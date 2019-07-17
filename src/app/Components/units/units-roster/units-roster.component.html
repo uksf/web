@@ -1,0 +1,39 @@
+<app-default-content-areas>
+    <app-main-content-area style="grid-column: span 3;">
+        <app-units-page></app-units-page>
+        <div class="flex-container">
+            <div class="spinner-container" *ngIf="!rosterData">
+                <mat-spinner></mat-spinner>
+            </div>
+            <mat-table class="table-container mat-elevation-z8" #table [dataSource]="rosterData">
+                <ng-container matColumnDef="name">
+                    <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+                    <mat-cell *matCellDef="let element" [routerLink]="['/profile', element.id]">{{element.name}}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="rank">
+                    <mat-header-cell *matHeaderCellDef> Rank </mat-header-cell>
+                    <mat-cell *matCellDef="let element" [routerLink]="['/profile', element.id]">{{element.rank}}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="roleAssignment">
+                    <mat-header-cell *matHeaderCellDef> Role </mat-header-cell>
+                    <mat-cell *matCellDef="let element" [routerLink]="['/profile', element.id]">{{element.roleAssignment}}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="unitAssignment">
+                    <mat-header-cell *matHeaderCellDef> Unit </mat-header-cell>
+                    <mat-cell *matCellDef="let element" [routerLink]="['/profile', element.id]">{{element.unitAssignment}}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="nation">
+                    <mat-header-cell *matHeaderCellDef> Nation </mat-header-cell>
+                    <mat-cell *matCellDef="let element" [routerLink]="['/profile', element.id]">
+                        <div>
+                            <img src="{{element.nation | countryImage}}" width="20">
+                            <span style="margin-left: 5px;">{{element.nation | countryName}}</span>
+                        </div>
+                    </mat-cell>
+                </ng-container>
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            </mat-table>
+        </div>
+    </app-main-content-area>
+</app-default-content-areas>

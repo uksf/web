@@ -1,0 +1,25 @@
+.mat-dialog-content {
+    overflow: unset;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.overflow-container {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.normal {
+    width: 400px;
+}

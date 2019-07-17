@@ -1,0 +1,32 @@
+.mat-dialog-content {
+    .container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+
+        .container-body {
+            width: 100%;
+
+            .mat-form-field {
+                width: 100%;
+                margin: 5px 0;
+
+                input {
+                    cursor: pointer;
+                }
+            }
+        }
+
+        .invalid-message {
+            text-align: center;
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+        }
+    }
+}

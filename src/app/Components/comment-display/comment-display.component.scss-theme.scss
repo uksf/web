@@ -1,0 +1,40 @@
+@import "~@angular/material/theming";
+
+@mixin comment-display-component-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+    $primary: map-get($theme, primary);
+
+    app-comment-display {
+        .comment-form {
+            button {
+                background-color: mat-color($background, selected);
+            }
+        }
+        .comments-container {
+            .comment-wrapper {
+                .author {
+                    .author-string {
+                        color: mat-color($primary);
+                    }
+
+                    .date-string {
+                        color: mat-color($background, hover);
+                    }
+
+                    .menu-button {
+                        background-color: transparent;
+
+                        &:hover {
+                            color: mat-color($primary);
+                        }
+                    }
+
+                    .mat-button-focus-overlay {
+                        background-color: transparent;
+                    }
+                }
+            }
+        }
+    }
+}

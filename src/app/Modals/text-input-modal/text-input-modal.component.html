@@ -1,0 +1,14 @@
+<mat-dialog-content>
+    <div class="flex-container">
+        <span>{{message}}</span>
+        <form [formGroup]="form" class="textarea-container">
+            <mat-form-field class="textarea">
+                <textarea matInput formControlName="input" required [(ngModel)]="input" matTextareaAutosize matAutosizeMinRows="5" matAutosizeMaxRows="5" maxlength="200"></textarea>
+            </mat-form-field>
+        </form>
+        <div class="flex-container-row">
+            <button mat-raised-button (click)="confirm()" color="primary" class="confirm" [disabled]="!form.valid">Confirm</button>
+            <button mat-raised-button (click)="cancel()" class="cancel">Cancel</button>
+        </div>
+    </div>
+</mat-dialog-content>

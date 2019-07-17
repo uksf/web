@@ -1,0 +1,61 @@
+.flex-container {
+    display: flex;
+    flex-direction: row;
+    margin-left: 0;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.flex-container-slim {
+    display: flex;
+    flex-direction: row;
+    margin-left: 0;
+}
+
+.column-container {
+    margin-right: 16px;
+}
+
+::ng-deep .node-wrapper {
+    align-items: center;
+}
+
+::ng-deep .node-content-wrapper {
+    font-size: 16px;
+}
+
+.mat-card {
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    width: fit-content;
+    align-items: center;
+    margin-bottom: 1px;
+    height: fit-content;
+    padding-right: 10px;
+}
+
+.name {
+    flex: 1;
+    flex-basis: 50%;
+}
+
+.shortname {
+    flex: 1;
+    flex-basis: 25%;
+}
+
+.teamspeakGroup {
+    flex: 1;
+    flex-basis: 25%;
+}
+
+.delete-icon {
+    color: red;
+}
+
+.disabled {
+    opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
+}

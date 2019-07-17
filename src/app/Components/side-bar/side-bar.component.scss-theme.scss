@@ -1,0 +1,35 @@
+@import "~@angular/material/theming";
+
+@mixin side-bar-component-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+    $primary: map-get($theme, primary);
+    $accent: map-get($theme, accent);
+    $inset-colour: mat-color($primary, default);
+    $inset-colour-newversion: mat-color($accent);
+
+    .sideNav {
+        .sideNavItem {
+            color: mat-color($foreground, base);
+
+            &.selected {
+                color: mat-color($primary, default);
+                background-color: mat-color($background, selected);
+                box-shadow: inset 3px 0 0 0 $inset-colour;
+            }
+    
+            &:hover {
+                background-color: mat-color($background, hover);
+            }
+        }
+
+        .newVersionNavItem {
+            background-color: mat-color($primary);
+            color: mat-color($primary, default-contrast);
+    
+            &:hover {
+                background-color: mat-color($primary);
+            }
+        }
+    }
+}

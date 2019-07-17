@@ -1,0 +1,118 @@
+<app-default-content-areas>
+    <app-main-content-area style="grid-column: span 3;">
+        <app-operations-page></app-operations-page>
+        <div class="flex-container column">
+            <div class="spinner-container" *ngIf="!servers">
+                <mat-spinner></mat-spinner>
+            </div>
+            <app-file-drop (onFileOver)="onFileOver()" (onFileLeave)="onFileLeave()" (onFileDrop)="onFileDrop($event)">
+                <div #serversContainer [ngClass]="{'fileDragging': fileDragging}">
+                    <div class="admin-container">
+                        <ng-template [ngxPermissionsOnly]="['ADMIN']">
+                            <button mat-raised-button color="primary" (click)="toggleDisabledState()" *ngIf="!disabled">
+                                Disable Server Control
+                            </button>
+                            <button mat-raised-button color="primary" (click)="toggleDisabledState()" *ngIf="disabled">
+                                Enable Server Control
+                            </button>
+                            <button mat-raised-button color="primary" (click)="addServer()">
+                                Add Server
+                            </button>
+                            <button mat-raised-button color="primary" (click)="killAll()" *ngIf="instanceCount > 0">
+                                Kill {{instanceCount}} Arma Instances
+                            </button>
+                        </ng-template>
+                        <button mat-raised-button color="primary" (click)="uploader.click()" class="uploading-button" [ngClass]="{'uploading': uploadingFile}" [disabled]="isDisabled">
+                            <span *ngIf="!uploadingFile">Upload Mission</span>
+                            <mat-icon *ngIf="uploadingFile" class="uploading-icon">autorenew</mat-icon>
+                        </button>
+                        <app-flex-filler></app-flex-filler>
+                        <div class="admin-container">
+                            <div class="control-disabled" *ngIf="disabled">
+                                Server control has been disabled by an admin
+                            </div>
+                            <button mat-button class="refresh-button icon" (click)="getServers()">
+                                <mat-icon matTooltip="Refresh all" [ngClass]="{'server-updating': updating}">refresh</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                    <div *ngIf="servers">
+                        <div class="servers-container" *ngIf="servers.length == 0">
+                            <h3>There are no game servers defined</h3>
+                        </div>
+                        <div class="servers-list" *ngIf="servers.length > 0" cdkDropList [cdkDropListDisabled]="updating || updatingOrder" (cdkDropListDropped)="onMove($event)" [class.disabled]="updatingOrder">
+                            <div *ngFor="let server of servers" cdkDrag (cdkDragStarted)="onDragStarted($event)" (cdkDragDropped)="onDragStopped($event)">
+                                <mat-card class="servers-list-item" [ngClass]="{'server-running': server.status.running}">
+                                    <div class="servers-list-header">
+                                        <ng-template [ngxPermissionsOnly]="['ADMIN']">
+                                            <span class="handle" cdkDragHandle [class.disabled]="updating || updatingOrder">=</span>
+                                        </ng-template>
+                                        <h3 class="servers-list-h3"
+                                            [ngClass]="{'title-updating': server.updating, 'title-stopping': server.status.stopping, 'title': !server.updating && !server.status.running, 'title-started': server.status.started && !server.updating && !server.status.running, 'title-running': !server.updating && server.status.running}">
+                                            {{server.name}}
+                                            - {{getServerStatus(server)}}</h3>
+                                        <app-flex-filler></app-flex-filler>
+                                        <button mat-button class="icon" (click)="refreshServerStatus(server)">
+                                            <mat-icon matTooltip="Refresh server status" [ngClass]="{'server-updating': server.updating}">refresh</mat-icon>
+                                        </button>
+                                    </div>
+                                    <div class="server-container">
+                                        <div class="server-details" *ngIf="server.status.running">
+                                            <span *ngIf="server.status.mission"><b>Map:</b> {{server.status.map}}</span>
+                                            <span *ngIf="server.status.mission"><b>Mission:</b> {{server.status.mission}}</span>
+                                            <span *ngIf="server.status.parsedUptime !== '00:00:00'"><b>Players:</b>
+                                                {{server.status.players}}</span>
+                                            <span *ngIf="server.status.parsedUptime !== '00:00:00'"><b>Max Players:</b>
+                                                {{server.status.maxPlayers}}</span>
+                                            <span *ngIf="server.status.parsedUptime !== '00:00:00'"><b>Uptime:</b>
+                                                {{server.status.parsedUptime}}</span>
+                                            <app-flex-filler></app-flex-filler>
+                                        </div>
+                                        <app-flex-filler></app-flex-filler>
+                                        <div class="server-buttons">
+                                            <ng-template [ngxPermissionsOnly]="['ADMIN']">
+                                                <button mat-button class="delete-icon" (click)="deleteServer($event, server)" [disabled]="server.updating || server.status.running || server.status.started || server.status.stopping">
+                                                    <mat-icon matTooltip="Delete game server">highlight_off</mat-icon>
+                                                </button>
+                                            </ng-template>
+                                            <ng-template [ngxPermissionsOnly]="['ADMIN']">
+                                                <button mat-button class="icon" (click)="editServer($event, server)" [disabled]="server.updating || server.status.running || server.status.started || server.status.stopping">
+                                                    <mat-icon matTooltip="Edit game server">edit</mat-icon>
+                                                </button>
+                                            </ng-template>
+                                            <ng-template [ngxPermissionsOnly]="['ADMIN']">
+                                                <button mat-button class="icon" (click)="editServerMods($event, server)" [disabled]="server.updating || server.status.running || server.status.started || server.status.stopping">
+                                                    <mat-icon matTooltip="Edit game server mods">extension</mat-icon>
+                                                </button>
+                                            </ng-template>
+                                            <app-flex-filler></app-flex-filler>
+                                            <mat-select *ngIf="!server.status.running && !server.status.started && !server.updating && !server.status.stopping" placeholder="Select mission" class="mission-select" [disabled]="server.updating || isDisabled">
+                                                <mat-option *ngFor="let mission of missions" [value]="mission.path" (onSelectionChange)="missionSelectionChange($event, server)">
+                                                    {{mission.map}}, {{mission.name}}
+                                                </mat-option>
+                                            </mat-select>
+                                            <button mat-raised-button color="primary" *ngIf="!server.status.started && !server.status.running && !server.status.stopping" [ngClass]="{'control-button': !server.status.started && !server.status.running && !server.status.stopping}"
+                                                [disabled]="server.updating || !server.missionSelection || isDisabled" (click)="launch(server)">Launch</button>
+                                            <!-- <button mat-raised-button color="primary" *ngIf="server.status.running && !server.status.stopping && server.status.parsedUptime !== '00:00:00'"
+                                                [ngClass]="{'control-button-running': server.status.running && !server.status.stopping && server.status.parsedUptime !== '00:00:00'}" [disabled]="server.updating || isDisabled" (click)="stop(server)">Stop</button>
+                                            <button mat-raised-button color="primary" *ngIf="server.status.running && !server.status.stopping && server.status.parsedUptime === '00:00:00'"
+                                                [ngClass]="{'control-button-running': server.status.running && !server.status.stopping && server.status.parsedUptime === '00:00:00'}" [disabled]="server.updating || isDisabled" (click)="stop(server, true)">Stop</button>
+                                            <button mat-raised-button color="primary" *ngIf="server.status.started || server.status.stopping" [ngClass]="{'control-button-running': server.status.started || server.status.stopping || server.status.parsedUptime === '00:00:00'}"
+                                                [disabled]="server.updating || isDisabled" (click)="kill(server)">Kill</button> -->
+                                            <button mat-raised-button color="primary" *ngIf="server.status.started || server.status.running" [ngClass]="{'control-button-running': server.status.started || server.status.running}" [disabled]="server.updating || isDisabled"
+                                                (click)="kill(server, true)">Stop</button>
+                                        </div>
+                                    </div>
+                                </mat-card>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="dropZone" [style.height.px]="dropZoneHeight" [style.width.px]="dropZoneWidth" *ngIf="fileDragging">
+                    <span>Drop mission files here to upload them</span>
+                </div>
+            </app-file-drop>
+            <input #uploader hidden type="file" accept=".pbo" multiple (change)="upload($event.target.files)" style="display: none;" />
+        </div>
+    </app-main-content-area>
+</app-default-content-areas>

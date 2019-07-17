@@ -1,0 +1,72 @@
+<h2 mat-dialog-title *ngIf="!edit">Add Server</h2>
+<h2 mat-dialog-title *ngIf="edit">Edit Server</h2>
+<mat-dialog-content>
+    <form [formGroup]="form" class="container">
+        <div class="overflow-container">
+            <mat-form-field class="normal">
+                <input #input matInput formControlName="name" required placeholder="Server Name" [errorStateMatcher]="instantErrorStateMatcher">
+                <mat-error *ngFor="let validation of validationMessages.name">
+                    <mat-error class="error-message" *ngIf="form.get('name').hasError(validation.type)">{{validation.message}}</mat-error>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="normal">
+                <input #input matInput formControlName="port" required placeholder="Port" type="number" [errorStateMatcher]="instantErrorStateMatcher">
+                <mat-error *ngFor="let validation of validationMessages.port">
+                    <mat-error class="error-message" *ngIf="form.get('port').hasError(validation.type)">{{validation.message}}</mat-error>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="normal">
+                <input #input matInput formControlName="apiPort" required placeholder="Api Port" type="number" [errorStateMatcher]="instantErrorStateMatcher">
+                <mat-error *ngFor="let validation of validationMessages.apiPort">
+                    <mat-error class="error-message" *ngIf="form.get('apiPort').hasError(validation.type)">{{validation.message}}</mat-error>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="normal">
+                <input #input matInput formControlName="numberHeadlessClients" placeholder="Headless clients required" type="number" [errorStateMatcher]="instantErrorStateMatcher">
+                <mat-error *ngFor="let validation of validationMessages.numberHeadlessClients">
+                    <mat-error class="error-message" *ngIf="form.get('numberHeadlessClients').hasError(validation.type)">{{validation.message}}</mat-error>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="normal">
+                <input #input matInput formControlName="profileName" required placeholder="Server Profile Name" [errorStateMatcher]="instantErrorStateMatcher">
+                <mat-error *ngFor="let validation of validationMessages.profileName">
+                    <mat-error class="error-message" *ngIf="form.get('profileName').hasError(validation.type)">{{validation.message}}</mat-error>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="normal">
+                <input #input matInput formControlName="hostName" required placeholder="Server Display Name" [errorStateMatcher]="instantErrorStateMatcher">
+                <mat-error *ngFor="let validation of validationMessages.hostName">
+                    <mat-error class="error-message" *ngIf="form.get('hostName').hasError(validation.type)">{{validation.message}}</mat-error>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="normal">
+                <input #input matInput formControlName="password" required placeholder="Server Password" [errorStateMatcher]="instantErrorStateMatcher">
+                <mat-error *ngFor="let validation of validationMessages.password">
+                    <mat-error class="error-message" *ngIf="form.get('password').hasError(validation.type)">{{validation.message}}</mat-error>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="normal">
+                <input #input matInput formControlName="adminPassword" required placeholder="Admin Password" [errorStateMatcher]="instantErrorStateMatcher">
+                <mat-error *ngFor="let validation of validationMessages.adminPassword">
+                    <mat-error class="error-message" *ngIf="form.get('adminPassword').hasError(validation.type)">{{validation.message}}</mat-error>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="normal">
+                <input #input matInput formControlName="serverMods" placeholder="Server only mods e.g @AliveServer;@dcg;">
+            </mat-form-field>
+            <mat-form-field class="normal">
+                <mat-select formControlName="serverOption" placeholder="Server options" required>
+                    <mat-option *ngFor="let option of serverOptions" [value]="option.value">
+                        {{ option.viewValue }}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngFor="let validation of validationMessages.serverOption">
+                    <mat-error class="error-message" *ngIf="form.get('serverOption').hasError(validation.type)">{{validation.message}}</mat-error>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div class="button-container">
+            <button mat-raised-button color="primary" type="button" #button (click)="submit(); button.disabled = true" [disabled]="!form.valid || changes.size === 0 || submitting">Submit</button>
+        </div>
+    </form>
+</mat-dialog-content>

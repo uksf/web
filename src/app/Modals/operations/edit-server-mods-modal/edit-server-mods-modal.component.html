@@ -1,0 +1,19 @@
+<h2 mat-dialog-title>Edit Server Mods</h2>
+<mat-dialog-content>
+    <div class="flex-container" *ngIf="availableMods">
+        <div class="mods-list-container">
+            <mat-checkbox color="primary" *ngFor="let mod of availableMods" [(ngModel)]="mod.selected">
+                <div class="mods-list-item">
+                    <span *ngIf="!mod.isDuplicate">{{mod.name}}</span>
+                    <div *ngIf="mod.isDuplicate">
+                        <span *ngIf="mod.pathRelativeToServerExecutable">{{mod.pathRelativeToServerExecutable}}</span>
+                        <span *ngIf="!mod.pathRelativeToServerExecutable">{{mod.path}}</span>
+                    </div>
+                </div>
+            </mat-checkbox>
+        </div>
+        <div class="button-container">
+            <button mat-raised-button color="primary" (click)="submit()">Save</button>
+        </div>
+    </div>
+</mat-dialog-content>

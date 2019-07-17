@@ -1,0 +1,15 @@
+@import "~@angular/material/theming";
+
+@mixin personnel-page-component-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+    $primary: map-get($theme, primary);
+
+    .report {
+        background-color: mat-color($background, card);
+        color: mat-color($foreground, base);
+        &:hover {
+            background-color: mat-color($background, hover);
+        }
+    }
+}

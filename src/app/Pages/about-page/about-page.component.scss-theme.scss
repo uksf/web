@@ -1,0 +1,18 @@
+@import "~@angular/material/theming";
+
+@mixin about-page-component-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+    $primary: map-get($theme, primary);
+
+    app-about-page {
+        .text-container {
+            color: white;
+            background-color: #000000d6;
+            opacity: 
+            a {
+                color: mat-color($primary);
+            }
+        }
+    }
+}

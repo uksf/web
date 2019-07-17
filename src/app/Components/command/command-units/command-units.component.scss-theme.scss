@@ -1,0 +1,23 @@
+@import "~@angular/material/theming";
+
+@mixin command-units-component-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+    $primary: map-get($theme, primary);
+
+    app-command-units {
+        .node-content-wrapper {
+            &:hover {
+                background-color: mat-color($background, hover);
+            }
+            &.is-dragging-over {
+                background-color: mat-color($background, hover);
+            }
+        }
+        .node-drop-slot {
+            &.is-dragging-over {
+                background-color: mat-color($background, hover);
+            }
+        }
+    }
+}

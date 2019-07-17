@@ -1,0 +1,78 @@
+<div class="list-container">
+    <div class="list-header">
+        <h3>{{title}}</h3>
+    </div>
+    <p *ngIf="loas.length == 0">No {{title.toLowerCase()}} LOAs</p>
+    <mat-accordion *ngIf="loas.length > 0">
+        <mat-card *ngFor="let loa of loas; trackBy: trackByLoa; let loaIndex = index" (click)="activate(loaIndex)" [ngClass]="{'hover': loaIndex !== selectedIndex, 'disable': !canViewReason(loa)}">
+            <div class="header-container">
+                <div class="title-container">
+                    <div class="date-container">
+                        <div class="title start">
+                            {{loa.start | date:'d MMM y':'+0000'}}
+                        </div>
+                        <div class="title to">
+                            to
+                        </div>
+                        <div class="title end">
+                            {{loa.end | date:'d MMM y':'+0000'}}
+                        </div>
+                    </div>
+                    <mat-divider [vertical]="true"></mat-divider>
+                    <div class="description name">
+                        {{loa.name}}
+                    </div>
+                </div>
+                <app-flex-filler></app-flex-filler>
+                <div class="description-container">
+                    <div *ngIf="loa.emergency" class="description end rejected">
+                        Emergency
+                    </div>
+                    <div *ngIf="loa.late && !loa.emergency" class="description end pending">
+                        Late
+                    </div>
+                    <div *ngIf="loa.longTerm" class="description end pending">
+                        Long Term
+                    </div>
+                    <div *ngIf="loa.state === loaReviewState.PENDING" class="description end pending">
+                        Pending
+                    </div>
+                    <div *ngIf="loa.state === loaReviewState.APPROVED" class="description end">
+                        Approved
+                    </div>
+                    <div *ngIf="loa.state === loaReviewState.REJECTED" class="description end rejected">
+                        Rejected
+                    </div>
+                </div>
+                <div class="toggle" [@indicatorRotate]="getExpandedState(loaIndex)" [ngClass]="{'disable': !canViewReason(loa)}"></div>
+            </div>
+
+            <div class="content-container" [@bodyExpansion]="getExpandedState(loaIndex)">
+                <div class="content-body">
+                    <div class="content">
+                        <div class="reason">
+                            {{loa.reason}}
+                        </div>
+                        <button mat-raised-button *ngIf="canDelete(loa)" color="primary" (click)="$event.stopPropagation(); delete(loa)">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </mat-card>
+    </mat-accordion>
+    <div class="list-footer">
+        <div class="pagination-container" *ngIf="loas.length > 0">
+            <span>{{pageIndex + 1}} - {{min(pageIndex + length, filteredLoas.length)}} of {{filteredLoas.length}}</span>
+            <button mat-raised-button color="primary" [disabled]="pageIndex <= 0" (click)="navigate(0)" matTooltip="Previous">
+                <div class="previous"></div>
+            </button>
+            <button mat-raised-button color="primary" [disabled]="(pageIndex + length) >= filteredLoas.length" (click)="navigate(1)" matTooltip="Next">
+                <div class="next"></div>
+            </button>
+            <mat-select [(ngModel)]="length" (selectionChange)="pageIndex = 0; navigate(-1)">
+                <mat-option *ngFor="let option of lengths" [value]="option.value">
+                    {{option.name}}
+                </mat-option>
+            </mat-select>
+        </div>
+    </div>
+</div>

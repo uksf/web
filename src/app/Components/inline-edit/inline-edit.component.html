@@ -1,0 +1,10 @@
+<div>
+    <div *ngIf="editing">
+        <input #inlineEditControl [required]="required" (blur)="unfocus()" [name]="value" [(ngModel)]="value" [type]="type"
+            [placeholder]="label" [class.invalid]="invalid"/>
+    </div>
+    <div *ngIf="!editing">
+        <span class="bold">{{label}}</span>
+        <div title="Click to edit" (click)="edit(value)" (focus)="edit(value)" tabindex="0" class="inline-edit">{{value}}</div>
+    </div>
+</div>

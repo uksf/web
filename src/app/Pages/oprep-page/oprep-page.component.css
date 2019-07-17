@@ -1,0 +1,39 @@
+.oprepPanel {
+    display: grid;
+    grid-template-areas: "title title" "time detail" "descr descr" "imgur imgur";
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto auto auto;
+}
+
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    margin-left: 0;
+    padding: 16px;
+}
+
+.attendanceArea {
+    line-height: 3px;
+}
+
+.detailsArea {
+    grid-area: detail;
+    padding: 5px;
+}
+
+.titleArea {
+    grid-area: title;
+}
+
+.timeArea {
+    grid-area: time;
+    padding: 2px 15px 0px 0px;
+}
+
+.imgurArea {
+    grid-area: imgur;
+}
+
+.descriptionArea {
+    grid-area: descr;
+}

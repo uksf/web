@@ -1,0 +1,79 @@
+app-default-content-areas {
+    margin-top: 10px;
+}
+
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    margin-left: 0;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 16px;
+}
+
+.progress-container-wrapper {
+    display: flex;
+    flex-direction: row;
+    margin: 10px 0;
+    text-align: center;
+    word-break: break-word;
+
+    .progress-container {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        height: 50px;
+        margin: 5px 0;
+
+        .box {
+            width: 100px;
+            flex: 1;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            cursor: default;
+            padding: 5px;
+        }
+
+        .box:last-child {
+            margin-right: 0px;
+        }
+    }
+
+    .progress-container:last-child {
+        margin-left: 10px;
+    }
+}
+
+.mat-card {
+    h2 {
+        margin-top: 0;
+    }
+}
+
+.mat-form-field {
+    width: 100%;
+    max-width: 300px;
+}
+
+.button-next {
+    text-align: right;
+}
+
+@media screen and (max-width: 800px) {
+    .progress-container-wrapper {
+        flex-direction: column;
+
+        .progress-container:last-child {
+            margin-left: 0;
+        }
+    }
+}
+
+@media screen and (max-width: 450px) {
+    .progress-container-wrapper {
+        font-size: 12px;
+    }
+}

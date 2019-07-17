@@ -1,0 +1,17 @@
+@import "~@angular/material/theming";
+
+@mixin login-page-component-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+    $primary: map-get($theme, primary);
+    $warn: map-get($theme, warn);
+
+    app-login-page {
+        a {
+            color: mat-color($primary);
+        }
+        .invalid-message {
+            color: mat-color($warn);
+        }
+    }
+}

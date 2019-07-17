@@ -1,0 +1,12 @@
+<mat-dialog-content>
+    <div class="flex-container">
+        <div class="message-container">
+            <p>{{message}}</p>
+        </div>
+        <app-flex-filler></app-flex-filler>
+        <div class="flex-container-row">
+            <app-flex-filler></app-flex-filler>
+            <button mat-button (click)="dialog.close()">{{button}}</button>
+        </div>
+    </div>
+</mat-dialog-content>

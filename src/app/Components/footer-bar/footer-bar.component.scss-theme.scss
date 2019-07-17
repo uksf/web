@@ -1,0 +1,31 @@
+@import "~@angular/material/theming";
+@mixin footer-bar-component-theme($theme) {
+    $foreground: map-get($theme, foreground);
+    $background: map-get($theme, background);
+    $primary: map-get($theme, primary);
+
+    app-footer-bar {
+        background-color: mat-color($background, side-bar);
+        .flex-container {
+            .buttons-container {
+                a {
+                    i {
+                        color: mat-color($primary);
+                    }
+                }
+            }
+            .copyright {
+                background-color: transparent;
+                p {
+                    color: mat-color($foreground, base);
+                }
+            }
+        }
+    }
+
+    @media screen and (max-width: 1024px) {
+        app-footer-bar {
+            background-color: black;
+        }
+    }
+}

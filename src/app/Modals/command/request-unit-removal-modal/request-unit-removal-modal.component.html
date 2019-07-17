@@ -1,0 +1,29 @@
+<h2 mat-dialog-title>Unit Removal Request</h2>
+<mat-dialog-content>
+    <form [formGroup]="form">
+        <div style="text-align: center;">
+            <mat-form-field>
+                <mat-select placeholder="Select recipient" formControlName="recipient" (selectionChange)="onSelectRecipient($event)">
+                    <mat-option *ngFor="let recipient of possibleRecipients" [value]="recipient.value">
+                        {{recipient.displayValue}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <mat-select placeholder="Select unit" formControlName="value">
+                    <mat-option *ngFor="let unit of possibleUnits" [value]="unit.id">
+                        {{unit.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <br>
+            <br>
+            <mat-form-field>
+                <textarea matInput placeholder="Reason" formControlName="reason" matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="5"></textarea>
+            </mat-form-field>
+        </div>
+        <button mat-raised-button color="primary" style="float:right;" [disabled]="!form.valid" (click)="submit()">Submit</button>
+        <br style="clear:both;">
+    </form>
+</mat-dialog-content>

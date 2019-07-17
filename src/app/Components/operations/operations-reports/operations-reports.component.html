@@ -1,0 +1,23 @@
+<app-default-content-areas>
+    <app-main-content-area style="grid-column: span 3;">
+        <app-operations-page></app-operations-page>
+        <div class="flex-container">
+            <div class="spinner-container" *ngIf="!oprepData">
+                <mat-spinner></mat-spinner>
+            </div>
+            <div class="reports-container" *ngIf="oprepData">
+                <div class="report-container">
+                    <div>
+                        <button mat-raised-button color="primary" (click)="createOprep()">Create OPREP</button>
+                    </div>
+                    <br>
+                    <div class="report-section">
+                        <mat-card class="report" *ngFor="let oprep of oprepData" (click)="openOprep(oprep.id)">
+                            {{oprep.name}}
+                        </mat-card>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </app-main-content-area>
+</app-default-content-areas>

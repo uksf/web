@@ -1,0 +1,75 @@
+<mat-card>
+    <h2>Identity</h2>
+    <form [formGroup]="formGroup">
+        <div class="special-field-form-container">
+            <label for="name">If you see this, keep this field blank</label>
+            <input type="text" id="name" formControlName="name" tabindex="-1" autocomplete="off" />
+        </div>
+        <mat-form-field class="normal">
+            <input matInput formControlName="email" required placeholder="Email" autocomplete="username" [errorStateMatcher]="instantErrorStateMatcher">
+            <mat-error *ngFor="let validation of validation_messages.email">
+                <mat-error class="error-message" *ngIf="formGroup.get('email').hasError(validation.type)">{{validation.message}}</mat-error>
+            </mat-error>
+        </mat-form-field>
+        <br>
+        <div formGroupName="passwordGroup">
+            <mat-form-field class="normal">
+                <input matInput formControlName="password" type="password" required placeholder="Password" autocomplete="new-password" [errorStateMatcher]="instantErrorStateMatcher">
+                <mat-error *ngFor="let validation of validation_messages.password">
+                    <mat-error class="error-message" *ngIf="formGroup.get('passwordGroup.password').hasError(validation.type)">{{validation.message}}</mat-error>
+                </mat-error>
+            </mat-form-field>
+            <br>
+            <mat-form-field class="normal">
+                <input matInput formControlName="confirmPassword" type="password" required placeholder="Confirm Password" autocomplete="new-password" [errorStateMatcher]="confirmValidParentMatcher">
+                <mat-error *ngFor="let validation of validation_messages.confirmPassword">
+                    <mat-error class="error-message" *ngIf="(formGroup.get('passwordGroup').hasError(validation.type) || formGroup.get('passwordGroup.confirmPassword').hasError(validation.type))">{{validation.message}}</mat-error>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <br>
+        <div>
+            <p>
+                This name will be used in-game, on teamspeak, and on discord.
+            </p>
+            <p>
+                If you do not wish to use your real name, you may use a realistic fake name (for example, Barry Miller)
+            </p>
+            <mat-form-field class="names">
+                <input matInput formControlName="firstname" placeholder="First name" required autocomplete="given-name">
+            </mat-form-field>
+            <mat-form-field>
+                <input matInput formControlName="lastname" placeholder="Last name" required autocomplete="family-name">
+            </mat-form-field>
+        </div>
+        <br>
+        <div formGroupName="dobGroup">
+            <p>Date of Birth</p>
+            <p>For example: 15/02/1989</p>
+            <mat-form-field class="dob">
+                <input matInput type="number" formControlName="day" placeholder="dd" maxlength="2" required autocomplete="bday-day">
+            </mat-form-field>/
+            <mat-form-field class="dob">
+                <input matInput type="number" formControlName="month" placeholder="mm" maxlength="2" required autocomplete="bday-month">
+            </mat-form-field>/
+            <mat-form-field class="dob year">
+                <input matInput type="number" formControlName="year" placeholder="yyyy" maxlength="4" required autocomplete="bday-year">
+            </mat-form-field>
+            <mat-error *ngFor="let validation of validation_messages.dob">
+                <mat-error class="error-message" *ngIf="formGroup.get('dobGroup').hasError(validation.type)">{{validation.message}}</mat-error>
+            </mat-error>
+        </div>
+        <br>
+        <mat-form-field>
+            <mat-select placeholder="Nation of Residence" formControlName="nation">
+                <mat-option *ngFor="let country of countries;" [value]="country.value">
+                    <img src="{{country.value | countryImage}}" width="35"> {{country.value | countryName}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <br>
+        <div class="button-next">
+            <button mat-raised-button color="primary" [disabled]="!formGroup.valid || pending || validating" (click)="next()">Next</button>
+        </div>
+    </form>
+</mat-card>

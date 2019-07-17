@@ -1,0 +1,47 @@
+h3 {
+    margin-top: 0px;
+    margin-bottom: 30px;
+}
+
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 600px;
+    min-height: 200px;
+    font-size: 18px;
+}
+
+.title-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.error {
+    font-weight: bolder;
+}
+
+span {
+    line-height: 40px;
+}
+
+.message-container {
+    max-height: 500px;
+    margin: 10px;
+    margin-top: 30px;
+    overflow: auto;
+}
+
+p {
+    white-space: pre-wrap;
+}
+
+a {
+    text-decoration: none;
+}
+
+.flex-container-row {
+    display: flex;
+    flex-direction: row;
+}

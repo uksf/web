@@ -1,0 +1,25 @@
+@import "~@angular/material/theming";
+
+@mixin new-application-page-component-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+    $primary: map-get($theme, primary);
+
+    app-new-application-page {
+        a {
+            color: mat-color($primary);
+        }
+        .progress-container-wrapper {
+            .progress-container {
+                .box {
+                    background-color: mat-color($background, card);
+                    color: mat-color($foreground, base);
+                }
+                .enabled {
+                    background-color: mat-color($primary);
+                    color: mat-color($primary, default-contrast);
+                }
+            }
+        }
+    }
+}

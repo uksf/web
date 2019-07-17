@@ -1,0 +1,22 @@
+.orbat-container {
+    padding-left: 16px;
+}
+
+.spinner-container {
+    height: 200px;
+    position: relative;
+}
+
+.inner-table {
+    width: 100%;
+}
+
+.row-container {
+    display: flex;
+    flex-direction: row;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+    min-height: 0px;
+}

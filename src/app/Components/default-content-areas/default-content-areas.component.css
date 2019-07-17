@@ -1,0 +1,24 @@
+:host {
+    display: grid;
+    grid-template-areas: "main space side";
+    grid-template-columns: 1fr 10px 0.45fr;
+    grid-template-rows: auto;
+}
+.main {
+    grid-area: main;
+}
+.space {
+    grid-area: space;
+}
+.side {
+    grid-area: side;
+}
+
+@media screen and (max-width: 768px) {
+    :host {
+        display: grid;
+        grid-template-areas: "main" "side";
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+    }
+}

@@ -1,0 +1,111 @@
+a {
+    text-decoration: none;
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.spinner-container {
+    height: 416px;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin-left: 50%;
+    transform: translate(-170px, 0);
+}
+
+.table-container {
+    display: flex;
+    flex-direction: column;
+    min-width: 300px;
+    max-width: 100vw;
+}
+
+.table-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.refresh-button {
+    margin-right: 10px;
+    line-height: 36px;
+    height: 36px;
+    padding: 0px;
+    min-width: 36px;
+    align-self: center;
+}
+
+.expand-hint {
+    display: inline-block;
+    vertical-align: bottom;
+    text-align: right;
+    font-size: 11px;
+}
+
+.mat-form-field {
+    font-size: 14px;
+    width: 100%;
+}
+
+.mat-table {
+    overflow: auto;
+    min-height: 360px;
+}
+
+.mat-row {
+    min-height: 30px;
+    padding: 0 10px;
+}
+
+.mat-header-row {
+    padding: 0 10px;
+}
+
+.mat-cell {
+    overflow: hidden;
+    max-height: 75px;
+    font-size: 11px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding: 2px;
+}
+
+.mat-header-cell {
+    overflow: unset;
+}
+
+.mat-column-id {
+    flex: 0 0 150px;
+}
+
+.mat-column-timestamp {
+    flex: 0 0 100px;
+}
+
+.mat-column-message {
+    flex: 1 0 200px;
+    cursor: pointer;
+}
+
+.updating {
+    animation: rotation 2s infinite linear;
+    -webkit-animation: rotation 2s infinite linear;
+}
+
+@keyframes rotation {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(359deg);
+    }
+}
+
+@-webkit-keyframes rotation {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(359deg);
+    }
+}

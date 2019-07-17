@@ -1,0 +1,28 @@
+@import "~@angular/material/theming";
+
+@mixin home-page-component-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+    $primary: map-get($theme, primary);
+    $accent: map-get($theme, accent);
+
+    app-home-page {
+        .issues-container {
+            color: mat-color($primary, default-contrast);
+        }
+        .teamspeak-container {
+            background-color: mat-color($primary);
+            .teamspeak-header {
+                .teamspeak-text {
+                    color: mat-color($primary, default-contrast);
+                }
+                a {
+                    color: mat-color($primary, default-contrast);
+                }
+            }
+            .teamspeak-content-container {
+                background-color: mat-color($background, card);
+            }
+        }
+    }
+}

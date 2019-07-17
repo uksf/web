@@ -1,0 +1,22 @@
+@import "~@angular/material/theming";
+@mixin edit-server-mods-modal-component-theme($theme) {
+    $foreground: map-get($theme, foreground);
+    $background: map-get($theme, background);
+    $primary: map-get($theme, primary);
+
+    app-edit-server-mods-modal {
+        .mods-list-item {
+            span {
+                color: mat-color($foreground, base);
+            }
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: mat-color($background, background);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: mat-color($background, hover);
+        }
+    }
+}

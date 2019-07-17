@@ -1,0 +1,29 @@
+<h2 mat-dialog-title>Add Rank</h2>
+<mat-dialog-content>
+    <form [formGroup]="form" class="container">
+        <mat-form-field class="normal">
+            <input #input matInput formControlName="name" required placeholder="Rank Name" [errorStateMatcher]="instantErrorStateMatcher">
+            <mat-error *ngFor="let validation of validationMessages.name">
+                <mat-error class="error-message" *ngIf="form.get('name').hasError(validation.type)">{{validation.message}}</mat-error>
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="normal">
+            <input #input matInput formControlName="abbreviation" required placeholder="Abbreviation" [errorStateMatcher]="instantErrorStateMatcher">
+            <mat-error *ngFor="let validation of validationMessages.abbreviation">
+                <mat-error class="error-message" *ngIf="form.get('abbreviation').hasError(validation.type)">{{validation.message}}</mat-error>
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="normal">
+            <input #input matInput formControlName="teamspeakGroup" placeholder="Teamspeak Group ID" type="number" [errorStateMatcher]="instantErrorStateMatcher">
+            <mat-error *ngFor="let validation of validationMessages.teamspeakGroup">
+                <mat-error class="error-message" *ngIf="form.get('teamspeakGroup').hasError(validation.type)">{{validation.message}}</mat-error>
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="normal">
+            <input #input matInput formControlName="discordRoleId" placeholder="Discord Role ID">
+        </mat-form-field>
+        <div class="button-container">
+            <button mat-raised-button color="primary" type="button" #button (click)="submit(); button.disabled = true" [disabled]="!form.valid">Submit</button>
+        </div>
+    </form>
+</mat-dialog-content>

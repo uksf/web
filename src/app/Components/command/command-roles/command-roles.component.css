@@ -1,0 +1,80 @@
+.flex-container {
+    display: flex;
+    flex-direction: row;
+    margin-left: 0;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.flex-container-input {
+    display: flex;
+    flex-direction: row;
+    margin-left: 0;
+}
+
+.normal {
+    width: 292px;
+}
+
+.mat-raised-button {
+    height: fit-content;
+    align-self: center;
+    margin-left: 20px;
+}
+
+.column-container {
+    margin-right: 16px;
+}
+
+.roles-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+    width: fit-content;
+}
+
+.roles-list-item {
+	font-size: 16px;
+    width: fit-content;
+}
+
+.handle {
+	font-size: 30px;
+    width: 40px;
+    line-height: 0;
+}
+
+.mat-card {
+    display: flex;
+    flex-direction: row;
+    padding: 0 10px;
+    align-items: center;
+    width: 400px;
+    margin-bottom: 1px;
+    height: 36px;
+}
+
+.inline-edit {
+    flex: 1;
+    flex-basis: 100%;
+    margin-right: 10px;
+}
+
+.no-handle {
+    margin-left: 16px;
+}
+
+.delete-icon {
+    color: red;
+    cursor: pointer;
+}
+
+.disabled {
+    opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
+}
+
+.cdk-drag-placeholder {
+    opacity: 0;
+}

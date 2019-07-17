@@ -1,0 +1,40 @@
+$light-theme-background: (
+    status-bar: mat-color($light-pallette, 300),
+    footer-bar: black,
+    side-bar: mat-color($light-pallette, 200),
+    app-bar: mat-color($light-pallette, 100),
+    background: mat-color($light-pallette, 50),
+    hover: mat-color($light-pallette, 400),
+    selected: mat-color($light-pallette, 300),
+    card: white,
+    dark-card: mat-color($light-pallette, 100),
+    dialog: white,
+    disabled-button: rgba(black, 0.12),
+    raised-button: white,
+    focused-button: $dark-focused,
+    selected-button: mat-color($light-pallette, 300),
+    selected-disabled-button: mat-color($light-pallette, 400),
+    disabled-button-toggle: mat-color($light-pallette, 200),
+    unselected-chip: mat-color($light-pallette, 300),
+    disabled-list-option: mat-color($light-pallette, 200),
+    org-line: mat-color($light-pallette, 900),
+    org-content: white,
+    org-hover: mat-color($light-pallette, 200),
+    scroll-track: mat-color($light-pallette, 200),
+    scroll-thumb: mat-color($light-pallette, 400),
+    server: mat-color($light-pallette, 200),
+    server-running: white
+);
+
+$light-theme-primary: mat-palette($mat-indigo, 500);
+$light-theme-accent: mat-palette($mat-amber, A200);
+$light-theme: mat-light-theme($light-theme-primary, $light-theme-accent);
+
+$background: map-get($light-theme, background);
+$background: map_merge($background, $light-theme-background);
+$light-theme: map_merge(
+    $light-theme,
+    (
+        background: $background
+    )
+);

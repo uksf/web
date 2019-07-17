@@ -1,0 +1,28 @@
+@import "~@angular/material/theming";
+
+@mixin personnel-loas-list-component-theme($theme) {
+    $background: map-get($theme, background);
+    $primary: map-get($theme, primary);
+    $warn: map-get($theme, warn);
+
+    app-personnel-loas-list {
+        .list-container {
+            .mat-card {
+                &.hover:hover {
+                    background-color: mat-color($background, hover);
+                }
+                .header-container {
+                    .description {
+                        &.pending {
+                            color: goldenrod;
+                        }
+
+                        &.rejected {
+                            color: red;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

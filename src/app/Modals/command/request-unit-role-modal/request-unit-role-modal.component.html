@@ -1,0 +1,38 @@
+<h2 mat-dialog-title>Unit Role Request</h2>
+<mat-dialog-content>
+    <p class="hint-text">The following form allows you to assign roles inside of units. This is not to be confused with an individual's
+        role assignment. For example, Perlaky's role is Commanding Officer 1 Platoon, but his unit role is 1iC.</p>
+    <form [formGroup]="form">
+        <div style="text-align: center;">
+            <mat-form-field>
+                <mat-select placeholder="Select recipient" formControlName="recipient" (selectionChange)="onSelectRecipient($event)">
+                    <mat-option *ngFor="let recipient of possibleRecipients" [value]="recipient.value">
+                        {{recipient.displayValue}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <mat-select placeholder="Select unit" formControlName="value" (selectionChange)="onSelectUnit($event)">
+                    <mat-option *ngFor="let unit of possibleUnits" [value]="unit.id">
+                        {{unit.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <mat-select placeholder="Select new role" formControlName="secondaryValue">
+                    <mat-option *ngFor="let role of possibleRoles" [value]="role.name">
+                        {{role.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <textarea matInput placeholder="Reason" formControlName="reason" matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="5"></textarea>
+            </mat-form-field>
+        </div>
+        <button mat-raised-button color="primary" style="float:right;" [disabled]="!form.valid" (click)="submit()">Submit</button>
+        <br style="clear:both;">
+    </form>
+</mat-dialog-content>

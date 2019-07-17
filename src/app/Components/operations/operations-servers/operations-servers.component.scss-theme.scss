@@ -1,0 +1,77 @@
+@import "~@angular/material/theming";
+@mixin operations-servers-component-theme($theme) {
+    $foreground: map-get($theme, foreground);
+    $background: map-get($theme, background);
+    $primary: map-get($theme, primary);
+    $accent: map-get($theme, accent);
+
+    app-operations-servers {
+        .uploading {
+            color: mat-color($accent, default-contrast) !important;
+            background-color: mat-color($accent) !important;
+        }
+
+        .admin-container {
+            .control-disabled {
+                color: red;
+            }
+            .refresh-button {
+                background-color: transparent;
+            }
+        }
+
+        .servers-list-item {
+            background-color: mat-color($background, server);
+
+            &.server-running {
+                background-color: mat-color($background, server-running);
+            }
+
+            .servers-list-header {
+                button {
+                    background-color: transparent;
+                }
+
+                .title-updating {
+                    color: mat-color($primary);
+                }
+            }
+        }
+
+        .server-buttons {
+            button {
+                background-color: transparent;
+            }
+        }
+
+        .dropZone {
+            border-color: mat-color($primary);
+        }
+
+        h3 {
+            background-color: transparent !important;
+        }
+    }
+
+    &.cdk-drag-preview {
+        .servers-list-item {
+            background-color: mat-color($background, server);
+
+            &.server-running {
+                background-color: mat-color($background, server-running);
+            }
+
+            .servers-list-header {
+                button {
+                    background-color: transparent;
+                }
+            }
+        }
+
+        .server-buttons {
+            button {
+                background-color: transparent;
+            }
+        }
+    }
+}

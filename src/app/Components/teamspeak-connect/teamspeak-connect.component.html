@@ -1,0 +1,25 @@
+<div *ngIf="!sent">
+    <span>
+        Connect to our <a href="ts3server://uk-sf.co.uk">TeamSpeak (uk-sf.co.uk)</a>, then select your TeamSpeak name from the list below, then press 'Send Code'
+    </span>
+    <form [formGroup]="teamspeakForm">
+        <div class="row-container">
+            <mat-form-field>
+                <mat-select placeholder="Select your teamspeak name" formControlName="teamspeakId">
+                    <mat-option *ngFor="let teamspeakUser of clients" [value]="teamspeakUser.clientDbId">
+                        {{ teamspeakUser.name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <app-flex-filler></app-flex-filler>
+            <button mat-raised-button color="primary" [disabled]="!teamspeakForm.value.teamspeakId" (click)="sendCode()">Send Code</button>
+        </div>
+    </form>
+</div>
+<div *ngIf="sent">
+    <form [formGroup]="formGroup">
+        <mat-form-field class="normal">
+            <input matInput formControlName="code" required placeholder="Enter confirmation code" (ngModelChange)="changed($event)">
+        </mat-form-field>
+    </form>
+</div>

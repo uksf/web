@@ -1,0 +1,58 @@
+<h2 mat-dialog-title>Create operation report</h2>
+<mat-dialog-content>
+    <form [formGroup]="oprepform">
+        <mat-form-field class="example-full-width">
+            <input matInput placeholder="Operation name" formControlName="name">
+        </mat-form-field>
+        <br>
+        <br>
+        <mat-form-field class="example-full-width">
+            <input matInput placeholder="Map" formControlName="map">
+        </mat-form-field>
+        <mat-form-field>
+            <mat-select placeholder="Type" formControlName="type">
+                <mat-option value="0">
+                    Campaign mission
+                </mat-option>
+                <mat-option value="1">
+                    Side mission
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <br>
+        <br>
+        <mat-form-field>
+            <input matInput [matDatepicker]="picker" placeholder="Start date" formControlName="start">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="example-full-width">
+            <input matInput placeholder="Start time" formControlName="starttime">
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+            <input matInput [matDatepicker]="picker2" placeholder="End date" formControlName="end">
+            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+            <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="example-full-width">
+            <input matInput placeholder="End time" formControlName="endtime">
+        </mat-form-field>
+        <br>
+        <br>
+        <mat-form-field>
+            <mat-select placeholder="Result" formControlName="result">
+                <mat-option value="0">
+                    Success
+                </mat-option>
+                <mat-option value="1">
+                    Failure
+                </mat-option>
+                <mat-option value="2">
+                    Ongoing
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </form>
+</mat-dialog-content>
+<button mat-raised-button color="primary" style="float:right;" (click)="submit()">Create</button>

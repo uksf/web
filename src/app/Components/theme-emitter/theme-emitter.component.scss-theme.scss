@@ -1,0 +1,26 @@
+@import "~@angular/material/theming";
+
+@mixin theme-emitter-component-theme($theme) {
+    $foreground: map-get($theme, foreground);
+    $primary: map-get($theme, primary);
+    $accent: map-get($theme, accent);
+    $warn: map-get($theme, warn);
+
+    app-theme-emitter {
+        .foreground {
+            color: mat-color($foreground, base);
+        }
+        .primary {
+            color: mat-color($primary);
+        }
+        .primary-contrast {
+            color: mat-color($primary, default-contrast);
+        }
+        .accent {
+            color: mat-color($accent);
+        }
+        .warn {
+            color: mat-color($warn);
+        }
+    }
+}

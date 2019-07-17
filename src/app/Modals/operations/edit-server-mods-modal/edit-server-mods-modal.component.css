@@ -1,0 +1,39 @@
+.mat-dialog-content {
+    padding: 0px;
+    overflow: hidden;
+}
+
+h2 {
+    margin: 0;
+}
+
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    min-width: 450px;
+    height: 600px;
+}
+
+.mods-list-container {
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    padding-bottom: 0px;
+    margin-bottom: 24px;
+}
+
+.mods-list-item {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    min-height: fit-content;
+    padding: 0 24px;
+}

@@ -1,0 +1,97 @@
+<mat-card *ngIf="rejected">    
+    <h2>{{applicationState}}</h2>
+    <p>We are sorry but your application to join UKSF has been rejected</p>
+    <p>Thank you for your interest in our unit. We hope you find a suitable alternative.</p>
+</mat-card>
+<div *ngIf="!rejected">
+    <mat-card>
+        <h2>{{applicationState}}</h2>
+        <p>Your application has been successfully submitted. Please wait for your SR1 recruitment officer to contact you.</p>
+        <p>They will take you through some information and answer any questions you have. Your SR1 is your point of contact during the application process.</p>
+        <p>You may edit certain parts of the application below, as well as communicate directly with your SR1 Recruitment Officer</p>
+        <br>
+        <h3>Please read the following information</h3>
+        <h4>Next steps</h4>
+        <p>We require all applicants to play a candidate op with us to complete the process. This is an opportunity for
+            you to see what kind of missions we play and how we play them, as well as the kind of people you will be
+            playing with. Please note that some ops we do are not representative of the missions we play normally. Your
+            SR1 will inform you if this is the case.</p>
+        <br>
+        <h4>Teamspeak</h4>
+        <p>Feel free to join our Teamspeak <a href="ts3server://uk-sf.co.uk">(uk-sf.co.uk)</a> at any time</p>
+        <p>Members with a red <span style="color: red;">R</span> tag are SR1 Recruitment Officers and are available should you have any questions.</p>
+        <p>The 'General Discussion Lobby' is a public lobby that you may join at any time.</p>
+        <p>'Private Discussion' lobbies are private, thus you should ask the people inside if you may join them before joining.</p>
+        <br>
+        <h4>Game Setup</h4>
+        <p>You should visit the <a routerLink="/modpack">Modpack Setup Guide</a> whilst you wait for your SR1 to contact you.</p>
+        <p>Your Arma profile name and your teamspeak name both need to be changed to <b>{{name}}</b></p>
+    </mat-card>
+    <div class="application-container">
+        <mat-card>
+            <h3>Edit Application</h3>
+            <form [formGroup]="formGroup">
+                <div class="special-field-form-container">
+                    <label for="name">If you see this, keep this field blank</label>
+                    <input type="text" id="name" formControlName="name" tabindex="-1" autocomplete="off" />
+                </div>
+                <div>
+                    <mat-form-field class="large-input">
+                        <textarea matInput placeholder="How much experience do you have playing Arma?" matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="5" formControlName="armaExperience" maxlength="250" #armaText></textarea>
+                        <mat-hint *ngIf="armaText.value.length > 200">{{armaText.value.length}} / 500</mat-hint>
+                        <mat-error *ngFor="let validation of validation_messages.armaExperience">
+                            <mat-error class="error-message" *ngIf="formGroup.get('armaExperience').hasError(validation.type)">{{validation.message}}</mat-error>
+                        </mat-error>
+                    </mat-form-field>
+                    <br>
+                    <mat-form-field class="large-input">
+                        <textarea matInput placeholder="Other Units - have you ever been in an Arma unit? Which?" matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="4" formControlName="unitsExperience" maxlength="250" #unitsText></textarea>
+                        <mat-hint *ngIf="unitsText.value.length > 200">{{unitsText.value.length}} / 250</mat-hint>
+                        <mat-error *ngFor="let validation of validation_messages.unitsExperience">
+                            <mat-error class="error-message" *ngIf="formGroup.get('unitsExperience').hasError(validation.type)">{{validation.message}}</mat-error>
+                        </mat-error>
+                    </mat-form-field>
+                    <br>
+                    <mat-form-field class="large-input">
+                        <textarea matInput placeholder="Personal background - tell us a little about yourself" matTextareaAutosize matAutosizeMinRows="5" matAutosizeMaxRows="10" formControlName="background" maxlength="500" #backgroundText></textarea>
+                        <mat-hint *ngIf="backgroundText.value.length > 400">{{backgroundText.value.length}} / 500</mat-hint>
+                        <mat-error *ngFor="let validation of validation_messages.background">
+                            <mat-error class="error-message" *ngIf="formGroup.get('background').hasError(validation.type)">{{validation.message}}</mat-error>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <mat-checkbox color="primary" formControlName="militaryExperience">Are you or have you ever been a member of the military?</mat-checkbox>
+                <br>
+                <br>
+                <p>These options exist to give us an idea of what kind of role you are interested in. There is no guarentee you will be admited
+                    to any of these programs.</p>
+                <mat-checkbox color="primary" formControlName="officer">Officer leadership</mat-checkbox>
+                <br>
+                <mat-checkbox color="primary" formControlName="nco">NCO leadership</mat-checkbox>
+                <br>
+                <mat-checkbox color="primary" formControlName="aviation">Aviation</mat-checkbox>
+                <br>
+                <br>
+                <mat-form-field>
+                    <mat-select placeholder="Where did you hear about UKSF?" formControlName="reference">
+                        <mat-option *ngFor="let referenceOption of referenceOptions" [value]="referenceOption.value">
+                            {{ referenceOption.viewValue }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <br>
+                <br>
+                <div class="button-next">
+                    <button mat-raised-button color="primary" [disabled]="!formGroup.valid || !changesMade" (click)="update()">Update</button>
+                </div>
+            </form>
+        </mat-card>
+        <mat-card>
+            <h3>Application Chat</h3>
+            <ng-template [ngxPermissionsOnly]="['SR1']">
+                <sup>Visible to candidate</sup>
+            </ng-template>
+            <app-comment-display [threadId]="[applicationCommentThread]"></app-comment-display>
+        </mat-card>
+    </div>
+</div>

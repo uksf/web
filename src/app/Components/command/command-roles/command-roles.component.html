@@ -1,0 +1,93 @@
+<app-default-content-areas>
+    <app-main-content-area style="grid-column: span 3;">
+        <app-command-page></app-command-page>
+        <div class="spinner-container" *ngIf="!individualRoles || !unitRoles">
+            <mat-spinner></mat-spinner>
+        </div>
+        <div *ngIf="individualRoles && unitRoles">
+            <div class="flex-container">
+                <div class="column-container">
+                    <div>
+                        <h3>Individual Roles</h3>
+                        <ng-template [ngxPermissionsOnly]="['ADMIN']">
+                            <div>
+                                <form [formGroup]="individualForm" class="flex-container-input">
+                                    <mat-form-field class="normal">
+                                        <input #input matInput formControlName="name" required placeholder="Role" [errorStateMatcher]="instantErrorStateMatcher" (blur)="unfocus()">
+                                        <mat-error *ngFor="let validation of validationMessages">
+                                            <mat-error class="error-message" *ngIf="individualForm.get('name').hasError(validation.type)">{{validation.message}}</mat-error>
+                                        </mat-error>
+                                    </mat-form-field>
+                                    <button mat-raised-button color="primary" (click)="addRole(0)" [disabled]="!individualForm.valid">Add
+                                        Role
+                                    </button>
+                                </form>
+                            </div>
+                            <br>
+                            <div class="roles-list">
+                                <li *ngFor="let role of individualRoles">
+                                    <mat-card>
+                                        <app-inline-edit class="inline-edit no-handle" [(ngModel)]="role.name" [required]="true" type="text" [validator]="validateInlineRole(role, 0)" (finishedEvent)="editRole($event)"></app-inline-edit>
+                                        <app-flex-filler></app-flex-filler>
+                                        <mat-icon class="delete-icon" (click)="deleteRole($event, role)">highlight_off</mat-icon>
+                                    </mat-card>
+                                </li>
+                            </div>
+                        </ng-template>
+                        <ng-template [ngxPermissionsExcept]="['ADMIN']">
+                            <br>
+                            <div class="roles-list">
+                                <li *ngFor="let role of individualRoles">
+                                    <mat-card>
+                                        <span>{{role.name}}</span>
+                                    </mat-card>
+                                </li>
+                            </div>
+                        </ng-template>
+                    </div>
+                </div>
+                <div class="column-container">
+                    <div>
+                        <h3>Unit Roles</h3>
+                        <ng-template [ngxPermissionsOnly]="['ADMIN']">
+                            <div>
+                                <form [formGroup]="unitForm" class="flex-container-input">
+                                    <mat-form-field class="normal">
+                                        <input #input matInput formControlName="name" required placeholder="Role" [errorStateMatcher]="instantErrorStateMatcher" (blur)="unfocus()">
+                                        <mat-error *ngFor="let validation of validationMessages">
+                                            <mat-error class="error-message" *ngIf="unitForm.get('name').hasError(validation.type)">{{validation.message}}</mat-error>
+                                        </mat-error>
+                                    </mat-form-field>
+                                    <button mat-raised-button color="primary" (click)="addRole(1)" [disabled]="!unitForm.valid">Add
+                                        Role
+                                    </button>
+                                </form>
+                            </div>
+                            <br>
+                            <div class="roles-list" cdkDropList (cdkDropListDropped)="onMove($event)" [cdkDropListDisabled]="updatingOrder" [class.disabled]="updatingOrder">
+                                <div class="roles-list-item" *ngFor="let role of unitRoles" cdkDrag (cdkDragStarted)="onDragStarted($event)" (cdkDragDropped)="onDragStopped($event)">
+                                    <mat-card>
+                                        <span class="handle" cdkDragHandle>=</span>
+                                        <app-inline-edit class="inline-edit" [(ngModel)]="role.name" [required]="true" type="text" [validator]="validateInlineRole(role, 1)" (finishedEvent)="editRole($event)"></app-inline-edit>
+                                        <app-flex-filler></app-flex-filler>
+                                        <mat-icon class="delete-icon" (click)="deleteRole($event, role)">highlight_off</mat-icon>
+                                    </mat-card>
+                                </div>
+                            </div>
+                        </ng-template>
+                        <ng-template [ngxPermissionsExcept]="['ADMIN']">
+                            <br>
+                            <div class="roles-list">
+                                <div class="roles-list-item" *ngFor="let role of unitRoles">
+                                    <mat-card>
+                                        <span>{{role.name}}</span>
+                                    </mat-card>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </app-main-content-area>
+</app-default-content-areas>

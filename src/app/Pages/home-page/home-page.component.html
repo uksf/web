@@ -1,0 +1,99 @@
+<app-default-content-areas>
+    <app-main-content-area>
+        <div class="timezone-container">
+            <div class="timezone">
+                <span class="normal">Greenwich Mean Time</span>
+                <span class="short">GMT</span>
+                <span class="normal">{{ time | zonedTime:'Europe/London' }}</span>
+                <span class="short">{{ time | zonedTime:'Europe/London':true }}</span>
+            </div>
+            <div class="timezone">
+                <span class="normal">Central European Time</span>
+                <span class="short">CET</span>
+                <span class="normal">{{ time | zonedTime:'Europe/Berlin' }}</span>
+                <span class="short">{{ time | zonedTime:'Europe/Berlin':true }}</span>
+            </div>
+            <div class="timezone">
+                <span class="normal">US Eastern Standard Time</span>
+                <span class="short">EST</span>
+                <span class="normal">{{ time | zonedTime:'America/New_York' }}</span>
+                <span class="short">{{ time | zonedTime:'America/New_York':true }}</span>
+            </div>
+            <div class="timezone">
+                <span class="normal">US Central Standard Time</span>
+                <span class="short">CST</span>
+                <span class="normal">{{ time | zonedTime:'America/Chicago' }}</span>
+                <span class="short">{{ time | zonedTime:'America/Chicago':true }}</span>
+            </div>
+        </div>
+        <ng-template [ngxPermissionsExcept]="['MEMBER']">
+            <app-about-page></app-about-page>
+        </ng-template>
+        <ng-template [ngxPermissionsOnly]="['MEMBER']">
+            <div class="flex-container">This area is intentionally empty at the moment</div>
+        </ng-template>
+    </app-main-content-area>
+    <app-side-content-area>
+        <div class="flex-container">
+            <ng-template [ngxPermissionsOnly]="['MEMBER']">
+                <div class="issues-container">
+                    <button mat-raised-button color="primary" class="issues-button" (click)="openIssueModal(0)">
+                        <div>
+                            <i class="material-icons">feedback</i>
+                            <span>Report website issue</span>
+                        </div>
+                    </button>
+                    <button mat-raised-button color="primary" class="issues-button" (click)="openIssueModal(1)">
+                        <div>
+                            <i class="material-icons">feedback</i>
+                            <span>Report modpack issue</span>
+                        </div>
+                    </button>
+                </div>
+            </ng-template>
+            <mat-card class="teamspeak-container">
+                <div class="teamspeak-header">
+                    <span class="teamspeak-text">TeamSpeak Online (<a href="ts3server://uk-sf.co.uk">Join</a>)</span>
+                    <a href="ts3server://uk-sf.co.uk">
+                        <i class="fab fa-teamspeak teamspeak-icon" width="25"></i>
+                    </a>
+                </div>
+                <div class="teamspeak-content-container">
+                    <div class="spinner-container" *ngIf="!recruiters || !members || !guests">
+                        <app-flex-filler></app-flex-filler>
+                        <mat-spinner></mat-spinner>
+                        <app-flex-filler></app-flex-filler>
+                    </div>
+                    <div *ngIf="recruiters && members && guests">
+                        <div *ngIf="recruiters.length > 0">
+                            <h4>Recruitment Staff</h4>
+                            <ul>
+                                <div *ngFor="let user of recruiters">
+                                    <li>{{user.displayName}}</li>
+                                </div>
+                            </ul>
+                            <hr>
+                        </div>
+                        <div *ngIf="members.length > 0">
+                            <h4>Members</h4>
+                            <ul>
+                                <div *ngFor="let user of members">
+                                    <li>{{user.displayName}}</li>
+                                </div>
+                            </ul>
+                        </div>
+                        <div *ngIf="guests.length > 0">
+                            <h4>Guests</h4>
+                            <ul>
+                                <div *ngFor="let user of guests">
+                                    <li>{{user.displayName}}</li>
+                                </div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+            <iframe src="https://discordapp.com/widget?id=311543678126653451&theme=dark" style="width: 100%;" height="500" allowtransparency="true" frameborder="0"></iframe>
+        </div>
+    </app-side-content-area>
+</app-default-content-areas>

@@ -1,0 +1,56 @@
+.loa-buttons-container {
+    display: flex;
+    align-items: center;
+
+    .loa-filter-buttons-container {
+        display: flex;
+
+        .loa-filter-button {
+            margin-right: 5px;
+            width: 80px;
+            height: min-content;
+
+            .mat-icon {
+                margin-right: 2px;
+            }
+        }
+    }
+
+    .mat-form-field {
+        width: 30%;
+        margin-right: 10px;
+
+        .mat-icon-button {
+            background-color: transparent;
+
+            .mat-icon {
+                margin: 0;
+                height: 21px;
+                line-height: 21px;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .loa-buttons-container {
+        flex-direction: column;
+        align-items: start;
+
+        &:nth-child(1) {
+            margin-bottom: 5px;
+        }
+
+        .loa-filter-buttons-container {
+        }
+
+        .mat-form-field {
+            width: 95%;
+
+            .mat-icon-button {
+                .mat-icon {
+                }
+            }
+        }
+    }
+}

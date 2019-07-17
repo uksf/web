@@ -1,0 +1,30 @@
+<h2 mat-dialog-title>Role Request</h2>
+<mat-dialog-content>
+    <form [formGroup]="form">
+        <div>
+            <div style="text-align: center;">
+                <mat-form-field>
+                    <mat-select placeholder="Select recipient" formControlName="recipient" (selectionChange)="onSelectRecipient($event)">
+                        <mat-option *ngFor="let recipient of possibleRecipients" [value]="recipient.value">
+                            {{recipient.displayValue}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <br>
+                <mat-form-field>
+                    <mat-select placeholder="Select new role" formControlName="value">
+                        <mat-option *ngFor="let role of possibleRoles" [value]="role.name">
+                            {{role.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <br>
+                <mat-form-field>
+                    <textarea matInput placeholder="Reason" formControlName="reason" matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="5"></textarea>
+                </mat-form-field>
+            </div>
+            <button mat-raised-button color="primary" style="float:right;" [disabled]="!form.valid" (click)="submit()">Submit</button>
+            <br style="clear:both;">
+        </div>
+    </form>
+</mat-dialog-content>

@@ -1,0 +1,408 @@
+<app-default-content-areas>
+    <app-theme-emitter></app-theme-emitter>
+    <app-main-content-area>
+        <div class="flex-container">
+            <h3 *ngIf="waiting.length > 0 || allWaiting.length > 0">Active Applications</h3>
+            <div *ngIf="waiting.length == 0 && allWaiting.length > 0">
+                <h4>You have no active applications</h4>
+            </div>
+            <div *ngIf="waiting.length > 0 && !mobile" class="applications-container">
+                <mat-card class="applicationCardMine" (click)="openApplication(application)" *ngFor="let application of waiting">
+                    <table class="table-list">
+                        <tr class="tr-active">
+                            <td style="width: 20%;" [rowSpan]="2">
+                                <h4 [ngStyle]="{'color': getApplicationColour(application)}">{{application.account.firstname}} {{application.account.lastname}}</h4>
+                            </td>
+                            <td style="width: 30%; cursor: default;" (click)="$event.stopPropagation();">
+                                <b>Email: </b>
+                                <small>{{application.account.email}}</small>
+                            </td>
+                            <td style="width: 30%;">
+                                <b>Teamspeak: </b>
+                                <small>
+                                    <span *ngIf="application.teamspeak.online" style="color: green;">Online as {{application.teamspeak.nickname}}</span>
+                                    <span *ngIf="!application.teamspeak.online" style="color: red;">Offline</span>
+                                </small>
+                            </td>
+                            <td style="width: 20%;">
+                                <b>Applied: </b>
+                                <small>{{application.account.application.dateCreated | date:'mediumDate'}}</small>
+                            </td>
+                        </tr>
+                        <tr class="tr-active">
+                            <td style="width: 20%;">
+                                <b>SR1: </b>
+                                <small>{{application.recruiter}}</small>
+                            </td>
+                            <td style="width: 20%;">
+                                <b>Steam: </b>
+                                <small>
+                                    <a [attr.href]="application.steamprofile" target="_blank" (click)="$event.stopPropagation();">Steam Profile</a>
+                                </small>
+                            </td>
+                            <td style="width: 20%;">
+                                <span>
+                                    <b>Processing: </b>
+                                </span>
+                                <small [ngStyle]="{'color': getApplicationColour(application)}">
+                                    {{application.daysProcessing}}
+                                    <span *ngIf="application.daysProcessing == 1; else days">Day</span>
+                                    <ng-template #days>Days</ng-template>
+                                </small>
+                            </td>
+                        </tr>
+                    </table>
+                </mat-card>
+                <br style="clear: both;">
+            </div>
+            <div *ngIf="waiting.length > 0 && mobile" class="applications-container">
+                <mat-card class="applicationCardMine" (click)="openApplication(application)" *ngFor="let application of waiting">
+                    <div class="application-card-container">
+                        <div class="application-card-name">
+                            <h4 [ngStyle]="{'color': getApplicationColour(application)}">{{application.account.firstname}} {{application.account.lastname}}</h4>
+                        </div>
+                        <div>
+                            <div>
+                                <b>SR1: </b>
+                                <small>{{application.recruiter}}</small>
+                            </div>
+                            <div>
+                                <span>
+                                    <b>Processing: </b>
+                                </span>
+                                <small [ngStyle]="{'color': getApplicationColour(application)}">
+                                    {{application.daysProcessing}}
+                                    <span *ngIf="application.daysProcessing == 1; else days">Day</span>
+                                    <ng-template #days>Days</ng-template>
+                                </small>
+                            </div>
+
+                        </div>
+                    </div>
+                </mat-card>
+                <br style="clear: both;">
+            </div>
+            <br>
+            <div *ngIf="loaded && waiting.length == 0 && allWaiting.length == 0">
+                <h4>There are no active applications</h4>
+            </div>
+            <div *ngIf="allWaiting.length > 0 && !mobile" class="applications-container">
+                <h4>Other Applications</h4>
+                <mat-card class="applicationCardOthers" (click)="openApplication(application)" *ngFor="let application of allWaiting">
+                    <table class="table-list">
+                        <tr class="tr-active">
+                            <td style="width: 20%;" [rowSpan]="2">
+                                <h4 [ngStyle]="{'color': getApplicationColour(application)}">{{application.account.firstname}} {{application.account.lastname}}</h4>
+                            </td>
+                            <td style="width: 30%; cursor: default;" (click)="$event.stopPropagation();">
+                                <b>Email: </b>
+                                <small>{{application.account.email}}</small>
+                            </td>
+                            <td style="width: 30%;">
+                                <b>Teamspeak: </b>
+                                <small>
+                                    <span *ngIf="application.teamspeak.online" style="color: green;">Online as {{application.teamspeak.nickname}}</span>
+                                    <span *ngIf="!application.teamspeak.online" style="color: red;">Offline</span>
+                                </small>
+                            </td>
+                            <td style="width: 20%;">
+                                <b>Applied: </b>
+                                <small>{{application.account.application.dateCreated | date:'mediumDate'}}</small>
+                            </td>
+                        </tr>
+                        <tr class="tr-active">
+                            <td style="width: 20%;">
+                                <b>SR1: </b>
+                                <small>{{application.recruiter}}</small>
+                            </td>
+                            <td style="width: 20%;">
+                                <b>Steam: </b>
+                                <small>
+                                    <a [attr.href]="application.steamprofile" target="_blank" (click)="$event.stopPropagation();">Steam Profile</a>
+                                </small>
+                            </td>
+                            <td style="width: 20%;">
+                                <span>
+                                    <b>Processing: </b>
+                                </span>
+                                <small [ngStyle]="{'color': getApplicationColour(application)}">
+                                    {{application.daysProcessing}}
+                                    <span *ngIf="application.daysProcessing == 1; else days">Day</span>
+                                    <ng-template #days>Days</ng-template>
+                                </small>
+                            </td>
+                        </tr>
+                    </table>
+                </mat-card>
+            </div>
+            <div *ngIf="allWaiting.length > 0 && mobile" class="applications-container">
+                <h4>Other Applications</h4>
+                <mat-card class="applicationCardOthers" (click)="openApplication(application)" *ngFor="let application of allWaiting">
+                    <div class="application-card-container">
+                        <div class="application-card-name">
+                            <h4 [ngStyle]="{'color': getApplicationColour(application)}">{{application.account.firstname}} {{application.account.lastname}}</h4>
+                        </div>
+                        <div>
+                            <div>
+                                <b>SR1: </b>
+                                <small>{{application.recruiter}}</small>
+                            </div>
+                            <div>
+                                <span>
+                                    <b>Processing: </b>
+                                </span>
+                                <small [ngStyle]="{'color': getApplicationColour(application)}">
+                                    {{application.daysProcessing}}
+                                    <span *ngIf="application.daysProcessing == 1; else days">Day</span>
+                                    <ng-template #days>Days</ng-template>
+                                </small>
+                            </div>
+
+                        </div>
+                    </div>
+                </mat-card>
+            </div>
+            <br style="clear:left;">
+            <hr>
+            <span class="history-header" *ngIf="loaded && !mobile">
+                <table>
+                    <tr>
+                        <td style="white-space: nowrap;">
+                            <span>
+                                <h3 style="margin-right: 25px; display: inline; vertical-align: middle;">Application History</h3>
+                            </span>
+                        </td>
+                        <td>
+                            <mat-form-field class="example-form-field" style="margin-right: 20px;">
+                                <input matInput #searchInput type="text" placeholder="Search" [(ngModel)]="searchValue" (ngModelChange)="search($event)">
+                                <button mat-raised-button *ngIf="searchValue" matSuffix mat-icon-button aria-label="Clear" (click)="searchValue = ''; search('')">
+                                    <mat-icon>close</mat-icon>
+                                </button>
+                            </mat-form-field>
+                        </td>
+                        <td style="text-align: left;">
+                            <button mat-raised-button [matMenuTriggerFor]="sortMenu" style="margin-right: 10px; vertical-align: middle;">
+                                <mat-icon class="icon-right">sort</mat-icon>
+                                Sort
+                            </button>
+                            <mat-menu #sortMenu="matMenu">
+                                <button mat-menu-item (click)="sort(0)">Name</button>
+                                <button mat-menu-item (click)="sort(1)">Date Applied</button>
+                                <button mat-menu-item (click)="sort(2)">Date Completed</button>
+                            </mat-menu>
+                        </td>
+                        <td style="text-align: left;">
+                            <button mat-raised-button [matMenuTriggerFor]="filterMenu" style="margin-right: 10px; vertical-align: middle;">
+                                <mat-icon class="icon-right">filter_list</mat-icon>
+                                Filter SR1
+                            </button>
+                            <mat-menu #filterMenu="matMenu">
+                                <button mat-menu-item (click)="filter('')">All</button>
+                                <div *ngFor="let sr1 of recruiters">
+                                    <button mat-menu-item (click)="filter(sr1)">{{sr1}}</button>
+                                </div>
+                            </mat-menu>
+                        </td>
+                        <td style="text-align: right; width: 100%;">
+                            <button mat-mini-fab color="primary" [disabled]="index <= 0" (click)="navigate(0)" matTooltip="Previous" style="margin-right: 10px; vertical-align: middle;">
+                                <mat-icon class="icon-right">navigate_before</mat-icon>
+                            </button>
+                        </td>
+                        <td style="text-align: right; width: 100%;">
+                            <button mat-mini-fab color="primary" [disabled]="(index + length) >= filteredAndSearched.length" (click)="navigate(1)" matTooltip="Next" style="margin-right: 10px; vertical-align: middle;">
+                                <mat-icon class="icon-right">navigate_next</mat-icon>
+                            </button>
+                        </td>
+                        <td style="text-align: right; width: 100%;">
+                            <mat-select style="width: 50px;" [(ngModel)]="length" (selectionChange)="index = 0; navigate(-1)">
+                                <mat-option *ngFor="let option of lengths" [value]="option.value">
+                                    {{option.name}}
+                                </mat-option>
+                            </mat-select>
+                        </td>
+                    </tr>
+                </table>
+            </span>
+            <div class="history-header" *ngIf="loaded && mobile">
+                <h3 style="vertical-align: middle;">Application History</h3>
+                <div class="history-header-mobile-part">
+                    <mat-form-field class="example-form-field" style="margin-right: 20px;">
+                        <input matInput #searchInput type="text" placeholder="Search" [(ngModel)]="searchValue" (ngModelChange)="search($event)">
+                        <button mat-raised-button *ngIf="searchValue" matSuffix mat-icon-button aria-label="Clear" (click)="searchValue=''; search('')">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </mat-form-field>
+                </div>
+                <div class="history-header-mobile-part">
+                    <button mat-raised-button [matMenuTriggerFor]="sortMenu" style="margin-right: 10px; vertical-align: middle;">
+                        <mat-icon class="icon-right">sort</mat-icon>
+                        Sort
+                    </button>
+                    <mat-menu #sortMenu="matMenu">
+                        <button mat-menu-item (click)="sort(0)">Name</button>
+                        <button mat-menu-item (click)="sort(1)">Date Applied</button>
+                        <button mat-menu-item (click)="sort(2)">Date Completed</button>
+                    </mat-menu>
+                    <button mat-raised-button [matMenuTriggerFor]="filterMenu" style="margin-right: 10px; vertical-align: middle;">
+                        <mat-icon class="icon-right">filter_list</mat-icon>
+                        Filter SR1
+                    </button>
+                    <mat-menu #filterMenu="matMenu">
+                        <button mat-menu-item (click)="filter('')">All</button>
+                        <div *ngFor="let sr1 of recruiters">
+                            <button mat-menu-item (click)="filter(sr1)">{{sr1}}</button>
+                        </div>
+                    </mat-menu>
+                </div>
+                <div class="history-header-mobile-part">
+                    <button mat-mini-fab color="primary" [disabled]="index <= 0" (click)="navigate(0)" matTooltip="Previous" style="margin-right: 10px; vertical-align: middle;">
+                        <mat-icon class="icon-right">navigate_before</mat-icon>
+                    </button>
+                    <button mat-mini-fab color="primary" [disabled]="(index + length) >= filteredAndSearched.length" (click)="navigate(1)" matTooltip="Next" style="margin-right: 10px; vertical-align: middle;">
+                        <mat-icon class="icon-right">navigate_next</mat-icon>
+                    </button>
+                    <mat-select style="width: 50px;" [(ngModel)]="length" (selectionChange)="index = 0; navigate(-1)">
+                        <mat-option *ngFor="let option of lengths" [value]="option.value">
+                            {{option.name}}
+                        </mat-option>
+                    </mat-select>
+                </div>
+            </div>
+            <br>
+            <div class="history" *ngIf="loaded && !mobile">
+                <mat-card class="applicationCardList" (click)="openApplication(application)" *ngFor="let application of applicationHistory; trackBy: trackByApplication">
+                    <table class="table-list">
+                        <tr class="tr-list">
+                            <td style="width: 20%;">
+                                <b style="color:green" *ngIf="application.account.application.state == applicationState.ACCEPTED">{{application.displayName}}</b>
+                                <b style="color:red" *ngIf="application.account.application.state == applicationState.REJECTED">{{application.displayName}}</b>
+                            </td>
+                            <td style="width: 20%;">
+                                <b>Applied: </b>
+                                <small>{{application.account.application.dateCreated | date:'mediumDate'}}</small>
+                            </td>
+                            <td style="width: 20%;">
+                                <span *ngIf="application.account.application.state == applicationState.ACCEPTED; else rejected">
+                                    <b>Accepted: </b>
+                                </span>
+                                <ng-template #rejected>
+                                    <b>Rejected: </b>
+                                </ng-template>
+                                <small>{{application.account.application.dateAccepted | date:'mediumDate'}}</small>
+                            </td>
+                            <td style="width: 20%;">
+                                <b>SR1: </b>
+                                <small>{{application.recruiter}}</small>
+                            </td>
+                            <td style="width: 20%;">
+                                <b>Processed: </b>
+                                <small>{{application.daysProcessed}}
+                                    <span *ngIf="application.daysProcessed == 1; else days">Day</span>
+                                    <ng-template #days>Days</ng-template>
+                                </small>
+                            </td>
+                        </tr>
+                    </table>
+                </mat-card>
+            </div>
+            <div class="history" *ngIf="loaded && mobile">
+                <mat-card class="applicationCardList" (click)="openApplication(application)" *ngFor="let application of applicationHistory; trackBy: trackByApplication">
+                    <table class="table-list">
+                        <tr class="tr-list">
+                            <td style="width: 50%;">
+                                <b style="color:green" *ngIf="application.account.application.state == applicationState.ACCEPTED">{{application.displayName}}</b>
+                                <b style="color:red" *ngIf="application.account.application.state == applicationState.REJECTED">{{application.displayName}}</b>
+                            </td>
+                            <td style="width: 50%;">
+                                <b>SR1: </b>
+                                <small>{{application.recruiter}}</small>
+                            </td>
+                        </tr>
+                    </table>
+                </mat-card>
+            </div>
+            <br style="clear:both;">
+            <br>
+            <br>
+            <br>
+        </div>
+    </app-main-content-area>
+    <app-side-content-area>
+        <div class="flex-container">
+            <mat-card *ngIf="accountService.account != null">
+                <div class="sr1Enabled-container">
+                    <h4 *ngIf="accountService.account.settings.sr1Enabled" class="enabled">You are taking applicatons</h4>
+                    <h4 *ngIf="!accountService.account.settings.sr1Enabled" class="disabled">You are not taking applicatons</h4>
+                    <button mat-raised-button color="primary" class="state-button" (click)="setSr1Enabled()">
+                        <span *ngIf="accountService.account.settings.sr1Enabled; else enable">Disable</span>
+                        <ng-template #enable>Enable</ng-template>
+                    </button>
+                </div>
+            </mat-card>
+            <br>
+            <div *ngIf="activity != null && yourStats != null && sr1Stats != null">
+                <h3>SR1 Activity</h3>
+                <mat-card>
+                    <table style="width: 100%;">
+                        <thead class="thead-stats">
+                            <ng-template [ngxPermissionsOnly]="['SR1_LEAD']">
+                                <th style="width: 10%; text-align: left;"></th>
+                            </ng-template>
+                            <th style="width: 30%; text-align: left;">SR1</th>
+                            <th style="text-align: center;">Active</th>
+                            <th style="text-align: center;">Accepted</th>
+                            <th style="text-align: center;">Rejected</th>
+                            <th style="text-align: center;">Total</th>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of activity">
+                                <ng-template [ngxPermissionsOnly]="['SR1_LEAD']">
+                                    <td class="td-stats-checkbox" style="text-align: left; padding-left: 0px;">
+                                        <mat-checkbox color="primary" matTooltip="Recruiter enabled/disabled" [(ngModel)]="item.account.settings.sr1Enabled" (change)="setSr1Enabled(item);"></mat-checkbox>
+                                    </td>
+                                </ng-template>
+                                <td class="tr-stats" style="text-align: left; padding-left: 2px;">{{item.name}}</td>
+                                <td class="tr-stats" style="text-align: center;">{{item.active}}</td>
+                                <td class="tr-stats" style="text-align: center;">{{item.accepted}}</td>
+                                <td class="tr-stats" style="text-align: center;">{{item.rejected}}</td>
+                                <td class="tr-stats" style="text-align: center;">{{item.active + item.accepted + item.rejected}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </mat-card>
+                <br>
+                <h3>SR1 Statistics</h3>
+                <mat-card>
+                    <mat-tab-group>
+                        <mat-tab label="Your Statistics" style="width: 100%">
+                            <mat-card>
+                                <h4>Last Month</h4>
+                                <p *ngFor="let stats of yourStats.lastMonth">
+                                    {{stats.fieldName}} - {{stats.fieldValue}}
+                                </p>
+                                <br>
+                                <h4>Total</h4>
+                                <p *ngFor="let stats of yourStats.overall">
+                                    {{stats.fieldName}} - {{stats.fieldValue}}
+                                </p>
+                            </mat-card>
+                        </mat-tab>
+                        <mat-tab label="All Statistics" style="width: 100%">
+                            <mat-card>
+                                <h4>Last Month</h4>
+                                <p *ngFor="let stats of sr1Stats.lastMonth">
+                                    {{stats.fieldName}} - {{stats.fieldValue}}
+                                </p>
+                                <br>
+                                <h4>Total</h4>
+                                <p *ngFor="let stats of sr1Stats.overall">
+                                    {{stats.fieldName}} - {{stats.fieldValue}}
+                                </p>
+                            </mat-card>
+                        </mat-tab>
+                    </mat-tab-group>
+                </mat-card>
+            </div>
+        </div>
+    </app-side-content-area>
+</app-default-content-areas>

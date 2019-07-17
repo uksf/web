@@ -1,0 +1,10 @@
+<app-default-content-areas>
+    <app-main-content-area style="grid-column: span 3;">
+        <app-admin-page></app-admin-page>
+        <div class="flex-container">
+            <button mat-raised-button color="primary" (click)="invalidateCaches()" [disabled]="updating">Invalidate Data Caches</button>
+            <button mat-raised-button color="primary" (click)="getDiscordRoles()" [disabled]="updating">Get Discord Roles</button>
+            <button mat-raised-button color="primary" (click)="updateDiscordRoles()" [disabled]="updating">Update Discord Users</button>
+        </div>
+    </app-main-content-area>
+</app-default-content-areas>

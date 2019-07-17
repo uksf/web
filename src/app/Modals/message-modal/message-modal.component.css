@@ -1,0 +1,21 @@
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    min-width: 300px;
+    min-height: 100px;
+    font-size: 18px;
+}
+
+.message-container {
+    max-height: 500px; margin: 10px; overflow: auto;
+}
+
+p {    
+    white-space: pre-wrap;
+}
+
+.flex-container-row {
+    display: flex;
+    flex-direction: row;
+}

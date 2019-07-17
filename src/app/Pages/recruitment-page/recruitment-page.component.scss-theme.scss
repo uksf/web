@@ -1,0 +1,15 @@
+@import "~@angular/material/theming";
+
+@mixin recruitment-page-component-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+    $primary: map-get($theme, primary);
+
+    app-recruitment-page {
+        .applications-container {
+            .applicationCardOthers {
+                background-color: mat-color($background, dark-card);
+            }
+        }
+    }
+}

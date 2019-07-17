@@ -1,0 +1,18 @@
+@import "~@angular/material/theming";
+@mixin command-request-component-theme($theme) {
+    $background: map-get($theme, background);
+    $primary: map-get($theme, primary);
+
+    app-command-requests {
+        .request-type {
+            color: mat-color($primary, default-contrast);
+            background-color: mat-color($primary);
+        }
+
+        .request-button-sub-container {
+            .mat-button {
+                background-color: mat-color($background, card);
+            }
+        }
+    }
+}

@@ -1,0 +1,20 @@
+.section {
+    height: fit-content;
+    background-position-y: center;
+    background-position-x: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.text-container {
+    height: 100%;
+    padding: 16px;
+}
+
+h3 {
+    border-bottom: solid;
+}
+
+h4 {
+    display: inline;
+}

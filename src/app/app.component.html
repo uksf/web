@@ -1,0 +1,14 @@
+<div id="wrapper-parent" [class]="Theme + '-theme'">
+    <div class="wrapper">
+        <app-header-bar class="header"></app-header-bar>
+        <div class="sideboard">
+            <app-side-bar></app-side-bar>
+            <app-footer-bar class="footer"></app-footer-bar>
+        </div>
+        <div class="board">
+            <router-outlet></router-outlet>
+            <app-flex-filler></app-flex-filler>
+        </div>
+        <app-footer-bar class="small-footer"></app-footer-bar>
+    </div>
+</div>

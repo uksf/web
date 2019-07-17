@@ -1,0 +1,23 @@
+@import "~@angular/material/theming";
+
+@mixin personnel-discharges-component-theme($theme) {
+    $background: map-get($theme, background);
+    $primary: map-get($theme, primary);
+    $warn: map-get($theme, warn);
+
+    app-personnel-discharges {
+        .discharge-1 {
+            color: green;
+        }
+        .discharge-2 {
+            color: goldenrod;
+        }
+        .discharge-limit {
+            color: red;
+        }
+        .request-override {
+            background-color: mat-color($warn);
+            color: mat-color($warn, default-contrast);
+        }
+    }
+}

@@ -1,0 +1,250 @@
+.list-container {
+    margin-bottom: 20px;
+
+    .list-header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        h3 {
+            margin: 12px 0;
+        }
+    }
+
+    .mat-card {
+        cursor: pointer;
+        padding: 0;
+        overflow: hidden;
+
+        &.disable {
+            pointer-events: none;
+        }
+
+        .header-container {
+            display: flex;
+            flex-direction: row;
+            padding: 0 20px;
+            height: 40px;
+            line-height: 40px;
+
+            .title-container {
+                display: flex;
+                flex-direction: row;
+                flex-grow: 1;
+
+                .date-container {
+                    display: flex;
+                    width: 204px;
+                    align-items: center;
+
+                    .title {
+                        font-size: 15px;
+                        display: flex;
+
+                        &.start {
+                            justify-content: flex-start;
+                            min-width: 95px;
+                        }
+
+                        &.end {
+                            justify-content: flex-end;
+                            min-width: 95px;
+                        }
+
+                        &.to {
+                            justify-content: center;
+                            min-width: 14px;
+                            font-size: 13px;
+                        }
+                    }
+                }
+
+                .mat-divider {
+                    margin: 0 20px;
+                    height: 25px;
+                    align-self: center;
+                }
+            }
+
+            .description-container {
+                display: flex;
+                margin-right: 10px;
+            }
+
+            .description {
+                display: flex;
+                flex-grow: 1;
+                align-items: center;
+                font-size: 15px;
+
+                &.end {
+                    justify-content: flex-end;
+                    margin-left: 16px;
+                }
+
+                &:last-of-type {
+                    min-width: 64px;
+                    max-width: 64px;
+                }
+            }
+
+            .toggle {
+                height: fit-content;
+                align-self: center;
+
+                &.disable {
+                    opacity: 0;
+                    pointer-events: none;
+                }
+
+                &::after {
+                    content: "";
+                    border-style: solid;
+                    border-width: 0 2px 2px 0;
+                    display: inline-block;
+                    padding: 3px;
+                    transform: rotate(45deg) translate(-1px, -1px);
+                    vertical-align: middle;
+                }
+            }
+        }
+    }
+
+    .content-container {
+        overflow: visible;
+
+        .content-body {
+            padding: 0 20px 10px;
+
+            .content {
+                display: flex;
+                flex-direction: row;
+                flex: 1;
+                justify-content: space-between;
+                align-items: center;
+
+                .reason {
+                    flex: 1;
+                }
+            }
+        }
+    }
+
+    .list-footer {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .pagination-container {
+            display: flex;
+            flex-direction: row;
+            flex: 1;
+            justify-content: flex-end;
+
+            span {
+                margin-right: 10px;
+                align-self: center;
+            }
+
+            button {
+                margin: 0px 5px 0 0;
+                padding: 0;
+                border-radius: 20px;
+                min-width: 40px;
+                height: 40px;
+
+                .next {
+                    border-style: solid;
+                    border-width: 0 2px 2px 0;
+                    display: inline-block;
+                    padding: 4px;
+                    transform: rotate(-45deg) translate(-1px, -1px);
+                    vertical-align: middle;
+                }
+
+                .previous {
+                    border-style: solid;
+                    border-width: 0 2px 2px 0;
+                    display: inline-block;
+                    padding: 4px;
+                    transform: rotate(135deg) translate(-1px, -1px);
+                    vertical-align: middle;
+                }
+            }
+
+            mat-select {
+                width: 40px;
+                align-self: center;
+                margin-left: 10px;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .list-container {
+        .mat-card {
+            .header-container {
+                padding: 0 10px;
+
+                .title-container {
+                    .date-container {
+                        width: 138px;
+
+                        .title {
+                            font-size: 11px;
+
+                            &.start {
+                                min-width: 64px;
+                            }
+
+                            &.end {
+                                min-width: 64px;
+                            }
+
+                            &.to {
+                                min-width: 12px;
+                                font-size: 9px;
+                            }
+                        }
+                    }
+
+                    .mat-divider {
+                        margin: 0 10px;
+                    }
+                }
+
+                .name {
+                    font-size: 11px;
+                    margin-right: 8px;
+                }
+
+                .description-container {
+                    margin-right: 8px;
+                }
+
+                .description {
+                    font-size: 11px;
+
+                    &.end {
+                        margin-left: 8px;
+                    }
+
+                    &:last-of-type {
+                        min-width: 46px;
+                        max-width: 46px;
+                    }
+                }
+            }
+
+            .content-container {
+                .content-body {
+                    padding: 0 10px 5px;
+                    .content {
+                        font-size: 11px;
+                    }
+                }
+            }
+        }
+    }
+}

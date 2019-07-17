@@ -1,0 +1,167 @@
+app-side-content-area {
+    margin-top: 10px;
+
+    .sr1Enabled-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .enabled {
+            color: green;
+            margin: 0px;
+            flex: 1;
+        }
+
+        .disabled {
+            color: red;
+            margin: 0px;
+            flex: 1;
+        }
+    }
+
+    td.tr-stats {
+        margin: 2px 5px;
+        padding: 2px 5px;
+        border: 0px;
+        text-align: center;
+    }
+
+    .td-stats-checkbox {
+        margin: 2px 5px;
+        padding: 2px 5px 2px 0px;
+        border: 0px;
+        text-align: center;
+    }
+}
+
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    margin-left: 0;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.applications-container {
+    .applicationCardMine {
+        width: 100%;
+        float: left;
+        margin: 3px;
+        padding: 5px;
+        cursor: pointer;
+    }
+
+    .applicationCardOthers {
+        width: 100%;
+        float: left;
+        margin: 3px;
+        padding: 5px;
+        cursor: pointer;
+        opacity: 0.9;
+    }
+}
+
+.applicationCardList {
+    width: 100%;
+    float: left;
+    margin: 2px;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.table-list {
+    width: 100%;
+}
+
+.tr-active td {
+    margin: 1px;
+    padding: 4px 10px;
+    border: 0px;
+}
+
+.tr-list td {
+    margin: 0px;
+    padding: 0 0 0 10px;
+    border: 0px;
+}
+
+.history-header {
+    .icon-right {
+        vertical-align: middle;
+    }
+
+    .mat-icon-button {
+        background-color: transparent;
+
+        .mat-icon {
+            margin: 0;
+            height: 21px;
+            line-height: 21px;
+        }
+    }
+}
+
+@media screen and (max-width: 450px) {
+    app-side-content-area {
+        .enabled {
+            font-size: 16px;
+        }
+        .disabled {
+            font-size: 16px;
+        }
+        td.tr-stats {
+            font-size: 11px;
+        }
+        .td-stats-checkbox {
+            font-size: 11px;
+        }
+        .thead-stats th {
+            font-size: 11px;
+        }
+    }
+    .applications-container {
+        .applicationCardMine {
+            width: 98%;
+        }
+        .applicationCardOthers {
+            width: 98%;
+        }
+        .application-card-container {
+            display: flex;
+            align-items: center;
+        }
+        .application-card-name {
+            flex: 1;
+        }
+    }
+    .applicationCardList {
+        max-width: 99vw;
+        padding: 1px;
+    }
+    .history-header {
+        display: flex;
+        flex-direction: column;
+        .history-header-mobile-part {
+            margin: 5px;
+            flex: 1;
+        }
+    }
+    .history {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+app-default-content-areas {
+    grid-template-areas: "main side";
+    grid-template-columns: 1fr 0.45fr;
+}
+
+@media screen and (max-width: 950px) {
+    app-default-content-areas {
+        display: grid;
+        grid-template-areas: "main" "side";
+        grid-template-columns: auto;
+        grid-template-rows: auto auto;
+    }
+}

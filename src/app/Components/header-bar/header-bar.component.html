@@ -1,0 +1,86 @@
+<div class="header-wrapper">
+    <div class="logo-wrapper" routerLink="/home">
+        <img src="assets/dist/images/logolight.png" class="logo">
+        <span>United Kingdom Special Forces</span>
+    </div>
+    <app-flex-filler></app-flex-filler>
+    <div class="name-wrapper" *ngIf="getName" routerLink="/profile">
+        <span>{{getName}}</span>
+    </div>
+    <div class="button-wrapper" *ngIf="!mobile && !mobileSmall">
+        <ng-template [ngxPermissionsExcept]="['UNLOGGED']">
+            <app-notifications class="notifications-button"></app-notifications>
+        </ng-template>
+        <ng-template [ngxPermissionsOnly]="['UNLOGGED']">
+            <button mat-raised-button color="primary" class="button" routerLink="/login">
+                <div>
+                    <mat-icon>person</mat-icon> Login
+                </div>
+            </button>
+        </ng-template>
+        <ng-template [ngxPermissionsOnly]="['CONFIRMED']">
+            <button mat-raised-button color="primary" class="button" routerLink="/application">
+                <div>
+                    <mat-icon>contact_mail</mat-icon> Apply
+                </div>
+            </button>
+        </ng-template>
+        <ng-template [ngxPermissionsExcept]="['UNLOGGED']">
+            <button mat-raised-button color="primary" class="button profile" [matMenuTriggerFor]="menu">
+                <mat-icon>account_circle</mat-icon>
+            </button>
+        </ng-template>
+        <mat-menu #menu="matMenu" yPosition="below" xPosition="before" [overlapTrigger]="false">
+            <button mat-menu-item routerLink="/profile">Profile</button>
+            <ng-template [ngxPermissionsOnly]="['MEMBER']">
+                <button mat-menu-item (click)="openLOAModal()">New LOA</button>
+            </ng-template>
+            <button mat-menu-item (click)="toggleTheme()">{{otherTheme | titlecase}} Theme</button>
+            <button mat-menu-item (click)="logout()">Logout</button>
+        </mat-menu>
+    </div>
+    <div class="button-wrapper" *ngIf="mobile">
+        <ng-template [ngxPermissionsExcept]="['UNLOGGED']">
+            <app-notifications class="button"></app-notifications>
+        </ng-template>
+        <ng-template [ngxPermissionsOnly]="['UNLOGGED']">
+            <button mat-raised-button color="primary" class="button" routerLink="/login">
+                Login
+            </button>
+        </ng-template>
+        <ng-template [ngxPermissionsOnly]="['CONFIRMED']">
+            <button mat-raised-button color="primary" class="button" routerLink="/application">
+                Apply
+            </button>
+        </ng-template>
+        <ng-template [ngxPermissionsOnly]="['MEMBER']">
+            <button mat-raised-button color="primary" class="button" (click)="openLOAModal()">
+                New LOA
+            </button>
+        </ng-template>
+        <ng-template [ngxPermissionsExcept]="['UNLOGGED']">
+            <button mat-raised-button color="primary" class="button" routerLink="/profile">
+                Profile
+            </button>
+            <button mat-raised-button color="primary" class="button" (click)="logout()">
+                Logout
+            </button>
+        </ng-template>
+    </div>
+    <div class="button-wrapper" *ngIf="mobileSmall">
+        <ng-template [ngxPermissionsOnly]="['UNLOGGED']">
+            <mat-icon routerLink="/login">person</mat-icon>
+        </ng-template>
+        <ng-template [ngxPermissionsOnly]="['CONFIRMED']">
+            <mat-icon routerLink="/application">contact_mail</mat-icon>
+        </ng-template>
+        <ng-template [ngxPermissionsOnly]="['MEMBER']">
+            <mat-icon (click)="openLOAModal()">add_circle</mat-icon>
+        </ng-template>
+        <ng-template [ngxPermissionsExcept]="['UNLOGGED']">
+            <mat-icon routerLink="/profile">account_circle</mat-icon>
+            <mat-icon (click)="logout()">exit_to_app</mat-icon>
+            <app-notifications></app-notifications>
+        </ng-template>
+    </div>
+</div>

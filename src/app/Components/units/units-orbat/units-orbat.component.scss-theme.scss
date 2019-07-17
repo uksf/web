@@ -1,0 +1,65 @@
+@import "~@angular/material/theming";
+
+@mixin units-orbat-component-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+    $primary: map-get($theme, primary);
+
+    app-units-orbat {
+        .regiments-container {
+            button {
+                background-color: transparent;
+            }
+        }
+        ::-webkit-scrollbar-track {
+            background-color: mat-color($background, scroll-track);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: mat-color($background, scroll-thumb);
+        }
+
+        .ui-organizationchart {
+            .ui-organizationchart-line-down {
+                background-color: mat-color($background, org-line);
+            }
+            .ui-organizationchart-line-left {
+                border-right: 1px solid mat-color($background, org-line);
+            }
+            .ui-organizationchart-line-top {
+                border-top: 1px solid mat-color($background, org-line);
+            }
+            .ui-organizationchart-node-content {
+                border-color: mat-color($background, org-line);
+            }
+            .ui-organizationchart-node-content {
+                .ui-node-toggler {
+                    color: mat-color($background, org-line);
+                }
+                &.ui-organizationchart-selectable-node {
+                    &:not(.ui-state-highlight) {
+                        &:hover {
+                            border-color: mat-color($background, org-line);
+                            background-color: mat-color($background, org-hover);
+                            color: mat-color($foreground, base);
+                            h4 {
+                                color: mat-color($primary);
+                            }
+                            &a {
+                                color: mat-color($primary);
+                            }
+                        }
+                    }
+                }
+            }
+            .ui-widget-content {
+                color: mat-color($foreground, base);
+                background-color: mat-color($background, org-content);
+                h4 {
+                    color: mat-color($foreground, base);
+                    background-color: transparent;
+                }
+            }
+        }
+    }
+}

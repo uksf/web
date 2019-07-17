@@ -1,0 +1,73 @@
+.comment-form {
+    display: flex;
+    flex-direction: column;
+
+    mat-form-field {
+        width: 100%;
+    }
+
+    button {
+        align-self: flex-end;
+        width: fit-content;
+    }
+}
+
+.comments-container {
+    max-height: 1000px;
+    overflow: auto;
+
+    .comment-wrapper {
+        display: block;
+        margin-bottom: 18px;
+
+        .author {
+            width: 100%;
+            font-size: 0.9em;
+            height: 24px;
+
+            > span {
+                vertical-align: middle;
+            }
+
+            span {
+                filter: blur(0px);
+            }
+
+            .author-string {
+                margin-right: 8px;
+                margin-bottom: 2px;
+                font-size: 13px;
+                font-weight: bold;
+                vertical-align: middle;
+            }
+
+            .date-string {
+                font-size: 13px;
+                vertical-align: middle;
+            }
+
+            .menu-button {
+                margin: 0px;
+                padding: 0px;
+                min-width: 0px;
+                line-height: 0px;
+                float: right;
+            }
+
+            .menu-item {
+                min-width: 0px;
+                line-height: 26px;
+                height: 26px;
+            }
+        }
+    }
+
+    .comment {
+        padding-right: 24px;
+
+        .comment-string {
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+    }
+}

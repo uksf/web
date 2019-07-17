@@ -1,0 +1,38 @@
+.regiments-container {
+    padding-left: 16px;
+    .regiments {
+        display: flex;
+        flex-direction: row;
+        div {
+            text-align: center;
+            margin-left: 25px;
+            padding-top: 8px;
+            img {
+                width: 60px;
+            }
+        }
+    }
+}
+
+.orbat-container {
+    padding-left: 16px;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+    min-height: 0px;
+}
+
+.spinner-container {
+    height: 200px;
+    position: relative;
+}
+
+.inner-table {
+    width: 100%;
+}
+
+.row-container {
+    display: flex;
+    flex-direction: row;
+}

@@ -1,0 +1,55 @@
+<app-default-content-areas>
+    <app-full-content-area>
+        <div class="flex-container">
+            <mat-card *ngIf="opordData">
+                <div class="oprepPanel">
+                    <div class="titleArea">
+                        <h2>{{opordData.name}}</h2>
+                    </div>
+                    <div class="detailsArea">
+                        <div>Type: {{opordData.type}}</div>
+                    </div>
+                    <div class="timeArea">
+                        <div>
+                            <mat-icon>access_time</mat-icon>
+                            <span>Start: {{opordData.start | date:'short'}}</span>
+                        </div>
+                        <div>
+                            <mat-icon>access_time</mat-icon>
+                            <span>End: {{opordData.end | date:'short'}}</span>
+                        </div>
+                        <div>
+                            <mat-icon>explore</mat-icon>
+                            <span>Map name: {{opordData.map}}</span>
+                        </div>
+                        <br>
+                    </div>
+                    <div class="descriptionArea">
+                        <h4>Description:
+                            <mat-icon (click)="editing = !editing;">mode_edit</mat-icon>
+                        </h4>
+                        <div *ngIf="!editing" [innerHTML]="description">
+                        </div>
+                        <p-editor *ngIf="editing" [(ngModel)]="description" [style]="{'height':'200px'}">
+                            <p-header>
+                                <span class="ql-formats">
+                                    <button class="ql-bold" aria-label="Bold"></button>
+                                    <button class="ql-italic" aria-label="Italic"></button>
+                                    <button class="ql-underline" aria-label="Underline"></button>
+                                </span>
+                            </p-header>
+                        </p-editor>
+                        <button mat-raised-button color="primary" *ngIf="editing" (click)="editing = false;">Cancel</button>
+                        <button mat-raised-button color="primary" *ngIf="editing" (click)="editing = false; saveDescription()">Save</button>
+                    </div>
+                </div>
+            </mat-card>
+            <br />
+            <mat-card>
+                <h3>Expected Attendance</h3>
+                <div class="attendanceArea">
+                </div>
+            </mat-card>
+        </div>
+    </app-full-content-area>
+</app-default-content-areas>

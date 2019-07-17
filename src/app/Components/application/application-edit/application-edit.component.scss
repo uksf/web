@@ -1,0 +1,23 @@
+.application-container {
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+
+    .large-input {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .mat-select {
+        width: 300px;
+    }
+
+    .mat-card:first-child {
+        flex-basis: 40%;
+        margin-right: 10px;
+    }
+
+    .mat-card {
+        flex: 1;
+    }
+}

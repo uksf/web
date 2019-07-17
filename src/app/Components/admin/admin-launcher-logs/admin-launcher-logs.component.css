@@ -1,0 +1,19 @@
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    margin-left: 0;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.mat-column-userId {
+    flex: 0 0 200px;
+}
+
+.mat-column-name {
+    flex: 0 0 125px;
+}
+
+.mat-column-version {
+    flex: 0 0 85px;
+}

@@ -1,0 +1,23 @@
+<app-default-content-areas>
+    <app-main-content-area style="grid-column: span 3;">
+        <app-operations-page></app-operations-page>
+        <div class="flex-container">
+            <div class="spinner-container" *ngIf="!opordData">
+                <mat-spinner></mat-spinner>
+            </div>
+            <div class="reports-container" *ngIf="opordData">
+                <div class="report-container">
+                    <div>
+                        <button mat-raised-button color="primary" (click)="createOpord()">Create OPORD</button>
+                    </div>
+                    <br>
+                    <div class="report-section">
+                        <mat-card *ngFor="let opord of opordData" class="report" (click)="openOpord(opord.id)">
+                            {{opord.name}}
+                        </mat-card>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </app-main-content-area>
+</app-default-content-areas>

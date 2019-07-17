@@ -1,0 +1,20 @@
+@import "~@angular/material/theming";
+@mixin header-bar-component-theme($theme) {
+    $foreground: map-get($theme, foreground);
+    $background: map-get($theme, background);
+    $primary: map-get($theme, primary);
+
+    app-header-bar {
+        .logo-wrapper {
+            color: mat-color($foreground, base);
+        }
+
+        a {
+            color: mat-color($foreground, base);
+        }
+
+        .mat-menu {
+            background-color: mat-color($background, card);
+        }
+    }
+}

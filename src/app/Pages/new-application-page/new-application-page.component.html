@@ -1,0 +1,42 @@
+<app-default-content-areas>
+    <app-main-content-area style="grid-column: span 3;">
+        <div class="flex-container">
+            <mat-card *ngIf="step != 7">
+                <h2>Application to join UKSF</h2>
+                <p>If you have already started an application, please login to continue the application</p>
+                <p>You may edit certain parts of the application after submitting</p>
+                <p>If you require help, contact an SR1 on <a href="ts3server://uk-sf.co.uk">teamspeak</a></p>
+            </mat-card>
+            <div class="progress-container-wrapper" *ngIf="step != 7">
+                <div class="progress-container">
+                    <div class=" box" [ngClass]="{'enabled': step == 1}"><span>Identity</span></div>
+                    <div class="box" [ngClass]="{'enabled': step == 2}"><span>Email Confirmation</span></div>
+                    <div class="box" [ngClass]="{'enabled': step == 3}"><span>Login</span></div>
+                </div>
+                <div class="progress-container">
+                    <div class="box" [ngClass]="{'enabled': step == 4}"><span>Communications</span></div>
+                    <div class="box" [ngClass]="{'enabled': step == 5}"><span>Details</span></div>
+                    <div class="box" [ngClass]="{'enabled': step == 6}"><span>Submit</span></div>
+                </div>
+            </div>
+            <div *ngIf="step == 1">
+                <app-application-identity (nextEvent)="next($event)"></app-application-identity>
+            </div>
+            <div *ngIf="step == 2">
+                <app-application-email-confirmation (nextEvent)="next($event)" [email]="email"></app-application-email-confirmation>
+            </div>
+            <div *ngIf="step == 4">
+                <app-application-communications (nextEvent)="next($event)"></app-application-communications>
+            </div>
+            <div *ngIf="step == 5">
+                <app-application-details (nextEvent)="next($event)"></app-application-details>
+            </div>
+            <div *ngIf="step == 6">
+                <app-application-submit (submitEvent)="submit()"></app-application-submit>
+            </div>
+            <div *ngIf="step == 7">
+                <app-application-edit></app-application-edit>
+            </div>
+        </div>
+    </app-main-content-area>
+</app-default-content-areas>

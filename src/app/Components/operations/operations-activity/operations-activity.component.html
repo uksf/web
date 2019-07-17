@@ -1,0 +1,20 @@
+<app-default-content-areas>
+    <app-full-content-area>
+        <app-operations-page></app-operations-page>
+        <div class="flex-container">
+            <div class="spinner-container" *ngIf="!activityData">
+                <mat-spinner></mat-spinner>
+            </div>
+            <div class="div-container" *ngIf="activityData">
+                <h4>Operation Activity</h4>
+                <mat-card>
+                    <p-chart type="line" [data]="activityData.acreData"></p-chart>
+                </mat-card>
+                <h4>Teamspeak Activity</h4>
+                <mat-card>
+                    <p-chart type="line" [data]="activityData.data"></p-chart>
+                </mat-card>
+            </div>
+        </div>
+    </app-full-content-area>
+</app-default-content-areas>

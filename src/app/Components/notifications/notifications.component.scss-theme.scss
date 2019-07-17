@@ -1,0 +1,56 @@
+@import "~@angular/material/theming";
+@mixin notifications-component-theme($theme) {
+    $foreground: map-get($theme, foreground);
+    $background: map-get($theme, background);
+    $primary: map-get($theme, primary);
+
+    app-notifications {
+        .mat-icon.clear {
+            color: mat-color($primary, default-contrast);
+        }
+
+        .notification-count {
+            color: mat-color($foreground, base);
+        }
+
+        .notification-panel-header {
+            background-color: mat-color($primary);
+        }
+
+        .notification-card-container {
+            background-color: mat-color($background, card);
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: mat-color($background, background);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: mat-color($background, hover);
+        }
+
+        .notification-header-text {
+            color: mat-color($primary, default-contrast);
+        }
+
+        .notification-card {
+            background-color: mat-color($background, card);
+        }
+
+        .notification-card:hover {
+            background-color: mat-color($background, hover);
+        }
+
+        .notification-card-nohover {
+            background-color: mat-color($background, card);
+        }
+
+        .notification-text {
+            color: mat-color($foreground, base);
+        }
+
+        .notification-text-timestamp {
+            color: mat-color($foreground, base);
+        }
+    }
+}

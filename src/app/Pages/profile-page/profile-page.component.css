@@ -1,0 +1,41 @@
+app-main-content-area {
+    margin-top: 10px;
+}
+
+app-side-content-area {
+    margin-top: 10px;
+}
+
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    margin-left: 0;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.button {
+    margin-bottom: 5px;
+    margin-right: 5px;
+}
+
+.connected {
+    margin-bottom: 4px;
+    color: green;
+}
+
+.details-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.details-panel {
+    display: flex;
+    flex: 1;
+    margin: 25px 0;
+}
+
+.detail {
+    flex: 1;
+    max-width: 350px;
+}

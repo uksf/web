@@ -1,0 +1,81 @@
+<app-default-content-areas *ngIf="oprepEntity">
+    <app-full-content-area>
+        <div class="flex-container">
+            <mat-card>
+                <div class="oprepPanel">
+                    <div class="titleArea">
+                        <h2>{{oprepEntity.name}}</h2>
+                    </div>
+                    <div class="detailsArea">
+                        <div>
+                            <mat-icon>timelapse</mat-icon>Duration: 2h
+                        </div>
+                        <div>Type: Campaign mission</div>
+                        <div>Result: Success</div>
+                    </div>
+                    <div class="timeArea">
+                        <div>
+                            <mat-icon>access_time</mat-icon>
+                            <span>Start: {{oprepEntity.start | date:'short'}}</span>
+                        </div>
+                        <div>
+                            <mat-icon>access_time</mat-icon>
+                            <span>End: {{oprepEntity.end | date:'short'}}</span>
+                        </div>
+                        <div>
+                            <mat-icon>explore</mat-icon>
+                            <span>Map name: {{oprepEntity.map}}</span>
+                        </div>
+                        <br>
+                    </div>
+                    <div class="descriptionArea">
+                        <h4>Description:
+                            <mat-icon (click)="editing = !editing;">mode_edit</mat-icon>
+                        </h4>
+                        <div *ngIf="!editing" [innerHTML]="description">
+                        </div>
+                        <p-editor *ngIf="editing" [(ngModel)]="description" [style]="{'height':'200px'}">
+                            <p-header>
+                                <span class="ql-formats">
+                                    <button class="ql-bold" aria-label="Bold"></button>
+                                    <button class="ql-italic" aria-label="Italic"></button>
+                                    <button class="ql-underline" aria-label="Underline"></button>
+                                </span>
+                            </p-header>
+                        </p-editor>
+                        <button mat-raised-button color="primary" *ngIf="editing" (click)="editing = false;">Cancel</button>
+                        <button mat-raised-button color="primary" *ngIf="editing" (click)="editing = false; saveDescription()">Save</button>
+                    </div>
+                </div>
+            </mat-card>
+            <br />
+            <mat-card>
+                <h3>Media</h3>
+                <div>
+                    <div class="imgurArea">
+                        Mission album:
+                        <a>http://link.com</a>
+                        <mat-icon>mode_edit</mat-icon>
+                        <div>
+                            <!--<img src="assets/dist/images/banner.jpg" style="width:32%">
+                        <img src="assets/dist/images/banner.jpg" style="width:32%">
+                        <img src="assets/dist/images/banner.jpg" style="width:32%">!-->
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+            <br />
+            <mat-card>
+                <h3>Attendance</h3>
+                <div class="attendanceArea">
+                    <div *ngFor="let personalReport of groupedAttendance">
+                        <h4 style="margin-top:25px;">{{personalReport[0].groupName}}</h4>
+                        <p *ngFor="let individualReport of personalReport">
+                            <span [style.color]="getAttendeeColor(individualReport.attendanceState)" [style.cursor]="'pointer'" [matTooltip]="getAttendeePopup(individualReport.attendanceState)">{{individualReport.displayName}}</span>
+                        </p>
+                    </div>
+                </div>
+            </mat-card>
+        </div>
+    </app-full-content-area>
+</app-default-content-areas>

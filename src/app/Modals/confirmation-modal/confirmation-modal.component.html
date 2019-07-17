@@ -1,0 +1,11 @@
+<mat-dialog-content>
+    <div class="flex-container">
+        <span>{{text}}</span>
+        <app-flex-filler></app-flex-filler>
+        <div class="flex-container-row">
+            <app-flex-filler></app-flex-filler>
+            <button mat-raised-button (click)="confirm()" color="primary" class="confirm">{{button}}</button>
+            <button mat-raised-button (click)="cancel()" class="cancel">Cancel</button>
+        </div>
+    </div>
+</mat-dialog-content>
