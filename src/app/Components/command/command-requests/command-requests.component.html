@@ -79,18 +79,22 @@
                                     <div class="request-spacer"></div>
                                     <div class="request-button-sub-container">
                                         <button *ngIf="canReview(request)" mat-button style="color: green;" (click)="setReview(request, reviewState.APPROVED, false)" matTooltip="Accept" [disabled]="request.updating">
-                                            <mat-icon class="approval-icon">done</mat-icon>
+                                            <mat-icon *ngIf="!request.updating || request.reviewState != 0 || request.reviewOverriden" class="approval-icon">done</mat-icon>
+                                            <mat-spinner *ngIf="request.updating && request.reviewState == 0 && !request.reviewOverriden" class="approval-updating" [diameter]="30"></mat-spinner>
                                         </button>
                                         <button *ngIf="request.canOverride" mat-button class="override-button" style="color: green;" (click)="setReview(request, reviewState.APPROVED, true)" matTooltip="Override accept" [disabled]="request.updating">
-                                            <mat-icon class="approval-icon">report_problem</mat-icon>
+                                            <mat-icon *ngIf="!request.updating || request.reviewState != 0 || !request.reviewOverriden" class="approval-icon">report_problem</mat-icon>
+                                            <mat-spinner *ngIf="request.updating && request.reviewState == 0 && request.reviewOverriden" class="approval-updating" [diameter]="30"></mat-spinner>
                                         </button>
                                     </div>
                                     <div class="request-button-sub-container">
                                         <button *ngIf="canReview(request)" mat-button style="color: red;" (click)="setReview(request, reviewState.REJECTED, false)" matTooltip="Reject" [disabled]="request.updating">
-                                            <mat-icon class="approval-icon">clear</mat-icon>
+                                            <mat-icon *ngIf="!request.updating || request.reviewState != 1 || request.reviewOverriden" class="approval-icon">clear</mat-icon>
+                                            <mat-spinner *ngIf="request.updating && request.reviewState == 1 && !request.reviewOverriden" class="approval-updating" [diameter]="30"></mat-spinner>
                                         </button>
                                         <button *ngIf="request.canOverride" mat-button class="override-button" style="color: red;" (click)="setReview(request, reviewState.REJECTED, true)" matTooltip="Override reject" [disabled]="request.updating">
-                                            <mat-icon class="approval-icon">report</mat-icon>
+                                            <mat-icon *ngIf="!request.updating || request.reviewState != 1 || !request.reviewOverriden" class="approval-icon">report</mat-icon>
+                                            <mat-spinner *ngIf="request.updating && request.reviewState == 1 && request.reviewOverriden" class="approval-updating" [diameter]="30"></mat-spinner>
                                         </button>
                                     </div>
                                     <div class="request-spacer"></div>
@@ -160,12 +164,14 @@
                                     <div class="request-spacer"></div>
                                     <div class="request-button-sub-container">
                                         <button mat-button class="override-button" style="color: green;" (click)="setReview(request, reviewState.APPROVED, true)" matTooltip="Override accept" [disabled]="request.updating">
-                                            <mat-icon class="approval-icon">report_problem</mat-icon>
+                                            <mat-icon *ngIf="!request.updating || request.reviewState != 0 || !request.reviewOverriden" class="approval-icon">report_problem</mat-icon>
+                                            <mat-spinner *ngIf="request.updating && request.reviewState == 0 && request.reviewOverriden" class="approval-updating" [diameter]="30"></mat-spinner>
                                         </button>
                                     </div>
                                     <div class="request-button-sub-container">
                                         <button mat-button class="override-button" style="color: red;" (click)="setReview(request, reviewState.REJECTED, true)" matTooltip="Override reject" [disabled]="request.updating">
-                                            <mat-icon class="approval-icon">report</mat-icon>
+                                            <mat-icon *ngIf="!request.updating || request.reviewState != 1 || !request.reviewOverriden" class="approval-icon">report</mat-icon>
+                                            <mat-spinner *ngIf="request.updating && request.reviewState == 1 && request.reviewOverriden" class="approval-updating" [diameter]="30"></mat-spinner>
                                         </button>
                                     </div>
                                     <div class="request-spacer"></div>

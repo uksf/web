@@ -10,11 +10,12 @@ import { RequestDischargeModalComponent } from '../../../Modals/command/request-
 import { RequestUnitRemovalModalComponent } from 'app/Modals/command/request-unit-removal-modal/request-unit-removal-modal.component';
 import { SignalRService, ConnectionContainer } from 'app/Services/signalr.service';
 import { AccountService } from 'app/Services/account.service';
+import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
 
 @Component({
     selector: 'app-command-requests',
     templateUrl: './command-requests.component.html',
-    styleUrls: ['../../../Pages/command-page/command-page.component.css', './command-requests.component.css']
+    styleUrls: ['../../../Pages/command-page/command-page.component.css', './command-requests.component.scss']
 })
 export class CommandRequestsComponent implements OnInit, OnDestroy {
     reviewState = ReviewState;
@@ -62,11 +63,18 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
 
     setReview(request, reviewState, overriden) {
         request.updating = true;
+        request.reviewState = reviewState;
+        request.reviewOverriden = overriden;
         this.httpClient.patch(this.urls.apiUrl + '/commandrequests/' + request.data.id, { reviewState: reviewState, overriden: overriden }, {
             headers: new HttpHeaders({
                 'Content-Type': 'application/json'
             })
-        }).subscribe(_ => this.getRequests(), _ => this.getRequests());
+        }).subscribe(_ => this.getRequests(), error => {
+            this.getRequests();
+            this.dialog.open(MessageModalComponent, {
+                data: { message: error.error }
+            });
+        });
     }
 
     transferRequest(): void {

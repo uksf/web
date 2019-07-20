@@ -125,9 +125,9 @@ export class RequestLoaModalComponent implements OnInit {
             })
         }).subscribe(_ => {
             this.dialog.closeAll();
-        }, _ => {
+        }, error => {
             this.dialog.open(MessageModalComponent, {
-                data: { message: `Equivalent LOA already exists` }
+                data: { message: error.error }
             }).afterClosed().subscribe(() => {
                 this.submitting = false;
             });
