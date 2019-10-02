@@ -6,6 +6,9 @@
     $primary: map-get($theme, primary);
 
     app-recruitment-application-page {
+        a {
+            color: mat-color($primary);
+        }
         .ui-rating a {
             color: mat-color($primary);
         }

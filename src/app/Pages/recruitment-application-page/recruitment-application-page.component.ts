@@ -1,5 +1,5 @@
-import { Component, Input, ViewChild } from '@angular/core';
-import { Location } from '@angular/common';
+import { Component, ViewChild } from '@angular/core';
+import { Location, DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { UrlService } from '../../Services/url.service';
 import { HttpClient } from '@angular/common/http';
@@ -13,7 +13,8 @@ import { CountryPickerService, ICountry } from 'app/Services/CountryPicker/count
 @Component({
     selector: 'app-recruitment-application-page',
     templateUrl: './recruitment-application-page.component.html',
-    styleUrls: ['./recruitment-application-page.component.css']
+    styleUrls: ['./recruitment-application-page.component.scss'],
+    providers: [DatePipe]
 })
 export class RecruitmentApplicationPageComponent {
     @ViewChild('recruiterCommentsDisplay') recruiterCommentDisplay: CommentDisplayComponent;
@@ -36,7 +37,8 @@ export class RecruitmentApplicationPageComponent {
         private router: Router,
         private permissions: NgxPermissionsService,
         private accountService: AccountService,
-        private location: Location
+        private location: Location,
+        private datePipe: DatePipe
     ) {
         this.ratingsForm = this.formbuilder.group({
             attitude: [],
@@ -52,12 +54,6 @@ export class RecruitmentApplicationPageComponent {
             this.accountId = this.accountService.account.id;
         }
         this.getApplication();
-        const grantedPermissions = this.permissions.getPermissions();
-        if (grantedPermissions[Permissions.SR1_LEAD]) {
-            this.httpClient.get(this.urls.apiUrl + '/recruitment/recruiters/' + this.accountId).subscribe(response => {
-                this.recruiters = response;
-            });
-        }
     }
 
     getApplication() {
@@ -75,6 +71,13 @@ export class RecruitmentApplicationPageComponent {
             }
             this.application = application;
             this.ratingsForm.patchValue(this.application.account.application.ratings);
+
+            if (grantedPermissions[Permissions.SR1_LEAD]) {
+                this.httpClient.get(this.urls.apiUrl + '/recruitment/recruiters/' + this.accountId).subscribe(recruiterResponse => {
+                    this.recruiters = recruiterResponse;
+                    this.selected = this.application.recruiterId;
+                });
+            }
         });
     }
 
@@ -85,10 +88,6 @@ export class RecruitmentApplicationPageComponent {
             this.getApplication();
             this.recruiterCommentDisplay.getCanPostComment();
             this.applicationCommentDisplay.getCanPostComment();
-            this.httpClient.get(this.urls.apiUrl + '/applications/recruiters/' + this.accountId).subscribe(response => {
-                this.recruiters = response;
-            });
-            this.selected = '';
         });
     }
 
@@ -106,6 +105,18 @@ export class RecruitmentApplicationPageComponent {
         ).subscribe(() => {
             this.getApplication();
         });
+    }
+
+    getAgeColour() {
+        return this.application.age.years >= 16 ? 'green' : this.application.age.years === 15 && this.application.age.months === 11 ? 'goldenrod' : 'red';
+    }
+
+    getNextCandidateOp() {
+        const nextDate = new Date(this.application.nextCandidateOp);
+        const today = new Date();
+        const tomorrow = new Date();
+        tomorrow.setUTCDate(today.getUTCDate() + 1);
+        return nextDate.toDateString() === today.toDateString() ? 'Today' : nextDate.toDateString() === tomorrow.toDateString() ? 'Tomorrow' : this.datePipe.transform(nextDate, 'EEEE');
     }
 
     back() {

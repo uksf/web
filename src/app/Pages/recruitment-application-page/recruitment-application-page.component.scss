@@ -1,0 +1,222 @@
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    margin-left: 0;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 16px;
+
+    &.flex-row {
+        flex-direction: row;
+    }
+
+    &.no-padding {
+        padding: 0;
+    }
+
+    &.padding-right {
+        padding-right: 16px;
+    }
+
+    &.padding-left {
+        padding-left: 16px;
+    }
+
+    &.padding-top {
+        padding-top: 16px;
+    }
+
+    &.flex-half {
+        flex: 0.5;
+    }
+
+    &.flex-third {
+        flex: 0.33;
+    }
+
+    &.flex-two-thirds {
+        flex: 0.67;
+    }
+}
+
+h3 {
+    margin: 15px 0;
+}
+
+.flex-grow {
+    flex: 1;
+
+    & mat-card {
+        flex: 1;
+    }
+}
+
+.flex-spread {
+    justify-content: space-between;
+}
+
+.margin-bottom {
+    margin-bottom: 16px;
+
+    p {
+        margin-bottom: 0;
+    }
+}
+
+.margin-bottom-small {
+    margin-bottom: 8px;
+}
+
+.header {
+    margin: 0;
+    flex: 1;
+}
+
+.scrollable {
+    overflow: auto;
+    max-height: 300px;
+}
+
+img {
+    margin: -3px 5px;
+    vertical-align: unset;
+}
+
+.rating {
+    height: 20px;
+    font-size: 16px;
+    line-height: 0;
+}
+
+::ng-deep .ui-rating a {
+    margin-right: 4px;
+
+    &:last-child {
+        margin-right: 0;
+    }
+}
+
+.mat-icon {
+    cursor: pointer;
+    vertical-align: top;
+    height: 26px;
+    line-height: 26px;
+}
+
+.recruiter {
+    margin: auto;
+}
+
+.green {
+    color: green;
+}
+
+.goldenrod {
+    color: goldenrod;
+}
+
+.red {
+    color: red;
+}
+
+.controls {
+    margin: auto;
+    justify-content: flex-end;
+    margin-right: 16px;
+
+    .mat-button {
+        margin-left: 16px;
+    }
+}
+
+::ng-deep .select-small {
+    margin: 0 0 0 -16px;
+}
+
+@media screen and (max-width: 768px) {
+    .flex-container {
+        &.padding-right {
+            padding-right: 8px;
+        }
+
+        &.padding-left {
+            padding-left: 8px;
+        }
+
+        &.padding-top {
+            padding-top: 8px;
+        }
+
+        &.collapse {
+            flex-direction: column !important;
+        }
+    }
+
+    .controls {
+        justify-content: flex-start;
+
+        .mat-button {
+            margin-left: 8px;
+
+            &:first-child {
+                margin-left: 0;
+            }
+
+            &:last-child {
+                margin-right: 0;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .flex-container {
+        &.padding-right {
+            padding-right: 0;
+        }
+
+        &.padding-left {
+            padding-left: 0;
+        }
+
+        &.collapse-small {
+            flex-direction: column !important;
+        }
+    }
+}
+
+@media screen and (max-width: 450px) {
+    .small-centred {
+        text-align: center;
+    }
+
+    .flex-container {
+        &.collapse-tiny {
+            flex-direction: column !important;
+        }
+    }
+
+    .recruiter {
+        margin: 0;
+        justify-content: center;
+    }
+
+    .controls {
+        margin: 0;
+        justify-content: center;
+
+        .mat-button {
+            margin: 0 4px;
+            flex: 1;
+            max-width: 200px;
+
+            &:first-child {
+                margin-left: 0;
+            }
+
+            &:last-child {
+                margin-right: 0;
+            }
+        }
+    }
+}
