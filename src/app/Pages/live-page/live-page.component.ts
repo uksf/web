@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
 import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '../../Services/Authentication/authentication.service';
 import { UrlService } from '../../Services/url.service';
@@ -15,7 +14,6 @@ export class LivePageComponent implements OnInit, OnDestroy {
     terminalForm: any;
     subscription: Subscription;
     messages: string[];
-    private processing: boolean;
 
     ngOnInit() { }
 

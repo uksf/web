@@ -1,7 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { MatDialog } from '@angular/material';
-import { ApplicationEmailConfirmationComponent } from 'app/Components/application/application-email-confirmation/application-email-confirmation.component';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from 'app/Services/url.service';
 import { AccountService, MembershipState, ApplicationState } from 'app/Services/account.service';
@@ -14,7 +13,6 @@ import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.co
     styleUrls: ['./new-application-page.component.scss']
 })
 export class NewApplicationPageComponent implements OnInit {
-    @ViewChild(ApplicationEmailConfirmationComponent) emailConfirmation: ApplicationEmailConfirmationComponent;
     step = 1;
     email;
     details;

@@ -20,8 +20,8 @@ import { NgxPermissionsService } from 'ngx-permissions';
 })
 export class OperationsServersComponent implements OnInit, OnDestroy {
     static theme;
-    @ViewChild('uploader') uploader: ElementRef;
-    @ViewChild('serversContainer') serversContainer: ElementRef;
+    @ViewChild('uploader', {static: false}) uploader: ElementRef;
+    @ViewChild('serversContainer', {static: false}) serversContainer: ElementRef;
     admin;
     servers;
     disabled = false;
