@@ -1,6 +1,6 @@
 <div class="flex-container flex-row collapse" *ngIf="application != null">
     <h3 class="small-centred">
-        {{application.account.firstname}} {{application.account.lastname}}'s Application
+        <mat-icon (click)="back()">arrow_back</mat-icon>{{application.account.firstname}} {{application.account.lastname}}'s Application
         <span [ngClass]="{'green': application.account.application.state == applicationState.ACCEPTED, 'red': application.account.application.state == applicationState.REJECTED}">
             {{(application.account.application.state == applicationState.ACCEPTED ? " - Accepted" : application.account.application.state == applicationState.REJECTED ? " - Rejected" : "")}}
         </span>
@@ -19,7 +19,7 @@
             </div>
             <div class="flex-container flex-row no-padding recruiter">
                 <div>
-                    <mat-form-field>
+                    <mat-form-field [floatLabel]="'never'">
                         <mat-select [(ngModel)]="selected" placeholder="{{application.recruiter}}" (selectionChange)="setNewRecruiter($event.value)" [disableOptionCentering]="true" [panelClass]="'select-small'">
                             <mat-option *ngFor="let recruiter of recruiters" [value]="recruiter.value">
                                 {{recruiter.viewValue}}
