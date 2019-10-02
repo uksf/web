@@ -1,6 +1,6 @@
 <app-centre-wrapper>
     <mat-card class="container">
-        <form *ngIf="!isPasswordReset()">
+        <form *ngIf="!reset">
             <div *ngIf="isValidatingCode()">
                 <span>Login to validate {{validationTarget}}</span>
                 <br>
@@ -8,18 +8,18 @@
             <form [formGroup]="form">
                 <div class="special-field-form-container">
                     <label for="name">If you see this, keep this field blank</label>
-                    <input type="text" id="name" formControlName="name" tabindex="-1" autocomplete="off" />
+                    <input type="text" id="name" formControlName="name" tabindex="-1" autocomplete="off">
                 </div>
                 <mat-form-field class="full-width">
-                    <input matInput formControlName="userid" required id="emailAddress" type="email" placeholder="Email Address" autocomplete="username">
+                    <input matInput formControlName="userid" type="email" required placeholder="Email Address" autocomplete="username" (keydown.enter)="submit(); false">
                 </mat-form-field>
                 <br>
                 <mat-form-field class="full-width">
-                    <input matInput formControlName="password" type="password" required placeholder="Password" autocomplete="current-password">
+                    <input matInput formControlName="password" type="password" required placeholder="Password" autocomplete="current-password" (keydown.enter)="submit(); false">
                 </mat-form-field>
             </form>
         </form>
-        <form *ngIf="isPasswordReset()">
+        <form *ngIf="reset">
             <div>
                 <span>Enter your email and new password</span>
                 <br>
@@ -27,18 +27,18 @@
             <form [formGroup]="form">
                 <div class="special-field-form-container">
                     <label for="name">If you see this, keep this field blank</label>
-                    <input type="text" id="name" formControlName="name" tabindex="-1" autocomplete="off" />
+                    <input type="text" id="name" formControlName="name" tabindex="-1" autocomplete="off">
                 </div>
                 <mat-form-field class="full-width">
-                    <input matInput formControlName="userid" required id="emailAddress" type="email" placeholder="Email Address" autocomplete="username">
+                    <input matInput formControlName="userid" type="email" required placeholder="Email Address" autocomplete="username" (keydown.enter)="submit(); false">
                 </mat-form-field>
                 <br>
                 <mat-form-field class="full-width">
-                    <input matInput formControlName="password" type="password" required placeholder="New Password" autocomplete="new-password">
+                    <input matInput formControlName="password" type="password" required placeholder="New Password" autocomplete="new-password" (keydown.enter)="submit(); false">
                 </mat-form-field>
                 <br />
                 <mat-form-field class="full-width">
-                    <input matInput formControlName="confirmPass" type="password" required placeholder="Confirm New Password" autocomplete="new-password">
+                    <input matInput formControlName="confirmPass" type="password" required placeholder="Confirm New Password" autocomplete="new-password" (keydown.enter)="submit(); false">
                 </mat-form-field>
             </form>
         </form>
@@ -47,7 +47,7 @@
                 <tbody>
                     <tr>
                         <td style="width: 50%;">
-                            <mat-checkbox color="primary" [(ngModel)]="stayLogged">Stay signed in</mat-checkbox>
+                            <mat-checkbox color="primary" [(ngModel)]="stayLogged">Stay logged in</mat-checkbox>
                         </td>
                         <td style="width: 50%; text-align: right;">
                             <a style="cursor: pointer;" (click)="forgotPassword()">Forgot Password</a>
@@ -65,9 +65,8 @@
         <br>
         <form>
             <div class="button-container">
-                <button mat-raised-button color="primary" type="button" (click)="submit()">
-                    <span *ngIf="!isPasswordReset(); else submitText">Login</span>
-                    <ng-template #submitText>Submit</ng-template>
+                <button mat-raised-button color="primary" type="button" (click)="submit()" [disabled]="!formValid()">
+                    {{(!reset ? "Login" : "Submit")}}
                 </button>
             </div>
         </form>

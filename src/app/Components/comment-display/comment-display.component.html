@@ -1,11 +1,11 @@
 <div class="comment-form" *ngIf="canPost">
     <form [formGroup]="commentForm">
         <mat-form-field>
-            <textarea matInput placeholder="Enter comment" formControlName="commentContent" matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="10" maxlength="1000" #message></textarea>
+            <textarea matInput placeholder="Enter comment" formControlName="commentContent" matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="10" maxlength="1000" #message (keydown.enter)="postComment(); false"></textarea>
             <mat-hint *ngIf="message.value.length > 900">{{message.value.length}} / 1000</mat-hint>
         </mat-form-field>
     </form>
-    <button mat-button (click)="postComment()" [disabled]="formHasText()" type="submit">Submit</button>
+    <button mat-button (click)="postComment()" [disabled]="!hasText()" type="submit">Submit</button>
 </div>
 <br>
 <div class="comments-container">

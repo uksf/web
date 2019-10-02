@@ -11,12 +11,12 @@ import { SignalRService, ConnectionContainer } from 'app/Services/signalr.servic
     styleUrls: ['./comment-display.component.scss']
 })
 export class CommentDisplayComponent implements OnInit, OnDestroy {
-    comments = [];
-    commentForm;
+    @Input() threadId: string;
     private canPostComment;
     private previousResponse;
     private hubConnection: ConnectionContainer;
-    @Input() threadId: string;
+    comments = [];
+    commentForm;
 
     constructor(
         private httpClient: HttpClient,
@@ -64,8 +64,8 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
         }, error => this.urls.errorWrapper('Failed to update comments', error));
     }
 
-    formHasText() {
-        return this.commentForm.controls.commentContent.value == null || this.commentForm.controls.commentContent.value === '';
+    hasText() {
+        return this.commentForm.controls.commentContent.value != null && this.commentForm.controls.commentContent.value !== '';
     }
 
     get canPost() {
@@ -73,6 +73,7 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
     }
 
     postComment() {
+        if (!this.hasText()) { return; }
         this.httpClient.put(
             this.urls.apiUrl + '/commentthread/' + this.threadId,
             { content: this.commentForm.controls.commentContent.value }
