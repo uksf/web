@@ -51,6 +51,10 @@
                             <div>{{application.account.dob | date:'d MMM y'}}</div>
                         </div>
                         <div class="flex-container flex-row no-padding margin-bottom">
+                            <div class="header"><b>Age</b></div>
+                            <div [ngStyle]="{'color': getAgeColour()}">{{application.age.years}} Years {{(application.age.months > 0 ? application.age.months + (application.age.months == 1 ? " Month" : " Months") : "")}}</div>
+                        </div>
+                        <div class="flex-container flex-row no-padding margin-bottom">
                             <div class="header"><b>Reference</b></div>
                             <div>{{application.account.reference}}</div>
                         </div>
