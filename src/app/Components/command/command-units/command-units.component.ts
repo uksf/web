@@ -16,8 +16,8 @@ import { Permissions } from 'app/Services/permissions';
     styleUrls: ['../../../Pages/command-page/command-page.component.css', './command-units.component.css']
 })
 export class CommandUnitsComponent implements OnInit {
-    @ViewChild('combatUnitsTree') combatUnitsTree: TreeNode;
-    @ViewChild('auxiliaryUnitsTree') auxiliaryUnitsTree: TreeNode;
+    @ViewChild('combatUnitsTree', {static: false}) combatUnitsTree: TreeNode;
+    @ViewChild('auxiliaryUnitsTree', {static: false}) auxiliaryUnitsTree: TreeNode;
     options: ITreeOptions = {
         actionMapping: {
             mouse: {

@@ -20,7 +20,7 @@
             <div class="flex-container flex-row no-padding recruiter">
                 <div>
                     <mat-form-field>
-                        <mat-select [(ngModel)]="selected" (selectionChange)="setNewRecruiter($event.value)" [disableOptionCentering]="true" [panelClass]="'select-small'">
+                        <mat-select [(ngModel)]="selected" placeholder="{{application.recruiter}}" (selectionChange)="setNewRecruiter($event.value)" [disableOptionCentering]="true" [panelClass]="'select-small'">
                             <mat-option *ngFor="let recruiter of recruiters" [value]="recruiter.value">
                                 {{recruiter.viewValue}}
                             </mat-option>
@@ -44,7 +44,7 @@
                         </div>
                         <div class="flex-container flex-row no-padding margin-bottom">
                             <div class="header"><b>Nationality</b></div>
-                            <div><img src="{{application.account.nation | countryImage}}" width="20">{{application.account.nation | countryName}}</div>
+                            <div><img src="{{application.account.nation | countryImage}}">{{application.account.nation | countryName}}</div>
                         </div>
                         <div class="flex-container flex-row no-padding margin-bottom">
                             <div class="header"><b>Date of Birth</b></div>

@@ -8,7 +8,7 @@ import { UploadFile, UploadEvent } from '../../Services/fileUploadTypes.service'
     styleUrls: ['./file-drop.component.css']
 })
 export class FileDropComponent implements OnDestroy {
-    @ViewChild('dropZone') dropZone: ElementRef;
+    @ViewChild('dropZone', {static: false}) dropZone: ElementRef;
     @Input() headertext = '';
     @Input() customstyle = null;
     @Input() disableIf = false;

@@ -12,7 +12,7 @@ import { ThemeEmitterComponent } from 'app/Components/theme-emitter/theme-emitte
     styleUrls: ['./recruitment-page.component.scss']
 })
 export class RecruitmentPageComponent implements OnInit {
-    @ViewChild(ThemeEmitterComponent) theme: ThemeEmitterComponent;
+    @ViewChild(ThemeEmitterComponent, {static: false}) theme: ThemeEmitterComponent;
     waiting: any[] = [];
     allWaiting: any[] = [];
     complete;

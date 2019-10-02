@@ -2,7 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { ApiService } from '../../Services/api.service';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { FormGroup } from '@angular/forms/src/model';
+import { FormGroup } from '@angular/forms';
 
 @Component({
     selector: 'app-modify-unit-modal',

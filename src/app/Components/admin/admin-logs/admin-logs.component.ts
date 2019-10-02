@@ -13,8 +13,8 @@ import { SignalRService, ConnectionContainer } from 'app/Services/signalr.servic
     styleUrls: ['../../../Pages/admin-page/admin-page.component.css', './admin-logs.component.css']
 })
 export class AdminLogsComponent implements OnInit, OnDestroy {
-    @ViewChild(MatPaginator) paginator: MatPaginator;
-    @ViewChild(MatSort) sort: MatSort;
+    @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+    @ViewChild(MatSort, {static: true}) sort: MatSort;
     logDisplayedColumns = ['id', 'timestamp', 'message'];
     datasource: MatTableDataSource<Log>;
     private hubConnection: ConnectionContainer;

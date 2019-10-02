@@ -26,7 +26,7 @@ const INLINE_EDIT_CONTROL_VALUE_ACCESSOR = {
     styleUrls: ['./inline-edit.component.css']
 })
 export class InlineEditComponent implements ControlValueAccessor, OnInit {
-    @ViewChild('inlineEditControl') inlineEditControl;
+    @ViewChild('inlineEditControl', {static: false}) inlineEditControl;
     @Input() label = '';
     @Input() type = 'text';
     @Input() required = false;

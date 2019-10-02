@@ -17,8 +17,8 @@ import { CountryPickerService, ICountry } from 'app/Services/CountryPicker/count
     providers: [DatePipe]
 })
 export class RecruitmentApplicationPageComponent {
-    @ViewChild('recruiterCommentsDisplay') recruiterCommentDisplay: CommentDisplayComponent;
-    @ViewChild('applicationCommentsDisplay') applicationCommentDisplay: CommentDisplayComponent;
+    @ViewChild('recruiterCommentsDisplay', {static: false}) recruiterCommentDisplay: CommentDisplayComponent;
+    @ViewChild('applicationCommentsDisplay', {static: false}) applicationCommentDisplay: CommentDisplayComponent;
     membershipState = MembershipState;
     applicationState = ApplicationState;
     countries: ICountry[];
