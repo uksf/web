@@ -15,13 +15,13 @@
                             </td>
                             <td style="width: 30%; cursor: default;" (click)="$event.stopPropagation();">
                                 <b>Email: </b>
-                                <small>{{application.account.email}}</small>
+                                <small><a [attr.href]="'mailto:' + application.account.email" target="_blank">{{application.account.email}}</a></small>
                             </td>
                             <td style="width: 30%;">
                                 <b>Teamspeak: </b>
                                 <small>
-                                    <span *ngIf="application.teamspeak.online" style="color: green;">Online as {{application.teamspeak.nickname}}</span>
-                                    <span *ngIf="!application.teamspeak.online" style="color: red;">Offline</span>
+                                    <span *ngIf="application.communications.tsOnline" style="color: green;">Online as {{application.communications.tsNickname}}</span>
+                                    <span *ngIf="!application.communications.tsOnline" style="color: red;">Offline</span>
                                 </small>
                             </td>
                             <td style="width: 20%;">
@@ -96,13 +96,13 @@
                             </td>
                             <td style="width: 30%; cursor: default;" (click)="$event.stopPropagation();">
                                 <b>Email: </b>
-                                <small>{{application.account.email}}</small>
+                                <small><a [attr.href]="'mailto:' + application.account.email" target="_blank">{{application.account.email}}</a></small>
                             </td>
                             <td style="width: 30%;">
                                 <b>Teamspeak: </b>
                                 <small>
-                                    <span *ngIf="application.teamspeak.online" style="color: green;">Online as {{application.teamspeak.nickname}}</span>
-                                    <span *ngIf="!application.teamspeak.online" style="color: red;">Offline</span>
+                                    <span *ngIf="application.communications.tsOnline" style="color: green;">Online as {{application.communications.tsNickname}}</span>
+                                    <span *ngIf="!application.communications.tsOnline" style="color: red;">Offline</span>
                                 </small>
                             </td>
                             <td style="width: 20%;">

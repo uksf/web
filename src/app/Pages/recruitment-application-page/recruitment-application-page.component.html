@@ -1,255 +1,209 @@
-<app-default-content-areas>
-    <app-main-content-area *ngIf="application != null">
-        <div class="flex-container">
-            <h3>
-                <mat-icon (click)="back()">arrow_back</mat-icon> {{application.account.firstname}} {{application.account.lastname}}'s Application
-            </h3>
-            <table>
-                <tr>
-                    <td style="width: 50%;">
-                        <h4>Personal Information</h4>
-                        <mat-card>
-                            <p>
-                                <b>Name:</b>
-                                <span style="float: right;">{{application.account.firstname}} {{application.account.lastname}}
-                                </span>
-                            </p>
-                            <p>
-                                <b>Date of Birth:</b>
-                                <span style="float: right;">{{application.account.dob | date:'mediumDate'}}</span>
-                            </p>
-                            <p>
-                                <b>Nation:</b>
-                                <span style="float: right;">{{application.account.nation | countryName}}
-                                    <img src="{{application.account.nation | countryImage}}" width="20">
-                                </span>
-                            </p>
-                            <p>
-                                <b>Military Experience:</b>
-                                <span style="float: right;" *ngIf="application.account.militaryExperience; else no"> Yes</span>
-                            </p>
-                            <p>
-                                <b>Background:</b>
-                                <span style="float: right; overflow: auto; max-height: 300px;">{{application.account.background}}
-                                    <ng-template #no> No</ng-template>
-                                </span>
-                            </p>
-                            <ng-template [ngxPermissionsOnly]="['SR1']">
-                                <div>
-                                    <br style="clear: both;">
-                                    <button mat-button *ngIf="application.account.application.state == applicationState.WAITING" style="float: left; color: red;" (click)="updateApplicationState(applicationState.REJECTED)">Reject</button>
-                                    <button mat-button *ngIf="application.account.application.state == applicationState.WAITING" style="float: right; color: green;" (click)="updateApplicationState(applicationState.ACCEPTED)">Approve</button>
-                                    <button mat-button *ngIf="application.account.application.state != applicationState.WAITING && application.account.membershipState != membershipState.MEMBER && application.account.membershipState != membershipState.DISCHARGED"
-                                        style="float: right; color: rgb(255, 167, 4);" (click)="updateApplicationState(applicationState.WAITING)">Reactivate</button>
-                                    <button mat-button *ngIf="application.account.application.state == applicationState.ACCEPTED && application.account.membershipState == membershipState.MEMBER" style="float: right; color: red;" (click)="updateApplicationState(applicationState.WAITING)">Return to
-                                        recruitment</button>
-                                    <button mat-button *ngIf="application.account.application.state != applicationState.WAITING && application.account.membershipState != membershipState.MEMBER && application.account.membershipState == membershipState.DISCHARGED"
-                                        style="float: right; color: rgb(255, 167, 4);" [routerLink]="['/personnel/discharges']" [queryParams]="{filter: application.account.lastname}">Discharged</button>
-                                </div>
-                            </ng-template>
-                            <br style="clear: both;">
-                        </mat-card>
-                    </td>
-                    <td style="width: 20%;">
-                        <h4>Preferences</h4>
-                        <mat-card>
-                            <p>
-                                <b>Officer:</b>
-                                <span style="float: right;" *ngIf="application.account.officer; else no"> Yes</span>
-                            </p>
-                            <p>
-                                <b>NCO:</b>
-                                <span style="float: right;" *ngIf="application.account.nco; else no"> Yes</span>
-                            </p>
-                            <p>
-                                <b>Aviation:</b>
-                                <span style="float: right;" *ngIf="application.account.aviation; else no"> Yes</span>
-                            </p>
-                            <ng-template #no>
-                                <span style="float: right;"> No</span>
-                            </ng-template>
-                        </mat-card>
-                    </td>
-                    <td style="width: 25%;">
-                        <h4>Experience</h4>
-                        <mat-card>
-                            <p>
-                                <b>Arma:</b>
-                                <span style="float: right;">{{application.account.armaExperience}}</span>
-                            </p>
-                            <p>
-                                <b>Units:</b>
-                                <span style="float: right;">{{application.account.unitsExperience}}</span>
-                            </p>
-                            <p>
-                                <b>Reference:</b>
-                                <span style="float: right;">{{application.account.reference}}</span>
-                            </p>
-                        </mat-card>
-                    </td>
-                    <ng-template [ngxPermissionsOnly]="['SR1']">
-                        <td style="width: max-content;">
-                            <h4>Ratings</h4>
-                            <mat-card style="width: 175px;">
-                                <form [formGroup]="ratingsForm">
-                                    <div>
-                                        <sup class="rating-label">Attitude</sup>
-                                        <p-rating class="rating" [cancel]="false" formControlName="attitude" (onRate)="applyRating($event, 'attitude')" iconOnClass="fas fa-star" iconOffClass="far fa-star"></p-rating>
-                                    </div>
-                                    <br>
-                                    <div>
-                                        <sup class="rating-label">Maturity</sup>
-                                        <p-rating class="rating" [cancel]="false" formControlName="maturity" (onRate)="applyRating($event, 'maturity')" iconOnClass="fas fa-star" iconOffClass="far fa-star"></p-rating>
-                                    </div>
-                                    <br>
-                                    <div>
-                                        <sup class="rating-label">Sociability</sup>
-                                        <p-rating class="rating" [cancel]="false" formControlName="sociability" (onRate)="applyRating($event, 'sociability')" iconOnClass="fas fa-star" iconOffClass="far fa-star"></p-rating>
-                                    </div>
-                                    <br>
-                                    <div>
-                                        <sup class="rating-label">Ability to take critiscm</sup>
-                                        <p-rating class="rating" [cancel]="false" formControlName="criticism" (onRate)="applyRating($event, 'criticism')" iconOnClass="fas fa-star" iconOffClass="far fa-star"></p-rating>
-                                    </div>
-                                    <br>
-                                    <div>
-                                        <sup class="rating-label">General skills in-game</sup>
-                                        <p-rating class="rating" [cancel]="false" formControlName="skills" (onRate)="applyRating($event, 'skills')" iconOnClass="fas fa-star" iconOffClass="far fa-star"></p-rating>
-                                    </div>
-                                </form>
-                            </mat-card>
-                        </td>
-                    </ng-template>
-                </tr>
-            </table>
-            <br>
-            <table style="width: 100%;">
-                <tr>
-                    <td style="min-width: 300px; width: 50%;">
-                        <h4>Application Chat</h4>
-                        <mat-card>
-                            <ng-template [ngxPermissionsOnly]="['SR1']">
-                                <sup>Visible to candidate</sup>
-                            </ng-template>
-                            <app-comment-display #applicationCommentsDisplay [threadId]="application.account.application.applicationCommentThread"></app-comment-display>
-                        </mat-card>
-                    </td>
-                    <ng-template [ngxPermissionsOnly]="['SR1']">
-                        <td style="min-width: 300px; width: 50%;">
-                            <h4>Recruiter Chat</h4>
-                            <mat-card>
-                                <sup>Only visible to SR1</sup>
-                                <app-comment-display #recruiterCommentsDisplay [threadId]="application.account.application.recruiterCommentThread"></app-comment-display>
-                            </mat-card>
-                        </td>
-                    </ng-template>
-                </tr>
-            </table>
-        </div>
-    </app-main-content-area>
-    <app-side-content-area *ngIf="application != null">
-        <div class="flex-container">
-            <ng-template [ngxPermissionsOnly]="['SR1_LEAD']">
+<div class="flex-container flex-row collapse" *ngIf="application != null">
+    <h3 class="small-centred">
+        {{application.account.firstname}} {{application.account.lastname}}'s Application
+        <span [ngClass]="{'green': application.account.application.state == applicationState.ACCEPTED, 'red': application.account.application.state == applicationState.REJECTED}">
+            {{(application.account.application.state == applicationState.ACCEPTED ? " - Accepted" : application.account.application.state == applicationState.REJECTED ? " - Rejected" : "")}}
+        </span>
+    </h3>
+    <ng-template [ngxPermissionsOnly]="['SR1_LEAD']">
+        <div class="flex-container flex-grow flex-row no-padding collapse-tiny">
+            <div class="flex-container flex-grow flex-row no-padding controls">
+                <button mat-button *ngIf="application.account.application.state == applicationState.WAITING" class="green" (click)="updateApplicationState(applicationState.ACCEPTED)">Approve</button>
+                <button mat-button *ngIf="application.account.application.state == applicationState.WAITING" class="red" (click)="updateApplicationState(applicationState.REJECTED)">Reject</button>
+                <button mat-button *ngIf="application.account.application.state != applicationState.WAITING && application.account.membershipState != membershipState.MEMBER && application.account.membershipState != membershipState.DISCHARGED" class="goldenrod"
+                    (click)="updateApplicationState(applicationState.WAITING)">Reactivate</button>
+                <button mat-button *ngIf="application.account.application.state != applicationState.WAITING && application.account.membershipState != membershipState.MEMBER && application.account.membershipState == membershipState.DISCHARGED" class="goldenrod"
+                    [routerLink]="['/personnel/discharges']" [queryParams]="{filter: application.account.lastname}">Discharged</button>
+                <button mat-button *ngIf="application.account.application.state == applicationState.ACCEPTED && application.account.membershipState == membershipState.MEMBER" class="red" (click)="updateApplicationState(applicationState.WAITING)">Return to
+                    recruitment</button>
+            </div>
+            <div class="flex-container flex-row no-padding recruiter">
                 <div>
-                    <h4>Reassign</h4>
+                    <mat-form-field>
+                        <mat-select [(ngModel)]="selected" (selectionChange)="setNewRecruiter($event.value)" [disableOptionCentering]="true" [panelClass]="'select-small'">
+                            <mat-option *ngFor="let recruiter of recruiters" [value]="recruiter.value">
+                                {{recruiter.viewValue}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</div>
+<div *ngIf="application != null">
+    <div class="flex-container">
+        <div class="flex-container flex-row flex-grow no-padding collapse-small">
+            <div class="flex-container flex-two-thirds no-padding padding-right">
+                <div class="flex-container flex-grow no-padding">
+                    <h4>Candidate Information</h4>
                     <mat-card>
-                        <b>From</b>
-                        <span style="float: right;">{{application.recruiter}}</span>
-                        <br style="clear: both;">
-                        <br>
-                        <div>
-                            <b style="line-height: 50px;">To</b>
-                            <mat-form-field style="float: right;">
-                                <mat-select placeholder="New recruiter" [(ngModel)]="selected">
-                                    <mat-option *ngFor="let recruiter of recruiters" [value]="recruiter.value">
-                                        {{recruiter.viewValue}}
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
+                        <div class="flex-container flex-row no-padding margin-bottom">
+                            <div class="header"><b>Name</b></div>
+                            <div>{{application.account.firstname}} {{application.account.lastname}}</div>
                         </div>
-                        <br style="clear: both;">
-                        <button mat-button style="float:right;" (click)="setNewRecruiter(selected)">Apply</button>
-                        <br style="clear: both;">
+                        <div class="flex-container flex-row no-padding margin-bottom">
+                            <div class="header"><b>Nationality</b></div>
+                            <div><img src="{{application.account.nation | countryImage}}" width="20">{{application.account.nation | countryName}}</div>
+                        </div>
+                        <div class="flex-container flex-row no-padding margin-bottom">
+                            <div class="header"><b>Date of Birth</b></div>
+                            <div>{{application.account.dob | date:'d MMM y'}}</div>
+                        </div>
+                        <div class="flex-container flex-row no-padding margin-bottom">
+                            <div class="header"><b>Reference</b></div>
+                            <div>{{application.account.reference}}</div>
+                        </div>
+                        <div class="flex-container no-padding">
+                            <div class="header"><b>Background</b></div>
+                            <p class="scrollable"><span>{{application.account.background}}</span></p>
+                        </div>
+                    </mat-card>
+                </div>
+            </div>
+            <div class="flex-container flex-third no-padding">
+                <div class="flex-container no-padding flex-grow">
+                    <h4>Candidate Experience</h4>
+                    <mat-card>
+                        <div class="flex-container flex-row no-padding margin-bottom">
+                            <div class="header"><b>Military Experience</b></div>
+                            <div>{{(application.account.militaryExperience ? "Yes" : "No")}}</div>
+                        </div>
+                        <div class="flex-container no-padding margin-bottom">
+                            <div class="header"><b>Previous Units</b></div>
+                            <p class="scrollable"><span>{{application.account.unitsExperience}}</span></p>
+                        </div>
+                        <div class="flex-container no-padding">
+                            <div class="header"><b>Arma Experience</b></div>
+                            <p class="scrollable"><span>{{application.account.armaExperience}}</span></p>
+                        </div>
+                    </mat-card>
+                </div>
+                <div class="flex-container no-padding flex-grow">
+                    <h4>Specialist Preferences</h4>
+                    <mat-card>
+                        <div class="flex-container flex-row no-padding margin-bottom">
+                            <div class="header"><b>Officer</b></div>
+                            <div>{{(application.account.officer ? "Yes" : "No")}}</div>
+                        </div>
+                        <div class="flex-container flex-row no-padding margin-bottom">
+                            <div class="header"><b>NCO</b></div>
+                            <div>{{(application.account.nco ? "Yes" : "No")}}</div>
+                        </div>
+                        <div class="flex-container flex-row no-padding margin-bottom">
+                            <div class="header"><b>Aviation</b></div>
+                            <div>{{(application.account.aviation ? "Yes" : "No")}}</div>
+                        </div>
+                    </mat-card>
+                </div>
+            </div>
+        </div>
+        <div class="flex-container flex-row flex-grow no-padding collapse">
+            <div class="flex-container flex-row flex-two-thirds no-padding padding-right collapse-small">
+                <div class="flex-container flex-grow no-padding padding-right">
+                    <h4>Candidate Contacts</h4>
+                    <mat-card>
+                        <div class="flex-container flex-row flex-grow no-padding margin-bottom">
+                            <div class="header"><b>Teamspeak</b></div>
+                            <div [ngClass]="{'green': application.communications.tsOnline, 'red': !application.communications.tsOnline}">{{(application.communications.tsOnline ? "Online as " + application.communications.tsNickname : "Offline")}}</div>
+                        </div>
+                        <div class="flex-container flex-row flex-grow no-padding margin-bottom">
+                            <div class="header"><b>Discord</b></div>
+                            <div [ngClass]="{'green': application.communications.discordOnline, 'red': !application.communications.discordOnline}">{{(application.communications.discordOnline ? "Online" : "Offline")}}</div>
+                        </div>
+                        <div class="flex-container flex-row flex-grow no-padding margin-bottom">
+                            <div class="header"><b>Steam</b></div>
+                            <div><a [attr.href]="application.steamprofile" target="_blank">Steam Profile</a></div>
+                        </div>
+                        <div class="flex-container flex-row flex-grow no-padding margin-bottom">
+                            <div class="header"><b>Email</b></div>
+                            <div><a [attr.href]="'mailto:' + application.account.email" target="_blank">{{application.account.email}}</a></div>
+                        </div>
+                    </mat-card>
+                </div>
+                <div class="flex-container flex-grow no-padding">
+                    <h4>Candidate Ratings</h4>
+                    <mat-card>
+                        <form [formGroup]="ratingsForm">
+                            <div class="flex-container flex-row flex-grow no-padding margin-bottom-small">
+                                <div class="header"><b>Attitude</b></div>
+                                <p-rating class="rating" [cancel]="false" formControlName="attitude" (onRate)="applyRating($event, 'attitude')" iconOnClass="fas fa-star" iconOffClass="far fa-star"></p-rating>
+                            </div>
+                            <div class="flex-container flex-row flex-grow no-padding margin-bottom-small">
+                                <div class="header"><b>Maturity</b></div>
+                                <p-rating class="rating" [cancel]="false" formControlName="maturity" (onRate)="applyRating($event, 'maturity')" iconOnClass="fas fa-star" iconOffClass="far fa-star"></p-rating>
+                            </div>
+                            <div class="flex-container flex-row flex-grow no-padding margin-bottom-small">
+                                <div class="header"><b>Sociability</b></div>
+                                <p-rating class="rating" [cancel]="false" formControlName="sociability" (onRate)="applyRating($event, 'sociability')" iconOnClass="fas fa-star" iconOffClass="far fa-star"></p-rating>
+                            </div>
+                            <div class="flex-container flex-row flex-grow no-padding margin-bottom-small">
+                                <div class="header"><b>Ability to take criticism</b></div>
+                                <p-rating class="rating" [cancel]="false" formControlName="criticism" (onRate)="applyRating($event, 'criticism')" iconOnClass="fas fa-star" iconOffClass="far fa-star"></p-rating>
+                            </div>
+                            <div class="flex-container flex-row flex-grow no-padding margin-bottom-small">
+                                <div class="header"><b>In-game skills</b></div>
+                                <p-rating class="rating" [cancel]="false" formControlName="skills" (onRate)="applyRating($event, 'skills')" iconOnClass="fas fa-star" iconOffClass="far fa-star"></p-rating>
+                            </div>
+                        </form>
+                    </mat-card>
+                </div>
+            </div>
+            <div class="flex-container flex-row flex-third no-padding">
+                <div class="flex-container flex-grow no-padding">
+                    <h4>Application Dates</h4>
+                    <mat-card>
+                        <div class="flex-container flex-row flex-grow no-padding margin-bottom">
+                            <div class="header"><b>Date Applied</b></div>
+                            <div>{{application.account.application.dateCreated | date:'d MMM y'}}</div>
+                        </div>
+                        <div *ngIf="application.account.application.state == applicationState.WAITING">
+                            <div class="flex-container flex-row flex-grow no-padding margin-bottom">
+                                <div class="header"><b>Next Candidate Op</b></div>
+                                <div>{{getNextCandidateOp()}}</div>
+                            </div>
+                            <div class="flex-container flex-row flex-grow no-padding margin-bottom">
+                                <div class="header"><b>Days Processing</b></div>
+                                <div>{{application.daysProcessing}} {{(application.daysProcessing == 1 ? "Day" : "Days")}}</div>
+                            </div>
+                        </div>
+                        <div *ngIf="application.account.application.state != applicationState.WAITING">
+                            <div class="flex-container flex-row flex-grow no-padding margin-bottom">
+                                <div class="header"><b>Date Processed</b></div>
+                                <div>{{application.account.application.dateAccepted | date:'d MMM y'}}</div>
+                            </div>
+                            <div class="flex-container flex-row flex-grow no-padding margin-bottom">
+                                <div class="header"><b>Processing Duration</b></div>
+                                <div>{{application.daysProcessed}} {{(application.daysProcessing == 1 ? "Day" : "Days")}}</div>
+                            </div>
+                        </div>
+                        <div class="flex-container flex-row flex-grow no-padding margin-bottom">
+                            <div class="header"><b>Average Processing Duration</b></div>
+                            <div>{{application.averageProcessingTime}} {{(application.daysProcessing == 1 ? "Day" : "Days")}}</div>
+                        </div>
+                    </mat-card>
+                </div>
+            </div>
+        </div>
+        <div class="flex-container flex-row flex-grow no-padding padding-top collapse-small">
+            <div class="flex-container flex-grow no-padding">
+                <h4>Application Chat</h4>
+                <mat-card>
+                    <ng-template [ngxPermissionsOnly]="['SR1']">
+                        <sup>Visible to candidate</sup>
+                    </ng-template>
+                    <app-comment-display #applicationCommentsDisplay [threadId]="application.account.application.applicationCommentThread"></app-comment-display>
+                </mat-card>
+            </div>
+            <ng-template [ngxPermissionsOnly]="['SR1']">
+                <div class="flex-container flex-grow no-padding padding-left">
+                    <h4>Recruiter Chat</h4>
+                    <mat-card>
+                        <sup>Only visible to SR1</sup>
+                        <app-comment-display #recruiterCommentsDisplay [threadId]="application.account.application.recruiterCommentThread"></app-comment-display>
                     </mat-card>
                 </div>
             </ng-template>
-            <br>
-            <div>
-                <h4>Dates</h4>
-                <mat-card>
-                    <p>
-                        <b>Date Applied:</b>
-                        <span style="float: right;">{{application.account.application.dateCreated | date:'mediumDate'}}</span>
-                    </p>
-                    <p>
-                        <span *ngIf="application.account.application.state != applicationState.WAITING">
-                            <b>Date Processed:</b>
-                            <span style="float: right;">{{application.account.application.dateAccepted | date:'mediumDate'}}</span>
-                        </span>
-                        <span *ngIf="application.account.application.state == applicationState.WAITING">
-                            <b>Next Candidate Op:</b>
-                            <span style="float: right;">{{application.nextCandidateOp | date:'mediumDate'}}</span>
-                        </span>
-                    </p>
-                    <p>
-                        <span *ngIf="application.account.application.state != applicationState.WAITING">
-                            <b>Days Processed:</b>
-                            <span style="float: right;">{{application.daysProcessed}}
-                                <span *ngIf="application.daysProcessed == 1; else days">Day</span>
-                                <ng-template #days>Days</ng-template>
-                            </span>
-                        </span>
-                        <span *ngIf="application.account.application.state == applicationState.WAITING">
-                            <b>Days Processing:</b>
-                            <span style="float: right;">{{application.daysProcessing}}
-                                <span *ngIf="application.daysProcessing == 1; else days">Day</span>
-                                <ng-template #days>Days</ng-template>
-                            </span>
-                        </span>
-                    </p>
-                    <p>
-                        <b>Average Duration:</b>
-                        <span style="float: right;">{{application.averageProcessingTime}} Days</span>
-                    </p>
-                </mat-card>
-            </div>
-            <br>
-            <div>
-                <h4>Contact</h4>
-                <mat-card>
-                    <p>
-                        <b>Teamspeak:</b>
-                        <span *ngIf="application.teamspeak.online" style="color: green; float: right;">Online as {{application.teamspeak.nickname}}</span>
-                        <span *ngIf="!application.teamspeak.online" style="color: red; float: right;">Offline</span>
-                    </p>
-                    <p>
-                        <b>Discord:</b>
-                        <span style="color:grey; float: right;">Not Setup</span>
-                    </p>
-                    <p>
-                        <b>Steam:</b>
-                        <span style="float: right;">
-                            <a [attr.href]="application.steamprofile" target="_blank">Steam Profile</a>
-                        </span>
-                    </p>
-                    <p>
-                        <b>Email:</b>
-                        <span style="float: right;">
-                            {{application.account.email}}
-                        </span>
-                    </p>
-                </mat-card>
-            </div>
-            <br>
-            <div>
-                <h4>Performance</h4>
-                <mat-card>
-                    <p>
-                        <b>Teamspeak Participation:</b>
-                        <span style="color: green; float: right;">{{application.teamspeakParticipation}} (Not Setup)</span>
-                    </p>
-                </mat-card>
-            </div>
         </div>
-    </app-side-content-area>
-</app-default-content-areas>
+    </div>
+</div>

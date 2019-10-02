@@ -6,6 +6,9 @@
     $primary: map-get($theme, primary);
 
     app-recruitment-page {
+        a {
+            color: mat-color($primary);
+        }
         .applications-container {
             .applicationCardOthers {
                 background-color: mat-color($background, dark-card);
