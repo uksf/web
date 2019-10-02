@@ -11,16 +11,11 @@
 <div class="comments-container">
     <div class="comment-wrapper" *ngFor="let comment of comments">
         <div class="author">
-            <span>
-                <span class="author-string">{{comment.displayName}}</span>
-                <span class="date-string">{{comment.timestamp | timeAgo}}</span>
-            </span>
-            <button class="menu-button" mat-button [matMenuTriggerFor]="menu" *ngIf="canDelete(comment)">
-                <mat-icon>menu</mat-icon>
+            <span class="author-string">{{comment.displayName}}</span>
+            <span class="date-string">{{comment.timestamp | timeAgo}}</span>
+            <button class="delete-button" mat-button *ngIf="canDelete(comment)" (click)="deleteComment(comment)">
+                <mat-icon>delete</mat-icon>
             </button>
-            <mat-menu #menu="matMenu">
-                <button class="menu-item" mat-menu-item (click)="deleteComment(comment)">Delete</button>
-            </mat-menu>
         </div>
         <div class="comment">
             <span class="comment-string">{{comment.content}}</span>
