@@ -17,8 +17,8 @@ import { CountryPickerService, ICountry } from 'app/Services/CountryPicker/count
     providers: [DatePipe]
 })
 export class RecruitmentApplicationPageComponent {
-    @ViewChild('recruiterCommentsDisplay', {static: false}) recruiterCommentDisplay: CommentDisplayComponent;
-    @ViewChild('applicationCommentsDisplay', {static: false}) applicationCommentDisplay: CommentDisplayComponent;
+    @ViewChild('recruiterCommentsDisplay', { static: false }) recruiterCommentDisplay: CommentDisplayComponent;
+    @ViewChild('applicationCommentsDisplay', { static: false }) applicationCommentDisplay: CommentDisplayComponent;
     membershipState = MembershipState;
     applicationState = ApplicationState;
     countries: ICountry[];
@@ -109,14 +109,6 @@ export class RecruitmentApplicationPageComponent {
 
     getAgeColour() {
         return this.application.age.years >= 16 ? 'green' : this.application.age.years === 15 && this.application.age.months === 11 ? 'goldenrod' : 'red';
-    }
-
-    getNextCandidateOp() {
-        const nextDate = new Date(this.application.nextCandidateOp);
-        const today = new Date();
-        const tomorrow = new Date();
-        tomorrow.setUTCDate(today.getUTCDate() + 1);
-        return nextDate.toDateString() === today.toDateString() ? 'Today' : nextDate.toDateString() === tomorrow.toDateString() ? 'Tomorrow' : this.datePipe.transform(nextDate, 'EEEE');
     }
 
     back() {
