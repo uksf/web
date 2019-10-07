@@ -107,6 +107,10 @@ export class RecruitmentApplicationPageComponent {
         });
     }
 
+    isAcceptableAge() {
+        return this.application.age.years >= 16 || (this.application.age.years === 15 && this.application.age.months === 11);
+    }
+
     getAgeColour() {
         return this.application.age.years >= 16 ? 'green' : this.application.age.years === 15 && this.application.age.months === 11 ? 'goldenrod' : 'red';
     }

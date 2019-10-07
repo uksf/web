@@ -5,21 +5,23 @@
             {{(application.account.application.state == applicationState.ACCEPTED ? " - Accepted" : application.account.application.state == applicationState.REJECTED ? " - Rejected" : "")}}
         </span>
     </h3>
-    <ng-template [ngxPermissionsOnly]="['SR1_LEAD']">
-        <div class="flex-container flex-grow flex-row no-padding collapse-tiny">
-            <div class="flex-container flex-grow flex-row no-padding controls">
-                <button mat-button *ngIf="application.account.application.state == applicationState.WAITING" class="green" (click)="updateApplicationState(applicationState.ACCEPTED)">Approve</button>
-                <button mat-button *ngIf="application.account.application.state == applicationState.WAITING" class="red" (click)="updateApplicationState(applicationState.REJECTED)">Reject</button>
-                <button mat-button *ngIf="application.account.application.state != applicationState.WAITING && application.account.membershipState != membershipState.MEMBER && application.account.membershipState != membershipState.DISCHARGED" class="goldenrod"
-                    (click)="updateApplicationState(applicationState.WAITING)">Reactivate</button>
-                <button mat-button *ngIf="application.account.application.state != applicationState.WAITING && application.account.membershipState != membershipState.MEMBER && application.account.membershipState == membershipState.DISCHARGED" class="goldenrod"
-                    [routerLink]="['/personnel/discharges']" [queryParams]="{filter: application.account.lastname}">Discharged</button>
-                <button mat-button *ngIf="application.account.application.state == applicationState.ACCEPTED && application.account.membershipState == membershipState.MEMBER" class="red" (click)="updateApplicationState(applicationState.WAITING)">Return to
-                    recruitment</button>
-            </div>
+    <div class="flex-container flex-grow flex-row no-padding collapse-tiny">
+        <div class="flex-container flex-grow flex-row no-padding controls">
+            <button mat-button *ngIf="application.account.application.state == applicationState.WAITING" class="green" (click)="updateApplicationState(applicationState.ACCEPTED)" [disabled]="!isAcceptableAge()">
+                <span [matTooltip]="!isAcceptableAge() ? 'Application cannot be accepted due to age requirements' : null">Approve</span>
+            </button>
+            <button mat-button *ngIf="application.account.application.state == applicationState.WAITING" class="red" (click)="updateApplicationState(applicationState.REJECTED)">Reject</button>
+            <button mat-button *ngIf="application.account.application.state != applicationState.WAITING && application.account.membershipState != membershipState.MEMBER && application.account.membershipState != membershipState.DISCHARGED" class="goldenrod"
+                (click)="updateApplicationState(applicationState.WAITING)">Reactivate</button>
+            <button mat-button *ngIf="application.account.application.state != applicationState.WAITING && application.account.membershipState != membershipState.MEMBER && application.account.membershipState == membershipState.DISCHARGED" class="goldenrod" [routerLink]="['/personnel/discharges']"
+                [queryParams]="{filter: application.account.lastname}">Discharged</button>
+            <button mat-button *ngIf="application.account.application.state == applicationState.ACCEPTED && application.account.membershipState == membershipState.MEMBER" class="red" (click)="updateApplicationState(applicationState.WAITING)">Return to
+                recruitment</button>
+        </div>
+        <ng-template [ngxPermissionsOnly]="['SR1_LEAD']">
             <div class="flex-container flex-row no-padding recruiter">
                 <div>
-                    <mat-form-field [floatLabel]="'never'">
+                    <mat-form-field [floatLabel]="'never'" class="select-thin">
                         <mat-select [(ngModel)]="selected" placeholder="{{application.recruiter}}" (selectionChange)="setNewRecruiter($event.value)" [disableOptionCentering]="true" [panelClass]="'select-small'">
                             <mat-option *ngFor="let recruiter of recruiters" [value]="recruiter.value">
                                 {{recruiter.viewValue}}
@@ -28,8 +30,8 @@
                     </mat-form-field>
                 </div>
             </div>
-        </div>
-    </ng-template>
+        </ng-template>
+    </div>
 </div>
 <div *ngIf="application != null">
     <div class="flex-container">

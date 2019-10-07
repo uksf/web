@@ -116,8 +116,22 @@ img {
     margin-right: 8px;
 }
 
+.controls {
+    margin: auto;
+    justify-content: flex-end;
+
+    .mat-button {
+        margin-left: 16px;
+    }
+}
+
 .recruiter {
     margin: auto;
+    margin-left: 16px;
+
+    .select-thin {
+        margin-bottom: -4px;
+    }
 }
 
 .green {
@@ -130,16 +144,6 @@ img {
 
 .red {
     color: red;
-}
-
-.controls {
-    margin: auto;
-    justify-content: flex-end;
-    margin-right: 16px;
-
-    .mat-button {
-        margin-left: 16px;
-    }
 }
 
 ::ng-deep .select-small {
