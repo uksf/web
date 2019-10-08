@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '../../Services/Authentication/authentication.service';
 import { UrlService } from '../../Services/url.service';
 import { Router } from '@angular/router';
-import { AccountService, ApplicationState } from '../../Services/account.service';
+import { AccountService, ApplicationState, MembershipState } from '../../Services/account.service';
 import { ThemeEmitterComponent } from 'app/Components/theme-emitter/theme-emitter.component';
 
 @Component({
@@ -12,7 +12,8 @@ import { ThemeEmitterComponent } from 'app/Components/theme-emitter/theme-emitte
     styleUrls: ['./recruitment-page.component.scss']
 })
 export class RecruitmentPageComponent implements OnInit {
-    @ViewChild(ThemeEmitterComponent, {static: false}) theme: ThemeEmitterComponent;
+    @ViewChild(ThemeEmitterComponent, { static: false }) theme: ThemeEmitterComponent;
+    membershipState = MembershipState;
     waiting: any[] = [];
     allWaiting: any[] = [];
     complete;
@@ -193,6 +194,10 @@ export class RecruitmentPageComponent implements OnInit {
                 break;
         }
         this.applicationHistory = this.filteredAndSearched.slice(this.index, this.index + this.length);
+    }
+
+    getHistoryColour(application) {
+        return application.account.application.state !== this.applicationState.WAITING && application.account.membershipState === this.membershipState.DISCHARGED ? 'goldenrod' : application.account.application.state === this.applicationState.ACCEPTED ? 'green' : 'red';
     }
 
     trackByApplication(application): number { return application; }

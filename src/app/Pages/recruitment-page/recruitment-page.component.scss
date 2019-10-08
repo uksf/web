@@ -101,6 +101,18 @@ app-side-content-area {
     }
 }
 
+.green {
+    color: green;
+}
+
+.goldenrod {
+    color: goldenrod;
+}
+
+.red {
+    color: red;
+}
+
 @media screen and (max-width: 450px) {
     app-side-content-area {
         .enabled {

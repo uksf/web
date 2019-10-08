@@ -274,8 +274,7 @@
                     <table class="table-list">
                         <tr class="tr-list">
                             <td style="width: 20%;">
-                                <b style="color:green" *ngIf="application.account.application.state == applicationState.ACCEPTED">{{application.displayName}}</b>
-                                <b style="color:red" *ngIf="application.account.application.state == applicationState.REJECTED">{{application.displayName}}</b>
+                                <b [ngClass]="getHistoryColour(application)">{{application.displayName}}</b>
                             </td>
                             <td style="width: 20%;">
                                 <b>Applied: </b>
