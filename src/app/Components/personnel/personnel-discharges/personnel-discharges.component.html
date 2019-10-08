@@ -95,15 +95,15 @@
                                         </mat-cell>
                                     </ng-container>
                                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                                    <mat-row *matRowDef="let column; columns: displayedColumns;">
-                                    </mat-row>
+                                    <mat-row *matRowDef="let column; columns: displayedColumns;"></mat-row>
                                 </mat-table>
                             </div>
                             <div class="button-container">
                                 <app-flex-filler></app-flex-filler>
                                 <ng-template [ngxPermissionsOnly]="['SR10']">
                                     <div *ngIf="dischargeCollection.discharges.length < 3">
-                                        <button mat-raised-button color="primary" #button (click)="reinstate($event, dischargeCollection); button.disabled = true" [disabled]="dischargeCollection.reinstated || dischargeCollection.requestExists" [matTooltip]="'Reinstate ' + dischargeCollection.name + ' as a member'">Reinstate</button>
+                                        <button mat-raised-button color="primary" #button (click)="reinstate($event, dischargeCollection); button.disabled = true" [disabled]="dischargeCollection.reinstated || dischargeCollection.requestExists"
+                                            [matTooltip]="'Reinstate ' + dischargeCollection.name + ' as a member'">Reinstate</button>
                                     </div>
                                     <div *ngIf="dischargeCollection.discharges.length >= 3 && !dischargeCollection.requestExists">
                                         <button mat-raised-button class="request-override" #button (click)="requestReinstate($event, dischargeCollection); button.disabled = true" [disabled]="dischargeCollection.reinstated"

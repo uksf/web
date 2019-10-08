@@ -124,7 +124,9 @@ export class PersonnelDischargesComponent {
         });
     }
 
-    trackByDischargeCollection(collection): number { return collection; }
+    trackByDischargeCollection(_, dischargeCollection) {
+        return dischargeCollection.accountId;
+    }
 
     min(a, b) {
         return Math.min(a, b);
