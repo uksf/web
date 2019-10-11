@@ -9,25 +9,39 @@
 
 .mat-icon {
     cursor: pointer;
+
+    &.notification {
+        cursor: pointer;
+        margin: auto;
+    }
+
+    &.clear {
+        cursor: pointer;
+        margin-right: 16px;
+    }
+
+    &.clear-single {
+        align-items: center;
+        text-align: center;
+        display: flex;
+        height: 48px;
+        margin-right: 16px;
+        margin-left: 8px;
+    }
+
+    &.notification-icon {
+        height: 28px;
+        width: 28px;
+        line-height: 28px;
+        font-size: 28px;
+        flex: 1;
+        cursor: auto;
+    }
 }
 
-.mat-icon.notification {
-    cursor: pointer;
-    flex: 1;
-}
-
-.mat-icon.clear {
-    cursor: pointer;
-    margin-right: 16px;
-}
-
-.mat-icon.clear-single {
-    align-items: center;
-    text-align: center;
-    display: flex;
-    height: 48px;
-    margin-right: 16px;
-    margin-left: 8px;
+.mat-badge-content {
+    right: -6px !important;
+    top: -4px !important;
 }
 
 .notification-count {
@@ -79,10 +93,10 @@
     width: 100%;
     display: flex;
     padding: 16px 0;
-}
 
-.notification-card.clickable {
-    cursor: pointer;
+    &.clickable {
+        cursor: pointer;
+    }
 }
 
 .notification-card-nohover {
@@ -101,10 +115,10 @@
     height: 6px;
     border-radius: 50%;
     margin: 22px 6px 0 6px;
-}
 
-.notification-read.read {
-    background-color: red;
+    &.read {
+        background-color: red;
+    }
 }
 
 .notification-icon-container {
@@ -114,15 +128,6 @@
     align-items: center;
     text-align: center;
     display: flex;
-}
-
-.mat-icon.notification-icon {
-    height: 28px;
-    width: 28px;
-    line-height: 28px;
-    font-size: 28px;
-    flex: 1;
-    cursor: auto;
 }
 
 .notification-text-container {

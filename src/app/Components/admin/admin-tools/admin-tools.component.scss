@@ -1,0 +1,30 @@
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    margin-left: 0;
+    padding-left: 16px;
+    padding-right: 16px;
+
+    &.flex-row {
+        flex-direction: row;
+    }
+
+    &.no-padding-left {
+        padding-left: 0;
+    }
+
+    &.flex-wrap {
+        flex-wrap: wrap;
+    }
+}
+
+h4 {
+    margin: 16px;
+}
+
+button {
+    width: fit-content;
+    height: min-content;
+    align-self: center;
+    margin: 5px 0 0 5px;
+}

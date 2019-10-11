@@ -1,16 +1,35 @@
 import { Component } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
+import { AccountService } from 'app/Services/account.service';
+import { MatDialog } from '@angular/material';
+import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
 
 @Component({
     selector: 'app-admin-tools',
     templateUrl: './admin-tools.component.html',
-    styleUrls: ['../../../Pages/admin-page/admin-page.component.css', './admin-tools.component.css']
+    styleUrls: ['../../../Pages/admin-page/admin-page.component.css', './admin-tools.component.scss']
 })
 export class AdminToolsComponent {
     updating;
+    accountId;
+    tools = [];
 
-    constructor(private httpClient: HttpClient, private urls: UrlService) { }
+    constructor(private httpClient: HttpClient, private urls: UrlService, private accountService: AccountService, private dialog: MatDialog) { }
+
+    ngOnInit(): void {
+        this.accountId = this.accountService.account.id;
+
+        this.tools = [
+            { title: 'Invalidate Data Caches', function: this.invalidateCaches },
+            { title: 'Get Discord Roles', function: this.getDiscordRoles },
+            { title: 'Update Discord Users', function: this.updateDiscordRoles }
+        ]
+    }
+
+    runFunction(tool) {
+        tool.function.call(this);
+    }
 
     invalidateCaches() {
         this.updating = true;
@@ -23,11 +42,15 @@ export class AdminToolsComponent {
 
     getDiscordRoles() {
         this.updating = true;
-        this.httpClient.get(`${this.urls.apiUrl}/discord/roles`, {responseType: 'text'}).subscribe(response => {
-            console.log(response);
+        this.httpClient.get(`${this.urls.apiUrl}/discord/roles`, { responseType: 'text' }).subscribe(response => {
+            this.dialog.open(MessageModalComponent, {
+                data: { message: response }
+            });
             this.updating = false;
         }, error => {
-            console.log(error);
+            this.dialog.open(MessageModalComponent, {
+                data: { message: 'Failed to get discord roles' }
+            });
             this.updating = false;
         });
     }

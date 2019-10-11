@@ -54,6 +54,7 @@ import {
     MatStepperModule,
     MAT_DATE_LOCALE,
     MatTabsModule,
+    MatBadgeModule,
 } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -226,6 +227,7 @@ export function tokenGetter() {
         BrowserAnimationsModule,
         MatNativeDateModule,
         MatAutocompleteModule,
+        MatBadgeModule,
         MatButtonModule,
         MatButtonToggleModule,
         MatCardModule,

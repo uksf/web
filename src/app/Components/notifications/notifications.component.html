@@ -1,7 +1,9 @@
 <div class="icon-container">
-    <mat-icon class="notification" *ngIf="notifications.length > 0" (click)="togglePanel()">notifications</mat-icon>
+    <mat-icon class="notification" *ngIf="unreadNotifications.length > 0" (click)="togglePanel()" matBadge="{{unreadNotifications.length}}" matBadgePosition="above after" matBadgeColor="warning" matBadgeSize="small">notifications</mat-icon>
+    <mat-icon class="notification" *ngIf="notifications.length > 0 && unreadNotifications.length == 0" (click)="togglePanel()">notifications</mat-icon>
+    <!-- <mat-icon class="notification" *ngIf="notifications.length > 0" (click)="togglePanel()">notifications</mat-icon> -->
     <mat-icon class="notification" *ngIf="notifications.length == 0" (click)="togglePanel()">notifications_none</mat-icon>
-    <div class="notification-count" *ngIf="unreadNotifications.length > 0" (click)="togglePanel()">{{unreadNotifications.length}}</div>
+    <!-- <div class="notification-count" *ngIf="unreadNotifications.length > 0" (click)="togglePanel()">{{unreadNotifications.length}}</div> -->
 </div>
 <div class="notification-panel-container" *ngIf="panel">
     <div class="notification-panel-header" color="primary">
@@ -15,7 +17,9 @@
         <div *ngFor="let notification of notifications">
             <div class="notification-card" [class.clickable]="notification.link" (click)="openNotification(notification)">
                 <div class="notification-read" [class.read]="!notification.read"></div>
-                <div class="notification-icon-container"><mat-icon class="notification-icon">{{notification.icon}}</mat-icon></div>
+                <div class="notification-icon-container">
+                    <mat-icon class="notification-icon">{{notification.icon}}</mat-icon>
+                </div>
                 <div class="notification-text-container">
                     <span class="notification-text">{{notification.message}}</span>
                     <span class="notification-text-timestamp">{{notification.timestamp | timeAgo}}</span>

@@ -9,7 +9,8 @@
             color: mat-color($primary, default-contrast);
         }
 
-        .notification-count {
+        .mat-badge-content {
+            background: red;
             color: mat-color($foreground, base);
         }
 
