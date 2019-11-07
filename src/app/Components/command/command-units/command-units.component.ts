@@ -105,7 +105,7 @@ export class CommandUnitsComponent implements OnInit {
     onMove(event) {
         this.updatingOrder = true;
         if (event.node.unit.parent !== event.to.parent.unit.id) {
-            this.httpClient.post(`${this.urls.apiUrl}/units/parent`, { unit: event.node.unit, parentUnit: event.to.parent.unit }).subscribe(_ => {
+            this.httpClient.post(`${this.urls.apiUrl}/units/parent`, { unit: event.node.unit, parentUnit: event.to.parent.unit, index: event.to.index }).subscribe(_ => {
                 this.getUnits();
             });
         } else {
