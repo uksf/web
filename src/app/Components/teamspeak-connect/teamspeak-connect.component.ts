@@ -19,8 +19,8 @@ export class ConnectTeamspeakComponent {
     teamspeakForm: FormGroup;
     pending = false;
     sent = false;
-    clients;
-    private previousResponse;
+    clients = [];
+    private previousResponse = '-1';
     private data;
     private hubConnection: ConnectionContainer;
 
@@ -58,9 +58,11 @@ export class ConnectTeamspeakComponent {
     findTeamspeakClients() {
         this.httpClient.get(this.urls.apiUrl + '/teamspeak/online').subscribe(
             response => {
-                if (response['clients']) {
-                    this.updateClients(response['clients']);
+                let clients = response['clients'];
+                if (!clients) {
+                    clients = [];
                 }
+                this.updateClients(clients);
             }, error => this.urls.errorWrapper('Failed to find teamspeak client', error)
         );
     }
@@ -68,7 +70,6 @@ export class ConnectTeamspeakComponent {
     updateClients(clients) {
         if (this.previousResponse !== JSON.stringify(clients)) {
             this.clients = clients;
-            this.previousResponse = JSON.stringify(clients);
             const tsIds: Array<string> = this.accountService.account.teamspeakIdentities;
             if (tsIds.length > 0) {
                 this.clients.forEach(client => {
@@ -77,6 +78,8 @@ export class ConnectTeamspeakComponent {
                     }
                 });
             }
+            this.previousResponse = JSON.stringify(this.clients);
+            console.log(this.clients);
         }
     }
 

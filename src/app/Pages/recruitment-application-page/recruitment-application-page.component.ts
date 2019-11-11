@@ -73,7 +73,7 @@ export class RecruitmentApplicationPageComponent {
             this.ratingsForm.patchValue(this.application.account.application.ratings);
 
             if (grantedPermissions[Permissions.SR1_LEAD]) {
-                this.httpClient.get(this.urls.apiUrl + '/recruitment/recruiters/' + this.accountId).subscribe(recruiterResponse => {
+                this.httpClient.get(this.urls.apiUrl + '/recruitment/recruiters').subscribe(recruiterResponse => {
                     this.recruiters = recruiterResponse;
                     this.selected = this.application.recruiterId;
                 });

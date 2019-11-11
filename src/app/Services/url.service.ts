@@ -4,7 +4,7 @@ import { DOCUMENT } from '@angular/common';
 @Injectable()
 export class UrlService {
     public apiUrl = 'https://api.uk-sf.co.uk';
-    public steamUrl = 'https://steam.uk-sf.co.uk';
+    public steamUrl = 'https://integrations.uk-sf.co.uk';
 
     constructor(@Inject(DOCUMENT) private document: any) {
         if (this.document.location.hostname === 'localhost') {

@@ -36,8 +36,8 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
         this.hubConnection.connection.on('ReceiveComment', (comment) => {
             this.comments.unshift(comment);
         });
-        this.hubConnection.connection.on('DeleteComment', (index) => {
-            this.comments.splice(index, 1);
+        this.hubConnection.connection.on('DeleteComment', (id) => {
+            this.comments.splice(this.comments.indexOf(x => x.id === id), 1);
         });
         this.hubConnection.reconnectEvent.subscribe(() => {
             this.getComments();

@@ -5,14 +5,14 @@
     <form [formGroup]="teamspeakForm">
         <div class="row-container">
             <mat-form-field>
-                <mat-select placeholder="Select your teamspeak name" formControlName="teamspeakId">
+                <mat-select placeholder="{{(clients.length === 0) ? 'TeamSpeak service not connected' : 'Select your teamspeak name'}}" formControlName="teamspeakId">
                     <mat-option *ngFor="let teamspeakUser of clients" [value]="teamspeakUser.clientDbId">
                         {{ teamspeakUser.name }}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
             <app-flex-filler></app-flex-filler>
-            <button mat-raised-button color="primary" [disabled]="!teamspeakForm.value.teamspeakId" (click)="sendCode()">Send Code</button>
+            <button mat-raised-button color="primary" [disabled]="!teamspeakForm.value.teamspeakId || clients.length === 0" (click)="sendCode()">Send Code</button>
         </div>
     </form>
 </div>
