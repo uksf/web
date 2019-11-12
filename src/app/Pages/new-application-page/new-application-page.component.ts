@@ -34,7 +34,7 @@ export class NewApplicationPageComponent implements OnInit {
     checkStep() {
         if (this.accountService.account) {
             // Application completed
-            if (this.accountService.account.application.state !== ApplicationState.WAITING) {
+            if (this.accountService.account.application && this.accountService.account.application.state !== ApplicationState.WAITING) {
                 this.step = 7;
             } else if (this.accountService.account.membershipState === MembershipState.UNCONFIRMED) {
                 // Needs to confirm email
