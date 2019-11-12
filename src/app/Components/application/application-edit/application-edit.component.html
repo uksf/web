@@ -1,9 +1,24 @@
-<mat-card *ngIf="rejected">    
-    <h2>{{applicationState}}</h2>
-    <p>We are sorry but your application to join UKSF has been rejected</p>
-    <p>Thank you for your interest in our unit. We hope you find a suitable alternative.</p>
-</mat-card>
-<div *ngIf="!rejected">
+<div *ngIf="accepted">
+    <mat-card>
+        <h2>{{applicationState}}</h2>
+        <p>Confgratulations! Your application to join UKSF was accepted.</p>
+        <p>Your next steps will be detailed to you by either an SR1, or a member of SFSG.</p>
+    </mat-card>
+</div>
+<div *ngIf="rejected">
+    <mat-card>
+        <h2>{{applicationState}}</h2>
+        <p>We are sorry but your application to join UKSF has been rejected</p>
+        <p>Thank you for your interest in our unit. We hope you find a suitable alternative.</p>
+    </mat-card>
+    <div class="application-container">
+        <mat-card class="no-margin-right">
+            <h3>Application Chat</h3>
+            <app-comment-display [threadId]="[applicationCommentThread]"></app-comment-display>
+        </mat-card>
+    </div>
+</div>
+<div *ngIf="!accepted && !rejected">
     <mat-card>
         <h2>{{applicationState}}</h2>
         <p>Your application has been successfully submitted. Please wait for your SR1 recruitment officer to contact you.</p>
@@ -88,9 +103,6 @@
         </mat-card>
         <mat-card>
             <h3>Application Chat</h3>
-            <ng-template [ngxPermissionsOnly]="['SR1']">
-                <sup>Visible to candidate</sup>
-            </ng-template>
             <app-comment-display [threadId]="[applicationCommentThread]"></app-comment-display>
         </mat-card>
     </div>

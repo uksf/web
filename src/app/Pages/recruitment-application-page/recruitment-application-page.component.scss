@@ -49,6 +49,10 @@ h3 {
     margin: 15px 0;
 }
 
+.updating {
+    margin: 13px;
+}
+
 .flex-grow {
     flex: 1;
 
@@ -205,6 +209,10 @@ img {
 @media screen and (max-width: 450px) {
     .small-centred {
         text-align: center;
+    }
+
+    .updating {
+        margin: 13px auto;
     }
 
     .flex-container {

@@ -67,8 +67,11 @@
                 <div *ngIf="account.application != null">
                     <br>
                     <mat-card style="text-align: center; vertical-align: middle;">
-                        <h2 *ngIf="isMyProfile || (!isMyProfile && recruiter)">
+                        <h2 *ngIf="recruiter">
                             <a routerLink="/recruitment/{{account.id}}">View application</a>
+                        </h2>
+                        <h2 *ngIf="isMyProfile && !recruiter">
+                            <a routerLink="/application">View application</a>
                         </h2>
                     </mat-card>
                 </div>

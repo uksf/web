@@ -53,7 +53,7 @@ export class ApplicationEmailConfirmationComponent {
             if (this.accountService.account) {
                 this.permissionsService.refresh().then(() => {
                     this.nextEvent.emit();
-                })
+                });
             } else {
                 this.nextEvent.emit();
             }

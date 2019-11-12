@@ -82,7 +82,7 @@ export class ApplicationCommunicationsComponent {
                 } else {
                     this.next();
                 }
-            })
+            });
         } else {
             this.router.navigate(['/login'], { queryParams: { redirect: 'application' } });
         }

@@ -7,9 +7,11 @@
             </div>
             <div class="reports-container" *ngIf="opordData">
                 <div class="report-container">
-                    <div>
-                        <button mat-raised-button color="primary" (click)="createOpord()">Create OPORD</button>
-                    </div>
+                    <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                        <div>
+                            <button mat-raised-button color="primary" (click)="createOpord()">Create OPORD</button>
+                        </div>
+                    </ng-template>
                     <br>
                     <div class="report-section">
                         <mat-card *ngFor="let opord of opordData" class="report" (click)="openOpord(opord.id)">

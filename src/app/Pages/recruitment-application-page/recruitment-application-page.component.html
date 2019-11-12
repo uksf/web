@@ -1,28 +1,32 @@
 <div class="flex-container flex-row collapse" *ngIf="application != null">
-    <h3 class="small-centred">
-        <mat-icon (click)="back()">arrow_back</mat-icon>{{application.account.firstname}} {{application.account.lastname}}'s Application
-        <span [ngClass]="{'green': application.account.application.state == applicationState.ACCEPTED, 'red': application.account.application.state == applicationState.REJECTED}">
-            {{(application.account.application.state == applicationState.ACCEPTED ? " - Accepted" : application.account.application.state == applicationState.REJECTED ? " - Rejected" : "")}}
-        </span>
-    </h3>
+    <div class="flex-container flex-grow flex-row no-padding collapse-tiny">
+        <h3 class="small-centred">
+            <mat-icon (click)="back()">arrow_back</mat-icon>{{application.account.firstname}} {{application.account.lastname}}'s Application
+            {{(application.account.application.state == applicationState.ACCEPTED ? " - " : application.account.application.state == applicationState.REJECTED ? " - " : "")}}
+            <span [ngClass]="{'green': application.account.application.state == applicationState.ACCEPTED, 'red': application.account.application.state == applicationState.REJECTED}">
+                {{(application.account.application.state == applicationState.ACCEPTED ? "Accepted" : application.account.application.state == applicationState.REJECTED ? "Rejected" : "")}}
+            </span>
+        </h3>
+        <mat-spinner *ngIf="updating" class="updating" [diameter]="30"></mat-spinner>
+    </div>
     <div class="flex-container flex-grow flex-row no-padding collapse-tiny">
         <div class="flex-container flex-grow flex-row no-padding controls">
-            <button mat-button *ngIf="application.account.application.state == applicationState.WAITING" class="green" (click)="updateApplicationState(applicationState.ACCEPTED)" [disabled]="!isAcceptableAge()">
+            <button mat-button *ngIf="application.account.application.state == applicationState.WAITING" class="green" (click)="updateApplicationState(applicationState.ACCEPTED)" [disabled]="!isAcceptableAge() || updating">
                 <span [matTooltip]="!isAcceptableAge() ? 'Application cannot be accepted due to age requirements' : null">Approve</span>
             </button>
-            <button mat-button *ngIf="application.account.application.state == applicationState.WAITING" class="red" (click)="updateApplicationState(applicationState.REJECTED)">Reject</button>
+            <button mat-button *ngIf="application.account.application.state == applicationState.WAITING" class="red" (click)="updateApplicationState(applicationState.REJECTED)" [disabled]="updating">Reject</button>
             <button mat-button *ngIf="application.account.application.state != applicationState.WAITING && application.account.membershipState != membershipState.MEMBER && application.account.membershipState != membershipState.DISCHARGED" class="goldenrod"
-                (click)="updateApplicationState(applicationState.WAITING)">Reactivate</button>
+                (click)="updateApplicationState(applicationState.WAITING)" [disabled]="updating">Reactivate</button>
             <button mat-button *ngIf="application.account.application.state != applicationState.WAITING && application.account.membershipState != membershipState.MEMBER && application.account.membershipState == membershipState.DISCHARGED" class="goldenrod" [routerLink]="['/personnel/discharges']"
-                [queryParams]="{filter: application.account.lastname}">Discharged</button>
-            <button mat-button *ngIf="application.account.application.state == applicationState.ACCEPTED && application.account.membershipState == membershipState.MEMBER" class="red" (click)="updateApplicationState(applicationState.WAITING)">Return to
+                [queryParams]="{filter: application.account.lastname}" [disabled]="updating">Discharged</button>
+            <button mat-button *ngIf="application.account.application.state == applicationState.ACCEPTED && application.account.membershipState == membershipState.MEMBER" class="red" (click)="updateApplicationState(applicationState.WAITING)" [disabled]="updating">Return to
                 recruitment</button>
         </div>
         <ng-template [ngxPermissionsOnly]="['SR1_LEAD']">
             <div class="flex-container flex-row no-padding recruiter">
                 <div>
                     <mat-form-field [floatLabel]="'never'" class="select-thin">
-                        <mat-select [(ngModel)]="selected" placeholder="{{application.recruiter}}" (selectionChange)="setNewRecruiter($event.value)" [disableOptionCentering]="true" [panelClass]="'select-small'">
+                        <mat-select [(ngModel)]="selected" placeholder="{{application.recruiter}}" (selectionChange)="setNewRecruiter($event.value)" [disableOptionCentering]="true" [panelClass]="'select-small'" [disabled]="updating">
                             <mat-option *ngFor="let recruiter of recruiters" [value]="recruiter.value">
                                 {{recruiter.viewValue}}
                             </mat-option>
@@ -71,17 +75,17 @@
                 <div class="flex-container no-padding flex-grow">
                     <h4>Candidate Experience</h4>
                     <mat-card>
-                        <div class="flex-container flex-row no-padding margin-bottom">
-                            <div class="header"><b>Military Experience</b></div>
-                            <div>{{(application.account.militaryExperience ? "Yes" : "No")}}</div>
+                        <div class="flex-container no-padding">
+                            <div class="header"><b>Arma Experience</b></div>
+                            <p class="scrollable"><span>{{application.account.armaExperience}}</span></p>
                         </div>
                         <div class="flex-container no-padding margin-bottom">
                             <div class="header"><b>Previous Units</b></div>
                             <p class="scrollable"><span>{{application.account.unitsExperience}}</span></p>
                         </div>
-                        <div class="flex-container no-padding">
-                            <div class="header"><b>Arma Experience</b></div>
-                            <p class="scrollable"><span>{{application.account.armaExperience}}</span></p>
+                        <div class="flex-container no-padding margin-bottom">
+                            <div class="header"><b>Military Experience</b></div>
+                            <div>{{(application.account.militaryExperience ? "Yes" : "No")}}</div>
                         </div>
                     </mat-card>
                 </div>

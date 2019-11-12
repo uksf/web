@@ -28,6 +28,7 @@ export class RecruitmentApplicationPageComponent {
     recruiters;
     ratings;
     selected;
+    updating;
 
     constructor(
         private httpClient: HttpClient,
@@ -37,8 +38,7 @@ export class RecruitmentApplicationPageComponent {
         private router: Router,
         private permissions: NgxPermissionsService,
         private accountService: AccountService,
-        private location: Location,
-        private datePipe: DatePipe
+        private location: Location
     ) {
         this.ratingsForm = this.formbuilder.group({
             attitude: [],
@@ -78,32 +78,42 @@ export class RecruitmentApplicationPageComponent {
                     this.selected = this.application.recruiterId;
                 });
             }
+            this.updating = false;
         });
     }
 
     setNewRecruiter(newRecruiter) {
+        this.updating = true;
         this.httpClient.post(
             this.urls.apiUrl + '/recruitment/recruiter/' + this.accountId, { newRecruiter: newRecruiter }
         ).subscribe(() => {
             this.getApplication();
             this.recruiterCommentDisplay.getCanPostComment();
             this.applicationCommentDisplay.getCanPostComment();
+        }, _ => {
+            this.updating = false;
         });
     }
 
     applyRating(e1, e2) {
+        this.updating = true;
         this.httpClient.post(
             this.urls.apiUrl + '/recruitment/ratings/' + this.accountId, { key: e2, value: e1.value }
         ).subscribe(() => {
 
+        }, _ => {
+            this.updating = false;
         });
     }
 
     updateApplicationState(updatedState) {
+        this.updating = true;
         this.httpClient.post(
             this.urls.apiUrl + '/recruitment/' + this.accountId, { updatedState: updatedState }
         ).subscribe(() => {
             this.getApplication();
+        }, _ => {
+            this.updating = false;
         });
     }
 

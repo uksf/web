@@ -37,7 +37,7 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
             this.comments.unshift(comment);
         });
         this.hubConnection.connection.on('DeleteComment', (id) => {
-            this.comments.splice(this.comments.indexOf(x => x.id === id), 1);
+            this.comments.splice(this.comments.findIndex(x => x.id === id), 1);
         });
         this.hubConnection.reconnectEvent.subscribe(() => {
             this.getComments();
@@ -90,7 +90,7 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
         this.httpClient.post(
             this.urls.apiUrl + '/commentthread/' + this.threadId + '/' + comment.id,
             { content: this.commentForm.controls.commentContent.value }
-        ).subscribe(response => {
+        ).subscribe(() => {
             this.commentForm.controls.commentContent.setValue('');
         }, error => this.urls.errorWrapper('Failed to apply comment', error));
     }

@@ -6,6 +6,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from 'app/Services/url.service';
 import { Router } from '@angular/router';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
+import { PermissionsService } from 'app/Services/permissions.service';
+import { NgxPermissionsService } from 'ngx-permissions';
+import { Permissions } from 'app/Services/permissions';
 
 export class InstantErrorStateMatcher implements ErrorStateMatcher {
     isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
@@ -43,14 +46,17 @@ export class ApplicationEditComponent {
     }
 
     constructor(
-        private httpClient: HttpClient,
-        private urls: UrlService,
         public formBuilder: FormBuilder,
         public dialog: MatDialog,
+        private httpClient: HttpClient,
+        private urls: UrlService,
         private accountService: AccountService,
+        private permissions: NgxPermissionsService,
+        private permissionsService: PermissionsService,
         private router: Router
     ) {
-        if (this.accountService.account.application.state === ApplicationState.ACCEPTED) {
+        const grantedPermissions = this.permissions.getPermissions();
+        if (grantedPermissions[Permissions.SR1]) {
             this.router.navigate(['/recruitment/' + this.accountService.account.id]);
             return;
         }
@@ -67,6 +73,14 @@ export class ApplicationEditComponent {
         });
         this.formGroup.patchValue(this.accountService.account);
         this.original = JSON.stringify(this.formGroup.getRawValue());
+        this.permissionsService.accountUpdateEvent.subscribe(() => {
+            this.formGroup.patchValue(this.accountService.account);
+            this.original = JSON.stringify(this.formGroup.getRawValue());
+        });
+    }
+
+    get accepted() {
+        return this.accountService.account.application.state === ApplicationState.ACCEPTED;
     }
 
     get rejected() {

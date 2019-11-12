@@ -7,9 +7,11 @@
             </div>
             <div class="reports-container" *ngIf="oprepData">
                 <div class="report-container">
-                    <div>
-                        <button mat-raised-button color="primary" (click)="createOprep()">Create OPREP</button>
-                    </div>
+                    <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                        <div>
+                            <button mat-raised-button color="primary" (click)="createOprep()">Create OPREP</button>
+                        </div>
+                    </ng-template>
                     <br>
                     <div class="report-section">
                         <mat-card class="report" *ngFor="let oprep of oprepData" (click)="openOprep(oprep.id)">

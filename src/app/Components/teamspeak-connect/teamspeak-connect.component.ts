@@ -79,7 +79,6 @@ export class ConnectTeamspeakComponent {
                 });
             }
             this.previousResponse = JSON.stringify(this.clients);
-            console.log(this.clients);
         }
     }
 

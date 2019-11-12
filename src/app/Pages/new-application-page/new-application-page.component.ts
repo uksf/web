@@ -25,12 +25,7 @@ export class NewApplicationPageComponent implements OnInit {
         public dialog: MatDialog,
         private accountService: AccountService,
         private router: Router
-    ) {
-        if (this.accountService.account && this.accountService.account.application && this.accountService.account.application.state !== ApplicationState.WAITING) {
-            this.router.navigate(['/recruitment/' + this.accountService.account.id]);
-            return;
-        }
-    }
+    ) { }
 
     ngOnInit() {
         this.checkStep();
@@ -38,8 +33,11 @@ export class NewApplicationPageComponent implements OnInit {
 
     checkStep() {
         if (this.accountService.account) {
-            // Needs to confirm email
-            if (this.accountService.account.membershipState === MembershipState.UNCONFIRMED) {
+            // Application completed
+            if (this.accountService.account.application.state !== ApplicationState.WAITING) {
+                this.step = 7;
+            } else if (this.accountService.account.membershipState === MembershipState.UNCONFIRMED) {
+                // Needs to confirm email
                 this.email = this.accountService.account.email;
                 this.step = 2;
             } else if (this.accountService.account.membershipState === MembershipState.CONFIRMED && !this.connected()) {

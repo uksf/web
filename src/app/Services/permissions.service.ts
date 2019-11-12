@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { AccountService, MembershipState } from './account.service';
 import { SessionService } from './Authentication/session.service';
@@ -12,6 +12,8 @@ import { StatesService } from './states.service';
 export class PermissionsService {
     private accountHubConnection: ConnectionContainer;
     private refreshing = false;
+    private updateTimeout;
+    public accountUpdateEvent = new EventEmitter();
 
     constructor(
         private ngxPermissionsService: NgxPermissionsService,
@@ -24,10 +26,14 @@ export class PermissionsService {
         this.waitForId().then(id => {
             this.accountHubConnection = this.signalrService.connect(`account?userId=${id}`);
             this.accountHubConnection.connection.on('ReceiveAccountUpdate', () => {
-                this.updateAccount();
+                this.mergeUpdates(() => {
+                    this.updateAccount();
+                });
             });
             this.accountHubConnection.reconnectEvent.subscribe(() => {
-                this.updateAccount();
+                this.mergeUpdates(() => {
+                    this.updateAccount();
+                });
             });
         });
     }
@@ -105,16 +111,27 @@ export class PermissionsService {
         }
     }
 
+    private mergeUpdates(callback: () => void) {
+        if (this.updateTimeout) {
+            clearTimeout(this.updateTimeout);
+        }
+        this.updateTimeout = setTimeout(() => {
+            callback();
+        }, 500);
+    }
+
     private updateAccount() {
-        this.refreshing = true;
         this.httpClient.get(this.urls.apiUrl + '/login/refresh').subscribe((response: any) => {
             this.sessionService.setSessionToken(response);
             if (StatesService.stayLogged) {
                 this.sessionService.setStorageToken();
             }
-            this.refresh();
+            this.refresh().then(() => {
+                this.accountUpdateEvent.emit();
+            }).catch(_ => {
+                this.accountUpdateEvent.emit();
+            });
         }, _ => {
-            this.refreshing = false;
             console.log('Account was refreshed but something failed');
         });
     }

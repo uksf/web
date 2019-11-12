@@ -30,7 +30,9 @@
                     </div>
                     <div class="descriptionArea">
                         <h4>Description:
-                            <mat-icon (click)="editing = !editing;">mode_edit</mat-icon>
+                            <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                                <mat-icon (click)="editing = !editing;">mode_edit</mat-icon>
+                            </ng-template>
                         </h4>
                         <div *ngIf="!editing" [innerHTML]="description">
                         </div>
@@ -55,7 +57,9 @@
                     <div class="imgurArea">
                         Mission album:
                         <a>http://link.com</a>
-                        <mat-icon>mode_edit</mat-icon>
+                        <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                            <mat-icon>mode_edit</mat-icon>
+                        </ng-template>
                         <div>
                             <!--<img src="assets/dist/images/banner.jpg" style="width:32%">
                         <img src="assets/dist/images/banner.jpg" style="width:32%">
