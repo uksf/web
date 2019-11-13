@@ -59,22 +59,31 @@
                     </a>
                 </div>
                 <div class="teamspeak-content-container">
-                    <div class="spinner-container" *ngIf="!recruiters || !members || !guests">
+                    <div class="spinner-container" *ngIf="!commanders && !recruiters && !members && !guests">
                         <app-flex-filler></app-flex-filler>
                         <mat-spinner></mat-spinner>
                         <app-flex-filler></app-flex-filler>
                     </div>
-                    <div *ngIf="recruiters && members && guests">
-                        <div *ngIf="recruiters.length > 0">
+                    <div *ngIf="commanders || recruiters || members || guests">
+                        <div *ngIf="commanders && commanders.length > 0">
+                            <h4>Command Staff</h4>
+                            <ul>
+                                <div *ngFor="let user of commanders">
+                                    <li>{{user.displayName}}</li>
+                                </div>
+                            </ul>
+                        </div>
+                        <hr *ngIf="commanders && commanders.length > 0 && recruiters && recruiters.length > 0">
+                        <div *ngIf="recruiters && recruiters.length > 0">
                             <h4>Recruitment Staff</h4>
                             <ul>
                                 <div *ngFor="let user of recruiters">
                                     <li>{{user.displayName}}</li>
                                 </div>
                             </ul>
-                            <hr>
                         </div>
-                        <div *ngIf="members.length > 0">
+                        <hr *ngIf="recruiters && recruiters.length > 0 && members && members.length > 0">
+                        <div *ngIf="members && members.length > 0">
                             <h4>Members</h4>
                             <ul>
                                 <div *ngFor="let user of members">
@@ -82,7 +91,7 @@
                                 </div>
                             </ul>
                         </div>
-                        <div *ngIf="guests.length > 0">
+                        <div *ngIf="guests && guests.length > 0">
                             <h4>Guests</h4>
                             <ul>
                                 <div *ngFor="let user of guests">

@@ -10,6 +10,7 @@ import { CreateIssueModalComponent } from '../../Modals/create-issue-modal/creat
     styleUrls: ['./home-page.component.scss']
 })
 export class HomePageComponent {
+    commanders;
     recruiters;
     members;
     guests;
@@ -18,9 +19,12 @@ export class HomePageComponent {
 
     constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, zone: NgZone) {
         this.httpClient.get('https://api.uk-sf.co.uk/accounts/online').subscribe(
-            // this.httpClient.get(this.urls.apiUrl + '/accounts/online').subscribe(
+        // this.httpClient.get(this.urls.apiUrl + '/accounts/online').subscribe(
             response => {
                 if (response) {
+                    if (response['commanders']) {
+                        this.commanders = response['commanders'];
+                    };
                     if (response['recruiters']) {
                         this.recruiters = response['recruiters'];
                     };
