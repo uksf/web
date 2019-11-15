@@ -19,8 +19,7 @@
                 (click)="updateApplicationState(applicationState.WAITING)" [disabled]="updating">Reactivate</button>
             <button mat-button *ngIf="application.account.application.state != applicationState.WAITING && application.account.membershipState != membershipState.MEMBER && application.account.membershipState == membershipState.DISCHARGED" class="goldenrod" [routerLink]="['/personnel/discharges']"
                 [queryParams]="{filter: application.account.lastname}" [disabled]="updating">Discharged</button>
-            <button mat-button *ngIf="application.account.application.state == applicationState.ACCEPTED && application.account.membershipState == membershipState.MEMBER" class="red" (click)="updateApplicationState(applicationState.WAITING)" [disabled]="updating">Return to
-                recruitment</button>
+            <button mat-button *ngIf="application.account.application.state == applicationState.ACCEPTED && application.account.membershipState == membershipState.MEMBER" class="red" (click)="resetApplicationToCandidate()" [disabled]="updating">Reset to Candidate</button>
         </div>
         <ng-template [ngxPermissionsOnly]="['SR1_LEAD']">
             <div class="flex-container flex-row no-padding recruiter">

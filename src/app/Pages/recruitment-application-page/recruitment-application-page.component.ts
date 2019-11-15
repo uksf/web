@@ -9,6 +9,8 @@ import { MembershipState, ApplicationState, AccountService } from '../../Service
 import { NgxPermissionsService } from 'ngx-permissions';
 import { Permissions } from 'app/Services/permissions';
 import { CountryPickerService, ICountry } from 'app/Services/CountryPicker/country-picker.service';
+import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
+import { MatDialog } from '@angular/material';
 
 @Component({
     selector: 'app-recruitment-application-page',
@@ -38,7 +40,8 @@ export class RecruitmentApplicationPageComponent {
         private router: Router,
         private permissions: NgxPermissionsService,
         private accountService: AccountService,
-        private location: Location
+        private location: Location,
+        private dialog: MatDialog
     ) {
         this.ratingsForm = this.formbuilder.group({
             attitude: [],
@@ -114,6 +117,14 @@ export class RecruitmentApplicationPageComponent {
             this.getApplication();
         }, _ => {
             this.updating = false;
+        });
+    }
+
+    resetApplicationToCandidate() {
+        this.dialog.open(ConfirmationModalComponent, {
+            data: { message: `Are you sure you want to reset ${this.application.displayName} to a Candidate?\nThis will remove any rank, unit, and role assignments.` }
+        }).componentInstance.confirmEvent.subscribe(() => {
+            this.updateApplicationState(ApplicationState.WAITING);
         });
     }
 
