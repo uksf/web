@@ -26,9 +26,9 @@
                 <br>
                 <div>
                     <mat-card *ngFor="let variable of variables">
+                        <mat-icon class="delete-icon" (click)="deleteVariable($event, variable)" [ngClass]="{'disabled': updating}">highlight_off</mat-icon>
                         <span class="key">{{variable.key}}</span>
                         <app-inline-edit class="item" [(ngModel)]="variable.item" [required]="true" type="text" (finishedEvent)="editVariable(variable, $event)"></app-inline-edit>
-                        <mat-icon class="delete-icon" (click)="deleteVariable($event, variable)" [ngClass]="{'disabled': updating}">highlight_off</mat-icon>
                     </mat-card>
                 </div>
             </div>

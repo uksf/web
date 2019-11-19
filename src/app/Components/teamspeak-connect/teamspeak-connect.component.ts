@@ -23,6 +23,7 @@ export class ConnectTeamspeakComponent {
     private previousResponse = '-1';
     private data;
     private hubConnection: ConnectionContainer;
+    private updateTimeout;
 
     constructor(
         private httpClient: HttpClient,
@@ -42,17 +43,30 @@ export class ConnectTeamspeakComponent {
 
     ngOnInit(): void {
         this.findTeamspeakClients();
-        this.hubConnection = this.signalrService.connect(`teamspeakClients?userId=${this.accountService.account.id}`);
+        this.hubConnection = this.signalrService.connect('teamspeakClients');
         this.hubConnection.connection.on('ReceiveClients', (clients) => {
-            this.updateClients(clients);
+            this.mergeUpdates(() => {
+                this.updateClients(clients);
+            });
         });
         this.hubConnection.reconnectEvent.subscribe(() => {
-            this.findTeamspeakClients();
+            this.mergeUpdates(() => {
+                this.findTeamspeakClients();
+            });
         });
     }
 
     ngOnDestroy(): void {
         this.hubConnection.connection.stop();
+    }
+
+    private mergeUpdates(callback: () => void) {
+        if (this.updateTimeout) {
+            clearTimeout(this.updateTimeout);
+        }
+        this.updateTimeout = setTimeout(() => {
+            callback();
+        }, 500);
     }
 
     findTeamspeakClients() {
