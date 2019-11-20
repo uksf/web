@@ -1,6 +1,7 @@
 <app-default-content-areas>
     <app-main-content-area style="grid-column: span 3;">
-        <div class="flex-container">
+        <app-maintenance></app-maintenance>
+        <!-- <div class="flex-container">
             <mat-card *ngIf="step != 7">
                 <h2>Application to join UKSF</h2>
                 <p>If you have already started an application, please <a routerLink="/login">login</a> to continue the application</p>
@@ -37,6 +38,6 @@
             <div *ngIf="step == 7">
                 <app-application-edit></app-application-edit>
             </div>
-        </div>
+        </div> -->
     </app-main-content-area>
 </app-default-content-areas>
