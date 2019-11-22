@@ -81,7 +81,7 @@
                                 </div>
                             </ul>
                         </div>
-                        <hr *ngIf="(recruiters && recruiters.length > 0 || commanders && commanders.length > 0) && members && members.length > 0">
+                        <hr *ngIf="(recruiters && recruiters.length > 0 || commanders && commanders.length > 0) && (members && members.length > 0 || guests && guests.length > 0)">
                         <div *ngIf="members && members.length > 0">
                             <h4>Members</h4>
                             <ul>
