@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, AbstractControl, ValidationErrors, FormControl } from '@angular/forms';
 import { InstantErrorStateMatcher } from 'app/Services/formhelper.service';
 import { Observable, of, timer } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
@@ -24,9 +24,6 @@ export class AddServerModalComponent {
         'name': [
             { type: 'required', message: 'Name is required' },
             { type: 'serverTaken', message: 'That name is already in use' }
-        ], 'apiPort': [
-            { type: 'required', message: 'Api Port is required' },
-            { type: 'serverTaken', message: 'That api port is already in use' }
         ], 'port': [
             { type: 'required', message: 'Port is required' }
         ], 'numberHeadlessClients': [
@@ -52,7 +49,6 @@ export class AddServerModalComponent {
         this.form = formbuilder.group({
             name: ['', Validators.required, this.validateServer.bind(this)],
             port: ['', Validators.required],
-            apiPort: ['', Validators.required, this.validateServer.bind(this)],
             numberHeadlessClients: [0, Validators.required],
             profileName: ['', Validators.required],
             hostName: ['', Validators.required],
@@ -106,7 +102,6 @@ export class AddServerModalComponent {
         if (this.edit) {
             this.server.name = this.form.controls['name'].value;
             this.server.port = this.form.controls['port'].value;
-            this.server.apiPort = this.form.controls['apiPort'].value;
             this.server.numberHeadlessClients = this.form.controls['numberHeadlessClients'].value;
             this.server.profileName = this.form.controls['profileName'].value;
             this.server.hostName = this.form.controls['hostName'].value;
