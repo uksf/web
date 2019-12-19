@@ -53,11 +53,11 @@
                                         <div class="server-details" *ngIf="getStatus(server); let status">
                                             <span *ngIf="status.mission"><b>Map:</b> {{status.map}}</span>
                                             <span *ngIf="status.mission"><b>Mission:</b> {{status.mission}}</span>
-                                            <span *ngIf="status.parsedUptime !== '00:00:00'"><b>Players:</b>
-                                                {{status.players}}</span>
-                                            <span *ngIf="status.parsedUptime !== '00:00:00'"><b>Max Players:</b>
-                                                {{status.maxPlayers}}</span>
-                                            <span *ngIf="status.parsedUptime !== '00:00:00'"><b>Uptime:</b>
+                                            <span *ngIf="status.missionUptime !== 0"><b>Players:</b>
+                                                {{status.playerCount}}</span>
+                                            <!-- <span *ngIf="status.missionUptime !== 0"><b>Max Players:</b>
+                                                {{status.maxPlayers}}</span> -->
+                                            <span *ngIf="status.missionUptime !== 0"><b>Uptime:</b>
                                                 {{getUptime(status)}}</span>
                                             <app-flex-filler></app-flex-filler>
                                         </div>

@@ -136,17 +136,11 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     getServerStatus(server: GameServer) {
         const status = this.getStatus(server);
         if (status) {
-            if (status.state === 0) {
-                return 'Offline';
-            }
-            if (status.state === 7) {
-                return 'Waiting';
-            }
-            if (status.state === 0) {
-                return 'Offline';
-            }
-            if (status.state === 0) {
-                return 'Offline';
+            switch (+status.state) {
+                case GameServerState.NOT_RUNNING: return 'Not Running';
+                case GameServerState.NOT_RESPONDING: return 'Not Responding';
+                case GameServerState.MISSION_RECEIVED: return 'Waiting';
+                default: return 'Offline';
             }
             // if (server.status.stopping) {
             //     return 'Stopping';
@@ -484,15 +478,35 @@ export class GameServer {
 }
 
 export class GameServerStatus {
+    timestamp: Date;
     port: number;
     type = 0;
-    timestamp: Date;
     name: string;
     processId = 0;
-    state = 0;
+    state: GameServerState = GameServerState.NONE;
     map: string;
     mission: string;
     uptime = 0;
+    missionUptime = 0;
     playerCount: number;
     playerMap = [];
+}
+
+// https://community.bistudio.com/wiki/getClientStateNumber
+export enum GameServerState {
+    NOT_RUNNING = -2,
+    NOT_RESPONDING = -1,
+    NONE,
+    CREATED,
+    CONNECTED,
+    LOGGED_IN,
+    MISSION_SELECTED,
+    MISSION_ASKED,
+    ROLE_ASSIGNED,
+    MISSION_RECEIVED,
+    GAME_LOADED,
+    BRIEFING_SWOWN,
+    BRIEFING_READ,
+    GAME_FINISHED,
+    DEBRIEFING_READ
 }
