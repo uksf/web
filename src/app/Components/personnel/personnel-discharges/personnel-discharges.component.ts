@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, QueryList, ViewChildren } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatExpansionPanel } from '@angular/material';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
 import { ActivatedRoute } from '@angular/router';
 import { TextInputModalComponent } from 'app/Modals/text-input-modal/text-input-modal.component';
@@ -12,6 +12,7 @@ import { TextInputModalComponent } from 'app/Modals/text-input-modal/text-input-
     styleUrls: ['../../../Pages/personnel-page/personnel-page.component.scss', './personnel-discharges.component.scss']
 })
 export class PersonnelDischargesComponent {
+    @ViewChildren('dischargePanels') dischargePanels: QueryList<MatExpansionPanel>;
     displayedColumns = ['timestamp', 'rank', 'unit', 'role', 'dischargedBy', 'reason'];
     updating;
     completeDischargeCollections: any[];
@@ -42,6 +43,8 @@ export class PersonnelDischargesComponent {
             this.completeDischargeCollections = response;
             if (initialFilter) {
                 this.filterString = initialFilter;
+                // TODO: expand panel if given param filter
+                // this.dischargePanels
                 this.filter();
             } else {
                 this.filtered = this.completeDischargeCollections;
