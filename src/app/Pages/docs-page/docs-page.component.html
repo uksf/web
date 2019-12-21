@@ -1,19 +1,11 @@
 <app-default-content-areas>
     <app-side-content-area>
         <div class="flex-container">
-            <mat-card>
-                <h3>Table of Contents</h3>
-                <toc-list [listData]="toc" linkPrefix="/docs/"></toc-list>
-            </mat-card>
+            <button mat-raised-button color="primary" (click)="createDocument()">Create Document</button>
         </div>
+        browsable contents go here. show tree of all documents visible to a user here
     </app-side-content-area>
     <app-main-content-area>
-        <div class="flex-container">
-            <h2>
-                <a routerLink="/information">Information</a>/Docs</h2>
-            <mat-card>
-                <div [innerHTML]="doc"></div>
-            </mat-card>
-        </div>
+        view active document here
     </app-main-content-area>
 </app-default-content-areas>

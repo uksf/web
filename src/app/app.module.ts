@@ -169,6 +169,7 @@ import { PersonnelActivityComponent } from './Components/personnel/personnel-act
 import { PersonnelLoasListComponent } from './Components/personnel/personnel-loas-list/personnel-loas-list.component';
 import { TextInputModalComponent } from './Modals/text-input-modal/text-input-modal.component';
 import { StatesService } from './Services/states.service';
+import { CreateDocumentModalComponent } from './Modals/documents/create-document-modal/create-document-modal.component';
 
 export function initPermissions(permissionsService: PermissionsService) {
     return () => permissionsService.refresh();
@@ -372,7 +373,8 @@ export function tokenGetter() {
         PersonnelLoasComponent,
         PersonnelActivityComponent,
         PersonnelDischargesComponent,
-        PersonnelLoasListComponent
+        PersonnelLoasListComponent,
+        CreateDocumentModalComponent
     ], bootstrap: [
         AppComponent
     ], entryComponents: [
@@ -399,7 +401,8 @@ export function tokenGetter() {
         EditServerModsModalComponent,
         ConfirmationModalComponent,
         MultipleMessageModalComponent,
-        TextInputModalComponent
+        TextInputModalComponent,
+        CreateDocumentModalComponent
     ]
 })
 

@@ -1,0 +1,15 @@
+<h3 mat-dialog-title *ngIf="!directory">Create Document in root</h3>
+<h3 mat-dialog-title *ngIf="directory">Create Document in {{directory}}</h3>
+<mat-dialog-content>
+    <form [formGroup]="form" class="container">
+        <mat-form-field class="normal">
+            <input #input matInput formControlName="name" required placeholder="Document Name" [errorStateMatcher]="instantErrorStateMatcher">
+            <mat-error *ngFor="let validation of validationMessages.name">
+                <mat-error class="error-message" *ngIf="form.get('name').hasError(validation.type)">{{validation.message}}</mat-error>
+            </mat-error>
+        </mat-form-field>
+        <div class="button-container">
+            <button mat-raised-button color="primary" (click)="submit()" [disabled]="!form.valid">Create</button>
+        </div>
+    </form>
+</mat-dialog-content>

@@ -1,55 +1,22 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ApiService } from '../../Services/api.service';
-import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { UrlService } from 'app/Services/url.service';
+import { MatDialog } from '@angular/material';
+import { CreateDocumentModalComponent } from 'app/Modals/documents/create-document-modal/create-document-modal.component';
 
 @Component({
     selector: 'app-docs-page',
     templateUrl: './docs-page.component.html',
     styleUrls: ['./docs-page.component.css']
 })
-export class DocsPageComponent implements OnInit, OnDestroy {
-    toc;
-    doc;
-    private sub;
-
-    constructor(
-        Api: ApiService,
-        private route: ActivatedRoute,
-        private router: Router
-    ) {
-        Api.sendRequest(
-            () => { return Api.httpClient.get(Api.urls.apiUrl + '/Docs') },
-            (data) => {
-            this.toc = data;
-                this.router.navigate(['/docs/' + this.toc[0].name]);
-            },
-            'failed to get docs'
-        );
-
-        if (this.route.snapshot.params.id) {
-            Api.sendRequest(
-                () => { return Api.httpClient.get(Api.urls.apiUrl + '/Docs/' + this.route.snapshot.params.id) },
-                (data) => { this.doc = data.doc },
-                'failed to get the doc'
-            );
-        } else {
-            this.doc = 'select a document';
-        }
-        this.sub = router.events.subscribe((val) => {
-            // see also
-            if (val instanceof NavigationEnd) {
-                Api.sendRequest(
-                    () => { return Api.httpClient.get(Api.urls.apiUrl + '/Docs/' + this.route.snapshot.params.id) },
-                    (data) => { this.doc = data.doc },
-                    'failed to get the doc'
-                );
-            }
-        });
-    }
+export class DocsPageComponent implements OnInit {
+    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) { }
 
     ngOnInit() { }
 
-    ngOnDestroy() {
-        this.sub.unsubscribe();
+    createDocument() {
+        this.dialog.open(CreateDocumentModalComponent, { data: '' }).afterClosed().subscribe(_ => {
+
+        });
     }
 }
