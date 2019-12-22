@@ -15,9 +15,9 @@ export class PersonnelDischargesComponent {
     @ViewChildren('dischargePanels') dischargePanels: QueryList<MatExpansionPanel>;
     displayedColumns = ['timestamp', 'rank', 'unit', 'role', 'dischargedBy', 'reason'];
     updating;
-    completeDischargeCollections: any[];
-    filtered: any[] = [];
-    dischargeCollections: any[] = []
+    completeDischargeCollections: DischargeCollection[];
+    filtered: DischargeCollection[] = [];
+    dischargeCollections: DischargeCollection[] = []
     index = 0;
     length = 15;
     lengths = [
@@ -39,13 +39,11 @@ export class PersonnelDischargesComponent {
     refresh(initialFilter = '') {
         this.completeDischargeCollections = undefined;
         this.updating = true;
-        this.httpClient.get<any[]>(this.urls.apiUrl + '/discharges').subscribe(response => {
+        this.httpClient.get<any[]>(this.urls.apiUrl + '/discharges').subscribe((response: DischargeCollection[]) => {
             this.completeDischargeCollections = response;
             if (initialFilter) {
                 this.filterString = initialFilter;
-                // TODO: expand panel if given param filter
-                // this.dischargePanels
-                this.filter();
+                this.filter(true);
             } else {
                 this.filtered = this.completeDischargeCollections;
                 this.navigate(-1);
@@ -70,7 +68,7 @@ export class PersonnelDischargesComponent {
         this.dischargeCollections = this.filtered.slice(this.index, this.index + this.length);
     }
 
-    filter() {
+    filter(openFirst: boolean = false) {
         clearTimeout(this.timeout);
         this.timeout = setTimeout(() => {
             this.filtered = [];
@@ -82,6 +80,10 @@ export class PersonnelDischargesComponent {
             this.dischargeCollections = this.filtered.filter(n => this.filtered.includes(n));
             this.index = 0;
             this.navigate(-1);
+            if (openFirst) {
+                console.log(JSON.stringify(this.dischargePanels));
+                this.dischargePanels.first.open();
+            }
         }, 150);
     }
 
@@ -134,4 +136,22 @@ export class PersonnelDischargesComponent {
     min(a, b) {
         return Math.min(a, b);
     }
+}
+
+export class DischargeCollection {
+    public accountId: string;
+    public discharges: Array<Discharge>;
+    public id: string;
+    public name: string;
+    public reinstated: boolean;
+}
+
+export class Discharge {
+    public dischargedBy: string;
+    public id: string;
+    public rank: string;
+    public reason: string;
+    public role: string;
+    public timestamp: Date;
+    public unit: string;
 }
