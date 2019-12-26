@@ -1,10 +1,11 @@
-import { Component, QueryList, ViewChildren } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { MatDialog, MatExpansionPanel } from '@angular/material';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
 import { ActivatedRoute } from '@angular/router';
 import { TextInputModalComponent } from 'app/Modals/text-input-modal/text-input-modal.component';
+import { HelperService } from 'app/Services/helper.service';
 
 @Component({
     selector: 'app-personnel-discharges',
@@ -12,9 +13,9 @@ import { TextInputModalComponent } from 'app/Modals/text-input-modal/text-input-
     styleUrls: ['../../../Pages/personnel-page/personnel-page.component.scss', './personnel-discharges.component.scss']
 })
 export class PersonnelDischargesComponent {
-    @ViewChildren('dischargePanels') dischargePanels: QueryList<MatExpansionPanel>;
+    @ViewChild(MatExpansionPanel, { static: false }) panel: MatExpansionPanel;
     displayedColumns = ['timestamp', 'rank', 'unit', 'role', 'dischargedBy', 'reason'];
-    updating;
+    updating: boolean;
     completeDischargeCollections: DischargeCollection[];
     filtered: DischargeCollection[] = [];
     dischargeCollections: DischargeCollection[] = []
@@ -26,9 +27,11 @@ export class PersonnelDischargesComponent {
         { 'value': 30, 'name': '30' }
     ];
     filterString = '';
-    private timeout;
+    private timeout: NodeJS.Timeout;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private route: ActivatedRoute) {
+    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private route: ActivatedRoute, private helperService: HelperService) { }
+
+    ngOnInit(): void {
         if (this.route.snapshot.queryParams['filter']) {
             this.refresh(this.route.snapshot.queryParams['filter']);
         } else {
@@ -54,7 +57,7 @@ export class PersonnelDischargesComponent {
         });
     }
 
-    navigate(mode) {
+    navigate(mode: number) {
         switch (mode) {
             case 0: // Previous
                 this.index -= this.length;
@@ -81,19 +84,20 @@ export class PersonnelDischargesComponent {
             this.index = 0;
             this.navigate(-1);
             if (openFirst) {
-                console.log(JSON.stringify(this.dischargePanels));
-                this.dischargePanels.first.open();
+                this.helperService.nextFrame(() => {
+                    this.panel.open();
+                })
             }
         }, 150);
     }
 
-    openMessageDialog(message) {
+    openMessageDialog(message: any) {
         this.dialog.open(MessageModalComponent, {
             data: { message: message }
         });
     }
 
-    reinstate(event: Event, dischargeCollection) {
+    reinstate(event: Event, dischargeCollection: DischargeCollection) {
         event.stopPropagation();
         this.httpClient.get<any[]>(this.urls.apiUrl + `/discharges/reinstate/${dischargeCollection.id}`).subscribe(response => {
             this.dischargeCollections = response;
@@ -104,7 +108,7 @@ export class PersonnelDischargesComponent {
         });
     }
 
-    requestReinstate(event: Event, dischargeCollection) {
+    requestReinstate(event: Event, dischargeCollection: DischargeCollection) {
         event.stopPropagation();
         this.dialog.open(TextInputModalComponent, {
             data: { message: 'Please provide a reason for the reinstate request' }
@@ -118,7 +122,7 @@ export class PersonnelDischargesComponent {
                     headers: new HttpHeaders({
                         'Content-Type': 'application/json'
                     })
-                }).subscribe(response => {
+                }).subscribe((response: boolean) => {
                     dischargeCollection.requestExists = response;
                 });
             }, _ => {
@@ -129,11 +133,11 @@ export class PersonnelDischargesComponent {
         });
     }
 
-    trackByDischargeCollection(_, dischargeCollection) {
+    trackByDischargeCollection(_: any, dischargeCollection: DischargeCollection) {
         return dischargeCollection.accountId;
     }
 
-    min(a, b) {
+    min(a: number, b: number) {
         return Math.min(a, b);
     }
 }
@@ -144,6 +148,7 @@ export class DischargeCollection {
     public id: string;
     public name: string;
     public reinstated: boolean;
+    public requestExists = false;
 }
 
 export class Discharge {

@@ -32,7 +32,7 @@
                 <mat-spinner></mat-spinner>
             </div>
             <mat-accordion *ngIf="completeDischargeCollections">
-                <mat-expansion-panel *ngFor="let dischargeCollection of dischargeCollections; trackBy: trackByDischargeCollection" #dischargePanels>
+                <mat-expansion-panel *ngFor="let dischargeCollection of dischargeCollections; trackBy: trackByDischargeCollection">
                     <mat-expansion-panel-header [expandedHeight]="'48px'">
                         <mat-panel-title>
                             {{dischargeCollection.name}}
@@ -56,10 +56,10 @@
                         </div>
                         <div class="description-container" *ngIf="dischargeCollection.reinstated && !dischargeCollection.requestExists">
                             <mat-panel-description *ngIf="dischargeCollection.discharges.length == 1" class="discharge-count discharge-2">
-                                Has been reinstated once
+                                Has been reinstated once (Current Member)
                             </mat-panel-description>
                             <mat-panel-description *ngIf="dischargeCollection.discharges.length == 2" class="discharge-count discharge-limit">
-                                Has been reinstated twice
+                                Has been reinstated twice (Current Member)
                             </mat-panel-description>
                         </div>
                     </mat-expansion-panel-header>
