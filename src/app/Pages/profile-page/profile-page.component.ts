@@ -52,40 +52,58 @@ export class ProfilePageComponent implements OnInit {
     ngOnInit() {
         if (this.route.snapshot.queryParams['steamid']) {
             const id = this.route.snapshot.queryParams['steamid'];
-            const code = this.route.snapshot.queryParams['validation'];
-            this.httpClient.post(this.urls.apiUrl + '/steamcode/' + id, { code: code }).subscribe(() => {
+            if (id === 'fail') {
                 this.router.navigate(['/profile']).then(() => {
                     this.getAccount();
                     this.dialog.open(MessageModalComponent, {
-                        data: { message: 'Steam successfully connected' }
+                        data: { message: 'Steam failed to connect' }
                     });
                 });
-            }, error => {
-                this.router.navigate(['/profile']).then(() => {
-                    this.getAccount();
-                    this.dialog.open(MessageModalComponent, {
-                        data: { message: error.error.error }
+            } else {
+                const code = this.route.snapshot.queryParams['validation'];
+                this.httpClient.post(this.urls.apiUrl + '/steamcode/' + id, { code: code }).subscribe(() => {
+                    this.router.navigate(['/profile']).then(() => {
+                        this.getAccount();
+                        this.dialog.open(MessageModalComponent, {
+                            data: { message: 'Steam successfully connected' }
+                        });
+                    });
+                }, error => {
+                    this.router.navigate(['/profile']).then(() => {
+                        this.getAccount();
+                        this.dialog.open(MessageModalComponent, {
+                            data: { message: error.error.error }
+                        });
                     });
                 });
-            });
+            }
         } else if (this.route.snapshot.queryParams['discordid']) {
             const id = this.route.snapshot.queryParams['discordid'];
-            const code = this.route.snapshot.queryParams['validation'];
-            this.httpClient.post(this.urls.apiUrl + '/discordcode/' + id, { code: code }).subscribe(() => {
+            if (id === 'fail') {
                 this.router.navigate(['/profile']).then(() => {
                     this.getAccount();
                     this.dialog.open(MessageModalComponent, {
-                        data: { message: 'Discord successfully connected' }
+                        data: { message: 'Discord failed to connect' }
                     });
                 });
-            }, error => {
-                this.router.navigate(['/profile']).then(() => {
-                    this.getAccount();
-                    this.dialog.open(MessageModalComponent, {
-                        data: { message: error.error.error }
+            } else {
+                const code = this.route.snapshot.queryParams['validation'];
+                this.httpClient.post(this.urls.apiUrl + '/discordcode/' + id, { code: code }).subscribe(() => {
+                    this.router.navigate(['/profile']).then(() => {
+                        this.getAccount();
+                        this.dialog.open(MessageModalComponent, {
+                            data: { message: 'Discord successfully connected' }
+                        });
+                    });
+                }, error => {
+                    this.router.navigate(['/profile']).then(() => {
+                        this.getAccount();
+                        this.dialog.open(MessageModalComponent, {
+                            data: { message: error.error.error }
+                        });
                     });
                 });
-            });
+            }
         } else {
             this.getAccount();
         }
