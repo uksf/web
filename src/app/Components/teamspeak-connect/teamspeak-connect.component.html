@@ -13,13 +13,18 @@
             </mat-form-field>
             <app-flex-filler></app-flex-filler>
             <button mat-raised-button color="primary" [disabled]="!teamspeakForm.value.teamspeakId || clients.length === 0" (click)="sendCode()">Send Code</button>
+            <button mat-raised-button class="cancel" *ngIf="showCancel" (click)="cancel()">Cancel</button>
         </div>
     </form>
 </div>
 <div *ngIf="sent">
     <form [formGroup]="formGroup">
-        <mat-form-field class="normal">
-            <input matInput formControlName="code" required placeholder="Enter confirmation code" (ngModelChange)="changed($event)">
-        </mat-form-field>
+        <div class="row-container">
+            <mat-form-field class="normal">
+                <input matInput formControlName="code" required placeholder="Enter confirmation code" (ngModelChange)="changed($event)">
+            </mat-form-field>
+            <app-flex-filler></app-flex-filler>
+            <button mat-raised-button class="cancel" *ngIf="showCancel" (click)="cancel()">Cancel</button>
+        </div>
     </form>
 </div>

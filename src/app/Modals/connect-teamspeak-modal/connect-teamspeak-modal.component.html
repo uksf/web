@@ -1,4 +1,4 @@
 <mat-dialog-content>
     <h2 mat-dialog-title>Connect teamspeak</h2>
-    <app-teamspeak-connect (connectedEvent)="connected()"></app-teamspeak-connect>
+    <app-teamspeak-connect (connectedEvent)="connected()" (cancelEvent)="cancel()" [showCancel]="true"></app-teamspeak-connect>
 </mat-dialog-content>

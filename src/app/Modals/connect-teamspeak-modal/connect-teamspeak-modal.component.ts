@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { MatDialog } from '@angular/material';
+import { MatDialogRef } from '@angular/material';
 
 @Component({
     selector: 'app-connect-teamspeak-modal',
@@ -7,9 +7,13 @@ import { MatDialog } from '@angular/material';
     styleUrls: ['./connect-teamspeak-modal.component.css']
 })
 export class ConnectTeamspeakModalComponent {
-    constructor(public dialog: MatDialog) { }
+    constructor(public dialogRef: MatDialogRef<ConnectTeamspeakModalComponent>) { }
 
     connected() {
-        this.dialog.closeAll();
+        this.dialogRef.close(0);
+    }
+
+    cancel() {
+        this.dialogRef.close(1);
     }
 }

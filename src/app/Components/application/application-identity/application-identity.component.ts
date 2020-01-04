@@ -152,6 +152,17 @@ export class ApplicationIdentityComponent {
         );
     }
 
+    numberOnly(fieldName: string, min: number, max: number) {
+        const field: AbstractControl = this.formGroup.get(['dobGroup', fieldName]);
+        const value = parseInt(field.value, 10);
+
+        if (value < min) {
+            field.setValue(min);
+        } else if (value > max) {
+            field.setValue(max);
+        }
+    }
+
     next() {
         // Honeypot field must be empty
         if (this.formGroup.value.name !== '') { return; }

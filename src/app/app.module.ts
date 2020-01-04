@@ -169,7 +169,6 @@ import { PersonnelActivityComponent } from './Components/personnel/personnel-act
 import { PersonnelLoasListComponent } from './Components/personnel/personnel-loas-list/personnel-loas-list.component';
 import { TextInputModalComponent } from './Modals/text-input-modal/text-input-modal.component';
 import { StatesService } from './Services/states.service';
-import { HelperService } from './Services/helper.service';
 
 export function initPermissions(permissionsService: PermissionsService) {
     return () => permissionsService.refresh();
@@ -198,7 +197,6 @@ export function tokenGetter() {
         NotificationsComponent,
         CountryPickerService,
         SignalRService,
-        HelperService,
         {
             provide: APP_INITIALIZER,
             useFactory: initPermissions,

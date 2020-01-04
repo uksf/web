@@ -32,7 +32,7 @@
                         <span class="connected">Steam connected</span>
                     </ng-template>
                 </button>
-                <button mat-raised-button class="button" (click)="openDiscordModal()">
+                <button mat-raised-button class="button" (click)="connectDiscord()">
                     <span *ngIf="account.discordId == null || account.discordId == ''; else dConnected">Connect Discord</span>
                     <ng-template #dConnected>
                         <span class="connected">Discord connected</span>

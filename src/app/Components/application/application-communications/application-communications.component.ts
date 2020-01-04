@@ -6,6 +6,7 @@ import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.co
 import { AccountService } from 'app/Services/account.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PermissionsService } from 'app/Services/permissions.service';
+import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
 
 @Component({
     selector: 'app-application-communications',
@@ -62,12 +63,21 @@ export class ApplicationCommunicationsComponent {
                 });
             } else {
                 const code = this.route.snapshot.queryParams['validation'];
+                const added = this.route.snapshot.queryParams['added'];
                 this.httpClient.post(this.urls.apiUrl + '/discordcode/' + id, { code: code }).subscribe(() => {
                     this.router.navigate(['/application']).then(() => {
                         this.checkModes();
-                        this.dialog.open(MessageModalComponent, {
-                            data: { message: 'Discord successfully connected' }
-                        });
+                        if (added === 'true') {
+                            this.dialog.open(MessageModalComponent, {
+                                data: { message: 'Discord successfully connected' }
+                            });
+                        } else {
+                            this.dialog.open(ConfirmationModalComponent, {
+                                data: { message: 'Discord successfully connected\n\nWe were unable to add you to our discord server.\nPlease join by pressing \'Join Discord\'', button: 'Join Discord' }
+                            }).componentInstance.confirmEvent.subscribe(() => {
+                                window.open('https://discord.uk-sf.co.uk', '_blank');
+                            });
+                        }
                     });
                 }, error => {
                     this.router.navigate(['/application']).then(() => {

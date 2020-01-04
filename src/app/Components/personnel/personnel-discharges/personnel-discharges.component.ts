@@ -5,7 +5,7 @@ import { MatDialog, MatExpansionPanel } from '@angular/material';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
 import { ActivatedRoute } from '@angular/router';
 import { TextInputModalComponent } from 'app/Modals/text-input-modal/text-input-modal.component';
-import { HelperService } from 'app/Services/helper.service';
+import { nextFrame } from 'app/Services/helper.service';
 
 @Component({
     selector: 'app-personnel-discharges',
@@ -29,7 +29,7 @@ export class PersonnelDischargesComponent {
     filterString = '';
     private timeout: NodeJS.Timeout;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private route: ActivatedRoute, private helperService: HelperService) { }
+    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private route: ActivatedRoute) { }
 
     ngOnInit(): void {
         if (this.route.snapshot.queryParams['filter']) {
@@ -84,9 +84,9 @@ export class PersonnelDischargesComponent {
             this.index = 0;
             this.navigate(-1);
             if (openFirst) {
-                this.helperService.nextFrame(() => {
+                nextFrame(() => {
                     this.panel.open();
-                })
+                });
             }
         }, 150);
     }

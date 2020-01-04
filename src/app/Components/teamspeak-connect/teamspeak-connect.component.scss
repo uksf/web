@@ -13,7 +13,11 @@
     }
 
     button {
-        padding: 5px 16px;
+        margin: auto 0px auto 5px;
         height: fit-content;
+
+        &.cancel {
+            color: red;
+        }
     }
 }

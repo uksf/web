@@ -47,13 +47,13 @@
             <p>Date of Birth</p>
             <p>For example: 15/02/1989</p>
             <mat-form-field class="dob">
-                <input matInput type="number" formControlName="day" placeholder="dd" maxlength="2" required autocomplete="bday-day">
+                <input matInput type="number" formControlName="day" placeholder="dd" maxlength="2" required autocomplete="bday-day" (keyup)="numberOnly('day', 1, 31)">
             </mat-form-field>/
             <mat-form-field class="dob">
-                <input matInput type="number" formControlName="month" placeholder="mm" maxlength="2" required autocomplete="bday-month">
+                <input matInput type="number" formControlName="month" placeholder="mm" maxlength="2" required autocomplete="bday-month" (keyup)="numberOnly('month', 1, 12)">
             </mat-form-field>/
             <mat-form-field class="dob year">
-                <input matInput type="number" formControlName="year" placeholder="yyyy" maxlength="4" required autocomplete="bday-year">
+                <input matInput type="number" formControlName="year" placeholder="yyyy" maxlength="4" required autocomplete="bday-year" (keyup)="numberOnly('year', 1, 2030)">
             </mat-form-field>
             <mat-error *ngFor="let validation of validation_messages.dob">
                 <mat-error class="error-message" *ngIf="formGroup.get('dobGroup').hasError(validation.type)">{{validation.message}}</mat-error>

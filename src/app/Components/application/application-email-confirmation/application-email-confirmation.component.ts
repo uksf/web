@@ -48,21 +48,23 @@ export class ApplicationEmailConfirmationComponent {
             email: this.email,
             code: code
         }, { headers: headers }).subscribe(() => {
-            this.pending = false;
             this.formGroup.controls['code'].enable();
             if (this.accountService.account) {
                 this.permissionsService.refresh().then(() => {
+                    this.pending = false;
                     this.nextEvent.emit();
                 });
             } else {
+                this.pending = false;
                 this.nextEvent.emit();
             }
         }, error => {
-            this.pending = false;
-            this.formGroup.controls['code'].enable();
-            this.formGroup.controls['code'].setValue('');
             this.dialog.open(MessageModalComponent, {
                 data: { message: error.error.error }
+            }).afterClosed().subscribe(() => {
+                this.formGroup.controls['code'].enable();
+                this.formGroup.controls['code'].setValue('');
+                this.pending = false;
             });
         });
     }

@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpHeaders } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
 import { AccountService } from 'app/Services/account.service';
 import { SignalRService, ConnectionContainer } from 'app/Services/signalr.service';
+import { nextFrame } from 'app/Services/helper.service';
 
 @Component({
     selector: 'app-teamspeak-connect',
@@ -14,7 +15,9 @@ import { SignalRService, ConnectionContainer } from 'app/Services/signalr.servic
     styleUrls: ['./teamspeak-connect.component.scss']
 })
 export class ConnectTeamspeakComponent {
+    @Input() showCancel = false;
     @Output() connectedEvent = new EventEmitter();
+    @Output() cancelEvent = new EventEmitter();
     formGroup: FormGroup;
     teamspeakForm: FormGroup;
     pending = false;
@@ -85,7 +88,7 @@ export class ConnectTeamspeakComponent {
         if (this.previousResponse !== JSON.stringify(clients)) {
             this.clients = clients;
             const tsIds: Array<string> = this.accountService.account.teamspeakIdentities;
-            if (tsIds.length > 0) {
+            if (tsIds && tsIds.length > 0) {
                 this.clients.forEach(client => {
                     if (tsIds.indexOf(client.clientDbId) !== -1) {
                         client.name = `${client.name} (Already connected to this account)`;
@@ -94,6 +97,10 @@ export class ConnectTeamspeakComponent {
             }
             this.previousResponse = JSON.stringify(this.clients);
         }
+    }
+
+    cancel() {
+        this.cancelEvent.emit();
     }
 
     sendCode() {
@@ -108,10 +115,10 @@ export class ConnectTeamspeakComponent {
     }
 
     changed(code) {
-        setTimeout(() => {
-            if (this.pending) { return; }
+        if (this.pending) { return; }
+        nextFrame(() => {
             this.validateCode(code);
-        }, 1);
+        })
     }
 
     validateCode(code) {
@@ -124,16 +131,16 @@ export class ConnectTeamspeakComponent {
             code: code
         }, { headers: headers }).subscribe(() => {
             this.pending = false;
+            this.connectedEvent.emit();
             this.dialog.open(MessageModalComponent, {
                 data: { message: 'Teamspeak successfully connected' }
-            }).afterClosed().subscribe(() => {
-                this.connectedEvent.emit();
             });
         }, error => {
-            this.pending = false;
-            this.formGroup.controls['code'].setValue('');
             this.dialog.open(MessageModalComponent, {
                 data: { message: error.error.error }
+            }).afterClosed().subscribe(() => {
+                this.formGroup.controls['code'].setValue('');
+                this.pending = false;
             });
         });
     }

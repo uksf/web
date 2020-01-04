@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, Inject } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 
 @Component({
@@ -22,13 +22,13 @@ export class ConfirmationModalComponent implements OnInit {
     ngOnInit() { }
 
     confirm() {
-        this.confirmEvent.emit();
         this.dialogRef.close();
+        this.confirmEvent.emit();
     }
 
     cancel() {
-        this.cancelEvent.emit();
         this.dialogRef.close();
+        this.cancelEvent.emit();
     }
 }
 

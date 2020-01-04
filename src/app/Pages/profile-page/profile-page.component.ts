@@ -12,6 +12,8 @@ import { NgxPermissionsService } from 'ngx-permissions';
 import { Permissions } from 'app/Services/permissions';
 import { CountryPickerService, ICountry } from 'app/Services/CountryPicker/country-picker.service';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
+import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-profile-page',
@@ -28,6 +30,7 @@ export class ProfilePageComponent implements OnInit {
     account;
     accountId;
     settingsFormGroup: FormGroup;
+    accountSubscription: Subscription;
 
     constructor(
         public dialog: MatDialog,
@@ -88,12 +91,21 @@ export class ProfilePageComponent implements OnInit {
                 });
             } else {
                 const code = this.route.snapshot.queryParams['validation'];
+                const added = this.route.snapshot.queryParams['added'];
                 this.httpClient.post(this.urls.apiUrl + '/discordcode/' + id, { code: code }).subscribe(() => {
                     this.router.navigate(['/profile']).then(() => {
                         this.getAccount();
-                        this.dialog.open(MessageModalComponent, {
-                            data: { message: 'Discord successfully connected' }
-                        });
+                        if (added === 'true') {
+                            this.dialog.open(MessageModalComponent, {
+                                data: { message: 'Discord successfully connected' }
+                            });
+                        } else {
+                            this.dialog.open(ConfirmationModalComponent, {
+                                data: { message: 'Discord successfully connected\n\nWe were unable to add you to our discord server.\nPlease join by pressing \'Join Discord\'', button: 'Join Discord' }
+                            }).componentInstance.confirmEvent.subscribe(() => {
+                                window.open('https://discord.uk-sf.co.uk', '_blank');
+                            });
+                        }
                     });
                 }, error => {
                     this.router.navigate(['/profile']).then(() => {
@@ -120,7 +132,15 @@ export class ProfilePageComponent implements OnInit {
             this.accountService.getAccount(account => {
                 this.account = account;
                 this.populateSettings();
-            })
+
+                if (this.accountSubscription) {
+                    this.accountSubscription.unsubscribe();
+                }
+                this.accountSubscription = this.accountService.accountChange.subscribe((newAccount: any) => {
+                    this.account = newAccount;
+                    this.populateSettings();
+                });
+            });
         }
     }
 
@@ -143,8 +163,10 @@ export class ProfilePageComponent implements OnInit {
     }
 
     openTeamspeakModal() {
-        this.dialog.open(ConnectTeamspeakModalComponent).afterClosed().subscribe(() => {
-            this.getAccount();
+        this.dialog.open(ConnectTeamspeakModalComponent, { disableClose: true }).afterClosed().subscribe((result: number) => {
+            if (result === 0) {
+                this.getAccount();
+            }
         });
     }
 
@@ -152,7 +174,7 @@ export class ProfilePageComponent implements OnInit {
         window.location.href = this.urls.steamUrl + '/steam';
     }
 
-    openDiscordModal() {
+    connectDiscord() {
         window.location.href = this.urls.steamUrl + '/discord';
     }
 
