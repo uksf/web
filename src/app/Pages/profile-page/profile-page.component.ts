@@ -210,6 +210,6 @@ export class ProfilePageComponent implements OnInit {
     }
 
     getServiceRecordNotes(notes) {
-        return this.account.nco ? notes : 'You don\'t have permission to view these service record notes';
+        return this.account.permissionNco ? notes : 'You don\'t have permission to view these service record notes';
     }
 }
