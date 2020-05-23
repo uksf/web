@@ -51,32 +51,32 @@ export class PermissionsService {
                         if (account.membershipState === MembershipState.MEMBER) {
                             // member
                             this.ngxPermissionsService.addPermission(Permissions.MEMBER);
-                            if (account.sr1) {
+                            if (account.permissionSr1) {
                                 this.ngxPermissionsService.addPermission(Permissions.SR1);
                                 this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
                                 this.ngxPermissionsService.addPermission(Permissions.DISCHARGES);
                             }
-                            if (account.sr5) {
+                            if (account.permissionSr5) {
                                 this.ngxPermissionsService.addPermission(Permissions.SR5);
                                 this.ngxPermissionsService.addPermission(Permissions.SERVERS);
                             }
-                            if (account.sr10) {
+                            if (account.permissionSr10) {
                                 this.ngxPermissionsService.addPermission(Permissions.SR10);
                             }
-                            if (account.sr1Lead) {
+                            if (account.permissionSr1Lead) {
                                 this.ngxPermissionsService.addPermission(Permissions.SR1_LEAD);
                             }
-                            if (account.command) {
+                            if (account.permissionCommand) {
                                 this.ngxPermissionsService.addPermission(Permissions.COMMAND);
                                 this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
                             }
-                            if (account.nco) {
+                            if (account.permissionNco) {
                                 this.ngxPermissionsService.addPermission(Permissions.NCO);
                                 this.ngxPermissionsService.addPermission(Permissions.SERVERS);
                                 this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
                                 this.ngxPermissionsService.addPermission(Permissions.DISCHARGES);
                             }
-                            if (account.admin) {
+                            if (account.permissionAdmin) {
                                 this.ngxPermissionsService.addPermission(Permissions.ADMIN);
                             }
                         } else if (account.membershipState === MembershipState.CONFIRMED) {
