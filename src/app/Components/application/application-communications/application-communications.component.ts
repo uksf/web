@@ -117,11 +117,34 @@ export class ApplicationCommunicationsComponent {
     }
 
     connectSteam() {
-        window.location.href = this.urls.steamUrl + '/steam/application';
+        this.dialog.open(ConfirmationModalComponent, {
+            data: {
+                message: 'By pressing \'Continue\' you will be redirected to <b>steamcommunity.com</b> where you will be asked to log in.' +
+                '\nBy doing so, we are able to read only your Steam User ID, which we store in our database for the purpose of verifying you have a valid steam account and for recruitment communication.' +
+                '\nWe can read no more information about your account than this.' +
+                '\n\nPlease note this is done on the official steam website, meaning we have zero interaction with your login process.' +
+                '\nIf you have any concerns about this process, please contact UKSF Staff for assistance.',
+                button: 'Continue'
+            }
+        }).componentInstance.confirmEvent.subscribe(() => {
+            window.location.href = this.urls.apiUrl + '/steamconnection/application';
+        });
     }
 
     connectDiscord() {
-        window.location.href = this.urls.steamUrl + '/discord/application';
+        this.dialog.open(ConfirmationModalComponent, {
+            data: {
+                message: 'By pressing \'Continue\' you will be redirected to <b>discord.com</b> where you will be asked to log in.' +
+                '\nBy doing so, we are able to read only your Discord User ID, which we store in our database for the purpose of connectivity between this website and our discord server.' +
+                '\nIn addition to reading your User ID, we will automatically add you to our discord server.' +
+                '\nWe can read no more information about your account than this.' +
+                '\n\nPlease note this is done on the official discord website, meaning we have zero interaction with your login process.' +
+                '\nIf you have any concerns about this process, please contact UKSF Staff for assistance.',
+                button: 'Continue'
+            }
+        }).componentInstance.confirmEvent.subscribe(() => {
+            window.location.href = this.urls.apiUrl + '/discordconnection/application';
+        });
     }
 
     next() {

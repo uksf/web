@@ -89,11 +89,11 @@ export class AccountService {
     }
 
     connectSteam() {
-        window.location.href = this.urls.steamUrl + '/steam';
+        window.location.href = this.urls.apiUrl + '/steamconnection';
     }
 
     connectDiscord() {
-        window.location.href = this.urls.steamUrl + '/discord';
+        window.location.href = this.urls.apiUrl + '/discordconnection';
     }
 
     public clear() {

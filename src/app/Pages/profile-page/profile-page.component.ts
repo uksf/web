@@ -171,11 +171,33 @@ export class ProfilePageComponent implements OnInit {
     }
 
     connectSteam() {
-        window.location.href = this.urls.steamUrl + '/steam';
+        this.dialog.open(ConfirmationModalComponent, {
+            data: {
+                message: 'By pressing \'Continue\' you will be redirected to <b>steamcommunity.com</b> where you will be asked to log in.' +
+                '\nBy doing so, we are able to read only your Steam User ID, which we store in our database for the purpose of verifying you have a valid steam account and for recruitment communication.' +
+                '\nWe can read no more information about your account than this.' +
+                '\n\nPlease note this is done on the official steam website, meaning we have zero interaction with your login process.' +
+                '\nIf you have any concerns about this process, please contact UKSF Staff for assistance.',
+                button: 'Continue'
+            }
+        }).componentInstance.confirmEvent.subscribe(() => {
+            window.location.href = this.urls.apiUrl + '/steamconnection';
+        });
     }
 
     connectDiscord() {
-        window.location.href = this.urls.steamUrl + '/discord';
+        this.dialog.open(ConfirmationModalComponent, {
+            data: {
+                message: 'By pressing \'Continue\' you will be redirected to <b>discord.com</b> where you will be asked to log in.' +
+                '\nBy doing so, we are able to read only your Discord User ID, which we store in our database for the purpose of connectivity between this website and our discord server.' +
+                '\nWe can read no more information about your account than this.' +
+                '\n\nPlease note this is done on the official discord website, meaning we have zero interaction with your login process.' +
+                '\nIf you have any concerns about this process, please contact UKSF Staff for assistance.',
+                button: 'Continue'
+            }
+        }).componentInstance.confirmEvent.subscribe(() => {
+            window.location.href = this.urls.apiUrl + '/discordconnection';
+        });
     }
 
     get otherTheme() {
