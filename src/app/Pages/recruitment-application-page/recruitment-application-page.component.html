@@ -118,7 +118,7 @@
                         </div>
                         <div class="flex-container flex-row flex-grow no-padding margin-bottom">
                             <div class="header"><b>Discord</b></div>
-                            <div [ngClass]="{'green': application.communications.discordOnline, 'red': !application.communications.discordOnline}">{{(application.communications.discordOnline ? "Online" : "Offline")}}</div>
+                            <div [ngClass]="{'green': application.communications.discordOnline, 'red': !application.communications.discordOnline}">{{getDiscordName()}}</div>
                         </div>
                         <div class="flex-container flex-row flex-grow no-padding margin-bottom">
                             <div class="header"><b>Steam</b></div>

@@ -1,0 +1,20 @@
+@import "~@angular/material/theming";
+
+@mixin information-page-component-theme($theme) {
+    $background: map-get($theme, background);
+    $primary: map-get($theme, primary);
+
+    app-information-page {
+        .flex-container {
+            .mat-card {
+                &:hover {
+                    background-color: mat-color($background, hover);
+                }
+
+                h3 {
+                    color: mat-color($primary);
+                }
+            }
+        }
+    }
+}

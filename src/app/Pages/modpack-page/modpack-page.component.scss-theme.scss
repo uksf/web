@@ -1,0 +1,11 @@
+@import "~@angular/material/theming";
+
+@mixin modpack-page-component-theme($theme) {
+    $primary: map-get($theme, primary);
+
+    app-modpack-page {
+        a {
+            color: mat-color($primary);
+        }
+    }
+}

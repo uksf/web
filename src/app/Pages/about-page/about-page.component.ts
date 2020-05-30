@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
     selector: 'app-about-page',
     templateUrl: './about-page.component.html',
-    styleUrls: ['./about-page.component.css']
+    styleUrls: ['./about-page.component.scss', '/about-page.component.scss-theme.scss']
 })
-export class AboutPageComponent implements OnInit {
-    constructor() { }
+export class AboutPageComponent {
+    @Input() showRoute = true;
 
-    ngOnInit() { }
+    constructor() { }
 }

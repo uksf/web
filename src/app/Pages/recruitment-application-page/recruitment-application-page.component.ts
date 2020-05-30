@@ -24,13 +24,13 @@ export class RecruitmentApplicationPageComponent {
     membershipState = MembershipState;
     applicationState = ApplicationState;
     countries: ICountry[];
-    accountId;
+    accountId: string;
     application;
     ratingsForm: FormGroup;
-    recruiters;
-    ratings;
-    selected;
-    updating;
+    recruiters: Object;
+    ratings: any;
+    selected: any;
+    updating: boolean;
 
     constructor(
         private httpClient: HttpClient,
@@ -85,7 +85,7 @@ export class RecruitmentApplicationPageComponent {
         });
     }
 
-    setNewRecruiter(newRecruiter) {
+    setNewRecruiter(newRecruiter: any) {
         this.updating = true;
         this.httpClient.post(
             this.urls.apiUrl + '/recruitment/recruiter/' + this.accountId, { newRecruiter: newRecruiter }
@@ -98,7 +98,7 @@ export class RecruitmentApplicationPageComponent {
         });
     }
 
-    applyRating(e1, e2) {
+    applyRating(e1: { value: any; }, e2: any) {
         this.updating = true;
         this.httpClient.post(
             this.urls.apiUrl + '/recruitment/ratings/' + this.accountId, { key: e2, value: e1.value }
@@ -109,7 +109,7 @@ export class RecruitmentApplicationPageComponent {
         });
     }
 
-    updateApplicationState(updatedState) {
+    updateApplicationState(updatedState: ApplicationState) {
         this.updating = true;
         this.httpClient.post(
             this.urls.apiUrl + '/recruitment/' + this.accountId, { updatedState: updatedState }
@@ -134,6 +134,14 @@ export class RecruitmentApplicationPageComponent {
 
     getAgeColour() {
         return this.application.age.years >= 16 ? 'green' : this.application.age.years === 15 && this.application.age.months === 11 ? 'goldenrod' : 'red';
+    }
+
+    getDiscordName() {
+        return this.application.communications.discordOnline ?
+            this.application.communications.discordNickname !== this.application.displayName ?
+                'Online as ' + this.application.communications.discordNickname : 'Online'
+            : this.application.communications.discordNickname === '' ?
+                'Offline (Not in server)' : 'Offline';
     }
 
     back() {

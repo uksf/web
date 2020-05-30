@@ -17,7 +17,9 @@
 @import "app/Components/side-bar/side-bar.component.scss-theme.scss";
 @import "app/Pages/about-page/about-page.component.scss-theme.scss";
 @import "app/Pages/home-page/home-page.component.scss-theme.scss";
+@import "app/Pages/information-page/information-page.component.scss-theme.scss";
 @import "app/Pages/login-page/login-page.component.scss-theme.scss";
+@import "app/Pages/modpack-page/modpack-page.component.scss-theme.scss";
 @import "app/Pages/new-application-page/new-application-page.component.scss-theme.scss";
 @import "app/Pages/operations-page/operations-page.component.scss-theme.scss";
 @import "app/Pages/personnel-page/personnel-page.component.scss-theme.scss";
@@ -53,7 +55,9 @@
     @include side-bar-component-theme($theme);
     @include about-page-component-theme($theme);
     @include home-page-component-theme($theme);
+    @include information-page-component-theme($theme);
     @include login-page-component-theme($theme);
+    @include modpack-page-component-theme($theme);
     @include new-application-page-component-theme($theme);
     @include operations-page-component-theme($theme);
     @include personnel-page-component-theme($theme);

@@ -1,0 +1,42 @@
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    margin-left: 0;
+    padding-left: 16px;
+    padding-right: 16px;
+
+    &.flex-row {
+        flex-direction: row;
+    }
+}
+
+.mat-card {
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    padding: 0 20px;
+    margin-bottom: 15px;
+    height: 80px;
+    line-height: 80px;
+    align-items: center;
+
+    .mat-icon {
+        margin-right: 30px;
+        height: 36px;
+        width: 36px;
+        font-size: 36px;
+    }
+
+    h3 {
+        margin: 0px;
+        min-width: 115px;
+    }
+
+    span {
+        margin-left: 20px;
+    }
+}
+
+h4 {
+    margin: 16px;
+}

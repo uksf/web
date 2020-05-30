@@ -6,7 +6,6 @@ import { AccountService, ApplicationState } from 'app/Services/account.service';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from 'app/Services/url.service';
 import { AppComponent } from 'app/app.component';
-import { environment } from 'environments/environment';
 
 @Component({
     selector: 'app-side-bar',
@@ -18,7 +17,6 @@ export class SideBarComponent {
     version = 0;
     private guestMenu = [
         { text: 'Home', link: 'home', icon: 'home' },
-        { text: 'About', link: 'about', icon: 'info_outline' },
         // { text: 'Docs', link: 'admin', icon: 'book' },
         // { text: 'Policy', link: 'policy', icon: 'gavel' },
         { text: 'Units', link: 'units', icon: 'memory' },
@@ -34,12 +32,11 @@ export class SideBarComponent {
     ];
     private memberMenuEnd = [
         { text: 'Information', link: 'information', icon: 'layers' },
-        { text: 'Modpack', link: 'modpack', icon: 'terrain' }
+        // { text: 'Modpack', link: 'information/modpack', icon: 'terrain' }
         // { text: "Statistics", link: 'admin', icon: "equalizer" }, disabled until implemented
     ];
     private notLoggedMenu = [
         { text: 'Home', link: 'home', icon: 'home' },
-        { text: 'About', link: 'about', icon: 'info_outline' },
         // { text: 'Docs', link: 'admin', icon: 'book' },
         // { text: 'Policy', link: 'policy', icon: 'gavel' },
         { text: 'Application', link: 'application', icon: 'contact_mail' }
@@ -66,6 +63,10 @@ export class SideBarComponent {
         return this.router.url.split('/')[1];
     }
 
+    isSelected(navigationItem) {
+        return this.currentRouterItem === navigationItem.link || this.router.url.slice(1) === navigationItem.link;
+    }
+
     get getSideBarElements() {
         const grantedPermissions = this.permissions.getPermissions();
         if (this.cachedSideBarElements !== null && this.currentPermissions === grantedPermissions && this.accountService.account === this.currentAccount) { return this.cachedSideBarElements; }
@@ -78,7 +79,7 @@ export class SideBarComponent {
             let combinedArray = new Array();
             combinedArray = combinedArray.concat(this.guestMenu);
             if (this.accountService.account.application && this.accountService.account.application.state === ApplicationState.WAITING) {
-                combinedArray.push({ text: 'Modpack', link: 'modpack', icon: 'terrain' });
+                combinedArray.push({ text: 'Modpack', link: 'information/modpack', icon: 'terrain' });
             }
             this.cachedSideBarElements = combinedArray;
         } else if (grantedPermissions[Permissions.MEMBER]) {

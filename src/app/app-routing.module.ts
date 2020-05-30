@@ -174,8 +174,10 @@ const appRoutes: Routes = [
         }, canActivate: [NgxPermissionsGuard]
     },
     { path: 'information', component: InformationPageComponent },
+    { path: 'about', redirectTo: 'information/about' },
+    { path: 'information/about', component: AboutPageComponent },
     {
-        path: 'modpack', component: ModpackPageComponent, data: {
+        path: 'information/modpack', component: ModpackPageComponent, data: {
             permissions: {
                 except: [Permissions.UNLOGGED, Permissions.UNCONFIRMED],
                 redirectTo: {
@@ -455,7 +457,6 @@ const appRoutes: Routes = [
             }
         }, canActivate: [NgxPermissionsGuard]
     },
-    { path: 'about', component: AboutPageComponent },
     { path: 'docs', component: DocsPageComponent },
     { path: 'docs/:id', component: DocsPageComponent },
     { path: 'policy', component: PolicyPageComponent },

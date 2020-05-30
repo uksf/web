@@ -27,7 +27,7 @@
             </div>
         </div>
         <ng-template [ngxPermissionsExcept]="['MEMBER']">
-            <app-about-page></app-about-page>
+            <app-about-page [showRoute]="false"></app-about-page>
         </ng-template>
         <ng-template [ngxPermissionsOnly]="['MEMBER']">
             <div class="flex-container">This area is intentionally empty at the moment</div>

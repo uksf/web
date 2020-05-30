@@ -9,8 +9,8 @@ import { Permissions } from 'app/Services/permissions';
 })
 export class OperationsPageComponent {
     tabLinks = [
-        { label: 'OPORDs', link: '../opords' },
-        { label: 'OPREPs', link: '../opreps' },
+        // { label: 'OPORDs', link: '../opords' },
+        // { label: 'OPREPs', link: '../opreps' },
         { label: 'Activity', link: '../activity' }
     ];
 
@@ -19,8 +19,8 @@ export class OperationsPageComponent {
         if (grantedPermissions[Permissions.SERVERS]) {
             this.tabLinks = [
                 { label: 'Servers', link: '../servers' },
-                { label: 'OPORDs', link: '../opords' },
-                { label: 'OPREPs', link: '../opreps' },
+                // { label: 'OPORDs', link: '../opords' },
+                // { label: 'OPREPs', link: '../opreps' },
                 { label: 'Activity', link: '../activity' }
             ];
         }

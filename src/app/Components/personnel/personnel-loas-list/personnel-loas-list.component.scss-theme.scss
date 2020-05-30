@@ -3,7 +3,6 @@
 @mixin personnel-loas-list-component-theme($theme) {
     $background: map-get($theme, background);
     $primary: map-get($theme, primary);
-    $warn: map-get($theme, warn);
 
     app-personnel-loas-list {
         .list-container {
@@ -11,6 +10,7 @@
                 &.hover:hover {
                     background-color: mat-color($background, hover);
                 }
+
                 .header-container {
                     .description {
                         &.pending {

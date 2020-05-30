@@ -9,7 +9,7 @@ export class AdminPageComponent {
     tabLinks = [
         { label: 'Audit', link: '../audit' },
         { label: 'Errors', link: '../errors' },
-        { label: 'Launcher', link: '../launcher' },
+        // { label: 'Launcher', link: '../launcher' },
         { label: 'Logs', link: '../logs' },
         { label: 'Tools', link: '../tools' },
         { label: 'Variables', link: '../variables' }

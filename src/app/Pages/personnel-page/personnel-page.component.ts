@@ -10,7 +10,7 @@ import { Permissions } from 'app/Services/permissions';
 export class PersonnelPageComponent {
     tabLinks = [
         { label: 'LOAs', link: '../loas' },
-        { label: 'Activity', link: '../activity' }
+        // { label: 'Activity', link: '../activity' }
     ];
 
     constructor(private permissions: NgxPermissionsService) {
@@ -18,7 +18,7 @@ export class PersonnelPageComponent {
         if (grantedPermissions[Permissions.DISCHARGES]) {
             this.tabLinks = [
                 { label: 'LOAs', link: '../loas' },
-                { label: 'Activity', link: '../activity' },
+                // { label: 'Activity', link: '../activity' },
                 { label: 'Discharges', link: '../discharges' }
             ];
         }

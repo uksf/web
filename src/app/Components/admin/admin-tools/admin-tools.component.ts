@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, isDevMode } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { AccountService } from 'app/Services/account.service';
@@ -14,6 +14,8 @@ export class AdminToolsComponent {
     updating;
     accountId;
     tools = [];
+    debugTools = [];
+    debug = false;
 
     constructor(private httpClient: HttpClient, private urls: UrlService, private accountService: AccountService, private dialog: MatDialog) { }
 
@@ -24,7 +26,13 @@ export class AdminToolsComponent {
             { title: 'Invalidate Data Caches', function: this.invalidateCaches },
             { title: 'Get Discord Roles', function: this.getDiscordRoles },
             { title: 'Update Discord Users', function: this.updateDiscordRoles }
-        ]
+        ];
+
+        this.debugTools = [
+            { title: 'Test Notification', function: this.testNotification }
+        ];
+
+        this.debug = isDevMode();
     }
 
     runFunction(tool) {
@@ -58,6 +66,15 @@ export class AdminToolsComponent {
     updateDiscordRoles() {
         this.updating = true;
         this.httpClient.get(`${this.urls.apiUrl}/discord/updateuserroles`).subscribe(_ => {
+            this.updating = false;
+        }, _ => {
+            this.updating = false;
+        });
+    }
+
+    testNotification() {
+        this.updating = true;
+        this.httpClient.get(`${this.urls.apiUrl}/debug/notifications-test`).subscribe(_ => {
             this.updating = false;
         }, _ => {
             this.updating = false;
