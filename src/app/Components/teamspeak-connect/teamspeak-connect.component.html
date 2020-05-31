@@ -18,6 +18,12 @@
     </form>
 </div>
 <div *ngIf="sent">
+    <p>
+        Paste the confirmation code from the message sent to you in TeamSpeak into the box below
+    </p>
+    <p>
+        If you did not receive a message with a code, please try again and ensure you select your own TeamSpeak name from the list
+    </p>
     <form [formGroup]="formGroup">
         <div class="row-container">
             <mat-form-field class="normal">

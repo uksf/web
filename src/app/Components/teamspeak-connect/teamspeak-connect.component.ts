@@ -24,9 +24,10 @@ export class ConnectTeamspeakComponent {
     sent = false;
     clients = [];
     private previousResponse = '-1';
-    private data;
+    private data: any;
     private hubConnection: ConnectionContainer;
-    private updateTimeout;
+    private updateTimeout: NodeJS.Timeout;
+    private changedTimeout: NodeJS.Timeout;
 
     constructor(
         private httpClient: HttpClient,
@@ -84,7 +85,7 @@ export class ConnectTeamspeakComponent {
         );
     }
 
-    updateClients(clients) {
+    updateClients(clients: any[]) {
         if (this.previousResponse !== JSON.stringify(clients)) {
             this.clients = clients;
             const tsIds: Array<string> = this.accountService.account.teamspeakIdentities;
@@ -114,14 +115,25 @@ export class ConnectTeamspeakComponent {
         });
     }
 
-    changed(code) {
+    changed(code: string) {
         if (this.pending) { return; }
         nextFrame(() => {
-            this.validateCode(code);
+            this.mergeChanged(() => {
+                this.validateCode(code);
+            });
         })
     }
 
-    validateCode(code) {
+    private mergeChanged(callback: () => void) {
+        if (this.changedTimeout) {
+            clearTimeout(this.changedTimeout);
+        }
+        this.changedTimeout = setTimeout(() => {
+            callback();
+        }, 100);
+    }
+
+    validateCode(code: string) {
         this.pending = true;
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
         this.httpClient.post(this.urls.apiUrl + '/communications/receive', {
