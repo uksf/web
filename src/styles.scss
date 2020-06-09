@@ -1,6 +1,10 @@
 @import "~@angular/material/theming";
 @import "~angular-tree-component/dist/angular-tree-component.css";
 
+.mat-checkbox-layout {
+    white-space: normal !important;
+}
+
 // core
 @include mat-core();
 
