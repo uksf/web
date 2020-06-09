@@ -67,15 +67,15 @@ export class RecruitmentApplicationPageComponent {
                 this.router.navigate(['/application']);
                 return;
             }
-            if (application.account.id !== this.accountService.account.id && !grantedPermissions[Permissions.SR1]
-                && !grantedPermissions[Permissions.SR1_LEAD] && !grantedPermissions[Permissions.COMMAND] && !grantedPermissions[Permissions.ADMIN]) {
+            if (application.account.id !== this.accountService.account.id && !grantedPermissions[Permissions.RECRUITER]
+                && !grantedPermissions[Permissions.RECRUITER_LEAD] && !grantedPermissions[Permissions.COMMAND] && !grantedPermissions[Permissions.ADMIN]) {
                 this.router.navigate(['/home']);
                 return;
             }
             this.application = application;
             this.ratingsForm.patchValue(this.application.account.application.ratings);
 
-            if (grantedPermissions[Permissions.SR1_LEAD]) {
+            if (grantedPermissions[Permissions.RECRUITER_LEAD]) {
                 this.httpClient.get(this.urls.apiUrl + '/recruitment/recruiters').subscribe(recruiterResponse => {
                     this.recruiters = recruiterResponse;
                     this.selected = this.application.recruiterId;

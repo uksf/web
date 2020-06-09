@@ -47,7 +47,7 @@ export class ProfilePageComponent implements OnInit {
             notificationsTeamspeak: [''],
             sr1Enabled: ['']
         });
-        this.recruiter = this.permissions.getPermissions()[Permissions.SR1];
+        this.recruiter = this.permissions.getPermissions()[Permissions.RECRUITER];
         this.admin = this.permissions.getPermissions()[Permissions.ADMIN];
         this.countries = CountryPickerService.countries;
     }

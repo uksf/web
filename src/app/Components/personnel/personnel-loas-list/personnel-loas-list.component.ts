@@ -105,7 +105,7 @@ export class PersonnelLoasListComponent {
             return true;
         }
         const permissions = this.permissions.getPermissions();
-        if (permissions[Permissions.NCO] || permissions[Permissions.COMMAND] || permissions[Permissions.SR1]) {
+        if (permissions[Permissions.NCO] || permissions[Permissions.COMMAND] || permissions[Permissions.RECRUITER]) {
             return true;
         }
 
@@ -120,7 +120,7 @@ export class PersonnelLoasListComponent {
             return true;
         }
         const permissions = this.permissions.getPermissions();
-        if (permissions[Permissions.SR10]) {
+        if (permissions[Permissions.PERSONNEL]) {
             return true;
         }
 

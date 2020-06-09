@@ -155,7 +155,7 @@ const appRoutes: Routes = [
     {
         path: 'recruitment', component: RecruitmentPageComponent, data: {
             permissions: {
-                only: Permissions.SR1,
+                only: Permissions.RECRUITER,
                 except: Permissions.UNLOGGED,
                 redirectTo: '/home'
             }
@@ -164,7 +164,7 @@ const appRoutes: Routes = [
     {
         path: 'recruitment/:id', component: RecruitmentApplicationPageComponent, data: {
             permissions: {
-                only: Permissions.SR1,
+                only: Permissions.RECRUITER,
                 except: Permissions.UNLOGGED,
                 redirectTo: {
                     UNLOGGED: loginRedirect,

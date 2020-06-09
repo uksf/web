@@ -56,7 +56,7 @@ export class ApplicationEditComponent {
         private router: Router
     ) {
         const grantedPermissions = this.permissions.getPermissions();
-        if (grantedPermissions[Permissions.SR1]) {
+        if (grantedPermissions[Permissions.RECRUITER]) {
             this.router.navigate(['/recruitment/' + this.accountService.account.id]);
             return;
         }

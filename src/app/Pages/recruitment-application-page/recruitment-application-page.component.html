@@ -21,7 +21,7 @@
                 [queryParams]="{filter: application.account.lastname}" [disabled]="updating">Discharged</button>
             <button mat-button *ngIf="application.account.application.state == applicationState.ACCEPTED && application.account.membershipState == membershipState.MEMBER" class="red" (click)="resetApplicationToCandidate()" [disabled]="updating">Reset to Candidate</button>
         </div>
-        <ng-template [ngxPermissionsOnly]="['SR1_LEAD']">
+        <ng-template [ngxPermissionsOnly]="['RECRUITER_LEAD']">
             <div class="flex-container flex-row no-padding recruiter">
                 <div>
                     <mat-form-field [floatLabel]="'never'" class="select-thin">
@@ -198,13 +198,13 @@
             <div class="flex-container flex-grow no-padding fit-content">
                 <h4>Application Chat</h4>
                 <mat-card>
-                    <ng-template [ngxPermissionsOnly]="['SR1']">
+                    <ng-template [ngxPermissionsOnly]="['RECRUITER']">
                         <sup>Visible to candidate</sup>
                     </ng-template>
                     <app-comment-display #applicationCommentsDisplay [threadId]="application.account.application.applicationCommentThread"></app-comment-display>
                 </mat-card>
             </div>
-            <ng-template [ngxPermissionsOnly]="['SR1']">
+            <ng-template [ngxPermissionsOnly]="['RECRUITER']">
                 <div class="flex-container flex-grow no-padding padding-left fit-content">
                     <h4>Recruiter Chat</h4>
                     <mat-card>

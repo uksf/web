@@ -51,20 +51,19 @@ export class PermissionsService {
                         if (account.membershipState === MembershipState.MEMBER) {
                             // member
                             this.ngxPermissionsService.addPermission(Permissions.MEMBER);
-                            if (account.permissionSr1) {
-                                this.ngxPermissionsService.addPermission(Permissions.SR1);
+                            if (account.permissionRecruiter) {
+                                this.ngxPermissionsService.addPermission(Permissions.RECRUITER);
                                 this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
                                 this.ngxPermissionsService.addPermission(Permissions.DISCHARGES);
                             }
-                            if (account.permissionSr5) {
-                                this.ngxPermissionsService.addPermission(Permissions.SR5);
+                            if (account.permissionServers) {
                                 this.ngxPermissionsService.addPermission(Permissions.SERVERS);
                             }
-                            if (account.permissionSr10) {
-                                this.ngxPermissionsService.addPermission(Permissions.SR10);
+                            if (account.permissionPersonnel) {
+                                this.ngxPermissionsService.addPermission(Permissions.PERSONNEL);
                             }
-                            if (account.permissionSr1Lead) {
-                                this.ngxPermissionsService.addPermission(Permissions.SR1_LEAD);
+                            if (account.permissionRecruiterLead) {
+                                this.ngxPermissionsService.addPermission(Permissions.RECRUITER_LEAD);
                             }
                             if (account.permissionCommand) {
                                 this.ngxPermissionsService.addPermission(Permissions.COMMAND);

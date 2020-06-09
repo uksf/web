@@ -343,7 +343,7 @@
                 <mat-card>
                     <table style="width: 100%;">
                         <thead class="thead-stats">
-                            <ng-template [ngxPermissionsOnly]="['SR1_LEAD']">
+                            <ng-template [ngxPermissionsOnly]="['RECRUITER_LEAD']">
                                 <th style="width: 10%; text-align: left;"></th>
                             </ng-template>
                             <th style="width: 30%; text-align: left;">SR1</th>
@@ -354,7 +354,7 @@
                         </thead>
                         <tbody>
                             <tr *ngFor="let item of activity">
-                                <ng-template [ngxPermissionsOnly]="['SR1_LEAD']">
+                                <ng-template [ngxPermissionsOnly]="['RECRUITER_LEAD']">
                                     <td class="td-stats-checkbox" style="text-align: left; padding-left: 0px;">
                                         <mat-checkbox color="primary" matTooltip="Recruiter enabled/disabled" [(ngModel)]="item.account.settings.sr1Enabled" (change)="setSr1Enabled(item);"></mat-checkbox>
                                     </td>

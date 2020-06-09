@@ -100,7 +100,7 @@
                             </div>
                             <div class="button-container">
                                 <app-flex-filler></app-flex-filler>
-                                <ng-template [ngxPermissionsOnly]="['SR10']">
+                                <ng-template [ngxPermissionsOnly]="['PERSONNEL']">
                                     <div *ngIf="dischargeCollection.discharges.length < 3">
                                         <button mat-raised-button color="primary" #button (click)="reinstate($event, dischargeCollection); button.disabled = true" [disabled]="dischargeCollection.reinstated || dischargeCollection.requestExists"
                                             [matTooltip]="'Reinstate ' + dischargeCollection.name + ' as a member'">Reinstate</button>
@@ -110,7 +110,7 @@
                                             [matTooltip]="'Request ' + dischargeCollection.name + ' to be reinstated as a member'">Request Reinstate</button>
                                     </div>
                                 </ng-template>
-                                <ng-template [ngxPermissionsExcept]="['SR10']" *ngIf="!dischargeCollection.requestExists">
+                                <ng-template [ngxPermissionsExcept]="['PERSONNEL']" *ngIf="!dischargeCollection.requestExists">
                                     <button mat-raised-button color="primary" #button (click)="requestReinstate($event, dischargeCollection); button.disabled = true" [disabled]="dischargeCollection.reinstated"
                                         [matTooltip]="'Request ' + dischargeCollection.name + ' to be reinstated as a member'">Request
                                         Reinstate</button>

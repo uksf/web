@@ -85,7 +85,7 @@ export class SideBarComponent {
         } else if (grantedPermissions[Permissions.MEMBER]) {
             let combinedArray = new Array();
             combinedArray = combinedArray.concat(this.memberMenuStart);
-            if (grantedPermissions[Permissions.SR1]) {
+            if (grantedPermissions[Permissions.RECRUITER]) {
                 combinedArray.push({ text: 'Recruitment', link: 'recruitment', icon: 'group_add' });
             }
             if (grantedPermissions[Permissions.COMMAND]) {
