@@ -1,8 +1,12 @@
 .large-input {
-    width: 75%;
     margin-bottom: 10px;
+    max-width: 750px;
 }
 
-.mat-select {
-    width: 300px;
+mat-placeholder {
+    white-space: pre-line;
+}
+
+.mat-checkbox-label {
+    white-space: pre-line;
 }

@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl, FormGroupDirective, NgForm } from '@angular/forms';
 import { MatDialog, ErrorStateMatcher } from '@angular/material';
 
@@ -11,18 +11,20 @@ export class InstantErrorStateMatcher implements ErrorStateMatcher {
 @Component({
     selector: 'app-application-details',
     templateUrl: './application-details.component.html',
-    styleUrls: ['../../../Pages/new-application-page/new-application-page.component.scss', './application-details.component.scss']
+    styleUrls: ['../../../Pages/new-application-page/new-application-page.component.scss', './application-details.component.scss'],
+    encapsulation: ViewEncapsulation.None
 })
 export class ApplicationDetailsComponent {
     @Output() nextEvent = new EventEmitter();
     formGroup: FormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     referenceOptions = [
-        { value: 'Google', viewValue: 'Google' },
-        { value: 'Youtube', viewValue: 'Youtube' },
-        { value: 'Reddit', viewValue: 'Reddit' },
-        { value: 'Steam', viewValue: 'Steam' },
         { value: 'Recruiter', viewValue: 'Recruiter' },
+        { value: 'Steam', viewValue: 'Steam' },
+        { value: 'Reddit', viewValue: 'Reddit' },
+        { value: 'Youtube', viewValue: 'Youtube' },
+        { value: 'Instagram', viewValue: 'Instagram' },
+        { value: 'Google', viewValue: 'Google' },
         { value: 'Friend', viewValue: 'Friend' },
         { value: 'Other', viewValue: 'Other' }
     ];
