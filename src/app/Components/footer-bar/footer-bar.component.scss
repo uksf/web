@@ -1,6 +1,8 @@
 .flex-container {
     display: flex;
     flex-direction: column;
+    margin: 0;
+    padding: 0;
 
     .buttons-container {
         display: flex;
