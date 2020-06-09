@@ -49,21 +49,21 @@
         }
 
         .copyright {
-            margin-top: -25px;
+            margin-top: -20px;
             justify-self: flex-end;
             width: fit-content;
             margin-left: auto;
             p {
                 text-align: right;
                 vertical-align: middle;
-                height: 25px;
-                line-height: 25px;
+                height: 20px;
+                line-height: 20px;
             }
         }
     }
 }
 
-@media screen and (max-width: 360px) {
+@media screen and (max-width: 375px) {
     .flex-container {
         .buttons-container {
             justify-content: left;
