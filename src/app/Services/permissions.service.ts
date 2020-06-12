@@ -91,6 +91,7 @@ export class PermissionsService {
                     });
                 } else {
                     // not logged in
+                    this.ngxPermissionsService.flushPermissions();
                     this.ngxPermissionsService.addPermission(Permissions.UNLOGGED);
                     resolve();
                 }
