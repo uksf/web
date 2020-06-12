@@ -2,9 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { MatDialog } from '@angular/material';
-import { RequestLoaModalComponent } from '../../../Modals/command/request-loa-modal/request-loa-modal.component';
-import { NgxPermissionsService } from 'ngx-permissions';
-import { Permissions } from 'app/Services/permissions';
+import { PermissionsService } from 'app/Services/permissions.service';
 
 @Component({
     selector: 'app-personnel-activity',
@@ -13,7 +11,7 @@ import { Permissions } from 'app/Services/permissions';
 })
 export class PersonnelActivityComponent implements OnInit {
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private permissions: NgxPermissionsService) { }
+    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private permissions: PermissionsService) { }
 
     ngOnInit() { }
 }

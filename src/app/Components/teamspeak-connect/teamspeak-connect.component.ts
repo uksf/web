@@ -17,11 +17,12 @@ import { nextFrame } from 'app/Services/helper.service';
 export class ConnectTeamspeakComponent {
     @Input() showCancel = false;
     @Output() connectedEvent = new EventEmitter();
+    @Output() confirmedEvent = new EventEmitter();
     @Output() cancelEvent = new EventEmitter();
     formGroup: FormGroup;
     teamspeakForm: FormGroup;
     pending = false;
-    sent = false;
+    state = 0;
     clients = [];
     private previousResponse = '-1';
     private data: any;
@@ -81,14 +82,14 @@ export class ConnectTeamspeakComponent {
                     clients = [];
                 }
                 this.updateClients(clients);
-            }, error => this.urls.errorWrapper('Failed to find teamspeak client', error)
+            }, error => this.urls.errorWrapper('Failed to find TeamSpeak client', error)
         );
     }
 
     updateClients(clients: any[]) {
         if (this.previousResponse !== JSON.stringify(clients)) {
             this.clients = clients;
-            const tsIds: Array<string> = this.accountService.account.teamspeakIdentities;
+            const tsIds = this.accountService.account.teamspeakIdentities;
             if (tsIds && tsIds.length > 0) {
                 this.clients.forEach(client => {
                     if (tsIds.indexOf(client.clientDbId) !== -1) {
@@ -104,6 +105,10 @@ export class ConnectTeamspeakComponent {
         this.cancelEvent.emit();
     }
 
+    confirmed() {
+        this.confirmedEvent.emit();
+    }
+
     sendCode() {
         this.data = this.teamspeakForm.value.teamspeakId;
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -111,7 +116,7 @@ export class ConnectTeamspeakComponent {
             mode: 'teamspeak',
             data: this.data
         }, { headers: headers }).subscribe(() => {
-            this.sent = true;
+            this.state = 1;
         });
     }
 
@@ -144,10 +149,9 @@ export class ConnectTeamspeakComponent {
         }, { headers: headers }).subscribe(() => {
             this.pending = false;
             this.connectedEvent.emit();
-            this.dialog.open(MessageModalComponent, {
-                data: { message: 'Teamspeak successfully connected' }
-            });
+            this.state = 2;
         }, error => {
+            this.state = 3;
             this.dialog.open(MessageModalComponent, {
                 data: { message: error.error.error }
             }).afterClosed().subscribe(() => {

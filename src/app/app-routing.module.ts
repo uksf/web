@@ -34,7 +34,7 @@ import { AdminLogsComponent } from './Components/admin/admin-logs/admin-logs.com
 import { HttpClient } from '@angular/common/http';
 import { AdminToolsComponent } from './Components/admin/admin-tools/admin-tools.component';
 import { Permissions } from './Services/permissions';
-import { NewApplicationPageComponent } from './Pages/new-application-page/new-application-page.component';
+import { ApplicationPageComponent } from './Pages/application-page/application-page.component';
 import { AdminLauncherLogsComponent } from './Components/admin/admin-launcher-logs/admin-launcher-logs.component';
 import { PersonnelLoasComponent } from './Components/personnel/personnel-loas/personnel-loas.component';
 import { PersonnelDischargesComponent } from './Components/personnel/personnel-discharges/personnel-discharges.component';
@@ -44,7 +44,7 @@ const appRoutes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
     { path: 'home', component: HomePageComponent },
     { path: 'login', component: LoginPageComponent },
-    { path: 'application', component: NewApplicationPageComponent },
+    { path: 'application', component: ApplicationPageComponent },
     {
         path: 'profile', component: ProfilePageComponent, data: {
             permissions: {

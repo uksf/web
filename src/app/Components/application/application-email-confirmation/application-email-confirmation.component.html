@@ -5,15 +5,14 @@
             An email has been sent to <b>'{{email}}'</b> containing a code. Please copy this code to your clipboard and return to this page to enter the code.
         </p>
         <p>
-            Once the code has been confirmed, you will be redirected to the login page befor continuing with the application.
+            Once the code has been confirmed, you will be redirected to the login page before continuing with the application.
         </p>
         <br>
         <mat-form-field class="normal">
             <input matInput formControlName="code" required placeholder="Enter confirmation code" (ngModelChange)="changed($event)">
         </mat-form-field>
-        <br>
         <div class="button-next">
-            <button mat-raised-button color="primary" [disabled]="!formGroup.valid || pending" (click)="next()">Next</button>
+            <button mat-raised-button color="primary" [disabled]="pending || resent" (click)="resend()">Resend Code</button>
         </div>
     </form>
 </mat-card>

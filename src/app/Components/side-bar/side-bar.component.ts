@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgxPermissionsService } from 'ngx-permissions';
 import { Permissions } from 'app/Services/permissions';
 import { AccountService, ApplicationState } from 'app/Services/account.service';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from 'app/Services/url.service';
 import { AppComponent } from 'app/app.component';
+import { PermissionsService } from 'app/Services/permissions.service';
 
 @Component({
     selector: 'app-side-bar',
@@ -45,7 +45,7 @@ export class SideBarComponent {
     private currentAccount;
     private cachedSideBarElements;
 
-    constructor(private router: Router, private permissions: NgxPermissionsService, private accountService: AccountService, private httpClient: HttpClient, private urls: UrlService) { }
+    constructor(private router: Router, private permissions: PermissionsService, private accountService: AccountService, private httpClient: HttpClient, private urls: UrlService) { }
 
     ngOnInit() {
         this.checkVersion();

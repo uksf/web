@@ -11,7 +11,7 @@ import { MultipleMessageModalComponent } from 'app/Modals/multiple-message-modal
 import { Observable } from 'rxjs';
 import { ConnectionContainer, SignalRService } from 'app/Services/signalr.service';
 import { Permissions } from 'app/Services/permissions';
-import { NgxPermissionsService } from 'ngx-permissions';
+import { PermissionsService } from 'app/Services/permissions.service';
 
 @Component({
     selector: 'app-operations-servers',
@@ -38,7 +38,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     dropZoneWidth = 0;
     private hubConnection: ConnectionContainer;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private signalrService: SignalRService, private permissions: NgxPermissionsService) {
+    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private signalrService: SignalRService, private permissions: PermissionsService) {
         this.getServers();
         this.getDisabledState();
     }
@@ -55,7 +55,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         this.hubConnection.reconnectEvent.subscribe(() => {
             this.getDisabledState();
         });
-        this.admin = this.permissions.getPermissions()[Permissions.ADMIN];
+        this.admin = this.permissions.hasPermission(Permissions.ADMIN);
     }
 
     ngOnDestroy() {

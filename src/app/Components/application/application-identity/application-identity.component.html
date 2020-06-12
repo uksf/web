@@ -30,7 +30,7 @@
         <br>
         <div>
             <p>
-                This name will be used in-game, on teamspeak, and on discord.
+                This name will be used in-game, on TeamSpeak, and on Discord.
             </p>
             <p>
                 If you do not wish to use your real name, you may use a realistic fake name (for example, Barry Miller)
@@ -47,25 +47,26 @@
             <p>Date of Birth</p>
             <p>For example: 15/02/1989</p>
             <mat-form-field class="dob">
-                <input matInput type="number" formControlName="day" placeholder="dd" maxlength="2" required autocomplete="bday-day" (keyup)="numberOnly('day', 1, 31)">
+                <input matInput type="number" formControlName="day" #day placeholder="dd" maxlength="2" required autocomplete="bday-day" (keyup)="numberOnly($event, 'day', 1, 31)">
             </mat-form-field>/
             <mat-form-field class="dob">
-                <input matInput type="number" formControlName="month" placeholder="mm" maxlength="2" required autocomplete="bday-month" (keyup)="numberOnly('month', 1, 12)">
+                <input matInput type="number" formControlName="month" #month placeholder="mm" maxlength="2" required autocomplete="bday-month" (keyup)="numberOnly($event, 'month', 1, 12)">
             </mat-form-field>/
             <mat-form-field class="dob year">
-                <input matInput type="number" formControlName="year" placeholder="yyyy" maxlength="4" required autocomplete="bday-year" (keyup)="numberOnly('year', 1, 2030)">
+                <input matInput type="number" formControlName="year" #year placeholder="yyyy" maxlength="4" required autocomplete="bday-year" (keyup)="numberOnly($event, 'year', 1, 2030)">
             </mat-form-field>
             <mat-error *ngFor="let validation of validation_messages.dob">
                 <mat-error class="error-message" *ngIf="formGroup.get('dobGroup').hasError(validation.type)">{{validation.message}}</mat-error>
             </mat-error>
         </div>
         <br>
-        <mat-form-field>
-            <mat-select placeholder="Nation of Residence" formControlName="nation">
-                <mat-option *ngFor="let country of countries;" [value]="country.value">
+        <mat-form-field class="nation">
+            <input type="text" placeholder="Nation of Residence" matInput formControlName="nation" [matAutocomplete]="auto">
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="countryDisplayName">
+                <mat-option *ngFor="let country of filteredCountries | async" [value]="country.value">
                     <img src="{{country.value | countryImage}}" width="35"> {{country.value | countryName}}
                 </mat-option>
-            </mat-select>
+            </mat-autocomplete>
         </mat-form-field>
         <br>
         <div class="button-next">

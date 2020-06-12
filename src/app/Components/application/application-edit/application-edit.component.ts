@@ -7,7 +7,6 @@ import { UrlService } from 'app/Services/url.service';
 import { Router } from '@angular/router';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
 import { PermissionsService } from 'app/Services/permissions.service';
-import { NgxPermissionsService } from 'ngx-permissions';
 import { Permissions } from 'app/Services/permissions';
 
 export class InstantErrorStateMatcher implements ErrorStateMatcher {
@@ -19,7 +18,7 @@ export class InstantErrorStateMatcher implements ErrorStateMatcher {
 @Component({
     selector: 'app-application-edit',
     templateUrl: './application-edit.component.html',
-    styleUrls: ['../../../Pages/new-application-page/new-application-page.component.scss', './application-edit.component.scss']
+    styleUrls: ['../../../Pages/application-page/application-page.component.scss', './application-edit.component.scss']
 })
 export class ApplicationEditComponent {
     formGroup: FormGroup;
@@ -51,12 +50,10 @@ export class ApplicationEditComponent {
         private httpClient: HttpClient,
         private urls: UrlService,
         private accountService: AccountService,
-        private permissions: NgxPermissionsService,
-        private permissionsService: PermissionsService,
+        private permissions: PermissionsService,
         private router: Router
     ) {
-        const grantedPermissions = this.permissions.getPermissions();
-        if (grantedPermissions[Permissions.RECRUITER]) {
+        if (this.permissions.hasPermission(Permissions.RECRUITER)) {
             this.router.navigate(['/recruitment/' + this.accountService.account.id]);
             return;
         }
@@ -73,7 +70,7 @@ export class ApplicationEditComponent {
         });
         this.formGroup.patchValue(this.accountService.account);
         this.original = JSON.stringify(this.formGroup.getRawValue());
-        this.permissionsService.accountUpdateEvent.subscribe(() => {
+        this.permissions.accountUpdateEvent.subscribe(() => {
             this.formGroup.patchValue(this.accountService.account);
             this.original = JSON.stringify(this.formGroup.getRawValue());
         });

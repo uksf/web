@@ -1,11 +1,11 @@
-<div *ngIf="!sent">
+<div *ngIf="state === 0">
     <span>
         Connect to our <a href="ts3server://uk-sf.co.uk">TeamSpeak (uk-sf.co.uk)</a>, then select your TeamSpeak name from the list below, then press 'Send Code'
     </span>
     <form [formGroup]="teamspeakForm">
         <div class="row-container">
             <mat-form-field>
-                <mat-select placeholder="{{(clients.length === 0) ? 'TeamSpeak service not connected' : 'Select your teamspeak name'}}" formControlName="teamspeakId">
+                <mat-select placeholder="{{(clients.length === 0) ? 'TeamSpeak service not connected' : 'Select your TeamSpeak name'}}" formControlName="teamspeakId">
                     <mat-option *ngFor="let teamspeakUser of clients" [value]="teamspeakUser.clientDbId">
                         {{ teamspeakUser.name }}
                     </mat-option>
@@ -17,7 +17,7 @@
         </div>
     </form>
 </div>
-<div *ngIf="sent">
+<div *ngIf="state === 1">
     <p>
         Paste the confirmation code from the message sent to you in TeamSpeak into the box below
     </p>
@@ -33,4 +33,22 @@
             <button mat-raised-button class="cancel" *ngIf="showCancel" (click)="cancel()">Cancel</button>
         </div>
     </form>
+</div>
+<div *ngIf="state === 2">
+    <p>
+        TeamSpeak was successfully connected
+    </p>
+    <div class="row-container">
+        <app-flex-filler></app-flex-filler>
+        <button mat-raised-button class="cancel" (click)="confirmed()">Close</button>
+    </div>
+</div>
+<div *ngIf="state === 3">
+    <p>
+        TeamSpeak failed to connect
+    </p>
+    <div class="row-container">
+        <app-flex-filler></app-flex-filler>
+        <button mat-raised-button class="cancel" (click)="confirmed()">Close</button>
+    </div>
 </div>

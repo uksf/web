@@ -11,11 +11,12 @@ import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confir
 @Component({
     selector: 'app-application-communications',
     templateUrl: './application-communications.component.html',
-    styleUrls: ['./application-communications.component.scss', '../../../Pages/new-application-page/new-application-page.component.scss']
+    styleUrls: ['./application-communications.component.scss', '../../../Pages/application-page/application-page.component.scss']
 })
 export class ApplicationCommunicationsComponent {
     @Output() nextEvent = new EventEmitter();
-    mode = 'teamspeak';
+    mode = 'pending';
+    private pendingValidation = false;
 
     constructor(
         private httpClient: HttpClient,
@@ -27,9 +28,11 @@ export class ApplicationCommunicationsComponent {
         private permissionsService: PermissionsService
     ) {
         if (window.location.href.indexOf('steamid=') !== -1) {
+            this.pendingValidation = true;
             const id = this.route.snapshot.queryParams['steamid'];
             if (id === 'fail') {
                 this.router.navigate(['/application']).then(() => {
+                    this.pendingValidation = false;
                     this.checkModes();
                     this.dialog.open(MessageModalComponent, {
                         data: { message: 'Steam failed to connect' }
@@ -39,6 +42,7 @@ export class ApplicationCommunicationsComponent {
                 const code = this.route.snapshot.queryParams['validation'];
                 this.httpClient.post(this.urls.apiUrl + '/steamcode/' + id, { code: code }).subscribe(() => {
                     this.router.navigate(['/application']).then(() => {
+                        this.pendingValidation = false;
                         this.checkModes();
                         this.dialog.open(MessageModalComponent, {
                             data: { message: 'Steam successfully connected' }
@@ -46,6 +50,7 @@ export class ApplicationCommunicationsComponent {
                     });
                 }, error => {
                     this.router.navigate(['/application']).then(() => {
+                        this.pendingValidation = false;
                         this.dialog.open(MessageModalComponent, {
                             data: { message: error.error.error }
                         });
@@ -53,9 +58,11 @@ export class ApplicationCommunicationsComponent {
                 });
             }
         } else if (window.location.href.indexOf('discordid=') !== -1) {
+            this.pendingValidation = true;
             const id = this.route.snapshot.queryParams['discordid'];
             if (id === 'fail') {
                 this.router.navigate(['/application']).then(() => {
+                    this.pendingValidation = false;
                     this.checkModes();
                     this.dialog.open(MessageModalComponent, {
                         data: { message: 'Discord failed to connect' }
@@ -66,6 +73,7 @@ export class ApplicationCommunicationsComponent {
                 const added = this.route.snapshot.queryParams['added'];
                 this.httpClient.post(this.urls.apiUrl + '/discordcode/' + id, { code: code }).subscribe(() => {
                     this.router.navigate(['/application']).then(() => {
+                        this.pendingValidation = false;
                         this.checkModes();
                         if (added === 'true') {
                             this.dialog.open(MessageModalComponent, {
@@ -73,7 +81,7 @@ export class ApplicationCommunicationsComponent {
                             });
                         } else {
                             this.dialog.open(ConfirmationModalComponent, {
-                                data: { message: 'Discord successfully connected\n\nWe were unable to add you to our discord server.\nPlease join by pressing \'Join Discord\'', button: 'Join Discord' }
+                                data: { message: 'Discord successfully connected\n\nWe were unable to add you to our Discord server.\nPlease join by pressing \'Join Discord\'', button: 'Join Discord' }
                             }).componentInstance.confirmEvent.subscribe(() => {
                                 window.open('https://discord.uk-sf.co.uk', '_blank');
                             });
@@ -81,6 +89,7 @@ export class ApplicationCommunicationsComponent {
                     });
                 }, error => {
                     this.router.navigate(['/application']).then(() => {
+                        this.pendingValidation = false;
                         this.dialog.open(MessageModalComponent, {
                             data: { message: error.error.error }
                         });
@@ -99,6 +108,8 @@ export class ApplicationCommunicationsComponent {
     }
 
     checkModes() {
+        if (this.pendingValidation) { return; }
+
         if (this.accountService.account) {
             this.permissionsService.refresh().then(() => {
                 if (!this.accountService.account.teamspeakIdentities || this.accountService.account.teamspeakIdentities.length === 0) {
@@ -120,10 +131,10 @@ export class ApplicationCommunicationsComponent {
         this.dialog.open(ConfirmationModalComponent, {
             data: {
                 message: 'By pressing \'Continue\' you will be redirected to <b>steamcommunity.com</b> where you will be asked to log in.' +
-                '\nBy doing so, we are able to read only your Steam User ID, which we store in our database for the purpose of verifying you have a valid steam account and for recruitment communication.' +
-                '\nWe can read no more information about your account than this.' +
-                '\n\nPlease note this is done on the official steam website, meaning we have zero interaction with your login process.' +
-                '\nIf you have any concerns about this process, please contact UKSF Staff for assistance.',
+                    '\nBy doing so, we are able to read only your Steam User ID, which we store in our database for the purpose of verifying you have a valid Steam account and for recruitment communication.' +
+                    '\nWe can read no more information about your account than this.' +
+                    '\n\nPlease note this is done on the official Steam website, meaning we have zero interaction with your login process.' +
+                    '\nIf you have any concerns about this process, please contact UKSF Staff for assistance.',
                 button: 'Continue'
             }
         }).componentInstance.confirmEvent.subscribe(() => {
@@ -135,11 +146,11 @@ export class ApplicationCommunicationsComponent {
         this.dialog.open(ConfirmationModalComponent, {
             data: {
                 message: 'By pressing \'Continue\' you will be redirected to <b>discord.com</b> where you will be asked to log in.' +
-                '\nBy doing so, we are able to read only your Discord User ID, which we store in our database for the purpose of connectivity between this website and our discord server.' +
-                '\nIn addition to reading your User ID, we will automatically add you to our discord server.' +
-                '\nWe can read no more information about your account than this.' +
-                '\n\nPlease note this is done on the official discord website, meaning we have zero interaction with your login process.' +
-                '\nIf you have any concerns about this process, please contact UKSF Staff for assistance.',
+                    '\nBy doing so, we are able to read only your Discord User ID, which we store in our database for the purpose of connectivity between this website and our Discord server.' +
+                    '\nIn addition to reading your User ID, we will automatically add you to our Discord server.' +
+                    '\nWe can read no more information about your account than this.' +
+                    '\n\nPlease note this is done on the official Discord website, meaning we have zero interaction with your login process.' +
+                    '\nIf you have any concerns about this process, please contact UKSF Staff for assistance.',
                 button: 'Continue'
             }
         }).componentInstance.confirmEvent.subscribe(() => {

@@ -39,6 +39,6 @@ export class CountryPickerService {
 }
 
 export interface ICountry {
-    value;
-    name;
+    value: string;
+    name: string;
 }

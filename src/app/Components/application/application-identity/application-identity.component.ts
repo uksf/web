@@ -1,13 +1,14 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl, FormGroupDirective, NgForm, AbstractControl, ValidationErrors } from '@angular/forms';
 import { HttpHeaders } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { MatDialog, ErrorStateMatcher } from '@angular/material';
 import { Observable, of, timer } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
+import { switchMap, map, startWith } from 'rxjs/operators';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
 import { ICountry, CountryPickerService } from 'app/Services/CountryPicker/country-picker.service';
+import { CountryName } from 'app/Pipes/country.pipe';
 
 function matchingPasswords(passwordKey: string, confirmPasswordKey: string) {
     return (group: FormGroup): { [key: string]: any } => {
@@ -71,15 +72,19 @@ export class ConfirmValidParentMatcher implements ErrorStateMatcher {
 @Component({
     selector: 'app-application-identity',
     templateUrl: './application-identity.component.html',
-    styleUrls: ['../../../Pages/new-application-page/new-application-page.component.scss', './application-identity.component.scss']
+    styleUrls: ['../../../Pages/application-page/application-page.component.scss', './application-identity.component.scss']
 })
 export class ApplicationIdentityComponent {
     @Output() nextEvent = new EventEmitter();
+    @ViewChild('day', { static: false }) dobDay: ElementRef;
+    @ViewChild('month', { static: false }) dobMonth: ElementRef;
+    @ViewChild('year', { static: false }) dobYear: ElementRef;
     formGroup: FormGroup;
     pending = false;
     confirmValidParentMatcher = new ConfirmValidParentMatcher();
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     countries: ICountry[];
+    filteredCountries: Observable<ICountry[]>;
     validating = false;
 
     validation_messages = {
@@ -106,10 +111,10 @@ export class ApplicationIdentityComponent {
     }
 
     constructor(
-        private httpClient: HttpClient,
+        public dialog: MatDialog,
         public formBuilder: FormBuilder,
-        private urls: UrlService,
-        public dialog: MatDialog
+        private httpClient: HttpClient,
+        private urls: UrlService
     ) {
         this.formGroup = formBuilder.group({
             name: ['', Validators.maxLength(0)],
@@ -128,6 +133,13 @@ export class ApplicationIdentityComponent {
             nation: ['', Validators.required]
         });
         this.countries = CountryPickerService.countries;
+    }
+
+    ngOnInit(): void {
+        this.filteredCountries = this.formGroup.get(['nation']).valueChanges.pipe(
+            startWith(''),
+            map(x => this.filterCountry(x))
+        )
     }
 
     private validateEmail(control: AbstractControl): Observable<ValidationErrors> {
@@ -152,7 +164,26 @@ export class ApplicationIdentityComponent {
         );
     }
 
-    numberOnly(fieldName: string, min: number, max: number) {
+    private filterCountry(value: string): ICountry[] {
+        const filterValue = value.toLowerCase();
+        return this.countries.filter(x => x.name.toLowerCase().includes(filterValue));
+    }
+
+    numberOnly(event: KeyboardEvent, fieldName: string, min: number, max: number) {
+        if (event.key === 'ArrowRight') {
+            if (fieldName === 'day') {
+                this.dobMonth.nativeElement.focus();
+            } else if (fieldName === 'month') {
+                this.dobYear.nativeElement.focus();
+            }
+        } else if (event.key === 'ArrowLeft') {
+            if (fieldName === 'month') {
+                this.dobDay.nativeElement.focus();
+            } else if (fieldName === 'year') {
+                this.dobMonth.nativeElement.focus();
+            }
+        }
+
         const field: AbstractControl = this.formGroup.get(['dobGroup', fieldName]);
         const value = parseInt(field.value, 10);
 
@@ -161,6 +192,15 @@ export class ApplicationIdentityComponent {
         } else if (value > max) {
             field.setValue(max);
         }
+    }
+
+    countryDisplayName(value: string): string {
+        if (!value) {
+            return '';
+        }
+
+        const countryName = new CountryName();
+        return countryName.transform(value);
     }
 
     next() {

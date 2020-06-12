@@ -6,11 +6,11 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommentDisplayComponent } from '../../Components/comment-display/comment-display.component';
 import { MembershipState, ApplicationState, AccountService } from '../../Services/account.service';
-import { NgxPermissionsService } from 'ngx-permissions';
 import { Permissions } from 'app/Services/permissions';
 import { CountryPickerService, ICountry } from 'app/Services/CountryPicker/country-picker.service';
 import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
 import { MatDialog } from '@angular/material';
+import { PermissionsService } from 'app/Services/permissions.service';
 
 @Component({
     selector: 'app-recruitment-application-page',
@@ -38,7 +38,7 @@ export class RecruitmentApplicationPageComponent {
         private formbuilder: FormBuilder,
         private route: ActivatedRoute,
         private router: Router,
-        private permissions: NgxPermissionsService,
+        private permissions: PermissionsService,
         private accountService: AccountService,
         private location: Location,
         private dialog: MatDialog
@@ -51,37 +51,38 @@ export class RecruitmentApplicationPageComponent {
             criticism: []
         }, {});
         this.countries = CountryPickerService.countries;
+
         if (this.route.snapshot.params.id) {
             this.accountId = this.route.snapshot.params.id;
         } else {
             this.accountId = this.accountService.account.id;
         }
+
         this.getApplication();
     }
 
     getApplication() {
         this.httpClient.get(this.urls.apiUrl + '/recruitment/' + this.accountId).subscribe((response: any) => {
             const application = response;
-            const grantedPermissions = this.permissions.getPermissions();
             if (application.account.id === this.accountService.account.id && application.account.application.state === ApplicationState.WAITING) {
                 this.router.navigate(['/application']);
                 return;
             }
-            if (application.account.id !== this.accountService.account.id && !grantedPermissions[Permissions.RECRUITER]
-                && !grantedPermissions[Permissions.RECRUITER_LEAD] && !grantedPermissions[Permissions.COMMAND] && !grantedPermissions[Permissions.ADMIN]) {
-                this.router.navigate(['/home']);
-                return;
-            }
-            this.application = application;
-            this.ratingsForm.patchValue(this.application.account.application.ratings);
 
-            if (grantedPermissions[Permissions.RECRUITER_LEAD]) {
-                this.httpClient.get(this.urls.apiUrl + '/recruitment/recruiters').subscribe(recruiterResponse => {
-                    this.recruiters = recruiterResponse;
-                    this.selected = this.application.recruiterId;
-                });
+            if (application.account.id === this.accountService.account.id || this.permissions.hasAnyPermissionOf([Permissions.RECRUITER, Permissions.RECRUITER_LEAD, Permissions.COMMAND, Permissions.ADMIN])) {
+                this.application = application;
+                this.ratingsForm.patchValue(this.application.account.application.ratings);
+
+                if (this.permissions.hasPermission(Permissions.RECRUITER_LEAD)) {
+                    this.httpClient.get(this.urls.apiUrl + '/recruitment/recruiters').subscribe(recruiterResponse => {
+                        this.recruiters = recruiterResponse;
+                        this.selected = this.application.recruiterId;
+                    });
+                }
+                this.updating = false;
+            } else {
+                this.router.navigate(['/home']);
             }
-            this.updating = false;
         });
     }
 

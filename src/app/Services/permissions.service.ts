@@ -12,7 +12,7 @@ import { StatesService } from './states.service';
 export class PermissionsService {
     private accountHubConnection: ConnectionContainer;
     private refreshing = false;
-    private updateTimeout;
+    private updateTimeout: NodeJS.Timeout;
     public accountUpdateEvent = new EventEmitter();
 
     constructor(
@@ -43,39 +43,39 @@ export class PermissionsService {
         this.refreshing = true;
         try {
             const promise = new Promise((resolve, reject) => {
-                this.ngxPermissionsService.flushPermissions();
                 if (this.sessionService.hasStorageToken()) {
                     // logged in
                     this.sessionService.setSessionToken();
                     this.accountService.getAccount(account => {
+                        this.ngxPermissionsService.flushPermissions();
                         if (account.membershipState === MembershipState.MEMBER) {
                             // member
                             this.ngxPermissionsService.addPermission(Permissions.MEMBER);
-                            if (account.permissionRecruiter) {
+                            if (account.permissions.recruiter) {
                                 this.ngxPermissionsService.addPermission(Permissions.RECRUITER);
                                 this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
                                 this.ngxPermissionsService.addPermission(Permissions.DISCHARGES);
                             }
-                            if (account.permissionServers) {
+                            if (account.permissions.servers) {
                                 this.ngxPermissionsService.addPermission(Permissions.SERVERS);
                             }
-                            if (account.permissionPersonnel) {
+                            if (account.permissions.personnel) {
                                 this.ngxPermissionsService.addPermission(Permissions.PERSONNEL);
                             }
-                            if (account.permissionRecruiterLead) {
+                            if (account.permissions.recruiterLead) {
                                 this.ngxPermissionsService.addPermission(Permissions.RECRUITER_LEAD);
                             }
-                            if (account.permissionCommand) {
+                            if (account.permissions.command) {
                                 this.ngxPermissionsService.addPermission(Permissions.COMMAND);
                                 this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
                             }
-                            if (account.permissionNco) {
+                            if (account.permissions.nco) {
                                 this.ngxPermissionsService.addPermission(Permissions.NCO);
                                 this.ngxPermissionsService.addPermission(Permissions.SERVERS);
                                 this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
                                 this.ngxPermissionsService.addPermission(Permissions.DISCHARGES);
                             }
-                            if (account.permissionAdmin) {
+                            if (account.permissions.admin) {
                                 this.ngxPermissionsService.addPermission(Permissions.ADMIN);
                             }
                         } else if (account.membershipState === MembershipState.CONFIRMED) {
@@ -108,6 +108,28 @@ export class PermissionsService {
         } catch (error) {
             console.log(error);
         }
+    }
+
+    hasPermission(permission: string) {
+        return this.ngxPermissionsService.getPermissions()[permission] !== undefined;
+    }
+
+    doesNotHavePermission(permission: string) {
+        return !this.hasPermission(permission);
+    }
+
+    hasAnyPermissionOf(permissions: string[]) {
+        return permissions.some(permission => {
+            return this.hasPermission(permission);
+        });
+    }
+
+    hasAllPermissionsOf(permissions: string[]) {
+        return this.ngxPermissionsService.hasPermission(permissions);
+    }
+
+    getPermissions() {
+        return this.ngxPermissionsService.getPermissions();
     }
 
     private mergeUpdates(callback: () => void) {

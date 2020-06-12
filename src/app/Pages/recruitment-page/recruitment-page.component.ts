@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '../../Services/Authentication/authentication.service';
 import { UrlService } from '../../Services/url.service';
@@ -36,29 +36,21 @@ export class RecruitmentPageComponent implements OnInit {
         { 'value': 100, 'name': '100' }
     ];
     private timeout;
-    mobile = false;
     applicationState = ApplicationState;
     accountService: AccountService;
 
     constructor(
-        as: AccountService,
+        newAccountService: AccountService,
         private httpClient: HttpClient,
-        private auth: AuthenticationService,
         private urls: UrlService,
         private router: Router
     ) {
-        this.accountService = as;
+        this.accountService = newAccountService;
     }
 
     ngOnInit() {
         this.getApplications();
         this.getStats();
-        this.mobile = window.screen.width < 450;
-    }
-
-    @HostListener('window:resize', ['$event'])
-    onResize(event) {
-        this.mobile = window.screen.width < 450;
     }
 
     private getApplications() {
@@ -99,11 +91,15 @@ export class RecruitmentPageComponent implements OnInit {
             recruiter = recruiter.account;
             value = recruiter.settings.sr1Enabled;
         }
+
         this.httpClient.post(this.urls.apiUrl + '/accounts/updatesetting/' + recruiter.id, {
             name: 'sr1Enabled',
             value: value
         }).subscribe(_ => {
-            this.activity.find(x => x.account.id === recruiter.id).account.settings.sr1Enabled = value;
+            recruiter = this.activity.find(x => x.account.id === recruiter.id);
+            if (recruiter !== undefined) {
+                recruiter.account.settings.sr1Enabled = value;
+            }
         }, error => this.urls.errorWrapper('Getting account data failed', error));
     }
 
@@ -111,11 +107,11 @@ export class RecruitmentPageComponent implements OnInit {
         this.router.navigate(['/recruitment', application.account.id]);
     }
 
-    capitalizeFirstLetter(string) {
+    capitalizeFirstLetter(string: string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
-    private sort(mode) {
+    sort(mode: number) {
         switch (mode) {
             case 1: // Applied
                 const compareApplied = this.descending
@@ -182,7 +178,7 @@ export class RecruitmentPageComponent implements OnInit {
         }, 150);
     }
 
-    private navigate(mode) {
+    navigate(mode: number) {
         switch (mode) {
             case 0: // Previous
                 this.index -= this.length;

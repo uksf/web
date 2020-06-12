@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { NgxPermissionsService } from 'ngx-permissions';
 
 @Component({
     selector: 'app-command-page',
@@ -14,5 +13,5 @@ export class CommandPageComponent {
         { label: 'Roles', link: '../roles' }
     ];
 
-    constructor(private permissions: NgxPermissionsService) { }
+    constructor() { }
 }

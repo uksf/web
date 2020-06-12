@@ -24,7 +24,7 @@
 @import "app/Pages/information-page/information-page.component.scss-theme.scss";
 @import "app/Pages/login-page/login-page.component.scss-theme.scss";
 @import "app/Pages/modpack-page/modpack-page.component.scss-theme.scss";
-@import "app/Pages/new-application-page/new-application-page.component.scss-theme.scss";
+@import "app/Pages/application-page/application-page.component.scss-theme.scss";
 @import "app/Pages/operations-page/operations-page.component.scss-theme.scss";
 @import "app/Pages/personnel-page/personnel-page.component.scss-theme.scss";
 @import "app/Pages/profile-page/profile-page.component.scss-theme.scss";
@@ -62,7 +62,7 @@
     @include information-page-component-theme($theme);
     @include login-page-component-theme($theme);
     @include modpack-page-component-theme($theme);
-    @include new-application-page-component-theme($theme);
+    @include application-page-component-theme($theme);
     @include operations-page-component-theme($theme);
     @include personnel-page-component-theme($theme);
     @include profile-page-component-theme($theme);

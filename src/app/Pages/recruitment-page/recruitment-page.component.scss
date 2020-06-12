@@ -1,24 +1,4 @@
 app-side-content-area {
-    margin-top: 10px;
-
-    .sr1Enabled-container {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-
-        .enabled {
-            color: green;
-            margin: 0px;
-            flex: 1;
-        }
-
-        .disabled {
-            color: red;
-            margin: 0px;
-            flex: 1;
-        }
-    }
-
     td.tr-stats {
         margin: 2px 5px;
         padding: 2px 5px;
@@ -40,63 +20,253 @@ app-side-content-area {
     margin-left: 0;
     padding-left: 16px;
     padding-right: 16px;
-}
+    padding-bottom: 16px;
 
-.applications-container {
-    .applicationCardMine {
-        width: 100%;
-        float: left;
-        margin: 3px;
-        padding: 5px;
-        cursor: pointer;
+    .applications {
+        .applications-container {
+            .application-card {
+                display: flex;
+                flex-direction: row;
+                width: 100%;
+                margin-bottom: 5px;
+                padding: 5px;
+                cursor: pointer;
+
+                &.others {
+                    opacity: 0.9;
+                }
+
+                .name {
+                    flex-grow: 1;
+                    flex-basis: 20%;
+                    padding: 10px;
+                    margin: auto 0;
+                }
+
+                .details {
+                    display: flex;
+                    flex-direction: column;
+                    flex-grow: 1;
+                    flex-basis: 80%;
+
+                    .row {
+                        display: flex;
+                        flex-direction: row;
+                        margin: auto 0;
+                    }
+
+                    .item {
+                        flex-grow: 1;
+                        padding: 5px 10px;
+
+                        &.recruiter {
+                            flex-basis: 40%;
+                        }
+
+                        &.teamspeak {
+                            flex-basis: 30%;
+                        }
+
+                        &.applied {
+                            flex-basis: 30%;
+                        }
+
+                        &.email {
+                            cursor: default;
+                            flex-basis: 40%;
+                        }
+
+                        &.steam {
+                            flex-basis: 30%;
+                        }
+
+                        &.processing {
+                            flex-basis: 30%;
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    .applicationCardOthers {
-        width: 100%;
-        float: left;
-        margin: 3px;
-        padding: 5px;
-        cursor: pointer;
-        opacity: 0.9;
+    .history {
+        .history-header {
+            display: flex;
+            flex-direction: row;
+            margin-top: 10px;
+
+            .history-header-part-container {
+                display: flex;
+                flex-direction: row;
+
+                h3 {
+                    margin-right: 15px;
+                }
+
+                &.actions {
+                    flex-grow: 1;
+                }
+
+                &.buttons {
+                    flex-grow: 1;
+                }
+
+                .history-header-part {
+                    margin: 5px 0;
+                    align-self: center;
+                    display: flex;
+                    flex-direction: row;
+
+                    .icon-right {
+                        vertical-align: middle;
+                    }
+
+                    &.search {
+                        flex-grow: 1;
+
+                        .mat-form-field {
+                            width: 100%;
+
+                            .mat-icon-button {
+                                background-color: transparent;
+                                margin-left: -21px;
+
+                                .mat-icon {
+                                    margin: 0;
+                                    height: 21px;
+                                    line-height: 21px;
+                                }
+                            }
+                        }
+                    }
+
+                    &.sort {
+                        button {
+                            margin-left: 10px;
+                        }
+                    }
+
+                    &.pagination {
+                        .mat-select {
+                            margin: auto 0;
+                        }
+                    }
+                }
+            }
+        }
+
+        .history-application {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            margin-bottom: 3px;
+            padding: 5px;
+            cursor: pointer;
+
+            &:first-of-type {
+                margin-top: 3px;
+            }
+
+            .name {
+                flex-grow: 1;
+                flex-basis: 15%;
+                margin: auto 0;
+                padding: 2px 5px;
+            }
+
+            .details {
+                display: flex;
+                flex-direction: row;
+                flex-grow: 1;
+                flex-basis: 75%;
+
+                .item {
+                    flex-grow: 1;
+                    padding: 2px 5px;
+
+                    &.recruiter {
+                        flex-basis: 25%;
+                    }
+
+                    &.applied {
+                        flex-basis: 25%;
+                    }
+
+                    &.accepted {
+                        flex-basis: 25%;
+                    }
+
+                    &.processed {
+                        flex-basis: 25%;
+                    }
+                }
+            }
+        }
     }
-}
 
-.applicationCardList {
-    width: 100%;
-    float: left;
-    margin: 2px;
-    padding: 5px;
-    cursor: pointer;
-}
+    .state-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
 
-.table-list {
-    width: 100%;
-}
+        .enabled {
+            color: green;
+            margin: 0px;
+            flex: 1;
+        }
 
-.tr-active td {
-    margin: 1px;
-    padding: 4px 10px;
-    border: 0px;
-}
-
-.tr-list td {
-    margin: 0px;
-    padding: 0 0 0 10px;
-    border: 0px;
-}
-
-.history-header {
-    .icon-right {
-        vertical-align: middle;
+        .disabled {
+            color: red;
+            margin: 0px;
+            flex: 1;
+        }
     }
 
-    .mat-icon-button {
-        background-color: transparent;
+    &.stats {
+        .stats-container {
+            display: flex;
+            flex-direction: column;
 
-        .mat-icon {
-            margin: 0;
-            height: 21px;
-            line-height: 21px;
+            .stats-item {
+                &.activity {
+                    .activity-row {
+                        display: flex;
+                        flex-direction: row;
+                        padding: 3px 0;
+
+                        .item {
+                            text-align: center;
+                            flex-grow: 1;
+                            flex-basis: 20%;
+
+                            &.state {
+                                text-align: left;
+                                max-width: 16px;
+                                min-width: 16px;
+                                height: 16px;
+                                margin: auto 5px auto 0;
+
+                                .mat-checkbox-layout {
+                                    margin: 0;
+                                }
+                            }
+
+                            &.recruiter {
+                                text-align: left;
+                                min-width: 100px;
+                            }
+
+                            &.active {
+                                flex-basis: 15%;
+                            }
+
+                            &.total {
+                                flex-basis: 10%;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -113,67 +283,334 @@ app-side-content-area {
     color: red;
 }
 
+@media screen and (max-width: 1450px) {
+    app-default-content-areas {
+        grid-template-areas: "main" "side";
+        grid-template-columns: auto;
+        grid-template-rows: auto auto;
+    }
+
+    .flex-container {
+        &.stats {
+            flex-direction: row;
+
+            .stats-container {
+                width: 50%;
+
+                &:last-of-type {
+                    margin-left: 16px;
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 850px) {
+    .flex-container {
+        .applications {
+            .applications-container {
+                .application-card {
+                    .name {
+                        flex-basis: 25%;
+                    }
+
+                    .details {
+                        flex-basis: 75%;
+
+                        .item {
+                            &.teamspeak {
+                                flex-basis: 20%;
+                            }
+
+                            &.applied {
+                                flex-basis: 20%;
+                            }
+
+                            &.steam {
+                                flex-basis: 20%;
+                            }
+
+                            &.processing {
+                                flex-basis: 20%;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .history {
+            .history-header {
+                flex-direction: column;
+            }
+
+            .history-application {
+                .details {
+                    .item {
+                        &.processed {
+                            display: none;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 768px) {
+    app-default-content-areas {
+        grid-template-columns: 1fr;
+    }
+
+    .flex-container {
+        .applications {
+            .applications-container {
+                .application-card {
+                    .name {
+                        flex-basis: 35%;
+                    }
+
+                    .details {
+                        .item {
+                            &.recruiter {
+                                flex-basis: 50%;
+                            }
+
+                            &.teamspeak {
+                                display: none;
+                            }
+
+                            &.applied {
+                                flex-basis: 30%;
+                            }
+
+                            &.email {
+                                flex-basis: 50%;
+                            }
+
+                            &.steam {
+                                display: none;
+                            }
+
+                            &.processing {
+                                flex-basis: 30%;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        &.stats {
+            flex-direction: column;
+
+            .stats-container {
+                width: 100%;
+
+                &:last-of-type {
+                    margin-left: 0;
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .flex-container {
+        .applications {
+            .applications-container {
+                .application-card {
+                    padding: 8px;
+
+                    .name {
+                        flex-basis: 50%;
+                        padding: 5px;
+                    }
+
+                    .details {
+                        flex-basis: 20%;
+
+                        .item {
+                            padding: 2px 5px;
+
+                            &.applied {
+                                display: none;
+                            }
+
+                            &.email {
+                                display: none;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .history {
+            .history-header {
+                .history-header-part-container {
+                    &.actions {
+                        flex-direction: column;
+                    }
+
+                    .history-header-part {
+                        &.search {
+                            align-self: unset;
+                        }
+
+                        &.sort {
+                            button {
+                                margin-left: 0;
+                                margin-right: 10px;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .history-application {
+                .name {
+                    flex-basis: 25%;
+                }
+
+                .details {
+                    flex-basis: 60%;
+
+                    .item {
+                        &.accepted {
+                            display: none;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 @media screen and (max-width: 450px) {
     app-side-content-area {
         .enabled {
             font-size: 16px;
         }
+
         .disabled {
             font-size: 16px;
         }
-        td.tr-stats {
-            font-size: 11px;
-        }
-        .td-stats-checkbox {
-            font-size: 11px;
-        }
-        .thead-stats th {
-            font-size: 11px;
-        }
     }
-    .applications-container {
-        .applicationCardMine {
-            width: 98%;
+
+    .flex-container {
+        .applications {
+            .applications-container {
+                .application-card {
+                    .name {
+                        flex-basis: 30%;
+                        padding: 0;
+
+                        h4 {
+                            font-size: 16px;
+                        }
+                    }
+
+                    .details {
+                        flex-basis: 20%;
+
+                        .item {
+                            padding: 0;
+                        }
+                    }
+                }
+            }
         }
-        .applicationCardOthers {
-            width: 98%;
+
+        .history {
+            .history-header {
+                .history-header-part-container {
+                    .history-header-part {
+                        margin: 5px;
+                        flex: 1;
+                    }
+                }
+            }
+
+            .history-applications {
+                .history-application {
+                    .name {
+                        flex-basis: 0%;
+                    }
+
+                    .details {
+                        flex-basis: 0%;
+
+                        .item {
+                            &.applied {
+                                display: none;
+                            }
+                        }
+                    }
+                }
+            }
         }
-        .application-card-container {
-            display: flex;
-            align-items: center;
+
+        &.stats {
+            .stats-container {
+                .stats-item {
+                    &.statistics {
+                        .mat-card {
+                            padding: 8px;
+                        }
+                    }
+                }
+            }
         }
-        .application-card-name {
-            flex: 1;
-        }
-    }
-    .applicationCardList {
-        max-width: 99vw;
-        padding: 1px;
-    }
-    .history-header {
-        display: flex;
-        flex-direction: column;
-        .history-header-mobile-part {
-            margin: 5px;
-            flex: 1;
-        }
-    }
-    .history {
-        display: flex;
-        flex-direction: column;
     }
 }
 
-app-default-content-areas {
-    grid-template-areas: "main side";
-    grid-template-columns: 1fr 0.45fr;
-}
+@media screen and (max-width: 425px) {
+    .flex-container {
+        .history {
+            .history-header {
+                .history-header-part-container {
+                    &.buttons {
+                        flex-direction: column;
 
-@media screen and (max-width: 950px) {
-    app-default-content-areas {
-        display: grid;
-        grid-template-areas: "main" "side";
-        grid-template-columns: auto;
-        grid-template-rows: auto auto;
+                        app-flex-filler {
+                            display: none;
+                        }
+
+                        .history-header-part {
+                            align-self: flex-start;
+                        }
+                    }
+                }
+            }
+        }
+
+        &.stats {
+            .stats-container {
+                .stats-item {
+                    &.activity {
+                        .mat-card {
+                            padding: 8px;
+                        }
+
+                        .activity-row {
+                            .item {
+                                font-size: 11px;
+
+                                &.recruiter {
+                                    min-width: 80px;
+                                }
+                            }
+                        }
+                    }
+
+                    &.statistics {
+                        ::ng-deep .mat-tab-label {
+                            padding: 0 12px !important;
+                        }
+                    }
+                }
+            }
+        }
     }
 }

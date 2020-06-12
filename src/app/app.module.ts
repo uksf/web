@@ -147,10 +147,11 @@ import { MessageModalComponent } from './Modals/message-modal/message-modal.comp
 import { ThemeEmitterComponent } from './Components/theme-emitter/theme-emitter.component';
 import { AdminToolsComponent } from './Components/admin/admin-tools/admin-tools.component';
 import { AuthHttpInterceptor } from './Services/Authentication/auth-http-interceptor';
-import { NewApplicationPageComponent } from './Pages/new-application-page/new-application-page.component';
+import { CountryPickerService } from './Services/CountryPicker/country-picker.service';
+import { ApplicationPageComponent } from './Pages/application-page/application-page.component';
+import { ApplicationInfoComponent } from './Components/application/application-info/application-info.component';
 import { ApplicationIdentityComponent } from './Components/application/application-identity/application-identity.component';
 import { ApplicationEmailConfirmationComponent } from './Components/application/application-email-confirmation/application-email-confirmation.component';
-import { CountryPickerService } from './Services/CountryPicker/country-picker.service';
 import { ApplicationCommunicationsComponent } from './Components/application/application-communications/application-communications.component';
 import { ApplicationDetailsComponent } from './Components/application/application-details/application-details.component';
 import { ApplicationSubmitComponent } from './Components/application/application-submit/application-submit.component';
@@ -354,7 +355,8 @@ export function tokenGetter() {
         FileDropComponent,
         ThemeEmitterComponent,
         AdminToolsComponent,
-        NewApplicationPageComponent,
+        ApplicationPageComponent,
+        ApplicationInfoComponent,
         ApplicationIdentityComponent,
         ApplicationEmailConfirmationComponent,
         ApplicationCommunicationsComponent,

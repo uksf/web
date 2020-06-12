@@ -30,7 +30,12 @@
             <app-about-page [showRoute]="false"></app-about-page>
         </ng-template>
         <ng-template [ngxPermissionsOnly]="['MEMBER']">
-            <div class="flex-container">This area is intentionally empty at the moment</div>
+            <div class="flex-container" *ngIf="instagramImages.length == 0">This area is intentionally empty at the moment</div>
+            <div class="flex-container instagram-feed" *ngIf="instagramImages.length > 0">
+                <div class="instagram-image" *ngFor="let instagramImage of instagramImages">
+                    <a target="_blank" href="https://www.instagram.com/p/{{instagramImage.shortcode}}"><img [src]="instagramImage.uri"></a>
+                </div>
+            </div>
         </ng-template>
     </app-main-content-area>
     <app-side-content-area>

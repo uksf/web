@@ -3,6 +3,7 @@ export class Permissions {
     public static readonly UNCONFIRMED = 'UNCONFIRMED';
     public static readonly CONFIRMED = 'CONFIRMED';
     public static readonly MEMBER = 'MEMBER';
+
     public static readonly RECRUITER = 'RECRUITER';
     public static readonly SERVERS = 'SERVERS';
     public static readonly PERSONNEL = 'PERSONNEL';

@@ -14,7 +14,7 @@
             </mat-error>
         </mat-form-field>
         <mat-form-field class="normal">
-            <input #input matInput formControlName="teamspeakGroup" placeholder="Teamspeak Group ID" type="number" [errorStateMatcher]="instantErrorStateMatcher">
+            <input #input matInput formControlName="teamspeakGroup" placeholder="TeamSpeak Group ID" type="number" [errorStateMatcher]="instantErrorStateMatcher">
             <mat-error *ngFor="let validation of validationMessages.teamspeakGroup">
                 <mat-error class="error-message" *ngIf="form.get('teamspeakGroup').hasError(validation.type)">{{validation.message}}</mat-error>
             </mat-error>

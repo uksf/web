@@ -11,7 +11,7 @@ export class InstantErrorStateMatcher implements ErrorStateMatcher {
 @Component({
     selector: 'app-application-details',
     templateUrl: './application-details.component.html',
-    styleUrls: ['../../../Pages/new-application-page/new-application-page.component.scss', './application-details.component.scss']
+    styleUrls: ['../../../Pages/application-page/application-page.component.scss', './application-details.component.scss']
 })
 export class ApplicationDetailsComponent {
     @Output() nextEvent = new EventEmitter();

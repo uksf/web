@@ -1,58 +1,58 @@
 <app-default-content-areas *ngIf="loaded">
+    <app-full-content-area>
+        <div class="flex-container padding-top padding-bottom">
+            <div class="title-container">
+                <div class="member">
+                    <h2 *ngIf="account.membershipState == membershipState.MEMBER">{{account.rank}}</h2>
+                    <h2 *ngIf="account.membershipState == membershipState.MEMBER">{{account.firstname}} {{account.lastname}}</h2>
+                </div>                
+                <h2 *ngIf="account.membershipState == membershipState.CONFIRMED">{{account.firstname}} {{account.lastname}}</h2>
+                <h2 *ngIf="account.membershipState == membershipState.DISCHARGED"><b>Discharged</b> {{account.firstname}} {{account.lastname}}</h2>
+                <app-flex-filler></app-flex-filler>
+                <img src="{{account.nation | countryImage}}">
+            </div>
+        </div>
+        <div class="flex-container padding-bottom">
+            <div class="action-container" *ngIf="isMyProfile">
+                    <button mat-raised-button class="button" (click)="toggleTheme()">{{otherTheme | titlecase}} Theme</button>
+                    <button mat-raised-button class="button" (click)="openChangeNameModal()">Change name</button>
+                    <button mat-raised-button class="button" (click)="openChangePasswordModal()">Change password</button>
+                    <button mat-raised-button class="button" (click)="connectSteam()">
+                        <span *ngIf="account.steamname == null || account.steamname == ''; else steamConnected">Connect Steam</span>
+                        <ng-template #steamConnected>
+                            <span class="connected">Steam connected</span>
+                        </ng-template>
+                    </button>
+                    <button mat-raised-button class="button" (click)="connectDiscord()">
+                        <span *ngIf="account.discordId == null || account.discordId == ''; else discordConnected">Connect Discord</span>
+                        <ng-template #discordConnected>
+                            <span class="connected">Discord connected</span>
+                        </ng-template>
+                    </button>
+                    <button mat-raised-button class="button" (click)="openTeamspeakModal()">
+                        <span *ngIf="account.teamspeakIdentities == null || account.teamspeakIdentities.length == 0; else teamspeakConnected">Connect TeamSpeak</span>
+                        <ng-template #teamspeakConnected>
+                            <span class="connected">TeamSpeak connected</span>
+                        </ng-template>
+                    </button>
+            </div>
+        </div>
+    </app-full-content-area>
+</app-default-content-areas>
+<app-default-content-areas *ngIf="loaded">
     <app-main-content-area>
         <div class="flex-container">
-            <div *ngIf="account.membershipState == membershipState.MEMBER" style="min-width: 400px;">
-                <h2 style="float: left;">{{account.rank}} {{account.firstname}} {{account.lastname}}</h2>
-                <img style="width: 135px; float: right;" src="{{account.nation | countryImage}}">
-                <br style="clear: both;">
-            </div>
-            <div *ngIf="account.membershipState == membershipState.DISCHARGED" style="min-width: 400px;">
-                <h2 style="float: left;"><b>Discharged</b> {{account.firstname}} {{account.lastname}}</h2>
-                <img style="width: 135px; float: right;" src="{{account.nation | countryImage}}">
-                <br style="clear: both;">
-            </div>
-            <div *ngIf="account.membershipState == membershipState.CONFIRMED" style="min-width: 400px;">
-                <h2 style="float: left;">{{account.firstname}} {{account.lastname}}</h2>
-                <img style="width: 135px; float: right;" src="{{account.nation | countryImage}}">
-                <br style="clear: both;">
-            </div>
-            <br>
-            <div *ngIf="isMyProfile">
-                <button mat-raised-button class="button" (click)="openChangeNameModal()">Change name</button>
-                <button mat-raised-button class="button" (click)="openChangePasswordModal()">Change password</button>
-                <button mat-raised-button class="button" (click)="openTeamspeakModal()">
-                    <span *ngIf="account.teamspeakIdentities == null || account.teamspeakIdentities.length == 0; else tsConnected">Connect TeamSpeak</span>
-                    <ng-template #tsConnected>
-                        <span class="connected">TeamSpeak connected</span>
-                    </ng-template>
-                </button>
-                <button mat-raised-button class="button" (click)="connectSteam()">
-                    <span *ngIf="account.steamname == null || account.steamname == ''; else sConnected">Connect Steam</span>
-                    <ng-template #sConnected>
-                        <span class="connected">Steam connected</span>
-                    </ng-template>
-                </button>
-                <button mat-raised-button class="button" (click)="connectDiscord()">
-                    <span *ngIf="account.discordId == null || account.discordId == ''; else dConnected">Connect Discord</span>
-                    <ng-template #dConnected>
-                        <span class="connected">Discord connected</span>
-                    </ng-template>
-                </button>
-                <button mat-raised-button class="button" (click)="toggleTheme()">{{otherTheme | titlecase}} Theme</button>
-            </div>
-            <br>
             <div *ngIf="account.membershipState == membershipState.MEMBER">
                 <mat-card>
                     <div class="details-container">
-                        <div class="details-panel">
-                            <ng-template [ngxPermissionsOnly]="['NCO']">
-                                <div class="detail">
-                                    <b>Email:</b> {{account.email}}
-                                </div>
-                                <div class="detail">
-                                    <b>Steam ID:</b> {{account.steamname}}
-                                </div>
-                            </ng-template>
+                        <h3>Details</h3>
+                        <div class="details-panel" *ngIf="isMyProfile || isNco">
+                            <div class="detail">
+                                <b>Email:</b> {{account.email}}
+                            </div>
+                            <div class="detail">
+                                <b>Steam ID:</b> {{account.steamname}}
+                            </div>
                         </div>
                         <div class="details-panel">
                             <div class="detail">
@@ -64,64 +64,53 @@
                         </div>
                     </div>
                 </mat-card>
-                <div *ngIf="account.application != null">
+
+                <div *ngIf="account.application != null && (isRecruiter || (isMyProfile && !isRecruiter))">
                     <br>
                     <mat-card style="text-align: center; vertical-align: middle;">
-                        <h2 *ngIf="recruiter">
+                        <h2 *ngIf="isRecruiter">
                             <a routerLink="/recruitment/{{account.id}}">View application</a>
                         </h2>
-                        <h2 *ngIf="isMyProfile && !recruiter">
+                        <h2 *ngIf="isMyProfile && !isRecruiter">
                             <a routerLink="/application">View application</a>
                         </h2>
                     </mat-card>
                 </div>
                 <br>
-                <mat-card>
-                    <mat-panel-title>
-                        Service History
-                        <br>
-                    </mat-panel-title>
-                    Below is the service history of the profile, click any of the items to extend and view details.
+                <h3 class="service-record-title">Service History</h3>
+                <mat-card *ngFor="let serviceItem of account.serviceRecord" class="service-record">
+                    <span>{{serviceItem.occurence}}</span>
+                    <app-flex-filler></app-flex-filler>
+                    <span class="date">{{serviceItem.timestamp | date:'mediumDate'}}</span>
                 </mat-card>
-                <mat-expansion-panel *ngFor="let serviceItem of account.serviceRecord">
-                    <mat-expansion-panel-header>
-                        <div style="width: 100%">
-                            <span>{{serviceItem.occurence}}</span>
-                            <span style="margin-right: 2%; float: right;">{{serviceItem.timestamp | date:'mediumDate'}}</span>
-                        </div>
-                    </mat-expansion-panel-header>
-                    {{getServiceRecordNotes(serviceItem.notes)}}
-                </mat-expansion-panel>
             </div>
         </div>
     </app-main-content-area>
     <app-side-content-area>
-        <div class="flex-container">
-            <div style="margin-right: 5px;">
-                <mat-card *ngIf="!accountId || admin">
-                    <h3>Settings</h3>
-                    <br>
-                    <form [formGroup]="settingsFormGroup">
-                        <div>
-                            <mat-checkbox color="primary" formControlName="notificationsEmail" matTooltip="Receive email notifications" (change)="changeSetting('notificationsEmail');">
-                                Email notifications
-                            </mat-checkbox>
-                            <br>
-                        </div>
-                        <div>
-                            <mat-checkbox color="primary" formControlName="notificationsTeamspeak" matTooltip="Receive TeamSpeak notifications" (change)="changeSetting('notificationsTeamspeak');">
-                                TeamSpeak notifications
-                            </mat-checkbox>
-                            <br>
-                        </div>
-                        <div *ngIf="account.permissionRecruiter">
-                            <mat-checkbox color="primary" formControlName="sr1Enabled" matTooltip="Toggle taking SR1 applications" (change)="changeSetting('sr1Enabled');">
-                                Taking applications
-                            </mat-checkbox>
-                        </div>
-                    </form>
-                </mat-card>
-            </div>
+        <div class="flex-container settings">
+            <mat-card *ngIf="!accountId || isAdmin">
+                <h3>Settings</h3>
+                <br>
+                <form [formGroup]="settingsFormGroup">
+                    <div>
+                        <mat-checkbox color="primary" formControlName="notificationsEmail" matTooltip="Receive email notifications" (change)="changeSetting('notificationsEmail');">
+                            Email notifications
+                        </mat-checkbox>
+                        <br>
+                    </div>
+                    <div>
+                        <mat-checkbox color="primary" formControlName="notificationsTeamspeak" matTooltip="Receive TeamSpeak notifications" (change)="changeSetting('notificationsTeamspeak');">
+                            TeamSpeak notifications
+                        </mat-checkbox>
+                        <br>
+                    </div>
+                    <div *ngIf="isRecruiter">
+                        <mat-checkbox color="primary" formControlName="sr1Enabled" matTooltip="Toggle taking SR1 applications" (change)="changeSetting('sr1Enabled');">
+                            Taking applications
+                        </mat-checkbox>
+                    </div>
+                </form>
+            </mat-card>
         </div>
     </app-side-content-area>
 </app-default-content-areas>

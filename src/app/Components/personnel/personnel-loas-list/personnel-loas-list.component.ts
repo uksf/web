@@ -1,8 +1,8 @@
 import { Component, Input, ChangeDetectionStrategy, EventEmitter, Output, SimpleChange } from '@angular/core';
 import { Loa, LoaReviewState } from '../personnel-loas/personnel-loas.component';
-import { NgxPermissionsService } from 'ngx-permissions';
 import { Permissions } from 'app/Services/permissions';
 import { AnimationTriggerMetadata, trigger, state, style, transition, animate } from '@angular/animations';
+import { PermissionsService } from 'app/Services/permissions.service';
 
 export const expansionAnimations: {
     readonly indicatorRotate: AnimationTriggerMetadata;
@@ -53,7 +53,7 @@ export class PersonnelLoasListComponent {
     ];
     selectedIndex = -1;
 
-    constructor(private permissions: NgxPermissionsService) { }
+    constructor(private permissions: PermissionsService) { }
 
     ngOnChanges(changes: { [propKey: string]: SimpleChange }): void {
         this.filter();
@@ -104,8 +104,7 @@ export class PersonnelLoasListComponent {
         if (loa.inChainOfCommand) {
             return true;
         }
-        const permissions = this.permissions.getPermissions();
-        if (permissions[Permissions.NCO] || permissions[Permissions.COMMAND] || permissions[Permissions.RECRUITER]) {
+        if (this.permissions.hasPermission(Permissions.NCO) || this.permissions.hasPermission(Permissions.COMMAND) || this.permissions.hasPermission(Permissions.RECRUITER)) {
             return true;
         }
 
@@ -119,8 +118,7 @@ export class PersonnelLoasListComponent {
         if (loa.inChainOfCommand) {
             return true;
         }
-        const permissions = this.permissions.getPermissions();
-        if (permissions[Permissions.PERSONNEL]) {
+        if (this.permissions.hasPermission(Permissions.PERSONNEL)) {
             return true;
         }
 

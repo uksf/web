@@ -16,6 +16,7 @@ export class HomePageComponent implements OnInit {
     members;
     guests;
     content = [];
+    instagramImages: InstagramImage[] = [];
     _time: number;
     private hubConnection: ConnectionContainer;
     private updateTimeout;
@@ -40,6 +41,8 @@ export class HomePageComponent implements OnInit {
                 this.getClients();
             });
         });
+
+        this.getInstagramImages();
     }
 
     private mergeUpdates(callback: () => void) {
@@ -69,8 +72,19 @@ export class HomePageComponent implements OnInit {
                         this.guests = response['guests'];
                     };
                 }
-            }, error => this.urls.errorWrapper('Failed to get online teamspeak clients', error)
+            }, error => this.urls.errorWrapper('Failed to get online TeamSpeak clients', error)
         );
+    }
+
+    private getInstagramImages() {
+        this.httpClient.get('https://www.instagram.com/uksfmilsim/?__a=1').subscribe((response: any) => {
+            if (response.graphql) {
+                const imageNodes: [] = response.graphql.user.edge_owner_to_timeline_media.edges;
+                imageNodes.forEach((imageNode: any) => {
+                    this.instagramImages.push({ uri: imageNode.node.display_url, shortcode: imageNode.node.shortcode });
+                });
+            }
+        });
     }
 
     get time() {
@@ -84,4 +98,9 @@ export class HomePageComponent implements OnInit {
             }
         });
     }
+}
+
+export interface InstagramImage {
+    uri: string;
+    shortcode: string;
 }

@@ -57,7 +57,7 @@ export class AdminToolsComponent {
             this.updating = false;
         }, error => {
             this.dialog.open(MessageModalComponent, {
-                data: { message: 'Failed to get discord roles' }
+                data: { message: 'Failed to get Discord roles' }
             });
             this.updating = false;
         });

@@ -6,9 +6,9 @@ import { Observable, timer } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 import { AddUnitModalComponent } from '../../../Modals/command/add-unit-modal/add-unit-modal.component';
 import { ITreeOptions, TreeNode, KEYS, TREE_ACTIONS } from 'angular-tree-component';
-import { NgxPermissionsService } from 'ngx-permissions';
 import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
 import { Permissions } from 'app/Services/permissions';
+import { PermissionsService } from 'app/Services/permissions.service';
 
 @Component({
     selector: 'app-command-units',
@@ -33,7 +33,7 @@ export class CommandUnitsComponent implements OnInit {
     combatUnits;
     auxiliaryUnits;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private permissions: NgxPermissionsService) {
+    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private permissions: PermissionsService) {
         if (permissions.hasPermission(Permissions.ADMIN)) {
             this.options = {
                 allowDrag: (node: TreeNode) => !this.updatingOrder && node.parent && !node.parent.data.virtual,

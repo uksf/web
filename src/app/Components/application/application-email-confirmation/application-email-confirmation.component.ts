@@ -11,13 +11,14 @@ import { PermissionsService } from 'app/Services/permissions.service';
 @Component({
     selector: 'app-application-email-confirmation',
     templateUrl: './application-email-confirmation.component.html',
-    styleUrls: ['./application-email-confirmation.component.scss', '../../../Pages/new-application-page/new-application-page.component.scss']
+    styleUrls: ['./application-email-confirmation.component.scss', '../../../Pages/application-page/application-page.component.scss']
 })
 export class ApplicationEmailConfirmationComponent {
     @Input() email: string;
-    @Output() nextEvent = new EventEmitter();
+    @Output() confirmedEvent = new EventEmitter();
     formGroup: FormGroup;
     pending = false;
+    resent = false;
 
     constructor(
         private httpClient: HttpClient,
@@ -32,15 +33,16 @@ export class ApplicationEmailConfirmationComponent {
         });
     }
 
-    changed(code) {
+    changed(code: string) {
         if (this.pending) { return; }
         this.validateCode(code);
     }
 
-    validateCode(code) {
+    validateCode(code: string) {
         if (code.length !== 24) {
             return;
         }
+
         this.pending = true;
         this.formGroup.controls['code'].disable();
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -52,11 +54,11 @@ export class ApplicationEmailConfirmationComponent {
             if (this.accountService.account) {
                 this.permissionsService.refresh().then(() => {
                     this.pending = false;
-                    this.nextEvent.emit();
+                    this.confirmedEvent.emit();
                 });
             } else {
                 this.pending = false;
-                this.nextEvent.emit();
+                this.confirmedEvent.emit();
             }
         }, error => {
             this.dialog.open(MessageModalComponent, {
@@ -69,7 +71,16 @@ export class ApplicationEmailConfirmationComponent {
         });
     }
 
-    next() {
-        this.nextEvent.emit();
+    resend() {
+        this.pending = true;
+        this.httpClient.get(this.urls.apiUrl + '/accounts/resend-email-code').subscribe(() => {
+            this.dialog.open(MessageModalComponent, {
+                data: { message: 'Resent email confirmation code' }
+            });
+            this.pending = false;
+            this.resent = true;
+        }, () => {
+            this.pending = false;
+        });
     }
 }

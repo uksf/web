@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { NgxPermissionsService } from 'ngx-permissions';
 import { Permissions } from 'app/Services/permissions';
+import { PermissionsService } from 'app/Services/permissions.service';
 
 @Component({
     selector: 'app-personnel-page',
@@ -13,9 +13,8 @@ export class PersonnelPageComponent {
         // { label: 'Activity', link: '../activity' }
     ];
 
-    constructor(private permissions: NgxPermissionsService) {
-        const grantedPermissions = this.permissions.getPermissions();
-        if (grantedPermissions[Permissions.DISCHARGES]) {
+    constructor(private permissions: PermissionsService) {
+        if (this.permissions.hasPermission(Permissions.DISCHARGES)) {
             this.tabLinks = [
                 { label: 'LOAs', link: '../loas' },
                 // { label: 'Activity', link: '../activity' },

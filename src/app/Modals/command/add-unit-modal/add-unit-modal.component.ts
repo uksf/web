@@ -45,7 +45,7 @@ export class AddUnitModalComponent implements OnInit {
         ], 'parent': [
             { type: 'required', message: 'Parent is required' }
         ], 'teamspeakGroup': [
-            { type: 'unitTaken', message: 'That Teamspeak ID is already in use' }
+            { type: 'unitTaken', message: 'That TeamSpeak ID is already in use' }
         ], 'discordRoleId': [
             { type: 'unitTaken', message: 'That Discord ID is already in use' }
         ], 'callsign': [

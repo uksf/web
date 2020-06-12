@@ -4,12 +4,17 @@
         We require a few different communications platforms to be connected before completing the application. Please follow the instructions for each platform below.
     </p>
     <br>
+    <div *ngIf="mode === 'pending'" class="flex-container row">
+        <app-flex-filler></app-flex-filler>
+        <mat-spinner></mat-spinner>
+        <app-flex-filler></app-flex-filler>
+    </div>
     <div *ngIf="mode === 'teamspeak'">
         <app-teamspeak-connect (connectedEvent)="connected()"></app-teamspeak-connect>
     </div>
     <div *ngIf="mode === 'steam'">
         <p>You must connect this account to your Steam account. We only store your steam64 ID in our database to allow our recruitment staff to contact you easily.</p>
-        <p>This button will redirect this page where you will need to login through steam. Once logged in, you will be automatically redirected to this application page.</p>
+        <p>This button will redirect this page where you will need to login through Steam. Once logged in, you will be automatically redirected to this application page.</p>
         <p>If you are not redirected correctly at any stage, please contact an admin.</p>
         <button mat-raised-button color="primary" (click)="connectSteam()">Connect Steam</button>
     </div>

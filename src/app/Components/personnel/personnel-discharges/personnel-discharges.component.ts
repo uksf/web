@@ -76,7 +76,7 @@ export class PersonnelDischargesComponent {
         this.timeout = setTimeout(() => {
             this.filtered = [];
             this.completeDischargeCollections.forEach(element => {
-                if (String(element.name).toLowerCase().indexOf(this.filterString.toLowerCase()) !== -1) {
+                if (element.name.toLowerCase().indexOf(this.filterString.toLowerCase()) !== -1) {
                     this.filtered.push(element);
                 }
             });

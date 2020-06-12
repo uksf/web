@@ -1,6 +1,5 @@
 app-side-content-area {
     margin-top: 10px;
-    margin-left: 10px;
 }
 
 .timezone-container {
@@ -31,6 +30,26 @@ app-side-content-area {
 
     & > * {
         margin-bottom: 16px;
+    }
+
+    &.instagram-feed {
+        padding: 16px;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        .instagram-image {
+            justify-content: center;
+            align-self: center;
+            max-width: 500px;
+            width: 50%;
+            margin-bottom: 0;
+
+            img {
+                width: 100%;
+            }
+        }
     }
 }
 
@@ -90,6 +109,75 @@ app-side-content-area {
     }
 }
 
+@media only screen and (max-width: 1275px) {
+    .timezone-container {
+        .timezone {
+            .normal {
+                display: none;
+            }
+            .short {
+                display: block;
+            }
+        }
+    }
+
+    .flex-container {
+        &.instagram-feed {
+            flex-direction: column;
+
+            .instagram-image {
+                width: 85%;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .teamspeak-container {
+        .teamspeak-header {
+            height: 56px;
+        }
+    }
+
+    .flex-container {
+        &.instagram-feed {
+            flex-direction: row;
+
+            .instagram-image {
+                width: 50%;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 768px) {
+    app-side-content-area {
+        margin-left: 0;
+    }
+
+    .flex-container {
+        &.instagram-feed {
+            padding: 8px;
+        }
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .flex-container {
+        &.instagram-feed {
+            flex-direction: column;
+
+            .instagram-image {
+                width: 90%;
+
+                &:nth-child(n + 6) {
+                    display: none;
+                }
+            }
+        }
+    }
+}
+
 @media screen and (max-width: 400px) {
     .issues-container {
         flex-direction: column;
@@ -104,33 +192,6 @@ app-side-content-area {
         .teamspeak-header {
             .teamspeak-text {
                 font-size: 20px;
-            }
-        }
-    }
-}
-
-@media screen and (max-width: 768px) {
-    app-side-content-area {
-        margin-left: 0;
-    }
-}
-
-@media screen and (max-width: 1024px) {
-    .teamspeak-container {
-        .teamspeak-header {
-            height: 56px;
-        }
-    }
-}
-
-@media only screen and (max-width: 1275px) {
-    .timezone-container {
-        .timezone {
-            .normal {
-                display: none;
-            }
-            .short {
-                display: block;
             }
         }
     }
