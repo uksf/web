@@ -119,7 +119,6 @@ export interface Account {
     id: string;
     application: any;
     armaExperience: string;
-    aviation: boolean;
     background: string;
     discordId: string;
     dob: Date;
@@ -129,17 +128,17 @@ export interface Account {
     membershipState: MembershipState;
     militaryExperience: boolean;
     nation: string;
-    nco: boolean;
-    officer: boolean;
     rank: string;
     reference: string;
     roleAssignment: string;
+    rolePreferences: string[];
     serviceRecord: ServiceRecordEntry[];
     settings: AccountSettings;
     steamname: string;
     teamspeakIdentities: number[];
     unitAssignment: string;
     unitsExperience: string;
+
     displayName: string;
     permissions: AccountPermisions;
 }

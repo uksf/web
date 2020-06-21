@@ -90,18 +90,14 @@
                 </div>
                 <div class="flex-container no-padding flex-grow">
                     <h4>Specialist Preferences</h4>
-                    <mat-card>
-                        <div class="flex-container flex-row no-padding margin-bottom">
-                            <div class="header"><b>Officer</b></div>
-                            <div>{{(application.account.officer ? "Yes" : "No")}}</div>
+                    <mat-card *ngIf="application.account.rolePreferences.length > 0">
+                        <div class="flex-container flex-row no-padding margin-bottom-small" *ngFor="let rolePreference of application.account.rolePreferences">
+                            <div class="header"><b>{{rolePreference}}</b></div>
                         </div>
-                        <div class="flex-container flex-row no-padding margin-bottom">
-                            <div class="header"><b>NCO</b></div>
-                            <div>{{(application.account.nco ? "Yes" : "No")}}</div>
-                        </div>
-                        <div class="flex-container flex-row no-padding margin-bottom">
-                            <div class="header"><b>Aviation</b></div>
-                            <div>{{(application.account.aviation ? "Yes" : "No")}}</div>
+                    </mat-card>
+                    <mat-card *ngIf="application.account.rolePreferences.length === 0">
+                        <div class="flex-container flex-row no-padding margin-bottom-small">
+                            <div class="header"><b>None</b></div>
                         </div>
                     </mat-card>
                 </div>

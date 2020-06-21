@@ -36,14 +36,13 @@
         <mat-checkbox color="primary" formControlName="militaryExperience">Are you or have you ever been a member of the military?</mat-checkbox>
         <br>
         <br>
-        <p>These options exist to give us an idea of what kind of role you are interested in. There is no guarantee you will be admited
-            to any of these programmes.</p>
-        <mat-checkbox color="primary" formControlName="officer">Officer Leadership</mat-checkbox>
-        <br>
-        <mat-checkbox color="primary" formControlName="nco">NCO Leadership</mat-checkbox>
-        <br>
-        <mat-checkbox color="primary" formControlName="aviation">Aviation</mat-checkbox>
-        <br>
+        <div formGroupName="rolePreferences">
+            <p>These options exist to give us an idea of what kind of role you are interested in. There is no guarantee you will be admitted
+                to any of these programmes.</p>
+            <div *ngFor="let rolePreferenceOption of rolePreferenceOptions">
+                <mat-checkbox color="primary" formControlName="{{rolePreferenceOption}}">{{rolePreferenceOption}}</mat-checkbox>
+            </div>
+        </div>
         <br>
         <mat-form-field>
             <mat-select formControlName="reference">

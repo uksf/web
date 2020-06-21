@@ -1,6 +1,6 @@
 import { Component, Output, EventEmitter, ViewEncapsulation } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl, FormGroupDirective, NgForm } from '@angular/forms';
-import { MatDialog, ErrorStateMatcher } from '@angular/material';
+import { FormBuilder, FormGroup, Validators, FormControl, FormGroupDirective, NgForm, AbstractControl } from '@angular/forms';
+import { MatDialog, ErrorStateMatcher, MatCheckboxChange } from '@angular/material';
 
 export class InstantErrorStateMatcher implements ErrorStateMatcher {
     isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
@@ -21,12 +21,13 @@ export class ApplicationDetailsComponent {
         { value: 'Recruiter', viewValue: 'Recruiter' },
         { value: 'Steam', viewValue: 'Steam' },
         { value: 'Reddit', viewValue: 'Reddit' },
-        { value: 'Youtube', viewValue: 'Youtube' },
+        { value: 'YouTube', viewValue: 'YouTube' },
         { value: 'Instagram', viewValue: 'Instagram' },
         { value: 'Google', viewValue: 'Google' },
         { value: 'Friend', viewValue: 'Friend' },
         { value: 'Other', viewValue: 'Other' }
     ];
+    rolePreferenceOptions = ['NCO', 'Officer', 'Aviation', 'Medic'];
 
     validation_messages = {
         'armaExperience': [
@@ -48,18 +49,37 @@ export class ApplicationDetailsComponent {
             unitsExperience: ['', Validators.required],
             background: ['', Validators.required],
             militaryExperience: [''],
-            officer: [''],
-            nco: [''],
-            aviation: [''],
             reference: ['', Validators.required]
         });
+        const rolePreferenceControls: { [key: string]: AbstractControl } = {};
+        this.rolePreferenceOptions.forEach(x => {
+            rolePreferenceControls[x] = new FormControl(false);
+        });
+        this.formGroup.addControl('rolePreferences', new FormGroup(rolePreferenceControls));
+
     }
 
     next() {
         // Honeypot field must be empty
         if (this.formGroup.value.name !== '') { return; }
-        const formObj = this.formGroup.getRawValue();
+        const formObj = this.convertRolePreferencesGroup();
         const formString = JSON.stringify(formObj).replace(/\n|\r/g, '');
         this.nextEvent.emit(formString);
+    }
+
+    convertRolePreferencesGroup(): any {
+        const formObj = this.formGroup.getRawValue();
+        const rolePreferences = [];
+        const rolePreferencesGroup: FormGroup = this.formGroup.controls['rolePreferences'] as FormGroup;
+        for (const key in rolePreferencesGroup.controls) {
+            if (rolePreferencesGroup.controls.hasOwnProperty(key)) {
+                const control = rolePreferencesGroup.controls[key];
+                if (control.value) {
+                    rolePreferences.push(key);
+                }
+            }
+        }
+        formObj.rolePreferences = rolePreferences;
+        return formObj;
     }
 }

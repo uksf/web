@@ -1,7 +1,7 @@
 <div *ngIf="accepted">
     <mat-card>
         <h2>{{applicationState}}</h2>
-        <p>Confgratulations! Your application to join UKSF was accepted.</p>
+        <p>Congratulations! Your application to join UKSF was accepted.</p>
         <p>Your next steps will be detailed to you by either an SR1, or a member of SFSG.</p>
     </mat-card>
 </div>
@@ -78,14 +78,13 @@
                 <mat-checkbox color="primary" formControlName="militaryExperience">Are you or have you ever been a member of the military?</mat-checkbox>
                 <br>
                 <br>
-                <p>These options exist to give us an idea of what kind of role you are interested in. There is no guarentee you will be admited
-                    to any of these programs.</p>
-                <mat-checkbox color="primary" formControlName="officer">Officer leadership</mat-checkbox>
-                <br>
-                <mat-checkbox color="primary" formControlName="nco">NCO leadership</mat-checkbox>
-                <br>
-                <mat-checkbox color="primary" formControlName="aviation">Aviation</mat-checkbox>
-                <br>
+                <div formGroupName="rolePreferences">
+                    <p>These options exist to give us an idea of what kind of role you are interested in. There is no guarantee you will be admitted
+                        to any of these programmes.</p>
+                    <div *ngFor="let rolePreferenceOption of rolePreferenceOptions">
+                        <mat-checkbox color="primary" formControlName="{{rolePreferenceOption}}">{{rolePreferenceOption}}</mat-checkbox>
+                    </div>
+                </div>
                 <br>
                 <mat-form-field>
                     <mat-select placeholder="Where did you hear about UKSF?" formControlName="reference">

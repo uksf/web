@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl, FormGroupDirective, NgForm } from '@angular/forms';
-import { MatDialog, ErrorStateMatcher } from '@angular/material';
+import { FormBuilder, FormGroup, Validators, FormControl, FormGroupDirective, NgForm, AbstractControl } from '@angular/forms';
+import { MatDialog, ErrorStateMatcher, MatCheckboxChange } from '@angular/material';
 import { AccountService, ApplicationState } from 'app/Services/account.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from 'app/Services/url.service';
@@ -24,15 +24,17 @@ export class ApplicationEditComponent {
     formGroup: FormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     referenceOptions = [
-        { value: 'Google', viewValue: 'Google' },
-        { value: 'Youtube', viewValue: 'Youtube' },
-        { value: 'Reddit', viewValue: 'Reddit' },
-        { value: 'Steam', viewValue: 'Steam' },
         { value: 'Recruiter', viewValue: 'Recruiter' },
+        { value: 'Steam', viewValue: 'Steam' },
+        { value: 'Reddit', viewValue: 'Reddit' },
+        { value: 'YouTube', viewValue: 'YouTube' },
+        { value: 'Instagram', viewValue: 'Instagram' },
+        { value: 'Google', viewValue: 'Google' },
         { value: 'Friend', viewValue: 'Friend' },
         { value: 'Other', viewValue: 'Other' }
     ];
-    original;
+    rolePreferenceOptions = ['NCO', 'Officer', 'Aviation', 'Medic'];
+    original: string;
 
     validation_messages = {
         'armaExperience': [
@@ -68,11 +70,15 @@ export class ApplicationEditComponent {
             aviation: [''],
             reference: ['', Validators.required]
         });
-        this.formGroup.patchValue(this.accountService.account);
-        this.original = JSON.stringify(this.formGroup.getRawValue());
+        const rolePreferenceControls: { [key: string]: AbstractControl } = {};
+        this.rolePreferenceOptions.forEach(x => {
+            rolePreferenceControls[x] = new FormControl(false);
+        });
+        this.formGroup.addControl('rolePreferences', new FormGroup(rolePreferenceControls));
+
+        this.updateOriginal();
         this.permissions.accountUpdateEvent.subscribe(() => {
-            this.formGroup.patchValue(this.accountService.account);
-            this.original = JSON.stringify(this.formGroup.getRawValue());
+            this.updateOriginal();
         });
     }
 
@@ -99,13 +105,13 @@ export class ApplicationEditComponent {
     update() {
         // Honeypot field must be empty
         if (this.formGroup.value.name !== '') { return; }
-        const formString = JSON.stringify(this.formGroup.getRawValue()).replace(/\n|\r/g, '');
+        const formObj = this.convertRolePreferencesFromGroup();
+        const formString = JSON.stringify(formObj).replace(/\n|\r/g, '');
         this.httpClient.post(this.urls.apiUrl + '/applications/update', formString, {
             headers: new HttpHeaders({ 'Content-Type': 'application/json' })
         }).subscribe(() => {
             this.accountService.getAccount(() => {
-                this.formGroup.patchValue(this.accountService.account);
-                this.original = JSON.stringify(this.formGroup.getRawValue());
+                this.updateOriginal();
             });
             this.dialog.open(MessageModalComponent, {
                 data: { message: 'Your application was successfully updated' }
@@ -117,7 +123,44 @@ export class ApplicationEditComponent {
         });
     }
 
+    updateOriginal() {
+        this.formGroup.patchValue(this.accountService.account);
+        this.convertRolePreferencesToGroup();
+
+        const formObj = this.convertRolePreferencesFromGroup();
+        this.original = JSON.stringify(formObj);
+    }
+
     get changesMade() {
-        return this.original !== JSON.stringify(this.formGroup.getRawValue());
+        const formObj = this.convertRolePreferencesFromGroup();
+        return this.original !== JSON.stringify(formObj);
+    }
+
+    convertRolePreferencesFromGroup(): any {
+        const formObj = this.formGroup.getRawValue();
+        const rolePreferences = [];
+        const rolePreferencesGroup: FormGroup = this.formGroup.controls['rolePreferences'] as FormGroup;
+
+        for (const key in rolePreferencesGroup.controls) {
+            if (rolePreferencesGroup.controls.hasOwnProperty(key)) {
+                const control = rolePreferencesGroup.controls[key];
+                if (control.value) {
+                    rolePreferences.push(key);
+                }
+            }
+        }
+        formObj.rolePreferences = rolePreferences;
+        return formObj;
+    }
+
+    convertRolePreferencesToGroup() {
+        const rolePreferences = this.accountService.account.rolePreferences;
+        const rolePreferencesGroup: FormGroup = this.formGroup.controls['rolePreferences'] as FormGroup;
+
+        this.rolePreferenceOptions.forEach(rolePreferenceOption => {
+            if (rolePreferences.includes(rolePreferenceOption)) {
+                rolePreferencesGroup.controls[rolePreferenceOption].setValue(true);
+            }
+        });
     }
 }
