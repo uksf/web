@@ -6,16 +6,23 @@ app-side-content-area {
     display: flex;
     flex-direction: row;
     height: 48px;
+    margin-top: 5px;
 
     .timezone {
         display: flex;
         flex-direction: column;
         flex: 1;
         align-self: center;
+
         span {
             text-align: center;
         }
+
         .short {
+            display: none;
+        }
+
+        .short-time {
             display: none;
         }
     }
@@ -115,6 +122,7 @@ app-side-content-area {
             .normal {
                 display: none;
             }
+
             .short {
                 display: block;
             }
@@ -192,6 +200,20 @@ app-side-content-area {
         .teamspeak-header {
             .teamspeak-text {
                 font-size: 20px;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 330px) {
+    .timezone-container {
+        .timezone {
+            .normal-time {
+                display: none;
+            }
+
+            .short-time {
+                display: block;
             }
         }
     }

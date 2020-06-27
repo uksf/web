@@ -2,28 +2,28 @@
     <app-main-content-area>
         <div class="timezone-container">
             <div class="timezone">
+                <span class="normal">Your Local Time</span>
+                <span class="short">Local</span>
+                <span class="normal-time">{{ time | zonedTime:'Local' }}</span>
+                <span class="short-time">{{ time | zonedTime:'Local':true }}</span>
+            </div>
+            <div class="timezone">
                 <span class="normal">Greenwich Mean Time</span>
                 <span class="short">GMT</span>
-                <span class="normal">{{ time | zonedTime:'Europe/London' }}</span>
-                <span class="short">{{ time | zonedTime:'Europe/London':true }}</span>
+                <span class="normal-time">{{ time | zonedTime:'Europe/London' }}</span>
+                <span class="short-time">{{ time | zonedTime:'Europe/London':true }}</span>
             </div>
             <div class="timezone">
                 <span class="normal">Central European Time</span>
                 <span class="short">CET</span>
-                <span class="normal">{{ time | zonedTime:'Europe/Berlin' }}</span>
-                <span class="short">{{ time | zonedTime:'Europe/Berlin':true }}</span>
+                <span class="normal-time">{{ time | zonedTime:'Europe/Berlin' }}</span>
+                <span class="short-time">{{ time | zonedTime:'Europe/Berlin':true }}</span>
             </div>
             <div class="timezone">
                 <span class="normal">US Eastern Standard Time</span>
                 <span class="short">EST</span>
-                <span class="normal">{{ time | zonedTime:'America/New_York' }}</span>
-                <span class="short">{{ time | zonedTime:'America/New_York':true }}</span>
-            </div>
-            <div class="timezone">
-                <span class="normal">US Central Standard Time</span>
-                <span class="short">CST</span>
-                <span class="normal">{{ time | zonedTime:'America/Chicago' }}</span>
-                <span class="short">{{ time | zonedTime:'America/Chicago':true }}</span>
+                <span class="normal-time">{{ time | zonedTime:'America/New_York' }}</span>
+                <span class="short-time">{{ time | zonedTime:'America/New_York':true }}</span>
             </div>
         </div>
         <ng-template [ngxPermissionsExcept]="['MEMBER']">
@@ -33,7 +33,7 @@
             <div class="flex-container" *ngIf="instagramImages.length == 0">This area is intentionally empty at the moment</div>
             <div class="flex-container instagram-feed" *ngIf="instagramImages.length > 0">
                 <div class="instagram-image" *ngFor="let instagramImage of instagramImages">
-                    <a target="_blank" href="https://www.instagram.com/p/{{instagramImage.shortcode}}"><img src="{{instagramImage.url}}"></a>
+                    <a target="_blank" href="{{instagramImage.permalink}}"><img src="{{instagramImage.media_url}}"></a>
                 </div>
             </div>
         </ng-template>

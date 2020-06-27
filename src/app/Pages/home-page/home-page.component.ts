@@ -104,6 +104,9 @@ export class HomePageComponent implements OnInit {
 }
 
 export interface InstagramImage {
-    url: string;
-    shortcode: string;
+    id: string;
+    permalink: string;
+    media_type: string;
+    media_url: string;
+    timestamp: Date;
 }
