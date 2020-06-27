@@ -4,6 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material';
 import { CreateIssueModalComponent } from '../../Modals/create-issue-modal/create-issue-modal.component';
 import { ConnectionContainer, SignalRService } from 'app/Services/signalr.service';
+import { PermissionsService } from 'app/Services/permissions.service';
+import { Permissions } from 'app/Services/permissions';
 
 @Component({
     selector: 'app-home-page',
@@ -21,7 +23,7 @@ export class HomePageComponent implements OnInit {
     private hubConnection: ConnectionContainer;
     private updateTimeout;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private signalrService: SignalRService) {
+    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private signalrService: SignalRService, private permissions: PermissionsService) {
         this._time = Date.now();
         setInterval(() => {
             this._time = Date.now()
@@ -77,12 +79,13 @@ export class HomePageComponent implements OnInit {
     }
 
     private getInstagramImages() {
-        this.httpClient.get('https://www.instagram.com/uksfmilsim/?__a=1').subscribe((response: any) => {
-            if (response.graphql) {
-                const imageNodes: [] = response.graphql.user.edge_owner_to_timeline_media.edges;
-                imageNodes.forEach((imageNode: any) => {
-                    this.instagramImages.push({ uri: imageNode.node.display_url, shortcode: imageNode.node.shortcode });
-                });
+        if (this.permissions.doesNotHavePermission(Permissions.MEMBER)) {
+            return;
+        }
+
+        this.httpClient.get(this.urls.apiUrl + '/instagram').subscribe((response: InstagramImage[]) => {
+            if (response.length > 0) {
+                this.instagramImages = response;
             }
         });
     }
@@ -101,6 +104,6 @@ export class HomePageComponent implements OnInit {
 }
 
 export interface InstagramImage {
-    uri: string;
+    url: string;
     shortcode: string;
 }

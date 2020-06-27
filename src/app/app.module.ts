@@ -273,7 +273,7 @@ export function tokenGetter() {
         JwtModule.forRoot({
             config: {
                 tokenGetter: tokenGetter,
-                whitelistedDomains: ['localhost:5000', 'uk-sf.co.uk', 'www.uk-sf.co.uk', 'api.uk-sf.co.uk', 'uk-sf.co.uk:5100']
+                whitelistedDomains: ['localhost:5000', 'uk-sf.co.uk', 'www.uk-sf.co.uk', 'api.uk-sf.co.uk']
             }
         }),
         NgxPermissionsModule.forRoot(),

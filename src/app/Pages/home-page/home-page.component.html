@@ -33,7 +33,7 @@
             <div class="flex-container" *ngIf="instagramImages.length == 0">This area is intentionally empty at the moment</div>
             <div class="flex-container instagram-feed" *ngIf="instagramImages.length > 0">
                 <div class="instagram-image" *ngFor="let instagramImage of instagramImages">
-                    <a target="_blank" href="https://www.instagram.com/p/{{instagramImage.shortcode}}"><img [src]="instagramImage.uri"></a>
+                    <a target="_blank" href="https://www.instagram.com/p/{{instagramImage.shortcode}}"><img src="{{instagramImage.url}}"></a>
                 </div>
             </div>
         </ng-template>

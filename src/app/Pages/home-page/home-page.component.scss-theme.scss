@@ -10,16 +10,20 @@
         .issues-container {
             color: mat-color($primary, default-contrast);
         }
+
         .teamspeak-container {
             background-color: mat-color($primary);
+
             .teamspeak-header {
                 .teamspeak-text {
                     color: mat-color($primary, default-contrast);
                 }
+
                 a {
                     color: mat-color($primary, default-contrast);
                 }
             }
+
             .teamspeak-content-container {
                 background-color: mat-color($background, card);
             }

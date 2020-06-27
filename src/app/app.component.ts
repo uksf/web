@@ -79,6 +79,8 @@ export class AppComponent implements OnInit {
     }
 
     checkBrowser() {
+        return; // disabled for now
+
         const chromeWarning = localStorage.getItem('chromeWarning');
         if (chromeWarning && chromeWarning === 'dismissed') {
             return;
