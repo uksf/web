@@ -18,14 +18,14 @@ export class HeaderBarComponent implements OnInit {
     constructor(private auth: AuthenticationService, private accountService: AccountService, private dialog: MatDialog) { }
 
     ngOnInit() {
-        this.mobile = window.screen.width <= 768 && window.screen.width > 374;
-        this.mobileSmall = window.screen.width <= 374;
+        this.mobile = window.screen.width <= 768 && window.screen.width > 375;
+        this.mobileSmall = window.screen.width <= 375;
     }
 
     @HostListener('window:resize', ['$event'])
     onResize(event) {
-        this.mobile = window.screen.width <= 768 && window.screen.width > 374;
-        this.mobileSmall = window.screen.width <= 374;
+        this.mobile = window.screen.width <= 768 && window.screen.width > 375;
+        this.mobileSmall = window.screen.width <= 375;
     }
 
     get getName() {

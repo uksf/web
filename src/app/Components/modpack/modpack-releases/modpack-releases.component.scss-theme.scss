@@ -1,0 +1,51 @@
+@import "~@angular/material/theming";
+
+@mixin modpack-releases-component-theme($theme) {
+    $primary: map-get($theme, primary);
+    $background: map-get($theme, background);
+    $inset-colour: mat-color($primary, default);
+
+    app-modpack-releases {
+        a {
+            color: mat-color($primary);
+        }
+
+        .flex-container {
+            .release-history-container {
+                background-color: mat-color($background, app-bar);
+
+                .release-history-item {
+                    border-bottom: 1px solid mat-color($background, selected);
+
+                    &.selected {
+                        color: mat-color($primary, default);
+                        background-color: mat-color($background, selected);
+                    }
+
+                    &:hover {
+                        background-color: mat-color($background, hover);
+                    }
+                }
+            }
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: mat-color($background, side-bar);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: mat-color($background, scroll-thumb);
+        }
+
+        @media only screen and (max-width: 600px) {
+            .flex-container {
+                .release-history-container {
+                    .release-history-item {
+                        border-bottom: unset;
+                        border-right: 1px solid mat-color($background, selected);
+                    }
+                }
+            }
+        }
+    }
+}

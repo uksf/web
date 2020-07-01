@@ -170,6 +170,10 @@ import { PersonnelActivityComponent } from './Components/personnel/personnel-act
 import { PersonnelLoasListComponent } from './Components/personnel/personnel-loas-list/personnel-loas-list.component';
 import { TextInputModalComponent } from './Modals/text-input-modal/text-input-modal.component';
 import { StatesService } from './Services/states.service';
+import { ModpackGuideComponent } from './Components/modpack/modpack-guide/modpack-guide.component';
+import { ModpackReleasesComponent } from './Components/modpack/modpack-releases/modpack-releases.component';
+import { ModpackBuildsComponent } from './Components/modpack/modpack-builds/modpack-builds.component';
+import { ModpackBuildService } from './Services/modpackBuild.service';
 
 export function initPermissions(permissionsService: PermissionsService) {
     return () => permissionsService.refresh();
@@ -198,6 +202,7 @@ export function tokenGetter() {
         NotificationsComponent,
         CountryPickerService,
         SignalRService,
+        ModpackBuildService,
         {
             provide: APP_INITIALIZER,
             useFactory: initPermissions,
@@ -374,7 +379,10 @@ export function tokenGetter() {
         PersonnelLoasComponent,
         PersonnelActivityComponent,
         PersonnelDischargesComponent,
-        PersonnelLoasListComponent
+        PersonnelLoasListComponent,
+        ModpackGuideComponent,
+        ModpackReleasesComponent,
+        ModpackBuildsComponent
     ], bootstrap: [
         AppComponent
     ], entryComponents: [

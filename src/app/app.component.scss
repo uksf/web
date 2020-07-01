@@ -28,6 +28,7 @@
         padding-top: 75px;
         display: flex;
         flex-direction: column;
+        box-shadow: 0 0 5px 0px #000;
 
         app-side-bar {
             flex: 1;
@@ -116,7 +117,7 @@
     }
 }
 
-@media screen and (max-width: 374px) {
+@media screen and (max-width: 375px) {
     .wrapper {
         grid-template-rows: auto auto 100%;
         .sideboard {

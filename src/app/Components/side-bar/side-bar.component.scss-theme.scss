@@ -6,7 +6,6 @@
     $primary: map-get($theme, primary);
     $accent: map-get($theme, accent);
     $inset-colour: mat-color($primary, default);
-    $inset-colour-newversion: mat-color($accent);
 
     .sideNav {
         .sideNavItem {
@@ -17,7 +16,7 @@
                 background-color: mat-color($background, selected);
                 box-shadow: inset 3px 0 0 0 $inset-colour;
             }
-    
+
             &:hover {
                 background-color: mat-color($background, hover);
             }
@@ -26,7 +25,7 @@
         .newVersionNavItem {
             background-color: mat-color($primary);
             color: mat-color($primary, default-contrast);
-    
+
             &:hover {
                 background-color: mat-color($primary);
             }

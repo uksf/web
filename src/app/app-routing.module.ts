@@ -39,6 +39,9 @@ import { AdminLauncherLogsComponent } from './Components/admin/admin-launcher-lo
 import { PersonnelLoasComponent } from './Components/personnel/personnel-loas/personnel-loas.component';
 import { PersonnelDischargesComponent } from './Components/personnel/personnel-discharges/personnel-discharges.component';
 import { PersonnelActivityComponent } from './Components/personnel/personnel-activity/personnel-activity.component';
+import { ModpackGuideComponent } from './Components/modpack/modpack-guide/modpack-guide.component';
+import { ModpackReleasesComponent } from './Components/modpack/modpack-releases/modpack-releases.component';
+import { ModpackBuildsComponent } from './Components/modpack/modpack-builds/modpack-builds.component';
 
 const appRoutes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -176,18 +179,6 @@ const appRoutes: Routes = [
     { path: 'information', component: InformationPageComponent },
     { path: 'about', redirectTo: 'information/about' },
     { path: 'information/about', component: AboutPageComponent },
-    {
-        path: 'information/modpack', component: ModpackPageComponent, data: {
-            permissions: {
-                except: [Permissions.UNLOGGED, Permissions.UNCONFIRMED],
-                redirectTo: {
-                    UNLOGGED: loginRedirect,
-                    UNCONFIRMED: '/home',
-                    default: '/home'
-                }
-            }
-        }, canActivate: [NgxPermissionsGuard]
-    },
     {
         path: 'units', redirectTo: 'units/orbat', data: {
             permissions: {
@@ -451,6 +442,54 @@ const appRoutes: Routes = [
                 except: Permissions.UNLOGGED,
                 redirectTo: {
                     DISCHARGES: '/home',
+                    UNLOGGED: loginRedirect,
+                    default: '/home'
+                }
+            }
+        }, canActivate: [NgxPermissionsGuard]
+    },
+    {
+        path: 'modpack', redirectTo: 'modpack/guide', data: {
+            permissions: {
+                except: [Permissions.UNLOGGED, Permissions.UNCONFIRMED],
+                redirectTo: {
+                    UNLOGGED: loginRedirect,
+                    UNCONFIRMED: '/home',
+                    default: '/home'
+                }
+            }
+        }, canActivate: [NgxPermissionsGuard]
+    },
+    {
+        path: 'modpack/guide', component: ModpackGuideComponent, data: {
+            permissions: {
+                except: [Permissions.UNLOGGED, Permissions.UNCONFIRMED],
+                redirectTo: {
+                    UNLOGGED: loginRedirect,
+                    UNCONFIRMED: '/home',
+                    default: '/home'
+                }
+            }
+        }, canActivate: [NgxPermissionsGuard]
+    },
+    {
+        path: 'modpack/releases', component: ModpackReleasesComponent, data: {
+            permissions: {
+                only: Permissions.MEMBER,
+                except: Permissions.UNLOGGED,
+                redirectTo: {
+                    UNLOGGED: loginRedirect,
+                    default: '/home'
+                }
+            }
+        }, canActivate: [NgxPermissionsGuard]
+    },
+    {
+        path: 'modpack/builds', component: ModpackBuildsComponent, data: {
+            permissions: {
+                only: Permissions.TESTER,
+                except: Permissions.UNLOGGED,
+                redirectTo: {
                     UNLOGGED: loginRedirect,
                     default: '/home'
                 }

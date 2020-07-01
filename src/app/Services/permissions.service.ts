@@ -51,19 +51,9 @@ export class PermissionsService {
                         if (account.membershipState === MembershipState.MEMBER) {
                             // member
                             this.ngxPermissionsService.addPermission(Permissions.MEMBER);
-                            if (account.permissions.recruiter) {
-                                this.ngxPermissionsService.addPermission(Permissions.RECRUITER);
-                                this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
-                                this.ngxPermissionsService.addPermission(Permissions.DISCHARGES);
-                            }
-                            if (account.permissions.servers) {
-                                this.ngxPermissionsService.addPermission(Permissions.SERVERS);
-                            }
-                            if (account.permissions.personnel) {
-                                this.ngxPermissionsService.addPermission(Permissions.PERSONNEL);
-                            }
-                            if (account.permissions.recruiterLead) {
-                                this.ngxPermissionsService.addPermission(Permissions.RECRUITER_LEAD);
+
+                            if (account.permissions.admin) {
+                                this.ngxPermissionsService.addPermission(Permissions.ADMIN);
                             }
                             if (account.permissions.command) {
                                 this.ngxPermissionsService.addPermission(Permissions.COMMAND);
@@ -75,8 +65,23 @@ export class PermissionsService {
                                 this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
                                 this.ngxPermissionsService.addPermission(Permissions.DISCHARGES);
                             }
-                            if (account.permissions.admin) {
-                                this.ngxPermissionsService.addPermission(Permissions.ADMIN);
+                            if (account.permissions.personnel) {
+                                this.ngxPermissionsService.addPermission(Permissions.PERSONNEL);
+                            }
+                            if (account.permissions.recruiter) {
+                                this.ngxPermissionsService.addPermission(Permissions.RECRUITER);
+                                this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
+                                this.ngxPermissionsService.addPermission(Permissions.DISCHARGES);
+                            }
+                            if (account.permissions.recruiterLead) {
+                                this.ngxPermissionsService.addPermission(Permissions.RECRUITER_LEAD);
+                            }
+                            if (account.permissions.servers) {
+                                this.ngxPermissionsService.addPermission(Permissions.SERVERS);
+                                this.ngxPermissionsService.addPermission(Permissions.TESTER);
+                            }
+                            if (account.permissions.tester) {
+                                this.ngxPermissionsService.addPermission(Permissions.TESTER);
                             }
                         } else if (account.membershipState === MembershipState.CONFIRMED) {
                             // guest

@@ -1,3 +1,22 @@
+.nav-bar {
+    padding: 0;
+}
+
+a {
+    text-decoration: none;
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.spinner-container {
+    height: 416px;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin-left: 50%;
+    transform: translate(-170px, 0);
+}
+
 .flex-container {
     display: flex;
     flex-direction: column;
@@ -5,11 +24,7 @@
     padding-left: 16px;
     padding-right: 16px;
 
-    .mat-card {
-        margin-bottom: 15px;
-
-        img {
-            margin: 0 5px 5px 0px;
-        }
+    &.no-padding-left {
+        padding-left: 0;
     }
 }

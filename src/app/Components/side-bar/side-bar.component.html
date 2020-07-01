@@ -4,10 +4,12 @@
     </div>
     <div style="text-decoration: none;" *ngFor="let navigationItem of getSideBarElements">
         <div class="sideNavItem selected" *ngIf="isSelected(navigationItem)" [routerLink]="navigationItem.link" routerLinkActive="active">
-            <mat-icon *ngIf="navigationItem.icon!=''">{{navigationItem.icon}}</mat-icon><span>{{navigationItem.text}}</span>
+            <mat-icon *ngIf="navigationItem.icon != ''">{{navigationItem.icon}}</mat-icon>
+            <span>{{navigationItem.text}}</span>
         </div>
         <div class="sideNavItem" *ngIf="!isSelected(navigationItem)" [routerLink]="navigationItem.link" routerLinkActive="active">
-            <mat-icon *ngIf="navigationItem.icon!=''">{{navigationItem.icon}}</mat-icon><span>{{navigationItem.text}}</span>
+            <mat-icon *ngIf="navigationItem.icon != ''">{{navigationItem.icon}}</mat-icon>
+            <span>{{navigationItem.text}}</span>
         </div>
     </div>
 </div>

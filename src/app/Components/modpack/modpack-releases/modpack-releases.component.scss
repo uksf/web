@@ -1,0 +1,130 @@
+.nav-bar {
+    padding: 0;
+}
+
+.flex-container {
+    flex-direction: row;
+
+    .release-history-container {
+        display: flex;
+        flex-direction: column;
+        width: 160px;
+        text-align: center;
+        overflow-y: scroll;
+        position: absolute;
+        left: 225px;
+        top: 123px;
+        bottom: 0;
+
+        .release-history-item {
+            height: 50px;
+            font-size: 20px;
+            line-height: 50px;
+            cursor: pointer;
+        }
+    }
+
+    .release-container {
+        overflow-y: auto;
+        position: absolute;
+        left: 385px;
+        padding: 0 16px 16px 16px;
+
+        .release-description {
+            padding-top: 16px;
+            white-space: pre-wrap;
+        }
+
+        .release-changelog {
+            padding-top: 16px;
+        }
+    }
+}
+
+::-webkit-scrollbar {
+    width: 7px;
+    height: 5px;
+}
+
+@media only screen and (max-width: 1360px) {
+    .flex-container {
+        .release-history-container {
+            left: 200px;
+        }
+
+        .release-container {
+            left: 360px;
+        }
+    }
+}
+
+@media only screen and (max-width: 1024px) {
+    .flex-container {
+        .release-history-container {
+            left: 0;
+            top: 175px;
+            bottom: 30px;
+        }
+
+        .release-container {
+            left: 160px;
+            top: 175px;
+            bottom: 30px;
+        }
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .flex-container {
+        .release-history-container {
+            top: 138px;
+        }
+
+        .release-container {
+            top: 138px;
+        }
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .flex-container {
+        flex-direction: row;
+
+        .release-history-container {
+            flex-direction: row;
+            width: 100%;
+            height: 35px;
+            overflow-y: auto;
+            overflow-x: auto;
+
+            .release-history-item {
+                height: 30px;
+                min-width: 75px;
+                font-size: 14px;
+                line-height: 30px;
+                padding: 1px 10px;
+            }
+        }
+
+        .release-container {
+            top: 174px;
+            left: 0;
+
+            .release-title {
+                font-size: 26px;
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 375px) {
+    .flex-container {
+        .release-history-container {
+            top: 124px;
+        }
+
+        .release-container {
+            top: 160px;
+        }
+    }
+}

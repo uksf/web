@@ -144,13 +144,14 @@ export interface Account {
 }
 
 export interface AccountPermisions {
+    admin: boolean;
+    command: boolean;
+    nco: boolean;
+    personnel: boolean;
     recruiter: boolean;
     recruiterLead: boolean;
     servers: boolean;
-    personnel: boolean;
-    command: boolean;
-    admin: boolean;
-    nco: boolean;
+    tester: boolean;
 }
 
 export interface AccountSettings {

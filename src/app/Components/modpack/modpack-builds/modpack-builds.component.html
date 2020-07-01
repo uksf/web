@@ -1,0 +1,93 @@
+<app-default-content-areas>
+    <app-theme-emitter></app-theme-emitter>
+    <app-full-content-area>
+        <app-modpack-page></app-modpack-page>
+        <div class="flex-container no-padding-left" *ngIf="buildsReleases">
+            <div class="history-container">
+                <div class="history-item" [ngClass]="{'selected': selectedRelease === buildsRelease}" *ngFor="let buildsRelease of buildsReleases" (click)="select(buildsRelease)">
+                    {{buildsRelease.version}}
+                </div>
+            </div>
+            <div class="release-container" *ngIf="selectedRelease">
+                <div class="history-container builds">
+                    <div class="history-item" [ngClass]="{'selected': selectedBuild === build}" *ngFor="let build of selectedRelease.builds" (click)="selectBuild(build)">
+                        {{selectedRelease.version}}.{{build.buildNumber}}
+                    </div>
+                </div>
+                <div class="build-container" *ngIf="selectedBuild === undefined">
+                    <div class="build-container-section">
+                        <h1 class="build-title">No Build Selected</h1>
+                    </div>
+                </div>
+                <div class="build-container" *ngIf="selectedBuild && !logOpen">
+                    <div class="build-container-section">
+                        <div>
+                            <h1 class="build-title" *ngIf="selectedBuild.isReleaseCandidate">Release Candidate {{selectedRelease.version}}</h1>
+                            <h1 class="build-title" *ngIf="selectedBuild.isNewVersion">New Version Build {{selectedRelease.version}}</h1>
+                            <h1 class="build-title" *ngIf="!selectedBuild.isReleaseCandidate && !selectedBuild.isNewVersion">Dev Build {{selectedRelease.version}}.{{selectedBuild.buildNumber}}</h1>
+                        </div>
+                        <app-flex-filler></app-flex-filler>
+                        <div class="buttons">
+                            <button mat-raised-button color="primary" *ngIf="selectedBuild.isReleaseCandidate" (click)="makeRelease()">
+                                Release
+                            </button>
+                            <button mat-raised-button color="primary" *ngIf="!selectedBuild.isReleaseCandidate && !selectedBuild.isNewVersion" (click)="makeReleaseCandidate()">
+                                Make RC
+                            </button>
+                            <button mat-raised-button color="primary" *ngIf="selectedBuild.steps.length > 0" (click)="openLog()">
+                                Build Log
+                            </button>
+                        </div>
+                    </div>
+                    <div class="build-content">
+                        <h3 class="build-description">Changes</h3>
+                        <div class="build-changelog">
+                            <markdown ngPreserveWhitespaces [data]="changesMarkdown"></markdown>
+                        </div>
+                        <div *ngIf="additionalChangesMarkdown !== ''">
+                            <h3 class="build-description">Additional changes since {{previousRelease()}}</h3>
+                            <div class="build-changelog">
+                                <markdown ngPreserveWhitespaces [data]="additionalChangesMarkdown"></markdown>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="build-container log" *ngIf="selectedBuild && logOpen">
+                    <div class="log-steps">
+                        <h3>Steps</h3>
+                        <div class="steps-container">
+                            <div class="build-step-item" [ngClass]="{'selected': selectedStep === step}" *ngFor="let step of selectedBuild.steps" (click)="selectStep(step)">
+                                <i class="fas fa-chevron-circle-right running" *ngIf="step.running"></i>
+                                <i class="fas fa-check-circle success" *ngIf="step.success"></i>
+                                <i class="fas fa-exclamation-circle fail" *ngIf="step.fail"></i>
+                                <i class="far fa-circle pending" *ngIf="!step.running && !step.success && !step.fail"></i>
+                                {{step.name}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="log-output">
+                        <div class="log-output-header">
+                            <div class="build-step-title">
+                                <i class="fas fa-chevron-circle-right running" *ngIf="selectedStep.running"></i>
+                                <i class="fas fa-check-circle success" *ngIf="selectedStep.success"></i>
+                                <i class="fas fa-exclamation-circle fail" *ngIf="selectedStep.fail"></i>
+                                <i class="far fa-circle pending" *ngIf="!selectedStep.running && !selectedStep.success && !selectedStep.fail"></i>
+                                <h1 class="build-title">{{selectedStep.name}}</h1>
+                            </div>
+                            <app-flex-filler></app-flex-filler>
+                            <button mat-raised-button color="primary" (click)="closeLog()">
+                                Close Log
+                            </button>
+                        </div>
+                        <div class="build-log">
+                            <div class="log-item" *ngFor="let log of selectedStep.logs; let index = index">
+                                <div class="index">{{index + 1}}</div>
+                                <div class="text" [ngStyle]="{'color': getLogItemColour(index)}">{{log}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </app-full-content-area>
+</app-default-content-areas>

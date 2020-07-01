@@ -1,0 +1,107 @@
+@import "~@angular/material/theming";
+
+@mixin modpack-builds-component-theme($theme) {
+    $foreground: map-get($theme, foreground);
+    $primary: map-get($theme, primary);
+    $accent: map-get($theme, accent);
+    $background: map-get($theme, background);
+
+    app-modpack-builds {
+        a {
+            color: mat-color($primary);
+        }
+
+        .flex-container {
+            .history-container {
+                background-color: mat-color($background, app-bar);
+
+                .history-item {
+                    border-bottom: 1px solid mat-color($background, selected);
+
+                    &.selected {
+                        color: mat-color($primary, default);
+                        background-color: mat-color($background, selected);
+                    }
+
+                    &:hover {
+                        background-color: mat-color($background, hover);
+                    }
+
+                    &.no-select {
+                        cursor: default;
+                        border: unset;
+
+                        &:hover {
+                            background-color: unset;
+                        }
+                    }
+                }
+            }
+
+            .release-container {
+                .build-container {
+                    &.log {
+                        .log-steps {
+                            border-right: 1px solid mat-color($background, selected);
+
+                            h3 {
+                                border-bottom: 1px solid mat-color($background, selected);
+                            }
+
+                            .build-step-item {
+                                border-bottom: 1px solid mat-color($background, selected);
+
+                                &.selected {
+                                    color: mat-color($primary, default);
+                                    background-color: mat-color($background, selected);
+                                }
+
+                                &:hover {
+                                    background-color: mat-color($background, hover);
+                                }
+                            }
+                        }
+
+                        .log-output {
+                            .build-log {
+                                color: mat-color($background, contrast);
+                                background-color: transparent;
+
+                                .log-item {
+                                    color: mat-color($foreground, base);
+
+                                    &:hover {
+                                        background-color: mat-color($background, selected);
+                                    }
+                                }
+                            }
+                        }
+
+                        i {
+                            color: mat-color($background, contrast);
+                        }
+                    }
+                }
+            }
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: mat-color($background, side-bar);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: mat-color($background, scroll-thumb);
+        }
+
+        @media only screen and (max-width: 600px) {
+            .flex-container {
+                .history-container {
+                    .history-item {
+                        border-bottom: unset;
+                        border-right: 1px solid mat-color($background, selected);
+                    }
+                }
+            }
+        }
+    }
+}

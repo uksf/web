@@ -23,7 +23,8 @@ $light-theme-background: (
     scroll-track: mat-color($light-pallette, 200),
     scroll-thumb: mat-color($light-pallette, 400),
     server: mat-color($light-pallette, 200),
-    server-running: white
+    server-running: white,
+    contrast: black
 );
 
 $light-theme-primary: mat-palette($mat-indigo, 500);

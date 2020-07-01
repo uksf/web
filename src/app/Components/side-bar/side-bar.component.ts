@@ -31,8 +31,8 @@ export class SideBarComponent {
         // { text: "Training", link: 'admin', icon: "explore" } disabled until implemented
     ];
     private memberMenuEnd = [
-        { text: 'Information', link: 'information', icon: 'layers' },
-        // { text: 'Modpack', link: 'information/modpack', icon: 'terrain' }
+        { text: 'Modpack', link: 'modpack', icon: 'build' },
+        { text: 'Information', link: 'information', icon: 'layers' }
         // { text: "Statistics", link: 'admin', icon: "equalizer" }, disabled until implemented
     ];
     private notLoggedMenu = [
