@@ -19,8 +19,11 @@
                     border-bottom: 1px solid mat-color($background, selected);
 
                     &.selected {
-                        color: mat-color($primary, default);
                         background-color: mat-color($background, selected);
+
+                        &.release {
+                            color: mat-color($primary, default);
+                        }
                     }
 
                     &:hover {
@@ -28,7 +31,6 @@
                     }
 
                     &.no-select {
-                        cursor: default;
                         border: unset;
 
                         &:hover {

@@ -27,6 +27,14 @@
                     }
                 }
             }
+
+            .release-container {
+                .release-content {
+                    textarea {
+                        background-color: mat-color($background, app-bar);
+                    }
+                }
+            }
         }
 
         ::-webkit-scrollbar-track {

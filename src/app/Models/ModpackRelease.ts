@@ -4,4 +4,5 @@ export interface ModpackRelease {
     version: string;
     description: string;
     changelog: string;
+    isDraft: boolean;
 }

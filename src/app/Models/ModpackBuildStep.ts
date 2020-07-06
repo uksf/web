@@ -1,3 +1,5 @@
+import { ModpackBuildResult } from './ModpackBuildResult';
+
 export interface ModpackBuildStep {
     index: number;
     startTime: Date;
@@ -5,6 +7,6 @@ export interface ModpackBuildStep {
     name: string;
     logs: string[];
     running: boolean;
-    success: boolean;
-    fail: boolean;
+    finished: boolean;
+    buildResult: ModpackBuildResult;
 }
