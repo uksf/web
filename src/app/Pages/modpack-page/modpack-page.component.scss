@@ -1,5 +1,14 @@
 .nav-bar {
     padding: 0;
+
+    .mat-tab-header {
+        border-bottom: unset;
+    }
+
+    .mat-tab-nav-bar {
+        z-index: 1;
+        box-shadow: 0px 0px 5px 0px #000;
+    }
 }
 
 a {
@@ -23,6 +32,10 @@ a {
     margin-left: 0;
     padding-left: 16px;
     padding-right: 16px;
+
+    &.no-padding {
+        padding: 0;
+    }
 
     &.no-padding-left {
         padding-left: 0;

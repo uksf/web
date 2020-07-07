@@ -1,12 +1,12 @@
 @import "~@angular/material/theming";
 
-@mixin modpack-builds-component-theme($theme) {
+@mixin modpack-builds-stage-component-theme($theme) {
     $foreground: map-get($theme, foreground);
     $primary: map-get($theme, primary);
     $accent: map-get($theme, accent);
     $background: map-get($theme, background);
 
-    app-modpack-builds {
+    app-modpack-builds-stage {
         a {
             color: mat-color($primary);
         }
@@ -81,6 +81,16 @@
 
                         i {
                             color: mat-color($background, contrast);
+                        }
+                    }
+                }
+
+                .build-footer {
+                    background-color: mat-color($background, dark-bar);
+
+                    .footer-item {
+                        &:nth-child(2) {
+                            border-left: 1px solid mat-color($background, selected);
                         }
                     }
                 }

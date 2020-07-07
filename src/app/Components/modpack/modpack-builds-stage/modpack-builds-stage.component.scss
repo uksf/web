@@ -8,7 +8,7 @@
     .history-container {
         display: flex;
         flex-direction: column;
-        width: 160px;
+        width: 110px;
         text-align: center;
         overflow-y: scroll;
         position: absolute;
@@ -36,7 +36,7 @@
 
     .release-container {
         position: absolute;
-        left: 385px;
+        left: 335px;
         top: 123px;
         bottom: 0;
         right: 0;
@@ -46,7 +46,7 @@
             position: absolute;
             left: 110px;
             top: 0;
-            bottom: 0;
+            bottom: 35px;
             right: 0;
             display: flex;
             flex-direction: column;
@@ -109,7 +109,8 @@
                     h3 {
                         text-align: center;
                         margin: 0;
-                        padding: 15px 0;
+                        padding: 12px 0;
+                        height: 50px;
                     }
 
                     .steps-container {
@@ -240,6 +241,25 @@
                 }
             }
         }
+
+        .build-footer {
+            display: flex;
+            flex-direction: row;
+            height: 35px;
+            position: absolute;
+            bottom: 0;
+            left: 110px;
+            right: 0;
+            align-items: center;
+
+            .footer-item {
+                padding: 0 10px;
+
+                &:last-child {
+                    padding-left: 0;
+                }
+            }
+        }
     }
 }
 
@@ -252,7 +272,7 @@
     .flex-container {
         .history-container {
             left: 200px;
-            width: 120px;
+            width: 90px;
 
             &.builds {
                 width: 90px;
@@ -266,7 +286,7 @@
         }
 
         .release-container {
-            left: 320px;
+            left: 290px;
 
             .build-container {
                 left: 90px;
@@ -276,7 +296,6 @@
                         width: 130px;
 
                         h3 {
-                            padding: 10px 0;
                             font-size: 20px;
                         }
 
@@ -294,6 +313,10 @@
                         left: 130px;
                     }
                 }
+            }
+
+            .build-footer {
+                left: 90px;
             }
         }
     }
@@ -335,7 +358,7 @@
             left: 0;
             top: 175px;
             bottom: 30px;
-            width: 90px;
+            width: 80px;
 
             &.builds {
                 bottom: 0;
@@ -350,11 +373,15 @@
         }
 
         .release-container {
-            left: 90px;
+            left: 80px;
             top: 175px;
             bottom: 30px;
 
             .build-container {
+                left: 75px;
+            }
+
+            .build-footer {
                 left: 75px;
             }
         }
@@ -371,6 +398,8 @@
             top: 138px;
 
             .build-container {
+                bottom: 30px;
+
                 .build-header {
                     flex-direction: column-reverse;
                     padding-top: 12px;
@@ -394,6 +423,17 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+
+            .build-footer {
+                height: 30px;
+                font-size: 13px;
+
+                .footer-item {
+                    &:last-child {
+                        display: none;
                     }
                 }
             }
@@ -438,6 +478,7 @@
             .build-container {
                 left: 0;
                 top: 35px;
+                bottom: 25px;
 
                 .build-header {
                     .build-title {
@@ -481,6 +522,12 @@
                         left: 55px;
                     }
                 }
+            }
+
+            .build-footer {
+                height: 25px;
+                left: 0;
+                font-size: 12px;
             }
         }
     }

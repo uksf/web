@@ -1,51 +1,67 @@
-import { Component, ViewChild, OnDestroy } from '@angular/core';
+import { Component, ViewChild, OnDestroy, OnInit } from '@angular/core';
 import { MarkdownService } from 'ngx-markdown';
 import { ModpackBuild } from 'app/Models/ModpackBuild';
 import { ModpackBuildStep } from 'app/Models/ModpackBuildStep';
 import { ThemeEmitterComponent } from 'app/Components/theme-emitter/theme-emitter.component';
 import { ModpackBuildService } from 'app/Services/modpackBuild.service';
-import { ModpackBuildRelease } from 'app/Models/ModpackBuildRelease';
 import { ModpackBuildResult } from 'app/Models/ModpackBuildResult';
+import { ModpackRc } from 'app/Models/ModpackRc';
+import { ModpackRcService } from 'app/Services/modpackRc.service';
+import { ModpackBuildProcessService } from 'app/Services/modpackBuildProcess.service';
 
 @Component({
-    selector: 'app-modpack-builds',
-    templateUrl: './modpack-builds.component.html',
-    styleUrls: ['../../../Pages/modpack-page/modpack-page.component.scss', './modpack-builds.component.scss', './modpack-builds.component.scss-theme.scss']
+    selector: 'app-modpack-builds-stage',
+    templateUrl: './modpack-builds-stage.component.html',
+    styleUrls: ['../../../Pages/modpack-page/modpack-page.component.scss', './modpack-builds-stage.component.scss', './modpack-builds-stage.component.scss-theme.scss']
 })
-export class ModpackBuildsComponent implements OnDestroy {
+export class ModpackBuildsStageComponent implements OnInit, OnDestroy {
     @ViewChild(ThemeEmitterComponent, { static: false }) theme: ThemeEmitterComponent;
     modpackBuildResult = ModpackBuildResult;
-    selectedRelease: ModpackBuildRelease = undefined;
+    selectedRc: ModpackRc = undefined;
     selectedBuild: ModpackBuild = undefined;
     selectedStep: ModpackBuildStep = undefined;
     changesMarkdown: string;
     additionalChangesMarkdown: string;
+    builderName = 'UKSF Bot';
     logOpen = false;
     cancelling = false;
 
     constructor(
         private markdownService: MarkdownService,
-        private modpackBuildService: ModpackBuildService
-    ) {
-        this.modpackBuildService.connect(() => {
-            if (this.buildReleases.length > 0) {
-                this.select(this.buildReleases[0]);
+        private modpackBuildProcessService: ModpackBuildProcessService,
+        private modpackRcService: ModpackRcService
+    ) { }
+
+    ngOnInit(): void {
+        this.modpackRcService.connect(() => {
+            if (this.rcs.length > 0) {
+                this.selectRc(this.rcs[0]);
+            } else {
+                this.selectRc(undefined);
             }
         });
     }
 
     ngOnDestroy(): void {
-        this.modpackBuildService.disconnect();
+        this.modpackRcService.disconnect();
     }
 
-    get buildReleases() {
-        return this.modpackBuildService.buildReleases;
+    get rcs() {
+        return this.modpackRcService.rcs;
     }
 
-    select(release: ModpackBuildRelease) {
-        this.selectedRelease = release;
-        if (this.selectedRelease.builds.length > 0) {
-            this.selectBuild(this.selectedRelease.builds[0]);
+    selectRc(rc: ModpackRc) {
+        if (rc === undefined) {
+            this.closeLog();
+            this.selectedRc = undefined;
+            this.changesMarkdown = undefined;
+            this.additionalChangesMarkdown = undefined;
+            this.selectedStep = undefined;
+        } else {
+            this.selectedRc = rc;
+            if (this.selectedRc.builds.length > 0) {
+                this.selectBuild(this.selectedRc.builds[0]);
+            }
         }
     }
 
@@ -58,6 +74,11 @@ export class ModpackBuildsComponent implements OnDestroy {
             this.selectedStep = undefined;
         } else {
             this.selectedBuild = build;
+            this.modpackBuildProcessService.getBuilderName(this.selectedBuild.builderId, (name: string) => {
+                this.builderName = name;
+            }, () => {
+                this.builderName = 'UKSF Bot';
+            });
             this.compilePreviousChanges();
             if (this.logOpen) {
                 this.openLog();
@@ -97,14 +118,14 @@ export class ModpackBuildsComponent implements OnDestroy {
             this.changesMarkdown = this.markdownService.compile(this.selectedBuild.commit.message);
 
             let changesSincePreviousRelease = '';
-            const index = this.selectedRelease.builds.indexOf(this.selectedBuild) + 1;
-            if (index === this.selectedRelease.builds.length) {
+            const index = this.selectedRc.builds.indexOf(this.selectedBuild) + 1;
+            if (index === this.selectedRc.builds.length) {
                 changesSincePreviousRelease = '';
             } else {
-                for (let i = index; i < this.selectedRelease.builds.length - 1; i++) {
-                    const previousBuild = this.selectedRelease.builds[i];
-                    changesSincePreviousRelease += `#### ${this.selectedRelease.version}.${previousBuild.buildNumber}`
-                    changesSincePreviousRelease += `\n${previousBuild.commit.message}<br/><br/>\n\n`
+                for (let i = index; i < this.selectedRc.builds.length; i++) {
+                    const previousBuild = this.selectedRc.builds[i];
+                    changesSincePreviousRelease += `#### RC #${previousBuild.buildNumber}`;
+                    changesSincePreviousRelease += `\n${previousBuild.commit.message}<br/><br/>\n\n`;
                 }
             }
 
@@ -113,34 +134,30 @@ export class ModpackBuildsComponent implements OnDestroy {
     }
 
     previousRelease(): string {
-        const index = this.buildReleases.indexOf(this.selectedRelease);
-        if (index < this.buildReleases.length - 1) {
-            return this.buildReleases[index + 1].version;
+        const index = this.rcs.indexOf(this.selectedRc);
+        if (index < this.rcs.length - 1) {
+            return this.rcs[index + 1].version;
         }
 
         return 'last release';
     }
 
-    makeReleaseCandidate() {
-        this.modpackBuildService.makeRc(this.selectedRelease.version, this.selectedBuild);
-    }
-
     cancelBuild() {
         this.cancelling = true;
-        this.modpackBuildService.cancel(() => {
+        this.modpackRcService.cancel(this.selectedBuild, () => {
             this.cancelling = false;
         });
     }
 
     rebuild() {
-        this.modpackBuildService.rebuild(this.selectedRelease.version, this.selectedBuild);
+        this.modpackRcService.rebuild(this.selectedBuild);
     }
 
     openLog() {
         this.logOpen = true;
         this.chooseStep();
         if (!this.selectedBuild.finished) {
-            this.modpackBuildService.connectToBuildLog(this.selectedRelease.version, this.selectedBuild, () => {
+            this.modpackRcService.connectToBuildLog(this.selectedBuild, () => {
                 this.chooseStep();
             });
         }
@@ -153,63 +170,75 @@ export class ModpackBuildsComponent implements OnDestroy {
 
         this.logOpen = false;
         this.selectStep(undefined);
-        this.modpackBuildService.disconnectFromBuildLog();
+        this.modpackRcService.disconnectFromBuildLog();
+    }
+
+    get duration() {
+        return this.modpackBuildProcessService.duration(this.selectedBuild.startTime, this.selectedBuild.endTime);
+    }
+
+    get branch() {
+        return this.modpackBuildProcessService.branch(this.selectedBuild.commit.branch);
     }
 
     getBuildColour(build: ModpackBuild) {
         if (this.theme === undefined) {
-            return '';
+            return { 'color': '' };
         }
 
         if (build.running) {
-            return '#0c78ff';
+            return { 'color': '#0c78ff' };
         }
 
         if (build.buildResult === ModpackBuildResult.SUCCESS) {
-            return 'green';
+            return { 'color': 'green' };
         }
 
         if (build.buildResult === ModpackBuildResult.FAILED) {
-            return 'red';
+            return { 'color': 'red' };
         }
 
         if (build.buildResult === ModpackBuildResult.CANCELLED) {
-            return 'goldenrod';
+            return { 'color': 'goldenrod' };
         }
 
-        return this.theme.foregroundColor;
+        if (build === this.selectedBuild) {
+            return { 'color': this.theme.primaryColor };
+        }
+
+        return { 'color': this.theme.foregroundColor };
     }
 
-    getLogItemColour(index: number): string {
+    getLogItemColour(index: number): any {
         // TODO: Use objects for logs tht define things, styles, links maybe etc
         if (this.theme === undefined) {
-            return '';
+            return { 'color': '' };
         }
 
         if (this.selectedStep.logs[index].includes('Error')) {
-            return 'red';
+            return { 'color': 'red' };
         }
 
         if (this.selectedStep.logs[index].includes('cancelled')) {
-            return 'goldenrod';
+            return { 'color': 'goldenrod' };
         }
 
         if (index > 0 && index < this.selectedStep.logs.length - 1) {
-            return this.theme.foregroundColor;
+            return { 'color': this.theme.foregroundColor };
         }
 
         if (this.selectedStep.running && index === 0) {
-            return '#0c78ff';
+            return { 'color': '#0c78ff' };
         }
 
         if (this.selectedStep.buildResult === ModpackBuildResult.SUCCESS) {
-            return 'green';
+            return { 'color': 'green' };
         }
 
         if (this.selectedStep.buildResult === ModpackBuildResult.FAILED) {
-            return 'red';
+            return { 'color': 'red' };
         }
 
-        return this.theme.foregroundColor;
+        return { 'color': this.theme.foregroundColor };
     }
 }

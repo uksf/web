@@ -18,7 +18,8 @@ export class ModpackPageComponent {
             this.tabLinks = [
                 { label: 'Guide', link: '../guide' },
                 { label: 'Releases', link: '../releases' },
-                { label: 'Builds', link: '../builds' }
+                { label: 'Dev Builds', link: '../builds-dev' },
+                { label: 'RC Builds', link: '../builds-stage' }
             ];
         }
     }

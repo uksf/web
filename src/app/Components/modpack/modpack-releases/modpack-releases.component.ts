@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MarkdownService } from 'ngx-markdown';
 import { ModpackRelease } from 'app/Models/ModpackRelease';
 import { HttpClient } from '@angular/common/http';
@@ -11,7 +11,7 @@ import { Permissions } from 'app/Services/permissions';
     templateUrl: './modpack-releases.component.html',
     styleUrls: ['../../../Pages/modpack-page/modpack-page.component.scss', './modpack-releases.component.scss', './modpack-releases.component.scss-theme.scss']
 })
-export class ModpackReleasesComponent {
+export class ModpackReleasesComponent implements OnInit {
     releases: ModpackRelease[] = [];
     selectedRelease: ModpackRelease = undefined;
     editing = false;
@@ -26,7 +26,9 @@ export class ModpackReleasesComponent {
         private httpClient: HttpClient,
         private urls: UrlService,
         private permissionsService: PermissionsService
-    ) {
+    ) { }
+
+    ngOnInit(): void {
         this.getReleases();
     }
 

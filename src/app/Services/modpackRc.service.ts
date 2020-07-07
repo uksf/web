@@ -1,16 +1,16 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { SignalRService, ConnectionContainer } from './signalr.service';
+import { ModpackRc } from 'app/Models/ModpackRc';
 import { ModpackBuild } from 'app/Models/ModpackBuild';
 import { ModpackBuildStep } from 'app/Models/ModpackBuildStep';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from './url.service';
-import { Observable } from 'rxjs/internal/Observable';
 
 @Injectable()
-export class ModpackBuildService implements OnDestroy {
+export class ModpackRcService implements OnDestroy {
     private hubConnection: ConnectionContainer;
     private buildConnection: ConnectionContainer;
-    builds: ModpackBuild[] = [];
+    rcs: ModpackRc[] = [];
 
     constructor(
         private httpClient: HttpClient,
@@ -25,9 +25,7 @@ export class ModpackBuildService implements OnDestroy {
         this.getData(callback);
 
         this.hubConnection = this.signalrService.connect(`builds`);
-        this.hubConnection.connection.on('ReceiveBuild', (build: ModpackBuild) => {
-            console.log(build);
-
+        this.hubConnection.connection.on('ReceiveReleaseCandidateBuild', (build: ModpackBuild) => {
             this.patchBuild(build);
         });
         this.hubConnection.reconnectEvent.subscribe(() => {
@@ -68,37 +66,57 @@ export class ModpackBuildService implements OnDestroy {
         }
     }
 
-    sortBuilds() {
-        this.builds.sort((a: ModpackBuild, b: ModpackBuild) => a.buildNumber > b.buildNumber ? -1 : a.buildNumber < b.buildNumber ? 1 : 0);
+    sortRcs() {
+        this.rcs.sort((a: ModpackRc, b: ModpackRc) => b.version.localeCompare(a.version, undefined, { numeric: true, }));
     }
 
-    // TODO: build not updating on complete
+    sortBuilds(rc: ModpackRc) {
+        rc.builds.sort((a: ModpackBuild, b: ModpackBuild) => a.buildNumber > b.buildNumber ? -1 : a.buildNumber < b.buildNumber ? 1 : 0);
+    }
+
     patchBuild(build: ModpackBuild) {
-        const index = this.builds.findIndex(x => x.id === build.id);
+        let index = this.rcs.findIndex(x => x.version === build.version);
         if (index === -1) {
-            this.builds.unshift(build);
-        } else {
-            this.builds.splice(index, 1, build);
+            this.rcs.unshift({ version: build.version, builds: [] });
+            index = 0;
         }
 
-        this.sortBuilds();
+        const rc = this.rcs[index];
+        const buildIndex = rc.builds.findIndex(x => x.id === build.id);
+        if (buildIndex === -1) {
+            rc.builds.unshift(build);
+        } else {
+            rc.builds.splice(buildIndex, 1, build);
+        }
+
+        this.sortRcs();
+        this.sortBuilds(rc);
     }
 
     patchStep(build: ModpackBuild, step: ModpackBuildStep) {
-        const index = this.builds.findIndex(x => x.id === build.id);
+        const rc = this.rcs.find(x => x.version === build.version);
+        const index = rc.builds.findIndex(x => x.id === build.id);
+
         if (index === -1) {
             return;
         }
 
-        this.builds[index].steps.splice(step.index, 1, step);
+        rc.builds[index].steps[step.index] = step;
     }
 
     getData(callback: () => void) {
-        // get request for all builds
-        this.httpClient.get(this.urls.apiUrl + '/modpack/builds').subscribe((builds: ModpackBuild[]) => {
-            this.builds = builds;
+        // get request for all builds (groups by version)
+        this.httpClient.get(this.urls.apiUrl + '/modpack/rcs').subscribe((builds: ModpackBuild[]) => {
+            // this.rcs = builds;
+            if (builds.length === 0) {
+                this.rcs = [];
+            }
+
+            builds.forEach((build: ModpackBuild) => {
+                this.patchBuild(build);
+            });
             callback();
-        }, error => this.urls.errorWrapper('Failed to get releases', error));
+        }, error => this.urls.errorWrapper('Failed to get release candidates', error));
     }
 
     getBuildLogData(id: string, callback: () => void) {
@@ -107,15 +125,6 @@ export class ModpackBuildService implements OnDestroy {
             this.patchBuild(build);
             callback();
         }, error => this.urls.errorWrapper('Failed to get build', error));
-    }
-
-    // TODO: new build form
-    newBuild() {
-        // post request for rebuild
-        // this.httpClient.post(this.urls.apiUrl + `/modpack/rebuild/${version}`, build).subscribe(
-        //     () => { },
-        //     error => this.urls.errorWrapper('Failed to rebuild', error)
-        // );
     }
 
     rebuild(build: ModpackBuild) {
@@ -136,3 +145,4 @@ export class ModpackBuildService implements OnDestroy {
         });
     }
 }
+

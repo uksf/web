@@ -5,4 +5,6 @@ export interface ModpackRelease {
     description: string;
     changelog: string;
     isDraft: boolean;
+    creatorId: string;
+    releaserId: string;
 }

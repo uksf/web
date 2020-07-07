@@ -2,23 +2,16 @@
     <app-theme-emitter></app-theme-emitter>
     <app-full-content-area>
         <app-modpack-page></app-modpack-page>
-        <div class="flex-container no-padding-left" *ngIf="buildReleases">
+        <div class="flex-container no-padding-left" *ngIf="rcs">
             <div class="history-container">
-                <div class="history-item no-select" *ngIf="buildReleases.length === 0">
-                    No Builds
-                </div>
-                <div class="history-item release" [ngClass]="{'selected': selectedRelease === buildsRelease}" *ngFor="let buildsRelease of buildReleases" (click)="select(buildsRelease)">
-                    {{buildsRelease.version}}
+                <div class="history-item release" [ngClass]="{'selected': selectedRc && selectedRc.version === rc.version}" *ngFor="let rc of rcs" (click)="selectRc(rc)">
+                    {{rc.version}}
                 </div>
             </div>
-            <div class="release-container" *ngIf="selectedRelease">
+            <div class="release-container" *ngIf="selectedRc">
                 <div class="history-container builds">
-                    <div class="history-item" [ngClass]="{'selected': selectedBuild === build}" [ngStyle]="{'color': getBuildColour(build)}" *ngFor="let build of selectedRelease.builds" (click)="selectBuild(build)">
-                        <!-- <span *ngIf="build.isRelease">{{selectedRelease.version}}</span>
-                        <span *ngIf="!build.isRelease">{{selectedRelease.version}}.{{build.buildNumber}}</span> -->
-                        <span *ngIf="build.isRelease">Release</span>
-                        <span *ngIf="build.isReleaseCandidate">{{build.buildNumber}} RC</span>
-                        <span *ngIf="!build.isRelease && !build.isReleaseCandidate">{{build.buildNumber}}</span>
+                    <div class="history-item" [ngClass]="{'selected': selectedBuild && selectedBuild.id === build.id}" [ngStyle]="getBuildColour(build)" *ngFor="let build of selectedRc.builds" (click)="selectBuild(build)">
+                        <span>RC #{{build.buildNumber}}</span>
                     </div>
                 </div>
                 <div class="build-container" *ngIf="selectedBuild === undefined">
@@ -29,10 +22,8 @@
                 <div class="build-container" *ngIf="selectedBuild && !logOpen">
                     <div class="build-header">
                         <div>
-                            <h1 class="build-title" *ngIf="selectedBuild.isRelease">Release {{selectedRelease.version}}</h1>
-                            <h1 class="build-title" *ngIf="selectedBuild.isReleaseCandidate">Release Candidate {{selectedRelease.version}}.{{selectedBuild.buildNumber}}</h1>
-                            <h1 class="build-title" *ngIf="selectedBuild.isNewVersion">New Version Build {{selectedRelease.version}}</h1>
-                            <h1 class="build-title" *ngIf="!selectedBuild.isRelease && !selectedBuild.isReleaseCandidate && !selectedBuild.isNewVersion">Dev Build {{selectedRelease.version}}.{{selectedBuild.buildNumber}}</h1>
+                            <h1 class="build-title" *ngIf="selectedBuild.isRelease">Release {{selectedRc.version}}</h1>
+                            <h1 class="build-title" *ngIf="!selectedBuild.isRelease">{{selectedRc.version}} RC #{{selectedBuild.buildNumber}}</h1>
                         </div>
                         <app-flex-filler></app-flex-filler>
                         <div class="buttons">
@@ -44,16 +35,10 @@
                             </div>
                             <app-flex-filler></app-flex-filler>
                             <ng-template [ngxPermissionsOnly]="['ADMIN']">
-                                <button mat-raised-button color="primary"
-                                    *ngIf="selectedRelease === buildReleases[0] && selectedBuild === selectedRelease.builds[0] && selectedBuild.buildResult === modpackBuildResult.SUCCESS && !selectedBuild.isRelease && !selectedBuild.isReleaseCandidate && !selectedBuild.isNewVersion"
-                                    (click)="makeReleaseCandidate()">
-                                    Make RC
-                                </button>
                                 <button mat-raised-button color="primary" *ngIf="selectedBuild.running && !cancelling" (click)="cancelBuild()">
                                     Cancel Build
                                 </button>
-                                <button mat-raised-button color="primary" *ngIf="selectedRelease === buildReleases[0] && selectedBuild === selectedRelease.builds[0] && selectedBuild.finished && selectedBuild.buildResult !== modpackBuildResult.SUCCESS && !selectedBuild.isNewVersion"
-                                    (click)="rebuild()">
+                                <button mat-raised-button color="primary" *ngIf="selectedBuild.finished && selectedBuild.buildResult !== modpackBuildResult.SUCCESS" (click)="rebuild()">
                                     Rebuild
                                 </button>
                             </ng-template>
@@ -79,14 +64,14 @@
                     <div class="log-steps">
                         <h3>Steps</h3>
                         <div class="steps-container">
-                            <div class="build-step-item" [ngClass]="{'selected': selectedStep === step}" *ngFor="let step of selectedBuild.steps; let index = index" (click)="selectStep(step)">
+                            <div class="build-step-item" [ngClass]="{'selected': selectedStep && selectedStep.index === step.index}" *ngFor="let step of selectedBuild.steps" (click)="selectStep(step)">
                                 <i class="fas fa-chevron-circle-right running" *ngIf="step.running"></i>
                                 <i class="fas fa-check-circle success" *ngIf="step.buildResult === modpackBuildResult.SUCCESS"></i>
                                 <i class="fas fa-exclamation-circle fail" *ngIf="step.buildResult === modpackBuildResult.FAILED"></i>
                                 <i class="fas fa-stop-circle cancelled" *ngIf="step.buildResult === modpackBuildResult.CANCELLED"></i>
                                 <i class="far fa-circle pending" *ngIf="!step.running && !step.finished"></i>
                                 <span class="wide">{{step.name}}</span>
-                                <span class="narrow">{{index + 1}}</span>
+                                <span class="narrow">{{step.index + 1}}</span>
                             </div>
                         </div>
                     </div>
@@ -113,8 +98,7 @@
                                     <button mat-raised-button color="primary" *ngIf="selectedBuild.running && !cancelling" (click)="cancelBuild()">
                                         Cancel Build
                                     </button>
-                                    <button mat-raised-button color="primary" *ngIf="selectedRelease === buildReleases[0] && selectedBuild === selectedRelease.builds[0] && selectedBuild.finished && selectedBuild.buildResult !== modpackBuildResult.SUCCESS && !selectedBuild.isNewVersion"
-                                        (click)="rebuild()">
+                                    <button mat-raised-button color="primary" *ngIf="selectedBuild.finished && selectedBuild.buildResult !== modpackBuildResult.SUCCESS" (click)="rebuild()">
                                         Rebuild
                                     </button>
                                 </ng-template>
@@ -133,9 +117,25 @@
                             </div>
                             <div class="log-item" *ngFor="let log of selectedStep.logs; let index = index">
                                 <div class="index">{{index + 1}}</div>
-                                <div class="text" [ngStyle]="{'color': getLogItemColour(index)}">{{log}}</div>
+                                <div class="text" [ngStyle]="getLogItemColour(index)">{{log}}</div>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <app-flex-filler></app-flex-filler>
+                <div class="build-footer" *ngIf="selectedBuild">
+                    <div class="footer-item">
+                        {{selectedBuild.startTime | date:'MMM dd HH:mm'}}
+                    </div>
+                    <div class="footer-item" *ngIf="selectedBuild.finished">
+                        {{duration}}
+                    </div>
+                    <app-flex-filler></app-flex-filler>
+                    <div class="footer-item">
+                        Branch: {{branch}}
+                    </div>
+                    <div class="footer-item">
+                        Built By: {{builderName}}
                     </div>
                 </div>
             </div>

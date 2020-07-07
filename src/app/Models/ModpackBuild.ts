@@ -3,14 +3,17 @@ import { GithubCommit } from './GithubCommit';
 import { ModpackBuildResult } from './ModpackBuildResult';
 
 export interface ModpackBuild {
-    timestamp: Date;
+    id: string;
+    version: string;
     buildNumber: number;
     commit: GithubCommit;
-    isRelease: boolean;
-    isReleaseCandidate: boolean;
-    isNewVersion: boolean;
     steps: ModpackBuildStep[];
     running: boolean;
     finished: boolean;
+    startTime: Date;
+    endTime: Date;
     buildResult: ModpackBuildResult;
+    builderId: string;
+    isRelease: boolean;
+    isReleaseCandidate: boolean;
 }

@@ -41,7 +41,8 @@ import { PersonnelDischargesComponent } from './Components/personnel/personnel-d
 import { PersonnelActivityComponent } from './Components/personnel/personnel-activity/personnel-activity.component';
 import { ModpackGuideComponent } from './Components/modpack/modpack-guide/modpack-guide.component';
 import { ModpackReleasesComponent } from './Components/modpack/modpack-releases/modpack-releases.component';
-import { ModpackBuildsComponent } from './Components/modpack/modpack-builds/modpack-builds.component';
+import { ModpackBuildsDevComponent } from './Components/modpack/modpack-builds-dev/modpack-builds-dev.component';
+import { ModpackBuildsStageComponent } from './Components/modpack/modpack-builds-stage/modpack-builds-stage.component';
 
 const appRoutes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -485,7 +486,19 @@ const appRoutes: Routes = [
         }, canActivate: [NgxPermissionsGuard]
     },
     {
-        path: 'modpack/builds', component: ModpackBuildsComponent, data: {
+        path: 'modpack/builds-dev', component: ModpackBuildsDevComponent, data: {
+            permissions: {
+                only: Permissions.TESTER,
+                except: Permissions.UNLOGGED,
+                redirectTo: {
+                    UNLOGGED: loginRedirect,
+                    default: '/home'
+                }
+            }
+        }, canActivate: [NgxPermissionsGuard]
+    },
+    {
+        path: 'modpack/builds-stage', component: ModpackBuildsStageComponent, data: {
             permissions: {
                 only: Permissions.TESTER,
                 except: Permissions.UNLOGGED,

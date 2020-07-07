@@ -37,7 +37,8 @@
 @import "app/Components/inline-edit/inline-edit.component.scss-theme.scss";
 @import "app/Components/command/command-requests/command-request.component.scss-theme.scss";
 @import "app/Components/command/command-units/command-units.component.scss-theme.scss";
-@import "app/Components/modpack/modpack-builds/modpack-builds.component.scss-theme.scss";
+@import "app/Components/modpack/modpack-builds-dev/modpack-builds-dev.component.scss-theme.scss";
+@import "app/Components/modpack/modpack-builds-stage/modpack-builds-stage.component.scss-theme.scss";
 @import "app/Components/modpack/modpack-guide/modpack-guide.component.scss-theme.scss";
 @import "app/Components/modpack/modpack-releases/modpack-releases.component.scss-theme.scss";
 @import "app/Components/operations/operations-servers/operations-servers.component.scss-theme.scss";
@@ -78,7 +79,8 @@
     @include inline-edit-component-theme($theme);
     @include command-request-component-theme($theme);
     @include command-units-component-theme($theme);
-    @include modpack-builds-component-theme($theme);
+    @include modpack-builds-dev-component-theme($theme);
+    @include modpack-builds-stage-component-theme($theme);
     @include modpack-guide-component-theme($theme);
     @include modpack-releases-component-theme($theme);
     @include operations-servers-component-theme($theme);

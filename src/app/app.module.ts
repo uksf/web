@@ -172,8 +172,12 @@ import { TextInputModalComponent } from './Modals/text-input-modal/text-input-mo
 import { StatesService } from './Services/states.service';
 import { ModpackGuideComponent } from './Components/modpack/modpack-guide/modpack-guide.component';
 import { ModpackReleasesComponent } from './Components/modpack/modpack-releases/modpack-releases.component';
-import { ModpackBuildsComponent } from './Components/modpack/modpack-builds/modpack-builds.component';
+import { ModpackBuildsDevComponent } from './Components/modpack/modpack-builds-dev/modpack-builds-dev.component';
+import { ModpackBuildsStageComponent } from './Components/modpack/modpack-builds-stage/modpack-builds-stage.component';
 import { ModpackBuildService } from './Services/modpackBuild.service';
+import { ModpackRcService } from './Services/modpackRc.service';
+import { DisplayNameService } from './Services/displayName.service';
+import { ModpackBuildProcessService } from './Services/modpackBuildProcess.service';
 
 export function initPermissions(permissionsService: PermissionsService) {
     return () => permissionsService.refresh();
@@ -203,6 +207,9 @@ export function tokenGetter() {
         CountryPickerService,
         SignalRService,
         ModpackBuildService,
+        ModpackRcService,
+        ModpackBuildProcessService,
+        DisplayNameService,
         {
             provide: APP_INITIALIZER,
             useFactory: initPermissions,
@@ -382,7 +389,8 @@ export function tokenGetter() {
         PersonnelLoasListComponent,
         ModpackGuideComponent,
         ModpackReleasesComponent,
-        ModpackBuildsComponent
+        ModpackBuildsDevComponent,
+        ModpackBuildsStageComponent
     ], bootstrap: [
         AppComponent
     ], entryComponents: [

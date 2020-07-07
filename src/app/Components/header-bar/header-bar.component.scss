@@ -52,24 +52,29 @@
     padding: 0px 10px 0 5px;
     margin-right: 10px;
     min-width: fit-content;
+
     div {
         display: flex;
         flex-direction: row;
         align-items: center;
+
         span {
             text-align: center;
             width: 100%;
         }
+
         > .mat-icon {
             height: 30px;
             margin: 0 5px 0 0;
         }
     }
+
     &.profile {
         padding: 5px;
         min-width: 25px;
         border-radius: 20px;
         height: 40px;
+
         .mat-icon {
             font-size: 30px;
             width: 30px;
@@ -99,9 +104,11 @@ a {
     .header-wrapper {
         flex-direction: column;
     }
+
     .name-wrapper {
         display: none;
     }
+
     .logo-wrapper {
         position: absolute;
         left: 0px;
@@ -117,10 +124,12 @@ a {
             display: none;
         }
     }
+
     .button-wrapper {
         height: 100%;
         margin: 5px 0px;
     }
+
     .button {
         padding: 0 16px;
 
@@ -128,15 +137,18 @@ a {
             margin-right: 0px;
         }
     }
+
     app-notifications {
         padding: 0 !important;
         margin: auto 5px auto 0 !important;
     }
+
     .notifications {
         position: absolute;
         right: 5px;
         margin-right: 0px;
     }
+
     .mat-icon {
         text-align: center;
         align-items: center;
@@ -154,12 +166,14 @@ a {
             margin: auto;
         }
     }
+
     .button-wrapper {
         flex-direction: row;
         align-items: flex-end;
         height: 100%;
         margin: 0;
     }
+
     .mat-icon {
         text-align: center;
         align-items: center;
@@ -167,6 +181,7 @@ a {
         height: 40px;
         margin: 0 8px;
     }
+
     app-notifications {
         margin: auto 0 !important;
     }

@@ -1,7 +1,7 @@
+import { ModpackBuildStep } from './ModpackBuildStep';
 import { ModpackBuild } from './ModpackBuild';
 
-export interface ModpackBuildRelease {
-    id: string;
+export interface ModpackRc {
     version: string;
     builds: ModpackBuild[];
 }
