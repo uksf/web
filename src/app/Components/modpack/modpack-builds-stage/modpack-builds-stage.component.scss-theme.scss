@@ -41,50 +41,6 @@
             }
 
             .release-container {
-                .build-container {
-                    &.log {
-                        .log-steps {
-                            border-right: 1px solid mat-color($background, selected);
-
-                            h3 {
-                                border-bottom: 1px solid mat-color($background, selected);
-                            }
-
-                            .build-step-item {
-                                border-bottom: 1px solid mat-color($background, selected);
-
-                                &.selected {
-                                    color: mat-color($primary, default);
-                                    background-color: mat-color($background, selected);
-                                }
-
-                                &:hover {
-                                    background-color: mat-color($background, hover);
-                                }
-                            }
-                        }
-
-                        .log-output {
-                            .build-log {
-                                color: mat-color($background, contrast);
-                                background-color: transparent;
-
-                                .log-item {
-                                    color: mat-color($foreground, base);
-
-                                    &:hover {
-                                        background-color: mat-color($background, selected);
-                                    }
-                                }
-                            }
-                        }
-
-                        i {
-                            color: mat-color($background, contrast);
-                        }
-                    }
-                }
-
                 .build-footer {
                     background-color: mat-color($background, dark-bar);
 
@@ -105,7 +61,7 @@
             background-color: mat-color($background, scroll-thumb);
         }
 
-        @media only screen and (max-width: 600px) {
+        @media only screen and (max-width: 1024px) {
             .flex-container {
                 .history-container {
                     .history-item {

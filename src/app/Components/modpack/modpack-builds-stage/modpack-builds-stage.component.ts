@@ -1,9 +1,7 @@
 import { Component, ViewChild, OnDestroy, OnInit } from '@angular/core';
 import { MarkdownService } from 'ngx-markdown';
 import { ModpackBuild } from 'app/Models/ModpackBuild';
-import { ModpackBuildStep } from 'app/Models/ModpackBuildStep';
 import { ThemeEmitterComponent } from 'app/Components/theme-emitter/theme-emitter.component';
-import { ModpackBuildService } from 'app/Services/modpackBuild.service';
 import { ModpackBuildResult } from 'app/Models/ModpackBuildResult';
 import { ModpackRc } from 'app/Models/ModpackRc';
 import { ModpackRcService } from 'app/Services/modpackRc.service';
@@ -17,9 +15,8 @@ import { ModpackBuildProcessService } from 'app/Services/modpackBuildProcess.ser
 export class ModpackBuildsStageComponent implements OnInit, OnDestroy {
     @ViewChild(ThemeEmitterComponent, { static: false }) theme: ThemeEmitterComponent;
     modpackBuildResult = ModpackBuildResult;
-    selectedRc: ModpackRc = undefined;
-    selectedBuild: ModpackBuild = undefined;
-    selectedStep: ModpackBuildStep = undefined;
+    selectedRcVersion = '';
+    selectedBuildId = '';
     changesMarkdown: string;
     additionalChangesMarkdown: string;
     builderName = 'UKSF Bot';
@@ -35,7 +32,7 @@ export class ModpackBuildsStageComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.modpackRcService.connect(() => {
             if (this.rcs.length > 0) {
-                this.selectRc(this.rcs[0]);
+                this.selectRc(this.rcs[0].version);
             } else {
                 this.selectRc(undefined);
             }
@@ -50,30 +47,34 @@ export class ModpackBuildsStageComponent implements OnInit, OnDestroy {
         return this.modpackRcService.rcs;
     }
 
-    selectRc(rc: ModpackRc) {
-        if (rc === undefined) {
+    get selectedRc(): ModpackRc {
+        return this.rcs.find(x => x.version === this.selectedRcVersion);
+    }
+
+    get selectedBuild(): ModpackBuild {
+        return this.selectedRc ? this.selectedRc.builds.find(x => x.id === this.selectedBuildId) : undefined;
+    }
+
+    selectRc(version: string) {
+        this.selectedRcVersion = version;
+        if (!this.selectedRc) {
             this.closeLog();
-            this.selectedRc = undefined;
-            this.changesMarkdown = undefined;
-            this.additionalChangesMarkdown = undefined;
-            this.selectedStep = undefined;
+            this.changesMarkdown = '';
+            this.additionalChangesMarkdown = '';
         } else {
-            this.selectedRc = rc;
             if (this.selectedRc.builds.length > 0) {
-                this.selectBuild(this.selectedRc.builds[0]);
+                this.selectBuild(this.selectedRc.builds[0].id);
             }
         }
     }
 
-    selectBuild(build: ModpackBuild) {
-        if (build === undefined) {
+    selectBuild(id: string) {
+        this.selectedBuildId = id;
+        if (!this.selectedBuild) {
             this.closeLog();
-            this.selectedBuild = undefined;
-            this.changesMarkdown = undefined;
-            this.additionalChangesMarkdown = undefined;
-            this.selectedStep = undefined;
+            this.changesMarkdown = '';
+            this.additionalChangesMarkdown = '';
         } else {
-            this.selectedBuild = build;
             this.modpackBuildProcessService.getBuilderName(this.selectedBuild.builderId, (name: string) => {
                 this.builderName = name;
             }, () => {
@@ -83,33 +84,6 @@ export class ModpackBuildsStageComponent implements OnInit, OnDestroy {
             if (this.logOpen) {
                 this.openLog();
             }
-        }
-    }
-
-    chooseStep() {
-        if (this.selectedBuild.running) {
-            const step = this.selectedBuild.steps.find(x => x.running);
-            if (step) {
-                this.selectStep(step);
-            }
-        } else if (this.selectedBuild.finished) {
-            if (this.selectedBuild.buildResult === ModpackBuildResult.FAILED) {
-                this.selectStep(this.selectedBuild.steps.find(x => x.buildResult === ModpackBuildResult.FAILED));
-            } else if (this.selectedBuild.buildResult === ModpackBuildResult.CANCELLED) {
-                this.selectStep(this.selectedBuild.steps.find(x => x.buildResult === ModpackBuildResult.CANCELLED));
-            } else {
-                this.selectStep(this.selectedBuild.steps[this.selectedBuild.steps.length - 1]);
-            }
-        } else {
-            this.selectStep(this.selectedBuild.steps[0]);
-        }
-    }
-
-    selectStep(step: ModpackBuildStep) {
-        if (step === undefined) {
-            this.selectedStep = undefined;
-        } else {
-            this.selectedStep = step;
         }
     }
 
@@ -142,35 +116,23 @@ export class ModpackBuildsStageComponent implements OnInit, OnDestroy {
         return 'last release';
     }
 
+    openLog() {
+        this.logOpen = true;
+    }
+
+    closeLog() {
+        this.logOpen = false;
+    }
+
     cancelBuild() {
         this.cancelling = true;
-        this.modpackRcService.cancel(this.selectedBuild, () => {
+        this.modpackBuildProcessService.cancel(this.selectedBuild, () => {
             this.cancelling = false;
         });
     }
 
     rebuild() {
-        this.modpackRcService.rebuild(this.selectedBuild);
-    }
-
-    openLog() {
-        this.logOpen = true;
-        this.chooseStep();
-        if (!this.selectedBuild.finished) {
-            this.modpackRcService.connectToBuildLog(this.selectedBuild, () => {
-                this.chooseStep();
-            });
-        }
-    }
-
-    closeLog() {
-        if (!this.logOpen) {
-            return;
-        }
-
-        this.logOpen = false;
-        this.selectStep(undefined);
-        this.modpackRcService.disconnectFromBuildLog();
+        this.modpackBuildProcessService.rebuild(this.selectedBuild);
     }
 
     get duration() {
@@ -204,39 +166,6 @@ export class ModpackBuildsStageComponent implements OnInit, OnDestroy {
 
         if (build === this.selectedBuild) {
             return { 'color': this.theme.primaryColor };
-        }
-
-        return { 'color': this.theme.foregroundColor };
-    }
-
-    getLogItemColour(index: number): any {
-        // TODO: Use objects for logs tht define things, styles, links maybe etc
-        if (this.theme === undefined) {
-            return { 'color': '' };
-        }
-
-        if (this.selectedStep.logs[index].includes('Error')) {
-            return { 'color': 'red' };
-        }
-
-        if (this.selectedStep.logs[index].includes('cancelled')) {
-            return { 'color': 'goldenrod' };
-        }
-
-        if (index > 0 && index < this.selectedStep.logs.length - 1) {
-            return { 'color': this.theme.foregroundColor };
-        }
-
-        if (this.selectedStep.running && index === 0) {
-            return { 'color': '#0c78ff' };
-        }
-
-        if (this.selectedStep.buildResult === ModpackBuildResult.SUCCESS) {
-            return { 'color': 'green' };
-        }
-
-        if (this.selectedStep.buildResult === ModpackBuildResult.FAILED) {
-            return { 'color': 'red' };
         }
 
         return { 'color': this.theme.foregroundColor };

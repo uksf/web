@@ -78,10 +78,11 @@ export class PermissionsService {
                             }
                             if (account.permissions.servers) {
                                 this.ngxPermissionsService.addPermission(Permissions.SERVERS);
-                                this.ngxPermissionsService.addPermission(Permissions.TESTER);
+                                this.ngxPermissionsService.addPermission(Permissions.BUILDS);
                             }
                             if (account.permissions.tester) {
                                 this.ngxPermissionsService.addPermission(Permissions.TESTER);
+                                this.ngxPermissionsService.addPermission(Permissions.BUILDS);
                             }
                         } else if (account.membershipState === MembershipState.CONFIRMED) {
                             // guest

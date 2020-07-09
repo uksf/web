@@ -39,6 +39,7 @@
 @import "app/Components/command/command-units/command-units.component.scss-theme.scss";
 @import "app/Components/modpack/modpack-builds-dev/modpack-builds-dev.component.scss-theme.scss";
 @import "app/Components/modpack/modpack-builds-stage/modpack-builds-stage.component.scss-theme.scss";
+@import "app/Components/modpack/modpack-builds-steps/modpack-builds-steps.component.scss-theme.scss";
 @import "app/Components/modpack/modpack-guide/modpack-guide.component.scss-theme.scss";
 @import "app/Components/modpack/modpack-releases/modpack-releases.component.scss-theme.scss";
 @import "app/Components/operations/operations-servers/operations-servers.component.scss-theme.scss";
@@ -81,6 +82,7 @@
     @include command-units-component-theme($theme);
     @include modpack-builds-dev-component-theme($theme);
     @include modpack-builds-stage-component-theme($theme);
+    @include modpack-builds-steps-component-theme($theme);
     @include modpack-guide-component-theme($theme);
     @include modpack-releases-component-theme($theme);
     @include operations-servers-component-theme($theme);

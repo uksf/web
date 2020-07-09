@@ -41,3 +41,25 @@ a {
         padding-left: 0;
     }
 }
+
+.state {
+    align-self: center;
+    margin: 0 5px;
+    font-size: 18px;
+
+    .running {
+        color: #0c78ff;
+    }
+
+    .success {
+        color: green;
+    }
+
+    .fail {
+        color: red;
+    }
+
+    .cancelled {
+        color: goldenrod;
+    }
+}

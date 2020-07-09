@@ -14,7 +14,7 @@ export class ModpackPageComponent {
     ];
 
     constructor(private permissions: PermissionsService) {
-        if (this.permissions.hasPermission(Permissions.TESTER)) {
+        if (this.permissions.hasAnyPermissionOf([Permissions.TESTER, Permissions.SERVERS])) {
             this.tabLinks = [
                 { label: 'Guide', link: '../guide' },
                 { label: 'Releases', link: '../releases' },

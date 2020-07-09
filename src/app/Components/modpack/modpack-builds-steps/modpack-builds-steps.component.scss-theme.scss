@@ -1,0 +1,56 @@
+@import "~@angular/material/theming";
+
+@mixin modpack-builds-steps-component-theme($theme) {
+    $foreground: map-get($theme, foreground);
+    $primary: map-get($theme, primary);
+    $accent: map-get($theme, accent);
+    $background: map-get($theme, background);
+
+    app-modpack-builds-steps {
+        a {
+            color: mat-color($primary);
+        }
+
+        .log-container {
+            .log-steps {
+                border-right: 1px solid mat-color($background, selected);
+
+                h3 {
+                    border-bottom: 1px solid mat-color($background, selected);
+                }
+
+                .log-step-item {
+                    border-bottom: 1px solid mat-color($background, selected);
+
+                    &.selected {
+                        color: mat-color($primary, default);
+                        background-color: mat-color($background, selected);
+                    }
+
+                    &:hover {
+                        background-color: mat-color($background, hover);
+                    }
+                }
+            }
+
+            .log-output {
+                .build-log {
+                    color: mat-color($background, contrast);
+                    background-color: transparent;
+
+                    .log-item {
+                        color: mat-color($foreground, base);
+
+                        &:hover {
+                            background-color: mat-color($background, selected);
+                        }
+                    }
+                }
+            }
+
+            i {
+                color: mat-color($background, contrast);
+            }
+        }
+    }
+}

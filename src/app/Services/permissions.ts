@@ -1,9 +1,10 @@
 export class Permissions {
+    // Member state
     public static readonly CONFIRMED = 'CONFIRMED';
     public static readonly MEMBER = 'MEMBER';
     public static readonly UNCONFIRMED = 'UNCONFIRMED';
-    public static readonly UNLOGGED = 'UNLOGGED';
 
+    // API
     public static readonly ADMIN = 'ADMIN';
     public static readonly COMMAND = 'COMMAND';
     public static readonly NCO = 'NCO';
@@ -13,6 +14,9 @@ export class Permissions {
     public static readonly SERVERS = 'SERVERS';
     public static readonly TESTER = 'TESTER';
 
+    // Frontend only
     public static readonly ACTIVITY = 'ACTIVITY';
+    public static readonly BUILDS = 'BUILDS';
     public static readonly DISCHARGES = 'DISCHARGES';
+    public static readonly UNLOGGED = 'UNLOGGED';
 }

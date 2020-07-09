@@ -1,0 +1,62 @@
+<div class="log-container" *ngIf="build">
+    <div class="log-steps">
+        <h3>Steps</h3>
+        <div class="steps-container">
+            <div class="log-step-item" [ngClass]="{'selected': selectedStepIndex === stepIndex}" *ngFor="let step of build.steps; let stepIndex = index;" (click)="selectStep(stepIndex, true)">
+                <i class="fas fa-chevron-circle-right running" *ngIf="step.running"></i>
+                <i class="fas fa-check-circle success" *ngIf="step.buildResult === modpackBuildResult.SUCCESS"></i>
+                <i class="fas fa-exclamation-circle fail" *ngIf="step.buildResult === modpackBuildResult.FAILED"></i>
+                <i class="fas fa-stop-circle cancelled" *ngIf="step.buildResult === modpackBuildResult.CANCELLED"></i>
+                <i class="far fa-circle pending" *ngIf="!step.running && !step.finished"></i>
+                <span class="wide">{{step.name}}</span>
+                <span class="narrow">{{step.index + 1}}</span>
+            </div>
+        </div>
+    </div>
+    <div class="log-output" *ngIf="selectedStep">
+        <div class="log-output-header">
+            <div class="log-step-title">
+                <i class="fas fa-chevron-circle-right running" *ngIf="selectedStep.running"></i>
+                <i class="fas fa-check-circle success" *ngIf="selectedStep.buildResult === modpackBuildResult.SUCCESS"></i>
+                <i class="fas fa-exclamation-circle fail" *ngIf="selectedStep.buildResult === modpackBuildResult.FAILED"></i>
+                <i class="fas fa-stop-circle cancelled" *ngIf="selectedStep.buildResult === modpackBuildResult.CANCELLED"></i>
+                <i class="far fa-circle pending" *ngIf="!selectedStep.running && !selectedStep.finished"></i>
+                <h1 class="build-title">{{selectedStep.name}}</h1>
+            </div>
+            <app-flex-filler></app-flex-filler>
+            <div class="buttons">
+                <div class="state">
+                    <i class="running" *ngIf="build.running">Running...</i>
+                    <span class="success" *ngIf="build.buildResult === modpackBuildResult.SUCCESS">Success</span>
+                    <span class="fail" *ngIf="build.buildResult === modpackBuildResult.FAILED">Failed</span>
+                    <span class="cancelled" *ngIf="build.buildResult === modpackBuildResult.CANCELLED">Cancelled</span>
+                </div>
+                <app-flex-filler></app-flex-filler>
+                <ng-template [ngxPermissionsOnly]="['ADMIN']">
+                    <button mat-raised-button color="primary" *ngIf="build.running && !cancelling" (click)="cancelBuild()">
+                        Cancel Build
+                    </button>
+                    <button mat-raised-button color="primary" *ngIf="build.finished && build.buildResult !== modpackBuildResult.SUCCESS" (click)="rebuild()">
+                        Rebuild
+                    </button>
+                </ng-template>
+                <button mat-raised-button color="primary" (click)="closeLog()">
+                    Close Log
+                </button>
+            </div>
+        </div>
+        <div class="build-log">
+            <div class="log-item" *ngIf="selectedStep.logs.length === 0">
+                <div class="index">0</div>
+                <div class="text" *ngIf="!build.running && !build.finished">Waiting for build to start...</div>
+                <div class="text" *ngIf="selectedStep.index > 0 && build.running">Waiting for previous step to finish...</div>
+                <div class="text" *ngIf="build.buildResult === modpackBuildResult.FAILED">Build failed</div>
+                <div class="text" *ngIf="build.buildResult === modpackBuildResult.CANCELLED">Build cancelled</div>
+            </div>
+            <div class="log-item" *ngFor="let log of selectedStep.logs; let logIndex = index">
+                <div class="index">{{logIndex + 1}}</div>
+                <div class="text" [ngStyle]="getLogItemColour(logIndex)">{{log}}</div>
+            </div>
+        </div>
+    </div>
+</div>

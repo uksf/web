@@ -178,6 +178,8 @@ import { ModpackBuildService } from './Services/modpackBuild.service';
 import { ModpackRcService } from './Services/modpackRc.service';
 import { DisplayNameService } from './Services/displayName.service';
 import { ModpackBuildProcessService } from './Services/modpackBuildProcess.service';
+import { NewModpackBuildModalComponent } from './Modals/new-modpack-build/new-modpack-build-modal.component';
+import { ModpackBuildsStepsComponent } from './Components/modpack/modpack-builds-steps/modpack-builds-steps.component';
 
 export function initPermissions(permissionsService: PermissionsService) {
     return () => permissionsService.refresh();
@@ -390,7 +392,9 @@ export function tokenGetter() {
         ModpackGuideComponent,
         ModpackReleasesComponent,
         ModpackBuildsDevComponent,
-        ModpackBuildsStageComponent
+        ModpackBuildsStageComponent,
+        ModpackBuildsStepsComponent,
+        NewModpackBuildModalComponent
     ], bootstrap: [
         AppComponent
     ], entryComponents: [
@@ -417,7 +421,8 @@ export function tokenGetter() {
         EditServerModsModalComponent,
         ConfirmationModalComponent,
         MultipleMessageModalComponent,
-        TextInputModalComponent
+        TextInputModalComponent,
+        NewModpackBuildModalComponent
     ]
 })
 

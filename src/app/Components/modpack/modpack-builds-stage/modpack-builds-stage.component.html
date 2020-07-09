@@ -4,13 +4,13 @@
         <app-modpack-page></app-modpack-page>
         <div class="flex-container no-padding-left" *ngIf="rcs">
             <div class="history-container">
-                <div class="history-item release" [ngClass]="{'selected': selectedRc && selectedRc.version === rc.version}" *ngFor="let rc of rcs" (click)="selectRc(rc)">
+                <div class="history-item release" [ngClass]="{'selected': selectedRcVersion === rc.version}" *ngFor="let rc of rcs" (click)="selectRc(rc.version)">
                     {{rc.version}}
                 </div>
             </div>
             <div class="release-container" *ngIf="selectedRc">
                 <div class="history-container builds">
-                    <div class="history-item" [ngClass]="{'selected': selectedBuild && selectedBuild.id === build.id}" [ngStyle]="getBuildColour(build)" *ngFor="let build of selectedRc.builds" (click)="selectBuild(build)">
+                    <div class="history-item" [ngClass]="{'selected': selectedBuildId === build.id}" [ngStyle]="getBuildColour(build)" *ngFor="let build of selectedRc.builds" (click)="selectBuild(build.id)">
                         <span>RC #{{build.buildNumber}}</span>
                     </div>
                 </div>
@@ -60,68 +60,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="build-container log" *ngIf="selectedBuild && logOpen">
-                    <div class="log-steps">
-                        <h3>Steps</h3>
-                        <div class="steps-container">
-                            <div class="build-step-item" [ngClass]="{'selected': selectedStep && selectedStep.index === step.index}" *ngFor="let step of selectedBuild.steps" (click)="selectStep(step)">
-                                <i class="fas fa-chevron-circle-right running" *ngIf="step.running"></i>
-                                <i class="fas fa-check-circle success" *ngIf="step.buildResult === modpackBuildResult.SUCCESS"></i>
-                                <i class="fas fa-exclamation-circle fail" *ngIf="step.buildResult === modpackBuildResult.FAILED"></i>
-                                <i class="fas fa-stop-circle cancelled" *ngIf="step.buildResult === modpackBuildResult.CANCELLED"></i>
-                                <i class="far fa-circle pending" *ngIf="!step.running && !step.finished"></i>
-                                <span class="wide">{{step.name}}</span>
-                                <span class="narrow">{{step.index + 1}}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="log-output" *ngIf="selectedStep">
-                        <div class="log-output-header">
-                            <div class="build-step-title">
-                                <i class="fas fa-chevron-circle-right running" *ngIf="selectedStep.running"></i>
-                                <i class="fas fa-check-circle success" *ngIf="selectedStep.buildResult === modpackBuildResult.SUCCESS"></i>
-                                <i class="fas fa-exclamation-circle fail" *ngIf="selectedStep.buildResult === modpackBuildResult.FAILED"></i>
-                                <i class="fas fa-stop-circle cancelled" *ngIf="selectedStep.buildResult === modpackBuildResult.CANCELLED"></i>
-                                <i class="far fa-circle pending" *ngIf="!selectedStep.running && !selectedStep.finished"></i>
-                                <h1 class="build-title">{{selectedStep.name}}</h1>
-                            </div>
-                            <app-flex-filler></app-flex-filler>
-                            <div class="buttons">
-                                <div class="state">
-                                    <i class="running" *ngIf="selectedBuild.running">Build {{selectedBuild.buildNumber}}: Running...</i>
-                                    <span class="success" *ngIf="selectedBuild.buildResult === modpackBuildResult.SUCCESS">Build {{selectedBuild.buildNumber}}: Success</span>
-                                    <span class="fail" *ngIf="selectedBuild.buildResult === modpackBuildResult.FAILED">Build {{selectedBuild.buildNumber}}: Failed</span>
-                                    <span class="cancelled" *ngIf="selectedBuild.buildResult === modpackBuildResult.CANCELLED">Build {{selectedBuild.buildNumber}}: Cancelled</span>
-                                </div>
-                                <app-flex-filler></app-flex-filler>
-                                <ng-template [ngxPermissionsOnly]="['ADMIN']">
-                                    <button mat-raised-button color="primary" *ngIf="selectedBuild.running && !cancelling" (click)="cancelBuild()">
-                                        Cancel Build
-                                    </button>
-                                    <button mat-raised-button color="primary" *ngIf="selectedBuild.finished && selectedBuild.buildResult !== modpackBuildResult.SUCCESS" (click)="rebuild()">
-                                        Rebuild
-                                    </button>
-                                </ng-template>
-                                <button mat-raised-button color="primary" (click)="closeLog()">
-                                    Close Log
-                                </button>
-                            </div>
-                        </div>
-                        <div class="build-log">
-                            <div class="log-item" *ngIf="selectedStep.logs.length === 0">
-                                <div class="index">0</div>
-                                <div class="text" *ngIf="!selectedBuild.running && !selectedBuild.finished">Waiting for build to start...</div>
-                                <div class="text" *ngIf="selectedStep.index > 0 && selectedBuild.running">Waiting for previous step to finish...</div>
-                                <div class="text" *ngIf="selectedBuild.buildResult === modpackBuildResult.FAILED">Build failed</div>
-                                <div class="text" *ngIf="selectedBuild.buildResult === modpackBuildResult.CANCELLED">Build cancelled</div>
-                            </div>
-                            <div class="log-item" *ngFor="let log of selectedStep.logs; let index = index">
-                                <div class="index">{{index + 1}}</div>
-                                <div class="text" [ngStyle]="getLogItemColour(index)">{{log}}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <app-modpack-builds-steps *ngIf="selectedBuild && logOpen" [build]="selectedBuild" (onCloseLog)="closeLog()"></app-modpack-builds-steps>
                 <app-flex-filler></app-flex-filler>
                 <div class="build-footer" *ngIf="selectedBuild">
                     <div class="footer-item">

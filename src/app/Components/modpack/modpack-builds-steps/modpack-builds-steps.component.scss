@@ -1,0 +1,249 @@
+.log-container {
+    display: flex;
+    flex-direction: column;
+
+    .log-steps {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        bottom: 0;
+        top: 0;
+        width: 150px;
+
+        h3 {
+            text-align: center;
+            margin: 0;
+            padding: 12px 0;
+            height: 50px;
+        }
+
+        .steps-container {
+            overflow-y: auto;
+
+            .log-step-item {
+                display: flex;
+                flex-direction: row;
+                height: 40px;
+                padding-right: 6px;
+                font-size: 16px;
+                line-height: 40px;
+                cursor: pointer;
+
+                .wide {
+                    display: block;
+                }
+
+                .narrow {
+                    display: none;
+                }
+            }
+        }
+    }
+
+    .log-output {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 0 16px 16px 16px;
+        position: absolute;
+        left: 150px;
+        right: 0;
+        top: 0;
+        bottom: 0;
+
+        .log-output-header {
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 8px;
+
+            .log-step-title {
+                display: flex;
+                flex-direction: row;
+
+                i {
+                    margin: 0 8px 0 0;
+                    font-size: 30px;
+                }
+
+                .build-title {
+                    margin: 15px 0;
+                }
+            }
+
+            .buttons {
+                display: flex;
+                flex-direction: row;
+
+                .mat-raised-button {
+                    margin-left: 5px;
+                    height: fit-content;
+                    align-self: center;
+                }
+            }
+        }
+
+        .build-log {
+            flex: 1;
+            overflow-y: auto;
+
+            .log-item {
+                font-family: Menlo, Consolas, Courier New, monospace;
+                padding-left: 8px;
+                display: flex;
+                white-space: pre-wrap;
+                word-break: break-word;
+
+                .index {
+                    min-width: fit-content;
+                    padding-right: 16px;
+                }
+            }
+        }
+    }
+
+    i {
+        margin: 0 8px;
+        align-self: center;
+
+        &.running {
+            color: #0c78ff;
+        }
+
+        &.success {
+            color: green;
+        }
+
+        &.fail {
+            color: red;
+        }
+
+        &.cancelled {
+            color: goldenrod;
+        }
+    }
+}
+
+::-webkit-scrollbar {
+    width: 7px;
+    height: 5px;
+}
+
+@media only screen and (max-width: 1360px) {
+    .log-container {
+        .log-steps {
+            width: 130px;
+
+            h3 {
+                font-size: 20px;
+            }
+
+            .steps-container {
+                .log-step-item {
+                    height: 35px;
+                    padding-right: 3px;
+                    font-size: 14px;
+                    line-height: 35px;
+                }
+            }
+        }
+
+        .log-output {
+            left: 130px;
+        }
+    }
+}
+
+@media only screen and (max-width: 1150px) {
+    .log-container {
+        .log-output {
+            .log-output-header {
+                .log-step-title {
+                    i {
+                        font-size: 24px;
+                    }
+
+                    .build-title {
+                        font-size: 28px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .log-container {
+        .log-output {
+            .log-output-header {
+                flex-direction: column-reverse;
+                padding-top: 12px;
+
+                .buttons {
+                    flex-direction: row;
+
+                    .mat-raised-button {
+                        align-self: flex-end;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .log-container {
+        .log-steps {
+            width: 55px;
+
+            h3 {
+                display: none;
+            }
+
+            .steps-container {
+                .log-step-item {
+                    height: 35px;
+                    padding-right: 3px;
+                    font-size: 14px;
+                    line-height: 35px;
+
+                    .wide {
+                        display: none;
+                    }
+
+                    .narrow {
+                        display: block;
+                    }
+                }
+            }
+        }
+
+        .log-output {
+            left: 55px;
+        }
+    }
+}
+
+@media only screen and (max-width: 475px) {
+    .log-container {
+        .log-output {
+            .log-output-header {
+                .buttons {
+                    flex-direction: column;
+                    align-self: flex-start;
+                    padding-top: 0;
+
+                    .state {
+                        margin: 0;
+                        align-self: flex-start;
+                    }
+
+                    .mat-raised-button {
+                        margin-left: 0;
+                        margin-top: 5px;
+                        align-self: flex-start;
+                    }
+                }
+            }
+        }
+    }
+}

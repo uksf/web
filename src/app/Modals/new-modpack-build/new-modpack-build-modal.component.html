@@ -1,0 +1,26 @@
+<h2 mat-dialog-title>New Build</h2>
+<mat-dialog-content>
+    <p class="hint-text">Select a branch or enter a commit id to run a new build from</p>
+    <form [formGroup]="form" class="container">
+        <mat-form-field class="normal">
+            <mat-select placeholder="{{(branches.length === 0) ? 'Loading branches...' : 'Select branch'}}" formControlName="branch" [errorStateMatcher]="instantErrorStateMatcher">
+                <mat-option *ngFor="let branch of branches" [value]="branch">
+                    {{branch}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="normal">
+            <input #input matInput formControlName="commitId" placeholder="Commit ID" [errorStateMatcher]="instantErrorStateMatcher">
+            <mat-error *ngFor="let validation of validationMessages.commitId">
+                <mat-error class="error-message" *ngIf="form.get('commitId').hasError(validation.type)">{{validation.message}}</mat-error>
+            </mat-error>
+        </mat-form-field>
+        <mat-error *ngIf="form.hasError('both')">
+            <mat-error class="error-message">Cannot select both a branch and a commit ID</mat-error>
+        </mat-error>
+        <app-flex-filler></app-flex-filler>
+        <div class="button-container">
+            <button mat-raised-button color="primary" type="button" #runButton (click)="run(); runButton.disabled = true" [disabled]="submitting || !form.valid || (!form.value.branch || form.value.branch === 'No branch' && !form.value.commitId)">Run</button>
+        </div>
+    </form>
+</mat-dialog-content>
