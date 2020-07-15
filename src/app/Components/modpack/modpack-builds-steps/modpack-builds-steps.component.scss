@@ -78,6 +78,19 @@
                     margin-left: 5px;
                     height: fit-content;
                     align-self: center;
+
+                    &.scroll {
+                        position: absolute;
+                        right: 33px;
+                        bottom: 26px;
+                        width: 35px;
+                        min-width: 35px;
+                        height: 35px;
+                        line-height: 35px;
+                        margin: 0;
+                        padding: 0;
+                        z-index: 1;
+                    }
                 }
             }
         }
@@ -87,15 +100,31 @@
             overflow-y: auto;
 
             .log-item {
-                font-family: Menlo, Consolas, Courier New, monospace;
-                padding-left: 8px;
                 display: flex;
+                padding-left: 8px;
+                font-family: Menlo, Consolas, Courier New, monospace;
                 white-space: pre-wrap;
                 word-break: break-word;
 
                 .index {
                     min-width: fit-content;
                     padding-right: 16px;
+                }
+
+                .text {
+                    padding-right: 8px;
+                }
+
+                .link {
+                    font-size: 19px;
+                    height: 19px;
+                    line-height: 19px;
+                    width: fit-content;
+                    transform: rotateZ(45deg);
+
+                    &:hover {
+                        cursor: pointer;
+                    }
                 }
             }
         }

@@ -11,7 +11,6 @@ import { DocsPageComponent } from './Pages/docs-page/docs-page.component';
 import { RulesPageComponent } from './Pages/rules-page/rules-page.component';
 import { PolicyPageComponent } from './Pages/policy-page/policy-page.component';
 import { InformationPageComponent } from './Pages/information-page/information-page.component';
-import { ModpackPageComponent } from './Pages/modpack-page/modpack-page.component';
 import { UnitPageComponent } from './Pages/unit-page/unit-page.component';
 import { OprepPageComponent } from './Pages/oprep-page/oprep-page.component';
 import { AdminErrorLogsComponent } from './Components/admin/admin-error-logs/admin-error-logs.component';
@@ -42,7 +41,7 @@ import { PersonnelActivityComponent } from './Components/personnel/personnel-act
 import { ModpackGuideComponent } from './Components/modpack/modpack-guide/modpack-guide.component';
 import { ModpackReleasesComponent } from './Components/modpack/modpack-releases/modpack-releases.component';
 import { ModpackBuildsDevComponent } from './Components/modpack/modpack-builds-dev/modpack-builds-dev.component';
-import { ModpackBuildsStageComponent } from './Components/modpack/modpack-builds-stage/modpack-builds-stage.component';
+import { ModpackBuildsRcComponent } from './Components/modpack/modpack-builds-rc/modpack-builds-rc.component';
 
 const appRoutes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -498,7 +497,7 @@ const appRoutes: Routes = [
         }, canActivate: [NgxPermissionsGuard]
     },
     {
-        path: 'modpack/builds-stage', component: ModpackBuildsStageComponent, data: {
+        path: 'modpack/builds-rc', component: ModpackBuildsRcComponent, data: {
             permissions: {
                 only: Permissions.BUILDS,
                 except: Permissions.UNLOGGED,

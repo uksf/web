@@ -6,13 +6,14 @@ import { ModpackBuildResult } from 'app/Models/ModpackBuildResult';
 import { ModpackRc } from 'app/Models/ModpackRc';
 import { ModpackRcService } from 'app/Services/modpackRc.service';
 import { ModpackBuildProcessService } from 'app/Services/modpackBuildProcess.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-    selector: 'app-modpack-builds-stage',
-    templateUrl: './modpack-builds-stage.component.html',
-    styleUrls: ['../../../Pages/modpack-page/modpack-page.component.scss', './modpack-builds-stage.component.scss', './modpack-builds-stage.component.scss-theme.scss']
+    selector: 'app-modpack-builds-rc',
+    templateUrl: './modpack-builds-rc.component.html',
+    styleUrls: ['../../../Pages/modpack-page/modpack-page.component.scss', './modpack-builds-rc.component.scss', './modpack-builds-rc.component.scss-theme.scss']
 })
-export class ModpackBuildsStageComponent implements OnInit, OnDestroy {
+export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
     @ViewChild(ThemeEmitterComponent, { static: false }) theme: ThemeEmitterComponent;
     modpackBuildResult = ModpackBuildResult;
     selectedRcVersion = '';
@@ -26,13 +27,15 @@ export class ModpackBuildsStageComponent implements OnInit, OnDestroy {
     constructor(
         private markdownService: MarkdownService,
         private modpackBuildProcessService: ModpackBuildProcessService,
-        private modpackRcService: ModpackRcService
+        private modpackRcService: ModpackRcService,
+        private route: ActivatedRoute,
+        private router: Router
     ) { }
 
     ngOnInit(): void {
         this.modpackRcService.connect(() => {
             if (this.rcs.length > 0) {
-                this.selectRc(this.rcs[0].version);
+                this.checkRoute();
             } else {
                 this.selectRc(undefined);
             }
@@ -55,12 +58,31 @@ export class ModpackBuildsStageComponent implements OnInit, OnDestroy {
         return this.selectedRc ? this.selectedRc.builds.find(x => x.id === this.selectedBuildId) : undefined;
     }
 
+    checkRoute() {
+        const rc = this.route.snapshot.queryParams['rc'];
+        if (rc && this.rcs.findIndex(x => x.version === rc) !== -1) {
+            this.selectRc(rc);
+            const build = this.route.snapshot.queryParams['build'];
+            if (build && this.selectedRc.builds.findIndex(x => x.id === build) !== -1) {
+                this.selectBuild(build);
+            }
+        } else {
+            this.selectRc(this.rcs[0].version);
+        }
+
+        const log = this.route.snapshot.queryParams['log'];
+        if (log) {
+            this.logOpen = true;
+        }
+    }
+
     selectRc(version: string) {
         this.selectedRcVersion = version;
         if (!this.selectedRc) {
             this.closeLog();
             this.changesMarkdown = '';
             this.additionalChangesMarkdown = '';
+            this.router.navigate([], { relativeTo: this.route, queryParams: { rc: null, build: null }, queryParamsHandling: 'merge' });
         } else {
             if (this.selectedRc.builds.length > 0) {
                 this.selectBuild(this.selectedRc.builds[0].id);
@@ -74,6 +96,7 @@ export class ModpackBuildsStageComponent implements OnInit, OnDestroy {
             this.closeLog();
             this.changesMarkdown = '';
             this.additionalChangesMarkdown = '';
+            this.router.navigate([], { relativeTo: this.route, queryParams: { build: null }, queryParamsHandling: 'merge' });
         } else {
             this.modpackBuildProcessService.getBuilderName(this.selectedBuild.builderId, (name: string) => {
                 this.builderName = name;
@@ -84,6 +107,8 @@ export class ModpackBuildsStageComponent implements OnInit, OnDestroy {
             if (this.logOpen) {
                 this.openLog();
             }
+
+            this.router.navigate([], { relativeTo: this.route, queryParams: { rc: this.selectedRcVersion, build: this.selectedBuildId }, queryParamsHandling: 'merge' });
         }
     }
 
@@ -118,10 +143,12 @@ export class ModpackBuildsStageComponent implements OnInit, OnDestroy {
 
     openLog() {
         this.logOpen = true;
+        this.router.navigate([], { relativeTo: this.route, queryParams: { log: true }, queryParamsHandling: 'merge' });
     }
 
     closeLog() {
         this.logOpen = false;
+        this.router.navigate([], { relativeTo: this.route, queryParams: { log: null, step: null, line: null }, queryParamsHandling: 'merge' });
     }
 
     cancelBuild() {

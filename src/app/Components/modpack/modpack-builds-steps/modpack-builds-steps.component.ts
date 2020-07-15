@@ -5,6 +5,9 @@ import { ThemeEmitterComponent } from 'app/Components/theme-emitter/theme-emitte
 import { ModpackBuildResult } from 'app/Models/ModpackBuildResult';
 import { ModpackBuildProcessService } from 'app/Services/modpackBuildProcess.service';
 import { ConnectionContainer, SignalRService } from 'app/Services/signalr.service';
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { nextFrame } from 'app/Services/helper.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
     selector: 'app-modpack-builds-steps',
@@ -13,17 +16,23 @@ import { ConnectionContainer, SignalRService } from 'app/Services/signalr.servic
 })
 export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges {
     @ViewChild(ThemeEmitterComponent, { static: false }) theme: ThemeEmitterComponent;
+    @ViewChild(CdkVirtualScrollViewport, { static: false }) scrollView: CdkVirtualScrollViewport;
     @Input() build: ModpackBuild;
     @Output() onCloseLog = new EventEmitter();
     private hubConnection: ConnectionContainer;
     modpackBuildResult = ModpackBuildResult;
     selectedStepIndex = 0;
-    overrideRunningStepIndex = false;
+    selectedLogIndex = -1;
+    overrideAutomaticStepChoose = false;
+    ignoreUpdates = false;
     cancelling = false;
+    autoScroll = true;
 
     constructor(
         private signalrService: SignalRService,
-        private modpackBuildProcessService: ModpackBuildProcessService
+        private modpackBuildProcessService: ModpackBuildProcessService,
+        private route: ActivatedRoute,
+        private router: Router
     ) { }
 
     ngOnInit(): void {
@@ -43,6 +52,7 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
     connect() {
         this.modpackBuildProcessService.getBuildLogData(this.build.id, (newBuild: ModpackBuild) => {
             this.build = newBuild;
+            this.checkRoute();
             this.chooseStep();
 
             if (!this.build.finished) {
@@ -76,16 +86,24 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
         return this.build && this.build.steps.length > this.selectedStepIndex ? this.build.steps[this.selectedStepIndex] : undefined;
     }
 
-    selectStep(index: number, override: boolean = false) {
-        this.selectedStepIndex = index;
-        const runningIndex = this.build.steps.findIndex(x => x.running);
-        if (runningIndex !== -1) {
-            this.overrideRunningStepIndex = this.selectedStepIndex === runningIndex ? false : override;
+    stepTrackBy(index: number, step: ModpackBuildStep) {
+        return `${index}-${step.name}-${step.running}-${step.finished}-${step.buildResult}-${step.startTime}-${step.endTime}`;
+    }
+
+    checkRoute() {
+        const step = this.route.snapshot.queryParams['step'];
+        if (step) {
+            const line = this.route.snapshot.queryParams['line'];
+            if (line) {
+                this.selectStep(step - 1, true);
+                this.setScroll(line - 5);
+                this.selectLogLine(line - 1);
+            }
         }
     }
 
     chooseStep() {
-        if (this.overrideRunningStepIndex) {
+        if (this.ignoreUpdates || this.overrideAutomaticStepChoose) {
             return;
         }
 
@@ -105,6 +123,45 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
         } else {
             this.selectStep(0);
         }
+    }
+
+    selectStep(index: number, override: boolean = false) {
+        if (this.selectedStepIndex !== index) {
+            this.selectLogLine(-1);
+        }
+
+        this.selectedStepIndex = index;
+        const runningIndex = this.build.steps.findIndex(x => x.running);
+        this.overrideAutomaticStepChoose = this.selectedStepIndex === runningIndex ? false : override;
+        this.setScroll();
+    }
+
+    setScroll(index: number = -1) {
+        if (index > -1) {
+            nextFrame(() => {
+                this.scrollView.scrollToIndex(index, 'smooth');
+            });
+        } else if (this.autoScroll && this.selectedStep.running) {
+            nextFrame(() => {
+                this.scrollView.scrollTo({ bottom: 0 });
+            });
+        }
+    }
+
+    selectLogLine(index: number) {
+        if (index === -1 || this.selectedLogIndex === index) {
+            this.selectedLogIndex = -1;
+            this.ignoreUpdates = false;
+            this.router.navigate([], { relativeTo: this.route, queryParams: { step: null, line: null }, queryParamsHandling: 'merge' });
+        } else {
+            this.selectedLogIndex = index;
+            this.ignoreUpdates = true;
+            this.router.navigate([], { relativeTo: this.route, queryParams: { step: this.selectedStepIndex + 1, line: this.selectedLogIndex + 1 }, queryParamsHandling: 'merge' });
+        }
+    }
+
+    toggleAutoScroll() {
+        this.autoScroll = !this.autoScroll;
     }
 
     closeLog() {

@@ -28,22 +28,21 @@ $dark-theme-background: (
     scroll-thumb: mat-color($dark-pallette, 100),
     server: mat-color($dark-pallette, 500),
     server-running: mat-color($dark-pallette, 400),
-    contrast: white
+    selected-line: #fec300dd,
+    selected-line-hover: #fec300ee,
+    selected-line-text: black,
+    contrast: white,
 );
 
 $dark-theme-primary: $gold-pallette;
 $dark-theme-accent: mat-palette($mat-blue, 900);
 $dark-theme-warn: mat-palette($mat-red, A400);
-$dark-theme: mat-dark-theme(
-    $dark-theme-primary,
-    $dark-theme-accent,
-    $dark-theme-warn
-);
+$dark-theme: mat-dark-theme($dark-theme-primary, $dark-theme-accent, $dark-theme-warn);
 $background: map-get($dark-theme, background);
 $background: map_merge($background, $dark-theme-background);
 $dark-theme: map_merge(
     $dark-theme,
     (
-        background: $background
+        background: $background,
     )
 );

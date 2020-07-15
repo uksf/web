@@ -1,3 +1,5 @@
+@import "palettes.scss";
+
 $light-theme-background: (
     status-bar: mat-color($light-pallette, 300),
     footer-bar: black,
@@ -25,7 +27,10 @@ $light-theme-background: (
     scroll-thumb: mat-color($light-pallette, 400),
     server: mat-color($light-pallette, 200),
     server-running: white,
-    contrast: black
+    selected-line: #3f51b5dd,
+    selected-line-hover: #3f51b5ee,
+    selected-line-text: white,
+    contrast: black,
 );
 
 $light-theme-primary: mat-palette($mat-indigo, 500);
@@ -37,6 +42,6 @@ $background: map_merge($background, $light-theme-background);
 $light-theme: map_merge(
     $light-theme,
     (
-        background: $background
+        background: $background,
     )
 );

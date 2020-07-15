@@ -1,12 +1,12 @@
 @import "~@angular/material/theming";
 
-@mixin modpack-builds-stage-component-theme($theme) {
+@mixin modpack-builds-rc-component-theme($theme) {
     $foreground: map-get($theme, foreground);
     $primary: map-get($theme, primary);
     $accent: map-get($theme, accent);
     $background: map-get($theme, background);
 
-    app-modpack-builds-stage {
+    app-modpack-builds-rc {
         a {
             color: mat-color($primary);
         }

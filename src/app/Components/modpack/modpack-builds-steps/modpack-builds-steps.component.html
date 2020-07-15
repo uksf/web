@@ -2,7 +2,7 @@
     <div class="log-steps">
         <h3>Steps</h3>
         <div class="steps-container">
-            <div class="log-step-item" [ngClass]="{'selected': selectedStepIndex === stepIndex}" *ngFor="let step of build.steps; let stepIndex = index;" (click)="selectStep(stepIndex, true)">
+            <div class="log-step-item" [ngClass]="{'selected': selectedStepIndex === stepIndex}" *ngFor="let step of build.steps; let stepIndex = index; trackBy: stepTrackBy" (click)="selectStep(stepIndex, true)">
                 <i class="fas fa-chevron-circle-right running" *ngIf="step.running"></i>
                 <i class="fas fa-check-circle success" *ngIf="step.buildResult === modpackBuildResult.SUCCESS"></i>
                 <i class="fas fa-exclamation-circle fail" *ngIf="step.buildResult === modpackBuildResult.FAILED"></i>
@@ -43,9 +43,12 @@
                 <button mat-raised-button color="primary" (click)="closeLog()">
                     Close Log
                 </button>
+                <button mat-raised-button color="primary" class="scroll" [ngClass]="{'autoScroll': !autoScroll}" (click)="toggleAutoScroll()" [matTooltip]="'Turn autoscroll ' + (autoScroll ? 'off' : 'on')" [disabled]="!selectedStep.running">
+                    <mat-icon>arrow_downward</mat-icon>
+                </button>
             </div>
         </div>
-        <div class="build-log">
+        <cdk-virtual-scroll-viewport itemSize="20" class="build-log">
             <div class="log-item" *ngIf="selectedStep.logs.length === 0">
                 <div class="index">0</div>
                 <div class="text" *ngIf="!build.running && !build.finished">Waiting for build to start...</div>
@@ -53,10 +56,11 @@
                 <div class="text" *ngIf="build.buildResult === modpackBuildResult.FAILED">Build failed</div>
                 <div class="text" *ngIf="build.buildResult === modpackBuildResult.CANCELLED">Build cancelled</div>
             </div>
-            <div class="log-item" *ngFor="let log of selectedStep.logs; let logIndex = index">
+            <div class="log-item" [ngClass]="{'selected': selectedLogIndex === logIndex}" *cdkVirtualFor="let log of selectedStep.logs; let logIndex = index">
                 <div class="index">{{logIndex + 1}}</div>
                 <div class="text" [ngStyle]="getLogItemColour(logIndex)">{{log}}</div>
+                <mat-icon class="link" *ngIf="log" (click)="selectLogLine(logIndex)" [matTooltip]="(selectedLogIndex === logIndex ?  'Deselect' : 'Copy link')">link</mat-icon>
             </div>
-        </div>
+        </cdk-virtual-scroll-viewport>
     </div>
 </div>

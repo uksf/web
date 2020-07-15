@@ -173,13 +173,14 @@ import { StatesService } from './Services/states.service';
 import { ModpackGuideComponent } from './Components/modpack/modpack-guide/modpack-guide.component';
 import { ModpackReleasesComponent } from './Components/modpack/modpack-releases/modpack-releases.component';
 import { ModpackBuildsDevComponent } from './Components/modpack/modpack-builds-dev/modpack-builds-dev.component';
-import { ModpackBuildsStageComponent } from './Components/modpack/modpack-builds-stage/modpack-builds-stage.component';
+import { ModpackBuildsRcComponent } from './Components/modpack/modpack-builds-rc/modpack-builds-rc.component';
 import { ModpackBuildService } from './Services/modpackBuild.service';
 import { ModpackRcService } from './Services/modpackRc.service';
 import { DisplayNameService } from './Services/displayName.service';
 import { ModpackBuildProcessService } from './Services/modpackBuildProcess.service';
 import { NewModpackBuildModalComponent } from './Modals/new-modpack-build/new-modpack-build-modal.component';
 import { ModpackBuildsStepsComponent } from './Components/modpack/modpack-builds-steps/modpack-builds-steps.component';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 export function initPermissions(permissionsService: PermissionsService) {
     return () => permissionsService.refresh();
@@ -273,6 +274,7 @@ export function tokenGetter() {
         MatTabsModule,
         MessageModule,
         MatToolbarModule,
+        ScrollingModule,
         CarouselModule,
         OrganizationChartModule,
         TerminalModule,
@@ -392,7 +394,7 @@ export function tokenGetter() {
         ModpackGuideComponent,
         ModpackReleasesComponent,
         ModpackBuildsDevComponent,
-        ModpackBuildsStageComponent,
+        ModpackBuildsRcComponent,
         ModpackBuildsStepsComponent,
         NewModpackBuildModalComponent
     ], bootstrap: [

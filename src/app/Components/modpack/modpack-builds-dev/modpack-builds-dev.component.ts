@@ -5,7 +5,7 @@ import { ModpackBuildService } from 'app/Services/modpackBuild.service';
 import { ModpackBuildResult } from 'app/Models/ModpackBuildResult';
 import { MarkdownService } from 'ngx-markdown';
 import { ModpackBuildProcessService } from 'app/Services/modpackBuildProcess.service';
-import { ModpackBuildsStepsComponent } from '../modpack-builds-steps/modpack-builds-steps.component';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
     selector: 'app-modpack-builds-dev',
@@ -25,12 +25,14 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
         private modpackBuildService: ModpackBuildService,
         private modpackBuildProcessService: ModpackBuildProcessService,
         private markdownService: MarkdownService,
+        private route: ActivatedRoute,
+        private router: Router
     ) { }
 
     ngOnInit(): void {
         this.modpackBuildService.connect(() => {
             if (this.builds.length > 0) {
-                this.selectBuild(this.builds[0].id);
+                this.checkRoute();
             } else {
                 this.selectBuild('');
             }
@@ -53,6 +55,20 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
         return this.builds.find(x => x.id === this.selectedBuildId);
     }
 
+    checkRoute() {
+        const build = this.route.snapshot.queryParams['build'];
+        if (build && this.builds.findIndex(x => x.id === build) !== -1) {
+            this.selectBuild(build);
+        } else {
+            this.selectBuild(this.builds[0].id);
+        }
+
+        const log = this.route.snapshot.queryParams['log'];
+        if (log) {
+            this.logOpen = true;
+        }
+    }
+
     selectBuild(id: string) {
         this.selectedBuildId = id;
         if (!this.selectedBuild) {
@@ -68,15 +84,19 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
             if (this.logOpen) {
                 this.openLog();
             }
+
+            this.router.navigate([], { relativeTo: this.route, queryParams: { build: this.selectedBuildId }, queryParamsHandling: 'merge' });
         }
     }
 
     openLog() {
         this.logOpen = true;
+        this.router.navigate([], { relativeTo: this.route, queryParams: { log: true }, queryParamsHandling: 'merge' });
     }
 
     closeLog() {
         this.logOpen = false;
+        this.router.navigate([], { relativeTo: this.route, queryParams: { log: null, step: null, line: null }, queryParamsHandling: 'merge' });
     }
 
     newBuild() {

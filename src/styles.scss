@@ -5,6 +5,13 @@
     white-space: normal !important;
 }
 
+.cdk-virtual-scroll-orientation-horizontal {
+    .cdk-virtual-scroll-content-wrapper {
+        display: flex;
+        flex-direction: row;
+    }
+}
+
 // core
 @include mat-core();
 
@@ -38,7 +45,7 @@
 @import "app/Components/command/command-requests/command-request.component.scss-theme.scss";
 @import "app/Components/command/command-units/command-units.component.scss-theme.scss";
 @import "app/Components/modpack/modpack-builds-dev/modpack-builds-dev.component.scss-theme.scss";
-@import "app/Components/modpack/modpack-builds-stage/modpack-builds-stage.component.scss-theme.scss";
+@import "app/Components/modpack/modpack-builds-rc/modpack-builds-rc.component.scss-theme.scss";
 @import "app/Components/modpack/modpack-builds-steps/modpack-builds-steps.component.scss-theme.scss";
 @import "app/Components/modpack/modpack-guide/modpack-guide.component.scss-theme.scss";
 @import "app/Components/modpack/modpack-releases/modpack-releases.component.scss-theme.scss";
@@ -81,7 +88,7 @@
     @include command-request-component-theme($theme);
     @include command-units-component-theme($theme);
     @include modpack-builds-dev-component-theme($theme);
-    @include modpack-builds-stage-component-theme($theme);
+    @include modpack-builds-rc-component-theme($theme);
     @include modpack-builds-steps-component-theme($theme);
     @include modpack-guide-component-theme($theme);
     @include modpack-releases-component-theme($theme);
