@@ -104,11 +104,20 @@
                         </mat-checkbox>
                         <br>
                     </div>
-                    <div *ngIf="isRecruiter">
-                        <mat-checkbox color="primary" formControlName="sr1Enabled" matTooltip="Toggle taking SR1 applications" (change)="changeSetting('sr1Enabled');">
-                            Taking applications
-                        </mat-checkbox>
-                    </div>
+                    <ng-template [ngxPermissionsOnly]="['BUILDS']">
+                        <div>
+                            <mat-checkbox color="primary" formControlName="notificationsBuilds" matTooltip="Toggle notifications for new dev and rc builds" (change)="changeSetting('notificationsBuilds');">
+                                Build notifications
+                            </mat-checkbox>
+                        </div>
+                    </ng-template>
+                    <ng-template [ngxPermissionsOnly]="['RECRUITER']">
+                        <div>
+                            <mat-checkbox color="primary" formControlName="sr1Enabled" matTooltip="Toggle taking SR1 applications" (change)="changeSetting('sr1Enabled');">
+                                Taking applications
+                            </mat-checkbox>
+                        </div>
+                    </ng-template>
                 </form>
             </mat-card>
         </div>

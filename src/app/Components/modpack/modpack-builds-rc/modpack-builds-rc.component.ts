@@ -59,9 +59,9 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
     }
 
     checkRoute() {
-        const rc = this.route.snapshot.queryParams['rc'];
-        if (rc && this.rcs.findIndex(x => x.version === rc) !== -1) {
-            this.selectRc(rc);
+        const version = this.route.snapshot.queryParams['version'];
+        if (version && this.rcs.findIndex(x => x.version === version) !== -1) {
+            this.selectRc(version);
             const build = this.route.snapshot.queryParams['build'];
             if (build && this.selectedRc.builds.findIndex(x => x.id === build) !== -1) {
                 this.selectBuild(build);
@@ -82,7 +82,7 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
             this.closeLog();
             this.changesMarkdown = '';
             this.additionalChangesMarkdown = '';
-            this.router.navigate([], { relativeTo: this.route, queryParams: { rc: null, build: null }, queryParamsHandling: 'merge' });
+            this.router.navigate([], { relativeTo: this.route, queryParams: { version: null, build: null }, queryParamsHandling: 'merge' });
         } else {
             if (this.selectedRc.builds.length > 0) {
                 this.selectBuild(this.selectedRc.builds[0].id);
@@ -108,7 +108,7 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
                 this.openLog();
             }
 
-            this.router.navigate([], { relativeTo: this.route, queryParams: { rc: this.selectedRcVersion, build: this.selectedBuildId }, queryParamsHandling: 'merge' });
+            this.router.navigate([], { relativeTo: this.route, queryParams: { version: this.selectedRcVersion, build: this.selectedBuildId }, queryParamsHandling: 'merge' });
         }
     }
 

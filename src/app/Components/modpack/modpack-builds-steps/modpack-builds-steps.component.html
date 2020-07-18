@@ -59,7 +59,7 @@
             <div class="log-item" [ngClass]="{'selected': selectedLogIndex === logIndex}" *cdkVirtualFor="let log of selectedStep.logs; let logIndex = index">
                 <div class="index">{{logIndex + 1}}</div>
                 <div class="text" [ngStyle]="getLogItemColour(logIndex)">{{log}}</div>
-                <mat-icon class="link" *ngIf="log" (click)="selectLogLine(logIndex)" [matTooltip]="(selectedLogIndex === logIndex ?  'Deselect' : 'Copy link')">link</mat-icon>
+                <mat-icon class="link" *ngIf="log && build.finished" (click)="selectLogLine(logIndex)" [matTooltip]="(selectedLogIndex === logIndex ?  'Deselect' : 'Copy link')">link</mat-icon>
             </div>
         </cdk-virtual-scroll-viewport>
     </div>

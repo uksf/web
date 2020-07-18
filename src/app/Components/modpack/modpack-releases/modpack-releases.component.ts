@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { UrlService } from 'app/Services/url.service';
 import { PermissionsService } from 'app/Services/permissions.service';
 import { Permissions } from 'app/Services/permissions';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
     selector: 'app-modpack-releases',
@@ -25,7 +26,9 @@ export class ModpackReleasesComponent implements OnInit {
         private markdownService: MarkdownService,
         private httpClient: HttpClient,
         private urls: UrlService,
-        private permissionsService: PermissionsService
+        private permissionsService: PermissionsService,
+        private route: ActivatedRoute,
+        private router: Router
     ) { }
 
     ngOnInit(): void {
@@ -36,10 +39,20 @@ export class ModpackReleasesComponent implements OnInit {
         return this.releases.filter(x => !x.isDraft || this.permissionsService.hasPermission(Permissions.TESTER));
     }
 
+    checkRoute() {
+        const version = this.route.snapshot.queryParams['version'];
+        const index = this.releases.findIndex(x => x.version === version);
+        if (version && index !== -1) {
+            this.select(this.releases[index]);
+        } else {
+            this.select(this.releases[0]);
+        }
+    }
+
     getReleases() {
         this.httpClient.get(this.urls.apiUrl + '/modpack/releases').subscribe((releases: ModpackRelease[]) => {
             this.releases = releases;
-            this.select(this.releases[0]);
+            this.checkRoute();
         }, error => this.urls.errorWrapper('Failed to get releases', error));
     }
 
@@ -47,6 +60,7 @@ export class ModpackReleasesComponent implements OnInit {
         this.editing = false;
         this.selectedRelease = release;
         this.changelogMarkdown = this.markdownService.compile(this.selectedRelease.changelog);
+        this.router.navigate([], { relativeTo: this.route, queryParams: { version: this.selectedRelease.version }, queryParamsHandling: 'merge' });
     }
 
     edit() {

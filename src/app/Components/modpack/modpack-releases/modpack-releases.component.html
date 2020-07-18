@@ -36,8 +36,8 @@
                     </div>
                 </div>
                 <div class="release-content" *ngIf="!editing">
-                    <div class="release-date" *ngIf="selectedRelease.isDraft">Draft created: {{selectedRelease.timestamp | timeAgo}}</div>
-                    <div class="release-date" *ngIf="!selectedRelease.isDraft">Released: {{selectedRelease.timestamp | timeAgo}}</div>
+                    <div class="release-date" *ngIf="selectedRelease.isDraft">Draft created {{selectedRelease.timestamp | timeAgo}}</div>
+                    <div class="release-date" *ngIf="!selectedRelease.isDraft">Released {{selectedRelease.timestamp | timeAgo}}</div>
                     <h4 class="release-description" *ngIf="selectedRelease.description">{{selectedRelease.description}}</h4>
                     <div class="release-changelog">
                         <markdown ngPreserveWhitespaces [data]="changelogMarkdown"></markdown>

@@ -11,7 +11,8 @@
             <div class="release-container" *ngIf="selectedRc">
                 <div class="history-container builds">
                     <div class="history-item" [ngClass]="{'selected': selectedBuildId === build.id}" [ngStyle]="getBuildColour(build)" *ngFor="let build of selectedRc.builds" (click)="selectBuild(build.id)">
-                        <span>RC #{{build.buildNumber}}</span>
+                        <span *ngIf="build.isReleaseCandidate">RC #{{build.buildNumber}}</span>
+                        <span *ngIf="build.isRelease">Release</span>
                     </div>
                 </div>
                 <div class="build-container" *ngIf="selectedBuild === undefined">
