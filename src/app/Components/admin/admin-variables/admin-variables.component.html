@@ -6,31 +6,43 @@
                 <mat-spinner></mat-spinner>
             </div>
             <div *ngIf="variables" class="variables-container">
-                <div>
-                    <form [formGroup]="form" class="flex-container-slim">
-                        <mat-form-field class="key-field">
-                            <input #input matInput formControlName="key" required placeholder="Key" [errorStateMatcher]="instantErrorStateMatcher">
-                            <mat-error *ngFor="let validation of validationMessages.key">
-                                <mat-error class="error-message" *ngIf="form.get('key').hasError(validation.type)">{{validation.message}}</mat-error>
-                            </mat-error>
-                        </mat-form-field>
-                        <mat-form-field class="item-field">
-                            <input #input matInput formControlName="item" required placeholder="Item" [errorStateMatcher]="instantErrorStateMatcher">
-                            <mat-error *ngFor="let validation of validationMessages.item">
-                                <mat-error class="error-message" *ngIf="form.get('item').hasError(validation.type)">{{validation.message}}</mat-error>
-                            </mat-error>
-                        </mat-form-field>
-                        <button mat-raised-button color="primary" (click)="addVariable()" [disabled]="!form.valid || updating">Add Variable</button>
-                    </form>
-                </div>
-                <br>
-                <div>
-                    <mat-card *ngFor="let variable of variables">
-                        <mat-icon class="delete-icon" (click)="deleteVariable($event, variable)" [ngClass]="{'disabled': updating}">highlight_off</mat-icon>
-                        <span class="key">{{variable.key}}</span>
-                        <app-inline-edit class="item" [(ngModel)]="variable.item" [required]="true" type="text" (finishedEvent)="editVariable(variable, $event)"></app-inline-edit>
-                    </mat-card>
-                </div>
+                <form [formGroup]="form" class="variables-form-container">
+                    <mat-form-field class="key-field">
+                        <input #input matInput formControlName="key" required placeholder="Key" [errorStateMatcher]="instantErrorStateMatcher">
+                        <mat-error *ngFor="let validation of validationMessages.key">
+                            <mat-error class="error-message" *ngIf="form.get('key').hasError(validation.type)">{{validation.message}}</mat-error>
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="item-field">
+                        <input #input matInput formControlName="item" required placeholder="Item" [errorStateMatcher]="instantErrorStateMatcher">
+                        <mat-error *ngFor="let validation of validationMessages.item">
+                            <mat-error class="error-message" *ngIf="form.get('item').hasError(validation.type)">{{validation.message}}</mat-error>
+                        </mat-error>
+                    </mat-form-field>
+                    <button mat-raised-button color="primary" (click)="addVariable()" [disabled]="!form.valid || updating">Add Variable</button>
+                    <button mat-icon-button (click)="accordion.openAll(); expanded = true" matTooltip="Expand all" [disabled]="expanded">
+                        <mat-icon>unfold_more</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="accordion.closeAll(); expanded = false" matTooltip="Collapse all" [disabled]="!expanded">
+                        <mat-icon>unfold_less</mat-icon>
+                    </button>
+                </form>
+                <mat-accordion [multi]="true" class="variables-list">
+                    <mat-expansion-panel class="variables-list-item" *ngFor="let variableList of variableLists" [togglePosition]="'before'" [expanded]="true">
+                        <mat-expansion-panel-header [collapsedHeight]="'36px'" [expandedHeight]="'36px'">
+                            <mat-panel-title>
+                                {{variableList.name}}
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <ng-template matExpansionPanelContent>
+                            <mat-card class="variable-item" *ngFor="let variable of variableList.items">
+                                <mat-icon class="delete-icon" (click)="deleteVariable($event, variable)" [ngClass]="{'disabled': updating}" matTooltip="Delete variable">highlight_off</mat-icon>
+                                <span class="key">{{variable.key}}</span>
+                                <app-inline-edit class="item" [(ngModel)]="variable.item" [required]="true" type="text" (finishedEvent)="editVariable(variable, $event)"></app-inline-edit>
+                            </mat-card>
+                        </ng-template>
+                    </mat-expansion-panel>
+                </mat-accordion>
             </div>
         </div>
     </app-main-content-area>

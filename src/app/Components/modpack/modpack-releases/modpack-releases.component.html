@@ -3,7 +3,7 @@
         <app-modpack-page></app-modpack-page>
         <div class="flex-container no-padding-left">
             <div class="release-history-container">
-                <div class="release-history-item" [ngClass]="{'selected': selectedRelease === release}" *ngFor="let release of publicReleases" (click)="select(release)">
+                <div class="release-history-item" [ngClass]="{'selected': selectedReleaseVersion === release.version}" *ngFor="let release of publicReleases" (click)="select(release)">
                     <i *ngIf="release.isDraft">{{release.version}}</i>
                     <span *ngIf="!release.isDraft">{{release.version}}</span>
                 </div>
@@ -17,6 +17,9 @@
                     <app-flex-filler></app-flex-filler>
                     <div class="buttons" *ngIf="selectedRelease.isDraft">
                         <ng-template [ngxPermissionsOnly]="['ADMIN']">
+                            <button mat-raised-button color="primary" *ngIf="!editing" (click)="regenerateChangelog()">
+                                Regenerate Changelog
+                            </button>
                             <button mat-raised-button color="primary" *ngIf="!editing" (click)="edit()">
                                 Edit Draft
                             </button>

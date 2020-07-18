@@ -12,6 +12,12 @@
     }
 }
 
+.variables-list {
+    .mat-expansion-panel-body {
+        padding: 0 0 0 24px;
+    }
+}
+
 // core
 @include mat-core();
 

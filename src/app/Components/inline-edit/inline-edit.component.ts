@@ -26,7 +26,7 @@ const INLINE_EDIT_CONTROL_VALUE_ACCESSOR = {
     styleUrls: ['./inline-edit.component.css']
 })
 export class InlineEditComponent implements ControlValueAccessor, OnInit {
-    @ViewChild('inlineEditControl', {static: false}) inlineEditControl;
+    @ViewChild('inlineEditControl', { static: false }) inlineEditControl;
     @Input() label = '';
     @Input() type = 'text';
     @Input() required = false;
@@ -72,9 +72,9 @@ export class InlineEditComponent implements ControlValueAccessor, OnInit {
         this.onTouched = fn;
     }
 
-    unfocus() {
+    unfocus(reset: boolean = false) {
         this.editing = false;
-        if (this.invalid) {
+        if (this.invalid || reset) {
             this._value = this.preValue;
             this.onChange(this.preValue);
             this.invalid = false;
@@ -93,8 +93,12 @@ export class InlineEditComponent implements ControlValueAccessor, OnInit {
 
     @HostListener('window:keyup', ['$event'])
     keyEvent(event: KeyboardEvent) {
-        if (this.editing && event.key === 'Enter') {
-            this.unfocus();
+        if (this.editing) {
+            if (event.key === 'Enter') {
+                this.unfocus();
+            } else if (event.key === 'Escape') {
+                this.unfocus(true);
+            }
         }
     }
 }

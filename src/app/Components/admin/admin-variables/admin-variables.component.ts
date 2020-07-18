@@ -1,23 +1,27 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatAccordion } from '@angular/material';
 import { Observable, timer, of } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 import { FormGroup, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { InstantErrorStateMatcher } from 'app/Services/formhelper.service';
 import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
+import { VariableItem } from 'app/Models/VariableItem';
 
 @Component({
     selector: 'app-admin-variables',
     templateUrl: './admin-variables.component.html',
-    styleUrls: ['../../../Pages/admin-page/admin-page.component.css', './admin-variables.component.css']
+    styleUrls: ['../../../Pages/admin-page/admin-page.component.css', './admin-variables.component.scss']
 })
 export class AdminVariablesComponent implements OnInit {
+    @ViewChild(MatAccordion, { static: false }) accordion: MatAccordion;
+    expanded = true;
     form: FormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     updating;
-    variables;
+    variables: VariableItem[];
+    variableLists: VariableItemList[];
 
     validationMessages = {
         'key': [
@@ -39,35 +43,25 @@ export class AdminVariablesComponent implements OnInit {
         this.getVariables();
     }
 
-    validateVariable(control: AbstractControl): Observable<ValidationErrors> {
-        return timer(200).pipe(
-            switchMap(() => {
-                if (control.pristine || !control.value) { return of(null); }
-                return this.httpClient.post(`${this.urls.apiUrl}/variables/${control.value}`, {}).pipe(
-                    map(response => (response ? { keyTaken: true } : null))
-                );
-            })
-        );
-    }
-
-    validateInlineVariable(variable): Observable<boolean> {
-        return timer(200).pipe(
-            switchMap(() => {
-                return this.httpClient.post(`${this.urls.apiUrl}/variables`, variable, {
-                    headers: new HttpHeaders({
-                        'Content-Type': 'application/json'
-                    })
-                }).pipe(
-                    map(response => (response ? true : false))
-                );
-            })
-        );
+    formatVariables() {
+        this.variableLists = [];
+        this.variables.forEach((variableItem: VariableItem) => {
+            const parts = variableItem.key.split('_');
+            const index = this.variableLists.findIndex(x => x.name === parts[0]);
+            if (index === -1) {
+                this.variableLists.push({ name: parts[0], items: [variableItem], list: [] });
+            } else {
+                const variableList = this.variableLists[index];
+                variableList.items.push(variableItem);
+            }
+        });
     }
 
     getVariables() {
         this.updating = true;
-        this.httpClient.get(`${this.urls.apiUrl}/variables`).subscribe(response => {
+        this.httpClient.get(`${this.urls.apiUrl}/variables`).subscribe((response: VariableItem[]) => {
             this.variables = response;
+            this.formatVariables();
             this.updating = false;
         }, _ => {
             this.updating = false;
@@ -84,39 +78,56 @@ export class AdminVariablesComponent implements OnInit {
         }).subscribe(_ => {
             this.form.controls.key.reset();
             this.form.controls.item.reset();
-            this.getVariables();
+            this.getVariables(); // todo patch
         });
     }
 
-    editVariable(variable) {
-        if (variable) {
-            this.updating = true;
-            this.httpClient.patch(`${this.urls.apiUrl}/variables`, variable, {
-                headers: new HttpHeaders({
-                    'Content-Type': 'application/json'
-                })
-            }).subscribe(response => {
-                this.variables = response;
-                this.updating = false;
-            }, _ => {
-                this.updating = false;
-            });
-        }
+    validateVariable(control: AbstractControl): Observable<ValidationErrors> {
+        return timer(200).pipe(
+            switchMap(() => {
+                if (control.pristine || !control.value) { return of(null); }
+                return this.httpClient.post(`${this.urls.apiUrl}/variables/${control.value}`, {}).pipe(
+                    map(response => (response ? { keyTaken: true } : null))
+                );
+            })
+        );
     }
 
-    deleteVariable(event, variable) {
+    editVariable(variable: VariableItem) {
+        this.updating = true;
+        this.httpClient.patch(`${this.urls.apiUrl}/variables`, variable, {
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json'
+            })
+        }).subscribe((response: VariableItem[]) => {
+            this.variables = response; // todo: change to patch
+            this.formatVariables();
+            this.updating = false;
+        }, _ => {
+            this.updating = false;
+        });
+    }
+
+    deleteVariable(event, variable: VariableItem) {
         event.stopPropagation();
         const dialog = this.dialog.open(ConfirmationModalComponent, {
             data: { message: `Are you sure you want to delete '${variable.key}'? This action could break functionality` }
         });
         dialog.componentInstance.confirmEvent.subscribe(() => {
             this.updating = true;
-            this.httpClient.delete(`${this.urls.apiUrl}/variables/${variable.key}`).subscribe(response => {
-                this.variables = response;
+            this.httpClient.delete(`${this.urls.apiUrl}/variables/${variable.key}`).subscribe((response: VariableItem[]) => {
+                this.variables = response; // todo: change to patch
+                this.formatVariables();
                 this.updating = false;
             }, _ => {
                 this.updating = false;
             });
         });
     }
+}
+
+interface VariableItemList {
+    name: string;
+    list: VariableItemList[];
+    items: VariableItem[];
 }

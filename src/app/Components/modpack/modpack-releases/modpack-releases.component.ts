@@ -14,7 +14,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class ModpackReleasesComponent implements OnInit {
     releases: ModpackRelease[] = [];
-    selectedRelease: ModpackRelease = undefined;
+    selectedReleaseVersion = '';
     editing = false;
     preview = false;
     descriptionEditing: string;
@@ -39,13 +39,17 @@ export class ModpackReleasesComponent implements OnInit {
         return this.releases.filter(x => !x.isDraft || this.permissionsService.hasPermission(Permissions.TESTER));
     }
 
+    get selectedRelease(): ModpackRelease {
+        return this.releases.find(x => x.version === this.selectedReleaseVersion);
+    }
+
     checkRoute() {
         const version = this.route.snapshot.queryParams['version'];
         const index = this.releases.findIndex(x => x.version === version);
         if (version && index !== -1) {
-            this.select(this.releases[index]);
+            this.select(version);
         } else {
-            this.select(this.releases[0]);
+            this.select(this.releases[0].version);
         }
     }
 
@@ -56,11 +60,27 @@ export class ModpackReleasesComponent implements OnInit {
         }, error => this.urls.errorWrapper('Failed to get releases', error));
     }
 
-    select(release: ModpackRelease) {
+    select(version: string) {
         this.editing = false;
-        this.selectedRelease = release;
+        this.selectedReleaseVersion = version;
         this.changelogMarkdown = this.markdownService.compile(this.selectedRelease.changelog);
-        this.router.navigate([], { relativeTo: this.route, queryParams: { version: this.selectedRelease.version }, queryParamsHandling: 'merge' });
+        this.router.navigate([], { relativeTo: this.route, queryParams: { version: this.selectedReleaseVersion }, queryParamsHandling: 'merge' });
+    }
+
+    patchRelease(release: ModpackRelease) {
+        const index = this.releases.findIndex(x => x.version === release.version);
+        if (index === -1) {
+            this.releases.unshift(release);
+        } else {
+            this.releases.splice(index, 1, release);
+        }
+    }
+
+    regenerateChangelog() {
+        // get request to regenerate changelog
+        this.httpClient.get(this.urls.apiUrl + `/modpack/release/${this.selectedReleaseVersion}/changelog`).subscribe((release: ModpackRelease) => {
+            this.patchRelease(release);
+        }, error => this.urls.errorWrapper('Failed to deploy release', error));
     }
 
     edit() {
