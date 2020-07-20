@@ -46,7 +46,6 @@ export class ProfilePageComponent implements OnInit {
         this.settingsFormGroup = this.formbuilder.group({
             notificationsEmail: [''],
             notificationsTeamspeak: [''],
-            notificationsBuilds: [''],
             sr1Enabled: ['']
         });
         this.countries = CountryPickerService.countries;
@@ -244,7 +243,6 @@ export class ProfilePageComponent implements OnInit {
         }
         this.settingsFormGroup.controls['notificationsEmail'].setValue(this.account.settings['notificationsEmail']);
         this.settingsFormGroup.controls['notificationsTeamspeak'].setValue(this.account.settings['notificationsTeamspeak']);
-        this.settingsFormGroup.controls['notificationsBuilds'].setValue(this.account.settings['notificationsBuilds']);
         this.settingsFormGroup.controls['sr1Enabled'].setValue(this.account.settings['sr1Enabled']);
     };
 
