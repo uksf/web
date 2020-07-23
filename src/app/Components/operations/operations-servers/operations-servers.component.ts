@@ -20,8 +20,8 @@ import { PermissionsService } from 'app/Services/permissions.service';
 })
 export class OperationsServersComponent implements OnInit, OnDestroy {
     static theme;
-    @ViewChild('uploader', {static: false}) uploader: ElementRef;
-    @ViewChild('serversContainer', {static: false}) serversContainer: ElementRef;
+    @ViewChild('uploader', { static: false }) uploader: ElementRef;
+    @ViewChild('serversContainer', { static: false }) serversContainer: ElementRef;
     admin;
     servers;
     disabled = false;
@@ -162,7 +162,11 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
             data: {
                 server: server
             }
-        }).afterClosed().subscribe(_ => {
+        }).afterClosed().subscribe((environmentChanged: boolean) => {
+            if (environmentChanged) {
+                this.dialog.open(MessageModalComponent, { data: { message: 'Server environment was changed. Selected mods for the server have been reset' } });
+            }
+
             this.getServers(true);
         });
     }

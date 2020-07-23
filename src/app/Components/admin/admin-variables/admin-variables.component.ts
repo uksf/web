@@ -43,13 +43,21 @@ export class AdminVariablesComponent implements OnInit {
         this.getVariables();
     }
 
+    trackByVariableList(_: number, variableList: VariableItemList) {
+        return variableList.name;
+    }
+
+    trackByVariableItem(_: number, variableItem: VariableItem) {
+        return variableItem.key;
+    }
+
     formatVariables() {
         this.variableLists = [];
         this.variables.forEach((variableItem: VariableItem) => {
             const parts = variableItem.key.split('_');
             const index = this.variableLists.findIndex(x => x.name === parts[0]);
             if (index === -1) {
-                this.variableLists.push({ name: parts[0], items: [variableItem], list: [] });
+                this.variableLists.push({ name: parts[0], items: [variableItem] });
             } else {
                 const variableList = this.variableLists[index];
                 variableList.items.push(variableItem);
@@ -78,7 +86,9 @@ export class AdminVariablesComponent implements OnInit {
         }).subscribe(_ => {
             this.form.controls.key.reset();
             this.form.controls.item.reset();
-            this.getVariables(); // todo patch
+            this.getVariables();
+        }, _ => {
+            this.updating = false;
         });
     }
 
@@ -99,10 +109,8 @@ export class AdminVariablesComponent implements OnInit {
             headers: new HttpHeaders({
                 'Content-Type': 'application/json'
             })
-        }).subscribe((response: VariableItem[]) => {
-            this.variables = response; // todo: change to patch
-            this.formatVariables();
-            this.updating = false;
+        }).subscribe(() => {
+            this.getVariables();
         }, _ => {
             this.updating = false;
         });
@@ -115,10 +123,8 @@ export class AdminVariablesComponent implements OnInit {
         });
         dialog.componentInstance.confirmEvent.subscribe(() => {
             this.updating = true;
-            this.httpClient.delete(`${this.urls.apiUrl}/variables/${variable.key}`).subscribe((response: VariableItem[]) => {
-                this.variables = response; // todo: change to patch
-                this.formatVariables();
-                this.updating = false;
+            this.httpClient.delete(`${this.urls.apiUrl}/variables/${variable.key}`).subscribe(() => {
+                this.getVariables();
             }, _ => {
                 this.updating = false;
             });
@@ -128,6 +134,5 @@ export class AdminVariablesComponent implements OnInit {
 
 interface VariableItemList {
     name: string;
-    list: VariableItemList[];
     items: VariableItem[];
 }

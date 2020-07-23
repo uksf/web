@@ -28,14 +28,14 @@
                     </button>
                 </form>
                 <mat-accordion [multi]="true" class="variables-list">
-                    <mat-expansion-panel class="variables-list-item" *ngFor="let variableList of variableLists" [togglePosition]="'before'" [expanded]="true">
+                    <mat-expansion-panel class="variables-list-item" *ngFor="let variableList of variableLists; trackBy: trackByVariableList" [togglePosition]="'before'" [expanded]="true">
                         <mat-expansion-panel-header [collapsedHeight]="'36px'" [expandedHeight]="'36px'">
                             <mat-panel-title>
                                 {{variableList.name}}
                             </mat-panel-title>
                         </mat-expansion-panel-header>
                         <ng-template matExpansionPanelContent>
-                            <mat-card class="variable-item" *ngFor="let variable of variableList.items">
+                            <mat-card class="variable-item" *ngFor="let variable of variableList.items; trackBy: trackByVariableItem">
                                 <mat-icon class="delete-icon" (click)="deleteVariable($event, variable)" [ngClass]="{'disabled': updating}" matTooltip="Delete variable">highlight_off</mat-icon>
                                 <span class="key">{{variable.key}}</span>
                                 <app-inline-edit class="item" [(ngModel)]="variable.item" [required]="true" type="text" (finishedEvent)="editVariable(variable, $event)"></app-inline-edit>

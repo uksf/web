@@ -5,7 +5,7 @@ import { Observable, of, timer } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 
 @Component({
     selector: 'app-add-server-modal',
@@ -15,6 +15,11 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
 export class AddServerModalComponent {
     form: FormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
+    serverEnvironments = [
+        { value: 0, viewValue: 'Release' },
+        { value: 1, viewValue: 'Stage' },
+        { value: 2, viewValue: 'Dev' }
+    ];
     serverOptions = [
         { value: 0, viewValue: 'None' },
         { value: 1, viewValue: 'Run alone' },
@@ -39,6 +44,8 @@ export class AddServerModalComponent {
             { type: 'required', message: 'Server password is required' }
         ], 'adminPassword': [
             { type: 'required', message: 'Admin password is required' }
+        ], 'serverEnvironment': [
+            { type: 'required', message: 'Environment is required' }
         ], 'serverOption': [
             { type: 'required', message: 'Server option is required' }
         ]
@@ -48,7 +55,7 @@ export class AddServerModalComponent {
     server;
     submitting = false;
 
-    constructor(formbuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: any) {
+    constructor(formbuilder: FormBuilder, private dialog: MatDialog, private dialogRef: MatDialogRef<AddServerModalComponent>, private httpClient: HttpClient, private urls: UrlService, @Inject(MAT_DIALOG_DATA) public data: any) {
         this.form = formbuilder.group({
             name: ['', Validators.required, this.validateServer.bind(this)],
             port: ['', Validators.required],
@@ -58,7 +65,7 @@ export class AddServerModalComponent {
             hostName: ['', Validators.required],
             password: ['', Validators.required],
             adminPassword: ['', Validators.required],
-            serverMods: [''],
+            serverEnvironment: [0, Validators.required],
             serverOption: [0, Validators.required]
         });
         if (data) {
@@ -112,14 +119,14 @@ export class AddServerModalComponent {
             this.server.hostName = this.form.controls['hostName'].value;
             this.server.password = this.form.controls['password'].value;
             this.server.adminPassword = this.form.controls['adminPassword'].value;
-            this.server.serverMods = this.form.controls['serverMods'].value;
+            this.server.serverEnvironment = this.form.controls['serverEnvironment'].value;
             this.server.serverOption = this.form.controls['serverOption'].value;
             this.httpClient.patch(`${this.urls.apiUrl}/gameservers`, this.server, {
                 headers: new HttpHeaders({
                     'Content-Type': 'application/json'
                 })
-            }).subscribe(_ => {
-                this.dialog.closeAll();
+            }).subscribe((environmentChanged: boolean) => {
+                this.dialogRef.close(environmentChanged);
             }, _ => {
                 this.submitting = false;
             });
@@ -129,7 +136,7 @@ export class AddServerModalComponent {
                     'Content-Type': 'application/json'
                 })
             }).subscribe(_ => {
-                this.dialog.closeAll();
+                this.dialogRef.close(false);
             }, _ => {
                 this.submitting = false;
             });

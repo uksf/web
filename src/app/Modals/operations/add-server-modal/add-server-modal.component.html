@@ -52,7 +52,14 @@
                 </mat-error>
             </mat-form-field>
             <mat-form-field class="normal">
-                <input #input matInput formControlName="serverMods" placeholder="Server only mods e.g @AliveServer;@dcg;">
+                <mat-select formControlName="serverEnvironment" placeholder="Environment" required>
+                    <mat-option *ngFor="let option of serverEnvironments" [value]="option.value">
+                        {{ option.viewValue }}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngFor="let validation of validationMessages.serverEnvironment">
+                    <mat-error class="error-message" *ngIf="form.get('serverEnvironment').hasError(validation.type)">{{validation.message}}</mat-error>
+                </mat-error>
             </mat-form-field>
             <mat-form-field class="normal">
                 <mat-select formControlName="serverOption" placeholder="Server options" required>

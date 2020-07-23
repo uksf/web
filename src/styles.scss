@@ -18,6 +18,12 @@
     }
 }
 
+.mods-list-item-container {
+    .mat-checkbox-layout {
+        margin-bottom: 0;
+    }
+}
+
 // core
 @include mat-core();
 
