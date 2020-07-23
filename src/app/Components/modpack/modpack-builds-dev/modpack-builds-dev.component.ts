@@ -131,6 +131,10 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
             return { 'color': '' };
         }
 
+        if (!build.running && !build.finished) {
+            return { 'color': 'gray' };
+        }
+
         if (build.running) {
             return { 'color': '#0c78ff' };
         }
@@ -144,7 +148,7 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
         }
 
         if (this.anySkipped(build)) {
-            return { 'color': 'orange' };
+            return { 'color': 'orangered' };
         }
 
         if (build.buildResult === ModpackBuildResult.SUCCESS) {

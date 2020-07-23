@@ -47,6 +47,10 @@ a {
     margin: 0 5px;
     font-size: 18px;
 
+    .queued {
+        color: gray;
+    }
+
     .running {
         color: #0c78ff;
     }
@@ -64,6 +68,6 @@ a {
     }
 
     .skipped {
-        color: orange;
+        color: orangered;
     }
 }

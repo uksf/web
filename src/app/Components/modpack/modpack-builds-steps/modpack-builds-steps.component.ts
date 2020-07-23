@@ -201,7 +201,7 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
                 } else if (this.selectedStep.buildResult === ModpackBuildResult.CANCELLED) {
                     return 'goldenrod';
                 } else if (this.selectedStep.buildResult === ModpackBuildResult.SKIPPED) {
-                    return 'orange';
+                    return 'orangered';
                 }
             }
         }
