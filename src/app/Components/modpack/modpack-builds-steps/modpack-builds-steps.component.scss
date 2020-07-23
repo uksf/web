@@ -102,6 +102,7 @@
             .log-item {
                 display: flex;
                 padding-left: 8px;
+                padding-right: 4px;
                 font-family: Menlo, Consolas, Courier New, monospace;
                 white-space: pre-wrap;
                 word-break: break-word;
@@ -148,6 +149,10 @@
 
         &.cancelled {
             color: goldenrod;
+        }
+
+        &.skipped {
+            color: orange;
         }
     }
 }

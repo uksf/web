@@ -29,7 +29,7 @@
                     <div class="buttons">
                         <div class="state">
                             <i class="running" *ngIf="selectedBuild.running">Running...</i>
-                            <span class="success" *ngIf="selectedBuild.buildResult === modpackBuildResult.SUCCESS">Success</span>
+                            <span class="success" [ngClass]="{'skipped': anySkipped(selectedBuild)}" *ngIf="selectedBuild.buildResult === modpackBuildResult.SUCCESS">Success</span>
                             <span class="fail" *ngIf="selectedBuild.buildResult === modpackBuildResult.FAILED">Failed</span>
                             <span class="cancelled" *ngIf="selectedBuild.buildResult === modpackBuildResult.CANCELLED">Cancelled</span>
                         </div>

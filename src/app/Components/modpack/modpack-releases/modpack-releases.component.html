@@ -3,7 +3,7 @@
         <app-modpack-page></app-modpack-page>
         <div class="flex-container no-padding-left">
             <div class="release-history-container">
-                <div class="release-history-item" [ngClass]="{'selected': selectedReleaseVersion === release.version}" *ngFor="let release of publicReleases" (click)="select(release)">
+                <div class="release-history-item" [ngClass]="{'selected': selectedReleaseVersion === release.version}" *ngFor="let release of publicReleases" (click)="select(release.version)">
                     <i *ngIf="release.isDraft">{{release.version}}</i>
                     <span *ngIf="!release.isDraft">{{release.version}}</span>
                 </div>

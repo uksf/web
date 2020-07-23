@@ -6,5 +6,4 @@ export interface ModpackRelease {
     changelog: string;
     isDraft: boolean;
     creatorId: string;
-    releaserId: string;
 }

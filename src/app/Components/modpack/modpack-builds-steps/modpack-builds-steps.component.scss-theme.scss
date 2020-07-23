@@ -54,27 +54,18 @@
                         color: mat-color($foreground, base);
 
                         &.selected {
-                            color: mat-color($background, selected-line-text);
-                            background-color: mat-color($background, selected-line);
+                            background-color: mat-color($background, selected);
 
                             .link {
-                                color: mat-color($background, selected-line-text);
+                                color: mat-color($background, contrast);
                             }
                         }
 
                         &:hover {
-                            background-color: mat-color($background, selected);
+                            background-color: mat-color($background, hover);
 
                             &.selected {
-                                background-color: mat-color($background, selected-line-hover);
-
-                                .link {
-                                    color: mat-color($background, selected-line-text);
-
-                                    &:hover {
-                                        color: mat-color($background, contrast);
-                                    }
-                                }
+                                background-color: mat-color($background, selected);
                             }
 
                             .link {

@@ -123,8 +123,8 @@ export class ModpackReleasesComponent implements OnInit {
 
     release() {
         // get request for release
-        this.httpClient.get(this.urls.apiUrl + `/modpack/release/${this.selectedRelease.version}`).subscribe(response => {
-            this.getReleases();
+        this.httpClient.get(this.urls.apiUrl + `/modpack/release/${this.selectedRelease.version}`).subscribe(() => {
+            this.router.navigate(['/modpack/builds-rc'], { queryParams: { version: this.selectedRelease.version, log: true } });
         }, error => this.urls.errorWrapper('Failed to deploy release', error));
     }
 

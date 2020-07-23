@@ -170,6 +170,10 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
         return this.modpackBuildProcessService.branch(this.selectedBuild.commit.branch);
     }
 
+    anySkipped(build: ModpackBuild): boolean {
+        return build.steps.findIndex(x => x.buildResult === ModpackBuildResult.SKIPPED) !== -1;
+    }
+
     getBuildColour(build: ModpackBuild) {
         if (this.theme === undefined) {
             return { 'color': '' };
@@ -179,16 +183,20 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
             return { 'color': '#0c78ff' };
         }
 
-        if (build.buildResult === ModpackBuildResult.SUCCESS) {
-            return { 'color': 'green' };
-        }
-
         if (build.buildResult === ModpackBuildResult.FAILED) {
             return { 'color': 'red' };
         }
 
         if (build.buildResult === ModpackBuildResult.CANCELLED) {
             return { 'color': 'goldenrod' };
+        }
+
+        if (this.anySkipped(build)) {
+            return { 'color': 'orange' };
+        }
+
+        if (build.buildResult === ModpackBuildResult.SUCCESS) {
+            return { 'color': 'green' };
         }
 
         if (build === this.selectedBuild) {

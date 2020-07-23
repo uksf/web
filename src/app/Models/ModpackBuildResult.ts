@@ -2,5 +2,6 @@ export enum ModpackBuildResult {
     NONE,
     SUCCESS,
     FAILED,
-    CANCELLED
+    CANCELLED,
+    SKIPPED
 }

@@ -78,6 +78,9 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
     }
 
     reconnect() {
+        this.router.navigate([], { relativeTo: this.route, queryParams: { step: null, line: null }, queryParamsHandling: 'merge' });
+        this.ignoreUpdates = false;
+        this.overrideAutomaticStepChoose = false;
         this.disconnect();
         this.connect();
     }
@@ -117,6 +120,8 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
                 this.selectStep(this.build.steps.findIndex(x => x.buildResult === ModpackBuildResult.FAILED));
             } else if (this.build.buildResult === ModpackBuildResult.CANCELLED) {
                 this.selectStep(this.build.steps.findIndex(x => x.buildResult === ModpackBuildResult.CANCELLED));
+            } else if (this.anySkipped) {
+                this.selectStep(this.build.steps.findIndex(x => x.buildResult === ModpackBuildResult.SKIPPED));
             } else {
                 this.selectStep(this.build.steps.length - 1);
             }
@@ -180,36 +185,39 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
         this.modpackBuildProcessService.rebuild(this.build);
     }
 
-    getLogItemColour(index: number): any {
-        // TODO: Use objects for logs tht define things, styles, links maybe etc
+    get anySkipped() {
+        return this.build.steps.findIndex(x => x.buildResult === ModpackBuildResult.SKIPPED) !== -1;
+    }
+
+    getLogItemColour(index: number): string {
+        if (index === 0) {
+            if (this.selectedStep.running) {
+                return '#0c78ff';
+            } else if (this.selectedStep.finished) {
+                if (this.selectedStep.buildResult === ModpackBuildResult.SUCCESS) {
+                    return 'green';
+                } else if (this.selectedStep.buildResult === ModpackBuildResult.FAILED) {
+                    return 'red';
+                } else if (this.selectedStep.buildResult === ModpackBuildResult.CANCELLED) {
+                    return 'goldenrod';
+                } else if (this.selectedStep.buildResult === ModpackBuildResult.SKIPPED) {
+                    return 'orange';
+                }
+            }
+        }
+
+        if (this.selectedStep.logs[index].colour !== '') {
+            return this.selectedStep.logs[index].colour;
+        }
+
         if (this.theme === undefined) {
-            return { 'color': '' };
-        }
-
-        if (this.selectedStep.logs[index].includes('Error')) {
-            return { 'color': 'red' };
-        }
-
-        if (this.selectedStep.logs[index].includes('cancelled')) {
-            return { 'color': 'goldenrod' };
+            return '';
         }
 
         if (index > 0 && index < this.selectedStep.logs.length - 1) {
-            return { 'color': this.theme.foregroundColor };
+            return this.theme.foregroundColor;
         }
 
-        if (this.selectedStep.running && index === 0) {
-            return { 'color': '#0c78ff' };
-        }
-
-        if (this.selectedStep.buildResult === ModpackBuildResult.SUCCESS) {
-            return { 'color': 'green' };
-        }
-
-        if (this.selectedStep.buildResult === ModpackBuildResult.FAILED) {
-            return { 'color': 'red' };
-        }
-
-        return { 'color': this.theme.foregroundColor };
+        return this.theme.foregroundColor;
     }
 }
