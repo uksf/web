@@ -336,7 +336,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
 
     killAll() {
         const dialog = this.dialog.open(ConfirmationModalComponent, {
-            data: { message: `Are you sure you want to kill ${this.instanceCount} servers? There could be players still on and this could have unexpected effects on the server` }
+            data: { message: `Are you sure you want to kill ${this.instanceCount} servers?\nThere could be players still on and this could have unexpected effects on the server` }
         });
         dialog.componentInstance.confirmEvent.subscribe(() => {
             this.httpClient.get(`${this.urls.apiUrl}/gameservers/killall`).subscribe(_ => {

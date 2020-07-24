@@ -17,7 +17,7 @@ export class AddServerModalComponent {
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     serverEnvironments = [
         { value: 0, viewValue: 'Release' },
-        { value: 1, viewValue: 'Stage' },
+        { value: 1, viewValue: 'Rc' },
         { value: 2, viewValue: 'Dev' }
     ];
     serverOptions = [

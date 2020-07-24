@@ -2,8 +2,8 @@
 <mat-dialog-content>
     <div class="flex-container" *ngIf="availableMods">
         <div class="mods-list-header">
-            <div class="mods-list-header-item" matTooltip="Global mods">@</div>
-            <div class="mods-list-header-item" matTooltip="Server-only mods">S</div>
+            <span class="mods-list-header-item" matTooltip="Global mods">@</span>
+            <span class="mods-list-header-item" matTooltip="Server-only mods">S</span>
         </div>
         <div class="mods-list-container">
             <div class="mods-list-item-container" *ngFor="let mod of availableMods">
@@ -19,6 +19,8 @@
             </div>
         </div>
         <div class="button-container">
+            <button mat-raised-button color="primary" (click)="reset()">Reset</button>
+            <app-flex-filler></app-flex-filler>
             <button mat-raised-button color="primary" (click)="submit()">Save</button>
         </div>
     </div>

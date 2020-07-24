@@ -17,11 +17,15 @@ h2 {
     .mods-list-header {
         display: flex;
         flex-direction: row;
-        margin: 6px 18px;
+        margin: 6px 18px 0;
 
         .mods-list-header-item {
             font-weight: bold;
             margin-right: 11px;
+
+            &:first-of-type {
+                line-height: 18px;
+            }
         }
     }
 

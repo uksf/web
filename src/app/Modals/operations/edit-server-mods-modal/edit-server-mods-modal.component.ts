@@ -64,4 +64,14 @@ export class EditServerModsModalComponent implements OnInit {
             this.dialog.closeAll();
         });
     }
+
+    reset() {
+        this.httpClient.get(`${this.urls.apiUrl}/gameservers/${this.server.id}/mods/reset`, {
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json'
+            })
+        }).subscribe(response => {
+            this.populateServerMods(response);
+        });
+    }
 }
