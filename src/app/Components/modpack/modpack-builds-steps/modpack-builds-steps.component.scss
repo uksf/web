@@ -151,8 +151,8 @@
             color: goldenrod;
         }
 
-        &.skipped {
-            color: orangered;
+        &.warning {
+            color: #ff4500;
         }
     }
 }

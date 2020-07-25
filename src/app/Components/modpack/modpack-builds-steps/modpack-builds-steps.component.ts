@@ -110,23 +110,32 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
             return;
         }
 
+        let index = -1;
         if (this.build.running) {
-            const index = this.build.steps.findIndex(x => x.running);
-            if (index !== -1) {
-                this.selectStep(index);
-            }
+            index = this.build.steps.findIndex(x => x.running);
         } else if (this.build.finished) {
             if (this.build.buildResult === ModpackBuildResult.FAILED) {
-                this.selectStep(this.build.steps.findIndex(x => x.buildResult === ModpackBuildResult.FAILED));
+                index = this.build.steps.findIndex(x => x.buildResult === ModpackBuildResult.FAILED);
             } else if (this.build.buildResult === ModpackBuildResult.CANCELLED) {
-                this.selectStep(this.build.steps.findIndex(x => x.buildResult === ModpackBuildResult.CANCELLED));
-            } else if (this.anySkipped) {
-                this.selectStep(this.build.steps.findIndex(x => x.buildResult === ModpackBuildResult.SKIPPED));
+                index = this.build.steps.findIndex(x => x.buildResult === ModpackBuildResult.CANCELLED);
+            } else if (this.build.buildResult === ModpackBuildResult.WARNING) {
+                index = this.build.steps.findIndex(x => x.buildResult === ModpackBuildResult.WARNING);
+            } else if (this.anySkippedOrWarning) {
+                index = this.build.steps.findIndex(x => x.buildResult === ModpackBuildResult.SKIPPED);
             } else {
-                this.selectStep(this.build.steps.length - 1);
+                index = this.build.steps.length - 1;
+            }
+
+            if (index === -1) {
+                index = this.build.steps.findIndex(x => !x.finished) - 1;
+                index = index < 0 ? 0 : index;
             }
         } else {
-            this.selectStep(0);
+            index = 0;
+        }
+
+        if (index >= 0) {
+            this.selectStep(index);
         }
     }
 
@@ -185,8 +194,8 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
         this.modpackBuildProcessService.rebuild(this.build);
     }
 
-    get anySkipped() {
-        return this.build.steps.findIndex(x => x.buildResult === ModpackBuildResult.SKIPPED) !== -1;
+    get anySkippedOrWarning() {
+        return this.build.steps.findIndex(x => x.buildResult === ModpackBuildResult.SKIPPED) !== -1 || this.build.steps.findIndex(x => x.buildResult === ModpackBuildResult.WARNING) !== -1;
     }
 
     getLogItemColour(index: number): string {
@@ -200,7 +209,7 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
                     return 'red';
                 } else if (this.selectedStep.buildResult === ModpackBuildResult.CANCELLED) {
                     return 'goldenrod';
-                } else if (this.selectedStep.buildResult === ModpackBuildResult.SKIPPED) {
+                } else if (this.selectedStep.buildResult === ModpackBuildResult.WARNING || this.selectedStep.buildResult === ModpackBuildResult.SKIPPED) {
                     return 'orangered';
                 }
             }

@@ -15,7 +15,7 @@ import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 export class AddServerModalComponent {
     form: FormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
-    serverEnvironments = [
+    environment = [
         { value: 0, viewValue: 'Release' },
         { value: 1, viewValue: 'Rc' },
         { value: 2, viewValue: 'Dev' }
@@ -44,7 +44,7 @@ export class AddServerModalComponent {
             { type: 'required', message: 'Server password is required' }
         ], 'adminPassword': [
             { type: 'required', message: 'Admin password is required' }
-        ], 'serverEnvironment': [
+        ], 'environment': [
             { type: 'required', message: 'Environment is required' }
         ], 'serverOption': [
             { type: 'required', message: 'Server option is required' }
@@ -65,7 +65,7 @@ export class AddServerModalComponent {
             hostName: ['', Validators.required],
             password: ['', Validators.required],
             adminPassword: ['', Validators.required],
-            serverEnvironment: [0, Validators.required],
+            environment: [0, Validators.required],
             serverOption: [0, Validators.required]
         });
         if (data) {
@@ -119,7 +119,7 @@ export class AddServerModalComponent {
             this.server.hostName = this.form.controls['hostName'].value;
             this.server.password = this.form.controls['password'].value;
             this.server.adminPassword = this.form.controls['adminPassword'].value;
-            this.server.serverEnvironment = this.form.controls['serverEnvironment'].value;
+            this.server.environment = this.form.controls['environment'].value;
             this.server.serverOption = this.form.controls['serverOption'].value;
             this.httpClient.patch(`${this.urls.apiUrl}/gameservers`, this.server, {
                 headers: new HttpHeaders({

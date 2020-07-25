@@ -52,13 +52,13 @@
                 </mat-error>
             </mat-form-field>
             <mat-form-field class="normal">
-                <mat-select formControlName="serverEnvironment" placeholder="Environment" required>
-                    <mat-option *ngFor="let option of serverEnvironments" [value]="option.value">
+                <mat-select formControlName="environment" placeholder="Environment" required>
+                    <mat-option *ngFor="let option of environments" [value]="option.value">
                         {{ option.viewValue }}
                     </mat-option>
                 </mat-select>
-                <mat-error *ngFor="let validation of validationMessages.serverEnvironment">
-                    <mat-error class="error-message" *ngIf="form.get('serverEnvironment').hasError(validation.type)">{{validation.message}}</mat-error>
+                <mat-error *ngFor="let validation of validationMessages.environment">
+                    <mat-error class="error-message" *ngIf="form.get('environment').hasError(validation.type)">{{validation.message}}</mat-error>
                 </mat-error>
             </mat-form-field>
             <mat-form-field class="normal">

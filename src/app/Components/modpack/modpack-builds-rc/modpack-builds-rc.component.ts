@@ -7,6 +7,7 @@ import { ModpackRc } from 'app/Models/ModpackRc';
 import { ModpackRcService } from 'app/Services/modpackRc.service';
 import { ModpackBuildProcessService } from 'app/Services/modpackBuildProcess.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { GameEnvironment } from 'app/Models/GameEnvironment';
 
 @Component({
     selector: 'app-modpack-builds-rc',
@@ -16,6 +17,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
     @ViewChild(ThemeEmitterComponent, { static: false }) theme: ThemeEmitterComponent;
     modpackBuildResult = ModpackBuildResult;
+    gameEnvironment = GameEnvironment;
     selectedRcVersion = '';
     selectedBuildId = '';
     changesMarkdown: string;
@@ -170,8 +172,8 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
         return this.modpackBuildProcessService.branch(this.selectedBuild.commit.branch);
     }
 
-    anySkipped(build: ModpackBuild): boolean {
-        return build.steps.findIndex(x => x.buildResult === ModpackBuildResult.SKIPPED) !== -1;
+    anySkippedOrWarning(build: ModpackBuild): boolean {
+        return build.steps.findIndex(x => x.buildResult === ModpackBuildResult.SKIPPED) !== -1 || build.steps.findIndex(x => x.buildResult === ModpackBuildResult.WARNING) !== -1;
     }
 
     getBuildColour(build: ModpackBuild) {
@@ -195,7 +197,7 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
             return { 'color': 'goldenrod' };
         }
 
-        if (this.anySkipped(build)) {
+        if (build.buildResult === ModpackBuildResult.WARNING || this.anySkippedOrWarning(build)) {
             return { 'color': 'orangered' };
         }
 

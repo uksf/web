@@ -122,8 +122,8 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
         return this.modpackBuildProcessService.branch(this.selectedBuild.commit.branch);
     }
 
-    anySkipped(build: ModpackBuild): boolean {
-        return build.steps.findIndex(x => x.buildResult === ModpackBuildResult.SKIPPED) !== -1;
+    anySkippedOrWarning(build: ModpackBuild): boolean {
+        return build.steps.findIndex(x => x.buildResult === ModpackBuildResult.SKIPPED) !== -1 || build.steps.findIndex(x => x.buildResult === ModpackBuildResult.WARNING) !== -1;
     }
 
     getBuildColour(build: ModpackBuild) {
@@ -147,7 +147,7 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
             return { 'color': 'goldenrod' };
         }
 
-        if (this.anySkipped(build)) {
+        if (build.buildResult === ModpackBuildResult.WARNING || this.anySkippedOrWarning(build)) {
             return { 'color': 'orangered' };
         }
 

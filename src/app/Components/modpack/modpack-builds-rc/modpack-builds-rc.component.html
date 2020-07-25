@@ -11,8 +11,8 @@
             <div class="release-container" *ngIf="selectedRc">
                 <div class="history-container builds">
                     <div class="history-item" [ngClass]="{'selected': selectedBuildId === build.id}" [ngStyle]="getBuildColour(build)" *ngFor="let build of selectedRc.builds" (click)="selectBuild(build.id)">
-                        <span *ngIf="build.isReleaseCandidate">RC #{{build.buildNumber}}</span>
-                        <span *ngIf="build.isRelease">Release</span>
+                        <span *ngIf="build.environment === gameEnvironment.RC">RC #{{build.buildNumber}}</span>
+                        <span *ngIf="build.environment === gameEnvironment.RELEASE">Release</span>
                     </div>
                 </div>
                 <div class="build-container" *ngIf="selectedBuild === undefined">
@@ -23,17 +23,18 @@
                 <div class="build-container" *ngIf="selectedBuild && !logOpen">
                     <div class="build-header">
                         <div>
-                            <h1 class="build-title" *ngIf="selectedBuild.isRelease">Release {{selectedRc.version}}</h1>
-                            <h1 class="build-title" *ngIf="!selectedBuild.isRelease">{{selectedRc.version}} RC #{{selectedBuild.buildNumber}}</h1>
+                            <h1 class="build-title" *ngIf="selectedBuild.environment === gameEnvironment.RELEASE">Release {{selectedRc.version}}</h1>
+                            <h1 class="build-title" *ngIf="selectedBuild.environment !== gameEnvironment.RELEASE">{{selectedRc.version}} RC #{{selectedBuild.buildNumber}}</h1>
                         </div>
                         <app-flex-filler></app-flex-filler>
                         <div class="buttons">
                             <div class="state">
                                 <i class="queued" *ngIf="!selectedBuild.running && !selectedBuild.finished">Queued</i>
-                                <i class="running" *ngIf="selectedBuild.running">Running...</i>
-                                <span class="success" [ngClass]="{'skipped': anySkipped(selectedBuild)}" *ngIf="selectedBuild.buildResult === modpackBuildResult.SUCCESS">Success</span>
+                                <i class="running" [ngClass]="{'warning': anySkippedOrWarning(selectedBuild)}" *ngIf="selectedBuild.running">Running...</i>
+                                <span class="success" [ngClass]="{'warning': anySkippedOrWarning(selectedBuild)}" *ngIf="selectedBuild.buildResult === modpackBuildResult.SUCCESS">Success</span>
                                 <span class="fail" *ngIf="selectedBuild.buildResult === modpackBuildResult.FAILED">Failed</span>
                                 <span class="cancelled" *ngIf="selectedBuild.buildResult === modpackBuildResult.CANCELLED">Cancelled</span>
+                                <span class="warning" *ngIf="selectedBuild.buildResult === modpackBuildResult.WARNING">Warning</span>
                             </div>
                             <app-flex-filler></app-flex-filler>
                             <ng-template [ngxPermissionsOnly]="['ADMIN']">
@@ -54,7 +55,7 @@
                         <div class="build-changelog">
                             <markdown ngPreserveWhitespaces [data]="changesMarkdown"></markdown>
                         </div>
-                        <div *ngIf="!selectedBuild.isRelease && additionalChangesMarkdown !== ''">
+                        <div *ngIf="selectedBuild.environment !== gameEnvironment.RELEASE && additionalChangesMarkdown !== ''">
                             <h3 class="build-description">Additional changes since {{previousRelease()}}</h3>
                             <div class="build-changelog">
                                 <markdown ngPreserveWhitespaces [data]="additionalChangesMarkdown"></markdown>

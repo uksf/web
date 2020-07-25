@@ -1,6 +1,7 @@
 import { ModpackBuildStep } from './ModpackBuildStep';
 import { GithubCommit } from './GithubCommit';
 import { ModpackBuildResult } from './ModpackBuildResult';
+import { GameEnvironment } from './GameEnvironment';
 
 export interface ModpackBuild {
     id: string;
@@ -14,6 +15,6 @@ export interface ModpackBuild {
     endTime: Date;
     buildResult: ModpackBuildResult;
     builderId: string;
-    isRelease: boolean;
-    isReleaseCandidate: boolean;
+    isRebuild: boolean;
+    environment: GameEnvironment;
 }
