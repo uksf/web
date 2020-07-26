@@ -37,6 +37,9 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
 
     ngOnInit(): void {
         this.connect();
+        if (this.build.steps.length > 0) {
+            this.selectStep(0);
+        }
     }
 
     ngOnDestroy(): void {
@@ -83,6 +86,9 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
         this.overrideAutomaticStepChoose = false;
         this.disconnect();
         this.connect();
+        if (this.build.steps.length > 0) {
+            this.selectStep(0);
+        }
     }
 
     get selectedStep(): ModpackBuildStep {
