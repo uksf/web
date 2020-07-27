@@ -180,6 +180,10 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
         return this.modpackBuildProcessService.branch(this.selectedBuild.commit.branch);
     }
 
+    get commit() {
+        return this.selectedBuild.commit.after.substr(0, 7);
+    }
+
     anySkippedOrWarning(build: ModpackBuild): boolean {
         return build.steps.findIndex(x => x.buildResult === ModpackBuildResult.SKIPPED) !== -1 || build.steps.findIndex(x => x.buildResult === ModpackBuildResult.WARNING) !== -1;
     }

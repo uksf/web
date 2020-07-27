@@ -487,7 +487,7 @@ const appRoutes: Routes = [
     {
         path: 'modpack/builds-dev', component: ModpackBuildsDevComponent, data: {
             permissions: {
-                only: Permissions.BUILDS,
+                only: Permissions.MEMBER,
                 except: Permissions.UNLOGGED,
                 redirectTo: {
                     UNLOGGED: loginRedirect,
@@ -499,7 +499,7 @@ const appRoutes: Routes = [
     {
         path: 'modpack/builds-rc', component: ModpackBuildsRcComponent, data: {
             permissions: {
-                only: Permissions.BUILDS,
+                only: Permissions.MEMBER,
                 except: Permissions.UNLOGGED,
                 redirectTo: {
                     UNLOGGED: loginRedirect,

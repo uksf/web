@@ -73,7 +73,10 @@
                         {{duration}}
                     </div>
                     <app-flex-filler></app-flex-filler>
-                    <div class="footer-item">
+                    <div class="footer-item" *ngIf="branch === 'None'">
+                        Commit: {{commit}}
+                    </div>
+                    <div class="footer-item" *ngIf="branch !== 'None'">
                         Branch: {{branch}}
                     </div>
                     <div class="footer-item">
