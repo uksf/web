@@ -18,6 +18,7 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
     @ViewChild(ThemeEmitterComponent, { static: false }) theme: ThemeEmitterComponent;
     @ViewChild(CdkVirtualScrollViewport, { static: false }) scrollView: CdkVirtualScrollViewport;
     @Input() build: ModpackBuild;
+    @Output() onRebuild = new EventEmitter();
     @Output() onCloseLog = new EventEmitter();
     private hubConnection: ConnectionContainer;
     modpackBuildResult = ModpackBuildResult;
@@ -197,7 +198,9 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
     }
 
     rebuild() {
-        this.modpackBuildProcessService.rebuild(this.build);
+        this.modpackBuildProcessService.rebuild(this.build, () => {
+            this.onRebuild.emit();
+        });
     }
 
     get anySkippedOrWarning() {

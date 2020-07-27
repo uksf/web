@@ -63,7 +63,7 @@
                         </div>
                     </div>
                 </div>
-                <app-modpack-builds-steps *ngIf="selectedBuild && logOpen" [build]="selectedBuild" (onCloseLog)="closeLog()"></app-modpack-builds-steps>
+                <app-modpack-builds-steps *ngIf="selectedBuild && logOpen" [build]="selectedBuild" (onCloseLog)="closeLog()" (onRebuild)="selectIncomingBuild = true;"></app-modpack-builds-steps>
                 <app-flex-filler></app-flex-filler>
                 <div class="build-footer" *ngIf="selectedBuild">
                     <div class="footer-item">

@@ -19,12 +19,13 @@ export class ModpackRcService implements OnDestroy {
         this.disconnect();
     }
 
-    connect(callback: () => void) {
+    connect(callback: () => void, newBuildCallback: (string) => void) {
         this.getData(callback);
 
         this.hubConnection = this.signalrService.connect(`builds`);
         this.hubConnection.connection.on('ReceiveReleaseCandidateBuild', (build: ModpackBuild) => {
             this.patchBuild(build);
+            newBuildCallback(build.version);
         });
         this.hubConnection.reconnectEvent.subscribe(() => {
             this.getData(callback);

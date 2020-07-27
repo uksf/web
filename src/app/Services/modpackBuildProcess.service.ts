@@ -48,33 +48,36 @@ export class ModpackBuildProcessService {
         }, error => this.urls.errorWrapper('Failed to get build', error));
     }
 
-    rebuild(build: ModpackBuild) {
-        // get request for rebuild
-        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${build.id}/rebuild`).subscribe(
-            () => { },
-            error => this.urls.errorWrapper('Failed to rebuild', error)
-        );
-    }
-
-    cancel(build: ModpackBuild, callback: () => void) {
-        // get request for build cancel
-        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${build.id}/cancel`).subscribe(() => {
-            callback();
-        }, error => {
-            callback();
-            this.urls.errorWrapper('Failed to cancel build', error)
-        });
-    }
-
-    newBuild() {
+    newBuild(callback: () => void) {
         this.dialog.open(NewModpackBuildModalComponent, {
             data: { branches: this.branches }
         }).componentInstance.runEvent.subscribe((reference: string) => {
-            this.httpClient.get(this.urls.apiUrl + `/modpack/newbuild/${reference}`).subscribe(() => { }, error => {
+            // get request for new build
+            this.httpClient.get(this.urls.apiUrl + `/modpack/newbuild/${reference}`).subscribe(() => {
+                callback();
+            }, error => {
                 this.dialog.open(MessageModalComponent, {
                     data: { message: error.error }
                 });
             });
+        });
+    }
+
+    rebuild(build: ModpackBuild, callback: () => void) {
+        // get request for rebuild
+        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${build.id}/rebuild`).subscribe(
+            () => {
+                callback();
+            },
+            error => this.urls.errorWrapper('Failed to rebuild', error)
+        );
+    }
+
+    cancel(build: ModpackBuild, errorCallback: () => void) {
+        // get request for build cancel
+        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${build.id}/cancel`).subscribe(() => {}, error => {
+            errorCallback();
+            this.urls.errorWrapper('Failed to cancel build', error)
         });
     }
 }

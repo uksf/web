@@ -25,6 +25,7 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
     builderName = 'UKSF Bot';
     logOpen = false;
     cancelling = false;
+    selectIncomingBuild = false;
 
     constructor(
         private markdownService: MarkdownService,
@@ -40,6 +41,11 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
                 this.checkRoute();
             } else {
                 this.selectRc(undefined);
+            }
+        }, (version: string) => {
+            if (this.selectIncomingBuild) {
+                this.selectIncomingBuild = false;
+                this.selectBuild(version);
             }
         });
     }
@@ -161,7 +167,9 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
     }
 
     rebuild() {
-        this.modpackBuildProcessService.rebuild(this.selectedBuild);
+        this.modpackBuildProcessService.rebuild(this.selectedBuild, () => {
+            this.selectIncomingBuild = true;
+        });
     }
 
     get duration() {
