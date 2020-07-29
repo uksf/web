@@ -9,7 +9,8 @@
                 <i class="fas fa-check-circle success" *ngIf="step.buildResult === modpackBuildResult.SUCCESS"></i>
                 <i class="fas fa-minus-circle fail" *ngIf="step.buildResult === modpackBuildResult.FAILED"></i>
                 <i class="fas fa-stop-circle cancelled" *ngIf="step.buildResult === modpackBuildResult.CANCELLED"></i>
-                <i class="fas fa-exclamation-circle warning" *ngIf="step.buildResult === modpackBuildResult.WARNING || step.buildResult === modpackBuildResult.SKIPPED"></i>
+                <i class="fas fa-exclamation-circle warning" *ngIf="step.buildResult === modpackBuildResult.WARNING"></i>
+                <i class="fas fa-exclamation-circle skipped" *ngIf="step.buildResult === modpackBuildResult.SKIPPED"></i>
                 <span class="wide">{{step.name}}</span>
                 <span class="narrow">{{step.index + 1}}</span>
             </div>
@@ -23,15 +24,16 @@
                 <i class="fas fa-check-circle success" *ngIf="selectedStep.buildResult === modpackBuildResult.SUCCESS"></i>
                 <i class="fas fa-minus-circle fail" *ngIf="selectedStep.buildResult === modpackBuildResult.FAILED"></i>
                 <i class="fas fa-stop-circle cancelled" *ngIf="selectedStep.buildResult === modpackBuildResult.CANCELLED"></i>
-                <i class="fas fa-exclamation-circle warning" *ngIf="selectedStep.buildResult === modpackBuildResult.WARNING || selectedStep.buildResult === modpackBuildResult.SKIPPED"></i>
+                <i class="fas fa-exclamation-circle warning" *ngIf="selectedStep.buildResult === modpackBuildResult.WARNING"></i>
+                <i class="fas fa-exclamation-circle skipped" *ngIf="selectedStep.buildResult === modpackBuildResult.SKIPPED"></i>
                 <h1 class="build-title">{{selectedStep.name}}</h1>
             </div>
             <app-flex-filler></app-flex-filler>
             <div class="buttons">
                 <div class="state">
                     <i class="queued" *ngIf="!build.running && !build.finished">Queued</i>
-                    <i class="running" [ngClass]="{'warning': anySkippedOrWarning}" *ngIf="build.running">Running...</i>
-                    <span class="success" [ngClass]="{'warning': anySkippedOrWarning}" *ngIf="build.buildResult === modpackBuildResult.SUCCESS">Success</span>
+                    <i class="running" [ngClass]="{'warning': anyWarning}" *ngIf="build.running">Running...</i>
+                    <span class="success" [ngClass]="{'warning': anyWarning}" *ngIf="build.buildResult === modpackBuildResult.SUCCESS">Success</span>
                     <span class="fail" *ngIf="build.buildResult === modpackBuildResult.FAILED">Failed</span>
                     <span class="cancelled" *ngIf="build.buildResult === modpackBuildResult.CANCELLED">Cancelled</span>
                     <span class="warning" *ngIf="build.buildResult === modpackBuildResult.WARNING">Warning</span>
@@ -48,7 +50,7 @@
                 <button mat-raised-button color="primary" (click)="closeLog()">
                     Close Log
                 </button>
-                <button mat-raised-button color="primary" class="scroll" [ngClass]="{'autoScroll': !autoScroll}" (click)="toggleAutoScroll()" [matTooltip]="'Turn autoscroll ' + (autoScroll ? 'off' : 'on')" [disabled]="!selectedStep.running">
+                <button mat-raised-button color="primary" class="scroll" [ngClass]="{'autoScroll': selectedStep.running && !autoScroll}" (click)="toggleAutoScroll()" [matTooltip]="(selectedStep.running ? 'Turn autoscroll ' + (autoScroll ? 'off' : 'on') : 'Scroll to bottom')">
                     <mat-icon>arrow_downward</mat-icon>
                 </button>
             </div>

@@ -30,8 +30,8 @@
                         <div class="buttons">
                             <div class="state">
                                 <i class="queued" *ngIf="!selectedBuild.running && !selectedBuild.finished">Queued</i>
-                                <i class="running" [ngClass]="{'warning': anySkippedOrWarning(selectedBuild)}" *ngIf="selectedBuild.running">Running...</i>
-                                <span class="success" [ngClass]="{'warning': anySkippedOrWarning(selectedBuild)}" *ngIf="selectedBuild.buildResult === modpackBuildResult.SUCCESS">Success</span>
+                                <i class="running" [ngClass]="{'warning': anyWarning(selectedBuild)}" *ngIf="selectedBuild.running">Running...</i>
+                                <span class="success" *ngIf="selectedBuild.buildResult === modpackBuildResult.SUCCESS">Success</span>
                                 <span class="fail" *ngIf="selectedBuild.buildResult === modpackBuildResult.FAILED">Failed</span>
                                 <span class="cancelled" *ngIf="selectedBuild.buildResult === modpackBuildResult.CANCELLED">Cancelled</span>
                                 <span class="warning" *ngIf="selectedBuild.buildResult === modpackBuildResult.WARNING">Warning</span>

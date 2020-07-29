@@ -2,7 +2,6 @@
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule, LowerCaseUrlSerializer } from './app-routing.module';
-import { JsonpModule } from '@angular/http';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GrowlModule } from 'primeng/primeng';
@@ -237,7 +236,6 @@ export function tokenGetter() {
         BrowserModule,
         AppRoutingModule,
         CommonModule,
-        JsonpModule,
         FormsModule,
         ReactiveFormsModule,
         BrowserAnimationsModule,

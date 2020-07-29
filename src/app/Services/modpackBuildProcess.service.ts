@@ -7,6 +7,7 @@ import { UrlService } from './url.service';
 import { MatDialog } from '@angular/material';
 import { NewModpackBuildModalComponent } from 'app/Modals/new-modpack-build/new-modpack-build-modal.component';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
+import {ModpackBuildStep} from '../Models/ModpackBuildStep';
 
 @Injectable()
 export class ModpackBuildProcessService {
@@ -41,11 +42,18 @@ export class ModpackBuildProcessService {
         });
     }
 
-    getBuildLogData(id: string, callback: (arg0: ModpackBuild) => void) {
+    getBuildData(id: string, callback: (arg0: ModpackBuild) => void) {
         // get request for build
         this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${id}`).subscribe((build: ModpackBuild) => {
             callback(build);
         }, error => this.urls.errorWrapper('Failed to get build', error));
+    }
+
+    getBuildStepData(id: string, index: number, callback: (arg0: ModpackBuildStep) => void) {
+        // get request for build
+        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${id}/step/${index}`).subscribe((step: ModpackBuildStep) => {
+            callback(step);
+        }, error => this.urls.errorWrapper('Failed to get build step', error));
     }
 
     newBuild(callback: () => void) {

@@ -38,7 +38,7 @@ export class NewModpackBuildModalComponent {
     ) {
         this.branches = data.branches;
         this.form = this.formbuilder.group({
-            branch: [''],
+            branch: ['No branch'],
             commitId: ['', Validators.pattern('^[a-fA-F0-9]{40}$')]
         }, { validator: onlyOne });
     }

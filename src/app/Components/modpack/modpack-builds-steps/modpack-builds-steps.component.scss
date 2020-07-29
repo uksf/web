@@ -154,6 +154,10 @@
         &.warning {
             color: #ff4500;
         }
+
+        &.skipped {
+            color: gray;
+        }
     }
 }
 
