@@ -1,0 +1,15 @@
+@import '~@angular/material/theming';
+
+@mixin admin-variables-component-theme($theme) {
+    $background: map-get($theme, background);
+
+    app-admin-variables {
+        .flex-container {
+            .variables-container {
+                .variables-header {
+                    background-color: mat-color($background, background);
+                }
+            }
+        }
+    }
+}

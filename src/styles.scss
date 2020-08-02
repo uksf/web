@@ -1,5 +1,5 @@
-@import "~@angular/material/theming";
-@import "~angular-tree-component/dist/angular-tree-component.css";
+@import '~@angular/material/theming';
+@import '~angular-tree-component/dist/angular-tree-component.css';
 
 .mat-checkbox-layout {
     white-space: normal !important;
@@ -24,63 +24,73 @@
     }
 }
 
-// core
+// Core
 @include mat-core();
 
-//themes
-@import "darkTheme.scss";
-@import "lightTheme.scss";
+// Themes
+@import 'darkTheme.scss';
+@import 'lightTheme.scss';
 
-//components
-@import "app/app.component.scss-theme.scss";
-@import "app/Components/teamspeak-connect/teamspeak-connect.component.scss-theme.scss";
-@import "app/Components/footer-bar/footer-bar.component.scss-theme.scss";
-@import "app/Components/header-bar/header-bar.component.scss-theme.scss";
-@import "app/Components/notifications/notifications.component.scss-theme.scss";
-@import "app/Components/side-bar/side-bar.component.scss-theme.scss";
-@import "app/Pages/about-page/about-page.component.scss-theme.scss";
-@import "app/Pages/home-page/home-page.component.scss-theme.scss";
-@import "app/Pages/information-page/information-page.component.scss-theme.scss";
-@import "app/Pages/login-page/login-page.component.scss-theme.scss";
-@import "app/Pages/modpack-page/modpack-page.component.scss-theme.scss";
-@import "app/Pages/application-page/application-page.component.scss-theme.scss";
-@import "app/Pages/operations-page/operations-page.component.scss-theme.scss";
-@import "app/Pages/personnel-page/personnel-page.component.scss-theme.scss";
-@import "app/Pages/profile-page/profile-page.component.scss-theme.scss";
-@import "app/Pages/recruitment-application-page/recruitment-application-page.component.scss-theme.scss";
-@import "app/Pages/recruitment-page/recruitment-page.component.scss-theme.scss";
-@import "app/Pages/unit-page/unit-page.component.scss-theme.scss";
-@import "app/Pages/units-page/units-page.component.scss-theme.scss";
-@import "app/Components/comment-display/comment-display.component.scss-theme.scss";
-@import "app/Components/file-drop/file-drop.component.scss-theme.scss";
-@import "app/Components/inline-edit/inline-edit.component.scss-theme.scss";
-@import "app/Components/command/command-requests/command-request.component.scss-theme.scss";
-@import "app/Components/command/command-units/command-units.component.scss-theme.scss";
-@import "app/Components/modpack/modpack-builds-dev/modpack-builds-dev.component.scss-theme.scss";
-@import "app/Components/modpack/modpack-builds-rc/modpack-builds-rc.component.scss-theme.scss";
-@import "app/Components/modpack/modpack-builds-steps/modpack-builds-steps.component.scss-theme.scss";
-@import "app/Components/modpack/modpack-guide/modpack-guide.component.scss-theme.scss";
-@import "app/Components/modpack/modpack-releases/modpack-releases.component.scss-theme.scss";
-@import "app/Components/operations/operations-servers/operations-servers.component.scss-theme.scss";
-@import "app/Components/personnel/personnel-discharges/personnel-discharges.component.scss-theme.scss";
-@import "app/Components/personnel/personnel-loas-list/personnel-loas-list.component.scss-theme.scss";
-@import "app/Components/theme-emitter/theme-emitter.component.scss-theme.scss";
-@import "app/Components/units/units-orbat/units-orbat.component.scss-theme.scss";
-@import "app/Components/units/units-orbat-aux/units-orbat-aux.component.scss-theme.scss";
-@import "app/Components/units/units-roster/units-roster.component.scss-theme.scss";
-@import "app/Modals/command/add-unit-modal/add-unit-modal.component.scss-theme.scss";
-@import "app/Modals/operations/edit-server-mods-modal/edit-server-mods-modal.component.scss-theme.scss";
-@import "app/Modals/command/request-loa-modal/request-loa-modal.component.scss-theme.scss";
-@import "app/Modals/multiple-message-modal/multiple-message-modal.scss-theme.scss";
+// Base
+@import 'app/app.component.scss-theme.scss';
+@import 'app/Components/teamspeak-connect/teamspeak-connect.component.scss-theme.scss';
+@import 'app/Components/footer-bar/footer-bar.component.scss-theme.scss';
+@import 'app/Components/header-bar/header-bar.component.scss-theme.scss';
+@import 'app/Components/notifications/notifications.component.scss-theme.scss';
+@import 'app/Components/side-bar/side-bar.component.scss-theme.scss';
 
-//add components themes
+// Pages
+@import 'app/Pages/about-page/about-page.component.scss-theme.scss';
+@import 'app/Pages/home-page/home-page.component.scss-theme.scss';
+@import 'app/Pages/information-page/information-page.component.scss-theme.scss';
+@import 'app/Pages/login-page/login-page.component.scss-theme.scss';
+@import 'app/Pages/modpack-page/modpack-page.component.scss-theme.scss';
+@import 'app/Pages/application-page/application-page.component.scss-theme.scss';
+@import 'app/Pages/operations-page/operations-page.component.scss-theme.scss';
+@import 'app/Pages/personnel-page/personnel-page.component.scss-theme.scss';
+@import 'app/Pages/profile-page/profile-page.component.scss-theme.scss';
+@import 'app/Pages/recruitment-application-page/recruitment-application-page.component.scss-theme.scss';
+@import 'app/Pages/recruitment-page/recruitment-page.component.scss-theme.scss';
+@import 'app/Pages/unit-page/unit-page.component.scss-theme.scss';
+@import 'app/Pages/units-page/units-page.component.scss-theme.scss';
+
+// Components
+@import 'app/Components/admin/admin-variables/admin-variables.component.scss-theme';
+@import 'app/Components/comment-display/comment-display.component.scss-theme.scss';
+@import 'app/Components/file-drop/file-drop.component.scss-theme.scss';
+@import 'app/Components/inline-edit/inline-edit.component.scss-theme.scss';
+@import 'app/Components/command/command-requests/command-request.component.scss-theme.scss';
+@import 'app/Components/command/command-units/command-units.component.scss-theme.scss';
+@import 'app/Components/modpack/modpack-builds-dev/modpack-builds-dev.component.scss-theme.scss';
+@import 'app/Components/modpack/modpack-builds-rc/modpack-builds-rc.component.scss-theme.scss';
+@import 'app/Components/modpack/modpack-builds-steps/modpack-builds-steps.component.scss-theme.scss';
+@import 'app/Components/modpack/modpack-guide/modpack-guide.component.scss-theme.scss';
+@import 'app/Components/modpack/modpack-releases/modpack-releases.component.scss-theme.scss';
+@import 'app/Components/operations/operations-servers/operations-servers.component.scss-theme.scss';
+@import 'app/Components/personnel/personnel-discharges/personnel-discharges.component.scss-theme.scss';
+@import 'app/Components/personnel/personnel-loas-list/personnel-loas-list.component.scss-theme.scss';
+@import 'app/Components/theme-emitter/theme-emitter.component.scss-theme.scss';
+@import 'app/Components/units/units-orbat/units-orbat.component.scss-theme.scss';
+@import 'app/Components/units/units-orbat-aux/units-orbat-aux.component.scss-theme.scss';
+@import 'app/Components/units/units-roster/units-roster.component.scss-theme.scss';
+
+// Modals
+@import 'app/Modals/command/add-unit-modal/add-unit-modal.component.scss-theme.scss';
+@import 'app/Modals/operations/edit-server-mods-modal/edit-server-mods-modal.component.scss-theme.scss';
+@import 'app/Modals/command/request-loa-modal/request-loa-modal.component.scss-theme.scss';
+@import 'app/Modals/multiple-message-modal/multiple-message-modal.scss-theme.scss';
+
+// Add components themes
 @mixin custom-components-theme($theme) {
+    // Base
     @include app-component-theme($theme);
     @include connect-teamspeak-component-theme($theme);
     @include footer-bar-component-theme($theme);
     @include header-bar-component-theme($theme);
     @include notifications-component-theme($theme);
     @include side-bar-component-theme($theme);
+
+    // Pages
     @include about-page-component-theme($theme);
     @include home-page-component-theme($theme);
     @include information-page-component-theme($theme);
@@ -94,6 +104,9 @@
     @include recruitment-page-component-theme($theme);
     @include unit-page-component-theme($theme);
     @include units-page-component-theme($theme);
+
+    // Components
+    @include admin-variables-component-theme($theme);
     @include comment-display-component-theme($theme);
     @include file-drop-component-theme($theme);
     @include inline-edit-component-theme($theme);
@@ -111,6 +124,8 @@
     @include units-orbat-component-theme($theme);
     @include units-orbat-aux-component-theme($theme);
     @include units-roster-component-theme($theme);
+
+    // Modals
     @include add-unit-modal-component-theme($theme);
     @include edit-server-mods-modal-component-theme($theme);
     @include request-loa-modal-component-theme($theme);

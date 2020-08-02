@@ -1,10 +1,8 @@
 import { Component, Inject, Output, EventEmitter } from '@angular/core';
-import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { FormBuilder, FormGroup, Validators, ValidationErrors } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
-import { UrlService } from 'app/Services/url.service';
 import { InstantErrorStateMatcher } from 'app/Services/formhelper.service';
+import { NewBuild } from '../../Models/NewBuild';
 
 function onlyOne(form: FormGroup): ValidationErrors | null {
     if (form && form.controls['branch'].value !== '' && form.controls['branch'].value !== 'No branch' && form.controls['commitId'].value !== '') {
@@ -17,36 +15,38 @@ function onlyOne(form: FormGroup): ValidationErrors | null {
 @Component({
     selector: 'app-new-modpack-build-modal',
     templateUrl: './new-modpack-build-modal.component.html',
-    styleUrls: ['./new-modpack-build-modal.component.scss']
+    styleUrls: ['./new-modpack-build-modal.component.scss'],
 })
 export class NewModpackBuildModalComponent {
-    @Output() runEvent = new EventEmitter<string>();
+    @Output() runEvent = new EventEmitter<NewBuild>();
     form: FormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     validationMessages = {
-        'commitId': [
-            { type: 'pattern', message: 'Commit ID format is invalid' }
-        ]
+        commitId: [{ type: 'pattern', message: 'Commit ID format is invalid' }],
     };
     branches: string[] = [];
     submitting = false;
 
-    constructor(
-        private formbuilder: FormBuilder,
-        public dialogRef: MatDialogRef<NewModpackBuildModalComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: any
-    ) {
+    constructor(private formBuilder: FormBuilder, public dialogRef: MatDialogRef<NewModpackBuildModalComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
         this.branches = data.branches;
-        this.form = this.formbuilder.group({
-            branch: ['No branch'],
-            commitId: ['', Validators.pattern('^[a-fA-F0-9]{40}$')]
-        }, { validator: onlyOne });
+        this.form = this.formBuilder.group({
+            referenceGroup: this.formBuilder.group(
+                {
+                    branch: ['No branch'],
+                    commitId: ['', Validators.pattern('^[a-fA-F0-9]{40}$')],
+                },
+                { validator: onlyOne }
+            ),
+            ace: [false],
+            acre: [false],
+            f35: [false],
+        });
     }
 
     run() {
         const formValue = this.form.getRawValue();
-        const reference = formValue.branch !== 'No branch' ? formValue.branch : formValue.commitId;
+        const reference = formValue.referenceGroup.branch !== 'No branch' ? formValue.referenceGroup.branch : formValue.referenceGroup.commitId;
         this.dialogRef.close();
-        this.runEvent.emit(reference);
+        this.runEvent.emit({ reference: reference, ace: formValue.ace, acre: formValue.acre, f35: formValue.f35 });
     }
 }

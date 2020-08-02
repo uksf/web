@@ -7,7 +7,7 @@ import { SessionService } from './Authentication/session.service';
 export class SignalRService {
     constructor(public readonly urls: UrlService, private sessionService: SessionService) {}
 
-    connect(endpoint: String, connectedCallback: () => void = null): ConnectionContainer {
+    connect(endpoint: String): ConnectionContainer {
         const reconnectEvent = new EventEmitter();
         const connection = new HubConnectionBuilder()
             .withUrl(`${this.urls.apiUrl}/hub/${endpoint}`, {
@@ -21,7 +21,6 @@ export class SignalRService {
         this.waitForConnection(connection).then(() => {
             connection.onclose((error) => {
                 if (error) {
-                    console.log(error);
                     const reconnect = setInterval(() => {
                         if (connection.state === HubConnectionState.Connected) {
                             clearInterval(reconnect);
@@ -40,9 +39,6 @@ export class SignalRService {
                     }, 5000);
                 }
             });
-            if (connectedCallback) {
-                connectedCallback();
-            }
         });
         return new ConnectionContainer(connection, reconnectEvent);
     }

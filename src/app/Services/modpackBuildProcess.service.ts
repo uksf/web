@@ -7,18 +7,14 @@ import { UrlService } from './url.service';
 import { MatDialog } from '@angular/material';
 import { NewModpackBuildModalComponent } from 'app/Modals/new-modpack-build/new-modpack-build-modal.component';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
-import {ModpackBuildStep} from '../Models/ModpackBuildStep';
+import { ModpackBuildStep } from '../Models/ModpackBuildStep';
+import { NewBuild } from '../Models/NewBuild';
 
 @Injectable()
 export class ModpackBuildProcessService {
     branches: string[] = [];
 
-    constructor(
-        private displayNameService: DisplayNameService,
-        private httpClient: HttpClient,
-        private urls: UrlService,
-        private dialog: MatDialog
-    ) {
+    constructor(private displayNameService: DisplayNameService, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {
         this.httpClient.get(this.urls.apiUrl + '/github/branches').subscribe((branches: string[]) => {
             this.branches = branches;
             this.branches.unshift('No branch');
@@ -35,40 +31,54 @@ export class ModpackBuildProcessService {
     }
 
     getBuilderName(id: string, callback: (arg0: string) => void, callbackError: () => void) {
-        this.displayNameService.getName(id).then((name: string) => {
-            callback(name);
-        }).catch(() => {
-            callbackError();
-        });
+        this.displayNameService
+            .getName(id)
+            .then((name: string) => {
+                callback(name);
+            })
+            .catch(() => {
+                callbackError();
+            });
     }
 
     getBuildData(id: string, callback: (arg0: ModpackBuild) => void) {
         // get request for build
-        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${id}`).subscribe((build: ModpackBuild) => {
-            callback(build);
-        }, error => this.urls.errorWrapper('Failed to get build', error));
+        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${id}`).subscribe(
+            (build: ModpackBuild) => {
+                callback(build);
+            },
+            (error) => this.urls.errorWrapper('Failed to get build', error)
+        );
     }
 
     getBuildStepData(id: string, index: number, callback: (arg0: ModpackBuildStep) => void) {
         // get request for build
-        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${id}/step/${index}`).subscribe((step: ModpackBuildStep) => {
-            callback(step);
-        }, error => this.urls.errorWrapper('Failed to get build step', error));
+        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${id}/step/${index}`).subscribe(
+            (step: ModpackBuildStep) => {
+                callback(step);
+            },
+            (error) => this.urls.errorWrapper('Failed to get build step', error)
+        );
     }
 
     newBuild(callback: () => void) {
-        this.dialog.open(NewModpackBuildModalComponent, {
-            data: { branches: this.branches }
-        }).componentInstance.runEvent.subscribe((reference: string) => {
-            // get request for new build
-            this.httpClient.get(this.urls.apiUrl + `/modpack/newbuild/${reference}`).subscribe(() => {
-                callback();
-            }, error => {
-                this.dialog.open(MessageModalComponent, {
-                    data: { message: error.error }
-                });
+        this.dialog
+            .open(NewModpackBuildModalComponent, {
+                data: { branches: this.branches },
+            })
+            .componentInstance.runEvent.subscribe((newBuild: NewBuild) => {
+                // get request for new build
+                this.httpClient.post(this.urls.apiUrl + `/modpack/newbuild`, newBuild).subscribe(
+                    () => {
+                        callback();
+                    },
+                    (error) => {
+                        this.dialog.open(MessageModalComponent, {
+                            data: { message: error.error },
+                        });
+                    }
+                );
             });
-        });
     }
 
     rebuild(build: ModpackBuild, callback: () => void) {
@@ -77,15 +87,18 @@ export class ModpackBuildProcessService {
             () => {
                 callback();
             },
-            error => this.urls.errorWrapper('Failed to rebuild', error)
+            (error) => this.urls.errorWrapper('Failed to rebuild', error)
         );
     }
 
     cancel(build: ModpackBuild, errorCallback: () => void) {
         // get request for build cancel
-        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${build.id}/cancel`).subscribe(() => {}, error => {
-            errorCallback();
-            this.urls.errorWrapper('Failed to cancel build', error)
-        });
+        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${build.id}/cancel`).subscribe(
+            () => {},
+            (error) => {
+                errorCallback();
+                this.urls.errorWrapper('Failed to cancel build', error);
+            }
+        );
     }
 }

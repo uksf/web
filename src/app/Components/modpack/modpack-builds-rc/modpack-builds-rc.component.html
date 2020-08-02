@@ -4,14 +4,20 @@
         <app-modpack-page></app-modpack-page>
         <div class="flex-container no-padding-left" *ngIf="rcs">
             <div class="history-container">
-                <div class="history-item release" [ngClass]="{'selected': selectedRcVersion === rc.version}" *ngFor="let rc of rcs" (click)="selectRc(rc.version)">
-                    {{rc.version}}
+                <div class="history-item release" [ngClass]="{ selected: selectedRcVersion === rc.version }" *ngFor="let rc of rcs" (click)="selectRc(rc.version)">
+                    {{ rc.version }}
                 </div>
+            </div>
+            <div class="release-container" *ngIf="rcs.length === 0">
+                <h2 class="no-builds">No release candidate builds available to view</h2>
+            </div>
+            <div class="release-container" *ngIf="rcs.length > 0 && !selectedRc">
+                <h2 class="no-builds">No release candidate selected</h2>
             </div>
             <div class="release-container" *ngIf="selectedRc">
                 <div class="history-container builds">
-                    <div class="history-item" [ngClass]="{'selected': selectedBuildId === build.id}" [ngStyle]="getBuildColour(build)" *ngFor="let build of selectedRc.builds" (click)="selectBuild(build.id)">
-                        <span *ngIf="build.environment === gameEnvironment.RC">RC #{{build.buildNumber}}</span>
+                    <div class="history-item" [ngClass]="{ selected: selectedBuildId === build.id }" [ngStyle]="getBuildColour(build)" *ngFor="let build of selectedRc.builds" (click)="selectBuild(build.id)">
+                        <span *ngIf="build.environment === gameEnvironment.RC">RC #{{ build.buildNumber }}</span>
                         <span *ngIf="build.environment === gameEnvironment.RELEASE">Release</span>
                     </div>
                 </div>
@@ -23,14 +29,14 @@
                 <div class="build-container" *ngIf="selectedBuild && !logOpen">
                     <div class="build-header">
                         <div>
-                            <h1 class="build-title" *ngIf="selectedBuild.environment === gameEnvironment.RELEASE">Release {{selectedRc.version}}</h1>
-                            <h1 class="build-title" *ngIf="selectedBuild.environment !== gameEnvironment.RELEASE">{{selectedRc.version}} RC #{{selectedBuild.buildNumber}}</h1>
+                            <h1 class="build-title" *ngIf="selectedBuild.environment === gameEnvironment.RELEASE">Release {{ selectedRc.version }}</h1>
+                            <h1 class="build-title" *ngIf="selectedBuild.environment !== gameEnvironment.RELEASE">{{ selectedRc.version }} RC #{{ selectedBuild.buildNumber }}</h1>
                         </div>
                         <app-flex-filler></app-flex-filler>
                         <div class="buttons">
                             <div class="state">
                                 <i class="queued" *ngIf="!selectedBuild.running && !selectedBuild.finished">Queued</i>
-                                <i class="running" [ngClass]="{'warning': anyWarning(selectedBuild)}" *ngIf="selectedBuild.running">Running...</i>
+                                <i class="running" [ngClass]="{ warning: anyWarning(selectedBuild) }" *ngIf="selectedBuild.running">Running...</i>
                                 <span class="success" *ngIf="selectedBuild.buildResult === modpackBuildResult.SUCCESS">Success</span>
                                 <span class="fail" *ngIf="selectedBuild.buildResult === modpackBuildResult.FAILED">Failed</span>
                                 <span class="cancelled" *ngIf="selectedBuild.buildResult === modpackBuildResult.CANCELLED">Cancelled</span>
@@ -56,32 +62,26 @@
                             <markdown ngPreserveWhitespaces [data]="changesMarkdown"></markdown>
                         </div>
                         <div *ngIf="selectedBuild.environment !== gameEnvironment.RELEASE && additionalChangesMarkdown !== ''">
-                            <h3 class="build-description">Additional changes since {{previousRelease()}}</h3>
+                            <h3 class="build-description">Additional changes since {{ previousRelease() }}</h3>
                             <div class="build-changelog">
                                 <markdown ngPreserveWhitespaces [data]="additionalChangesMarkdown"></markdown>
                             </div>
                         </div>
                     </div>
                 </div>
-                <app-modpack-builds-steps *ngIf="selectedBuild && logOpen" [build]="selectedBuild" (onCloseLog)="closeLog()" (onRebuild)="selectIncomingBuild = true;"></app-modpack-builds-steps>
+                <app-modpack-builds-steps *ngIf="selectedBuild && logOpen" [build]="selectedBuild" (onCloseLog)="closeLog()" (onRebuild)="selectIncomingBuild = true"></app-modpack-builds-steps>
                 <app-flex-filler></app-flex-filler>
                 <div class="build-footer" *ngIf="selectedBuild">
                     <div class="footer-item">
-                        {{selectedBuild.startTime | date:'MMM dd HH:mm'}}
+                        {{ selectedBuild.startTime | date: 'MMM dd HH:mm' }}
                     </div>
                     <div class="footer-item" *ngIf="selectedBuild.finished">
-                        {{duration}}
+                        {{ duration }}
                     </div>
                     <app-flex-filler></app-flex-filler>
-                    <div class="footer-item" *ngIf="branch === 'None'">
-                        Commit: {{commit}}
-                    </div>
-                    <div class="footer-item" *ngIf="branch !== 'None'">
-                        Branch: {{branch}}
-                    </div>
-                    <div class="footer-item">
-                        Built By: {{builderName}}
-                    </div>
+                    <div class="footer-item" *ngIf="branch === 'None'">Commit: {{ commit }}</div>
+                    <div class="footer-item" *ngIf="branch !== 'None'">Branch: {{ branch }}</div>
+                    <div class="footer-item">Built By: {{ builderName }}</div>
                 </div>
             </div>
         </div>

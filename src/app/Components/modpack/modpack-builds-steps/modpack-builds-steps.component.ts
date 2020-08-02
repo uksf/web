@@ -69,22 +69,7 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
             this.chooseStep();
 
             if (!this.build.finished) {
-                this.hubConnection = this.signalrService.connect(`builds?buildId=${this.build.id}`, () => {
-                    // this.hubConnection.connection.stream('StreamBuild', this.build.id).subscribe({
-                    //     next: (step: ModpackBuildStep) => {
-                    //         console.log('stream update');
-                    //         this.build.steps.splice(step.index, 1, step);
-                    //         this.chooseStep();
-                    //     },
-                    //     complete: () => {
-                    //         console.log('stream complete');
-                    //         this.disconnect();
-                    //     },
-                    //     error: (error) => {
-                    //         console.log(error);
-                    //     },
-                    // });
-                });
+                this.hubConnection = this.signalrService.connect(`builds?buildId=${this.build.id}`);
                 this.hubConnection.connection.on('ReceiveBuildStep', (step: ModpackBuildStep) => {
                     this.build.steps.splice(step.index, 1, step);
                     this.chooseStep();
@@ -119,7 +104,6 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
     }
 
     reconnect() {
-        console.log(JSON.stringify(this.build.buildNumber));
         this.router.navigate([], {
             relativeTo: this.route,
             queryParams: { step: null, line: null },

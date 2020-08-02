@@ -9,6 +9,11 @@
         .normal {
             width: 100%;
         }
+
+        .force-container {
+            display: flex;
+            flex-direction: column;
+        }
     }
 
     .button-container {

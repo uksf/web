@@ -8,7 +8,7 @@
     .history-container {
         display: flex;
         flex-direction: column;
-        width: 110px;
+        width: 100px;
         text-align: center;
         overflow-y: scroll;
         position: absolute;
@@ -36,10 +36,18 @@
 
     .release-container {
         position: absolute;
-        left: 335px;
+        left: 325px;
         top: 123px;
         bottom: 0;
         right: 0;
+        display: flex;
+        flex-direction: column;
+
+        .no-builds {
+            margin: auto;
+            padding: 16px;
+            text-align: center;
+        }
 
         .build-container {
             overflow-y: auto;
@@ -136,7 +144,7 @@
     .flex-container {
         .history-container {
             left: 200px;
-            width: 90px;
+            width: 80px;
 
             &.builds {
                 width: 90px;
@@ -150,7 +158,7 @@
         }
 
         .release-container {
-            left: 290px;
+            left: 280px;
 
             .build-container {
                 left: 90px;
