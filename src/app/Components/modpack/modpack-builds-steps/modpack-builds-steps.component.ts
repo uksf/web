@@ -71,22 +71,11 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
             if (!this.build.finished) {
                 this.hubConnection = this.signalrService.connect(`builds?buildId=${this.build.id}`);
                 this.hubConnection.connection.on('ReceiveBuildStep', (step: ModpackBuildStep) => {
-                    this.build.steps.splice(step.index, 1, step);
-                    this.chooseStep();
+                    if (JSON.stringify(step) !== JSON.stringify(this.build.steps[step.index])) {
+                        this.build.steps.splice(step.index, 1, step);
+                        this.chooseStep();
+                    }
                 });
-                // this.hubConnection.connection.on('ReceiveLargeBuildStep', (index: number) => {
-                //     this.modpackBuildProcessService.getBuildStepData(this.build.id, index, (step: ModpackBuildStep) => {
-                //         this.build.steps.splice(step.index, 1, step);
-                //         this.chooseStep();
-                //     });
-                // });
-                // this.hubConnection.connection.on('ReceiveBuildStepLog', (logUpdate: ModpackBuildStepLogItemUpdate) => {
-                //     if (logUpdate.logs.length === 1 && logUpdate.index === -1) {
-                //         this.selectedStep.logs.splice(this.selectedStep.logs.length - 1, 1, logUpdate.logs[0]);
-                //     } else {
-                //         this.selectedStep.logs.splice(logUpdate.index, 0, ...logUpdate.logs);
-                //     }
-                // });
                 this.hubConnection.reconnectEvent.subscribe(() => {
                     this.modpackBuildProcessService.getBuildData(this.build.id, (reconnectBuild: ModpackBuild) => {
                         this.build = reconnectBuild;
