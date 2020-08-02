@@ -5,33 +5,44 @@ import { SessionService } from './Authentication/session.service';
 
 @Injectable()
 export class SignalRService {
-    constructor(public readonly urls: UrlService, private sessionService: SessionService) { }
+    constructor(public readonly urls: UrlService, private sessionService: SessionService) {}
 
-    connect(endpoint: String): ConnectionContainer {
+    connect(endpoint: String, connectedCallback: () => void = null): ConnectionContainer {
         const reconnectEvent = new EventEmitter();
-        const connection = new HubConnectionBuilder().withUrl(`${this.urls.apiUrl}/hub/${endpoint}`, {
-            accessTokenFactory: () => {
-                return this.sessionService.getSessionToken(); // TODO: detect when token has been refreshed
-            }, transport: HttpTransportType.WebSockets, logger: LogLevel.None
-        }).build();
+        const connection = new HubConnectionBuilder()
+            .withUrl(`${this.urls.apiUrl}/hub/${endpoint}`, {
+                accessTokenFactory: () => {
+                    return this.sessionService.getSessionToken(); // TODO: detect when token has been refreshed
+                },
+                transport: HttpTransportType.WebSockets,
+                logger: LogLevel.None,
+            })
+            .build();
         this.waitForConnection(connection).then(() => {
-            connection.onclose(error => {
+            connection.onclose((error) => {
                 if (error) {
+                    console.log(error);
                     const reconnect = setInterval(() => {
                         if (connection.state === HubConnectionState.Connected) {
                             clearInterval(reconnect);
                             reconnectEvent.emit();
                             return;
                         }
-                        connection.start().then(() => {
-                            clearInterval(reconnect);
-                            reconnectEvent.emit();
-                        }).catch(() => {
-                            // console.log(`Failed to re-connect to SignalR hub: ${endpoint}`);
-                        });
+                        connection
+                            .start()
+                            .then(() => {
+                                clearInterval(reconnect);
+                                reconnectEvent.emit();
+                            })
+                            .catch(() => {
+                                // console.log(`Failed to re-connect to SignalR hub: ${endpoint}`);
+                            });
                     }, 5000);
                 }
             });
+            if (connectedCallback) {
+                connectedCallback();
+            }
         });
         return new ConnectionContainer(connection, reconnectEvent);
     }
@@ -39,12 +50,15 @@ export class SignalRService {
     private waitForConnection(connection: HubConnection): Promise<void> {
         return new Promise<void>((resolve) => {
             const connectFunction = function () {
-                connection.start().then(() => {
-                    clearTimeout(connectTimeout);
-                    resolve();
-                }).catch(() => {
-                    connectTimeout = setTimeout(connectFunction, 5000);
-                });
+                connection
+                    .start()
+                    .then(() => {
+                        clearTimeout(connectTimeout);
+                        resolve();
+                    })
+                    .catch(() => {
+                        connectTimeout = setTimeout(connectFunction, 5000);
+                    });
             };
             let connectTimeout = setTimeout(connectFunction, 0);
         });

@@ -3,7 +3,7 @@
     <div class="log-steps">
         <h3>Steps</h3>
         <div class="steps-container">
-            <div class="log-step-item" [ngClass]="{'selected': selectedStepIndex === stepIndex}" *ngFor="let step of build.steps; let stepIndex = index; trackBy: stepTrackBy" (click)="selectStep(stepIndex, true)">
+            <div class="log-step-item" [ngClass]="{ selected: selectedStepIndex === stepIndex }" *ngFor="let step of build.steps; let stepIndex = index; trackBy: stepTrackBy" (click)="selectStep(stepIndex, true)">
                 <i class="far fa-circle" *ngIf="!step.running && !step.finished"></i>
                 <i class="fas fa-chevron-circle-right running" *ngIf="step.running && step.buildResult !== modpackBuildResult.WARNING"></i>
                 <i class="fas fa-check-circle success" *ngIf="step.buildResult === modpackBuildResult.SUCCESS"></i>
@@ -11,8 +11,8 @@
                 <i class="fas fa-stop-circle cancelled" *ngIf="step.buildResult === modpackBuildResult.CANCELLED"></i>
                 <i class="fas fa-exclamation-circle warning" *ngIf="step.buildResult === modpackBuildResult.WARNING"></i>
                 <i class="fas fa-exclamation-circle skipped" *ngIf="step.buildResult === modpackBuildResult.SKIPPED"></i>
-                <span class="wide">{{step.name}}</span>
-                <span class="narrow">{{step.index + 1}}</span>
+                <span class="wide">{{ step.name }}</span>
+                <span class="narrow">{{ step.index + 1 }}</span>
             </div>
         </div>
     </div>
@@ -26,21 +26,21 @@
                 <i class="fas fa-stop-circle cancelled" *ngIf="selectedStep.buildResult === modpackBuildResult.CANCELLED"></i>
                 <i class="fas fa-exclamation-circle warning" *ngIf="selectedStep.buildResult === modpackBuildResult.WARNING"></i>
                 <i class="fas fa-exclamation-circle skipped" *ngIf="selectedStep.buildResult === modpackBuildResult.SKIPPED"></i>
-                <h1 class="build-title">{{selectedStep.name}}</h1>
+                <h1 class="build-title">{{ selectedStep.name }}</h1>
             </div>
             <app-flex-filler></app-flex-filler>
             <div class="buttons">
                 <div class="state">
                     <i class="queued" *ngIf="!build.running && !build.finished">Queued</i>
-                    <i class="running" [ngClass]="{'warning': anyWarning}" *ngIf="build.running">Running...</i>
-                    <span class="success" [ngClass]="{'warning': anyWarning}" *ngIf="build.buildResult === modpackBuildResult.SUCCESS">Success</span>
+                    <i class="running" [ngClass]="{ warning: anyWarning }" *ngIf="build.running">Running...</i>
+                    <span class="success" [ngClass]="{ warning: anyWarning }" *ngIf="build.buildResult === modpackBuildResult.SUCCESS">Success</span>
                     <span class="fail" *ngIf="build.buildResult === modpackBuildResult.FAILED">Failed</span>
                     <span class="cancelled" *ngIf="build.buildResult === modpackBuildResult.CANCELLED">Cancelled</span>
                     <span class="warning" *ngIf="build.buildResult === modpackBuildResult.WARNING">Warning</span>
                 </div>
                 <app-flex-filler></app-flex-filler>
                 <ng-template [ngxPermissionsOnly]="['ADMIN']">
-                    <button mat-raised-button color="primary" *ngIf="build.running && !cancelling" (click)="cancelBuild()">
+                    <button mat-raised-button color="primary" *ngIf="canCancel" (click)="cancelBuild()">
                         Cancel Build
                     </button>
                     <button mat-raised-button color="primary" *ngIf="build.finished && build.buildResult !== modpackBuildResult.SUCCESS" (click)="rebuild()">
@@ -50,7 +50,16 @@
                 <button mat-raised-button color="primary" (click)="closeLog()">
                     Close Log
                 </button>
-                <button mat-raised-button color="primary" class="scroll" [ngClass]="{'autoScroll': selectedStep.running && !autoScroll}" (click)="toggleAutoScroll()" [matTooltip]="(selectedStep.running ? 'Turn autoscroll ' + (autoScroll ? 'off' : 'on') : 'Scroll to bottom')">
+                <button
+                    mat-raised-button
+                    color="primary"
+                    class="scroll"
+                    [ngClass]="{
+                        autoScroll: selectedStep.running && !autoScroll
+                    }"
+                    (click)="toggleAutoScroll()"
+                    [matTooltip]="selectedStep.running ? 'Turn autoscroll ' + (autoScroll ? 'off' : 'on') : 'Scroll to bottom'"
+                >
                     <mat-icon>arrow_downward</mat-icon>
                 </button>
             </div>
@@ -58,15 +67,25 @@
         <cdk-virtual-scroll-viewport itemSize="20" class="build-log">
             <div class="log-item" *ngIf="selectedStep.logs.length === 0">
                 <div class="index">0</div>
-                <div class="text" *ngIf="!build.running && !build.finished">Waiting for build to start...</div>
-                <div class="text" style="color: #0c78ff;" *ngIf="selectedStep.index > 0 && build.running">Waiting for previous step to finish...</div>
-                <div class="text" style="color: red;" *ngIf="build.buildResult === modpackBuildResult.FAILED">Build failed</div>
-                <div class="text" style="color: goldenrod;" *ngIf="build.buildResult === modpackBuildResult.CANCELLED">Build cancelled</div>
+                <div class="text" *ngIf="!build.running && !build.finished">
+                    Waiting for build to start...
+                </div>
+                <div class="text" style="color: #0c78ff;" *ngIf="selectedStep.index > 0 && build.running">
+                    Waiting for previous step to finish...
+                </div>
+                <div class="text" style="color: red;" *ngIf="build.buildResult === modpackBuildResult.FAILED">
+                    Build failed
+                </div>
+                <div class="text" style="color: goldenrod;" *ngIf="build.buildResult === modpackBuildResult.CANCELLED">
+                    Build cancelled
+                </div>
             </div>
-            <div class="log-item" [ngClass]="{'selected': selectedLogIndex === logIndex}" *cdkVirtualFor="let log of selectedStep.logs; let logIndex = index">
-                <div class="index">{{logIndex + 1}}</div>
-                <div class="text" [style.color]="getLogItemColour(logIndex)">{{log.text}}</div>
-                <mat-icon class="link" *ngIf="log.text && build.finished" (click)="selectLogLine(logIndex)" [matTooltip]="(selectedLogIndex === logIndex ?  'Deselect' : 'Copy link')">link</mat-icon>
+            <div class="log-item" [ngClass]="{ selected: selectedLogIndex === logIndex }" *cdkVirtualFor="let log of selectedStep.logs; let logIndex = index">
+                <div class="index">{{ logIndex + 1 }}</div>
+                <div class="text" [style.color]="getLogItemColour(logIndex)">
+                    {{ log.text }}
+                </div>
+                <mat-icon class="link" *ngIf="log.text && build.finished" (click)="selectLogLine(logIndex)" [matTooltip]="selectedLogIndex === logIndex ? 'Deselect line' : 'Copy link to line'">link</mat-icon>
             </div>
         </cdk-virtual-scroll-viewport>
     </div>
