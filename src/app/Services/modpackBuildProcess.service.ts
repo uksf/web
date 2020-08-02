@@ -7,7 +7,6 @@ import { UrlService } from './url.service';
 import { MatDialog } from '@angular/material';
 import { NewModpackBuildModalComponent } from 'app/Modals/new-modpack-build/new-modpack-build-modal.component';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
-import { ModpackBuildStep } from '../Models/ModpackBuildStep';
 import { NewBuild } from '../Models/NewBuild';
 
 @Injectable()
@@ -15,6 +14,10 @@ export class ModpackBuildProcessService {
     branches: string[] = [];
 
     constructor(private displayNameService: DisplayNameService, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {
+        this.getBranches();
+    }
+
+    getBranches() {
         this.httpClient.get(this.urls.apiUrl + '/github/branches').subscribe((branches: string[]) => {
             this.branches = branches;
             this.branches.unshift('No branch');
@@ -48,16 +51,6 @@ export class ModpackBuildProcessService {
                 callback(build);
             },
             (error) => this.urls.errorWrapper('Failed to get build', error)
-        );
-    }
-
-    getBuildStepData(id: string, index: number, callback: (arg0: ModpackBuildStep) => void) {
-        // get request for build
-        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${id}/step/${index}`).subscribe(
-            (step: ModpackBuildStep) => {
-                callback(step);
-            },
-            (error) => this.urls.errorWrapper('Failed to get build step', error)
         );
     }
 

@@ -10,7 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 @Component({
     selector: 'app-modpack-builds-dev',
     templateUrl: './modpack-builds-dev.component.html',
-    styleUrls: ['../../../Pages/modpack-page/modpack-page.component.scss', './modpack-builds-dev.component.scss', './modpack-builds-dev.component.scss-theme.scss']
+    styleUrls: ['../../../Pages/modpack-page/modpack-page.component.scss', './modpack-builds-dev.component.scss', './modpack-builds-dev.component.scss-theme.scss'],
 })
 export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
     @ViewChild(ThemeEmitterComponent, { static: false }) theme: ThemeEmitterComponent;
@@ -28,22 +28,26 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
         private markdownService: MarkdownService,
         private route: ActivatedRoute,
         private router: Router
-    ) { }
+    ) {}
 
     ngOnInit(): void {
-        this.modpackBuildService.connect(() => {
-            if (this.builds.length > 0) {
-                this.checkRoute();
-            } else {
-                this.selectBuild('');
+        this.modpackBuildService.connect(
+            () => {
+                if (this.builds.length > 0) {
+                    this.checkRoute();
+                } else {
+                    this.selectBuild('');
+                }
+            },
+            (id: string) => {
+                if (this.selectIncomingBuild) {
+                    this.cancelling = false;
+                    this.selectIncomingBuild = false;
+                    this.selectBuild(id);
+                }
             }
-        }, (id: string) => {
-            if (this.selectIncomingBuild) {
-                this.cancelling = false;
-                this.selectIncomingBuild = false;
-                this.selectBuild(id);
-            }
-        });
+        );
+        this.modpackBuildProcessService.getBranches();
     }
 
     ngOnDestroy(): void {
@@ -59,12 +63,12 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
     }
 
     get selectedBuild(): ModpackBuild {
-        return this.builds.find(x => x.id === this.selectedBuildId);
+        return this.builds.find((x) => x.id === this.selectedBuildId);
     }
 
     checkRoute() {
         const build = this.route.snapshot.queryParams['build'];
-        if (build && this.builds.findIndex(x => x.id === build) !== -1) {
+        if (build && this.builds.findIndex((x) => x.id === build) !== -1) {
             this.selectBuild(build);
         } else {
             this.selectBuild(this.builds[0].id);
@@ -82,11 +86,15 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
             this.changesMarkdown = '';
             this.closeLog();
         } else {
-            this.modpackBuildProcessService.getBuilderName(this.selectedBuild.builderId, (name: string) => {
-                this.builderName = name;
-            }, () => {
-                this.builderName = 'UKSF Bot';
-            });
+            this.modpackBuildProcessService.getBuilderName(
+                this.selectedBuild.builderId,
+                (name: string) => {
+                    this.builderName = name;
+                },
+                () => {
+                    this.builderName = 'UKSF Bot';
+                }
+            );
             this.changesMarkdown = this.markdownService.compile(this.selectedBuild.commit.message);
             if (this.logOpen) {
                 this.openLog();
@@ -138,42 +146,42 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
     }
 
     anyWarning(build: ModpackBuild): boolean {
-        return build.steps.findIndex(x => x.buildResult === ModpackBuildResult.WARNING) !== -1;
+        return build.steps.findIndex((x) => x.buildResult === ModpackBuildResult.WARNING) !== -1;
     }
 
     getBuildColour(build: ModpackBuild) {
         if (this.theme === undefined) {
-            return { 'color': '' };
+            return { color: '' };
         }
 
         if (!build.running && !build.finished) {
-            return { 'color': 'gray' };
+            return { color: 'gray' };
         }
 
         if (build.running) {
-            return { 'color': '#0c78ff' };
+            return { color: '#0c78ff' };
         }
 
         if (build.buildResult === ModpackBuildResult.FAILED) {
-            return { 'color': 'red' };
+            return { color: 'red' };
         }
 
         if (build.buildResult === ModpackBuildResult.CANCELLED) {
-            return { 'color': 'goldenrod' };
+            return { color: 'goldenrod' };
         }
 
         if (build.buildResult === ModpackBuildResult.WARNING || this.anyWarning(build)) {
-            return { 'color': 'orangered' };
+            return { color: 'orangered' };
         }
 
         if (build.buildResult === ModpackBuildResult.SUCCESS) {
-            return { 'color': 'green' };
+            return { color: 'green' };
         }
 
         if (build === this.selectedBuild) {
-            return { 'color': this.theme.primaryColor };
+            return { color: this.theme.primaryColor };
         }
 
-        return { 'color': this.theme.foregroundColor };
+        return { color: this.theme.foregroundColor };
     }
 }
