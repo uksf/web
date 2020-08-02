@@ -189,6 +189,10 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
             nextFrame(() => {
                 this.scrollView.scrollTo({ bottom: 0 });
             });
+        } else if (!this.selectedStep.running) {
+            nextFrame(() => {
+                this.scrollView.scrollTo({ bottom: 0 });
+            });
         }
     }
 
