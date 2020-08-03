@@ -8,6 +8,9 @@ import { ConnectionContainer, SignalRService } from 'app/Services/signalr.servic
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { nextFrame } from 'app/Services/helper.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Permissions } from '../../../Services/permissions';
+import { PermissionsService } from '../../../Services/permissions.service';
+import { GameEnvironment } from '../../../Models/GameEnvironment';
 
 @Component({
     selector: 'app-modpack-builds-steps',
@@ -31,10 +34,20 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
     autoScroll = true;
     private hubConnection: ConnectionContainer;
 
-    constructor(private signalrService: SignalRService, private modpackBuildProcessService: ModpackBuildProcessService, private route: ActivatedRoute, private router: Router) {}
+    constructor(
+        private signalrService: SignalRService,
+        private modpackBuildProcessService: ModpackBuildProcessService,
+        private route: ActivatedRoute,
+        private router: Router,
+        private permissions: PermissionsService
+    ) {}
 
     get selectedStep(): ModpackBuildStep {
         return this.build && this.build.steps.length > this.selectedStepIndex ? this.build.steps[this.selectedStepIndex] : undefined;
+    }
+
+    get canControl() {
+        return this.permissions.hasPermission(Permissions.ADMIN) ? true : this.permissions.hasPermission(Permissions.TESTER) && this.build.environment === GameEnvironment.DEV;
     }
 
     get canCancel() {

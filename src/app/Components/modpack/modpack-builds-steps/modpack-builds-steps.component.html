@@ -3,7 +3,12 @@
     <div class="log-steps">
         <h3>Steps</h3>
         <div class="steps-container">
-            <div class="log-step-item" [ngClass]="{ selected: selectedStepIndex === stepIndex }" *ngFor="let step of build.steps; let stepIndex = index; trackBy: stepTrackBy" (click)="selectStep(stepIndex, true)">
+            <div
+                class="log-step-item"
+                [ngClass]="{ selected: selectedStepIndex === stepIndex }"
+                *ngFor="let step of build.steps; let stepIndex = index; trackBy: stepTrackBy"
+                (click)="selectStep(stepIndex, true)"
+            >
                 <i class="far fa-circle" *ngIf="!step.running && !step.finished"></i>
                 <i class="fas fa-chevron-circle-right running" *ngIf="step.running && step.buildResult !== modpackBuildResult.WARNING"></i>
                 <i class="fas fa-check-circle success" *ngIf="step.buildResult === modpackBuildResult.SUCCESS"></i>
@@ -39,7 +44,7 @@
                     <span class="warning" *ngIf="build.buildResult === modpackBuildResult.WARNING">Warning</span>
                 </div>
                 <app-flex-filler></app-flex-filler>
-                <ng-template [ngxPermissionsOnly]="['ADMIN']">
+                <ng-template [ngIf]="canControl">
                     <button mat-raised-button color="primary" *ngIf="canCancel" (click)="cancelBuild()">
                         Cancel Build
                     </button>
@@ -85,7 +90,9 @@
                 <div class="text" [style.color]="getLogItemColour(logIndex)">
                     {{ log.text }}
                 </div>
-                <mat-icon class="link" *ngIf="log.text && build.finished" (click)="selectLogLine(logIndex)" [matTooltip]="selectedLogIndex === logIndex ? 'Deselect line' : 'Copy link to line'">link</mat-icon>
+                <mat-icon class="link" *ngIf="log.text && build.finished" (click)="selectLogLine(logIndex)" [matTooltip]="selectedLogIndex === logIndex ? 'Deselect line' : 'Copy link to line'"
+                    >link</mat-icon
+                >
             </div>
         </cdk-virtual-scroll-viewport>
     </div>

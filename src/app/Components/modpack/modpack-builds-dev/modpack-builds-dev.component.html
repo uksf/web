@@ -42,7 +42,7 @@
                             <span class="warning" *ngIf="selectedBuild.buildResult === modpackBuildResult.WARNING">Warning</span>
                         </div>
                         <app-flex-filler></app-flex-filler>
-                        <ng-template [ngxPermissionsOnly]="['ADMIN']">
+                        <ng-template [ngxPermissionsOnly]="['TESTER']">
                             <button mat-raised-button color="primary" *ngIf="selectedBuild.running && !cancelling" (click)="cancelBuild()">
                                 Cancel Build
                             </button>
