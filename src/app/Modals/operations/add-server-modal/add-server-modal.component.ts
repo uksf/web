@@ -128,7 +128,7 @@ export class AddServerModalComponent {
                     }),
                 })
                 .subscribe(
-                    (environmentChanged: boolean) => {
+                    ({ environmentChanged }: any) => {
                         this.dialogRef.close(environmentChanged);
                     },
                     (_) => {

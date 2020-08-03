@@ -10,10 +10,10 @@
                 <mat-checkbox color="primary" [(ngModel)]="mod.selected" [disabled]="mod.serverMod || duplicateSelected(mod)" matTooltip="Set as global mod"></mat-checkbox>
                 <mat-checkbox color="primary" [(ngModel)]="mod.serverMod" [disabled]="mod.selected || duplicateSelected(mod)" matTooltip="Set as server-only mod"></mat-checkbox>
                 <div class="mods-list-item">
-                    <span *ngIf="!mod.isDuplicate">{{mod.name}}</span>
+                    <span *ngIf="!mod.isDuplicate">{{ mod.name }}</span>
                     <div *ngIf="mod.isDuplicate">
-                        <span *ngIf="mod.pathRelativeToServerExecutable">{{mod.pathRelativeToServerExecutable}}</span>
-                        <span *ngIf="!mod.pathRelativeToServerExecutable">{{mod.path}}</span>
+                        <span *ngIf="mod.pathRelativeToServerExecutable">{{ mod.pathRelativeToServerExecutable }}</span>
+                        <span *ngIf="!mod.pathRelativeToServerExecutable">{{ mod.path }}</span>
                     </div>
                 </div>
             </div>
@@ -21,7 +21,7 @@
         <div class="button-container">
             <button mat-raised-button color="primary" (click)="reset()">Reset</button>
             <app-flex-filler></app-flex-filler>
-            <button mat-raised-button color="primary" (click)="submit()">Save</button>
+            <button mat-raised-button color="primary" (click)="submit()" [disabled]="!changes">Save</button>
         </div>
     </div>
 </mat-dialog-content>
