@@ -16,7 +16,6 @@ export class Permissions {
 
     // Frontend only
     public static readonly ACTIVITY = 'ACTIVITY';
-    public static readonly BUILDS = 'BUILDS';
     public static readonly DISCHARGES = 'DISCHARGES';
     public static readonly UNLOGGED = 'UNLOGGED';
 }

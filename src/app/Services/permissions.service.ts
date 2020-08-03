@@ -23,7 +23,7 @@ export class PermissionsService {
         private httpClient: HttpClient,
         private urls: UrlService
     ) {
-        this.waitForId().then(id => {
+        this.waitForId().then((id) => {
             this.accountHubConnection = this.signalrService.connect(`account?userId=${id}`);
             this.accountHubConnection.connection.on('ReceiveAccountUpdate', () => {
                 this.mergeUpdates(() => {
@@ -39,78 +39,83 @@ export class PermissionsService {
     }
 
     async refresh() {
-        if (this.refreshing) { return; }
+        if (this.refreshing) {
+            return;
+        }
         this.refreshing = true;
         try {
             const promise = new Promise((resolve, reject) => {
                 if (this.sessionService.hasStorageToken()) {
                     // logged in
                     this.sessionService.setSessionToken();
-                    this.accountService.getAccount(account => {
-                        this.ngxPermissionsService.flushPermissions();
-                        if (account.membershipState === MembershipState.MEMBER) {
-                            // member
-                            this.ngxPermissionsService.addPermission(Permissions.MEMBER);
+                    this.accountService.getAccount(
+                        (account) => {
+                            this.ngxPermissionsService.flushPermissions();
+                            if (account.membershipState === MembershipState.MEMBER) {
+                                // member
+                                this.ngxPermissionsService.addPermission(Permissions.MEMBER);
 
-                            if (account.permissions.admin) {
-                                this.ngxPermissionsService.addPermission(Permissions.ADMIN);
+                                if (account.permissions.admin) {
+                                    this.ngxPermissionsService.addPermission(Permissions.ADMIN);
+                                }
+                                if (account.permissions.command) {
+                                    this.ngxPermissionsService.addPermission(Permissions.COMMAND);
+                                    this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
+                                }
+                                if (account.permissions.nco) {
+                                    this.ngxPermissionsService.addPermission(Permissions.NCO);
+                                    this.ngxPermissionsService.addPermission(Permissions.SERVERS);
+                                    this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
+                                    this.ngxPermissionsService.addPermission(Permissions.DISCHARGES);
+                                }
+                                if (account.permissions.personnel) {
+                                    this.ngxPermissionsService.addPermission(Permissions.PERSONNEL);
+                                }
+                                if (account.permissions.recruiter) {
+                                    this.ngxPermissionsService.addPermission(Permissions.RECRUITER);
+                                    this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
+                                    this.ngxPermissionsService.addPermission(Permissions.DISCHARGES);
+                                }
+                                if (account.permissions.recruiterLead) {
+                                    this.ngxPermissionsService.addPermission(Permissions.RECRUITER_LEAD);
+                                }
+                                if (account.permissions.servers) {
+                                    this.ngxPermissionsService.addPermission(Permissions.SERVERS);
+                                }
+                                if (account.permissions.tester) {
+                                    this.ngxPermissionsService.addPermission(Permissions.TESTER);
+                                }
+                            } else if (account.membershipState === MembershipState.CONFIRMED) {
+                                // guest
+                                this.ngxPermissionsService.addPermission(Permissions.CONFIRMED);
+                            } else {
+                                // unconfirmed, any else
+                                this.ngxPermissionsService.addPermission(Permissions.UNCONFIRMED);
                             }
-                            if (account.permissions.command) {
-                                this.ngxPermissionsService.addPermission(Permissions.COMMAND);
-                                this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
-                            }
-                            if (account.permissions.nco) {
-                                this.ngxPermissionsService.addPermission(Permissions.NCO);
-                                this.ngxPermissionsService.addPermission(Permissions.SERVERS);
-                                this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
-                                this.ngxPermissionsService.addPermission(Permissions.DISCHARGES);
-                            }
-                            if (account.permissions.personnel) {
-                                this.ngxPermissionsService.addPermission(Permissions.PERSONNEL);
-                            }
-                            if (account.permissions.recruiter) {
-                                this.ngxPermissionsService.addPermission(Permissions.RECRUITER);
-                                this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
-                                this.ngxPermissionsService.addPermission(Permissions.DISCHARGES);
-                            }
-                            if (account.permissions.recruiterLead) {
-                                this.ngxPermissionsService.addPermission(Permissions.RECRUITER_LEAD);
-                            }
-                            if (account.permissions.servers) {
-                                this.ngxPermissionsService.addPermission(Permissions.SERVERS);
-                                this.ngxPermissionsService.addPermission(Permissions.BUILDS);
-                            }
-                            if (account.permissions.tester) {
-                                this.ngxPermissionsService.addPermission(Permissions.TESTER);
-                                this.ngxPermissionsService.addPermission(Permissions.BUILDS);
-                            }
-                        } else if (account.membershipState === MembershipState.CONFIRMED) {
-                            // guest
-                            this.ngxPermissionsService.addPermission(Permissions.CONFIRMED);
-                        } else {
-                            // unconfirmed, any else
-                            this.ngxPermissionsService.addPermission(Permissions.UNCONFIRMED);
+                            resolve();
+                        },
+                        () => {
+                            reject('Token invalid, resetting');
                         }
-                        resolve();
-                    }, () => {
-                        reject('Token invalid, resetting');
-                    });
+                    );
                 } else {
                     // not logged in
                     this.ngxPermissionsService.flushPermissions();
                     this.ngxPermissionsService.addPermission(Permissions.UNLOGGED);
                     resolve();
                 }
-            })
-            promise.then(() => {
-                this.refreshing = false;
-            }).catch(reason => {
-                this.refreshing = false;
-                console.log(reason);
-                localStorage.clear();
-                sessionStorage.clear();
-                window.location.replace('/login');
             });
+            promise
+                .then(() => {
+                    this.refreshing = false;
+                })
+                .catch((reason) => {
+                    this.refreshing = false;
+                    console.log(reason);
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    window.location.replace('/login');
+                });
             return promise;
         } catch (error) {
             console.log(error);
@@ -126,7 +131,7 @@ export class PermissionsService {
     }
 
     hasAnyPermissionOf(permissions: string[]) {
-        return permissions.some(permission => {
+        return permissions.some((permission) => {
             return this.hasPermission(permission);
         });
     }
@@ -149,19 +154,24 @@ export class PermissionsService {
     }
 
     private updateAccount() {
-        this.httpClient.get(this.urls.apiUrl + '/login/refresh').subscribe((response: any) => {
-            this.sessionService.setSessionToken(response);
-            if (StatesService.stayLogged) {
-                this.sessionService.setStorageToken();
+        this.httpClient.get(this.urls.apiUrl + '/login/refresh').subscribe(
+            (response: any) => {
+                this.sessionService.setSessionToken(response);
+                if (StatesService.stayLogged) {
+                    this.sessionService.setStorageToken();
+                }
+                this.refresh()
+                    .then(() => {
+                        this.accountUpdateEvent.emit();
+                    })
+                    .catch((_) => {
+                        this.accountUpdateEvent.emit();
+                    });
+            },
+            (_) => {
+                console.log('Account was refreshed but something failed');
             }
-            this.refresh().then(() => {
-                this.accountUpdateEvent.emit();
-            }).catch(_ => {
-                this.accountUpdateEvent.emit();
-            });
-        }, _ => {
-            console.log('Account was refreshed but something failed');
-        });
+        );
     }
 
     private waitForId(): Promise<string> {
@@ -173,5 +183,7 @@ export class PermissionsService {
         });
     }
 
-    async delay(delay: number) { return new Promise(resolve => setTimeout(resolve, delay)); }
+    async delay(delay: number) {
+        return new Promise((resolve) => setTimeout(resolve, delay));
+    }
 }
