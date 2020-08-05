@@ -43,6 +43,11 @@
                 margin: 15px 0;
             }
 
+            .release-date {
+                font-size: 18px;
+                margin: auto;
+            }
+
             .buttons {
                 display: flex;
                 flex-direction: row;
@@ -73,6 +78,10 @@
             .release-date {
                 font-size: 18px;
                 padding: 0 6px;
+
+                &.released {
+                    display: none;
+                }
             }
 
             .release-description {
@@ -91,8 +100,12 @@
                 }
             }
 
+            .release-changelog-header {
+                padding: 0 6px;
+            }
+
             .release-changelog {
-                padding: 16px 6px;
+                padding: 0 12px 16px;
                 flex: 1;
 
                 textarea {
@@ -153,6 +166,10 @@
             .release-header {
                 flex-direction: column-reverse;
 
+                .release-date {
+                    display: none;
+                }
+
                 .buttons {
                     flex-direction: row;
                     padding-top: 12px;
@@ -160,6 +177,14 @@
 
                     .mat-raised-button {
                         margin-left: 0;
+                    }
+                }
+            }
+
+            .release-content {
+                .release-date {
+                    &.released {
+                        display: block;
                     }
                 }
             }
@@ -194,6 +219,25 @@
             .release-header {
                 .release-title {
                     font-size: 26px;
+                }
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .flex-container {
+        .release-container {
+            .release-header {
+                .buttons {
+                    flex-direction: column;
+                    align-self: flex-start;
+
+                    .mat-raised-button {
+                        margin-left: 0;
+                        margin-top: 5px;
+                        align-self: flex-start;
+                    }
                 }
             }
         }

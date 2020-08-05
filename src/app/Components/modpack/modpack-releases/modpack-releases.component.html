@@ -3,19 +3,31 @@
         <app-modpack-page></app-modpack-page>
         <div class="flex-container no-padding-left">
             <div class="release-history-container">
-                <div class="release-history-item" [ngClass]="{'selected': selectedReleaseVersion === release.version}" *ngFor="let release of publicReleases" (click)="select(release.version)">
-                    <i *ngIf="release.isDraft">{{release.version}}</i>
-                    <span *ngIf="!release.isDraft">{{release.version}}</span>
+                <div class="release-history-item" [ngClass]="{ selected: selectedReleaseVersion === release.version }" *ngFor="let release of publicReleases" (click)="select(release.version)">
+                    <i *ngIf="release.isDraft">{{ release.version }}</i>
+                    <span *ngIf="!release.isDraft">{{ release.version }}</span>
                 </div>
             </div>
-            <div class="release-container" *ngIf="selectedRelease">
+            <div class="release-container" *ngIf="selectedRelease && !selectedRelease.isDraft">
                 <div class="release-header">
-                    <div>
-                        <h1 class="release-title" *ngIf="!selectedRelease.isDraft">Release Version {{selectedRelease.version}}</h1>
-                        <h1 class="release-title" *ngIf="selectedRelease.isDraft">Release Version {{selectedRelease.version}} <i>(Draft)</i></h1>
-                    </div>
+                    <h1 class="release-title">Release Version {{ selectedRelease.version }}</h1>
                     <app-flex-filler></app-flex-filler>
-                    <div class="buttons" *ngIf="selectedRelease.isDraft">
+                    <div class="release-date">Released {{ selectedRelease.timestamp | date: 'dd MMM y' }}</div>
+                </div>
+                <div class="release-content">
+                    <div class="release-date released">Released {{ selectedRelease.timestamp | date: 'dd MMM y' }}</div>
+                    <h4 class="release-description" *ngIf="selectedRelease.description">{{ selectedRelease.description }}</h4>
+                    <h3 class="release-changelog-header">Changelog</h3>
+                    <div class="release-changelog">
+                        <markdown ngPreserveWhitespaces [data]="changelogMarkdown"></markdown>
+                    </div>
+                </div>
+            </div>
+            <div class="release-container" *ngIf="selectedRelease && selectedRelease.isDraft">
+                <div class="release-header">
+                    <h1 class="release-title">Release Version {{ selectedRelease.version }} <i>(Draft)</i></h1>
+                    <app-flex-filler></app-flex-filler>
+                    <div class="buttons">
                         <ng-template [ngxPermissionsOnly]="['ADMIN']">
                             <button mat-raised-button color="primary" *ngIf="!editing" (click)="regenerateChangelog()">
                                 Regenerate Changelog
@@ -39,9 +51,9 @@
                     </div>
                 </div>
                 <div class="release-content" *ngIf="!editing">
-                    <div class="release-date" *ngIf="selectedRelease.isDraft">Draft created {{selectedRelease.timestamp | date:'dd MMM y'}}</div>
-                    <div class="release-date" *ngIf="!selectedRelease.isDraft">Released {{selectedRelease.timestamp | date:'dd MMM y'}}</div>
-                    <h4 class="release-description" *ngIf="selectedRelease.description">{{selectedRelease.description}}</h4>
+                    <div class="release-date">Draft created {{ selectedRelease.timestamp | date: 'dd MMM y' }}</div>
+                    <h4 class="release-description" *ngIf="selectedRelease.description">{{ selectedRelease.description }}</h4>
+                    <h3 class="release-changelog-header">Changelog</h3>
                     <div class="release-changelog">
                         <markdown ngPreserveWhitespaces [data]="changelogMarkdown"></markdown>
                     </div>
@@ -50,7 +62,7 @@
                     <div class="release-description" *ngIf="!preview">
                         <textarea [(ngModel)]="descriptionEditing" type="text" placeholder="Release description" rows="3" maxlength="200" wrap="soft" (input)="validateDescription($event)"></textarea>
                     </div>
-                    <h4 class="release-description" *ngIf="preview">{{descriptionEditing}}</h4>
+                    <h4 class="release-description" *ngIf="preview">{{ descriptionEditing }}</h4>
                     <div class="release-changelog" *ngIf="!preview">
                         <textarea [(ngModel)]="changelogEditing" type="text" placeholder="Changelog" maxlength="5000" wrap="soft"></textarea>
                     </div>
