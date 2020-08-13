@@ -80,6 +80,7 @@ export class ModpackReleasesComponent implements OnInit {
         // get request to regenerate changelog
         this.httpClient.get(this.urls.apiUrl + `/modpack/release/${this.selectedReleaseVersion}/changelog`).subscribe((release: ModpackRelease) => {
             this.patchRelease(release);
+            this.changelogMarkdown = this.markdownService.compile(this.selectedRelease.changelog);
         }, error => this.urls.errorWrapper('Failed to deploy release', error));
     }
 
