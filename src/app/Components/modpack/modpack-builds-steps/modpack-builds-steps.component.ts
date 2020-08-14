@@ -23,6 +23,7 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
     @ViewChild(CdkVirtualScrollViewport, { static: false })
     scrollView: CdkVirtualScrollViewport;
     @Input() build: ModpackBuild;
+    @Input() rebuildCondition: () => boolean;
     @Output() onRebuild = new EventEmitter();
     @Output() onCloseLog = new EventEmitter();
     modpackBuildResult = ModpackBuildResult;
@@ -57,7 +58,7 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
     ngOnInit(): void {
         this.connect();
         if (this.build.steps.length > 0) {
-            this.selectStep(0);
+            this.chooseStep();
         }
     }
 
@@ -113,7 +114,7 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
         this.disconnect();
         this.connect();
         if (this.build.steps.length > 0) {
-            this.selectStep(0);
+            this.chooseStep();
         }
     }
 
@@ -138,7 +139,7 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
             return;
         }
 
-        let index = -1;
+        let index: number;
         if (this.build.running) {
             index = this.build.steps.findIndex((x) => x.running);
         } else if (this.build.finished) {

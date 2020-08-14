@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MarkdownService } from 'ngx-markdown';
 import { ModpackBuild } from 'app/Models/ModpackBuild';
 import { ThemeEmitterComponent } from 'app/Components/theme-emitter/theme-emitter.component';
@@ -67,10 +67,6 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
 
     get selectedBuild(): ModpackBuild {
         return this.selectedRc ? this.selectedRc.builds.find((x) => x.id === this.selectedBuildId) : undefined;
-    }
-
-    get canRebuild(): boolean {
-        return this.selectedBuild === this.selectedRc.builds[0] && this.selectedBuild.finished && this.selectedBuild.buildResult !== this.modpackBuildResult.SUCCESS;
     }
 
     checkRoute() {
@@ -176,6 +172,12 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
             this.cancelling = false;
         });
     }
+
+    canRebuild = (): boolean => {
+        return this.selectedBuild.environment === GameEnvironment.RELEASE && this.selectedBuild.buildResult === ModpackBuildResult.WARNING
+            ? false
+            : this.selectedRc === this.rcs[0] && this.selectedBuild === this.selectedRc.builds[0] && this.selectedBuild.finished && this.selectedBuild.buildResult !== ModpackBuildResult.SUCCESS;
+    };
 
     rebuild() {
         this.modpackBuildProcessService.rebuild(this.selectedBuild, () => {

@@ -53,7 +53,7 @@
                                 <button mat-raised-button color="primary" *ngIf="!selectedBuild.finished && !cancelling" (click)="cancelBuild()">
                                     Cancel Build
                                 </button>
-                                <button mat-raised-button color="primary" *ngIf="selectedBuild.finished && selectedBuild.buildResult !== modpackBuildResult.SUCCESS" (click)="rebuild()">
+                                <button mat-raised-button color="primary" *ngIf="canRebuild()" (click)="rebuild()">
                                     Rebuild
                                 </button>
                             </ng-template>
@@ -75,11 +75,17 @@
                         </div>
                     </div>
                 </div>
-                <app-modpack-builds-steps *ngIf="selectedBuild && logOpen" [build]="selectedBuild" (onCloseLog)="closeLog()" (onRebuild)="selectIncomingBuild = true"></app-modpack-builds-steps>
+                <app-modpack-builds-steps
+                    *ngIf="selectedBuild && logOpen"
+                    [rebuildCondition]="canRebuild"
+                    [build]="selectedBuild"
+                    (onCloseLog)="closeLog()"
+                    (onRebuild)="selectIncomingBuild = true"
+                ></app-modpack-builds-steps>
                 <app-flex-filler></app-flex-filler>
                 <div class="build-footer" *ngIf="selectedBuild">
                     <div class="footer-item">
-                        {{ selectedBuild.startTime | date: 'MMM dd HH:mm' }}
+                        {{ selectedBuild.startTime | date: 'dd MMM HH:mm' }}
                     </div>
                     <div class="footer-item" *ngIf="selectedBuild.finished">
                         {{ duration }}

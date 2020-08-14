@@ -48,7 +48,7 @@
                     <button mat-raised-button color="primary" *ngIf="!build.finished && !cancelling" (click)="cancelBuild()">
                         Cancel Build
                     </button>
-                    <button mat-raised-button color="primary" *ngIf="build.finished && build.buildResult !== modpackBuildResult.SUCCESS" (click)="rebuild()">
+                    <button mat-raised-button color="primary" *ngIf="rebuildCondition()" (click)="rebuild()">
                         Rebuild
                     </button>
                 </ng-template>

@@ -127,6 +127,10 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
         });
     }
 
+    canRebuild = (): boolean => {
+        return this.selectedBuild.finished && this.selectedBuild.buildResult !== ModpackBuildResult.SUCCESS;
+    };
+
     rebuild() {
         this.modpackBuildProcessService.rebuild(this.selectedBuild, () => {
             this.selectIncomingBuild = true;
