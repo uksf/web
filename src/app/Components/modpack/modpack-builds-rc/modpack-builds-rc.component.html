@@ -16,7 +16,13 @@
             </div>
             <div class="release-container" *ngIf="selectedRc">
                 <div class="history-container builds">
-                    <div class="history-item" [ngClass]="{ selected: selectedBuildId === build.id }" [ngStyle]="getBuildColour(build)" *ngFor="let build of selectedRc.builds" (click)="selectBuild(build.id)">
+                    <div
+                        class="history-item"
+                        [ngClass]="{ selected: selectedBuildId === build.id }"
+                        [ngStyle]="getBuildColour(build)"
+                        *ngFor="let build of selectedRc.builds"
+                        (click)="selectBuild(build.id)"
+                    >
                         <span *ngIf="build.environment === gameEnvironment.RC">RC #{{ build.buildNumber }}</span>
                         <span *ngIf="build.environment === gameEnvironment.RELEASE">Release</span>
                     </div>
@@ -44,7 +50,7 @@
                             </div>
                             <app-flex-filler></app-flex-filler>
                             <ng-template [ngxPermissionsOnly]="['ADMIN']">
-                                <button mat-raised-button color="primary" *ngIf="selectedBuild.running && !cancelling" (click)="cancelBuild()">
+                                <button mat-raised-button color="primary" *ngIf="!selectedBuild.finished && !cancelling" (click)="cancelBuild()">
                                     Cancel Build
                                 </button>
                                 <button mat-raised-button color="primary" *ngIf="selectedBuild.finished && selectedBuild.buildResult !== modpackBuildResult.SUCCESS" (click)="rebuild()">

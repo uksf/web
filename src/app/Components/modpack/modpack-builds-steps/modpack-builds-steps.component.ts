@@ -50,10 +50,6 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
         return this.permissions.hasPermission(Permissions.ADMIN) ? true : this.permissions.hasPermission(Permissions.TESTER) && this.build.environment === GameEnvironment.DEV;
     }
 
-    get canCancel() {
-        return this.build.running && !this.cancelling;
-    }
-
     get anyWarning() {
         return this.build.steps.findIndex((x) => x.buildResult === ModpackBuildResult.WARNING) !== -1;
     }

@@ -45,7 +45,7 @@
                 </div>
                 <app-flex-filler></app-flex-filler>
                 <ng-template [ngIf]="canControl">
-                    <button mat-raised-button color="primary" *ngIf="canCancel" (click)="cancelBuild()">
+                    <button mat-raised-button color="primary" *ngIf="!build.finished && !cancelling" (click)="cancelBuild()">
                         Cancel Build
                     </button>
                     <button mat-raised-button color="primary" *ngIf="build.finished && build.buildResult !== modpackBuildResult.SUCCESS" (click)="rebuild()">

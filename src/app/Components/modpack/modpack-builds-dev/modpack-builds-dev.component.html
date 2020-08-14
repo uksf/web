@@ -43,7 +43,7 @@
                         </div>
                         <app-flex-filler></app-flex-filler>
                         <ng-template [ngxPermissionsOnly]="['TESTER']">
-                            <button mat-raised-button color="primary" *ngIf="selectedBuild.running && !cancelling" (click)="cancelBuild()">
+                            <button mat-raised-button color="primary" *ngIf="!selectedBuild.finished && !cancelling" (click)="cancelBuild()">
                                 Cancel Build
                             </button>
                             <button mat-raised-button color="primary" *ngIf="selectedBuild.finished && selectedBuild.buildResult !== modpackBuildResult.SUCCESS" (click)="rebuild()">
