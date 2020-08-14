@@ -69,6 +69,10 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
         return this.selectedRc ? this.selectedRc.builds.find((x) => x.id === this.selectedBuildId) : undefined;
     }
 
+    get canRebuild(): boolean {
+        return this.selectedBuild === this.selectedRc.builds[0] && this.selectedBuild.finished && this.selectedBuild.buildResult !== this.modpackBuildResult.SUCCESS;
+    }
+
     checkRoute() {
         const version = this.route.snapshot.queryParams['version'];
         if (version && this.rcs.findIndex((x) => x.version === version) !== -1) {
