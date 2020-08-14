@@ -47,7 +47,7 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
             (version: string) => {
                 if (this.selectIncomingBuild) {
                     this.selectIncomingBuild = false;
-                    this.selectBuild(version);
+                    this.selectRc(version);
                 }
             }
         );
