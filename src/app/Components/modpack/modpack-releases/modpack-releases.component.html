@@ -8,7 +8,7 @@
                     <span *ngIf="!release.isDraft">{{ release.version }}</span>
                 </div>
             </div>
-            <div class="release-container" *ngIf="selectedRelease && selectedRelease.isDraft">
+            <div class="release-container" *ngIf="selectedRelease && !selectedRelease.isDraft">
                 <div class="release-header">
                     <h1 class="release-title">Release Version {{ selectedRelease.version }}</h1>
                     <app-flex-filler></app-flex-filler>
@@ -23,7 +23,7 @@
                     </div>
                 </div>
             </div>
-            <div class="release-container" *ngIf="selectedRelease && !selectedRelease.isDraft">
+            <div class="release-container" *ngIf="selectedRelease && selectedRelease.isDraft">
                 <div class="release-header">
                     <h1 class="release-title">Release Version {{ selectedRelease.version }} <i>(Draft)</i></h1>
                     <app-flex-filler></app-flex-filler>
