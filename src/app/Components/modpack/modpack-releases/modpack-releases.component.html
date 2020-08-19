@@ -8,7 +8,7 @@
                     <span *ngIf="!release.isDraft">{{ release.version }}</span>
                 </div>
             </div>
-            <div class="release-container" *ngIf="selectedRelease && !selectedRelease.isDraft">
+            <div class="release-container" *ngIf="selectedRelease && selectedRelease.isDraft">
                 <div class="release-header">
                     <h1 class="release-title">Release Version {{ selectedRelease.version }}</h1>
                     <app-flex-filler></app-flex-filler>
@@ -16,14 +16,14 @@
                 </div>
                 <div class="release-content">
                     <div class="release-date released">Released {{ selectedRelease.timestamp | date: 'dd MMM y' }}</div>
-                    <h4 class="release-description" *ngIf="selectedRelease.description">{{ selectedRelease.description }}</h4>
-                    <h3 class="release-changelog-header">Changelog</h3>
+                    <h3 class="release-description" *ngIf="selectedRelease.description">{{ selectedRelease.description }}</h3>
+                    <h3>Changelog</h3>
                     <div class="release-changelog">
                         <markdown ngPreserveWhitespaces [data]="changelogMarkdown"></markdown>
                     </div>
                 </div>
             </div>
-            <div class="release-container" *ngIf="selectedRelease && selectedRelease.isDraft">
+            <div class="release-container" *ngIf="selectedRelease && !selectedRelease.isDraft">
                 <div class="release-header">
                     <h1 class="release-title">Release Version {{ selectedRelease.version }} <i>(Draft)</i></h1>
                     <app-flex-filler></app-flex-filler>
@@ -52,8 +52,8 @@
                 </div>
                 <div class="release-content" *ngIf="!editing">
                     <div class="release-date">Draft created {{ selectedRelease.timestamp | date: 'dd MMM y' }}</div>
-                    <h4 class="release-description" *ngIf="selectedRelease.description">{{ selectedRelease.description }}</h4>
-                    <h3 class="release-changelog-header">Changelog</h3>
+                    <h3 class="release-description" *ngIf="selectedRelease.description">{{ selectedRelease.description }}</h3>
+                    <h3>Changelog</h3>
                     <div class="release-changelog">
                         <markdown ngPreserveWhitespaces [data]="changelogMarkdown"></markdown>
                     </div>
@@ -63,6 +63,7 @@
                         <textarea [(ngModel)]="descriptionEditing" type="text" placeholder="Release description" rows="3" maxlength="200" wrap="soft" (input)="validateDescription($event)"></textarea>
                     </div>
                     <h4 class="release-description" *ngIf="preview">{{ descriptionEditing }}</h4>
+                    <h3>Changelog</h3>
                     <div class="release-changelog" *ngIf="!preview">
                         <textarea [(ngModel)]="changelogEditing" type="text" placeholder="Changelog" maxlength="5000" wrap="soft"></textarea>
                     </div>
