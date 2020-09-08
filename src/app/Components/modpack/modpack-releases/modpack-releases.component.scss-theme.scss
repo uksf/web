@@ -32,6 +32,14 @@
                 .release-content {
                     textarea {
                         background-color: mat-color($background, app-bar);
+
+                        .release-changelog {
+                            markdown {
+                                h4 {
+                                    color: mat-color($primary, default);
+                                }
+                            }
+                        }
                     }
                 }
             }
