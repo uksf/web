@@ -1,6 +1,6 @@
-import { Component, Output, EventEmitter, ViewEncapsulation } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl, FormGroupDirective, NgForm, AbstractControl } from '@angular/forms';
-import { MatDialog, ErrorStateMatcher, MatCheckboxChange } from '@angular/material';
+import { MatDialog, ErrorStateMatcher } from '@angular/material';
 
 export class InstantErrorStateMatcher implements ErrorStateMatcher {
     isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
@@ -24,6 +24,7 @@ export class ApplicationDetailsComponent {
         { value: 'YouTube', viewValue: 'YouTube' },
         { value: 'Instagram', viewValue: 'Instagram' },
         { value: 'Google', viewValue: 'Google' },
+        { value: 'Arma 3 Discord', viewValue: 'Arma 3 Discord' },
         { value: 'Friend', viewValue: 'Friend' },
         { value: 'Other', viewValue: 'Other' }
     ];
