@@ -3,20 +3,23 @@
         <div class="flex-container">
             <mat-card *ngIf="step != 7">
                 <h2>Application to join UKSF</h2>
-                <p *ngIf="loggedOut()">If you have already started an application, please <a [routerLink]="['/login']" [queryParams]="{redirect: 'application'}">login</a> to continue the application</p>
+                <p *ngIf="loggedOut()">
+                    If you have already started an application, please <a [routerLink]="['/login']" [queryParams]="{ redirect: 'application' }">login</a> to continue the application
+                </p>
                 <p>You may edit certain parts of the application after submitting</p>
                 <p>If you require help, contact an SR1 (Red 'R' tag) on our <a href="ts3server://uk-sf.co.uk">TeamSpeak (uk-sf.co.uk)</a></p>
+                <p>Or you can talk with us in the 'newcomers' channel on our <a target="_blank" href="http://discord.uk-sf.co.uk">Discord</a></p>
             </mat-card>
             <div class="progress-container-wrapper" *ngIf="step != 7">
                 <div class="progress-container">
-                    <div class="box" [ngClass]="{'enabled': step == 1, 'complete': step > 1}"><span>Information</span></div>
-                    <div class="box" [ngClass]="{'enabled': step == 2, 'complete': step > 2}"><span>Identity</span></div>
-                    <div class="box" [ngClass]="{'enabled': step == 3, 'complete': step > 3}"><span>Email Confirmation</span></div>
+                    <div class="box" [ngClass]="{ enabled: step == 1, complete: step > 1 }"><span>Information</span></div>
+                    <div class="box" [ngClass]="{ enabled: step == 2, complete: step > 2 }"><span>Identity</span></div>
+                    <div class="box" [ngClass]="{ enabled: step == 3, complete: step > 3 }"><span>Email Confirmation</span></div>
                 </div>
                 <div class="progress-container">
-                    <div class="box" [ngClass]="{'enabled': step == 4, 'complete': step > 4}"><span>Communications</span></div>
-                    <div class="box" [ngClass]="{'enabled': step == 5, 'complete': step > 5}"><span>Details</span></div>
-                    <div class="box" [ngClass]="{'enabled': step == 6}"><span>Submit</span></div>
+                    <div class="box" [ngClass]="{ enabled: step == 4, complete: step > 4 }"><span>Communications</span></div>
+                    <div class="box" [ngClass]="{ enabled: step == 5, complete: step > 5 }"><span>Details</span></div>
+                    <div class="box" [ngClass]="{ enabled: step == 6 }"><span>Submit</span></div>
                 </div>
             </div>
             <div *ngIf="step == 1">

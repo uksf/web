@@ -12,7 +12,7 @@ import { nextFrame } from 'app/Services/helper.service';
 @Component({
     selector: 'app-teamspeak-connect',
     templateUrl: './teamspeak-connect.component.html',
-    styleUrls: ['./teamspeak-connect.component.scss']
+    styleUrls: ['./teamspeak-connect.component.scss'],
 })
 export class ConnectTeamspeakComponent {
     @Input() showCancel = false;
@@ -39,11 +39,14 @@ export class ConnectTeamspeakComponent {
         private signalrService: SignalRService
     ) {
         this.formGroup = formBuilder.group({
-            code: ['', Validators.required]
+            code: ['', Validators.required],
         });
-        this.teamspeakForm = formBuilder.group({
-            teamspeakId: ['', Validators.required]
-        }, {});
+        this.teamspeakForm = formBuilder.group(
+            {
+                teamspeakId: ['', Validators.required],
+            },
+            {}
+        );
     }
 
     ngOnInit(): void {
@@ -76,13 +79,10 @@ export class ConnectTeamspeakComponent {
 
     findTeamspeakClients() {
         this.httpClient.get(this.urls.apiUrl + '/teamspeak/online').subscribe(
-            response => {
-                let clients = response['clients'];
-                if (!clients) {
-                    clients = [];
-                }
-                this.updateClients(clients);
-            }, error => this.urls.errorWrapper('Failed to find TeamSpeak client', error)
+            (response: any[]) => {
+                this.updateClients(response);
+            },
+            (error) => this.urls.errorWrapper('Failed to find TeamSpeak client', error)
         );
     }
 
@@ -91,7 +91,7 @@ export class ConnectTeamspeakComponent {
             this.clients = clients;
             const tsIds = this.accountService.account.teamspeakIdentities;
             if (tsIds && tsIds.length > 0) {
-                this.clients.forEach(client => {
+                this.clients.forEach((client) => {
                     if (tsIds.indexOf(client.clientDbId) !== -1) {
                         client.name = `${client.name} (Already connected to this account)`;
                     }
@@ -112,21 +112,29 @@ export class ConnectTeamspeakComponent {
     sendCode() {
         this.data = this.teamspeakForm.value.teamspeakId;
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-        this.httpClient.post(this.urls.apiUrl + '/communications/send', {
-            mode: 'teamspeak',
-            data: this.data
-        }, { headers: headers }).subscribe(() => {
-            this.state = 1;
-        });
+        this.httpClient
+            .post(
+                this.urls.apiUrl + '/communications/send',
+                {
+                    mode: 'teamspeak',
+                    data: this.data,
+                },
+                { headers: headers }
+            )
+            .subscribe(() => {
+                this.state = 1;
+            });
     }
 
     changed(code: string) {
-        if (this.pending) { return; }
+        if (this.pending) {
+            return;
+        }
         nextFrame(() => {
             this.mergeChanged(() => {
                 this.validateCode(code);
             });
-        })
+        });
     }
 
     private mergeChanged(callback: () => void) {
@@ -141,23 +149,35 @@ export class ConnectTeamspeakComponent {
     validateCode(code: string) {
         this.pending = true;
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-        this.httpClient.post(this.urls.apiUrl + '/communications/receive', {
-            id: this.accountService.account.id,
-            mode: 'teamspeak',
-            data: this.data,
-            code: code
-        }, { headers: headers }).subscribe(() => {
-            this.pending = false;
-            this.connectedEvent.emit();
-            this.state = 2;
-        }, error => {
-            this.state = 3;
-            this.dialog.open(MessageModalComponent, {
-                data: { message: error.error.error }
-            }).afterClosed().subscribe(() => {
-                this.formGroup.controls['code'].setValue('');
-                this.pending = false;
-            });
-        });
+        this.httpClient
+            .post(
+                this.urls.apiUrl + '/communications/receive',
+                {
+                    id: this.accountService.account.id,
+                    mode: 'teamspeak',
+                    data: this.data,
+                    code: code,
+                },
+                { headers: headers }
+            )
+            .subscribe(
+                () => {
+                    this.pending = false;
+                    this.connectedEvent.emit();
+                    this.state = 2;
+                },
+                (error) => {
+                    this.state = 3;
+                    this.dialog
+                        .open(MessageModalComponent, {
+                            data: { message: error.error.error },
+                        })
+                        .afterClosed()
+                        .subscribe(() => {
+                            this.formGroup.controls['code'].setValue('');
+                            this.pending = false;
+                        });
+                }
+            );
     }
 }

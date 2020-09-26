@@ -2,14 +2,14 @@
     <h2>Email Confirmation</h2>
     <form [formGroup]="formGroup">
         <p>
-            An email has been sent to <b>'{{email}}'</b> containing a code. Please copy this code to your clipboard and return to this page to enter the code.
+            An email has been sent to <b>'{{ email }}'</b> containing a code. Please copy this code to your clipboard and return to this page to enter the code.
         </p>
         <p>
-            Once the code has been confirmed, you will be redirected to the login page before continuing with the application.
+            If the code does not work or you did not receive a code, press 'Resend Code'
         </p>
-        <br>
+        <br />
         <mat-form-field class="normal">
-            <input matInput formControlName="code" required placeholder="Enter confirmation code" (ngModelChange)="changed($event)">
+            <input matInput formControlName="code" required placeholder="Enter confirmation code" (ngModelChange)="changed($event)" autocomplete="off" />
         </mat-form-field>
         <div class="button-next">
             <button mat-raised-button color="primary" [disabled]="pending || resent" (click)="resend()">Resend Code</button>

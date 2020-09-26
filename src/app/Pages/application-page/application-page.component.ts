@@ -9,20 +9,14 @@ import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.co
 @Component({
     selector: 'app-application-page',
     templateUrl: './application-page.component.html',
-    styleUrls: ['./application-page.component.scss']
+    styleUrls: ['./application-page.component.scss'],
 })
 export class ApplicationPageComponent implements OnInit {
     step = 1;
     email: string;
     details: any;
 
-    constructor(
-        private httpClient: HttpClient,
-        public formBuilder: FormBuilder,
-        private urls: UrlService,
-        public dialog: MatDialog,
-        private accountService: AccountService
-    ) { }
+    constructor(private httpClient: HttpClient, public formBuilder: FormBuilder, private urls: UrlService, public dialog: MatDialog, private accountService: AccountService) {}
 
     ngOnInit() {
         this.checkStep();
@@ -58,7 +52,12 @@ export class ApplicationPageComponent implements OnInit {
     }
 
     connected() {
-        return this.accountService.account.teamspeakIdentities && this.accountService.account.teamspeakIdentities.length > 0 && this.accountService.account.steamname && this.accountService.account.discordId
+        return (
+            this.accountService.account.teamspeakIdentities &&
+            this.accountService.account.teamspeakIdentities.length > 0 &&
+            this.accountService.account.steamname &&
+            this.accountService.account.discordId
+        );
     }
 
     submitted() {
@@ -85,16 +84,21 @@ export class ApplicationPageComponent implements OnInit {
     }
 
     submit() {
-        this.httpClient.post(this.urls.apiUrl + '/applications', this.details, {
-            headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-        }).subscribe(() => {
-            this.accountService.getAccount(() => {
-                this.next(null);
-            });
-        }, error => {
-            this.dialog.open(MessageModalComponent, {
-                data: { message: error.error }
-            });
-        });
+        this.httpClient
+            .post(this.urls.apiUrl + '/applications', this.details, {
+                headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+            })
+            .subscribe(
+                () => {
+                    this.accountService.getAccount(() => {
+                        this.next(null);
+                    });
+                },
+                (error) => {
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: error.error },
+                    });
+                }
+            );
     }
 }

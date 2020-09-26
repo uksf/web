@@ -9,6 +9,7 @@ import { switchMap, map, startWith } from 'rxjs/operators';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
 import { ICountry, CountryPickerService } from 'app/Services/CountryPicker/country-picker.service';
 import { CountryName } from 'app/Pipes/country.pipe';
+import { Router } from '@angular/router';
 
 function matchingPasswords(passwordKey: string, confirmPasswordKey: string) {
     return (group: FormGroup): { [key: string]: any } => {
@@ -17,17 +18,20 @@ function matchingPasswords(passwordKey: string, confirmPasswordKey: string) {
         if (password.value !== confirmPassword.value) {
             return { mismatchedPasswords: true };
         }
-    }
+    };
 }
 
 function validDob(dayKey: string, monthKey: string, yearKey: string) {
     return (group: FormGroup): { [key: string]: any } => {
-        if (group.controls[dayKey].value === '' || group.controls[monthKey].value === '' || group.controls[yearKey].value === '') { return; }
+        if (group.controls[dayKey].value === '' || group.controls[monthKey].value === '' || group.controls[yearKey].value === '') {
+            return;
+        }
 
         const day = parseInt(group.controls[dayKey].value, 10);
         const month = parseInt(group.controls[monthKey].value, 10);
         const year = parseInt(group.controls[yearKey].value, 10);
-        if (isNaN(day) || isNaN(month) || isNaN(year)) {
+        const valid = !isNaN(new Date(`${month}/${day}/${year}`).getTime());
+        if (isNaN(day) || isNaN(month) || isNaN(year) || !valid) {
             return { nan: true };
         }
         if (day < 1 || day > 31) {
@@ -46,7 +50,7 @@ function validDob(dayKey: string, monthKey: string, yearKey: string) {
             return { monthday: true };
         }
         if (month === 2) {
-            const leap = (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0));
+            const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
             if (day > 29) {
                 return { febhigh: true };
             }
@@ -54,7 +58,7 @@ function validDob(dayKey: string, monthKey: string, yearKey: string) {
                 return { leap: true };
             }
         }
-    }
+    };
 }
 
 export class InstantErrorStateMatcher implements ErrorStateMatcher {
@@ -72,7 +76,7 @@ export class ConfirmValidParentMatcher implements ErrorStateMatcher {
 @Component({
     selector: 'app-application-identity',
     templateUrl: './application-identity.component.html',
-    styleUrls: ['../../../Pages/application-page/application-page.component.scss', './application-identity.component.scss']
+    styleUrls: ['../../../Pages/application-page/application-page.component.scss', './application-identity.component.scss'],
 })
 export class ApplicationIdentityComponent {
     @Output() nextEvent = new EventEmitter();
@@ -88,49 +92,51 @@ export class ApplicationIdentityComponent {
     validating = false;
 
     validation_messages = {
-        'email': [
+        email: [
             { type: 'required', message: 'Email is required' },
             { type: 'email', message: 'Enter a valid email' },
-            { type: 'emailTaken', message: 'That email has already been taken' }
-        ], 'password': [
-            { type: 'required', message: 'Password is required' }
-        ], 'confirmPassword': [
+            { type: 'emailTaken', message: 'That email has already been taken' },
+        ],
+        password: [{ type: 'required', message: 'Password is required' }],
+        confirmPassword: [
             { type: 'required', message: 'Confirm password is required' },
-            { type: 'mismatchedPasswords', message: 'Passwords are not the same' }
-        ], 'dob': [
+            { type: 'mismatchedPasswords', message: 'Passwords are not the same' },
+        ],
+        dob: [
             { type: 'required', message: 'Date of Birth is required' },
             { type: 'nan', message: 'Invalid date: Not a number' },
             { type: 'dead', message: 'Invalid date: Statistically you should be dead.' },
-            { type: 'born', message: 'Invalid date: You can\'t be born yet' },
+            { type: 'born', message: "Invalid date: You can't be born yet" },
             { type: 'day', message: 'Invalid date: Day should be between 1 and 31' },
             { type: 'month', message: 'Invalid date: Month should be between 1 and 12' },
-            { type: 'monthday', message: 'Invalid date: There aren\'t that many days in that month' },
-            { type: 'febhigh', message: 'Invalid date: February doesn\'t have that many days' },
-            { type: 'leap', message: 'Invalid date: February only has a 29th day if it\'s a leap year' }
-        ]
-    }
+            { type: 'monthday', message: "Invalid date: There aren't that many days in that month" },
+            { type: 'febhigh', message: "Invalid date: February doesn't have that many days" },
+            { type: 'leap', message: "Invalid date: February only has a 29th day if it's a leap year" },
+        ],
+    };
 
-    constructor(
-        public dialog: MatDialog,
-        public formBuilder: FormBuilder,
-        private httpClient: HttpClient,
-        private urls: UrlService
-    ) {
+    constructor(public dialog: MatDialog, public formBuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private router: Router) {
         this.formGroup = formBuilder.group({
             name: ['', Validators.maxLength(0)],
             email: ['', [Validators.required, Validators.email], this.validateEmail.bind(this)],
-            passwordGroup: formBuilder.group({
-                password: ['', Validators.required],
-                confirmPassword: ['', Validators.required]
-            }, { validator: matchingPasswords('password', 'confirmPassword') }),
+            passwordGroup: formBuilder.group(
+                {
+                    password: ['', Validators.required],
+                    confirmPassword: ['', Validators.required],
+                },
+                { validator: matchingPasswords('password', 'confirmPassword') }
+            ),
             firstname: ['', Validators.required],
             lastname: ['', Validators.required],
-            dobGroup: formBuilder.group({
-                day: ['', Validators.required],
-                month: ['', Validators.required],
-                year: ['', Validators.required]
-            }, { validator: validDob('day', 'month', 'year') }),
-            nation: ['', Validators.required]
+            dobGroup: formBuilder.group(
+                {
+                    day: ['', Validators.required],
+                    month: ['', Validators.required],
+                    year: ['', Validators.required],
+                },
+                { validator: validDob('day', 'month', 'year') }
+            ),
+            nation: ['', Validators.required],
         });
         this.countries = CountryPickerService.countries;
     }
@@ -138,13 +144,15 @@ export class ApplicationIdentityComponent {
     ngOnInit(): void {
         this.filteredCountries = this.formGroup.get(['nation']).valueChanges.pipe(
             startWith(''),
-            map(x => this.filterCountry(x))
-        )
+            map((x) => this.filterCountry(x))
+        );
     }
 
     private validateEmail(control: AbstractControl): Observable<ValidationErrors> {
         // Honeypot field must be empty
-        if (this.formGroup.value.name !== '') { return of(null); }
+        if (this.formGroup.value.name !== '') {
+            return of(null);
+        }
         this.validating = true;
         return timer(500).pipe(
             switchMap(() => {
@@ -152,10 +160,8 @@ export class ApplicationIdentityComponent {
                     this.validating = false;
                     return of(null);
                 }
-                return this.httpClient.get(
-                    this.urls.apiUrl + '/accounts/exists?check=' + control.value
-                ).pipe(
-                    map(response => {
+                return this.httpClient.get(this.urls.apiUrl + '/accounts/exists?check=' + control.value).pipe(
+                    map((response) => {
                         this.validating = false;
                         return response['exists'] ? { emailTaken: true } : null;
                     })
@@ -166,7 +172,7 @@ export class ApplicationIdentityComponent {
 
     private filterCountry(value: string): ICountry[] {
         const filterValue = value.toLowerCase();
-        return this.countries.filter(x => x.name.toLowerCase().includes(filterValue));
+        return this.countries.filter((x) => x.name.toLowerCase().includes(filterValue));
     }
 
     numberOnly(event: KeyboardEvent, fieldName: string, min: number, max: number) {
@@ -205,21 +211,33 @@ export class ApplicationIdentityComponent {
 
     next() {
         // Honeypot field must be empty
-        if (this.formGroup.value.name !== '') { return; }
+        if (this.formGroup.value.name !== '') {
+            return;
+        }
         this.pending = true;
         const formObj = this.formGroup.getRawValue();
         formObj.password = formObj.passwordGroup.password;
         delete formObj.passwordGroup;
-        const formString = JSON.stringify(formObj).replace(/\n|\r/g, '');
+        const formString = JSON.stringify(formObj).replace(/[\n\r]/g, '');
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-        this.httpClient.put(this.urls.apiUrl + '/accounts', formString, { headers: headers }).subscribe(response => {
-            this.pending = false;
-            this.nextEvent.emit(response);
-        }, error => {
-            this.dialog.open(MessageModalComponent, {
-                data: { message: error.error }
-            });
-            this.pending = false;
-        });
+        this.httpClient.put(this.urls.apiUrl + '/accounts', formString, { headers: headers }).subscribe(
+            (response) => {
+                this.pending = false;
+                this.dialog
+                    .open(MessageModalComponent, {
+                        data: { message: 'Your account has been successfully created.\n\nYou will now be redirected to log in, after which you can continue your application.', button: 'Continue' },
+                    })
+                    .afterClosed()
+                    .subscribe(() => {
+                        this.router.navigate(['/login'], { queryParams: { redirect: 'application' } }).then();
+                    });
+            },
+            (error) => {
+                this.dialog.open(MessageModalComponent, {
+                    data: { message: error.error },
+                });
+                this.pending = false;
+            }
+        );
     }
 }

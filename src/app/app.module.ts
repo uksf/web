@@ -1,5 +1,5 @@
 // Modules
-import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { NgModule, APP_INITIALIZER, Injector } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule, LowerCaseUrlSerializer } from './app-routing.module';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -181,8 +181,11 @@ import { NewModpackBuildModalComponent } from './Modals/new-modpack-build/new-mo
 import { ModpackBuildsStepsComponent } from './Components/modpack/modpack-builds-steps/modpack-builds-steps.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
-export function initPermissions(permissionsService: PermissionsService) {
-    return () => permissionsService.refresh();
+export function initPermissions(injector: Injector) {
+    return () => {
+        const permissionsService = injector.get(PermissionsService);
+        return permissionsService.refresh();
+    };
 }
 
 export function initCountries(countryPickerService: CountryPickerService) {
@@ -215,14 +218,14 @@ export function tokenGetter() {
         {
             provide: APP_INITIALIZER,
             useFactory: initPermissions,
-            deps: [PermissionsService],
-            multi: true
+            deps: [Injector],
+            multi: true,
         },
         {
             provide: APP_INITIALIZER,
             useFactory: initCountries,
             deps: [CountryPickerService],
-            multi: true
+            multi: true,
         },
         { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
         { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
@@ -230,9 +233,10 @@ export function tokenGetter() {
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthHttpInterceptor,
-            multi: true
-        }
-    ], imports: [
+            multi: true,
+        },
+    ],
+    imports: [
         BrowserModule,
         AppRoutingModule,
         CommonModule,
@@ -287,13 +291,14 @@ export function tokenGetter() {
         JwtModule.forRoot({
             config: {
                 tokenGetter: tokenGetter,
-                whitelistedDomains: ['localhost:5000', 'uk-sf.co.uk', 'www.uk-sf.co.uk', 'api.uk-sf.co.uk']
-            }
+                whitelistedDomains: ['localhost:5000', 'uk-sf.co.uk', 'www.uk-sf.co.uk', 'api.uk-sf.co.uk'],
+            },
         }),
         NgxPermissionsModule.forRoot(),
         TreeModule.forRoot(),
-        MarkdownModule.forRoot()
-    ], declarations: [
+        MarkdownModule.forRoot(),
+    ],
+    declarations: [
         AppComponent,
         FlexFillerComponent,
         HomePageComponent,
@@ -394,10 +399,10 @@ export function tokenGetter() {
         ModpackBuildsDevComponent,
         ModpackBuildsRcComponent,
         ModpackBuildsStepsComponent,
-        NewModpackBuildModalComponent
-    ], bootstrap: [
-        AppComponent
-    ], entryComponents: [
+        NewModpackBuildModalComponent,
+    ],
+    bootstrap: [AppComponent],
+    entryComponents: [
         ConnectTeamspeakModalComponent,
         ChangeFirstLastModalComponent,
         ChangePasswordModalComponent,
@@ -422,10 +427,9 @@ export function tokenGetter() {
         ConfirmationModalComponent,
         MultipleMessageModalComponent,
         TextInputModalComponent,
-        NewModpackBuildModalComponent
-    ]
+        NewModpackBuildModalComponent,
+    ],
 })
-
 export class AppModule {
-    constructor() { }
+    constructor() {}
 }

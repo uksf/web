@@ -2,13 +2,10 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class SessionService {
-    constructor() { }
+    constructor() {}
 
     hasStorageToken() {
-        if (localStorage.getItem('access_token')) {
-            return true;
-        }
-        return false;
+        return !!localStorage.getItem('access_token');
     }
 
     setStorageToken() {

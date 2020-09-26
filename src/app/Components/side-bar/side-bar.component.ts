@@ -39,6 +39,7 @@ export class SideBarComponent {
         { text: 'Home', link: 'home', icon: 'home' },
         // { text: 'Docs', link: 'admin', icon: 'book' },
         // { text: 'Policy', link: 'policy', icon: 'gavel' },
+        { text: 'About', link: 'information/about', icon: 'layers' },
         { text: 'Application', link: 'application', icon: 'contact_mail' },
     ];
     private currentPermissions;

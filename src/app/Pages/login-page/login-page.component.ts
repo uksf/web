@@ -1,15 +1,16 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { AuthenticationService } from '../../Services/Authentication/authentication.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators, ValidationErrors, AbstractControl } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import { ForgotPasswordModalComponent } from '../../Modals/forgot-password-modal/forgot-password-modal.component';
 import { StatesService } from 'app/Services/states.service';
+import { PermissionsService } from '../../Services/permissions.service';
 
 @Component({
     selector: 'app-login-page',
     templateUrl: './login-page.component.html',
-    styleUrls: ['./login-page.component.css']
+    styleUrls: ['./login-page.component.css'],
 })
 export class LoginPageComponent implements OnInit {
     public static staticRedirect;
@@ -28,14 +29,19 @@ export class LoginPageComponent implements OnInit {
         public dialog: MatDialog,
         private auth: AuthenticationService,
         private route: ActivatedRoute,
-        public formbuilder: FormBuilder
+        private router: Router,
+        public formbuilder: FormBuilder,
+        private permissionsService: PermissionsService
     ) {
-        this.form = formbuilder.group({
-            name: ['', Validators.maxLength(0)],
-            userid: [undefined, Validators.required],
-            password: [undefined, Validators.required],
-            confirmPass: [undefined, [Validators.required, this.matchValues('password')]]
-        }, {});
+        this.form = formbuilder.group(
+            {
+                name: ['', Validators.maxLength(0)],
+                userid: [undefined, Validators.required],
+                password: [undefined, Validators.required],
+                confirmPass: [undefined, [Validators.required, this.matchValues('password')]],
+            },
+            {}
+        );
     }
 
     ngOnInit() {
@@ -47,6 +53,7 @@ export class LoginPageComponent implements OnInit {
         } catch (err) {
             // ignored
         }
+
         if (this.params['redirect']) {
             this.redirect = '/' + this.params['redirect'];
         } else if (LoginPageComponent.staticRedirect) {
@@ -64,25 +71,36 @@ export class LoginPageComponent implements OnInit {
     }
 
     formValid() {
-        return this.form.value.name === '' && this.form.value.userid != null && this.form.value.userid !== '' && this.form.value.password != null && this.form.value.password !== '' && (this.reset ? this.form.value.confirmPass != null && this.form.value.confirmPass !== '' && this.form.value.password === this.form.value.confirmPass : true);
+        return (
+            this.form.value.name === '' &&
+            this.form.value.userid != null &&
+            this.form.value.userid !== '' &&
+            this.form.value.password != null &&
+            this.form.value.password !== '' &&
+            (this.reset ? this.form.value.confirmPass != null && this.form.value.confirmPass !== '' && this.form.value.password === this.form.value.confirmPass : true)
+        );
     }
 
     submit() {
-        if (!this.formValid()) { return; }
+        if (!this.formValid()) {
+            return;
+        }
         this.loginError = '';
         this.submitted = true;
         StatesService.stayLogged = this.stayLogged;
-        this.auth.tryAuth(
-            this.form.value.userid, this.form.value.password,
-            this.redirect, this.validateCode, this.validationURI,
-            response => {
-                this.submitted = false;
-                if (response === undefined) { return; }
-                if (response.message) {
-                    this.loginError = response.message;
-                }
+        this.auth.tryAuth(this.form.value.userid, this.form.value.password, this.validateCode, this.validationURI, (error?: any) => {
+            this.submitted = false;
+
+            if (!error) {
+                this.permissionsService.refresh().then(() => {
+                    this.router.navigate([this.redirect]).then();
+                });
+            } else if (error.message) {
+                this.loginError = error.message;
+            } else {
+                this.loginError = 'Login failed';
             }
-        );
+        });
     }
 
     forgotPassword() {

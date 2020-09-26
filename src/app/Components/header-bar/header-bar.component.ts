@@ -3,11 +3,12 @@ import { AuthenticationService } from '../../Services/Authentication/authenticat
 import { AccountService } from '../../Services/account.service';
 import { MatDialog } from '@angular/material';
 import { RequestLoaModalComponent } from '../../Modals/command/request-loa-modal/request-loa-modal.component';
+import { PermissionsService } from '../../Services/permissions.service';
 
 @Component({
     selector: 'app-header-bar',
     templateUrl: './header-bar.component.html',
-    styleUrls: ['./header-bar.component.scss']
+    styleUrls: ['./header-bar.component.scss'],
 })
 export class HeaderBarComponent implements OnInit {
     static otherTheme;
@@ -15,7 +16,7 @@ export class HeaderBarComponent implements OnInit {
     mobile = false;
     mobileSmall = false;
 
-    constructor(private auth: AuthenticationService, private accountService: AccountService, private dialog: MatDialog) { }
+    constructor(private permissionsService: PermissionsService, private accountService: AccountService, private dialog: MatDialog) {}
 
     ngOnInit() {
         this.mobile = window.screen.width <= 768 && window.screen.width > 375;
@@ -49,6 +50,6 @@ export class HeaderBarComponent implements OnInit {
     }
 
     logout() {
-        this.auth.logout();
+        this.permissionsService.revoke();
     }
 }

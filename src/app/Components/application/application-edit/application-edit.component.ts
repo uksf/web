@@ -18,7 +18,7 @@ export class InstantErrorStateMatcher implements ErrorStateMatcher {
 @Component({
     selector: 'app-application-edit',
     templateUrl: './application-edit.component.html',
-    styleUrls: ['../../../Pages/application-page/application-page.component.scss', './application-edit.component.scss']
+    styleUrls: ['../../../Pages/application-page/application-page.component.scss', './application-edit.component.scss'],
 })
 export class ApplicationEditComponent {
     formGroup: FormGroup;
@@ -31,20 +31,16 @@ export class ApplicationEditComponent {
         { value: 'Instagram', viewValue: 'Instagram' },
         { value: 'Google', viewValue: 'Google' },
         { value: 'Friend', viewValue: 'Friend' },
-        { value: 'Other', viewValue: 'Other' }
+        { value: 'Other', viewValue: 'Other' },
     ];
     rolePreferenceOptions = ['NCO', 'Officer', 'Aviation', 'Medic'];
     original: string;
 
     validation_messages = {
-        'armaExperience': [
-            { type: 'required', message: 'Details about your Arma experience are required' }
-        ], 'unitsExperience': [
-            { type: 'required', message: 'Details about your past Arma unit experience is required' }
-        ], 'background': [
-            { type: 'required', message: 'Some background info about yourself is required' }
-        ]
-    }
+        armaExperience: [{ type: 'required', message: 'Details about your Arma experience are required' }],
+        unitsExperience: [{ type: 'required', message: 'Details about your past Arma unit experience is required' }],
+        background: [{ type: 'required', message: 'Some background info about yourself is required' }],
+    };
 
     constructor(
         public formBuilder: FormBuilder,
@@ -68,10 +64,10 @@ export class ApplicationEditComponent {
             officer: [''],
             nco: [''],
             aviation: [''],
-            reference: ['', Validators.required]
+            reference: ['', Validators.required],
         });
         const rolePreferenceControls: { [key: string]: AbstractControl } = {};
-        this.rolePreferenceOptions.forEach(x => {
+        this.rolePreferenceOptions.forEach((x) => {
             rolePreferenceControls[x] = new FormControl(false);
         });
         this.formGroup.addControl('rolePreferences', new FormGroup(rolePreferenceControls));
@@ -91,36 +87,47 @@ export class ApplicationEditComponent {
     }
 
     get applicationState() {
-        return this.accountService.account.application.state === ApplicationState.ACCEPTED ? 'Application Accepted' : this.accountService.account.application.state === ApplicationState.REJECTED ? 'Application Rejected' : 'Application Submitted';
+        return this.accountService.account.application.state === ApplicationState.ACCEPTED
+            ? 'Application Accepted'
+            : this.accountService.account.application.state === ApplicationState.REJECTED
+            ? 'Application Rejected'
+            : 'Application Submitted';
     }
 
     get name() {
         return `Cdt.${this.accountService.account.lastname}.${this.accountService.account.firstname[0]}`;
     }
 
-    get applicationCommentThread() {
+    get applicationCommentThread(): string {
         return this.accountService.account.application.applicationCommentThread;
     }
 
     update() {
         // Honeypot field must be empty
-        if (this.formGroup.value.name !== '') { return; }
+        if (this.formGroup.value.name !== '') {
+            return;
+        }
         const formObj = this.convertRolePreferencesFromGroup();
-        const formString = JSON.stringify(formObj).replace(/\n|\r/g, '');
-        this.httpClient.post(this.urls.apiUrl + '/applications/update', formString, {
-            headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-        }).subscribe(() => {
-            this.accountService.getAccount(() => {
-                this.updateOriginal();
-            });
-            this.dialog.open(MessageModalComponent, {
-                data: { message: 'Your application was successfully updated' }
-            });
-        }, error => {
-            this.dialog.open(MessageModalComponent, {
-                data: { message: 'Failed to update application' }
-            });
-        });
+        const formString = JSON.stringify(formObj).replace(/[\n\r]/g, '');
+        this.httpClient
+            .post(this.urls.apiUrl + '/applications/update', formString, {
+                headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+            })
+            .subscribe(
+                () => {
+                    this.accountService.getAccount(() => {
+                        this.updateOriginal();
+                    });
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: 'Your application was successfully updated' },
+                    });
+                },
+                (error) => {
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: 'Failed to update application' },
+                    });
+                }
+            );
     }
 
     updateOriginal() {
@@ -157,7 +164,7 @@ export class ApplicationEditComponent {
         const rolePreferences = this.accountService.account.rolePreferences;
         const rolePreferencesGroup: FormGroup = this.formGroup.controls['rolePreferences'] as FormGroup;
 
-        this.rolePreferenceOptions.forEach(rolePreferenceOption => {
+        this.rolePreferenceOptions.forEach((rolePreferenceOption) => {
             if (rolePreferences.includes(rolePreferenceOption)) {
                 rolePreferencesGroup.controls[rolePreferenceOption].setValue(true);
             }

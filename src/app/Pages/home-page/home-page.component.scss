@@ -39,6 +39,10 @@ app-side-content-area {
         margin-bottom: 16px;
     }
 
+    &.no-padding-left {
+        padding-left: 0;
+    }
+
     &.instagram-feed {
         padding: 16px;
         display: flex;

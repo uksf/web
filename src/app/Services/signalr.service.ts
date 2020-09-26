@@ -12,7 +12,7 @@ export class SignalRService {
         const connection = new HubConnectionBuilder()
             .withUrl(`${this.urls.apiUrl}/hub/${endpoint}`, {
                 accessTokenFactory: () => {
-                    return this.sessionService.getSessionToken(); // TODO: detect when token has been refreshed
+                    return this.sessionService.getSessionToken();
                 },
                 transport: HttpTransportType.WebSockets,
                 logger: LogLevel.None,

@@ -8,7 +8,7 @@ import { PermissionsService } from '../../Services/permissions.service';
 @Component({
     selector: 'app-change-first-last-modal',
     templateUrl: './change-first-last-modal.component.html',
-    styleUrls: ['./change-first-last-modal.component.css']
+    styleUrls: ['./change-first-last-modal.component.css'],
 })
 export class ChangeFirstLastModalComponent implements OnInit {
     form: FormGroup;
@@ -16,21 +16,15 @@ export class ChangeFirstLastModalComponent implements OnInit {
     original;
     rank;
 
-    constructor(
-        formbuilder: FormBuilder,
-        private httpClient: HttpClient,
-        private urls: UrlService,
-        private accountService: AccountService,
-        private permissionsService: PermissionsService
-    ) {
+    constructor(formbuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private accountService: AccountService) {
         this.form = formbuilder.group({
             firstname: ['', Validators.required],
-            lastname: ['', Validators.required]
-        })
+            lastname: ['', Validators.required],
+        });
         this.form.controls['firstname'].setValue(this.accountService.account.firstname);
         this.form.controls['lastname'].setValue(this.accountService.account.lastname);
         this.httpClient.get(this.urls.apiUrl + '/ranks').subscribe((ranks: any[]) => {
-            this.rank = ranks.find(x => x.name === this.accountService.account.rank).abbreviation;
+            this.rank = ranks.find((x) => x.name === this.accountService.account.rank).abbreviation;
         });
     }
 
@@ -39,16 +33,18 @@ export class ChangeFirstLastModalComponent implements OnInit {
     }
 
     changeName() {
-        const formString = JSON.stringify(this.form.getRawValue()).replace(/\n|\r/g, '');
-        this.httpClient.put(this.urls.apiUrl + '/accounts/name', formString, {
-            headers: new HttpHeaders({
-                'Content-Type': 'application/json'
+        const formString = JSON.stringify(this.form.getRawValue()).replace(/[\n\r]/g, '');
+        this.httpClient
+            .put(this.urls.apiUrl + '/accounts/name', formString, {
+                headers: new HttpHeaders({
+                    'Content-Type': 'application/json',
+                }),
             })
-        }).subscribe(_ => {
-            this.permissionsService.refresh().then(() => {
-                this.changed = true;
+            .subscribe((_) => {
+                this.accountService.getAccount(() => {
+                    this.changed = true;
+                });
             });
-        });
     }
 
     get changesMade() {
@@ -59,4 +55,3 @@ export class ChangeFirstLastModalComponent implements OnInit {
         return this.form.errors.error;
     }
 }
-

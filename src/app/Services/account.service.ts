@@ -12,46 +12,52 @@ export class AccountService {
     public account: Account;
     private openDialog: MatDialogRef<ConfirmationModalComponent, any> = undefined;
 
-    constructor(
-        private httpClient: HttpClient,
-        private urls: UrlService,
-        private sessionService: SessionService,
-        public dialog: MatDialog
-    ) { }
+    constructor(private httpClient: HttpClient, private urls: UrlService, private sessionService: SessionService, public dialog: MatDialog) {}
 
     public getAccount(callback: (arg0: Account) => void = null, callbackError: () => void = null) {
         if (this.sessionService.hasStorageToken()) {
             const subscribable = this.httpClient.get(this.urls.apiUrl + '/accounts');
-            subscribable.subscribe((response: any) => {
-                const account = response;
-                this.account = account;
-                this.checkConnections();
-                if (callback) {
-                    callback(account);
+            subscribable.subscribe(
+                (response: any) => {
+                    const account = response;
+                    this.account = account;
+                    this.checkConnections();
+                    if (callback) {
+                        callback(account);
+                    }
+                    this.accountChange.emit(account);
+                },
+                (_) => {
+                    this.clear();
+                    if (callbackError) {
+                        callbackError();
+                    }
                 }
-                this.accountChange.emit(account);
-            }, _ => {
-                this.clear();
-                if (callbackError) {
-                    callbackError();
-                }
-            });
+            );
             return subscribable;
         }
     }
 
     public checkConnections() {
-        if (window.location.href.indexOf('validation') !== -1) { return; }
-        if (window.location.href.indexOf('application') !== -1) { return; }
+        if (window.location.href.indexOf('validation') !== -1) {
+            return;
+        }
+        if (window.location.href.indexOf('application') !== -1) {
+            return;
+        }
 
-        if (this.dialog.openDialogs.length > 0) { return; }
+        if (this.dialog.openDialogs.length > 0) {
+            return;
+        }
 
         if (!this.openDialog) {
-            if (this.account.membershipState !== MembershipState.MEMBER) { return; }
+            if (this.account.membershipState !== MembershipState.MEMBER) {
+                return;
+            }
 
             if (!this.account.teamspeakIdentities || this.account.teamspeakIdentities.length === 0) {
                 this.openDialog = this.dialog.open(ConfirmationModalComponent, {
-                    data: { message: 'Your account does not have TeamSpeak connected. Press the button below to connect TeamSpeak', button: 'Connect TeamSpeak' }
+                    data: { message: 'Your account does not have TeamSpeak connected. Press the button below to connect TeamSpeak', button: 'Connect TeamSpeak' },
                 });
                 this.openDialog.componentInstance.confirmEvent.subscribe(() => {
                     this.openTeamspeakModal();
@@ -61,7 +67,7 @@ export class AccountService {
                 });
             } else if (!this.account.steamname) {
                 this.openDialog = this.dialog.open(ConfirmationModalComponent, {
-                    data: { message: 'Your account does not have Steam connected. Press the button below to connect Steam', button: 'Connect Steam' }
+                    data: { message: 'Your account does not have Steam connected. Press the button below to connect Steam', button: 'Connect Steam' },
                 });
                 this.openDialog.componentInstance.confirmEvent.subscribe(() => {
                     this.connectSteam();
@@ -71,7 +77,7 @@ export class AccountService {
                 });
             } else if (!this.account.discordId) {
                 this.openDialog = this.dialog.open(ConfirmationModalComponent, {
-                    data: { message: 'Your account does not have Discord connected. Press the button below to connect Discord', button: 'Connect Discord' }
+                    data: { message: 'Your account does not have Discord connected. Press the button below to connect Discord', button: 'Connect Discord' },
                 });
                 this.openDialog.componentInstance.confirmEvent.subscribe(() => {
                     this.connectDiscord();
@@ -84,9 +90,12 @@ export class AccountService {
     }
 
     openTeamspeakModal() {
-        this.dialog.open(ConnectTeamspeakModalComponent, { disableClose: true }).afterClosed().subscribe(() => {
-            this.getAccount();
-        });
+        this.dialog
+            .open(ConnectTeamspeakModalComponent, { disableClose: true })
+            .afterClosed()
+            .subscribe(() => {
+                this.getAccount();
+            });
     }
 
     connectSteam() {
@@ -106,18 +115,18 @@ export enum MembershipState {
     UNCONFIRMED,
     CONFIRMED,
     MEMBER,
-    DISCHARGED
+    DISCHARGED,
 }
 
 export enum ApplicationState {
     ACCEPTED,
     REJECTED,
-    WAITING
+    WAITING,
 }
 
 export interface Account {
     id: string;
-    application: any;
+    application: Application;
     armaExperience: string;
     background: string;
     discordId: string;
@@ -140,10 +149,10 @@ export interface Account {
     unitsExperience: string;
 
     displayName: string;
-    permissions: AccountPermisions;
+    permissions: AccountPermissions;
 }
 
-export interface AccountPermisions {
+export interface AccountPermissions {
     admin: boolean;
     command: boolean;
     nco: boolean;
@@ -164,4 +173,14 @@ export interface ServiceRecordEntry {
     notes: string;
     occurence: string;
     timestamp: Date;
+}
+
+export interface Application {
+    applicationCommentThread: string;
+    dateAccepted: Date;
+    dateCreated: Date;
+    ratings: { [id: string]: number };
+    recruiter: string;
+    recruiterCommentThread: string;
+    state: ApplicationState;
 }

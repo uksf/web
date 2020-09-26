@@ -4,42 +4,36 @@
             <div class="timezone">
                 <span class="normal">Your Local Time</span>
                 <span class="short">Local</span>
-                <span class="normal-time">{{ time | zonedTime:'Local' }}</span>
-                <span class="short-time">{{ time | zonedTime:'Local':true }}</span>
+                <span class="normal-time">{{ time | zonedTime: 'Local' }}</span>
+                <span class="short-time">{{ time | zonedTime: 'Local':true }}</span>
             </div>
             <div class="timezone">
                 <span class="normal">Greenwich Mean Time</span>
                 <span class="short">GMT</span>
-                <span class="normal-time">{{ time | zonedTime:'Europe/London' }}</span>
-                <span class="short-time">{{ time | zonedTime:'Europe/London':true }}</span>
+                <span class="normal-time">{{ time | zonedTime: 'Europe/London' }}</span>
+                <span class="short-time">{{ time | zonedTime: 'Europe/London':true }}</span>
             </div>
             <div class="timezone">
                 <span class="normal">Central European Time</span>
                 <span class="short">CET</span>
-                <span class="normal-time">{{ time | zonedTime:'Europe/Berlin' }}</span>
-                <span class="short-time">{{ time | zonedTime:'Europe/Berlin':true }}</span>
+                <span class="normal-time">{{ time | zonedTime: 'Europe/Berlin' }}</span>
+                <span class="short-time">{{ time | zonedTime: 'Europe/Berlin':true }}</span>
             </div>
             <div class="timezone">
                 <span class="normal">US Eastern Standard Time</span>
                 <span class="short">EST</span>
-                <span class="normal-time">{{ time | zonedTime:'America/New_York' }}</span>
-                <span class="short-time">{{ time | zonedTime:'America/New_York':true }}</span>
+                <span class="normal-time">{{ time | zonedTime: 'America/New_York' }}</span>
+                <span class="short-time">{{ time | zonedTime: 'America/New_York':true }}</span>
             </div>
         </div>
-        <ng-template [ngxPermissionsExcept]="['MEMBER']">
-            <app-about-page [showRoute]="false"></app-about-page>
-        </ng-template>
-        <ng-template [ngxPermissionsOnly]="['MEMBER']">
-            <div class="flex-container" *ngIf="instagramImages.length == 0">This area is intentionally empty at the moment</div>
-            <div class="flex-container instagram-feed" *ngIf="instagramImages.length > 0">
-                <div class="instagram-image" *ngFor="let instagramImage of instagramImages">
-                    <a target="_blank" href="{{instagramImage.permalink}}"><img src="{{instagramImage.media_url}}"></a>
-                </div>
+        <div class="flex-container instagram-feed" *ngIf="instagramImages.length > 0">
+            <div class="instagram-image" *ngFor="let instagramImage of instagramImages">
+                <a target="_blank" href="{{ instagramImage.permalink }}"><img [src]="instagramImage.base64" alt="Instagram image {{ instagramImage.permalink }}" /></a>
             </div>
-        </ng-template>
+        </div>
     </app-main-content-area>
     <app-side-content-area>
-        <div class="flex-container">
+        <div class="flex-container no-padding-left">
             <ng-template [ngxPermissionsOnly]="['MEMBER']">
                 <div class="issues-container">
                     <button mat-raised-button color="primary" class="issues-button" (click)="openIssueModal(0)">
@@ -74,7 +68,7 @@
                             <h4>Command Staff</h4>
                             <ul>
                                 <div *ngFor="let user of commanders">
-                                    <li>{{user.displayName}}</li>
+                                    <li>{{ user.displayName }}</li>
                                 </div>
                             </ul>
                         </div>
@@ -82,16 +76,16 @@
                             <h4>Recruitment Staff</h4>
                             <ul>
                                 <div *ngFor="let user of recruiters">
-                                    <li>{{user.displayName}}</li>
+                                    <li>{{ user.displayName }}</li>
                                 </div>
                             </ul>
                         </div>
-                        <hr *ngIf="(recruiters && recruiters.length > 0 || commanders && commanders.length > 0) && (members && members.length > 0 || guests && guests.length > 0)">
+                        <hr *ngIf="((recruiters && recruiters.length > 0) || (commanders && commanders.length > 0)) && ((members && members.length > 0) || (guests && guests.length > 0))" />
                         <div *ngIf="members && members.length > 0">
                             <h4>Members</h4>
                             <ul>
                                 <div *ngFor="let user of members">
-                                    <li>{{user.displayName}}</li>
+                                    <li>{{ user.displayName }}</li>
                                 </div>
                             </ul>
                         </div>
@@ -99,7 +93,7 @@
                             <h4>Guests</h4>
                             <ul>
                                 <div *ngFor="let user of guests">
-                                    <li>{{user.displayName}}</li>
+                                    <li>{{ user.displayName }}</li>
                                 </div>
                             </ul>
                         </div>

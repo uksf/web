@@ -8,7 +8,7 @@ import { AccountService } from 'app/Services/account.service';
 @Component({
     selector: 'app-notifications',
     templateUrl: './notifications.component.html',
-    styleUrls: ['./notifications.component.scss']
+    styleUrls: ['./notifications.component.scss'],
 })
 export class NotificationsComponent implements OnInit, OnDestroy {
     panel = false;
@@ -17,8 +17,15 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     private unreadTimeout;
     private hubConnection: ConnectionContainer;
 
-    constructor(private router: Router, private elementRef: ElementRef, private httpClient: HttpClient, private urlService: UrlService, private signalrService: SignalRService, private accountService: AccountService) {
-        router.events.subscribe(event => {
+    constructor(
+        private router: Router,
+        private elementRef: ElementRef,
+        private httpClient: HttpClient,
+        private urlService: UrlService,
+        private signalrService: SignalRService,
+        private accountService: AccountService
+    ) {
+        router.events.subscribe((event) => {
             this.onClose();
             this.panel = false;
 
@@ -30,15 +37,15 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.getNotifications();
-        this.waitForId().then(id => {
+        this.waitForId().then((id) => {
             this.hubConnection = this.signalrService.connect(`notifications?userId=${id}`);
             this.hubConnection.connection.on('ReceiveNotification', (notification) => {
                 this.notifications.unshift(notification);
                 this.updateNotifications();
             });
             this.hubConnection.connection.on('ReceiveRead', (ids: any[]) => {
-                ids.forEach(readId => {
-                    const notification = this.notifications.find(x => x.id === readId);
+                ids.forEach((readId) => {
+                    const notification = this.notifications.find((x) => x.id === readId);
                     if (notification) {
                         notification.read = true;
                     }
@@ -46,8 +53,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
                 this.updateNotifications();
             });
             this.hubConnection.connection.on('ReceiveClear', (ids: any[]) => {
-                ids.forEach(clearId => {
-                    const index = this.notifications.findIndex(x => x.id === clearId);
+                ids.forEach((clearId) => {
+                    const index = this.notifications.findIndex((x) => x.id === clearId);
                     if (index > -1) {
                         this.notifications.splice(index, 1);
                     }
@@ -66,15 +73,15 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     }
 
     getNotifications() {
-        this.httpClient.get(this.urlService.apiUrl + '/notifications').subscribe(response => {
+        this.httpClient.get(this.urlService.apiUrl + '/notifications').subscribe((response) => {
             this.notifications = response as any[];
             this.updateNotifications();
         });
     }
 
     updateNotifications() {
-        this.unreadNotifications = this.notifications.filter(x => !x.read);
-        this.notifications.forEach(x => {
+        this.unreadNotifications = this.notifications.filter((x) => !x.read);
+        this.notifications.forEach((x) => {
             if (x.link === this.router.url) {
                 this.clear(x);
             }
@@ -94,11 +101,13 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         if (this.panel) {
             if (this.unreadNotifications.length > 0) {
                 this.unreadTimeout = setTimeout(() => {
-                    this.httpClient.post(this.urlService.apiUrl + '/notifications/read', {
-                        notifications: this.unreadNotifications
-                    }).subscribe(_ => {
-                        this.unreadTimeout = null;
-                    });
+                    this.httpClient
+                        .post(this.urlService.apiUrl + '/notifications/read', {
+                            notifications: this.unreadNotifications,
+                        })
+                        .subscribe((_) => {
+                            this.unreadTimeout = null;
+                        });
                 }, 2000);
             }
             this.blockScrolling();
@@ -121,9 +130,11 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
     clear(notification = null) {
         const clear = notification ? [notification] : this.notifications;
-        this.httpClient.post(this.urlService.apiUrl + '/notifications/clear', {
-            clear: clear
-        }).subscribe();
+        this.httpClient
+            .post(this.urlService.apiUrl + '/notifications/clear', {
+                clear: clear,
+            })
+            .subscribe();
     }
 
     blockScrolling() {
@@ -147,5 +158,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         });
     }
 
-    async delay(delay: number) { return new Promise(resolve => setTimeout(resolve, delay)); }
+    async delay(delay: number) {
+        return new Promise((resolve) => setTimeout(resolve, delay));
+    }
 }
