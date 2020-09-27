@@ -69,6 +69,7 @@ export class PermissionsService {
         try {
             const promise = new Promise((resolve, reject) => {
                 if (this.sessionService.hasStorageToken()) {
+                    this.sessionService.setSessionToken();
                     this.authenticationService.refresh(() => {
                         // logged in
                         this.accountService.getAccount(
