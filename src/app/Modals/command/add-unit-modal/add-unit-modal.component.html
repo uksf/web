@@ -2,84 +2,68 @@
 <mat-dialog-content>
     <form [formGroup]="form" class="container">
         <div style="text-align: center;">
-            <div class="spinner-container" *ngIf="!otherUnits">
-                <div class="spacer"></div>
-                <mat-spinner></mat-spinner>
-                <div class="spacer"></div>
+            <div class="container">
+                <h4>Required Fields</h4>
+                <mat-form-field class="normal">
+                    <input matInput formControlName="name" required placeholder="Unit Name" [errorStateMatcher]="instantErrorStateMatcher" />
+                    <mat-error *ngFor="let validation of validationMessages.name">
+                        <mat-error class="error-message" *ngIf="form.get('name').hasError(validation.type)">{{ validation.message }}</mat-error>
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="normal">
+                    <input matInput formControlName="shortname" required placeholder="Short Name" [errorStateMatcher]="instantErrorStateMatcher" />
+                    <mat-error *ngFor="let validation of validationMessages.shortname">
+                        <mat-error class="error-message" *ngIf="form.get('shortname').hasError(validation.type)">{{ validation.message }}</mat-error>
+                    </mat-error>
+                </mat-form-field>
+                <mat-checkbox color="primary" formControlName="preferShortname">Prefer displaying short name</mat-checkbox>
+                <mat-form-field class="normal">
+                    <mat-select placeholder="Branch Type" formControlName="branch" required (selectionChange)="resolveAvailableParentUnits()">
+                        <mat-option *ngFor="let type of branchTypes" [value]="type.value">
+                            {{ type.viewValue }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field class="normal">
+                    <mat-select placeholder="Parent Unit" formControlName="parent" required>
+                        <mat-option *ngFor="let unit of availableParentUnits" [value]="unit.id">
+                            {{ unit.name }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngFor="let validation of validationMessages.parent">
+                        <mat-error class="error-message" *ngIf="form.get('parent').hasError(validation.type)">{{ validation.message }}</mat-error>
+                    </mat-error>
+                </mat-form-field>
             </div>
-            <div *ngIf="otherUnits">
-                <div class="container">
-                    <h4>Required Fields</h4>
-                    <mat-form-field class="normal">
-                        <input #input matInput formControlName="name" required placeholder="Unit Name" [errorStateMatcher]="instantErrorStateMatcher">
-                        <mat-error *ngFor="let validation of validationMessages.name">
-                            <mat-error class="error-message" *ngIf="form.get('name').hasError(validation.type)">{{validation.message}}</mat-error>
-                        </mat-error>
-                    </mat-form-field>
-                    <mat-form-field class="normal">
-                        <input #input matInput formControlName="shortname" required placeholder="Short Name" [errorStateMatcher]="instantErrorStateMatcher">
-                        <mat-error *ngFor="let validation of validationMessages.shortname">
-                            <mat-error class="error-message" *ngIf="form.get('shortname').hasError(validation.type)">{{validation.message}}</mat-error>
-                        </mat-error>
-                    </mat-form-field>
-                    <mat-form-field class="normal">
-                        <mat-select placeholder="Unit Type" formControlName="type" required>
-                            <mat-option *ngFor="let type of types" [value]="type.value">
-                                {{ type.viewValue }}
-                            </mat-option>
-                        </mat-select>
-                        <mat-error *ngFor="let validation of validationMessages.type">
-                            <mat-error class="error-message" *ngIf="form.get('type').hasError(validation.type)">{{validation.message}}</mat-error>
-                        </mat-error>
-                    </mat-form-field>
-                    <mat-form-field class="normal">
-                        <mat-select placeholder="Parent Unit" formControlName="parent" required>
-                            <mat-option *ngFor="let unit of otherUnits" [value]="unit.id">
-                                {{ unit.name }}
-                            </mat-option>
-                        </mat-select>
-                        <mat-error *ngFor="let validation of validationMessages.parent">
-                            <mat-error class="error-message" *ngIf="form.get('parent').hasError(validation.type)">{{validation.message}}</mat-error>
-                        </mat-error>
-                    </mat-form-field>
-                </div>
-                <br>
-                <div class="container">
-                    <h4>Optional Fields</h4>
-                    <mat-form-field class="normal">
-                        <mat-select placeholder="Branch Type" formControlName="branch" required>
-                            <mat-option *ngFor="let type of branchTypes" [value]="type.value">
-                                {{ type.viewValue }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                    <mat-form-field class="normal">
-                        <input #input matInput formControlName="teamspeakGroup" placeholder="TeamSpeak Group ID" type="number" [errorStateMatcher]="instantErrorStateMatcher">
-                        <mat-error *ngFor="let validation of validationMessages.teamspeakGroup">
-                            <mat-error class="error-message" *ngIf="form.get('teamspeakGroup').hasError(validation.type)">{{validation.message}}</mat-error>
-                        </mat-error>
-                    </mat-form-field>
-                    <mat-form-field class="normal">
-                        <input #input matInput formControlName="discordRoleId" placeholder="Discord Role ID" [errorStateMatcher]="instantErrorStateMatcher">
-                        <mat-error *ngFor="let validation of validationMessages.discordRoleId">
-                            <mat-error class="error-message" *ngIf="form.get('discordRoleId').hasError(validation.type)">{{validation.message}}</mat-error>
-                        </mat-error>
-                    </mat-form-field>
-                    <mat-form-field class="normal">
-                        <input #input matInput formControlName="callsign" placeholder="Callsign" [errorStateMatcher]="instantErrorStateMatcher">
-                        <mat-error *ngFor="let validation of validationMessages.callsign">
-                            <mat-error class="error-message" *ngIf="form.get('callsign').hasError(validation.type)">{{validation.message}}</mat-error>
-                        </mat-error>
-                    </mat-form-field>
-                    <mat-form-field class="normal">
-                        <input #input matInput formControlName="icon" placeholder="Unit Icon">
-                    </mat-form-field>
-                </div>
-                <div class="button-container">
-                    <button mat-raised-button *ngIf="edit" type="button" (click)="delete()" class="button-delete">Delete</button>
-                    <app-flex-filler *ngIf="edit"></app-flex-filler>
-                    <button mat-raised-button color="primary" #button (click)="submit(); button.disabled = true" [disabled]="!form.valid">Submit</button>
-                </div>
+            <br />
+            <div class="container">
+                <h4>Optional Fields</h4>
+                <mat-form-field class="normal">
+                    <input matInput formControlName="teamspeakGroup" placeholder="TeamSpeak Group ID" type="number" [errorStateMatcher]="instantErrorStateMatcher" />
+                    <mat-error *ngFor="let validation of validationMessages.teamspeakGroup">
+                        <mat-error class="error-message" *ngIf="form.get('teamspeakGroup').hasError(validation.type)">{{ validation.message }}</mat-error>
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="normal">
+                    <input matInput formControlName="discordRoleId" placeholder="Discord Role ID" [errorStateMatcher]="instantErrorStateMatcher" />
+                    <mat-error *ngFor="let validation of validationMessages.discordRoleId">
+                        <mat-error class="error-message" *ngIf="form.get('discordRoleId').hasError(validation.type)">{{ validation.message }}</mat-error>
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="normal">
+                    <input matInput formControlName="callsign" placeholder="Callsign" [errorStateMatcher]="instantErrorStateMatcher" />
+                    <mat-error *ngFor="let validation of validationMessages.callsign">
+                        <mat-error class="error-message" *ngIf="form.get('callsign').hasError(validation.type)">{{ validation.message }}</mat-error>
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="normal">
+                    <input matInput formControlName="icon" placeholder="Unit Icon" />
+                </mat-form-field>
+            </div>
+            <div class="button-container">
+                <button mat-raised-button *ngIf="edit" type="button" (click)="delete()" class="button-delete">Delete</button>
+                <app-flex-filler *ngIf="edit"></app-flex-filler>
+                <button mat-raised-button color="primary" #button (click)="submit(); button.disabled = true" [disabled]="!form.valid">Submit</button>
             </div>
         </div>
     </form>

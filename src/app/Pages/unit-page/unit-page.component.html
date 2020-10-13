@@ -1,89 +1,47 @@
+<!--TODO: Redo-->
 <app-default-content-areas>
-    <app-main-content-area *ngIf="data">
-
-        <div style="min-width: 400px;">
-            <img style="width:135px">
-            <h2>
-                <mat-icon matTooltip="Back to units" (click)="back()" style="cursor: pointer;">arrow_back</mat-icon> {{data.displayName}}
-            </h2>
-            <br>
-        </div>
-        <mat-card>
-            <div>
-                Org structure
-                <mat-grid-list cols="3" rowHeight="75px">
-                    <mat-grid-tile [colspan]="1" [rowspan]="1">
-                        <span>Unit code: {{data.code}}</span>
-                    </mat-grid-tile>
-                    <mat-grid-tile [colspan]="1" [rowspan]="1" *ngIf="data.parentDisplay">
-                        <span>Parent unit:
-                            <a [routerLink]="['/units',data.parentURL]">{{data.parentDisplay}}</a></span>
-                    </mat-grid-tile>
-                    <mat-grid-tile [colspan]="1" [rowspan]="1" *ngIf="data.regimentDisplay">
-                        <span>Regiment:
-                            <a [routerLink]="['/units',data.regimentURL]">{{data.regimentDisplay}}</a></span>
-                    </mat-grid-tile>
-                </mat-grid-list>
+    <app-main-content-area *ngIf="unit">
+        <div class="flex-container">
+            <div style="min-width: 400px;">
+                <img style="width: 135px;" />
+                <h2><mat-icon matTooltip="Back to units" (click)="back()" style="cursor: pointer;">arrow_back</mat-icon> {{ unit.name }}</h2>
+                <br />
             </div>
-            <div *ngIf="data.oic || data.xic || data.ncoic">
-                Leadership
-                <mat-grid-list cols="3" rowHeight="75px">
-                    <mat-grid-tile [colspan]="1" [rowspan]="1" *ngIf="data.oic">
-                        <span>1ic: {{data.oic}}</span>
-                    </mat-grid-tile>
-                    <mat-grid-tile [colspan]="1" [rowspan]="1" *ngIf="data.xic">
-                        <span>2ic: {{data.xic}}</span>
-                    </mat-grid-tile>
-                    <mat-grid-tile [colspan]="1" [rowspan]="1" *ngIf="data.ncoic">
-                        <span>NCOiC: {{data.ncoic}}</span>
-                    </mat-grid-tile>
-                </mat-grid-list>
+            <mat-card>
+                <div>
+                    Org structure
+                    <mat-grid-list cols="2" rowHeight="75px">
+                        <mat-grid-tile [colspan]="1" [rowspan]="1">
+                            <span>Unit code: {{ unit.code }}</span>
+                        </mat-grid-tile>
+                        <mat-grid-tile [colspan]="1" [rowspan]="1" *ngIf="unit.parentName">
+                            <span
+                                >Parent unit: <a [routerLink]="['/units', unit.parentId]">{{ unit.parentName }}</a></span
+                            >
+                        </mat-grid-tile>
+                    </mat-grid-list>
+                </div>
+            </mat-card>
+            <br />
+            <h3>Members</h3>
+            <div class="example-container mat-elevation-z8">
+                <mat-table [dataSource]="unit.unitMembers">
+                    <ng-container matColumnDef="unitRole">
+                        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                        <mat-cell *matCellDef="let element">{{ resolveUnitRole(element.unitRole) }}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="name">
+                        <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+                        <mat-cell *matCellDef="let element">{{ element.name }}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="role">
+                        <mat-header-cell *matHeaderCellDef> Role </mat-header-cell>
+                        <mat-cell *matCellDef="let element">{{ element.role }}</mat-cell>
+                    </ng-container>
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+                </mat-table>
             </div>
-        </mat-card>
-        <br>
-        <!-- <h3>Performance</h3>
-        <mat-card>
-            Attendance data
-            <mat-grid-list cols="3" rowHeight="75px">
-                <mat-grid-tile [colspan]="1" [rowspan]="1">
-                    Attendance: {{data.attendance}}
-                </mat-grid-tile>
-                <mat-grid-tile [colspan]="1" [rowspan]="1">
-                    Absences: {{data.absences}}
-                </mat-grid-tile>
-                <mat-grid-tile [colspan]="1" [rowspan]="1">
-                    Average LOA coverage: {{data.coverageLOA}}
-                </mat-grid-tile>
-            </mat-grid-list>
-            Casualty rate
-            <mat-grid-list cols="3" rowHeight="75px">
-                <mat-grid-tile [colspan]="1" [rowspan]="1">
-                    Injuries: {{data.casualtyRate}}
-                </mat-grid-tile>
-                <mat-grid-tile [colspan]="1" [rowspan]="1">
-                    Fatalities: {{data.fatalityRate}}
-                </mat-grid-tile>
-            </mat-grid-list>
-        </mat-card>
-        <br> -->
-        <h3>Members</h3>
-        <div class="example-container mat-elevation-z8">
-            <mat-table #table [dataSource]="dataSource">
-                <ng-container matColumnDef="name">
-                    <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
-                    <mat-cell *matCellDef="let element">{{element.name}}</mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="role">
-                    <mat-header-cell *matHeaderCellDef> Role </mat-header-cell>
-                    <mat-cell *matCellDef="let element">{{element.role}}</mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="status">
-                    <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
-                    <mat-cell *matCellDef="let element">{{element.status}}</mat-cell>
-                </ng-container>
-                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-            </mat-table>
         </div>
     </app-main-content-area>
 </app-default-content-areas>

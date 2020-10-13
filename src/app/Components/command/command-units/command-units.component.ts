@@ -9,29 +9,31 @@ import { ITreeOptions, TreeNode, KEYS, TREE_ACTIONS } from 'angular-tree-compone
 import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
 import { Permissions } from 'app/Services/permissions';
 import { PermissionsService } from 'app/Services/permissions.service';
+import { RequestUnitUpdateOrder, RequestUnitUpdateParent, ResponseUnit, ResponseUnitTree, ResponseUnitTreeDataSet } from '../../../Models/Units';
 
 @Component({
     selector: 'app-command-units',
     templateUrl: './command-units.component.html',
-    styleUrls: ['../../../Pages/command-page/command-page.component.css', './command-units.component.css']
+    styleUrls: ['../../../Pages/command-page/command-page.component.css', './command-units.component.css'],
 })
 export class CommandUnitsComponent implements OnInit {
-    @ViewChild('combatUnitsTree', {static: false}) combatUnitsTree: TreeNode;
-    @ViewChild('auxiliaryUnitsTree', {static: false}) auxiliaryUnitsTree: TreeNode;
+    @ViewChild('combatUnitsTree', { static: false }) combatUnitsTree: TreeNode;
+    @ViewChild('auxiliaryUnitsTree', { static: false }) auxiliaryUnitsTree: TreeNode;
     options: ITreeOptions = {
         actionMapping: {
             mouse: {
                 click: null,
-                dblClick: TREE_ACTIONS.TOGGLE_EXPANDED
-            }, keys: {
+                dblClick: TREE_ACTIONS.TOGGLE_EXPANDED,
+            },
+            keys: {
                 [KEYS.SPACE]: null,
-                [KEYS.ENTER]: null
-            }
-        }
+                [KEYS.ENTER]: null,
+            },
+        },
     };
     updatingOrder = false;
-    combatUnits;
-    auxiliaryUnits;
+    combat: any[];
+    auxiliary: any[];
 
     constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private permissions: PermissionsService) {
         if (permissions.hasPermission(Permissions.ADMIN)) {
@@ -40,9 +42,9 @@ export class CommandUnitsComponent implements OnInit {
                 allowDrop: true,
                 actionMapping: {
                     mouse: {
-                        dblClick: TREE_ACTIONS.TOGGLE_EXPANDED
-                    }
-                }
+                        dblClick: TREE_ACTIONS.TOGGLE_EXPANDED,
+                    },
+                },
             };
         }
     }
@@ -66,9 +68,9 @@ export class CommandUnitsComponent implements OnInit {
     }
 
     getUnits() {
-        this.httpClient.get(`${this.urls.apiUrl}/units/tree`).subscribe(response => {
-            this.combatUnits = response['combatUnits'];
-            this.auxiliaryUnits = response['auxiliaryUnits'];
+        this.httpClient.get(`${this.urls.apiUrl}/units/tree`).subscribe((response: ResponseUnitTreeDataSet) => {
+            this.combat = response.combatNodes;
+            this.auxiliary = response.auxiliaryNodes;
             setTimeout(() => {
                 this.resetTree();
             }, 100);
@@ -76,40 +78,44 @@ export class CommandUnitsComponent implements OnInit {
     }
 
     addUnit() {
-        this.dialog.open(AddUnitModalComponent, {}).afterClosed().subscribe(_ => {
-            this.getUnits();
-        });
+        this.dialog
+            .open(AddUnitModalComponent, {})
+            .afterClosed()
+            .subscribe((_) => {
+                this.getUnits();
+            });
     }
 
     editUnit(event) {
-        this.dialog.open(AddUnitModalComponent, {
-            data: {
-                unit: event.node.data.unit
-            }
-        }).afterClosed().subscribe(_ => {
-            this.getUnits();
-        });
-    }
-
-    deleteUnit(unit) {
-        const dialog = this.dialog.open(ConfirmationModalComponent, {
-            data: { message: `Are you sure you want to delete '${unit.name}'?` }
-        });
-        dialog.componentInstance.confirmEvent.subscribe(() => {
-            this.httpClient.delete(`${this.urls.apiUrl}/units/${unit.id}`).subscribe(_ => {
-                this.getUnits();
-            });
+        this.httpClient.get(`${this.urls.apiUrl}/units/${event.node.id}`).subscribe((unit: ResponseUnit) => {
+            this.dialog
+                .open(AddUnitModalComponent, {
+                    data: {
+                        unit: unit,
+                    },
+                })
+                .afterClosed()
+                .subscribe((_) => {
+                    this.getUnits();
+                });
         });
     }
 
     onMove(event) {
         this.updatingOrder = true;
-        if (event.node.unit.parent !== event.to.parent.unit.id) {
-            this.httpClient.post(`${this.urls.apiUrl}/units/parent`, { unit: event.node.unit, parentUnit: event.to.parent.unit, index: event.to.index }).subscribe(_ => {
+        if (event.from.parent.id !== event.to.parent.id) {
+            const body: RequestUnitUpdateParent = {
+                index: event.to.index,
+                parentId: event.to.parent.id,
+            };
+            this.httpClient.patch(`${this.urls.apiUrl}/units/${event.node.id}/parent`, body).subscribe((_) => {
                 this.getUnits();
             });
         } else {
-            this.httpClient.post(`${this.urls.apiUrl}/units/order`, { unit: event.node.unit, index: event.to.index }).subscribe(_ => {
+            const body: RequestUnitUpdateOrder = {
+                index: event.to.index,
+            };
+            this.httpClient.patch(`${this.urls.apiUrl}/units/${event.node.id}/order`, body).subscribe((_) => {
                 this.getUnits();
             });
         }

@@ -4,12 +4,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule, LowerCaseUrlSerializer } from './app-routing.module';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { GrowlModule } from 'primeng/primeng';
-import { RatingModule } from 'primeng/primeng';
-import { CarouselModule } from 'primeng/primeng';
-import { OrganizationChartModule } from 'primeng/primeng';
-import { ChartModule } from 'primeng/primeng';
-import { MessageModule } from 'primeng/primeng';
 import { JwtModule } from '@auth0/angular-jwt';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { TreeModule } from 'angular-tree-component';
@@ -70,9 +64,7 @@ import { HeaderBarComponent } from './Components/header-bar/header-bar.component
 import { FooterBarComponent } from './Components/footer-bar/footer-bar.component';
 import { RecruitmentPageComponent } from './Pages/recruitment-page/recruitment-page.component';
 import { CentreWrapperComponent } from './Components/centre-wrapper/centre-wrapper.component';
-import { NotificationsService } from './Services/notifications.service';
 import { DefaultContentAreasComponent } from './Components/default-content-areas/default-content-areas.component';
-import { MessagesModule } from 'primeng/primeng';
 import { RecruitmentApplicationPageComponent } from './Pages/recruitment-application-page/recruitment-application-page.component';
 import { LivePageComponent } from './Pages/live-page/live-page.component';
 import { UnitsPageComponent } from './Pages/units-page/units-page.component';
@@ -83,8 +75,6 @@ import { OperationsPageComponent } from './Pages/operations-page/operations-page
 import { PolicyPageComponent } from './Pages/policy-page/policy-page.component';
 import { InformationPageComponent } from './Pages/information-page/information-page.component';
 import { ModpackPageComponent } from './Pages/modpack-page/modpack-page.component';
-import { TerminalModule } from 'primeng/primeng';
-import { TerminalService } from 'primeng/components/terminal/terminalservice';
 import 'chart.js/dist/Chart.min.js';
 import { CommandPageComponent } from './Pages/command-page/command-page.component';
 import { ApiService } from './Services/api.service';
@@ -108,7 +98,6 @@ import { AdminPageComponent } from './Pages/admin-page/admin-page.component';
 import { AdminErrorLogsComponent } from './Components/admin/admin-error-logs/admin-error-logs.component';
 import { AdminAuditLogsComponent } from './Components/admin/admin-audit-logs/admin-audit-logs.component';
 import { OpordPageComponent } from './Pages/opord-page/opord-page.component';
-import { EditorModule } from 'primeng/editor';
 import { UnitsOrbatComponent } from './Components/units/units-orbat/units-orbat.component';
 import { UnitsOrbatAuxComponent } from './Components/units/units-orbat-aux/units-orbat-aux.component';
 import { UnitsRosterComponent } from './Components/units/units-roster/units-roster.component';
@@ -180,6 +169,10 @@ import { ModpackBuildProcessService } from './Services/modpackBuildProcess.servi
 import { NewModpackBuildModalComponent } from './Modals/new-modpack-build/new-modpack-build-modal.component';
 import { ModpackBuildsStepsComponent } from './Components/modpack/modpack-builds-steps/modpack-builds-steps.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { OrganizationChartModule } from 'primeng/organizationchart';
+import { EditorModule } from 'primeng/editor';
+import { ChartModule } from 'primeng/chart';
+import { RatingModule } from 'primeng/rating';
 
 export function initPermissions(injector: Injector) {
     return () => {
@@ -204,8 +197,6 @@ export function tokenGetter() {
         AccountService,
         PermissionsService,
         UrlService,
-        NotificationsService,
-        TerminalService,
         ApiService,
         TimeAgoPipe,
         NotificationsComponent,
@@ -274,17 +265,12 @@ export function tokenGetter() {
         MatSortModule,
         MatTableModule,
         MatTabsModule,
-        MessageModule,
         MatToolbarModule,
         ScrollingModule,
-        CarouselModule,
         OrganizationChartModule,
-        TerminalModule,
         ChartModule,
         MatTooltipModule,
-        MessagesModule,
         RatingModule,
-        GrowlModule,
         EditorModule,
         DragDropModule,
         HttpClientModule,
@@ -297,6 +283,7 @@ export function tokenGetter() {
         NgxPermissionsModule.forRoot(),
         TreeModule.forRoot(),
         MarkdownModule.forRoot(),
+        OrganizationChartModule,
     ],
     declarations: [
         AppComponent,

@@ -1,38 +1,40 @@
-.regiments-container {
-    padding-left: 16px;
-    .regiments {
-        display: flex;
-        flex-direction: row;
-        div {
-            text-align: center;
-            margin-left: 25px;
-            padding-top: 8px;
-            img {
-                width: 60px;
-            }
-        }
-    }
-}
-
-.orbat-container {
-    padding-left: 16px;
-}
-
 ::-webkit-scrollbar {
     width: 12px;
     min-height: 0px;
 }
 
-.spinner-container {
-    height: 200px;
-    position: relative;
-}
-
-.inner-table {
-    width: 100%;
-}
-
-.row-container {
+.flex-container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+
+    h3 {
+        padding-left: 16px;
+    }
+
+    .spinner-container {
+        height: 200px;
+        position: relative;
+    }
+
+    .scroll-container {
+        font-size: 11px;
+        overflow-x: auto;
+        flex: 1;
+
+        .inner-table {
+            width: 100%;
+
+            .row-container {
+                display: flex;
+                flex-direction: row;
+            }
+        }
+    }
+}
+
+:host ::ng-deep .p-organizationchart {
+    .node-header,
+    .node-content {
+        padding: 0.5em 0.7rem;
+    }
 }

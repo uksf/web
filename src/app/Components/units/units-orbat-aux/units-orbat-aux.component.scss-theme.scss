@@ -1,4 +1,4 @@
-@import "~@angular/material/theming";
+@import '~@angular/material/theming';
 
 @mixin units-orbat-aux-component-theme($theme) {
     $background: map-get($theme, background);
@@ -14,25 +14,25 @@
             background-color: mat-color($background, hover);
         }
 
-        .ui-organizationchart {
-            .ui-organizationchart-line-down {
+        .p-organizationchart {
+            .p-organizationchart-line-down {
                 background-color: mat-color($background, org-line);
             }
-            .ui-organizationchart-line-left {
+            .p-organizationchart-line-left {
                 border-right: 1px solid mat-color($background, org-line);
             }
-            .ui-organizationchart-line-top {
+            .p-organizationchart-line-top {
                 border-top: 1px solid mat-color($background, org-line);
             }
-            .ui-organizationchart-node-content {
+            .p-organizationchart-node-content {
                 border-color: mat-color($background, org-line);
             }
-            .ui-organizationchart-node-content {
-                .ui-node-toggler {
+            .p-organizationchart-node-content {
+                .p-node-toggler {
                     color: mat-color($background, org-line);
                 }
-                &.ui-organizationchart-selectable-node {
-                    &:not(.ui-state-highlight) {
+                &.p-organizationchart-selectable-node {
+                    &:not(.p-state-highlight) {
                         &:hover {
                             border-color: mat-color($background, org-line);
                             background-color: mat-color($background, org-hover);
@@ -47,7 +47,7 @@
                     }
                 }
             }
-            .ui-widget-content {
+            .p-widget-content {
                 color: mat-color($foreground, base);
                 background-color: mat-color($background, org-content);
                 h4 {

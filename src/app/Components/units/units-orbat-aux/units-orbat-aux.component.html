@@ -3,25 +3,25 @@
         <app-units-page></app-units-page>
         <div class="orbat-container">
             <h3>Auxiliary Organisation Chart</h3>
-            <div style="font-size: 11px; overflow-x: scroll;" class="scrollArea">
+            <div class="spinner-container" *ngIf="!rootNodes">
+                <mat-spinner></mat-spinner>
+            </div>
+            <div style="font-size: 11px; overflow-x: scroll;" class="scrollArea" *ngIf="rootNodes">
                 <div style="margin-bottom: 30px;">
-                    <div class="spinner-container" *ngIf="!auxData">
-                        <mat-spinner></mat-spinner>
-                    </div>
-                    <p-organizationChart [value]="auxData" selectionMode="single" [(selection)]="selectedNode" (onNodeSelect)="onNodeSelect($event)">
-                        <ng-template let-node pTemplate="person">
+                    <p-organizationChart [value]="rootNodes" selectionMode="single" [(selection)]="selectedNode" (onNodeSelect)="onNodeSelect($event)">
+                        <ng-template let-node pTemplate="unit">
                             <div class="node-header ui-corner-top">
-                                <h4 class="title">{{node.label}}</h4>
+                                <h4 class="title">{{ node.label }}</h4>
                             </div>
                             <div class="node-content">
                                 <table class="inner-table">
-                                    <tr *ngFor="let unitMember of node.data.name">
+                                    <tr *ngFor="let unitMember of node.data.members">
                                         <div class="row-container">
                                             <td style="padding-right: 3px;">
-                                                <b class="role">{{unitMember.role}}</b>
+                                                <b class="unit-role">{{ unitMember.unitRole }}</b>
                                             </td>
                                             <app-flex-filler></app-flex-filler>
-                                            <td class="name">{{unitMember.name}}</td>
+                                            <td class="name">{{ unitMember.name }}</td>
                                             <app-flex-filler></app-flex-filler>
                                         </div>
                                     </tr>

@@ -8,34 +8,32 @@ import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.co
 @Component({
     selector: 'app-request-transfer-modal',
     templateUrl: './request-transfer-modal.component.html',
-    styleUrls: ['./request-transfer-modal.component.css']
+    styleUrls: ['./request-transfer-modal.component.css'],
 })
 export class RequestTransferModalComponent implements OnInit {
     form: FormGroup;
     possibleUnits;
     possibleRecipients;
 
-    ngOnInit() { }
+    ngOnInit() {}
 
-    constructor(
-        private dialog: MatDialog,
-        private httpClient: HttpClient,
-        private urlService: UrlService,
-        private formbuilder: FormBuilder
-    ) {
-        this.form = this.formbuilder.group({
-            recipient: ['', Validators.required],
-            value: ['', Validators.required],
-            reason: ['', Validators.required]
-        }, {});
-        this.httpClient.get(this.urlService.apiUrl + '/accounts/under').subscribe(response => {
+    constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService, private formbuilder: FormBuilder) {
+        this.form = this.formbuilder.group(
+            {
+                recipient: ['', Validators.required],
+                value: ['', Validators.required],
+                reason: ['', Validators.required],
+            },
+            {}
+        );
+        this.httpClient.get(this.urlService.apiUrl + '/accounts/under').subscribe((response) => {
             this.possibleRecipients = response;
         });
         this.form.controls.value.disable();
     }
 
     onSelectRecipient(event) {
-        this.httpClient.get(this.urlService.apiUrl + '/units/' + event.value + '?filter=available').subscribe(response => {
+        this.httpClient.get(`${this.urlService.apiUrl}/units?filter=available&accountId=${event.value}`).subscribe((response) => {
             this.possibleUnits = response;
             this.form.controls.value.enable();
         });
@@ -43,17 +41,22 @@ export class RequestTransferModalComponent implements OnInit {
 
     submit() {
         const formString = JSON.stringify(this.form.getRawValue()).replace(/\n|\r/g, '');
-        this.httpClient.put(this.urlService.apiUrl + '/commandrequests/create/transfer', formString, {
-            headers: new HttpHeaders({
-                'Content-Type': 'application/json'
+        this.httpClient
+            .put(this.urlService.apiUrl + '/commandrequests/create/transfer', formString, {
+                headers: new HttpHeaders({
+                    'Content-Type': 'application/json',
+                }),
             })
-        }).subscribe(_ => {
-            this.dialog.closeAll();
-        }, error => {
-            this.dialog.closeAll();
-            this.dialog.open(MessageModalComponent, {
-                data: { message: error.error }
-            });
-        });
+            .subscribe(
+                (_) => {
+                    this.dialog.closeAll();
+                },
+                (error) => {
+                    this.dialog.closeAll();
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: error.error },
+                    });
+                }
+            );
     }
 }
