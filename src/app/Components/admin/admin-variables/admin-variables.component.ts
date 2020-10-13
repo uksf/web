@@ -15,7 +15,7 @@ import { VariableItem } from 'app/Models/VariableItem';
     styleUrls: ['../../../Pages/admin-page/admin-page.component.css', './admin-variables.component.scss']
 })
 export class AdminVariablesComponent implements OnInit {
-    @ViewChild(MatAccordion, { static: false }) accordion: MatAccordion;
+    @ViewChild(MatAccordion) accordion: MatAccordion;
     expanded = true;
     form: FormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();

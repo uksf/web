@@ -15,7 +15,7 @@ import { GameEnvironment } from 'app/Models/GameEnvironment';
     styleUrls: ['../../../Pages/modpack-page/modpack-page.component.scss', './modpack-builds-rc.component.scss', './modpack-builds-rc.component.scss-theme.scss'],
 })
 export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
-    @ViewChild(ThemeEmitterComponent, { static: false }) theme: ThemeEmitterComponent;
+    @ViewChild(ThemeEmitterComponent) theme: ThemeEmitterComponent;
     modpackBuildResult = ModpackBuildResult;
     gameEnvironment = GameEnvironment;
     selectedRcVersion = '';

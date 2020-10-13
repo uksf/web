@@ -18,9 +18,9 @@ import { GameEnvironment } from '../../../Models/GameEnvironment';
     styleUrls: ['../../../Pages/modpack-page/modpack-page.component.scss', './modpack-builds-steps.component.scss', './modpack-builds-steps.component.scss-theme.scss'],
 })
 export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges {
-    @ViewChild(ThemeEmitterComponent, { static: false })
+    @ViewChild(ThemeEmitterComponent)
     theme: ThemeEmitterComponent;
-    @ViewChild(CdkVirtualScrollViewport, { static: false })
+    @ViewChild(CdkVirtualScrollViewport)
     scrollView: CdkVirtualScrollViewport;
     @Input() build: ModpackBuild;
     @Input() rebuildCondition: () => boolean;

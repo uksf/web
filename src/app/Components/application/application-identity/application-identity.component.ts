@@ -80,9 +80,9 @@ export class ConfirmValidParentMatcher implements ErrorStateMatcher {
 })
 export class ApplicationIdentityComponent {
     @Output() nextEvent = new EventEmitter();
-    @ViewChild('day', { static: false }) dobDay: ElementRef;
-    @ViewChild('month', { static: false }) dobMonth: ElementRef;
-    @ViewChild('year', { static: false }) dobYear: ElementRef;
+    @ViewChild('day') dobDay: ElementRef;
+    @ViewChild('month') dobMonth: ElementRef;
+    @ViewChild('year') dobYear: ElementRef;
     formGroup: FormGroup;
     pending = false;
     confirmValidParentMatcher = new ConfirmValidParentMatcher();

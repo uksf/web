@@ -13,7 +13,7 @@ import { ActivatedRoute, Router } from '@angular/router';
     styleUrls: ['../../../Pages/modpack-page/modpack-page.component.scss', './modpack-builds-dev.component.scss', './modpack-builds-dev.component.scss-theme.scss'],
 })
 export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
-    @ViewChild(ThemeEmitterComponent, { static: false }) theme: ThemeEmitterComponent;
+    @ViewChild(ThemeEmitterComponent) theme: ThemeEmitterComponent;
     modpackBuildResult = ModpackBuildResult;
     selectedBuildId = '';
     changesMarkdown: string;

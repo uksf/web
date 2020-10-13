@@ -5,7 +5,7 @@ import { Component, ViewChild, ElementRef } from '@angular/core';
     templateUrl: './maintenance.component.html'
 })
 export class MaintenanceComponent {
-    @ViewChild('maintenance', { read: ElementRef, static: false }) maintenance: ElementRef;
+    @ViewChild('maintenance', { read: ElementRef }) maintenance: ElementRef;
 
     constructor() { }
 

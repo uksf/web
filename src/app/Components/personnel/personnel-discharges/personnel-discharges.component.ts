@@ -13,7 +13,7 @@ import { nextFrame } from 'app/Services/helper.service';
     styleUrls: ['../../../Pages/personnel-page/personnel-page.component.scss', './personnel-discharges.component.scss']
 })
 export class PersonnelDischargesComponent {
-    @ViewChild(MatExpansionPanel, { static: false }) panel: MatExpansionPanel;
+    @ViewChild(MatExpansionPanel) panel: MatExpansionPanel;
     displayedColumns = ['timestamp', 'rank', 'unit', 'role', 'dischargedBy', 'reason'];
     updating: boolean;
     completeDischargeCollections: DischargeCollection[];

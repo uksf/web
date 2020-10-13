@@ -7,7 +7,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
     styleUrls: ['./multiple-message-modal.component.css']
 })
 export class MultipleMessageModalComponent {
-    @ViewChild('messageBox', {static: false}) messageBox: ElementRef;
+    @ViewChild('messageBox') messageBox: ElementRef;
     messages;
     title;
     message;

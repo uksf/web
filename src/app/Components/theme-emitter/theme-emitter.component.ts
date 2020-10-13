@@ -7,11 +7,11 @@ import { AppComponent } from 'app/app.component';
     styleUrls: ['./theme-emitter.component.css']
 })
 export class ThemeEmitterComponent implements AfterViewInit {
-    @ViewChild('foreground', {static: false}) foregroundElement: ElementRef;
-    @ViewChild('primary', {static: false}) primaryElement: ElementRef;
-    @ViewChild('primaryContrast', {static: false}) primaryContrastElement: ElementRef;
-    @ViewChild('accent', {static: false}) accentElement: ElementRef;
-    @ViewChild('warn', {static: false}) warnElement: ElementRef;
+    @ViewChild('foreground') foregroundElement: ElementRef;
+    @ViewChild('primary') primaryElement: ElementRef;
+    @ViewChild('primaryContrast') primaryContrastElement: ElementRef;
+    @ViewChild('accent') accentElement: ElementRef;
+    @ViewChild('warn') warnElement: ElementRef;
     foregroundColor: string;
     primaryColor: string;
     primaryContrastColor: string;

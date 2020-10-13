@@ -20,8 +20,8 @@ import { PermissionsService } from 'app/Services/permissions.service';
 })
 export class OperationsServersComponent implements OnInit, OnDestroy {
     static theme;
-    @ViewChild('uploader', { static: false }) uploader: ElementRef;
-    @ViewChild('serversContainer', { static: false }) serversContainer: ElementRef;
+    @ViewChild('uploader') uploader: ElementRef;
+    @ViewChild('serversContainer') serversContainer: ElementRef;
     admin;
     servers;
     disabled = false;

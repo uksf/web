@@ -19,8 +19,8 @@ import { PermissionsService } from 'app/Services/permissions.service';
     providers: [DatePipe],
 })
 export class RecruitmentApplicationPageComponent {
-    @ViewChild('recruiterCommentsDisplay', { static: false }) recruiterCommentDisplay: CommentDisplayComponent;
-    @ViewChild('applicationCommentsDisplay', { static: false }) applicationCommentDisplay: CommentDisplayComponent;
+    @ViewChild('recruiterCommentsDisplay') recruiterCommentDisplay: CommentDisplayComponent;
+    @ViewChild('applicationCommentsDisplay') applicationCommentDisplay: CommentDisplayComponent;
     membershipState = MembershipState;
     applicationState = ApplicationState;
     countries: ICountry[];

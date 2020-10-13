@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, Injectable } from '@angular/core';
 import { RouterModule, Routes, ActivatedRouteSnapshot, RouterStateSnapshot, DefaultUrlSerializer, UrlTree } from '@angular/router';
 import { HomePageComponent } from './Pages/home-page/home-page.component';
 import { LoginPageComponent } from './Pages/login-page/login-page.component';
@@ -536,6 +536,7 @@ export function loginRedirect(rejectedPermissionName: string, activatedRouteSnap
     return '/login';
 }
 
+@Injectable()
 export class LowerCaseUrlSerializer extends DefaultUrlSerializer {
     parse(url: string): UrlTree {
         return super.parse(url.toLowerCase());
