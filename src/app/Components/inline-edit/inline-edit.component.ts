@@ -1,29 +1,18 @@
-import {
-    Component,
-    Input,
-    ElementRef,
-    ViewChild,
-    Renderer,
-    forwardRef,
-    OnInit,
-    Output,
-    EventEmitter,
-    HostListener
-} from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, ValidationErrors } from '@angular/forms';
+import { Component, Input, ViewChild, forwardRef, OnInit, Output, EventEmitter, HostListener } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Observable } from 'rxjs';
 
 const INLINE_EDIT_CONTROL_VALUE_ACCESSOR = {
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => InlineEditComponent),
-    multi: true
+    multi: true,
 };
 
 @Component({
     selector: 'app-inline-edit',
     templateUrl: './inline-edit.component.html',
     providers: [INLINE_EDIT_CONTROL_VALUE_ACCESSOR],
-    styleUrls: ['./inline-edit.component.css']
+    styleUrls: ['./inline-edit.component.css'],
 })
 export class InlineEditComponent implements ControlValueAccessor, OnInit {
     @ViewChild('inlineEditControl', { static: false }) inlineEditControl;
@@ -48,7 +37,7 @@ export class InlineEditComponent implements ControlValueAccessor, OnInit {
         if (v !== this._value) {
             this._value = v;
             this.onChange(v);
-            this.validator.subscribe(invalid => {
+            this.validator.subscribe((invalid) => {
                 this.invalid = invalid;
             });
         } else {
@@ -56,9 +45,9 @@ export class InlineEditComponent implements ControlValueAccessor, OnInit {
         }
     }
 
-    constructor() { }
+    constructor() {}
 
-    ngOnInit() { }
+    ngOnInit() {}
 
     writeValue(value: any) {
         this._value = value;
@@ -85,10 +74,12 @@ export class InlineEditComponent implements ControlValueAccessor, OnInit {
     }
 
     edit(value) {
-        if (this.disabled) { return; }
+        if (this.disabled) {
+            return;
+        }
         this.preValue = value;
         this.editing = true;
-        setTimeout(_ => this.inlineEditControl.nativeElement.focus());
+        setTimeout((_) => this.inlineEditControl.nativeElement.focus());
     }
 
     @HostListener('window:keyup', ['$event'])
