@@ -1,5 +1,5 @@
 import { Component, Inject, Output, EventEmitter } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators, ValidationErrors } from '@angular/forms';
 import { InstantErrorStateMatcher } from 'app/Services/formhelper.service';
 import { NewBuild } from '../../Models/NewBuild';

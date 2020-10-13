@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { AddRankModalComponent } from '../../../Modals/command/add-rank-modal/add-rank-modal.component';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { Observable, timer, of } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';

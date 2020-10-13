@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { CreateOperationReportModalComponent } from '../../../Modals/create-operation-report-modal/create-operation-report-modal.component';
 import { Router } from '@angular/router';
 

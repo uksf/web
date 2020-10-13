@@ -2,7 +2,7 @@ import { Component, isDevMode } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { AccountService } from 'app/Services/account.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
 
 @Component({

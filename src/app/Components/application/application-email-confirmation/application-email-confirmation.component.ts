@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpHeaders } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
 import { PermissionsService } from 'app/Services/permissions.service';
 

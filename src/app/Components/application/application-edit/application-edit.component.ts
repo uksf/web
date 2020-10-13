@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl, FormGroupDirective, NgForm, AbstractControl } from '@angular/forms';
-import { MatDialog, ErrorStateMatcher, MatCheckboxChange } from '@angular/material';
+import { MatCheckboxChange } from '@angular/material/checkbox';
+import { ErrorStateMatcher } from '@angular/material/core';
+import { MatDialog } from '@angular/material/dialog';
 import { AccountService, ApplicationState } from 'app/Services/account.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from 'app/Services/url.service';

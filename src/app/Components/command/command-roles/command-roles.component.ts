@@ -6,7 +6,7 @@ import { Observable, timer, of } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 import { InstantErrorStateMatcher } from 'app/Services/formhelper.service';
 import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({

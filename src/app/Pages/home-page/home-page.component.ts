@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UrlService } from '../../Services/url.service';
 import { HttpClient } from '@angular/common/http';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { CreateIssueModalComponent } from '../../Modals/create-issue-modal/create-issue-modal.component';
 import { ConnectionContainer, SignalRService } from 'app/Services/signalr.service';
 import { PermissionsService } from 'app/Services/permissions.service';

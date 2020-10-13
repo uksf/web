@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { Observable, timer } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 import { AddUnitModalComponent } from '../../../Modals/command/add-unit-modal/add-unit-modal.component';

@@ -1,8 +1,10 @@
 import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
-import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { Log } from '../../../Pages/admin-page/admin-page.component';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
 import { SignalRService, ConnectionContainer } from 'app/Services/signalr.service';

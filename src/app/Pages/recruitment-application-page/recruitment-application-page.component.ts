@@ -9,7 +9,7 @@ import { MembershipState, ApplicationState, AccountService } from '../../Service
 import { Permissions } from 'app/Services/permissions';
 import { CountryPickerService, ICountry } from 'app/Services/CountryPicker/country-picker.service';
 import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { PermissionsService } from 'app/Services/permissions.service';
 
 @Component({

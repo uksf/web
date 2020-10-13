@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../Services/url.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AccountService, MembershipState } from '../../Services/account.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { ConnectTeamspeakModalComponent } from '../../Modals/connect-teamspeak-modal/connect-teamspeak-modal.component';
 import { ChangePasswordModalComponent } from '../../Modals/change-password-modal/change-password-modal.component';
 import { FormBuilder, FormGroup } from '@angular/forms';

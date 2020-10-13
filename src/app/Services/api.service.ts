@@ -3,7 +3,7 @@ import { AuthenticationService } from './Authentication/authentication.service';
 import { UrlService } from './url.service';
 import { HttpClient } from '@angular/common/http';
 import { FormGroup } from '@angular/forms';
-import { MatDialogRef } from '@angular/material';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Injectable()
 export class ApiService {

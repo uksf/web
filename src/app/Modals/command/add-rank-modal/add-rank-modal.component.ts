@@ -5,7 +5,7 @@ import { Observable, of, timer } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-add-rank-modal',

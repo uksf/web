@@ -5,7 +5,7 @@ import { Observable, of, timer } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
-import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-add-server-modal',

@@ -3,7 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { InstantErrorStateMatcher } from 'app/Services/formhelper.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../Services/url.service';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-create-issue-modal',

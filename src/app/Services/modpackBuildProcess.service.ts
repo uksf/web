@@ -4,7 +4,7 @@ import * as moment from 'moment';
 import { ModpackBuild } from 'app/Models/ModpackBuild';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from './url.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { NewModpackBuildModalComponent } from 'app/Modals/new-modpack-build/new-modpack-build-modal.component';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
 import { NewBuild } from '../Models/NewBuild';

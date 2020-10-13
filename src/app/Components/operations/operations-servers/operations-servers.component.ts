@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { AddServerModalComponent } from 'app/Modals/operations/add-server-modal/add-server-modal.component';
 import { EditServerModsModalComponent } from 'app/Modals/operations/edit-server-mods-modal/edit-server-mods-modal.component';
 import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';

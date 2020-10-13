@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/fo
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../Services/url.service';
 import { AuthenticationService } from '../../Services/Authentication/authentication.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { PermissionsService } from '../../Services/permissions.service';
 
 export function passwordMatcher(form: AbstractControl) {

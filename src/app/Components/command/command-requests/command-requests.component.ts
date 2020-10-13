@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { UrlService } from '../../../Services/url.service';
 import { RequestRankModalComponent } from '../../../Modals/command/request-rank-modal/request-rank-modal.component';
 import { RequestTransferModalComponent } from '../../../Modals/command/request-transfer-modal/request-transfer-modal.component';

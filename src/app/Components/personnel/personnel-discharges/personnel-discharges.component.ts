@@ -1,7 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
-import { MatDialog, MatExpansionPanel } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatExpansionPanel } from '@angular/material/expansion';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
 import { ActivatedRoute } from '@angular/router';
 import { TextInputModalComponent } from 'app/Modals/text-input-modal/text-input-modal.component';

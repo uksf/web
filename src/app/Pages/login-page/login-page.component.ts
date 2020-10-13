@@ -2,7 +2,7 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import { AuthenticationService } from '../../Services/Authentication/authentication.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators, ValidationErrors, AbstractControl } from '@angular/forms';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { ForgotPasswordModalComponent } from '../../Modals/forgot-password-modal/forgot-password-modal.component';
 import { StatesService } from 'app/Services/states.service';
 import { PermissionsService } from '../../Services/permissions.service';

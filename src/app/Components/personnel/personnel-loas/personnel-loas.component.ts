@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { RequestLoaModalComponent } from '../../../Modals/command/request-loa-modal/request-loa-modal.component';
 import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
 import { EventEmitter } from 'events';

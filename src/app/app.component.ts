@@ -6,7 +6,7 @@ import { OperationsServersComponent } from './Components/operations/operations-s
 import { CommandRanksComponent } from './Components/command/command-ranks/command-ranks.component';
 import { CommandRolesComponent } from './Components/command/command-roles/command-roles.component';
 import { isPlatformBrowser } from '@angular/common';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationModalComponent } from './Modals/confirmation-modal/confirmation-modal.component';
 import { SignalRService, ConnectionContainer } from './Services/signalr.service';
 

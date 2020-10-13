@@ -3,7 +3,8 @@ import { FormBuilder, FormGroup, Validators, FormControl, FormGroupDirective, Ng
 import { HttpHeaders } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
-import { MatDialog, ErrorStateMatcher } from '@angular/material';
+import { ErrorStateMatcher } from '@angular/material/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Observable, of, timer } from 'rxjs';
 import { switchMap, map, startWith } from 'rxjs/operators';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
