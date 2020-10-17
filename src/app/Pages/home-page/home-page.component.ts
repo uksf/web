@@ -4,10 +4,6 @@ import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateIssueModalComponent } from '../../Modals/create-issue-modal/create-issue-modal.component';
 import { ConnectionContainer, SignalRService } from 'app/Services/signalr.service';
-import { PermissionsService } from 'app/Services/permissions.service';
-import { Permissions } from 'app/Services/permissions';
-import { Observable } from 'rxjs';
-import { flatMap } from 'rxjs/operators';
 
 @Component({
     selector: 'app-home-page',
@@ -21,15 +17,15 @@ export class HomePageComponent implements OnInit {
     guests;
     content = [];
     instagramImages: InstagramImage[] = [];
-    _time: number;
+    _time: Date;
     private hubConnection: ConnectionContainer;
     private updateTimeout;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private signalrService: SignalRService, private permissions: PermissionsService) {
-        this._time = Date.now();
+    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private signalrService: SignalRService) {
+        this._time = new Date();
         setInterval(() => {
-            this._time = Date.now();
-        }, 100);
+            this._time = new Date();
+        }, 250);
     }
 
     ngOnInit(): void {
@@ -47,6 +43,18 @@ export class HomePageComponent implements OnInit {
         });
 
         this.getInstagramImages();
+    }
+
+    get time() {
+        return this._time;
+    }
+
+    openIssueModal(type) {
+        this.dialog.open(CreateIssueModalComponent, {
+            data: {
+                type: type,
+            },
+        });
     }
 
     private mergeUpdates(callback: () => void) {
@@ -86,18 +94,6 @@ export class HomePageComponent implements OnInit {
             if (response.length > 0) {
                 this.instagramImages = response;
             }
-        });
-    }
-
-    get time() {
-        return this._time;
-    }
-
-    openIssueModal(type) {
-        this.dialog.open(CreateIssueModalComponent, {
-            data: {
-                type: type,
-            },
         });
     }
 }

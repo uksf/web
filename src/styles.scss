@@ -1,5 +1,5 @@
 @import '~@angular/material/theming';
-@import '~angular-tree-component/dist/angular-tree-component.css';
+@import '~@circlon/angular-tree-component/css/angular-tree-component.css';
 
 .mat-checkbox-layout {
     white-space: normal !important;
@@ -142,9 +142,11 @@
     .nav-bar {
         display: block;
         padding: 0 0 12px 0;
+
         .mat-tab-link {
             color: mat-color($foreground, base);
             background-color: mat-color($background, background);
+
             &:hover {
                 background-color: mat-color($background, hover);
             }
@@ -183,9 +185,11 @@
     .nav-bar {
         display: block;
         padding: 0 0 12px 0;
+
         .mat-tab-link {
             color: mat-color($foreground, base);
             background-color: mat-color($background, background);
+
             &:hover {
                 background-color: mat-color($background, hover);
             }
@@ -212,4 +216,16 @@
     .mat-tab-nav-bar {
         overflow: auto;
     }
+}
+
+.mat-button,
+.mat-raised-button,
+.mat-icon-button,
+.mat-stroked-button,
+.mat-flat-button,
+.mat-fab,
+.mat-mini-fab,
+.mat-tab-label,
+.mat-tab-link {
+    font-weight: unset;
 }

@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Permissions } from 'app/Services/permissions';
-import { AccountService, ApplicationState } from 'app/Services/account.service';
+import { AccountService } from 'app/Services/account.service';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from 'app/Services/url.service';
 import { AppComponent } from 'app/app.component';
 import { PermissionsService } from 'app/Services/permissions.service';
+import { ApplicationState } from '../../Models/Account';
 
 @Component({
     selector: 'app-side-bar',

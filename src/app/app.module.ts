@@ -6,8 +6,8 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { JwtModule } from '@auth0/angular-jwt';
 import { NgxPermissionsModule } from 'ngx-permissions';
-import { TreeModule } from 'angular-tree-component';
 import { MarkdownModule } from 'ngx-markdown';
+import { TreeModule } from '@circlon/angular-tree-component';
 
 // Services
 import { AuthenticationService } from './Services/Authentication/authentication.service';
@@ -265,6 +265,7 @@ export function tokenGetter() {
         ScrollingModule,
         OrganizationChartModule,
         ChartModule,
+        TreeModule,
         MatTooltipModule,
         RatingModule,
         EditorModule,
@@ -273,13 +274,11 @@ export function tokenGetter() {
         JwtModule.forRoot({
             config: {
                 tokenGetter: tokenGetter,
-                whitelistedDomains: ['localhost:5000', 'uk-sf.co.uk', 'www.uk-sf.co.uk', 'api.uk-sf.co.uk'],
+                allowedDomains: ['localhost:5000', 'uk-sf.co.uk', 'www.uk-sf.co.uk', 'api.uk-sf.co.uk'],
             },
         }),
         NgxPermissionsModule.forRoot(),
-        TreeModule.forRoot(),
         MarkdownModule.forRoot(),
-        OrganizationChartModule,
     ],
     declarations: [
         AppComponent,
@@ -306,7 +305,6 @@ export function tokenGetter() {
         InformationPageComponent,
         ModpackPageComponent,
         CommandPageComponent,
-        TimeAgoPipe,
         TocList,
         RequestRankModalComponent,
         RequestRoleModalComponent,

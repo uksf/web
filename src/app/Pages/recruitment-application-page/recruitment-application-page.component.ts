@@ -5,12 +5,13 @@ import { UrlService } from '../../Services/url.service';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommentDisplayComponent } from '../../Components/comment-display/comment-display.component';
-import { MembershipState, ApplicationState, AccountService } from '../../Services/account.service';
+import { AccountService } from '../../Services/account.service';
 import { Permissions } from 'app/Services/permissions';
 import { CountryPickerService, ICountry } from 'app/Services/CountryPicker/country-picker.service';
 import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { PermissionsService } from 'app/Services/permissions.service';
+import { ApplicationState, MembershipState } from '../../Models/Account';
 
 @Component({
     selector: 'app-recruitment-application-page',

@@ -1,7 +1,7 @@
 <app-default-content-areas>
-    <app-main-content-area style="grid-column: span 3;">
+    <app-main-content-area style="grid-column: span 3">
         <app-units-page></app-units-page>
-        <div class="flex-container">
+        <div class="org-container">
             <h3>Organisation Chart</h3>
             <div class="spinner-container" *ngIf="!rootNodes">
                 <mat-spinner></mat-spinner>
@@ -12,11 +12,11 @@
                         <div class="node-header p-corner-top">
                             <h4 class="title">{{ node.label }}</h4>
                         </div>
-                        <div class="node-content">
+                        <div class="node-content" *ngIf="node.data.members.length > 0">
                             <table class="inner-table">
                                 <tr *ngFor="let unitMember of node.data.members">
                                     <div class="row-container">
-                                        <td style="padding-right: 3px;">
+                                        <td style="padding-right: 3px">
                                             <b class="unit-role">{{ unitMember.unitRole }}</b>
                                         </td>
                                         <app-flex-filler></app-flex-filler>

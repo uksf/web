@@ -4,13 +4,13 @@ import { CountryPickerService } from 'app/Services/CountryPicker/country-picker.
 @Pipe({ name: 'countryName' })
 export class CountryName implements PipeTransform {
     transform(value: string): string {
-        return CountryPickerService.countries.find(x => x.value === value).name;
+        return CountryPickerService.countries.find((x) => x.value === value).name;
     }
 }
 
 @Pipe({ name: 'countryImage' })
 export class CountryImage implements PipeTransform {
     transform(value: string): string {
-        return 'assets/dist/countries/' + value.toLowerCase() + '.svg';
+        return 'assets/dist/countries/' + CountryPickerService.countries.find((x) => x.value === value).code.toLowerCase() + '.svg';
     }
 }

@@ -1,0 +1,19 @@
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    margin-left: 0;
+    padding: 0 16px 16px;
+
+    .mat-row {
+        min-height: 36px;
+        max-height: 36px;
+    }
+
+    .mat-column-nation {
+        flex: 0 0 68px;
+
+        img {
+            width: 24px;
+        }
+    }
+}

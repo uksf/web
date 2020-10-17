@@ -1,12 +1,13 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { NgxPermissionsService } from 'ngx-permissions';
-import { Account, AccountService, MembershipState } from './account.service';
+import { AccountService } from './account.service';
 import { SessionService } from './Authentication/session.service';
 import { Permissions } from './permissions';
 import { ConnectionContainer, SignalRService } from './signalr.service';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from './url.service';
 import { AuthenticationService } from './Authentication/authentication.service';
+import { Account, MembershipState } from '../Models/Account';
 
 @Injectable()
 export class PermissionsService {

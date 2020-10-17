@@ -1,14 +1,22 @@
 <app-default-content-areas>
-    <app-main-content-area style="grid-column: span 3;">
+    <app-main-content-area style="grid-column: span 3">
         <app-units-page></app-units-page>
         <div class="flex-container">
             <div class="spinner-container" *ngIf="!rosterData">
                 <mat-spinner></mat-spinner>
             </div>
-            <mat-table class="table-container mat-elevation-z8" [dataSource]="rosterData">
+            <table mat-table class="table-container mat-elevation-z8" [dataSource]="rosterData">
+                <ng-container matColumnDef="nation">
+                    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                    <mat-cell *matCellDef="let member" [routerLink]="['/profile', member.id]">
+                        <img src="{{ member.nation | countryImage }}" alt="{{ member.nation }}" />
+                    </mat-cell>
+                </ng-container>
                 <ng-container matColumnDef="name">
                     <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
-                    <mat-cell *matCellDef="let member" [routerLink]="['/profile', member.id]">{{ member.name }}</mat-cell>
+                    <mat-cell *matCellDef="let member" [routerLink]="['/profile', member.id]">
+                        {{ member.name }}
+                    </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="rank">
                     <mat-header-cell *matHeaderCellDef>Rank</mat-header-cell>
@@ -22,18 +30,9 @@
                     <mat-header-cell *matHeaderCellDef>Unit</mat-header-cell>
                     <mat-cell *matCellDef="let member" [routerLink]="['/profile', member.id]">{{ member.unitAssignment }}</mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="nation">
-                    <mat-header-cell *matHeaderCellDef>Nation</mat-header-cell>
-                    <mat-cell *matCellDef="let member" [routerLink]="['/profile', member.id]">
-                        <div>
-                            <img src="{{ member.nation | countryImage }}" width="20" alt="{{ member.nation }}" />
-                            <span style="margin-left: 5px;">{{ member.nation | countryName }}</span>
-                        </div>
-                    </mat-cell>
-                </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                 <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-            </mat-table>
+            </table>
         </div>
     </app-main-content-area>
 </app-default-content-areas>

@@ -38,13 +38,68 @@ a {
     min-width: 75px;
 }
 
-.unit-role {
-    font-size: 18px;
-    line-height: 1px;
-    font-family: monospace;
-    vertical-align: middle;
+::-webkit-scrollbar {
+    width: 12px;
+    min-height: 0;
 }
 
-.name {
-    min-width: 75px;
+.org-container {
+    display: flex;
+    flex-direction: column;
+
+    h3 {
+        padding-left: 16px;
+    }
+
+    .spinner-container {
+        height: 200px;
+        position: relative;
+    }
+
+    .scroll-container {
+        font-size: 11px;
+        overflow-x: auto;
+        flex: 1;
+
+        .inner-table {
+            width: 100%;
+
+            .row-container {
+                display: flex;
+                flex-direction: row;
+
+                .unit-role {
+                    font-size: 18px;
+                    line-height: 1px;
+                    font-family: monospace;
+                    vertical-align: middle;
+                }
+
+                .name {
+                    min-width: 75px;
+                    font-size: 11px;
+                }
+            }
+        }
+    }
+}
+
+:host ::ng-deep .p-organizationchart {
+    .node-header,
+    .node-content {
+        padding: 0.5em 0.7rem;
+    }
+
+    .p-organizationchart-node-content {
+        padding: 0.5rem;
+        border-radius: 5px;
+
+        .p-node-toggler {
+            display: none;
+        }
+    }
+}
+
+:host ::ng-deep .p-organizationchart-table > tbody > tr > td {
+    padding: 0 0.5rem;
 }

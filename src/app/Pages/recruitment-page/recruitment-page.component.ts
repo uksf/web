@@ -1,15 +1,15 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AuthenticationService } from '../../Services/Authentication/authentication.service';
 import { UrlService } from '../../Services/url.service';
 import { Router } from '@angular/router';
-import { AccountService, ApplicationState, MembershipState } from '../../Services/account.service';
+import { AccountService } from '../../Services/account.service';
 import { ThemeEmitterComponent } from 'app/Components/theme-emitter/theme-emitter.component';
+import { ApplicationState, MembershipState } from '../../Models/Account';
 
 @Component({
     selector: 'app-recruitment-page',
     templateUrl: './recruitment-page.component.html',
-    styleUrls: ['./recruitment-page.component.scss']
+    styleUrls: ['./recruitment-page.component.scss'],
 })
 export class RecruitmentPageComponent implements OnInit {
     @ViewChild(ThemeEmitterComponent) theme: ThemeEmitterComponent;
@@ -31,20 +31,15 @@ export class RecruitmentPageComponent implements OnInit {
     index = 0;
     length = 25;
     lengths = [
-        { 'value': 25, 'name': '25' },
-        { 'value': 50, 'name': '50' },
-        { 'value': 100, 'name': '100' }
+        { value: 25, name: '25' },
+        { value: 50, name: '50' },
+        { value: 100, name: '100' },
     ];
     private timeout;
     applicationState = ApplicationState;
     accountService: AccountService;
 
-    constructor(
-        newAccountService: AccountService,
-        private httpClient: HttpClient,
-        private urls: UrlService,
-        private router: Router
-    ) {
+    constructor(newAccountService: AccountService, private httpClient: HttpClient, private urls: UrlService, private router: Router) {
         this.accountService = newAccountService;
     }
 
@@ -54,32 +49,43 @@ export class RecruitmentPageComponent implements OnInit {
     }
 
     private getApplications() {
-        this.httpClient.get(this.urls.apiUrl + '/recruitment').subscribe(response => {
-            this.waiting = response['waiting'];
-            this.allWaiting = response['allWaiting'];
-            this.complete = response['complete'];
-            this.recruiters = response['recruiters'];
-            this.filteredAndSearched = this.complete;
-            this.filtered = this.complete;
-            this.searched = this.complete;
-            this.sort(2);
-            this.loaded = true;
-        }, error => this.urls.errorWrapper('Failed to get applications', error));
+        this.httpClient.get(this.urls.apiUrl + '/recruitment').subscribe(
+            (response) => {
+                this.waiting = response['waiting'];
+                this.allWaiting = response['allWaiting'];
+                this.complete = response['complete'];
+                this.recruiters = response['recruiters'];
+                this.filteredAndSearched = this.complete;
+                this.filtered = this.complete;
+                this.searched = this.complete;
+                this.sort(2);
+                this.loaded = true;
+            },
+            (error) => this.urls.errorWrapper('Failed to get applications', error)
+        );
     }
 
     private getStats() {
-        this.httpClient.get(this.urls.apiUrl + '/recruitment/stats').subscribe(response => {
-            this.activity = response['activity'];
-            this.yourStats = response['yourStats'];
-            this.sr1Stats = response['sr1Stats'];
-        }, error => this.urls.errorWrapper('Failed to get recruitment stats', error));
+        this.httpClient.get(this.urls.apiUrl + '/recruitment/stats').subscribe(
+            (response) => {
+                this.activity = response['activity'];
+                this.yourStats = response['yourStats'];
+                this.sr1Stats = response['sr1Stats'];
+            },
+            (error) => this.urls.errorWrapper('Failed to get recruitment stats', error)
+        );
     }
 
     getApplicationColour(application) {
-        return application.processingDifference < 0 ? 'green' :
-            application.processingDifference > 10 ? 'red' :
-                application.processingDifference > 7 ? 'orange' :
-                    application.processingDifference > 5 ? 'goldenrod' : this.theme.foregroundColor;
+        return application.processingDifference < 0
+            ? 'green'
+            : application.processingDifference > 10
+            ? 'red'
+            : application.processingDifference > 7
+            ? 'orange'
+            : application.processingDifference > 5
+            ? 'goldenrod'
+            : this.theme.foregroundColor;
     }
 
     setSr1Enabled(recruiter = null) {
@@ -92,15 +98,20 @@ export class RecruitmentPageComponent implements OnInit {
             value = recruiter.settings.sr1Enabled;
         }
 
-        this.httpClient.post(this.urls.apiUrl + '/accounts/updatesetting/' + recruiter.id, {
-            name: 'sr1Enabled',
-            value: value
-        }).subscribe(_ => {
-            recruiter = this.activity.find(x => x.account.id === recruiter.id);
-            if (recruiter !== undefined) {
-                recruiter.account.settings.sr1Enabled = value;
-            }
-        }, error => this.urls.errorWrapper('Getting account data failed', error));
+        this.httpClient
+            .post(this.urls.apiUrl + '/accounts/updatesetting/' + recruiter.id, {
+                name: 'sr1Enabled',
+                value: value,
+            })
+            .subscribe(
+                (_) => {
+                    recruiter = this.activity.find((x) => x.account.id === recruiter.id);
+                    if (recruiter !== undefined) {
+                        recruiter.account.settings.sr1Enabled = value;
+                    }
+                },
+                (error) => this.urls.errorWrapper('Getting account data failed', error)
+            );
     }
 
     openApplication(application) {
@@ -116,34 +127,32 @@ export class RecruitmentPageComponent implements OnInit {
             case 1: // Applied
                 const compareApplied = this.descending
                     ? function (a, b) {
-                        return (a.account.application.dateCreated > b.account.application.dateCreated) ? 1 :
-                            ((b.account.application.dateCreated > a.account.application.dateCreated) ? -1 : 0);
-                    } : function (a, b) {
-                        return (a.account.application.dateCreated < b.account.application.dateCreated) ? 1 :
-                            ((b.account.application.dateCreated < a.account.application.dateCreated) ? -1 : 0);
-                    };
+                          return a.account.application.dateCreated > b.account.application.dateCreated ? 1 : b.account.application.dateCreated > a.account.application.dateCreated ? -1 : 0;
+                      }
+                    : function (a, b) {
+                          return a.account.application.dateCreated < b.account.application.dateCreated ? 1 : b.account.application.dateCreated < a.account.application.dateCreated ? -1 : 0;
+                      };
                 this.filteredAndSearched.sort(compareApplied);
                 break;
             case 2: // Completed
                 const compareCompleted = this.descending
                     ? function (a, b) {
-                        return (a.account.application.dateAccepted > b.account.application.dateAccepted) ? 1 :
-                            ((b.account.application.dateAccepted > a.account.application.dateAccepted) ? -1 : 0);
-                    } : function (a, b) {
-                        return (a.account.application.dateAccepted < b.account.application.dateAccepted) ? 1 :
-                            ((b.account.application.dateAccepted < a.account.application.dateAccepted) ? -1 : 0);
-                    };
+                          return a.account.application.dateAccepted > b.account.application.dateAccepted ? 1 : b.account.application.dateAccepted > a.account.application.dateAccepted ? -1 : 0;
+                      }
+                    : function (a, b) {
+                          return a.account.application.dateAccepted < b.account.application.dateAccepted ? 1 : b.account.application.dateAccepted < a.account.application.dateAccepted ? -1 : 0;
+                      };
                 this.filteredAndSearched.sort(compareCompleted);
                 break;
-            default: // Name
+            default:
+                // Name
                 const compareName = this.descending
                     ? function (a, b) {
-                        return (a.account.lastname > b.account.lastname) ? 1 :
-                            ((b.account.lastname > a.account.lastname) ? -1 : 0);
-                    } : function (a, b) {
-                        return (a.account.lastname < b.account.lastname) ? 1 :
-                            ((b.account.lastname < a.account.lastname) ? -1 : 0);
-                    };
+                          return a.account.lastname > b.account.lastname ? 1 : b.account.lastname > a.account.lastname ? -1 : 0;
+                      }
+                    : function (a, b) {
+                          return a.account.lastname < b.account.lastname ? 1 : b.account.lastname < a.account.lastname ? -1 : 0;
+                      };
                 this.filteredAndSearched.sort(compareName);
                 break;
         }
@@ -153,12 +162,12 @@ export class RecruitmentPageComponent implements OnInit {
 
     filter(sr1: string) {
         this.filtered = [];
-        this.complete.forEach(element => {
+        this.complete.forEach((element) => {
             if (String(element.recruiter).toLowerCase().indexOf(sr1.toLowerCase()) !== -1) {
                 this.filtered.push(element);
             }
         });
-        this.filteredAndSearched = this.filtered.filter(n => this.searched.includes(n));
+        this.filteredAndSearched = this.filtered.filter((n) => this.searched.includes(n));
         this.index = 0;
         this.navigate(-1);
     }
@@ -167,12 +176,12 @@ export class RecruitmentPageComponent implements OnInit {
         window.clearTimeout(this.timeout);
         this.timeout = window.setTimeout(() => {
             this.searched = [];
-            this.complete.forEach(element => {
+            this.complete.forEach((element) => {
                 if (String(element.account.lastname).toLowerCase().indexOf(newValue.toLowerCase()) !== -1) {
                     this.searched.push(element);
                 }
             });
-            this.filteredAndSearched = this.searched.filter(n => this.filtered.includes(n));
+            this.filteredAndSearched = this.searched.filter((n) => this.filtered.includes(n));
             this.index = 0;
             this.navigate(-1);
         }, 150);
@@ -186,15 +195,22 @@ export class RecruitmentPageComponent implements OnInit {
             case 1: // Next
                 this.index += this.length;
                 break;
-            default: // Don't navigate
+            default:
+                // Don't navigate
                 break;
         }
         this.applicationHistory = this.filteredAndSearched.slice(this.index, this.index + this.length);
     }
 
     getHistoryColour(application) {
-        return application.account.application.state !== this.applicationState.WAITING && application.account.membershipState === this.membershipState.DISCHARGED ? 'goldenrod' : application.account.application.state === this.applicationState.ACCEPTED ? 'green' : 'red';
+        return application.account.application.state !== this.applicationState.WAITING && application.account.membershipState === this.membershipState.DISCHARGED
+            ? 'goldenrod'
+            : application.account.application.state === this.applicationState.ACCEPTED
+            ? 'green'
+            : 'red';
     }
 
-    trackByApplication(application): number { return application; }
+    trackByApplication(application): number {
+        return application;
+    }
 }

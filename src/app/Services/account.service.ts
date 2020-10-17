@@ -5,6 +5,7 @@ import { ConnectTeamspeakModalComponent } from 'app/Modals/connect-teamspeak-mod
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
 import { SessionService } from './Authentication/session.service';
+import { Account, MembershipState } from '../Models/Account';
 
 @Injectable()
 export class AccountService {
@@ -109,78 +110,4 @@ export class AccountService {
     public clear() {
         this.account = undefined;
     }
-}
-
-export enum MembershipState {
-    UNCONFIRMED,
-    CONFIRMED,
-    MEMBER,
-    DISCHARGED,
-}
-
-export enum ApplicationState {
-    ACCEPTED,
-    REJECTED,
-    WAITING,
-}
-
-export interface Account {
-    id: string;
-    application: Application;
-    armaExperience: string;
-    background: string;
-    discordId: string;
-    dob: Date;
-    email: string;
-    firstname: string;
-    lastname: string;
-    membershipState: MembershipState;
-    militaryExperience: boolean;
-    nation: string;
-    rank: string;
-    reference: string;
-    roleAssignment: string;
-    rolePreferences: string[];
-    serviceRecord: ServiceRecordEntry[];
-    settings: AccountSettings;
-    steamname: string;
-    teamspeakIdentities: number[];
-    unitAssignment: string;
-    unitsExperience: string;
-
-    displayName: string;
-    permissions: AccountPermissions;
-}
-
-export interface AccountPermissions {
-    admin: boolean;
-    command: boolean;
-    nco: boolean;
-    personnel: boolean;
-    recruiter: boolean;
-    recruiterLead: boolean;
-    servers: boolean;
-    tester: boolean;
-}
-
-export interface AccountSettings {
-    notificationsEmail: boolean;
-    notificationsTeamspeak: boolean;
-    sr1Enabled: boolean;
-}
-
-export interface ServiceRecordEntry {
-    notes: string;
-    occurence: string;
-    timestamp: Date;
-}
-
-export interface Application {
-    applicationCommentThread: string;
-    dateAccepted: Date;
-    dateCreated: Date;
-    ratings: { [id: string]: number };
-    recruiter: string;
-    recruiterCommentThread: string;
-    state: ApplicationState;
 }

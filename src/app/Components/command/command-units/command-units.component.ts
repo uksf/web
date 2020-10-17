@@ -1,20 +1,17 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
-import { Observable, timer } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
 import { AddUnitModalComponent } from '../../../Modals/command/add-unit-modal/add-unit-modal.component';
-import { ITreeOptions, TreeNode, KEYS, TREE_ACTIONS } from 'angular-tree-component';
-import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
+import { ITreeOptions, TreeNode, KEYS, TREE_ACTIONS } from '@circlon/angular-tree-component';
 import { Permissions } from 'app/Services/permissions';
 import { PermissionsService } from 'app/Services/permissions.service';
-import { RequestUnitUpdateOrder, RequestUnitUpdateParent, ResponseUnit, ResponseUnitTree, ResponseUnitTreeDataSet } from '../../../Models/Units';
+import { RequestUnitUpdateOrder, RequestUnitUpdateParent, ResponseUnit, ResponseUnitTreeDataSet } from '../../../Models/Units';
 
 @Component({
     selector: 'app-command-units',
     templateUrl: './command-units.component.html',
-    styleUrls: ['../../../Pages/command-page/command-page.component.css', './command-units.component.css'],
+    styleUrls: ['../../../Pages/command-page/command-page.component.css', './command-units.component.scss'],
 })
 export class CommandUnitsComponent implements OnInit {
     @ViewChild('combatUnitsTree') combatUnitsTree: TreeNode;
