@@ -76,7 +76,6 @@ import { CommandPageComponent } from './Pages/command-page/command-page.componen
 import { ApiService } from './Services/api.service';
 import { TocList } from './Components/toc-list/toc-list.component';
 import { CommentDisplayComponent } from './Components/comment-display/comment-display.component';
-import { TimeAgoPipe } from 'time-ago-pipe';
 import { RequestRankModalComponent } from './Modals/command/request-rank-modal/request-rank-modal.component';
 import { UnitPageComponent } from './Pages/unit-page/unit-page.component';
 import { ConnectTeamspeakModalComponent } from './Modals/connect-teamspeak-modal/connect-teamspeak-modal.component';
@@ -146,7 +145,6 @@ import { MaintenanceComponent } from './Components/maintenance/maintenance.compo
 import { MultipleMessageModalComponent } from './Modals/multiple-message-modal/multiple-message-modal.component';
 import { SignalRService } from './Services/signalr.service';
 import { AdminLauncherLogsComponent } from './Components/admin/admin-launcher-logs/admin-launcher-logs.component';
-import { ZonedTime } from './Pipes/time.pipe';
 import { PersonnelPageComponent } from './Pages/personnel-page/personnel-page.component';
 import { PersonnelDischargesComponent } from './Components/personnel/personnel-discharges/personnel-discharges.component';
 import { PersonnelLoasComponent } from './Components/personnel/personnel-loas/personnel-loas.component';
@@ -169,6 +167,7 @@ import { OrganizationChartModule } from 'primeng/organizationchart';
 import { EditorModule } from 'primeng/editor';
 import { ChartModule } from 'primeng/chart';
 import { RatingModule } from 'primeng/rating';
+import { ZonedTime, TimeAgoPipe } from './Pipes/time.pipe';
 
 export function initPermissions(injector: Injector) {
     return () => {
@@ -194,7 +193,6 @@ export function tokenGetter() {
         PermissionsService,
         UrlService,
         ApiService,
-        TimeAgoPipe,
         NotificationsComponent,
         CountryPickerService,
         SignalRService,
@@ -381,6 +379,7 @@ export function tokenGetter() {
         ModpackBuildsRcComponent,
         ModpackBuildsStepsComponent,
         NewModpackBuildModalComponent,
+        TimeAgoPipe,
     ],
     bootstrap: [AppComponent],
 })
