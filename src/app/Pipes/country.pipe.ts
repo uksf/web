@@ -11,6 +11,6 @@ export class CountryName implements PipeTransform {
 @Pipe({ name: 'countryImage' })
 export class CountryImage implements PipeTransform {
     transform(value: string): string {
-        return 'assets/dist/countries/' + CountryPickerService.countries.find((x) => x.value === value).code.toLowerCase() + '.svg';
+        return 'assets/dist/flags/' + CountryPickerService.countries.find((x) => x.value === value).code.toLowerCase() + '.svg';
     }
 }
