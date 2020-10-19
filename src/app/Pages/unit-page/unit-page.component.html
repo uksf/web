@@ -2,9 +2,9 @@
 <app-default-content-areas>
     <app-main-content-area *ngIf="unit">
         <div class="flex-container">
-            <div style="min-width: 400px;">
-                <img style="width: 135px;" />
-                <h2><mat-icon matTooltip="Back to units" (click)="back()" style="cursor: pointer;">arrow_back</mat-icon> {{ unit.name }}</h2>
+            <div style="min-width: 400px">
+                <img style="width: 135px" />
+                <h2><mat-icon matTooltip="Back to units" (click)="back()" style="cursor: pointer">arrow_back</mat-icon> {{ unit.name }}</h2>
                 <br />
             </div>
             <mat-card>
@@ -16,7 +16,7 @@
                         </mat-grid-tile>
                         <mat-grid-tile [colspan]="1" [rowspan]="1" *ngIf="unit.parentName">
                             <span
-                                >Parent unit: <a [routerLink]="['/units', unit.parentId]">{{ unit.parentName }}</a></span
+                                >Parent unit: <a [routerLink]="['/units', unit.parent]">{{ unit.parentName }}</a></span
                             >
                         </mat-grid-tile>
                     </mat-grid-list>

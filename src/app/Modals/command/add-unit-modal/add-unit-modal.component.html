@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>Add Unit</h2>
 <mat-dialog-content>
     <form [formGroup]="form" class="container">
-        <div style="text-align: center;">
+        <div style="text-align: center">
             <div class="container">
                 <h4>Required Fields</h4>
                 <mat-form-field class="normal">
@@ -24,7 +24,7 @@
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
-                <mat-form-field class="normal">
+                <mat-form-field class="normal" *ngIf="this.unit.parent !== '000000000000000000000000'">
                     <mat-select placeholder="Parent Unit" formControlName="parent" required>
                         <mat-option *ngFor="let unit of availableParentUnits" [value]="unit.id">
                             {{ unit.name }}
@@ -63,7 +63,7 @@
             <div class="button-container">
                 <button mat-raised-button *ngIf="edit" type="button" (click)="delete()" class="button-delete">Delete</button>
                 <app-flex-filler *ngIf="edit"></app-flex-filler>
-                <button mat-raised-button color="primary" #button (click)="submit(); button.disabled = true" [disabled]="!form.valid">Submit</button>
+                <button mat-raised-button color="primary" #button (click)="submit(); button.disabled = true" [disabled]="!form.valid || !changesMade">Submit</button>
             </div>
         </div>
     </form>

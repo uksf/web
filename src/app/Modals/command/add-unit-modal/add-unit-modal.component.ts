@@ -39,6 +39,7 @@ export class AddUnitModalComponent implements OnInit {
     availableParentUnits: ResponseUnit[] = [];
     unit: ResponseUnit;
     edit = false;
+    original;
 
     constructor(formbuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: any) {
         this.form = formbuilder.group({
@@ -60,16 +61,25 @@ export class AddUnitModalComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.original = JSON.stringify(this.form.getRawValue());
         this.httpClient.get(`${this.urls.apiUrl}/units`).subscribe((units: ResponseUnit[]) => {
             this.units = units;
             this.resolveAvailableParentUnits();
         });
     }
 
+    get changesMade() {
+        return this.original !== JSON.stringify(this.form.getRawValue());
+    }
+
     resolveAvailableParentUnits() {
-        this.availableParentUnits = this.units.filter((x) => x.branch === this.form.controls['branch'].value);
-        if (this.edit && this.availableParentUnits.find((x) => x.id === this.unit.parentId)) {
-            this.form.controls['parent'].setValue(this.unit.parentId);
+        if (this.unit.parent === '000000000000000000000000') {
+            return;
+        }
+
+        this.availableParentUnits = this.units.filter((x) => x.branch === this.form.controls['branch'].value && x.id !== this.unit.id);
+        if (this.edit && this.availableParentUnits.find((x) => x.id === this.unit.parent)) {
+            this.form.controls['parent'].setValue(this.unit.parent);
         } else {
             this.form.controls['parent'].setValue(this.availableParentUnits[0].id);
         }

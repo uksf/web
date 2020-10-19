@@ -21,7 +21,6 @@ export enum UnitBranch {
 
 export interface ResponseUnit extends Unit {
     code: string;
-    parentId: string;
     parentName: string;
     unitMembers: ResponseUnitMember[];
 }
