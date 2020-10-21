@@ -22,8 +22,12 @@
               "src/favicon.ico"
             ],
             "styles": [
-              "src/styles-app-loading.scss"
-              "src/styles.scss"
+              {
+                "input": "src/styles-app-loading.scss"
+              },
+              {
+                "input": "src/styles.scss"
+              }
             ],
             "scripts": [
               "node_modules/quill/dist/quill.js",

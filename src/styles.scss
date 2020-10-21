@@ -229,36 +229,3 @@
 .mat-tab-link {
     font-weight: unset;
 }
-
-// Loading
-.loading {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    background-color: #121212;
-}
-
-.loading-title {
-    width: 100%;
-    text-align: center;
-    color: white;
-}
-
-.loading-logo {
-    background-image: url(assets/dist/images/logo.png);
-    background-size: contain;
-    background-repeat: no-repeat;
-    max-width: 400px;
-    max-height: 400px;
-    width: 90%;
-    height: 90%;
-    align-self: center;
-}
-
-.spacer {
-    flex: 1;
-}
-
-.special-field-form-container {
-    display: none !important;
-}
