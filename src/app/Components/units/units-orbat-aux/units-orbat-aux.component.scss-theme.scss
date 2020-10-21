@@ -18,28 +18,30 @@
             .p-organizationchart-line-down {
                 background-color: mat-color($background, org-line);
             }
-            .p-organizationchart-line-left {
-                border-right: 1px solid mat-color($background, org-line);
-            }
+
+            .p-organizationchart-line-left,
             .p-organizationchart-line-top {
                 border-top: 1px solid mat-color($background, org-line);
             }
+
             .p-organizationchart-node-content {
                 border-color: mat-color($background, org-line);
-            }
-            .p-organizationchart-node-content {
+
                 .p-node-toggler {
                     color: mat-color($background, org-line);
                 }
+
                 &.p-organizationchart-selectable-node {
+                    h4 {
+                        color: mat-color($primary);
+                    }
+
                     &:not(.p-state-highlight) {
                         &:hover {
                             border-color: mat-color($background, org-line);
                             background-color: mat-color($background, org-hover);
                             color: mat-color($foreground, base);
-                            h4 {
-                                color: mat-color($primary);
-                            }
+
                             &a {
                                 color: mat-color($primary);
                             }
@@ -47,9 +49,11 @@
                     }
                 }
             }
+
             .p-widget-content {
                 color: mat-color($foreground, base);
                 background-color: mat-color($background, org-content);
+
                 h4 {
                     color: mat-color($foreground, base);
                     background-color: transparent;
