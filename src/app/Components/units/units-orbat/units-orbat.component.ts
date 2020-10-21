@@ -9,7 +9,7 @@ import { TreeNode } from 'primeng/api';
 @Component({
     selector: 'app-units-orbat',
     templateUrl: './units-orbat.component.html',
-    styleUrls: ['../../../Pages/units-page/units-page.component.scss', './units-orbat.component.scss'],
+    styleUrls: ['../../../Pages/units-page/units-page.component.scss', './units-orbat.component.scss', './units-orbat.component.scss-theme.scss'],
 })
 export class UnitsOrbatComponent {
     rootNodes: TreeNode[];
