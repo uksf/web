@@ -1,29 +1,6 @@
 @import '~@angular/material/theming';
 @import '~@circlon/angular-tree-component/css/angular-tree-component.css';
 
-.mat-checkbox-layout {
-    white-space: normal !important;
-}
-
-.cdk-virtual-scroll-orientation-horizontal {
-    .cdk-virtual-scroll-content-wrapper {
-        display: flex;
-        flex-direction: row;
-    }
-}
-
-.variables-list {
-    .mat-expansion-panel-body {
-        padding: 0 0 0 24px;
-    }
-}
-
-.mods-list-item-container {
-    .mat-checkbox-layout {
-        margin-bottom: 0;
-    }
-}
-
 // Core
 @include mat-core();
 
@@ -218,6 +195,29 @@
     }
 }
 
+.mat-checkbox-layout {
+    white-space: normal !important;
+}
+
+.cdk-virtual-scroll-orientation-horizontal {
+    .cdk-virtual-scroll-content-wrapper {
+        display: flex;
+        flex-direction: row;
+    }
+}
+
+.variables-list {
+    .mat-expansion-panel-body {
+        padding: 0 0 0 24px;
+    }
+}
+
+.mods-list-item-container {
+    .mat-checkbox-layout {
+        margin-bottom: 0;
+    }
+}
+
 .mat-button,
 .mat-raised-button,
 .mat-icon-button,
@@ -228,4 +228,37 @@
 .mat-tab-label,
 .mat-tab-link {
     font-weight: unset;
+}
+
+// Loading
+.loading {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: #121212;
+}
+
+.loading-title {
+    width: 100%;
+    text-align: center;
+    color: white;
+}
+
+.loading-logo {
+    background-image: url(assets/dist/images/logo.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    max-width: 400px;
+    max-height: 400px;
+    width: 90%;
+    height: 90%;
+    align-self: center;
+}
+
+.spacer {
+    flex: 1;
+}
+
+.special-field-form-container {
+    display: none !important;
 }
