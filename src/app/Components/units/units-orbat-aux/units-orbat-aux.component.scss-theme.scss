@@ -14,7 +14,7 @@
             background-color: mat-color($background, hover);
         }
 
-        :host ::ng-deep .p-organizationchart {
+        .p-organizationchart {
             .p-organizationchart-line-down {
                 background-color: mat-color($background, org-line);
             }
