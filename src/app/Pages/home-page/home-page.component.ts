@@ -67,8 +67,8 @@ export class HomePageComponent implements OnInit {
     }
 
     private getClients() {
-        // this.httpClient.get('https://api.uk-sf.co.uk/accounts/online').subscribe(
-        this.httpClient.get(this.urls.apiUrl + '/accounts/online').subscribe(
+        // this.httpClient.get('https://api.uk-sf.co.uk/teamspeak/onlineAccounts').subscribe(
+        this.httpClient.get(this.urls.apiUrl + '/teamspeak/onlineAccounts').subscribe(
             (response) => {
                 if (response) {
                     if (response['commanders']) {

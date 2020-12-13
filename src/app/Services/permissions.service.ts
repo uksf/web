@@ -8,9 +8,11 @@ import { HttpClient } from '@angular/common/http';
 import { UrlService } from './url.service';
 import { AuthenticationService } from './Authentication/authentication.service';
 import { Account, MembershipState } from '../Models/Account';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Injectable()
 export class PermissionsService {
+    private jwtRolesKey = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
     private accountHubConnection: ConnectionContainer;
     private refreshing = false;
     private updateTimeout: NodeJS.Timeout;
@@ -23,7 +25,8 @@ export class PermissionsService {
         private signalrService: SignalRService,
         private httpClient: HttpClient,
         private urls: UrlService,
-        private authenticationService: AuthenticationService
+        private authenticationService: AuthenticationService,
+        private jwtHelperService: JwtHelperService
     ) {
         this.waitForId().then((id) => {
             this.accountHubConnection = this.signalrService.connect(`account?userId=${id}`);
@@ -119,36 +122,47 @@ export class PermissionsService {
             // member
             this.ngxPermissionsService.addPermission(Permissions.MEMBER);
 
-            if (account.permissions.admin) {
-                this.ngxPermissionsService.addPermission(Permissions.ADMIN);
-            }
-            if (account.permissions.command) {
-                this.ngxPermissionsService.addPermission(Permissions.COMMAND);
-                this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
-            }
-            if (account.permissions.nco) {
-                this.ngxPermissionsService.addPermission(Permissions.NCO);
-                this.ngxPermissionsService.addPermission(Permissions.SERVERS);
-                this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
-                this.ngxPermissionsService.addPermission(Permissions.DISCHARGES);
-            }
-            if (account.permissions.personnel) {
-                this.ngxPermissionsService.addPermission(Permissions.PERSONNEL);
-            }
-            if (account.permissions.recruiter) {
-                this.ngxPermissionsService.addPermission(Permissions.RECRUITER);
-                this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
-                this.ngxPermissionsService.addPermission(Permissions.DISCHARGES);
-            }
-            if (account.permissions.recruiterLead) {
-                this.ngxPermissionsService.addPermission(Permissions.RECRUITER_LEAD);
-            }
-            if (account.permissions.servers) {
-                this.ngxPermissionsService.addPermission(Permissions.SERVERS);
-            }
-            if (account.permissions.tester) {
-                this.ngxPermissionsService.addPermission(Permissions.TESTER);
-            }
+            let jwtData = this.jwtHelperService.decodeToken(this.sessionService.getSessionToken());
+            let tokenPermissions: string[] = jwtData[this.jwtRolesKey];
+            let lookup = Permissions.LookUp();
+
+            Object.entries(lookup).forEach(([role, permissions]) => {
+                if (tokenPermissions.includes(role)) {
+                    this.ngxPermissionsService.addPermission(permissions);
+                }
+            });
+
+            // TODO: Convert to lookup table to resolve permissions by roles
+            // if (permissions[Permissions.ADMIN]) {
+            //     this.ngxPermissionsService.addPermission(Permissions.ADMIN);
+            // }
+            // if (permissions[Permissions.COMMAND]) {
+            //     this.ngxPermissionsService.addPermission(Permissions.COMMAND);
+            //     this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
+            // }
+            // if (permissions[Permissions.NCO]) {
+            //     this.ngxPermissionsService.addPermission(Permissions.NCO);
+            //     this.ngxPermissionsService.addPermission(Permissions.SERVERS);
+            //     this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
+            //     this.ngxPermissionsService.addPermission(Permissions.DISCHARGES);
+            // }
+            // if (permissions[Permissions.PERSONNEL]) {
+            //     this.ngxPermissionsService.addPermission(Permissions.PERSONNEL);
+            // }
+            // if (permissions[Permissions.RECRUITER]) {
+            //     this.ngxPermissionsService.addPermission(Permissions.RECRUITER);
+            //     this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
+            //     this.ngxPermissionsService.addPermission(Permissions.DISCHARGES);
+            // }
+            // if (permissions[Permissions.RECRUITER_LEAD]) {
+            //     this.ngxPermissionsService.addPermission(Permissions.RECRUITER_LEAD);
+            // }
+            // if (permissions[Permissions.SERVERS]) {
+            //     this.ngxPermissionsService.addPermission(Permissions.SERVERS);
+            // }
+            // if (permissions[Permissions.TESTER]) {
+            //     this.ngxPermissionsService.addPermission(Permissions.TESTER);
+            // }
         } else if (account.membershipState === MembershipState.CONFIRMED) {
             // guest
             this.ngxPermissionsService.addPermission(Permissions.CONFIRMED);
@@ -157,6 +171,8 @@ export class PermissionsService {
             this.ngxPermissionsService.addPermission(Permissions.UNCONFIRMED);
         }
     }
+
+    private resolvePermissionsFromRole(role: string) {}
 
     private setUnlogged() {
         this.ngxPermissionsService.flushPermissions();

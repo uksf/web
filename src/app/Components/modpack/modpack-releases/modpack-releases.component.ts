@@ -10,7 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 @Component({
     selector: 'app-modpack-releases',
     templateUrl: './modpack-releases.component.html',
-    styleUrls: ['../../../Pages/modpack-page/modpack-page.component.scss', './modpack-releases.component.scss', './modpack-releases.component.scss-theme.scss']
+    styleUrls: ['../../../Pages/modpack-page/modpack-page.component.scss', './modpack-releases.component.scss', './modpack-releases.component.scss-theme.scss'],
 })
 export class ModpackReleasesComponent implements OnInit {
     releases: ModpackRelease[] = [];
@@ -29,35 +29,38 @@ export class ModpackReleasesComponent implements OnInit {
         private permissionsService: PermissionsService,
         private route: ActivatedRoute,
         private router: Router
-    ) { }
+    ) {}
 
     ngOnInit(): void {
         this.getReleases();
     }
 
     get publicReleases(): ModpackRelease[] {
-        return this.releases.filter(x => !x.isDraft || this.permissionsService.hasPermission(Permissions.TESTER));
+        return this.releases.filter((x) => !x.isDraft || this.permissionsService.hasPermission(Permissions.TESTER));
     }
 
     get selectedRelease(): ModpackRelease {
-        return this.releases.find(x => x.version === this.selectedReleaseVersion);
+        return this.releases.find((x) => x.version === this.selectedReleaseVersion);
     }
 
     checkRoute() {
         const version = this.route.snapshot.queryParams['version'];
-        const index = this.releases.findIndex(x => x.version === version);
+        const index = this.publicReleases.findIndex((x) => x.version === version);
         if (version && index !== -1) {
             this.select(version);
         } else {
-            this.select(this.releases[0].version);
+            this.select(this.publicReleases[0].version);
         }
     }
 
     getReleases() {
-        this.httpClient.get(this.urls.apiUrl + '/modpack/releases').subscribe((releases: ModpackRelease[]) => {
-            this.releases = releases;
-            this.checkRoute();
-        }, error => this.urls.errorWrapper('Failed to get releases', error));
+        this.httpClient.get(this.urls.apiUrl + '/modpack/releases').subscribe(
+            (releases: ModpackRelease[]) => {
+                this.releases = releases;
+                this.checkRoute();
+            },
+            (error) => this.urls.errorWrapper('Failed to get releases', error)
+        );
     }
 
     select(version: string) {
@@ -68,7 +71,7 @@ export class ModpackReleasesComponent implements OnInit {
     }
 
     patchRelease(release: ModpackRelease) {
-        const index = this.releases.findIndex(x => x.version === release.version);
+        const index = this.releases.findIndex((x) => x.version === release.version);
         if (index === -1) {
             this.releases.unshift(release);
         } else {
@@ -78,10 +81,13 @@ export class ModpackReleasesComponent implements OnInit {
 
     regenerateChangelog() {
         // get request to regenerate changelog
-        this.httpClient.get(this.urls.apiUrl + `/modpack/release/${this.selectedReleaseVersion}/changelog`).subscribe((release: ModpackRelease) => {
-            this.patchRelease(release);
-            this.changelogMarkdown = this.markdownService.compile(this.selectedRelease.changelog);
-        }, error => this.urls.errorWrapper('Failed to deploy release', error));
+        this.httpClient.get(this.urls.apiUrl + `/modpack/release/${this.selectedReleaseVersion}/changelog`).subscribe(
+            (release: ModpackRelease) => {
+                this.patchRelease(release);
+                this.changelogMarkdown = this.markdownService.compile(this.selectedRelease.changelog);
+            },
+            (error) => this.urls.errorWrapper('Failed to deploy release', error)
+        );
     }
 
     edit() {
@@ -108,8 +114,8 @@ export class ModpackReleasesComponent implements OnInit {
         this.changelogMarkdown = this.markdownService.compile(this.selectedRelease.changelog);
         // patch changes
         this.httpClient.patch(this.urls.apiUrl + `/modpack/release/${this.selectedRelease.version}`, this.selectedRelease).subscribe(
-            () => { },
-            error => this.urls.errorWrapper('Failed to update release draft', error)
+            () => {},
+            (error) => this.urls.errorWrapper('Failed to update release draft', error)
         );
     }
 
@@ -124,9 +130,12 @@ export class ModpackReleasesComponent implements OnInit {
 
     release() {
         // get request for release
-        this.httpClient.get(this.urls.apiUrl + `/modpack/release/${this.selectedRelease.version}`).subscribe(() => {
-            this.router.navigate(['/modpack/builds-rc'], { queryParams: { version: this.selectedRelease.version, log: true } });
-        }, error => this.urls.errorWrapper('Failed to deploy release', error));
+        this.httpClient.get(this.urls.apiUrl + `/modpack/release/${this.selectedRelease.version}`).subscribe(
+            () => {
+                this.router.navigate(['/modpack/builds-rc'], { queryParams: { version: this.selectedRelease.version, log: true } });
+            },
+            (error) => this.urls.errorWrapper('Failed to deploy release', error)
+        );
     }
 
     validateDescription(event: any) {

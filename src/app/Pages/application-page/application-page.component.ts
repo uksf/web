@@ -5,7 +5,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from 'app/Services/url.service';
 import { AccountService } from 'app/Services/account.service';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
-import { ApplicationState, MembershipState } from '../../Models/Account';
+import { MembershipState } from '../../Models/Account';
+import { ApplicationState } from '../../Models/Application';
 
 @Component({
     selector: 'app-application-page',

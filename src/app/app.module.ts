@@ -168,6 +168,7 @@ import { EditorModule } from 'primeng/editor';
 import { ChartModule } from 'primeng/chart';
 import { RatingModule } from 'primeng/rating';
 import { ZonedTime, TimeAgoPipe } from './Pipes/time.pipe';
+import { AdminDiscordLogsComponent } from './Components/admin/admin-discord-logs/admin-discord-logs.component';
 
 export function initPermissions(injector: Injector) {
     return () => {
@@ -329,6 +330,7 @@ export function tokenGetter() {
         AdminPageComponent,
         AdminErrorLogsComponent,
         AdminAuditLogsComponent,
+        AdminDiscordLogsComponent,
         MessageModalComponent,
         OpordPageComponent,
         CommandRequestsComponent,

@@ -21,7 +21,7 @@
 <div class="comments-container">
     <div class="comment-wrapper" *ngFor="let comment of comments">
         <div class="author">
-            <span class="author-string">{{ comment.displayName }}</span>
+            <span class="author-string">{{ getAuthorDisplayName(comment.displayName) }}</span>
             <span class="date-string">{{ comment.timestamp | timeAgo }}</span>
             <button class="delete-button" mat-button *ngIf="canDelete(comment)" (click)="deleteComment(comment)">
                 <mat-icon>delete</mat-icon>

@@ -29,25 +29,13 @@
                     <app-flex-filler></app-flex-filler>
                     <div class="buttons">
                         <ng-template [ngxPermissionsOnly]="['ADMIN']">
-                            <button mat-raised-button color="primary" *ngIf="!editing" (click)="regenerateChangelog()">
-                                Regenerate Changelog
-                            </button>
-                            <button mat-raised-button color="primary" *ngIf="!editing" (click)="edit()">
-                                Edit Draft
-                            </button>
-                            <button mat-raised-button color="primary" *ngIf="editing" (click)="save()">
-                                Save Draft
-                            </button>
-                            <button mat-raised-button color="primary" *ngIf="editing" (click)="togglePreview()">
-                                Toggle Preview
-                            </button>
-                            <button mat-raised-button color="primary" *ngIf="editing" (click)="discard()">
-                                Discard Changes
-                            </button>
+                            <button mat-raised-button color="primary" *ngIf="!editing" (click)="regenerateChangelog()">Regenerate Changelog</button>
+                            <button mat-raised-button color="primary" *ngIf="!editing" (click)="edit()">Edit Draft</button>
+                            <button mat-raised-button color="primary" *ngIf="editing" (click)="save()">Save Draft</button>
+                            <button mat-raised-button color="primary" *ngIf="editing" (click)="togglePreview()">Toggle Preview</button>
+                            <button mat-raised-button color="primary" *ngIf="editing" (click)="discard()">Discard Changes</button>
+                            <button mat-raised-button color="primary" *ngIf="!editing" (click)="release()">Release</button>
                         </ng-template>
-                        <button mat-raised-button color="primary" *ngIf="!editing" (click)="release()">
-                            Release
-                        </button>
                     </div>
                 </div>
                 <div class="release-content" *ngIf="!editing">

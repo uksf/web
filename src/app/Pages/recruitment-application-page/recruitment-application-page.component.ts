@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Location, DatePipe } from '@angular/common';
+import { DatePipe, Location } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { UrlService } from '../../Services/url.service';
 import { HttpClient } from '@angular/common/http';
@@ -11,7 +11,10 @@ import { CountryPickerService, ICountry } from 'app/Services/CountryPicker/count
 import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { PermissionsService } from 'app/Services/permissions.service';
-import { ApplicationState, MembershipState } from '../../Models/Account';
+import { MembershipState } from '../../Models/Account';
+import { AsyncSubject } from 'rxjs';
+import { ApplicationState, DetailedApplication, Recruiter } from '../../Models/Application';
+import { OnlineState } from '../../Models/OnlineState';
 
 @Component({
     selector: 'app-recruitment-application-page',
@@ -26,12 +29,14 @@ export class RecruitmentApplicationPageComponent {
     applicationState = ApplicationState;
     countries: ICountry[];
     accountId: string;
-    application;
+    application: DetailedApplication;
     ratingsForm: FormGroup;
-    recruiters: any;
+    recruiters: Recruiter[];
     ratings: any;
     selected: any;
     updating: boolean;
+    teamspeakState: AsyncSubject<OnlineState> = new AsyncSubject<OnlineState>();
+    discordState: AsyncSubject<OnlineState> = new AsyncSubject<OnlineState>();
 
     constructor(
         private httpClient: HttpClient,
@@ -66,7 +71,7 @@ export class RecruitmentApplicationPageComponent {
     }
 
     getApplication() {
-        this.httpClient.get(this.urls.apiUrl + '/recruitment/' + this.accountId).subscribe((response: any) => {
+        this.httpClient.get(this.urls.apiUrl + '/recruitment/' + this.accountId).subscribe((response: DetailedApplication) => {
             const application = response;
             if (application.account.id === this.accountService.account.id && application.account.application.state === ApplicationState.WAITING) {
                 this.router.navigate(['/application']);
@@ -81,8 +86,8 @@ export class RecruitmentApplicationPageComponent {
                 this.ratingsForm.patchValue(this.application.account.application.ratings);
 
                 if (this.permissions.hasPermission(Permissions.RECRUITER_LEAD)) {
-                    this.httpClient.get(this.urls.apiUrl + '/recruitment/recruiters').subscribe((recruiterResponse) => {
-                        this.recruiters = recruiterResponse;
+                    this.httpClient.get(this.urls.apiUrl + '/recruitment/recruiters').subscribe((recruiters: Recruiter[]) => {
+                        this.recruiters = recruiters;
                         this.selected = this.application.recruiterId;
                     });
                 }
@@ -90,6 +95,23 @@ export class RecruitmentApplicationPageComponent {
             } else {
                 this.router.navigate(['/home']);
             }
+        });
+
+        this.getTeamspeakState();
+        this.getDiscordState();
+    }
+
+    getTeamspeakState() {
+        this.httpClient.get(`${this.urls.apiUrl}/teamspeak/${this.accountId}/onlineUserDetails`).subscribe((state: OnlineState) => {
+            this.teamspeakState.next(state);
+            this.teamspeakState.complete();
+        });
+    }
+
+    getDiscordState() {
+        this.httpClient.get(`${this.urls.apiUrl}/discord/${this.accountId}/onlineUserDetails`).subscribe((state: OnlineState) => {
+            this.discordState.next(state);
+            this.discordState.complete();
         });
     }
 
@@ -147,12 +169,12 @@ export class RecruitmentApplicationPageComponent {
         return this.application.age.years >= 16 ? 'green' : this.application.age.years === 15 && this.application.age.months === 11 ? 'goldenrod' : 'red';
     }
 
-    getDiscordName() {
-        return this.application.communications.discordOnline
-            ? this.application.communications.discordNickname !== this.application.displayName
-                ? 'Online as ' + this.application.communications.discordNickname
+    getDiscordName(discordState) {
+        return discordState.online
+            ? discordState.nickname !== this.application.displayName
+                ? 'Online as ' + discordState.nickname
                 : 'Online'
-            : this.application.communications.discordNickname === ''
+            : discordState.nickname === ''
             ? 'Offline (Not in server)'
             : 'Offline';
     }

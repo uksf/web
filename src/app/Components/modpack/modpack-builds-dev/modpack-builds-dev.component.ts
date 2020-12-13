@@ -6,6 +6,7 @@ import { ModpackBuildResult } from 'app/Models/ModpackBuildResult';
 import { MarkdownService } from 'ngx-markdown';
 import { ModpackBuildProcessService } from 'app/Services/modpackBuildProcess.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { PermissionsService } from '../../../Services/permissions.service';
 
 @Component({
     selector: 'app-modpack-builds-dev',
@@ -27,7 +28,8 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
         private modpackBuildProcessService: ModpackBuildProcessService,
         private markdownService: MarkdownService,
         private route: ActivatedRoute,
-        private router: Router
+        private router: Router,
+        private permissions: PermissionsService
     ) {}
 
     ngOnInit(): void {
@@ -47,7 +49,10 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
                 }
             }
         );
-        this.modpackBuildProcessService.getBranches();
+
+        if (this.permissions.hasPermission('TESTER')) {
+            this.modpackBuildProcessService.getBranches();
+        }
     }
 
     ngOnDestroy(): void {
@@ -128,7 +133,7 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
     }
 
     canRebuild = (): boolean => {
-        return this.selectedBuild.finished && this.selectedBuild.buildResult !== ModpackBuildResult.SUCCESS;
+        return this.selectedBuild.finished;
     };
 
     rebuild() {

@@ -176,7 +176,7 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
     canRebuild = (): boolean => {
         return this.selectedBuild.environment === GameEnvironment.RELEASE && this.selectedBuild.buildResult === ModpackBuildResult.WARNING
             ? false
-            : this.selectedRc === this.rcs[0] && this.selectedBuild === this.selectedRc.builds[0] && this.selectedBuild.finished && this.selectedBuild.buildResult !== ModpackBuildResult.SUCCESS;
+            : this.selectedRc === this.rcs[0] && this.selectedBuild === this.selectedRc.builds[0] && this.selectedBuild.finished;
     };
 
     rebuild() {

@@ -4,7 +4,11 @@ import { UrlService } from '../../Services/url.service';
 import { Router } from '@angular/router';
 import { AccountService } from '../../Services/account.service';
 import { ThemeEmitterComponent } from 'app/Components/theme-emitter/theme-emitter.component';
-import { ApplicationState, MembershipState } from '../../Models/Account';
+import { MembershipState } from '../../Models/Account';
+import { ApplicationsOverview, ApplicationState, CompletedApplication, WaitingApplication } from '../../Models/Application';
+import { AsyncSubject } from 'rxjs';
+import { OnlineState } from '../../Models/OnlineState';
+import { Dictionary } from '../../Models/Dictionary';
 
 @Component({
     selector: 'app-recruitment-page',
@@ -14,17 +18,18 @@ import { ApplicationState, MembershipState } from '../../Models/Account';
 export class RecruitmentPageComponent implements OnInit {
     @ViewChild(ThemeEmitterComponent) theme: ThemeEmitterComponent;
     membershipState = MembershipState;
-    waiting: any[] = [];
-    allWaiting: any[] = [];
-    complete;
-    recruiters;
+    waiting: WaitingApplication[] = [];
+    allWaiting: WaitingApplication[] = [];
+    complete: CompletedApplication[] = [];
+    recruiters: string[];
     activity: any[] = [];
     yourStats;
     sr1Stats;
-    filteredAndSearched: any[] = [];
-    filtered: any[] = [];
-    searched: any[] = [];
-    applicationHistory: any[] = [];
+    filteredAndSearched: CompletedApplication[] = [];
+    filtered: CompletedApplication[] = [];
+    searched: CompletedApplication[] = [];
+    applicationHistory: CompletedApplication[] = [];
+    teamspeakStates: Dictionary<AsyncSubject<OnlineState>> = new Dictionary<AsyncSubject<OnlineState>>();
     loaded = false;
     descending = false;
     searchValue = '';
@@ -50,11 +55,13 @@ export class RecruitmentPageComponent implements OnInit {
 
     private getApplications() {
         this.httpClient.get(this.urls.apiUrl + '/recruitment').subscribe(
-            (response) => {
-                this.waiting = response['waiting'];
-                this.allWaiting = response['allWaiting'];
-                this.complete = response['complete'];
-                this.recruiters = response['recruiters'];
+            (applicationsOverview: ApplicationsOverview) => {
+                this.waiting = applicationsOverview.waiting;
+                this.allWaiting = applicationsOverview.allWaiting;
+                this.complete = applicationsOverview.complete;
+                this.recruiters = applicationsOverview.recruiters;
+                this.getTeamspeakOnlineStates();
+
                 this.filteredAndSearched = this.complete;
                 this.filtered = this.complete;
                 this.searched = this.complete;
@@ -63,6 +70,19 @@ export class RecruitmentPageComponent implements OnInit {
             },
             (error) => this.urls.errorWrapper('Failed to get applications', error)
         );
+    }
+
+    private getTeamspeakOnlineStates() {
+        let applications = this.waiting.concat(this.allWaiting);
+        for (const application of applications) {
+            let teamspeakState = new AsyncSubject<OnlineState>();
+            this.teamspeakStates.Add(application.account.id, teamspeakState);
+
+            this.httpClient.get(`${this.urls.apiUrl}/teamspeak/${application.account.id}/onlineUserDetails`).subscribe((state: OnlineState) => {
+                teamspeakState.next(state);
+                teamspeakState.complete();
+            });
+        }
     }
 
     private getStats() {

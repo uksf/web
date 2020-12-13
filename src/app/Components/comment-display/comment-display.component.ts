@@ -5,6 +5,7 @@ import { UrlService } from '../../Services/url.service';
 import { FormBuilder, Validators } from '@angular/forms';
 import { SignalRService, ConnectionContainer } from 'app/Services/signalr.service';
 import { TimeAgoPipe } from '../../Pipes/time.pipe';
+import { ObjectId } from '../../Models/ObjectId';
 
 @Component({
     selector: 'app-comment-display',
@@ -104,5 +105,9 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
             },
             (error) => this.urls.errorWrapper('Failed to apply comment', error)
         );
+    }
+
+    getAuthorDisplayName(displayName: string) {
+        return displayName === ObjectId.EmptyId ? 'Totally Not A Bot' : displayName;
     }
 }

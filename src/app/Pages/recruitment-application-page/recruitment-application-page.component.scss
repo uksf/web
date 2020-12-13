@@ -98,17 +98,15 @@ img {
     height: 15px;
 }
 
-.rating {
-    height: 20px;
-    font-size: 16px;
-    line-height: 0;
-}
+::ng-deep .p-rating {
+    ::ng-deep .p-rating-icon {
+        font-size: 18px;
+        line-height: 0;
+        margin-right: 4px;
 
-::ng-deep .ui-rating a {
-    margin-right: 4px;
-
-    &:last-child {
-        margin-right: 0;
+        &:last-child {
+            margin-right: 0;
+        }
     }
 }
 

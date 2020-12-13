@@ -1,14 +1,10 @@
+import { Application } from './Application';
+
 export enum MembershipState {
     UNCONFIRMED,
     CONFIRMED,
     MEMBER,
     DISCHARGED,
-}
-
-export enum ApplicationState {
-    ACCEPTED,
-    REJECTED,
-    WAITING,
 }
 
 export interface Account {
@@ -40,7 +36,7 @@ export interface Account {
 }
 
 export interface AccountPermissions {
-    admin: boolean;
+    Admin: boolean;
     command: boolean;
     nco: boolean;
     personnel: boolean;
@@ -60,16 +56,6 @@ export interface ServiceRecordEntry {
     notes: string;
     occurence: string;
     timestamp: Date;
-}
-
-export interface Application {
-    applicationCommentThread: string;
-    dateAccepted: Date;
-    dateCreated: Date;
-    ratings: { [id: string]: number };
-    recruiter: string;
-    recruiterCommentThread: string;
-    state: ApplicationState;
 }
 
 export interface RosterAccount {

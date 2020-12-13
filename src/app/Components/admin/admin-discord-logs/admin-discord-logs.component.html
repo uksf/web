@@ -26,22 +26,28 @@
                             ><span>{{ row.timestamp | date: 'dd/MM/yy HH:mm:ss' }}</span></mat-cell
                         >
                     </ng-container>
-                    <ng-container matColumnDef="httpMethod">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header> Method </mat-header-cell>
+                    <ng-container matColumnDef="discordUserEventType">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header> Event Type </mat-header-cell>
                         <mat-cell *matCellDef="let row"
-                            ><span>{{ row.httpMethod }}</span></mat-cell
+                            ><span>{{ eventTypeToString(row.discordUserEventType) }}</span></mat-cell
                         >
                     </ng-container>
-                    <ng-container matColumnDef="url">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header> URL </mat-header-cell>
+                    <ng-container matColumnDef="instigatorId">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header> Instigator ID </mat-header-cell>
+                        <mat-cell *matCellDef="let row"
+                            ><span>{{ row.instigatorId }}</span></mat-cell
+                        >
+                    </ng-container>
+                    <ng-container matColumnDef="instigatorName">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header> Instigator Name </mat-header-cell>
+                        <mat-cell *matCellDef="let row"
+                            ><span>{{ row.instigatorName }}</span></mat-cell
+                        >
+                    </ng-container>
+                    <ng-container matColumnDef="channelName">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header> Channel Name </mat-header-cell>
                         <mat-cell *matCellDef="let row" (click)="openMessageDialog($event.target.textContent)"
-                            ><span>{{ row.url }}</span></mat-cell
-                        >
-                    </ng-container>
-                    <ng-container matColumnDef="userId">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header> User ID </mat-header-cell>
-                        <mat-cell *matCellDef="let row"
-                            ><span>{{ row.userId }}</span></mat-cell
+                            ><span>{{ row.channelName }}</span></mat-cell
                         >
                     </ng-container>
                     <ng-container matColumnDef="name">
@@ -56,14 +62,8 @@
                             ><span>{{ row.message }}</span></mat-cell
                         >
                     </ng-container>
-                    <ng-container matColumnDef="exception">
-                        <mat-header-cell *matHeaderCellDef style="cursor: auto"> Exception </mat-header-cell>
-                        <mat-cell *matCellDef="let row" (click)="openMessageDialog($event.target.textContent)"
-                            ><span>{{ row.exception }}</span></mat-cell
-                        >
-                    </ng-container>
-                    <mat-header-row *matHeaderRowDef="errorLogDisplayedColumns"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: errorLogDisplayedColumns"> </mat-row>
+                    <mat-header-row *matHeaderRowDef="launcherLogDisplayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: launcherLogDisplayedColumns"> </mat-row>
                 </mat-table>
                 <mat-paginator [pageSizeOptions]="[25, 50, 100, 200]"></mat-paginator>
             </div>

@@ -68,18 +68,28 @@ a {
     white-space: nowrap;
     text-overflow: ellipsis;
     padding: 2px;
+
+    span {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
 }
 
 .mat-header-cell {
     overflow: unset;
+
+    &:first-of-type {
+        padding: 0;
+    }
 }
 
 .mat-column-id {
-    flex: 0 0 150px;
+    flex: 0 0 175px;
 }
 
 .mat-column-timestamp {
-    flex: 0 0 100px;
+    flex: 0 0 125px;
 }
 
 .mat-column-message {

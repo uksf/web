@@ -6,6 +6,10 @@
     padding-right: 16px;
 }
 
+.mat-column-level {
+    flex: 0 0 85px;
+}
+
 .mat-column-exception {
     flex: 1 1 250px;
     cursor: pointer;
@@ -21,7 +25,7 @@
 }
 
 .mat-column-userId {
-    flex: 0 0 200px;
+    flex: 0 0 175px;
 }
 
 .mat-column-name {

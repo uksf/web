@@ -13,9 +13,7 @@ import { NewBuild } from '../Models/NewBuild';
 export class ModpackBuildProcessService {
     branches: string[] = [];
 
-    constructor(private displayNameService: DisplayNameService, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {
-        this.getBranches();
-    }
+    constructor(private displayNameService: DisplayNameService, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {}
 
     getBranches() {
         this.httpClient.get(this.urls.apiUrl + '/github/branches').subscribe((branches: string[]) => {

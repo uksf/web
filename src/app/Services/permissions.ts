@@ -18,4 +18,26 @@ export class Permissions {
     public static readonly ACTIVITY = 'ACTIVITY';
     public static readonly DISCHARGES = 'DISCHARGES';
     public static readonly UNLOGGED = 'UNLOGGED';
+
+    public static LookUp(): Record<string, string[]> {
+        if (this.lookup) {
+            return this.lookup;
+        }
+
+        let lookup: Record<string, string[]> = {};
+
+        lookup[Permissions.ADMIN] = [Permissions.ADMIN];
+        lookup[Permissions.COMMAND] = [Permissions.COMMAND, Permissions.ACTIVITY];
+        lookup[Permissions.NCO] = [Permissions.NCO, Permissions.SERVERS, Permissions.ACTIVITY, Permissions.DISCHARGES];
+        lookup[Permissions.PERSONNEL] = [Permissions.PERSONNEL];
+        lookup[Permissions.RECRUITER] = [Permissions.RECRUITER, Permissions.ACTIVITY, Permissions.DISCHARGES];
+        lookup[Permissions.RECRUITER_LEAD] = [Permissions.RECRUITER_LEAD];
+        lookup[Permissions.SERVERS] = [Permissions.SERVERS];
+        lookup[Permissions.TESTER] = [Permissions.TESTER];
+
+        this.lookup = lookup;
+        return this.lookup;
+    }
+
+    private static lookup: Record<string, string[]> = undefined;
 }

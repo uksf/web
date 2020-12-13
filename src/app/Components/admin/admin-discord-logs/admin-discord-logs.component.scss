@@ -1,0 +1,27 @@
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    margin-left: 0;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.mat-column-discordUserEventType {
+    flex: 0 0 125px;
+}
+
+.mat-column-instigatorId {
+    flex: 0 0 150px;
+}
+
+.mat-column-instigatorName {
+    flex: 0 0 125px;
+}
+
+.mat-column-channelName {
+    flex: 0 0 100px;
+}
+
+.mat-column-name {
+    flex: 0 0 125px;
+}

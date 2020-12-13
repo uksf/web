@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { UrlService } from 'app/Services/url.service';
 import { AppComponent } from 'app/app.component';
 import { PermissionsService } from 'app/Services/permissions.service';
-import { ApplicationState } from '../../Models/Account';
+import { ApplicationState } from '../../Models/Application';
 
 @Component({
     selector: 'app-side-bar',
