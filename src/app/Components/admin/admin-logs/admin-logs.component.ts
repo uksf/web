@@ -28,6 +28,7 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
     protected hubConnection: ConnectionContainer;
     protected filterSubject = new Subject<string>();
     protected filter = '';
+    dataLoaded = false;
     logDisplayedColumns = ['id', 'timestamp', 'level', 'message'];
     datasource: MatTableDataSource<BasicLog> = new MatTableDataSource<BasicLog>();
 
@@ -67,6 +68,7 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.httpClient
             .get<PagedResult<BasicLog>>(`${this.urls.apiUrl}/logging/basic`, { params })
             .subscribe((pagedResult: PagedResult<BasicLog>) => {
+                this.dataLoaded = true;
                 this.paginator.length = pagedResult.totalCount;
                 this.datasource.data = pagedResult.data;
             });

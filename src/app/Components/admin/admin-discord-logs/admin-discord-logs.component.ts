@@ -26,6 +26,7 @@ export class AdminDiscordLogsComponent extends AdminLogsComponent implements OnI
         this.httpClient
             .get<PagedResult<DiscordLog>>(`${this.urls.apiUrl}/logging/discord`, { params })
             .subscribe((pagedResult: PagedResult<DiscordLog>) => {
+                this.dataLoaded = true;
                 this.paginator.length = pagedResult.totalCount;
                 this.datasource.data = pagedResult.data;
             });

@@ -26,6 +26,7 @@ export class AdminErrorLogsComponent extends AdminLogsComponent implements OnIni
         this.httpClient
             .get<PagedResult<ErrorLog>>(`${this.urls.apiUrl}/logging/httpError`, { params })
             .subscribe((pagedResult: PagedResult<ErrorLog>) => {
+                this.dataLoaded = true;
                 this.paginator.length = pagedResult.totalCount;
                 this.datasource.data = pagedResult.data;
             });

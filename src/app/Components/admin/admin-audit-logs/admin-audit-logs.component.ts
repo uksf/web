@@ -26,6 +26,7 @@ export class AdminAuditLogsComponent extends AdminLogsComponent implements OnIni
         this.httpClient
             .get<PagedResult<AuditLog>>(`${this.urls.apiUrl}/logging/audit`, { params })
             .subscribe((pagedResult: PagedResult<AuditLog>) => {
+                this.dataLoaded = true;
                 this.paginator.length = pagedResult.totalCount;
                 this.datasource.data = pagedResult.data;
             });
