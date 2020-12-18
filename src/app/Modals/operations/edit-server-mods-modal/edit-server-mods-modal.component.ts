@@ -54,10 +54,13 @@ export class EditServerModsModalComponent implements OnInit {
                 serverMods.push(mod);
             }
         });
+        this.server.mods = mods;
+        this.server.serverMods = serverMods;
+
         this.httpClient
             .post(
                 `${this.urls.apiUrl}/gameservers/${this.server.id}/mods`,
-                { mods: JSON.stringify(mods), serverMods: serverMods },
+                this.server,
                 {
                     headers: new HttpHeaders({
                         'Content-Type': 'application/json',
