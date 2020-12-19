@@ -54,6 +54,9 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
     }
 
     isDate(date) {
+        if (!date.match(/^(0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])[\/\-]\d{4} ([0-2][0-9][:][0-5][0-9][:][0-5][0-9])/)) {
+            return false;
+        }
         return !isNaN(Date.parse(date));
     }
 
