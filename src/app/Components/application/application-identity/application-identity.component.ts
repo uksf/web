@@ -150,8 +150,10 @@ export class ApplicationIdentityComponent {
                     return of(null);
                 }
                 if (this.countries.find((nation) => nation.value === control.value)) {
+                    this.validating = false;
                     return of(null);
                 } else {
+                    this.validating = false;
                     return of({ invalid: true });
                 }
             })
