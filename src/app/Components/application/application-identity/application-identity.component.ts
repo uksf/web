@@ -1,9 +1,8 @@
 import { Component, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl, FormGroupDirective, NgForm, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { HttpHeaders } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
-import { ErrorStateMatcher } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable, of, timer } from 'rxjs';
 import { switchMap, map, startWith } from 'rxjs/operators';
@@ -103,6 +102,10 @@ export class ApplicationIdentityComponent {
             { type: 'febhigh', message: "Invalid date: February doesn't have that many days" },
             { type: 'leap', message: "Invalid date: February only has a 29th day if it's a leap year" },
         ],
+        nation: [
+            { type: 'required', message: 'Nation of Residence is required' },
+            { type: 'invalid', message: 'Invalid Nation of Residence. Please select one from the list' },
+        ],
     };
 
     constructor(public dialog: MatDialog, public formBuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private router: Router) {
@@ -126,7 +129,7 @@ export class ApplicationIdentityComponent {
                 },
                 { validator: validDob('day', 'month', 'year') }
             ),
-            nation: ['', Validators.required],
+            nation: ['', { updateOn: 'blur', validators: [Validators.required], asyncValidators: [this.validNation.bind(this)] }],
         });
         this.countries = CountryPickerService.countries;
     }
@@ -135,6 +138,23 @@ export class ApplicationIdentityComponent {
         this.filteredCountries = this.formGroup.get(['nation']).valueChanges.pipe(
             startWith(''),
             map((x) => this.filterCountry(x))
+        );
+    }
+
+    private validNation(control: AbstractControl): ValidationErrors {
+        this.validating = true;
+        return timer(250).pipe(
+            switchMap(() => {
+                if (!control.value) {
+                    this.validating = false;
+                    return of(null);
+                }
+                if (this.countries.find((nation) => nation.value === control.value)) {
+                    return of(null);
+                } else {
+                    return of({ invalid: true });
+                }
+            })
         );
     }
 
@@ -209,6 +229,7 @@ export class ApplicationIdentityComponent {
         formObj.password = formObj.passwordGroup.password;
         delete formObj.passwordGroup;
         const formString = JSON.stringify(formObj).replace(/[\n\r]/g, '');
+
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
         this.httpClient.put(this.urls.apiUrl + '/accounts', formString, { headers: headers }).subscribe(
             (response) => {

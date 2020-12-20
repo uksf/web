@@ -31,12 +31,8 @@
         </div>
         <br />
         <div>
-            <p>
-                This name will be used in-game, on TeamSpeak, and on Discord.
-            </p>
-            <p>
-                If you do not wish to use your real name, you may use a realistic fake name (for example, Barry Miller)
-            </p>
+            <p>This name will be used in-game, on TeamSpeak, and on Discord.</p>
+            <p>If you do not wish to use your real name, you may use a realistic fake name (for example, Barry Miller)</p>
             <mat-form-field class="names">
                 <input matInput formControlName="firstname" placeholder="First name" required autocomplete="given-name" />
             </mat-form-field>
@@ -79,6 +75,9 @@
                     <img src="{{ country.value | countryImage }}" width="35" /> {{ country.value | countryName }}
                 </mat-option>
             </mat-autocomplete>
+            <mat-error *ngFor="let validation of validation_messages.nation">
+                <mat-error class="error-message" *ngIf="formGroup.get('nation').hasError(validation.type)">{{ validation.message }}</mat-error>
+            </mat-error>
         </mat-form-field>
         <br />
         <div class="button-next">
