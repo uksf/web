@@ -73,15 +73,20 @@ export class AddUnitModalComponent implements OnInit {
     }
 
     resolveAvailableParentUnits() {
-        if (!this.unit || this.unit.parent === '000000000000000000000000') {
-            return;
-        }
-
-        this.availableParentUnits = this.units.filter((x) => x.branch === this.form.controls['branch'].value && x.id !== this.unit.id);
-        if (this.edit && this.availableParentUnits.find((x) => x.id === this.unit.parent)) {
-            this.form.controls['parent'].setValue(this.unit.parent);
-        } else {
+        this.availableParentUnits = this.units.filter((x) => x.branch === this.form.controls['branch'].value);
+        if (!this.edit) {
             this.form.controls['parent'].setValue(this.availableParentUnits[0].id);
+        } else {
+            if (this.unit.parent === '000000000000000000000000') {
+                return;
+            }
+
+            this.availableParentUnits = this.availableParentUnits.filter((x) => x.id !== this.unit.id);
+            if (this.availableParentUnits.find((x) => x.id === this.unit.parent)) {
+                this.form.controls['parent'].setValue(this.unit.parent);
+            } else {
+                this.form.controls['parent'].setValue(this.availableParentUnits[0].id);
+            }
         }
     }
 
