@@ -73,7 +73,7 @@ export class AddUnitModalComponent implements OnInit {
     }
 
     resolveAvailableParentUnits() {
-        if (this.unit.parent === '000000000000000000000000') {
+        if (!this.unit || this.unit.parent === '000000000000000000000000') {
             return;
         }
 

@@ -24,7 +24,7 @@
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
-                <mat-form-field class="normal" *ngIf="this.unit.parent !== '000000000000000000000000'">
+                <mat-form-field class="normal" *ngIf="this.unit && this.unit.parent !== '000000000000000000000000'">
                     <mat-select placeholder="Parent Unit" formControlName="parent" required>
                         <mat-option *ngFor="let unit of availableParentUnits" [value]="unit.id">
                             {{ unit.name }}
