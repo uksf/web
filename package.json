@@ -36,7 +36,7 @@
     "eslint": "^7.11.0",
     "express": "^4.17.1",
     "moment-timezone": "^0.5.31",
-    "ngx-markdown": "^10.1.1",
+    "ngx-markdown": "^11.1.0",
     "ngx-permissions": "^8.1.1",
     "primeicons": "^4.0.0",
     "primeng": "^10.0.3",
