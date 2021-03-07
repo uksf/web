@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -15,7 +15,7 @@ import { VariableItem } from 'app/Models/VariableItem';
     templateUrl: './admin-variables.component.html',
     styleUrls: ['../../../Pages/admin-page/admin-page.component.scss', './admin-variables.component.scss'],
 })
-export class AdminVariablesComponent implements AfterViewInit {
+export class AdminVariablesComponent implements OnInit {
     @ViewChild(MatAccordion) accordion: MatAccordion;
     expanded = false;
     form: FormGroup;
@@ -39,10 +39,8 @@ export class AdminVariablesComponent implements AfterViewInit {
         });
     }
 
-    ngAfterViewInit() {
-        this.getVariables(() => {
-            this.accordion.closeAll();
-        });
+    ngOnInit(): void {
+        this.getVariables();
     }
 
     trackByVariableList(_: number, variableList: VariableItemList) {
@@ -67,15 +65,12 @@ export class AdminVariablesComponent implements AfterViewInit {
         });
     }
 
-    getVariables(callback: () => void = null) {
+    getVariables() {
         this.updating = true;
         this.httpClient.get(`${this.urls.apiUrl}/variables`).subscribe(
             (response: VariableItem[]) => {
                 this.variables = response;
                 this.formatVariables();
-                if (callback) {
-                    callback();
-                }
                 this.updating = false;
             },
             (_) => {

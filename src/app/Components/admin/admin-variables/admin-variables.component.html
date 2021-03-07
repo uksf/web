@@ -31,7 +31,7 @@
                 </div>
                 <div class="variables-list-container">
                     <mat-accordion [multi]="true" class="variables-list">
-                        <mat-expansion-panel class="variables-list-item" *ngFor="let variableList of variableLists; trackBy: trackByVariableList" [togglePosition]="'before'" [expanded]="true">
+                        <mat-expansion-panel class="variables-list-item" *ngFor="let variableList of variableLists; trackBy: trackByVariableList" [togglePosition]="'before'">
                             <mat-expansion-panel-header [collapsedHeight]="'36px'" [expandedHeight]="'36px'">
                                 <mat-panel-title>
                                     {{ variableList.name }}
