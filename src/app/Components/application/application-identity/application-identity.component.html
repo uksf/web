@@ -72,7 +72,7 @@
             <input type="text" placeholder="Nation of Residence" matInput formControlName="nation" [matAutocomplete]="auto" />
             <mat-autocomplete #auto="matAutocomplete" [displayWith]="countryDisplayName">
                 <mat-option *ngFor="let country of filteredCountries | async" [value]="country.value">
-                    <img src="{{ country.value | countryImage }}" width="35" /> {{ country.value | countryName }}
+                    <img src="{{ country.value | countryImage }}" width="35"  alt="{{ country.value | countryName }}"/> {{ country.value | countryName }}
                 </mat-option>
             </mat-autocomplete>
             <mat-error *ngFor="let validation of validation_messages.nation">

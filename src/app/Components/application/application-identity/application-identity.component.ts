@@ -41,7 +41,7 @@ function validDob(dayKey: string, monthKey: string, yearKey: string) {
         if (month < 1 || month > 12) {
             return { month: true };
         }
-        if (year < 1930) {
+        if (year < 1900) {
             return { dead: true };
         }
         if (year > new Date().getFullYear()) {

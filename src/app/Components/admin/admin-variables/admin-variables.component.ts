@@ -17,7 +17,7 @@ import { VariableItem } from 'app/Models/VariableItem';
 })
 export class AdminVariablesComponent implements OnInit {
     @ViewChild(MatAccordion) accordion: MatAccordion;
-    expanded = true;
+    expanded = false;
     form: FormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     updating;
@@ -81,7 +81,7 @@ export class AdminVariablesComponent implements OnInit {
 
     addVariable() {
         this.updating = true;
-        const formString = JSON.stringify(this.form.getRawValue()).replace(/\n|\r/g, '');
+        const formString = JSON.stringify(this.form.getRawValue()).replace(/[\n\r]/g, '');
         this.httpClient
             .put(`${this.urls.apiUrl}/variables`, formString, {
                 headers: new HttpHeaders({

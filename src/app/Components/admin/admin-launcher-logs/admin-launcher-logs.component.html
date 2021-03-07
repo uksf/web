@@ -4,7 +4,10 @@
         <div class="flex-container">
             <div class="table-header">
                 <mat-form-field style="width: 30%">
-                    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter" />
+                    <input matInput (keyup)="applyFilter($event.target.value)" [(ngModel)]="filter" placeholder="Filter" />
+                    <button mat-button *ngIf="filter" matSuffix mat-icon-button aria-label="Clear" (click)="applyFilter(''); $event.stopPropagation()">
+                        <mat-icon>close</mat-icon>
+                    </button>
                 </mat-form-field>
                 <app-flex-filler></app-flex-filler>
                 <span class="expand-hint">Some columns can be expanding by clicking on the data cell</span>
