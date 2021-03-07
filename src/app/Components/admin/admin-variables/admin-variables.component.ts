@@ -40,7 +40,9 @@ export class AdminVariablesComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.getVariables();
+        this.getVariables(() => {
+            this.accordion.closeAll();
+        });
     }
 
     trackByVariableList(_: number, variableList: VariableItemList) {
@@ -65,12 +67,15 @@ export class AdminVariablesComponent implements OnInit {
         });
     }
 
-    getVariables() {
+    getVariables(callback: () => void = null) {
         this.updating = true;
         this.httpClient.get(`${this.urls.apiUrl}/variables`).subscribe(
             (response: VariableItem[]) => {
                 this.variables = response;
                 this.formatVariables();
+                if (callback) {
+                    callback();
+                }
                 this.updating = false;
             },
             (_) => {
