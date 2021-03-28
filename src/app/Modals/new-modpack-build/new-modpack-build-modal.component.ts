@@ -39,7 +39,7 @@ export class NewModpackBuildModalComponent {
             ),
             ace: [false],
             acre: [false],
-            f35: [false],
+            air: [false],
         });
     }
 
@@ -47,6 +47,6 @@ export class NewModpackBuildModalComponent {
         const formValue = this.form.getRawValue();
         const reference = formValue.referenceGroup.branch !== 'No branch' ? formValue.referenceGroup.branch : formValue.referenceGroup.commitId;
         this.dialogRef.close();
-        this.runEvent.emit({ reference: reference, ace: formValue.ace, acre: formValue.acre, f35: formValue.f35 });
+        this.runEvent.emit({ reference: reference, ace: formValue.ace, acre: formValue.acre, air: formValue.air });
     }
 }
