@@ -3,12 +3,12 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../Services/url.service';
 import { AccountService } from '../../Services/account.service';
-import { PermissionsService } from '../../Services/permissions.service';
+import { titleCase } from '../../Services/helper.service';
 
 @Component({
     selector: 'app-change-first-last-modal',
     templateUrl: './change-first-last-modal.component.html',
-    styleUrls: ['./change-first-last-modal.component.css'],
+    styleUrls: ['./change-first-last-modal.component.scss'],
 })
 export class ChangeFirstLastModalComponent implements OnInit {
     form: FormGroup;
@@ -53,5 +53,11 @@ export class ChangeFirstLastModalComponent implements OnInit {
 
     get formErrors() {
         return this.form.errors.error;
+    }
+
+    get displayName(): string {
+        let firstName = titleCase(this.form.controls['firstname'].value);
+        let lastName = titleCase(this.form.controls['lastname'].value);
+        return `${this.rank ? `${this.rank}.` : ''}${lastName}.${firstName ? firstName[0] : '?'}`;
     }
 }

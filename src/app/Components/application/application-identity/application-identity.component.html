@@ -30,15 +30,21 @@
             </mat-form-field>
         </div>
         <br />
-        <div>
+        <div class="name-container">
             <p>This name will be used in-game, on TeamSpeak, and on Discord.</p>
             <p>If you do not wish to use your real name, you may use a realistic fake name (for example, Barry Miller)</p>
-            <mat-form-field class="names">
-                <input matInput formControlName="firstname" placeholder="First name" required autocomplete="given-name" />
-            </mat-form-field>
-            <mat-form-field>
-                <input matInput formControlName="lastname" placeholder="Last name" required autocomplete="family-name" />
-            </mat-form-field>
+            <div class="names-container">
+                <mat-form-field class="name">
+                    <input matInput formControlName="firstname" placeholder="First name" required autocomplete="given-name" appCharacterBlock />
+                </mat-form-field>
+                <mat-form-field class="name">
+                    <input matInput formControlName="lastname" placeholder="Last name" required autocomplete="family-name" appCharacterBlock />
+                </mat-form-field>
+            </div>
+            <span *ngIf="formGroup.value.firstname && formGroup.value.lastname">
+                Your name will be displayed as:
+                <b>{{ displayName }}</b>
+            </span>
         </div>
         <br />
         <div formGroupName="dobGroup">

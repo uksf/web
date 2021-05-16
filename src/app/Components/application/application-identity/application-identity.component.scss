@@ -1,5 +1,20 @@
-.names {
-    margin-right: 5px;
+.name-container {
+    display: flex;
+    flex-direction: column;
+
+    .names-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .name {
+            width: 100%;
+
+            &:first-of-type {
+                margin-right: 5px;
+            }
+        }
+    }
 }
 
 .dob {
@@ -11,11 +26,11 @@
     width: 40px;
 }
 
-input[type="number"] {
+input[type='number'] {
     -moz-appearance: textfield;
 }
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }

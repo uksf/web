@@ -2,23 +2,20 @@
     <div *ngIf="!changed">
         <h2 mat-dialog-title>Change Name</h2>
         <form [formGroup]="form">
-            <mat-form-field class="names">
-                <input matInput formControlName="firstname" required>
-            </mat-form-field>
-            <mat-form-field>
-                <input matInput formControlName="lastname" required>
-            </mat-form-field>
-            <br>
-            <mat-error *ngIf="form.errors != null">{{formErrors}}</mat-error>
-            <br>
+            <div class="names-container">
+                <mat-form-field class="name">
+                    <input matInput formControlName="firstname" required appCharacterBlock />
+                </mat-form-field>
+                <mat-form-field class="name">
+                    <input matInput formControlName="lastname" required appCharacterBlock />
+                </mat-form-field>
+                <br />
+                <mat-error *ngIf="form.errors != null">{{ formErrors }}</mat-error>
+            </div>
             <div class="button-container">
-                <span *ngIf="rank">
+                <span>
                     Your new name will be
-                    <b>{{rank}}.{{form.value.lastname}}.{{form.value.firstname[0]}}</b>
-                </span>
-                <span *ngIf="!rank">
-                    Your new name will be
-                    <b>{{form.value.lastname}}.{{form.value.firstname[0]}}</b>
+                    <b>{{ displayName }}</b>
                 </span>
                 <app-flex-filler></app-flex-filler>
                 <button mat-raised-button color="primary" type="button" (click)="changeName()" [disabled]="!form.valid || !changesMade">Submit</button>
@@ -26,11 +23,8 @@
         </form>
     </div>
     <div *ngIf="changed">
-        <span *ngIf="rank">
-            Please change your TeamSpeak name and Arma profile name to: <b>{{rank}}.{{form.value.lastname}}.{{form.value.firstname[0]}}</b>
-        </span>
-        <span *ngIf="!rank">
-            Please change your TeamSpeak name and Arma profile name to: <b>{{form.value.lastname}}.{{form.value.firstname[0]}}</b>
+        <span>
+            Please change your TeamSpeak name and Arma profile name to: <b>{{ displayName }}</b>
         </span>
     </div>
 </mat-dialog-content>

@@ -169,6 +169,7 @@ import { ChartModule } from 'primeng/chart';
 import { RatingModule } from 'primeng/rating';
 import { ZonedTime, TimeAgoPipe } from './Pipes/time.pipe';
 import { AdminDiscordLogsComponent } from './Components/admin/admin-discord-logs/admin-discord-logs.component';
+import { CharacterBlockDirective } from './Directives/character-block.directive';
 
 export function initPermissions(injector: Injector) {
     return () => {
@@ -382,6 +383,7 @@ export function tokenGetter() {
         ModpackBuildsStepsComponent,
         NewModpackBuildModalComponent,
         TimeAgoPipe,
+        CharacterBlockDirective,
     ],
     bootstrap: [AppComponent],
 })

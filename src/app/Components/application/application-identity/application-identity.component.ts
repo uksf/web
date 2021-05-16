@@ -11,6 +11,7 @@ import { ICountry, CountryPickerService } from 'app/Services/CountryPicker/count
 import { CountryName } from 'app/Pipes/country.pipe';
 import { Router } from '@angular/router';
 import { ConfirmValidParentMatcher, InstantErrorStateMatcher } from '../../../Services/formhelper.service';
+import { titleCase } from '../../../Services/helper.service';
 
 function matchingPasswords(passwordKey: string, confirmPasswordKey: string) {
     return (group: FormGroup): { [key: string]: any } => {
@@ -234,7 +235,7 @@ export class ApplicationIdentityComponent {
 
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
         this.httpClient.put(this.urls.apiUrl + '/accounts', formString, { headers: headers }).subscribe(
-            (response) => {
+            () => {
                 this.pending = false;
                 this.dialog
                     .open(MessageModalComponent, {
@@ -252,5 +253,11 @@ export class ApplicationIdentityComponent {
                 this.pending = false;
             }
         );
+    }
+
+    get displayName(): string {
+        let firstName = titleCase(this.formGroup.controls['firstname'].value);
+        let lastName = titleCase(this.formGroup.controls['lastname'].value);
+        return `Cdt.${lastName}.${firstName ? firstName[0] : '?'}`;
     }
 }
