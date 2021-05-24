@@ -79,12 +79,9 @@ export class ConnectTeamspeakComponent {
     }
 
     findTeamspeakClients() {
-        this.httpClient.get(this.urls.apiUrl + '/teamspeak/online').subscribe(
-            (response: any[]) => {
-                this.updateClients(response);
-            },
-            (error) => this.urls.errorWrapper('Failed to find TeamSpeak client', error)
-        );
+        this.httpClient.get(this.urls.apiUrl + '/teamspeak/online').subscribe((response: any[]) => {
+            this.updateClients(response);
+        });
     }
 
     updateClients(clients: any[]) {

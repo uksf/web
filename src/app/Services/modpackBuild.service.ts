@@ -9,10 +9,7 @@ export class ModpackBuildService implements OnDestroy {
     private hubConnection: ConnectionContainer;
     builds: ModpackBuild[] = [];
 
-    constructor(
-        private httpClient: HttpClient,
-        private urls: UrlService,
-        private signalrService: SignalRService) { }
+    constructor(private httpClient: HttpClient, private urls: UrlService, private signalrService: SignalRService) {}
 
     ngOnDestroy(): void {
         this.disconnect();
@@ -38,11 +35,11 @@ export class ModpackBuildService implements OnDestroy {
     }
 
     sortBuilds() {
-        this.builds.sort((a: ModpackBuild, b: ModpackBuild) => a.buildNumber > b.buildNumber ? -1 : a.buildNumber < b.buildNumber ? 1 : 0);
+        this.builds.sort((a: ModpackBuild, b: ModpackBuild) => (a.buildNumber > b.buildNumber ? -1 : a.buildNumber < b.buildNumber ? 1 : 0));
     }
 
     patchBuild(build: ModpackBuild) {
-        const index = this.builds.findIndex(x => x.id === build.id);
+        const index = this.builds.findIndex((x) => x.id === build.id);
         if (index === -1) {
             this.builds.unshift(build);
         } else {
@@ -57,6 +54,6 @@ export class ModpackBuildService implements OnDestroy {
         this.httpClient.get(this.urls.apiUrl + '/modpack/builds').subscribe((builds: ModpackBuild[]) => {
             this.builds = builds;
             callback();
-        }, error => this.urls.errorWrapper('Failed to get releases', error));
+        });
     }
 }

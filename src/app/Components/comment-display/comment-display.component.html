@@ -10,7 +10,7 @@
                 matAutosizeMaxRows="10"
                 maxlength="1000"
                 #message
-                (keydown.enter)="postComment(); (false)"
+                (keydown.enter)="postComment()"
             ></textarea>
             <mat-hint *ngIf="message.value.length > 900">{{ message.value.length }} / 1000</mat-hint>
         </mat-form-field>

@@ -44,12 +44,9 @@ export class ModpackBuildProcessService {
 
     getBuildData(id: string, callback: (arg0: ModpackBuild) => void) {
         // get request for build
-        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${id}`).subscribe(
-            (build: ModpackBuild) => {
-                callback(build);
-            },
-            (error) => this.urls.errorWrapper('Failed to get build', error)
-        );
+        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${id}`).subscribe((build: ModpackBuild) => {
+            callback(build);
+        });
     }
 
     newBuild(callback: () => void) {
@@ -74,21 +71,17 @@ export class ModpackBuildProcessService {
 
     rebuild(build: ModpackBuild, callback: () => void) {
         // get request for rebuild
-        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${build.id}/rebuild`).subscribe(
-            () => {
-                callback();
-            },
-            (error) => this.urls.errorWrapper('Failed to rebuild', error)
-        );
+        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${build.id}/rebuild`).subscribe(() => {
+            callback();
+        });
     }
 
     cancel(build: ModpackBuild, errorCallback: () => void) {
         // get request for build cancel
         this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${build.id}/cancel`).subscribe(
             () => {},
-            (error) => {
+            () => {
                 errorCallback();
-                this.urls.errorWrapper('Failed to cancel build', error);
             }
         );
     }

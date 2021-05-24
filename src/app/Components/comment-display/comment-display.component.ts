@@ -55,26 +55,18 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
     }
 
     private getComments() {
-        this.httpClient.get(this.urls.apiUrl + '/commentthread/' + this.threadId).subscribe(
-            (response) => {
-                if (this.previousResponse !== JSON.stringify(response)) {
-                    this.comments = response['comments'];
-                    this.previousResponse = JSON.stringify(response);
-                }
-            },
-            (error: UksfError) => {
-
+        this.httpClient.get(this.urls.apiUrl + '/commentthread/' + this.threadId).subscribe((response) => {
+            if (this.previousResponse !== JSON.stringify(response)) {
+                this.comments = response['comments'];
+                this.previousResponse = JSON.stringify(response);
             }
-        );
+        });
     }
 
     getCanPostComment() {
-        this.httpClient.get(this.urls.apiUrl + '/commentthread/canpost/' + this.threadId).subscribe(
-            (canPost: boolean) => {
-                this.canPostComment = canPost;
-            },
-            (error) => this.urls.errorWrapper('Failed to update comments', error)
-        );
+        this.httpClient.get(this.urls.apiUrl + '/commentthread/canpost/' + this.threadId).subscribe((canPost: boolean) => {
+            this.canPostComment = canPost;
+        });
     }
 
     hasText() {
@@ -89,12 +81,10 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
         if (!this.hasText()) {
             return;
         }
-        this.httpClient.put(this.urls.apiUrl + '/commentthread/' + this.threadId, { content: this.commentForm.controls.commentContent.value }).subscribe(
-            (_) => {
-                this.commentForm.controls.commentContent.setValue('');
-            },
-            (error) => this.urls.errorWrapper('Failed to apply comment', error)
-        );
+
+        this.httpClient.put(this.urls.apiUrl + '/commentthread/' + this.threadId, { content: this.commentForm.controls.commentContent.value }).subscribe((_) => {
+            this.commentForm.controls.commentContent.setValue('');
+        });
     }
 
     canDelete(comment) {
@@ -102,12 +92,9 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
     }
 
     deleteComment(comment) {
-        this.httpClient.post(this.urls.apiUrl + '/commentthread/' + this.threadId + '/' + comment.id, { content: this.commentForm.controls.commentContent.value }).subscribe(
-            () => {
-                this.commentForm.controls.commentContent.setValue('');
-            },
-            (error) => this.urls.errorWrapper('Failed to apply comment', error)
-        );
+        this.httpClient.post(this.urls.apiUrl + '/commentthread/' + this.threadId + '/' + comment.id, { content: this.commentForm.controls.commentContent.value }).subscribe(() => {
+            this.commentForm.controls.commentContent.setValue('');
+        });
     }
 
     getAuthorDisplayName(displayName: string) {

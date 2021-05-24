@@ -1,0 +1,12 @@
+.pending {
+    opacity: 0;
+}
+
+mat-spinner {
+    box-sizing: border-box;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -12px;
+    margin-left: -12px;
+}

@@ -65,19 +65,16 @@ export class ModpackRcService implements OnDestroy {
 
     getData(callback: () => void) {
         // get request for all builds (groups by version)
-        this.httpClient.get(this.urls.apiUrl + '/modpack/rcs').subscribe(
-            (builds: ModpackBuild[]) => {
-                // this.rcs = builds;
-                if (builds.length === 0) {
-                    this.rcs = [];
-                }
+        this.httpClient.get(this.urls.apiUrl + '/modpack/rcs').subscribe((builds: ModpackBuild[]) => {
+            // this.rcs = builds;
+            if (builds.length === 0) {
+                this.rcs = [];
+            }
 
-                builds.forEach((build: ModpackBuild) => {
-                    this.patchBuild(build);
-                });
-                callback();
-            },
-            (error) => this.urls.errorWrapper('Failed to get release candidates', error)
-        );
+            builds.forEach((build: ModpackBuild) => {
+                this.patchBuild(build);
+            });
+            callback();
+        });
     }
 }

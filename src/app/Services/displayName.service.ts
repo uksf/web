@@ -21,8 +21,7 @@ export class DisplayNameService {
                         reject();
                     }
                 },
-                (error) => {
-                    this.urls.errorWrapper('Failed to get displayname', error);
+                () => {
                     reject();
                 }
             );

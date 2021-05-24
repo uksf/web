@@ -54,22 +54,19 @@ export class RecruitmentPageComponent implements OnInit {
     }
 
     private getApplications() {
-        this.httpClient.get(this.urls.apiUrl + '/recruitment').subscribe(
-            (applicationsOverview: ApplicationsOverview) => {
-                this.waiting = applicationsOverview.waiting;
-                this.allWaiting = applicationsOverview.allWaiting;
-                this.complete = applicationsOverview.complete;
-                this.recruiters = applicationsOverview.recruiters;
-                this.getTeamspeakOnlineStates();
+        this.httpClient.get(this.urls.apiUrl + '/recruitment').subscribe((applicationsOverview: ApplicationsOverview) => {
+            this.waiting = applicationsOverview.waiting;
+            this.allWaiting = applicationsOverview.allWaiting;
+            this.complete = applicationsOverview.complete;
+            this.recruiters = applicationsOverview.recruiters;
+            this.getTeamspeakOnlineStates();
 
-                this.filteredAndSearched = this.complete;
-                this.filtered = this.complete;
-                this.searched = this.complete;
-                this.sort(2);
-                this.loaded = true;
-            },
-            (error) => this.urls.errorWrapper('Failed to get applications', error)
-        );
+            this.filteredAndSearched = this.complete;
+            this.filtered = this.complete;
+            this.searched = this.complete;
+            this.sort(2);
+            this.loaded = true;
+        });
     }
 
     private getTeamspeakOnlineStates() {
@@ -86,14 +83,11 @@ export class RecruitmentPageComponent implements OnInit {
     }
 
     private getStats() {
-        this.httpClient.get(this.urls.apiUrl + '/recruitment/stats').subscribe(
-            (response) => {
-                this.activity = response['activity'];
-                this.yourStats = response['yourStats'];
-                this.sr1Stats = response['sr1Stats'];
-            },
-            (error) => this.urls.errorWrapper('Failed to get recruitment stats', error)
-        );
+        this.httpClient.get(this.urls.apiUrl + '/recruitment/stats').subscribe((response) => {
+            this.activity = response['activity'];
+            this.yourStats = response['yourStats'];
+            this.sr1Stats = response['sr1Stats'];
+        });
     }
 
     getApplicationColour(application) {
@@ -123,15 +117,12 @@ export class RecruitmentPageComponent implements OnInit {
                 name: 'sr1Enabled',
                 value: value,
             })
-            .subscribe(
-                (_) => {
-                    recruiter = this.activity.find((x) => x.account.id === recruiter.id);
-                    if (recruiter !== undefined) {
-                        recruiter.account.settings.sr1Enabled = value;
-                    }
-                },
-                (error) => this.urls.errorWrapper('Getting account data failed', error)
-            );
+            .subscribe((_) => {
+                recruiter = this.activity.find((x) => x.account.id === recruiter.id);
+                if (recruiter !== undefined) {
+                    recruiter.account.settings.sr1Enabled = value;
+                }
+            });
     }
 
     openApplication(application) {

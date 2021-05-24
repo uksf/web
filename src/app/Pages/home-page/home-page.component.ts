@@ -68,25 +68,22 @@ export class HomePageComponent implements OnInit {
 
     private getClients() {
         // this.httpClient.get('https://api.uk-sf.co.uk/teamspeak/onlineAccounts').subscribe(
-        this.httpClient.get(this.urls.apiUrl + '/teamspeak/onlineAccounts').subscribe(
-            (response) => {
-                if (response) {
-                    if (response['commanders']) {
-                        this.commanders = response['commanders'];
-                    }
-                    if (response['recruiters']) {
-                        this.recruiters = response['recruiters'];
-                    }
-                    if (response['members']) {
-                        this.members = response['members'];
-                    }
-                    if (response['guests']) {
-                        this.guests = response['guests'];
-                    }
+        this.httpClient.get(this.urls.apiUrl + '/teamspeak/onlineAccounts').subscribe((response) => {
+            if (response) {
+                if (response['commanders']) {
+                    this.commanders = response['commanders'];
                 }
-            },
-            (error) => this.urls.errorWrapper('Failed to get online TeamSpeak clients', error)
-        );
+                if (response['recruiters']) {
+                    this.recruiters = response['recruiters'];
+                }
+                if (response['members']) {
+                    this.members = response['members'];
+                }
+                if (response['guests']) {
+                    this.guests = response['guests'];
+                }
+            }
+        });
     }
 
     private getInstagramImages() {

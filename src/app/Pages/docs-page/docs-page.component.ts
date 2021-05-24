@@ -1,53 +1,42 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ApiService } from '../../Services/api.service';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { UrlService } from '../../Services/url.service';
 
 @Component({
     selector: 'app-docs-page',
     templateUrl: './docs-page.component.html',
-    styleUrls: ['./docs-page.component.css']
+    styleUrls: ['./docs-page.component.css'],
 })
 export class DocsPageComponent implements OnInit, OnDestroy {
     toc;
     doc;
     private sub;
 
-    constructor(
-        Api: ApiService,
-        private route: ActivatedRoute,
-        private router: Router
-    ) {
-        Api.sendRequest(
-            () => { return Api.httpClient.get(Api.urls.apiUrl + '/Docs') },
-            (data) => {
+    constructor(private route: ActivatedRoute, private router: Router, private httpClient: HttpClient, private urlService: UrlService) {
+        this.httpClient.get(this.urlService.apiUrl + '/Docs').subscribe((data) => {
             this.toc = data;
-                this.router.navigate(['/docs/' + this.toc[0].name]);
-            },
-            'failed to get docs'
-        );
+            this.router.navigate(['/docs/' + this.toc[0].name]);
+        });
 
         if (this.route.snapshot.params.id) {
-            Api.sendRequest(
-                () => { return Api.httpClient.get(Api.urls.apiUrl + '/Docs/' + this.route.snapshot.params.id) },
-                (data) => { this.doc = data.doc },
-                'failed to get the doc'
-            );
+            this.httpClient.get(this.urlService.apiUrl + '/Docs/' + this.route.snapshot.params.id).subscribe((data: any) => {
+                this.doc = data.doc;
+            });
         } else {
             this.doc = 'select a document';
         }
         this.sub = router.events.subscribe((val) => {
             // see also
             if (val instanceof NavigationEnd) {
-                Api.sendRequest(
-                    () => { return Api.httpClient.get(Api.urls.apiUrl + '/Docs/' + this.route.snapshot.params.id) },
-                    (data) => { this.doc = data.doc },
-                    'failed to get the doc'
-                );
+                this.httpClient.get(this.urlService.apiUrl + '/Docs/' + this.route.snapshot.params.id).subscribe((data: any) => {
+                    this.doc = data.doc;
+                });
             }
         });
     }
 
-    ngOnInit() { }
+    ngOnInit() {}
 
     ngOnDestroy() {
         this.sub.unsubscribe();
