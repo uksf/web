@@ -4,33 +4,25 @@ import { Router } from '@angular/router';
 import { UrlService } from '../url.service';
 import { SessionService } from './session.service';
 import { AccountService } from '../account.service';
-import { StatesService } from '../states.service';
+import { UksfError } from '../../Models/Response';
 
 @Injectable()
 export class AuthenticationService {
     constructor(private httpClient: HttpClient, private router: Router, private urls: UrlService, private sessionService: SessionService, private accountService: AccountService) {}
 
-    tryAuth(email: string, password: string, validateCode: string, validateUri: string, callback: (any?) => void = null) {
-        let payload;
-        let uri;
-        if (validateUri) {
-            payload = { email: email, password: password, code: validateCode };
-            uri = '/' + validateUri;
-        } else {
-            payload = { email: email, password: password };
-            uri = '/login';
-        }
+    public login(email: string, password: string, stayLogged: boolean, callback: (any?) => void = null) {
+        let body = { email: email, password: password };
 
-        this.httpClient.post(this.urls.apiUrl + uri, payload).subscribe(
+        this.httpClient.post(`${this.urls.apiUrl}/auth/login`, body).subscribe(
             (response) => {
                 this.sessionService.setSessionToken(response);
-                if (StatesService.stayLogged) {
+                if (stayLogged) {
                     this.sessionService.setStorageToken();
                 }
                 callback();
             },
-            (error) => {
-                console.log(error);
+            (error: UksfError) => {
+                console.log(error.error);
                 if (callback) {
                     callback(error.error);
                 }
@@ -48,17 +40,51 @@ export class AuthenticationService {
         }
     }
 
-    public refresh(callback: () => void = null) {
-        this.httpClient.get(this.urls.apiUrl + '/login/refresh').subscribe(
-            (response: any) => {
+    public requestPasswordReset(email: string, callback: (any?) => void = null) {
+        let body = { email: email };
+
+        this.httpClient.post(`${this.urls.apiUrl}/auth/passwordReset`, body).subscribe(
+            () => {
+                callback();
+            },
+            (error: UksfError) => {
+                console.log(error.error);
+                if (callback) {
+                    callback(error.error);
+                }
+            }
+        );
+    }
+
+    public passwordReset(email: string, password: string, resetPasswordCode: string, stayLogged: boolean, callback: (any?) => void = null) {
+        let body = { email: email, password: password };
+
+        this.httpClient.post(`${this.urls.apiUrl}/auth/passwordReset/${resetPasswordCode}`, body).subscribe(
+            (response) => {
                 this.sessionService.setSessionToken(response);
-                if (StatesService.stayLogged) {
+                if (stayLogged) {
                     this.sessionService.setStorageToken();
                 }
                 callback();
             },
-            (_) => {
-                console.log('Token was refreshed but something failed');
+            (error: UksfError) => {
+                console.log(error.error);
+                if (callback) {
+                    callback(error.error);
+                }
+            }
+        );
+    }
+
+    public refresh(callback: () => void, errorCallback: (error: string) => void) {
+        this.httpClient.get(`${this.urls.apiUrl}/auth/refresh`).subscribe(
+            (response: any) => {
+                this.sessionService.setSessionToken(response);
+                this.sessionService.setStorageToken();
+                callback();
+            },
+            (error: UksfError) => {
+                errorCallback(error.error);
             }
         );
     }

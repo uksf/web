@@ -7,6 +7,7 @@ import { SignalRService } from 'app/Services/signalr.service';
 import { LauncherLog } from '../../../Models/Logging';
 import { AdminLogsComponent } from '../admin-logs/admin-logs.component';
 import { PagedResult } from '../../../Models/PagedResult';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
     selector: 'app-admin-launcher-logs',
@@ -17,8 +18,8 @@ export class AdminLauncherLogsComponent extends AdminLogsComponent implements On
     launcherLogDisplayedColumns = ['id', 'timestamp', 'userId', 'name', 'version', 'message'];
     datasource: MatTableDataSource<LauncherLog> = new MatTableDataSource<LauncherLog>();
 
-    constructor(httpClient: HttpClient, urls: UrlService, dialog: MatDialog, signalrService: SignalRService) {
-        super(httpClient, urls, dialog, signalrService);
+    constructor(httpClient: HttpClient, urls: UrlService, dialog: MatDialog, signalrService: SignalRService, clipboard: Clipboard) {
+        super(httpClient, urls, dialog, signalrService, clipboard);
     }
 
     refreshData() {

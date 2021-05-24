@@ -8,7 +8,7 @@ import { ApiService } from '../../Services/api.service';
 @Component({
     selector: 'app-opord-page',
     templateUrl: './opord-page.component.html',
-    styleUrls: ['./opord-page.component.css']
+    styleUrls: ['./opord-page.component.css'],
 })
 export class OpordPageComponent implements OnInit {
     opordData;
@@ -16,19 +16,19 @@ export class OpordPageComponent implements OnInit {
     editing = false;
     description = 'sss';
 
-    constructor(
-        private auth: AuthenticationService,
-        private urls: UrlService,
-        private route: ActivatedRoute,
-        private api: ApiService
-    ) {
-        this.opordId = this.route.snapshot.params.id
+    constructor(private auth: AuthenticationService, private urls: UrlService, private route: ActivatedRoute, private api: ApiService) {
+        this.opordId = this.route.snapshot.params.id;
     }
 
     ngOnInit() {
         this.api.sendRequest(
-            () => { return this.api.httpClient.get(this.urls.apiUrl + '/OperationOrder/' + this.opordId) },
-            result => { this.opordData = result.result; this.description = this.opordData.description; },
+            () => {
+                return this.api.httpClient.get(this.urls.apiUrl + '/OperationOrder/' + this.opordId);
+            },
+            (result) => {
+                this.opordData = result;
+                this.description = this.opordData.description;
+            },
             'failed to get opord data'
         );
     }
@@ -36,8 +36,10 @@ export class OpordPageComponent implements OnInit {
     saveDescription() {
         this.opordData.description = this.description;
         this.api.sendRequest(
-            () => { return this.api.httpClient.put(this.urls.apiUrl + '/OperationOrder', this.opordData) },
-            () => { },
+            () => {
+                return this.api.httpClient.put(this.urls.apiUrl + '/OperationOrder', this.opordData);
+            },
+            () => {},
             'failed to get opord data'
         );
     }

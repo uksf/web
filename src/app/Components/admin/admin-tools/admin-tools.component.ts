@@ -11,10 +11,9 @@ import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.co
     styleUrls: ['../../../Pages/admin-page/admin-page.component.scss', './admin-tools.component.scss'],
 })
 export class AdminToolsComponent {
-    updating;
     accountId;
-    tools = [];
-    debugTools = [];
+    tools: Tool[] = [];
+    debugTools: Tool[] = [];
     debug = false;
 
     constructor(private httpClient: HttpClient, private urls: UrlService, private accountService: AccountService, private dialog: MatDialog) {}
@@ -23,71 +22,83 @@ export class AdminToolsComponent {
         this.accountId = this.accountService.account.id;
 
         this.tools = [
-            { title: 'Invalidate Data Caches', function: this.invalidateCaches },
-            { title: 'Get Discord Roles', function: this.getDiscordRoles },
-            { title: 'Update Discord Users', function: this.updateDiscordRoles },
+            { key: 'invalidate', title: 'Invalidate Data Caches', function: this.invalidateCaches, pending: false },
+            { key: 'getDiscord', title: 'Get Discord Roles', function: this.getDiscordRoles, pending: false },
+            { key: 'updateDiscord', title: 'Update Discord Users', function: this.updateDiscordRoles, pending: false },
         ];
 
-        this.debugTools = [{ title: 'Test Notification', function: this.testNotification }];
+        this.debugTools = [{ key: 'notification', title: 'Test Notification', function: this.testNotification, pending: false }];
 
         this.debug = isDevMode();
     }
 
     runFunction(tool) {
+        if (tool.pending) {
+            return;
+        }
+
+        tool.pending = true;
         tool.function.call(this);
     }
 
     invalidateCaches() {
-        this.updating = true;
+        let tool = this.tools.find((x) => x.key === 'invalidate');
         this.httpClient.get(`${this.urls.apiUrl}/data/invalidate`).subscribe(
             (_) => {
-                this.updating = false;
+                tool.pending = false;
             },
             (_) => {
-                this.updating = false;
+                tool.pending = false;
             }
         );
     }
 
     getDiscordRoles() {
-        this.updating = true;
+        let tool = this.tools.find((x) => x.key === 'getDiscord');
         this.httpClient.get(`${this.urls.apiUrl}/discord/roles`, { responseType: 'text' }).subscribe(
             (response) => {
                 this.dialog.open(MessageModalComponent, {
                     data: { message: response },
                 });
-                this.updating = false;
+                tool.pending = false;
             },
-            (error) => {
+            () => {
                 this.dialog.open(MessageModalComponent, {
                     data: { message: 'Failed to get Discord roles' },
                 });
-                this.updating = false;
+                tool.pending = false;
             }
         );
     }
 
     updateDiscordRoles() {
-        this.updating = true;
+        let tool = this.tools.find((x) => x.key === 'updateDiscord');
         this.httpClient.get(`${this.urls.apiUrl}/discord/updateuserroles`).subscribe(
             (_) => {
-                this.updating = false;
+                tool.pending = false;
             },
             (_) => {
-                this.updating = false;
+                tool.pending = false;
             }
         );
     }
 
     testNotification() {
-        this.updating = true;
+        let tool = this.debugTools.find((x) => x.key === 'notification');
         this.httpClient.get(`${this.urls.apiUrl}/debug/notifications-test`).subscribe(
             (_) => {
-                this.updating = false;
+                tool.pending = false;
             },
             (_) => {
-                this.updating = false;
+                tool.pending = false;
             }
         );
     }
+}
+
+interface Tool {
+    key: string;
+    title: string;
+    function: () => void;
+    pending: boolean;
 }

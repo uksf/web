@@ -7,6 +7,7 @@ import { SignalRService } from 'app/Services/signalr.service';
 import { ErrorLog } from '../../../Models/Logging';
 import { AdminLogsComponent } from '../admin-logs/admin-logs.component';
 import { PagedResult } from '../../../Models/PagedResult';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
     selector: 'app-admin-error-logs',
@@ -14,17 +15,17 @@ import { PagedResult } from '../../../Models/PagedResult';
     styleUrls: ['../../../Pages/admin-page/admin-page.component.scss', './admin-error-logs.component.scss'],
 })
 export class AdminErrorLogsComponent extends AdminLogsComponent implements OnInit, OnDestroy {
-    errorLogDisplayedColumns = ['id', 'timestamp', 'httpMethod', 'url', 'userId', 'name', 'message', 'exception'];
+    errorLogDisplayedColumns = ['id', 'timestamp', 'statusCode', 'method', 'url', 'endpointName', 'userId', 'name', 'message', 'exception'];
     datasource: MatTableDataSource<ErrorLog> = new MatTableDataSource<ErrorLog>();
 
-    constructor(httpClient: HttpClient, urls: UrlService, dialog: MatDialog, signalrService: SignalRService) {
-        super(httpClient, urls, dialog, signalrService);
+    constructor(httpClient: HttpClient, urls: UrlService, dialog: MatDialog, signalrService: SignalRService, clipboard: Clipboard) {
+        super(httpClient, urls, dialog, signalrService, clipboard);
     }
 
     refreshData() {
         const params = this.buildParams();
         this.httpClient
-            .get<PagedResult<ErrorLog>>(`${this.urls.apiUrl}/logging/httpError`, { params })
+            .get<PagedResult<ErrorLog>>(`${this.urls.apiUrl}/logging/error`, { params })
             .subscribe((pagedResult: PagedResult<ErrorLog>) => {
                 this.dataLoaded = true;
                 this.paginator.length = pagedResult.totalCount;

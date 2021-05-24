@@ -89,6 +89,10 @@
             min-width: fit-content;
             align-self: center;
         }
+
+        &:last-of-type {
+            margin-bottom: 0;
+        }
     }
 
     &.settings {

@@ -11,7 +11,7 @@ import { ICountry, CountryPickerService } from 'app/Services/CountryPicker/count
 import { CountryName } from 'app/Pipes/country.pipe';
 import { Router } from '@angular/router';
 import { ConfirmValidParentMatcher, InstantErrorStateMatcher } from '../../../Services/formhelper.service';
-import { titleCase } from '../../../Services/helper.service';
+import { nameCase, titleCase } from '../../../Services/helper.service';
 
 function matchingPasswords(passwordKey: string, confirmPasswordKey: string) {
     return (group: FormGroup): { [key: string]: any } => {
@@ -120,8 +120,8 @@ export class ApplicationIdentityComponent {
                 },
                 { validator: matchingPasswords('password', 'confirmPassword') }
             ),
-            firstname: ['', Validators.required],
-            lastname: ['', Validators.required],
+            firstName: ['', Validators.required],
+            lastName: ['', Validators.required],
             dobGroup: formBuilder.group(
                 {
                     day: ['', Validators.required],
@@ -174,9 +174,9 @@ export class ApplicationIdentityComponent {
                     return of(null);
                 }
                 return this.httpClient.get(this.urls.apiUrl + '/accounts/exists?check=' + control.value).pipe(
-                    map((response) => {
+                    map((exists: boolean) => {
                         this.validating = false;
-                        return response['exists'] ? { emailTaken: true } : null;
+                        return exists ? { emailTaken: true } : null;
                     })
                 );
             })
@@ -227,19 +227,30 @@ export class ApplicationIdentityComponent {
         if (this.formGroup.value.name !== '') {
             return;
         }
+
         this.pending = true;
         const formObj = this.formGroup.getRawValue();
-        formObj.password = formObj.passwordGroup.password;
-        delete formObj.passwordGroup;
-        const formString = JSON.stringify(formObj).replace(/[\n\r]/g, '');
-
+        let body = {
+            Email: formObj.email,
+            Password: formObj.passwordGroup.password,
+            FirstName: formObj.firstName,
+            LastName: formObj.lastName,
+            DobYear: formObj.dobGroup.year,
+            DobMonth: formObj.dobGroup.month,
+            DobDay: formObj.dobGroup.day,
+            Nation: formObj.nation,
+        };
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-        this.httpClient.put(this.urls.apiUrl + '/accounts', formString, { headers: headers }).subscribe(
+
+        this.httpClient.put(this.urls.apiUrl + '/accounts', body, { headers: headers }).subscribe(
             () => {
                 this.pending = false;
                 this.dialog
                     .open(MessageModalComponent, {
-                        data: { message: 'Your account has been successfully created.\n\nYou will now be redirected to log in, after which you can continue your application.', button: 'Continue' },
+                        data: {
+                            message: 'Your account has been successfully created.\n\nYou will now be redirected to log in, after which you can continue your application.',
+                            button: 'Continue',
+                        },
                     })
                     .afterClosed()
                     .subscribe(() => {
@@ -256,8 +267,8 @@ export class ApplicationIdentityComponent {
     }
 
     get displayName(): string {
-        let firstName = titleCase(this.formGroup.controls['firstname'].value);
-        let lastName = titleCase(this.formGroup.controls['lastname'].value);
+        let firstName = titleCase(this.formGroup.controls['firstName'].value);
+        let lastName = nameCase(this.formGroup.controls['lastName'].value);
         return `Cdt.${lastName}.${firstName ? firstName[0] : '?'}`;
     }
 }

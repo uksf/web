@@ -1,5 +1,9 @@
 app-side-content-area {
     margin-top: 10px;
+
+    .flex-container {
+        padding-left: 0;
+    }
 }
 
 .timezone-container {
@@ -165,6 +169,10 @@ app-side-content-area {
 @media screen and (max-width: 768px) {
     app-side-content-area {
         margin-left: 0;
+
+        .flex-container {
+            padding-left: 16px;
+        }
     }
 
     .flex-container {

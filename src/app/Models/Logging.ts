@@ -27,8 +27,10 @@ export interface AuditLog extends BasicLog {
 
 export interface ErrorLog extends BasicLog {
     exception: string;
-    httpMethod: string;
+    statusCode: number;
+    method: string;
     url: string;
+    endpointName: string;
     userId: string;
     name: string;
 }

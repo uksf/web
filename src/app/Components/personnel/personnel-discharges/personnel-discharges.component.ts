@@ -11,7 +11,7 @@ import { nextFrame } from 'app/Services/helper.service';
 @Component({
     selector: 'app-personnel-discharges',
     templateUrl: './personnel-discharges.component.html',
-    styleUrls: ['../../../Pages/personnel-page/personnel-page.component.scss', './personnel-discharges.component.scss']
+    styleUrls: ['../../../Pages/personnel-page/personnel-page.component.scss', './personnel-discharges.component.scss'],
 })
 export class PersonnelDischargesComponent {
     @ViewChild(MatExpansionPanel) panel: MatExpansionPanel;
@@ -19,18 +19,18 @@ export class PersonnelDischargesComponent {
     updating: boolean;
     completeDischargeCollections: DischargeCollection[];
     filtered: DischargeCollection[] = [];
-    dischargeCollections: DischargeCollection[] = []
+    dischargeCollections: DischargeCollection[] = [];
     index = 0;
     length = 15;
     lengths = [
-        { 'value': 10, 'name': '10' },
-        { 'value': 15, 'name': '15' },
-        { 'value': 30, 'name': '30' }
+        { value: 10, name: '10' },
+        { value: 15, name: '15' },
+        { value: 30, name: '30' },
     ];
     filterString = '';
     private timeout: NodeJS.Timeout;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private route: ActivatedRoute) { }
+    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private route: ActivatedRoute) {}
 
     ngOnInit(): void {
         if (this.route.snapshot.queryParams['filter']) {
@@ -43,19 +43,22 @@ export class PersonnelDischargesComponent {
     refresh(initialFilter = '') {
         this.completeDischargeCollections = undefined;
         this.updating = true;
-        this.httpClient.get<any[]>(this.urls.apiUrl + '/discharges').subscribe((response: DischargeCollection[]) => {
-            this.completeDischargeCollections = response;
-            if (initialFilter) {
-                this.filterString = initialFilter;
-                this.filter(true);
-            } else {
-                this.filtered = this.completeDischargeCollections;
-                this.navigate(-1);
+        this.httpClient.get<any[]>(this.urls.apiUrl + '/discharges').subscribe(
+            (response: DischargeCollection[]) => {
+                this.completeDischargeCollections = response;
+                if (initialFilter) {
+                    this.filterString = initialFilter;
+                    this.filter(true);
+                } else {
+                    this.filtered = this.completeDischargeCollections;
+                    this.navigate(-1);
+                }
+                this.updating = false;
+            },
+            (_) => {
+                this.updating = false;
             }
-            this.updating = false;
-        }, _ => {
-            this.updating = false;
-        });
+        );
     }
 
     navigate(mode: number) {
@@ -66,7 +69,8 @@ export class PersonnelDischargesComponent {
             case 1: // Next
                 this.index += this.length;
                 break;
-            default: // Don't navigate
+            default:
+                // Don't navigate
                 break;
         }
         this.dischargeCollections = this.filtered.slice(this.index, this.index + this.length);
@@ -76,12 +80,12 @@ export class PersonnelDischargesComponent {
         clearTimeout(this.timeout);
         this.timeout = setTimeout(() => {
             this.filtered = [];
-            this.completeDischargeCollections.forEach(element => {
+            this.completeDischargeCollections.forEach((element) => {
                 if (element.name.toLowerCase().indexOf(this.filterString.toLowerCase()) !== -1) {
                     this.filtered.push(element);
                 }
             });
-            this.dischargeCollections = this.filtered.filter(n => this.filtered.includes(n));
+            this.dischargeCollections = this.filtered.filter((n) => this.filtered.includes(n));
             this.index = 0;
             this.navigate(-1);
             if (openFirst) {
@@ -94,44 +98,60 @@ export class PersonnelDischargesComponent {
 
     openMessageDialog(message: any) {
         this.dialog.open(MessageModalComponent, {
-            data: { message: message }
+            data: { message: message },
         });
     }
 
     reinstate(event: Event, dischargeCollection: DischargeCollection) {
         event.stopPropagation();
-        this.httpClient.get<any[]>(this.urls.apiUrl + `/discharges/reinstate/${dischargeCollection.id}`).subscribe(response => {
-            this.dischargeCollections = response;
-        }, _ => {
-            this.dialog.open(MessageModalComponent, {
-                data: { message: `Failed to reinstate ${dischargeCollection.name} as a member` }
-            });
-        });
+        this.httpClient.get<any[]>(this.urls.apiUrl + `/discharges/reinstate/${dischargeCollection.id}`).subscribe(
+            (response) => {
+                this.dischargeCollections = response;
+            },
+            (_) => {
+                this.dialog.open(MessageModalComponent, {
+                    data: { message: `Failed to reinstate ${dischargeCollection.name} as a member` },
+                });
+            }
+        );
     }
 
     requestReinstate(event: Event, dischargeCollection: DischargeCollection) {
         event.stopPropagation();
-        this.dialog.open(TextInputModalComponent, {
-            data: { message: 'Please provide a reason for the reinstate request' }
-        }).componentInstance.confirmEvent.subscribe((reason: string) => {
-            this.httpClient.put(this.urls.apiUrl + '/commandrequests/create/reinstate', JSON.stringify({ recipient: dischargeCollection.accountId, reason: reason }), {
-                headers: new HttpHeaders({
-                    'Content-Type': 'application/json'
-                })
-            }).subscribe(_ => {
-                this.httpClient.post(this.urls.apiUrl + '/commandrequests/exists', JSON.stringify({ recipient: dischargeCollection.accountId, type: 'Reinstate Member', displayValue: 'Member', displayFrom: 'Discharged' }), {
-                    headers: new HttpHeaders({
-                        'Content-Type': 'application/json'
+        this.dialog
+            .open(TextInputModalComponent, {
+                data: { message: 'Please provide a reason for the reinstate request' },
+            })
+            .componentInstance.confirmEvent.subscribe((reason: string) => {
+                this.httpClient
+                    .put(this.urls.apiUrl + '/commandrequests/create/reinstate', JSON.stringify({ recipient: dischargeCollection.accountId, reason: reason }), {
+                        headers: new HttpHeaders({
+                            'Content-Type': 'application/json',
+                        }),
                     })
-                }).subscribe((response: boolean) => {
-                    dischargeCollection.requestExists = response;
-                });
-            }, _ => {
-                this.dialog.open(MessageModalComponent, {
-                    data: { message: `Failed to create request to reinstate ${dischargeCollection.name} as a member` }
-                });
+                    .subscribe(
+                        (_) => {
+                            this.httpClient
+                                .post(
+                                    this.urls.apiUrl + '/commandrequests/exists',
+                                    JSON.stringify({ recipient: dischargeCollection.accountId, type: 'Reinstate Member', displayValue: 'Member', displayFrom: 'Discharged' }),
+                                    {
+                                        headers: new HttpHeaders({
+                                            'Content-Type': 'application/json',
+                                        }),
+                                    }
+                                )
+                                .subscribe((response: boolean) => {
+                                    dischargeCollection.requestExists = response;
+                                });
+                        },
+                        (_) => {
+                            this.dialog.open(MessageModalComponent, {
+                                data: { message: `Failed to create request to reinstate ${dischargeCollection.name} as a member` },
+                            });
+                        }
+                    );
             });
-        });
     }
 
     trackByDischargeCollection(_: any, dischargeCollection: DischargeCollection) {

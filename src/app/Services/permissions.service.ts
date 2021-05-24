@@ -74,18 +74,23 @@ export class PermissionsService {
             const promise = new Promise((resolve, reject) => {
                 if (this.sessionService.hasStorageToken()) {
                     this.sessionService.setSessionToken();
-                    this.authenticationService.refresh(() => {
-                        // logged in
-                        this.accountService.getAccount(
-                            (account) => {
-                                this.setPermissions(account);
-                                resolve();
-                            },
-                            () => {
-                                reject('Token invalid, resetting');
-                            }
-                        );
-                    });
+                    this.authenticationService.refresh(
+                        () => {
+                            // logged in
+                            this.accountService.getAccount(
+                                (account) => {
+                                    this.setPermissions(account);
+                                    resolve();
+                                },
+                                () => {
+                                    reject('Token invalid, resetting');
+                                }
+                            );
+                        },
+                        (error: string) => {
+                            reject(error);
+                        }
+                    );
                 } else {
                     // not logged in
                     this.setUnlogged();
@@ -131,38 +136,6 @@ export class PermissionsService {
                     this.ngxPermissionsService.addPermission(permissions);
                 }
             });
-
-            // TODO: Convert to lookup table to resolve permissions by roles
-            // if (permissions[Permissions.ADMIN]) {
-            //     this.ngxPermissionsService.addPermission(Permissions.ADMIN);
-            // }
-            // if (permissions[Permissions.COMMAND]) {
-            //     this.ngxPermissionsService.addPermission(Permissions.COMMAND);
-            //     this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
-            // }
-            // if (permissions[Permissions.NCO]) {
-            //     this.ngxPermissionsService.addPermission(Permissions.NCO);
-            //     this.ngxPermissionsService.addPermission(Permissions.SERVERS);
-            //     this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
-            //     this.ngxPermissionsService.addPermission(Permissions.DISCHARGES);
-            // }
-            // if (permissions[Permissions.PERSONNEL]) {
-            //     this.ngxPermissionsService.addPermission(Permissions.PERSONNEL);
-            // }
-            // if (permissions[Permissions.RECRUITER]) {
-            //     this.ngxPermissionsService.addPermission(Permissions.RECRUITER);
-            //     this.ngxPermissionsService.addPermission(Permissions.ACTIVITY);
-            //     this.ngxPermissionsService.addPermission(Permissions.DISCHARGES);
-            // }
-            // if (permissions[Permissions.RECRUITER_LEAD]) {
-            //     this.ngxPermissionsService.addPermission(Permissions.RECRUITER_LEAD);
-            // }
-            // if (permissions[Permissions.SERVERS]) {
-            //     this.ngxPermissionsService.addPermission(Permissions.SERVERS);
-            // }
-            // if (permissions[Permissions.TESTER]) {
-            //     this.ngxPermissionsService.addPermission(Permissions.TESTER);
-            // }
         } else if (account.membershipState === MembershipState.CONFIRMED) {
             // guest
             this.ngxPermissionsService.addPermission(Permissions.CONFIRMED);
@@ -171,8 +144,6 @@ export class PermissionsService {
             this.ngxPermissionsService.addPermission(Permissions.UNCONFIRMED);
         }
     }
-
-    private resolvePermissionsFromRole(role: string) {}
 
     private setUnlogged() {
         this.ngxPermissionsService.flushPermissions();

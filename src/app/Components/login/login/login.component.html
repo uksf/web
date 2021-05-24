@@ -1,0 +1,62 @@
+<div>
+    <h2 mat-dialog-title>Login</h2>
+    <form #form="ngForm">
+        <div class="special-field-form-container">
+            <label for="name">If you see this, keep this field blank</label>
+            <input type="text" id="name" name="formName" [(ngModel)]="model.name" tabindex="-1" autocomplete="off" [maxLength]="0" />
+        </div>
+        <mat-form-field class="full-width">
+            <input
+                matInput
+                #email="ngModel"
+                id="email"
+                type="email"
+                name="formEmail"
+                [(ngModel)]="model.email"
+                placeholder="Email Address"
+                autocomplete="username"
+                required
+                email
+                [errorStateMatcher]="instantErrorStateMatcher"
+            />
+            <mat-error *ngFor="let validation of validationMessages.email">
+                <mat-error class="error-message" *ngIf="email.hasError(validation.type)">{{ validation.message }}</mat-error>
+            </mat-error>
+        </mat-form-field>
+        <br />
+        <mat-form-field class="full-width">
+            <input
+                matInput
+                #password="ngModel"
+                id="password"
+                type="password"
+                name="formPassword"
+                [(ngModel)]="model.password"
+                placeholder="Password"
+                autocomplete="current-password"
+                required
+                [errorStateMatcher]="instantErrorStateMatcher"
+            />
+            <mat-error *ngFor="let validation of validationMessages.password">
+                <mat-error class="error-message" *ngIf="password.hasError(validation.type)">{{ validation.message }}</mat-error>
+            </mat-error>
+        </mat-form-field>
+    </form>
+    <div class="options-container">
+        <mat-checkbox color="primary" [(ngModel)]="stayLogged">Stay logged in</mat-checkbox>
+        <app-flex-filler></app-flex-filler>
+        <a class="option-link" (click)="requestPasswordReset()">Reset Password</a>
+    </div>
+    <div *ngIf="loginError != ''">
+        <br />
+        <div class="invalid-message">
+            <span>{{ loginError }}</span>
+        </div>
+    </div>
+    <br />
+    <form>
+        <div class="button-container">
+            <app-button-pending (click)="submit()" [pending]="pending" [disabled]="!form.valid">Login</app-button-pending>
+        </div>
+    </form>
+</div>

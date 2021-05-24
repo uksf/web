@@ -44,7 +44,7 @@ export class RequestUnitRoleModalComponent implements OnInit {
 
     onSelectUnit(event) {
         this.httpClient.get(this.urlService.apiUrl + '/roles?id=' + this.form.controls.recipient.value + '&unitId=' + event.value).subscribe((response) => {
-            this.possibleRoles = response;
+            this.possibleRoles = response['unitRoles'];
             this.possibleRoles.unshift({ name: 'None' });
             this.form.controls.secondaryValue.enable();
         });

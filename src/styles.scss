@@ -55,7 +55,7 @@
 @import 'app/Modals/command/add-unit-modal/add-unit-modal.component.scss-theme.scss';
 @import 'app/Modals/operations/edit-server-mods-modal/edit-server-mods-modal.component.scss-theme.scss';
 @import 'app/Modals/command/request-loa-modal/request-loa-modal.component.scss-theme.scss';
-@import 'app/Modals/multiple-message-modal/multiple-message-modal.scss-theme.scss';
+@import 'app/Modals/multiple-message-modal/validation-report-modal.scss-theme';
 
 // Add components themes
 @mixin custom-components-theme($theme) {
@@ -106,7 +106,7 @@
     @include add-unit-modal-component-theme($theme);
     @include edit-server-mods-modal-component-theme($theme);
     @include request-loa-modal-component-theme($theme);
-    @include multiple-message-modal-component-theme($theme);
+    @include validation-report-modal-component-theme($theme);
 }
 
 .dark-theme {

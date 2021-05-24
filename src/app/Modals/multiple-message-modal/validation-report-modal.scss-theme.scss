@@ -1,11 +1,11 @@
-@import "~@angular/material/theming";
-@mixin multiple-message-modal-component-theme($theme) {
+@import '~@angular/material/theming';
+@mixin validation-report-modal-component-theme($theme) {
     $foreground: map-get($theme, foreground);
     $background: map-get($theme, background);
     $primary: map-get($theme, primary);
     $warn: map-get($theme, warn);
 
-    app-multiple-message-modal {
+    app-validation-report-modal {
         h3 {
             color: mat-color($primary);
         }

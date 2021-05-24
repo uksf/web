@@ -17,14 +17,7 @@ export class ApplicationCommunicationsComponent {
     mode = 'pending';
     private pendingValidation = false;
 
-    constructor(
-        private httpClient: HttpClient,
-        private urls: UrlService,
-        public dialog: MatDialog,
-        private accountService: AccountService,
-        private router: Router,
-        private route: ActivatedRoute
-    ) {
+    constructor(private httpClient: HttpClient, private urls: UrlService, public dialog: MatDialog, private accountService: AccountService, private router: Router, private route: ActivatedRoute) {
         if (window.location.href.indexOf('steamid=') !== -1) {
             this.pendingValidation = true;
             const id = this.route.snapshot.queryParams['steamid'];
@@ -52,7 +45,7 @@ export class ApplicationCommunicationsComponent {
                         this.router.navigate(['/application']).then(() => {
                             this.pendingValidation = false;
                             this.dialog.open(MessageModalComponent, {
-                                data: { message: error.error.error },
+                                data: { message: error.error },
                             });
                         });
                     }
@@ -85,7 +78,7 @@ export class ApplicationCommunicationsComponent {
                                 this.dialog
                                     .open(ConfirmationModalComponent, {
                                         data: {
-                                            message: 'Discord successfully connected\n\nWe were unable to add you to our Discord server.\nPlease join by pressing \'Join Discord\'',
+                                            message: "Discord successfully connected\n\nWe were unable to add you to our Discord server.\nPlease join by pressing 'Join Discord'",
                                             button: 'Join Discord',
                                         },
                                     })
@@ -99,7 +92,7 @@ export class ApplicationCommunicationsComponent {
                         this.router.navigate(['/application']).then(() => {
                             this.pendingValidation = false;
                             this.dialog.open(MessageModalComponent, {
-                                data: { message: error.error.error },
+                                data: { message: error.error },
                             });
                         });
                     }
@@ -143,7 +136,7 @@ export class ApplicationCommunicationsComponent {
             .open(ConfirmationModalComponent, {
                 data: {
                     message:
-                        'By pressing \'Continue\' you will be redirected to <b>steamcommunity.com</b> where you will be asked to log in.' +
+                        "By pressing 'Continue' you will be redirected to <b>steamcommunity.com</b> where you will be asked to log in." +
                         '\nBy doing so, we are able to read only your Steam User ID, which we store in our database for the purpose of verifying you have a valid Steam account and for recruitment communication.' +
                         '\nWe can read no more information about your account than this.' +
                         '\n\nPlease note this is done on the official Steam website, meaning we have zero interaction with your login process.' +
@@ -161,7 +154,7 @@ export class ApplicationCommunicationsComponent {
             .open(ConfirmationModalComponent, {
                 data: {
                     message:
-                        'By pressing \'Continue\' you will be redirected to <b>discord.com</b> where you will be asked to log in.' +
+                        "By pressing 'Continue' you will be redirected to <b>discord.com</b> where you will be asked to log in." +
                         '\nBy doing so, we are able to read only your Discord User ID, which we store in our database for the purpose of connectivity between this website and our Discord server.' +
                         '\nIn addition to reading your User ID, we will automatically add you to our Discord server.' +
                         '\nWe can read no more information about your account than this.' +

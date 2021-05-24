@@ -11,6 +11,7 @@ import { BasicLog, LogLevel } from '../../../Models/Logging';
 import { PagedResult } from '../../../Models/PagedResult';
 import { SortDirection } from '../../../Models/SortDirection';
 import { Subject } from 'rxjs';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
@@ -32,7 +33,7 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
     logDisplayedColumns = ['id', 'timestamp', 'level', 'message'];
     datasource: MatTableDataSource<BasicLog> = new MatTableDataSource<BasicLog>();
 
-    constructor(httpClient: HttpClient, urls: UrlService, dialog: MatDialog, signalrService: SignalRService) {
+    constructor(httpClient: HttpClient, urls: UrlService, dialog: MatDialog, signalrService: SignalRService, private clipboard: Clipboard) {
         this.httpClient = httpClient;
         this.urls = urls;
         this.dialog = dialog;
@@ -42,7 +43,6 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnInit(): void {
         this.hubConnection = this.signalrService.connect(`admin`);
         this.hubConnection.connection.on('ReceiveLog', () => {
-            console.log('received log');
             this.refreshData();
         });
     }
@@ -62,7 +62,6 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.hubConnection.connection.stop();
-        console.log('destroy');
     }
 
     refreshData() {
@@ -85,6 +84,10 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.dialog.open(MessageModalComponent, {
             data: { message: message },
         });
+    }
+
+    copyToClipboard(text: string) {
+        this.clipboard.copy(text);
     }
 
     buildParams(): HttpParams {

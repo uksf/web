@@ -4,10 +4,7 @@ import { UrlService } from './url.service';
 
 @Injectable()
 export class DisplayNameService {
-    constructor(
-        private httpClient: HttpClient,
-        private urls: UrlService
-    ) { }
+    constructor(private httpClient: HttpClient, private urls: UrlService) {}
 
     getName(id: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
@@ -16,16 +13,19 @@ export class DisplayNameService {
                 return;
             }
 
-            this.httpClient.get(this.urls.apiUrl + `/displayName/${id}`).subscribe(response => {
-                if (response['name']) {
-                    resolve(response['name']);
-                } else {
+            this.httpClient.get(this.urls.apiUrl + `/displayName/${id}`).subscribe(
+                (name: string) => {
+                    if (name) {
+                        resolve(name);
+                    } else {
+                        reject();
+                    }
+                },
+                (error) => {
+                    this.urls.errorWrapper('Failed to get displayname', error);
                     reject();
                 }
-            }, error => {
-                this.urls.errorWrapper('Failed to get displayname', error);
-                reject();
-            });
+            );
         });
     }
 }

@@ -4,10 +4,10 @@
         <form [formGroup]="form">
             <div class="names-container">
                 <mat-form-field class="name">
-                    <input matInput formControlName="firstname" required appCharacterBlock />
+                    <input matInput formControlName="firstName" required appCharacterBlock />
                 </mat-form-field>
                 <mat-form-field class="name">
-                    <input matInput formControlName="lastname" required appCharacterBlock />
+                    <input matInput formControlName="lastName" required appCharacterBlock />
                 </mat-form-field>
                 <br />
                 <mat-error *ngIf="form.errors != null">{{ formErrors }}</mat-error>

@@ -1,13 +1,14 @@
 <div class="flex-container no-padding-left">
     <app-admin-page></app-admin-page>
-    <h4>Current user ID: {{accountId}}</h4>
+    <h4>Current user ID: {{ accountId }}</h4>
+    <h4>Tools</h4>
     <div class="flex-container flex-row flex-wrap">
-        <button mat-raised-button color="primary" *ngFor="let tool of tools" (click)="runFunction(tool)" [disabled]="updating">{{tool.title}}</button>
+        <app-button-pending *ngFor="let tool of tools" (click)="runFunction(tool)" [pending]="tool.pending">{{ tool.title }}</app-button-pending>
     </div>
     <div class="flex-container no-padding-left" *ngIf="debug">
         <h4>Debug Tools</h4>
         <div class="flex-container flex-row flex-wrap">
-            <button mat-raised-button color="primary" *ngFor="let tool of debugTools" (click)="runFunction(tool)" [disabled]="updating">{{tool.title}}</button>
+            <app-button-pending *ngFor="let tool of debugTools" (click)="runFunction(tool)" [pending]="tool.pending" [disabled]="true">{{ tool.title }}</app-button-pending>
         </div>
     </div>
 </div>

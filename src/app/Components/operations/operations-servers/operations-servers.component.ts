@@ -7,16 +7,17 @@ import { EditServerModsModalComponent } from 'app/Modals/operations/edit-server-
 import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
-import { MultipleMessageModalComponent } from 'app/Modals/multiple-message-modal/multiple-message-modal.component';
+import { ValidationReportModalComponent } from 'app/Modals/multiple-message-modal/validation-report-modal.component';
 import { Observable } from 'rxjs';
 import { ConnectionContainer, SignalRService } from 'app/Services/signalr.service';
 import { Permissions } from 'app/Services/permissions';
 import { PermissionsService } from 'app/Services/permissions.service';
+import { UksfError } from '../../../Models/Response';
 
 @Component({
     selector: 'app-operations-servers',
     templateUrl: './operations-servers.component.html',
-    styleUrls: ['../../../Pages/operations-page/operations-page.component.scss', './operations-servers.component.css']
+    styleUrls: ['../../../Pages/operations-page/operations-page.component.scss', './operations-servers.component.css'],
 })
 export class OperationsServersComponent implements OnInit, OnDestroy {
     static theme;
@@ -49,7 +50,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         }, 1000);
 
         this.hubConnection = this.signalrService.connect(`servers`);
-        this.hubConnection.connection.on('ReceiveDisabledState', state => {
+        this.hubConnection.connection.on('ReceiveDisabledState', (state) => {
             this.disabled = state as boolean;
         });
         this.hubConnection.reconnectEvent.subscribe(() => {
@@ -67,20 +68,23 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
             this.updateRequest.unsubscribe();
         }
         this.updating = true;
-        this.updateRequest = this.httpClient.get(this.urls.apiUrl + '/gameservers').subscribe(response => {
-            this.servers = response['servers'];
-            this.missions = response['missions'];
-            this.instanceCount = response['instanceCount'];
-            if (skip) {
+        this.updateRequest = this.httpClient.get(this.urls.apiUrl + '/gameservers').subscribe(
+            (response) => {
+                this.servers = response['servers'];
+                this.missions = response['missions'];
+                this.instanceCount = response['instanceCount'];
+                if (skip) {
+                    this.updating = false;
+                    return;
+                }
+                this.servers.forEach((server) => {
+                    this.refreshServerStatus(server);
+                });
+            },
+            (_) => {
                 this.updating = false;
-                return;
             }
-            this.servers.forEach(server => {
-                this.refreshServerStatus(server);
-            });
-        }, _ => {
-            this.updating = false;
-        });
+        );
     }
 
     refreshServerStatus(server) {
@@ -89,20 +93,23 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         }
         this.updating = true;
         server.updating = true;
-        server.request = this.httpClient.get(`${this.urls.apiUrl}/gameservers/status/${server.id}`).subscribe(response => {
-            const serverIndex = this.servers.findIndex(x => x.id === response['gameServer'].id);
-            this.servers[serverIndex] = response['gameServer'];
-            this.instanceCount = response['instanceCount'];
-            this.updating = false;
-        }, _ => {
-            server.updating = false;
-            this.updating = false;
-        });
+        server.request = this.httpClient.get(`${this.urls.apiUrl}/gameservers/status/${server.id}`).subscribe(
+            (response) => {
+                const serverIndex = this.servers.findIndex((x) => x.id === response['gameServer'].id);
+                this.servers[serverIndex] = response['gameServer'];
+                this.instanceCount = response['instanceCount'];
+                this.updating = false;
+            },
+            (_) => {
+                server.updating = false;
+                this.updating = false;
+            }
+        );
     }
 
     refreshUptimes() {
         if (this.servers) {
-            this.servers.forEach(server => {
+            this.servers.forEach((server) => {
                 if (server.status.parsedUptime && server.status.parsedUptime !== '00:00:00') {
                     const time = server.status.parsedUptime.split(':');
                     const seconds = time[2] === '59' ? 0 : parseInt(time[2], 10) + 1;
@@ -137,8 +144,8 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     }
 
     getDisabledState() {
-        this.httpClient.get(this.urls.apiUrl + '/gameservers/disabled').subscribe(response => {
-            this.disabled = response['state'] as boolean;
+        this.httpClient.get(this.urls.apiUrl + '/gameservers/disabled').subscribe((state: boolean) => {
+            this.disabled = state;
         });
     }
 
@@ -151,33 +158,39 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     }
 
     addServer() {
-        this.dialog.open(AddServerModalComponent, {}).afterClosed().subscribe(_ => {
-            this.getServers(true);
-        });
+        this.dialog
+            .open(AddServerModalComponent, {})
+            .afterClosed()
+            .subscribe((_) => {
+                this.getServers(true);
+            });
     }
 
     editServer(event, server) {
         event.stopPropagation();
-        this.dialog.open(AddServerModalComponent, {
-            data: {
-                server: server
-            }
-        }).afterClosed().subscribe((environmentChanged: boolean) => {
-            if (environmentChanged) {
-                this.dialog.open(MessageModalComponent, { data: { message: 'Server environment was changed. Selected mods for the server have been reset' } });
-            }
+        this.dialog
+            .open(AddServerModalComponent, {
+                data: {
+                    server: server,
+                },
+            })
+            .afterClosed()
+            .subscribe((environmentChanged: boolean) => {
+                if (environmentChanged) {
+                    this.dialog.open(MessageModalComponent, { data: { message: 'Server environment was changed. Selected mods for the server have been reset' } });
+                }
 
-            this.getServers(true);
-        });
+                this.getServers(true);
+            });
     }
 
     deleteServer(event, server) {
         event.stopPropagation();
         const dialog = this.dialog.open(ConfirmationModalComponent, {
-            data: { message: `Are you sure you want to delete '${server.name}'?` }
+            data: { message: `Are you sure you want to delete '${server.name}'?` },
         });
         dialog.componentInstance.confirmEvent.subscribe(() => {
-            this.httpClient.delete(`${this.urls.apiUrl}/gameservers/${server.id}`).subscribe(response => {
+            this.httpClient.delete(`${this.urls.apiUrl}/gameservers/${server.id}`).subscribe((response) => {
                 this.servers = response;
             });
         });
@@ -186,9 +199,11 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     onMove(event: CdkDragDrop<string[]>) {
         const before = JSON.stringify(this.servers);
         moveItemInArray(this.servers, event.previousIndex, event.currentIndex);
-        if (before === JSON.stringify(this.servers)) { return; }
+        if (before === JSON.stringify(this.servers)) {
+            return;
+        }
         this.updatingOrder = true;
-        this.httpClient.post(`${this.urls.apiUrl}/gameservers/order`, this.servers).subscribe(response => {
+        this.httpClient.post(`${this.urls.apiUrl}/gameservers/order`, this.servers).subscribe((response) => {
             this.servers = response;
             this.updatingOrder = false;
         });
@@ -205,34 +220,43 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         }
 
         this.uploadingFile = true;
-        this.httpClient.post(`${this.urls.apiUrl}/gameservers/mission`, formData, {
-            reportProgress: true,
-        }).subscribe(response => {
-            this.missions = response['missions'];
-            const missionReports = response['missionReports'];
-            this.uploadingFile = false;
-            this.uploader.nativeElement.value = '';
-            this.showMissionReport(missionReports);
-        }, error => {
-            this.uploadingFile = false;
-            this.uploader.nativeElement.value = '';
-            this.showError(error, 'Max size for all selected files is 10MB');
-        });
+        this.httpClient
+            .post(`${this.urls.apiUrl}/gameservers/mission`, formData, {
+                reportProgress: true,
+            })
+            .subscribe(
+                (response) => {
+                    this.missions = response['missions'];
+                    const missionReports = response['missionReports'];
+                    this.uploadingFile = false;
+                    this.uploader.nativeElement.value = '';
+                    this.showMissionReport(missionReports);
+                },
+                (error) => {
+                    this.uploadingFile = false;
+                    this.uploader.nativeElement.value = '';
+                    this.showError(error, 'Max size for all selected files is 10MB');
+                }
+            );
     }
 
     showMissionReport(missionReports: any[]) {
         const missionReport = missionReports.shift();
         let reportDialogClose: Observable<any>;
         if (missionReport.reports.length > 0) {
-            reportDialogClose = this.dialog.open(MultipleMessageModalComponent, {
-                data: { title: `Mission file: ${missionReport.mission}`, messages: missionReport.reports }
-            }).afterClosed();
+            reportDialogClose = this.dialog
+                .open(ValidationReportModalComponent, {
+                    data: { title: `Mission file: ${missionReport.mission}`, messages: missionReport.reports },
+                })
+                .afterClosed();
         } else {
-            reportDialogClose = this.dialog.open(MessageModalComponent, {
-                data: { message: `Successfully uploaded '${missionReport.mission}'` }
-            }).afterClosed();
+            reportDialogClose = this.dialog
+                .open(MessageModalComponent, {
+                    data: { message: `Successfully uploaded '${missionReport.mission}'` },
+                })
+                .afterClosed();
         }
-        reportDialogClose.subscribe(_ => {
+        reportDialogClose.subscribe((_) => {
             if (missionReports.length > 0) {
                 this.showMissionReport(missionReports);
             }
@@ -240,7 +264,9 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     }
 
     missionSelectionChange(event, server) {
-        if (!event.isUserInput) { return; }
+        if (!event.isUserInput) {
+            return;
+        }
         server.missionSelection = event.source.value;
     }
 
@@ -256,35 +282,37 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
             }
         }
         this.dialog.open(MessageModalComponent, {
-            data: { message: message }
+            data: { message: message },
         });
     }
 
     launch(server) {
         server.updating = true;
-        this.httpClient.post(`${this.urls.apiUrl}/gameservers/launch/${server.id}`, { missionName: server.missionSelection }).subscribe(_ => {
-            server.updating = false;
-            this.refreshServerStatus(server);
-        }, rawError => {
-            const error = rawError['error'];
-            if (error.reports && error.reports.length > 0) {
-                this.dialog.open(MultipleMessageModalComponent, {
-                    data: { title: error.message, messages: error.reports }
-                });
-            } else {
-                this.dialog.open(MessageModalComponent, {
-                    data: { message: error.message }
-                });
+        this.httpClient.post(`${this.urls.apiUrl}/gameservers/launch/${server.id}`, { missionName: server.missionSelection }).subscribe(
+            (_) => {
+                server.updating = false;
+                this.refreshServerStatus(server);
+            },
+            (error: UksfError) => {
+                if (error.statusCode === 400 && error.detailCode === 1 && error.validation != null) {
+                    this.dialog.open(ValidationReportModalComponent, {
+                        data: { title: error.error, messages: error.validation.reports },
+                    });
+                } else {
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: error.error },
+                    });
+                }
+                server.updating = false;
+                this.refreshServerStatus(server);
             }
-            server.updating = false;
-            this.refreshServerStatus(server);
-        });
+        );
     }
 
     stop(server) {
         if (server.status.players > 0) {
             const dialog = this.dialog.open(ConfirmationModalComponent, {
-                data: { message: `There are still ${server.status.players} players on '${server.name}'. Are you sure you want to stop the server?` }
+                data: { message: `There are still ${server.status.players} players on '${server.name}'. Are you sure you want to stop the server?` },
             });
             dialog.componentInstance.confirmEvent.subscribe(() => {
                 this.runStop(server);
@@ -296,16 +324,19 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
 
     runStop(server) {
         server.updating = true;
-        this.httpClient.get(`${this.urls.apiUrl}/gameservers/stop/${server.id}`).subscribe(response => {
-            const serverIndex = this.servers.findIndex(x => x.id === response['gameServer'].id);
-            this.servers[serverIndex] = response['gameServer'];
-            this.instanceCount = response['instanceCount'];
-            this.servers[serverIndex].status.stopping = true;
-        }, error => {
-            this.showError(error);
-            server.updating = false;
-            this.refreshServerStatus(server);
-        });
+        this.httpClient.get(`${this.urls.apiUrl}/gameservers/stop/${server.id}`).subscribe(
+            (response) => {
+                const serverIndex = this.servers.findIndex((x) => x.id === response['gameServer'].id);
+                this.servers[serverIndex] = response['gameServer'];
+                this.instanceCount = response['instanceCount'];
+                this.servers[serverIndex].status.stopping = true;
+            },
+            (error) => {
+                this.showError(error);
+                server.updating = false;
+                this.refreshServerStatus(server);
+            }
+        );
     }
 
     kill(server, skip = true) {
@@ -314,7 +345,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
             return;
         }
         const dialog = this.dialog.open(ConfirmationModalComponent, {
-            data: { message: `Are you sure you want to kill '${server.name}'? This could have unexpected effects on the server` }
+            data: { message: `Are you sure you want to kill '${server.name}'? This could have unexpected effects on the server` },
         });
         dialog.componentInstance.confirmEvent.subscribe(() => {
             this.runKill(server);
@@ -323,40 +354,49 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
 
     runKill(server) {
         server.updating = true;
-        this.httpClient.get(`${this.urls.apiUrl}/gameservers/kill/${server.id}`).subscribe(response => {
-            const serverIndex = this.servers.findIndex(x => x.id === response['gameServer'].id);
-            this.servers[serverIndex] = response['gameServer'];
-            this.instanceCount = response['instanceCount'];
-        }, error => {
-            this.showError(error);
-            server.updating = false;
-            this.refreshServerStatus(server);
-        });
+        this.httpClient.get(`${this.urls.apiUrl}/gameservers/kill/${server.id}`).subscribe(
+            (response) => {
+                const serverIndex = this.servers.findIndex((x) => x.id === response['gameServer'].id);
+                this.servers[serverIndex] = response['gameServer'];
+                this.instanceCount = response['instanceCount'];
+            },
+            (error) => {
+                this.showError(error);
+                server.updating = false;
+                this.refreshServerStatus(server);
+            }
+        );
     }
 
     killAll() {
         const dialog = this.dialog.open(ConfirmationModalComponent, {
-            data: { message: `Are you sure you want to kill ${this.instanceCount} servers?\nThere could be players still on and this could have unexpected effects on the server` }
+            data: { message: `Are you sure you want to kill ${this.instanceCount} servers?\nThere could be players still on and this could have unexpected effects on the server` },
         });
         dialog.componentInstance.confirmEvent.subscribe(() => {
-            this.httpClient.get(`${this.urls.apiUrl}/gameservers/killall`).subscribe(_ => {
-                this.getServers();
-            }, error => {
-                this.showError(error);
-                this.getServers();
-            });
+            this.httpClient.get(`${this.urls.apiUrl}/gameservers/killall`).subscribe(
+                (_) => {
+                    this.getServers();
+                },
+                (error) => {
+                    this.showError(error);
+                    this.getServers();
+                }
+            );
         });
     }
 
     editServerMods(event, server) {
         event.stopPropagation();
-        this.dialog.open(EditServerModsModalComponent, {
-            data: {
-                server: server
-            }
-        }).afterClosed().subscribe(_ => {
-            this.getServers(true);
-        });
+        this.dialog
+            .open(EditServerModsModalComponent, {
+                data: {
+                    server: server,
+                },
+            })
+            .afterClosed()
+            .subscribe((_) => {
+                this.getServers(true);
+            });
     }
 
     onFileOver() {
@@ -382,7 +422,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         const invalidFiles = [];
         const regex = /(?:\.([^.]+))?$/;
         files.forEach((file, index) => {
-            file.fileEntry.file(resolvedFile => {
+            file.fileEntry.file((resolvedFile) => {
                 const path = file.relativePath;
                 const ext = regex.exec(path)[1];
                 if (ext === 'pbo') {
@@ -398,19 +438,21 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     }
 
     fileDropFinished(pboFiles, invalidFiles) {
-        if (pboFiles.length === 0 && invalidFiles.length === 0) { return; }
+        if (pboFiles.length === 0 && invalidFiles.length === 0) {
+            return;
+        }
         if (pboFiles.length === 0) {
             this.dialog.open(MessageModalComponent, {
-                data: { message: 'None of those files are PBOs files' }
+                data: { message: 'None of those files are PBOs files' },
             });
         } else {
             if (invalidFiles.length > 0) {
                 let message = `Some of those files are not PBOs. Would you like to continue uploading the following files:\n`;
-                pboFiles.forEach(file => {
+                pboFiles.forEach((file) => {
                     message += `\n${file.name}`;
                 });
                 const dialog = this.dialog.open(ConfirmationModalComponent, {
-                    data: { message: message }
+                    data: { message: message },
                 });
                 dialog.componentInstance.confirmEvent.subscribe(() => {
                     this.uploadFromDrop(pboFiles);

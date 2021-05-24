@@ -6,6 +6,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { SignalRService, ConnectionContainer } from 'app/Services/signalr.service';
 import { TimeAgoPipe } from '../../Pipes/time.pipe';
 import { ObjectId } from '../../Models/ObjectId';
+import { UksfError } from '../../Models/Response';
 
 @Component({
     selector: 'app-comment-display',
@@ -61,14 +62,16 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
                     this.previousResponse = JSON.stringify(response);
                 }
             },
-            (error) => this.urls.errorWrapper('Failed to get comments', error)
+            (error: UksfError) => {
+
+            }
         );
     }
 
     getCanPostComment() {
         this.httpClient.get(this.urls.apiUrl + '/commentthread/canpost/' + this.threadId).subscribe(
-            (response) => {
-                this.canPostComment = response['canPost'];
+            (canPost: boolean) => {
+                this.canPostComment = canPost;
             },
             (error) => this.urls.errorWrapper('Failed to update comments', error)
         );

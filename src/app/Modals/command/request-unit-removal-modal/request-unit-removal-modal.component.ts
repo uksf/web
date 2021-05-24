@@ -33,7 +33,7 @@ export class RequestUnitRemovalModalComponent implements OnInit {
     }
 
     onSelectRecipient(event) {
-        this.httpClient.get(`${this.urlService.apiUrl}/units/units?filter=auxiliary&accountId=${event.value}`).subscribe((response) => {
+        this.httpClient.get(`${this.urlService.apiUrl}/units?filter=auxiliary&accountId=${event.value}`).subscribe((response) => {
             this.possibleUnits = response;
             this.form.controls.value.enable();
         });

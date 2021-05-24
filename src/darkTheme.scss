@@ -1,4 +1,4 @@
-@import "palettes.scss";
+@import 'palettes.scss';
 
 $dark-theme-background: (
     status-bar: black,
@@ -33,8 +33,9 @@ $dark-theme-background: (
 
 $dark-theme-primary: $gold-pallette;
 $dark-theme-accent: mat-palette($mat-blue, 900);
-$dark-theme-warn: mat-palette($mat-red, A400);
+$dark-theme-warn: mat-palette($mat-red, 800);
 $dark-theme: mat-dark-theme($dark-theme-primary, $dark-theme-accent, $dark-theme-warn);
+
 $background: map-get($dark-theme, background);
 $background: map_merge($background, $dark-theme-background);
 $dark-theme: map_merge(

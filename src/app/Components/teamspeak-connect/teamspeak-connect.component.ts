@@ -8,6 +8,7 @@ import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.co
 import { AccountService } from 'app/Services/account.service';
 import { SignalRService, ConnectionContainer } from 'app/Services/signalr.service';
 import { nextFrame } from 'app/Services/helper.service';
+import { ErrorResponse, UksfError } from '../../Models/Response';
 
 @Component({
     selector: 'app-teamspeak-connect',
@@ -24,8 +25,8 @@ export class ConnectTeamspeakComponent {
     pending = false;
     state = 0;
     clients = [];
+    errorMessage: string = 'Unknown error. Plase try again';
     private previousResponse = '-1';
-    private data: any;
     private hubConnection: ConnectionContainer;
     private updateTimeout: NodeJS.Timeout;
     private changedTimeout: NodeJS.Timeout;
@@ -109,25 +110,15 @@ export class ConnectTeamspeakComponent {
         this.confirmedEvent.emit();
     }
 
-    sendCode() {
-        this.data = this.teamspeakForm.value.teamspeakId;
+    requestCode() {
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-        this.httpClient
-            .post(
-                this.urls.apiUrl + '/communications/send',
-                {
-                    mode: 'teamspeak',
-                    data: this.data,
-                },
-                { headers: headers }
-            )
-            .subscribe(() => {
-                this.state = 1;
-            });
+        this.httpClient.get(this.urls.apiUrl + `/teamspeak/${this.teamspeakForm.value.teamspeakId}`, { headers: headers }).subscribe(() => {
+            this.state = 1;
+        });
     }
 
     changed(code: string) {
-        if (this.pending) {
+        if (this.pending || code.length < 24 || code.length > 24) {
             return;
         }
         nextFrame(() => {
@@ -151,11 +142,8 @@ export class ConnectTeamspeakComponent {
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
         this.httpClient
             .post(
-                this.urls.apiUrl + '/communications/receive',
+                this.urls.apiUrl + `/accounts/${this.accountService.account.id}/teamspeak/${this.teamspeakForm.value.teamspeakId}`,
                 {
-                    id: this.accountService.account.id,
-                    mode: 'teamspeak',
-                    data: this.data,
                     code: code,
                 },
                 { headers: headers }
@@ -166,17 +154,11 @@ export class ConnectTeamspeakComponent {
                     this.connectedEvent.emit();
                     this.state = 2;
                 },
-                (error) => {
+                (error: UksfError) => {
+                    this.errorMessage = error.error;
                     this.state = 3;
-                    this.dialog
-                        .open(MessageModalComponent, {
-                            data: { message: error.error.error },
-                        })
-                        .afterClosed()
-                        .subscribe(() => {
-                            this.formGroup.controls['code'].setValue('');
-                            this.pending = false;
-                        });
+                    this.formGroup.controls['code'].setValue('');
+                    this.pending = false;
                 }
             );
     }

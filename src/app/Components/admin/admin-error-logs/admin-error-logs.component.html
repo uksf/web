@@ -19,7 +19,7 @@
                 <mat-table [dataSource]="datasource" matSort>
                     <ng-container matColumnDef="id">
                         <mat-header-cell *matHeaderCellDef mat-sort-header> ID </mat-header-cell>
-                        <mat-cell *matCellDef="let row"
+                        <mat-cell *matCellDef="let row" (click)="copyToClipboard($event.target.textContent)"
                             ><span>{{ row.id }}</span></mat-cell
                         >
                     </ng-container>
@@ -29,16 +29,28 @@
                             ><span>{{ row.timestamp | date: 'dd/MM/yy HH:mm:ss' }}</span></mat-cell
                         >
                     </ng-container>
-                    <ng-container matColumnDef="httpMethod">
+                    <ng-container matColumnDef="statusCode">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header> Status Code </mat-header-cell>
+                        <mat-cell *matCellDef="let row"
+                            ><span>{{ row.statusCode }}</span></mat-cell
+                        >
+                    </ng-container>
+                    <ng-container matColumnDef="method">
                         <mat-header-cell *matHeaderCellDef mat-sort-header> Method </mat-header-cell>
                         <mat-cell *matCellDef="let row"
-                            ><span>{{ row.httpMethod }}</span></mat-cell
+                            ><span>{{ row.method }}</span></mat-cell
                         >
                     </ng-container>
                     <ng-container matColumnDef="url">
                         <mat-header-cell *matHeaderCellDef mat-sort-header> URL </mat-header-cell>
                         <mat-cell *matCellDef="let row" (click)="openMessageDialog($event.target.textContent)"
                             ><span>{{ row.url }}</span></mat-cell
+                        >
+                    </ng-container>
+                    <ng-container matColumnDef="endpointName">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header> Endpoint </mat-header-cell>
+                        <mat-cell *matCellDef="let row" (click)="openMessageDialog($event.target.textContent)"
+                            ><span>{{ row.endpointName }}</span></mat-cell
                         >
                     </ng-container>
                     <ng-container matColumnDef="userId">

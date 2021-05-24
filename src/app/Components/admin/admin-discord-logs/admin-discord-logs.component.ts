@@ -7,6 +7,7 @@ import { SignalRService } from 'app/Services/signalr.service';
 import { DiscordLog, DiscordUserEventType } from '../../../Models/Logging';
 import { AdminLogsComponent } from '../admin-logs/admin-logs.component';
 import { PagedResult } from '../../../Models/PagedResult';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
     selector: 'app-admin-discord-logs',
@@ -17,8 +18,8 @@ export class AdminDiscordLogsComponent extends AdminLogsComponent implements OnI
     launcherLogDisplayedColumns = ['id', 'timestamp', 'discordUserEventType', 'instigatorId', 'instigatorName', 'channelName', 'name', 'message'];
     datasource: MatTableDataSource<DiscordLog> = new MatTableDataSource<DiscordLog>();
 
-    constructor(httpClient: HttpClient, urls: UrlService, dialog: MatDialog, signalrService: SignalRService) {
-        super(httpClient, urls, dialog, signalrService);
+    constructor(httpClient: HttpClient, urls: UrlService, dialog: MatDialog, signalrService: SignalRService, clipboard: Clipboard) {
+        super(httpClient, urls, dialog, signalrService, clipboard);
     }
 
     refreshData() {

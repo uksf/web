@@ -1,21 +1,22 @@
 import { Component, Inject, Renderer2, ViewChild, ElementRef } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ValidationReport } from '../../Models/Response';
 
 @Component({
-    selector: 'app-multiple-message-modal',
-    templateUrl: './multiple-message-modal.component.html',
-    styleUrls: ['./multiple-message-modal.component.css']
+    selector: 'app-validation-report-modal',
+    templateUrl: './validation-report-modal.component.html',
+    styleUrls: ['./validation-report-modal.component.css'],
 })
-export class MultipleMessageModalComponent {
+export class ValidationReportModalComponent {
     @ViewChild('messageBox') messageBox: ElementRef;
-    messages;
+    messages: ValidationReport[];
     title;
     message;
     index = 0;
     private minWidth = 0;
     private minHeight = 0;
 
-    constructor(public dialog: MatDialogRef<MultipleMessageModalComponent>, public renderer: Renderer2, @Inject(MAT_DIALOG_DATA) public data: any) {
+    constructor(public dialog: MatDialogRef<ValidationReportModalComponent>, public renderer: Renderer2, @Inject(MAT_DIALOG_DATA) public data: any) {
         this.title = data.title;
         this.messages = data.messages;
         this.message = this.messages[0];
@@ -54,4 +55,3 @@ export class MultipleMessageModalComponent {
         }
     }
 }
-

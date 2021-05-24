@@ -92,7 +92,7 @@ export class ProfilePageComponent implements OnInit {
                             this.getAccount();
                             this.dialog
                                 .open(MessageModalComponent, {
-                                    data: { message: error.error.error },
+                                    data: { message: error.error },
                                 })
                                 .afterClosed()
                                 .subscribe(() => {
@@ -153,7 +153,7 @@ export class ProfilePageComponent implements OnInit {
                             this.getAccount();
                             this.dialog
                                 .open(MessageModalComponent, {
-                                    data: { message: error.error.error },
+                                    data: { message: error.error },
                                 })
                                 .afterClosed()
                                 .subscribe(() => {

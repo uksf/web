@@ -8,6 +8,7 @@ import { JwtModule } from '@auth0/angular-jwt';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { MarkdownModule } from 'ngx-markdown';
 import { TreeModule } from '@circlon/angular-tree-component';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 
 // Services
 import { AuthenticationService } from './Services/Authentication/authentication.service';
@@ -73,7 +74,6 @@ import { InformationPageComponent } from './Pages/information-page/information-p
 import { ModpackPageComponent } from './Pages/modpack-page/modpack-page.component';
 import 'chart.js/dist/Chart.min.js';
 import { CommandPageComponent } from './Pages/command-page/command-page.component';
-import { ApiService } from './Services/api.service';
 import { TocList } from './Components/toc-list/toc-list.component';
 import { CommentDisplayComponent } from './Components/comment-display/comment-display.component';
 import { RequestRankModalComponent } from './Modals/command/request-rank-modal/request-rank-modal.component';
@@ -81,7 +81,6 @@ import { UnitPageComponent } from './Pages/unit-page/unit-page.component';
 import { ConnectTeamspeakModalComponent } from './Modals/connect-teamspeak-modal/connect-teamspeak-modal.component';
 import { ChangeFirstLastModalComponent } from './Modals/change-first-last-modal/change-first-last-modal.component';
 import { ChangePasswordModalComponent } from './Modals/change-password-modal/change-password-modal.component';
-import { ForgotPasswordModalComponent } from './Modals/forgot-password-modal/forgot-password-modal.component';
 import { ModifyUnitModalComponent } from './Modals/modify-unit-modal/modify-unit-modal.component';
 import { ModifyUnitMembersModalComponent } from './Modals/modify-unit-members-modal/modify-unit-members-modal.component';
 import { CreateOperationReportModalComponent } from './Modals/create-operation-report-modal/create-operation-report-modal.component';
@@ -142,7 +141,7 @@ import { CountryName, CountryImage } from './Pipes/country.pipe';
 import { ApplicationEditComponent } from './Components/application/application-edit/application-edit.component';
 import { ConnectTeamspeakComponent } from './Components/teamspeak-connect/teamspeak-connect.component';
 import { MaintenanceComponent } from './Components/maintenance/maintenance.component';
-import { MultipleMessageModalComponent } from './Modals/multiple-message-modal/multiple-message-modal.component';
+import { ValidationReportModalComponent } from './Modals/multiple-message-modal/validation-report-modal.component';
 import { SignalRService } from './Services/signalr.service';
 import { AdminLauncherLogsComponent } from './Components/admin/admin-launcher-logs/admin-launcher-logs.component';
 import { PersonnelPageComponent } from './Pages/personnel-page/personnel-page.component';
@@ -151,7 +150,6 @@ import { PersonnelLoasComponent } from './Components/personnel/personnel-loas/pe
 import { PersonnelActivityComponent } from './Components/personnel/personnel-activity/personnel-activity.component';
 import { PersonnelLoasListComponent } from './Components/personnel/personnel-loas-list/personnel-loas-list.component';
 import { TextInputModalComponent } from './Modals/text-input-modal/text-input-modal.component';
-import { StatesService } from './Services/states.service';
 import { ModpackGuideComponent } from './Components/modpack/modpack-guide/modpack-guide.component';
 import { ModpackReleasesComponent } from './Components/modpack/modpack-releases/modpack-releases.component';
 import { ModpackBuildsDevComponent } from './Components/modpack/modpack-builds-dev/modpack-builds-dev.component';
@@ -170,6 +168,11 @@ import { RatingModule } from 'primeng/rating';
 import { ZonedTime, TimeAgoPipe } from './Pipes/time.pipe';
 import { AdminDiscordLogsComponent } from './Components/admin/admin-discord-logs/admin-discord-logs.component';
 import { CharacterBlockDirective } from './Directives/character-block.directive';
+import { RequestPasswordResetComponent } from './Components/login/request-password-reset/request-password-reset.component';
+import { LoginComponent } from './Components/login/login/login.component';
+import { PasswordResetComponent } from './Components/login/reset-password/password-reset.component';
+import { MustMatchDirective } from './Directives/must-match.directive';
+import { ButtonPendingComponent } from './Components/button-pending/button-pending.component';
 
 export function initPermissions(injector: Injector) {
     return () => {
@@ -188,13 +191,11 @@ export function tokenGetter() {
 
 @NgModule({
     providers: [
-        StatesService,
         SessionService,
         AuthenticationService,
         AccountService,
         PermissionsService,
         UrlService,
-        ApiService,
         NotificationsComponent,
         CountryPickerService,
         SignalRService,
@@ -225,6 +226,7 @@ export function tokenGetter() {
     ],
     imports: [
         BrowserModule,
+        ClipboardModule,
         AppRoutingModule,
         CommonModule,
         FormsModule,
@@ -319,7 +321,6 @@ export function tokenGetter() {
         ConnectTeamspeakModalComponent,
         ChangeFirstLastModalComponent,
         ChangePasswordModalComponent,
-        ForgotPasswordModalComponent,
         CommentDisplayComponent,
         ModifyUnitModalComponent,
         ModifyUnitMembersModalComponent,
@@ -368,7 +369,7 @@ export function tokenGetter() {
         CountryImage,
         ConnectTeamspeakComponent,
         MaintenanceComponent,
-        MultipleMessageModalComponent,
+        ValidationReportModalComponent,
         AdminLauncherLogsComponent,
         ZonedTime,
         PersonnelPageComponent,
@@ -384,6 +385,11 @@ export function tokenGetter() {
         NewModpackBuildModalComponent,
         TimeAgoPipe,
         CharacterBlockDirective,
+        MustMatchDirective,
+        LoginComponent,
+        RequestPasswordResetComponent,
+        PasswordResetComponent,
+        ButtonPendingComponent,
     ],
     bootstrap: [AppComponent],
 })

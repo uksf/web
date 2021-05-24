@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../Services/url.service';
 import { AccountService } from '../../Services/account.service';
-import { titleCase } from '../../Services/helper.service';
+import { nameCase, titleCase } from '../../Services/helper.service';
 
 @Component({
     selector: 'app-change-first-last-modal',
@@ -18,11 +18,11 @@ export class ChangeFirstLastModalComponent implements OnInit {
 
     constructor(formbuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private accountService: AccountService) {
         this.form = formbuilder.group({
-            firstname: ['', Validators.required],
-            lastname: ['', Validators.required],
+            firstName: ['', Validators.required],
+            lastName: ['', Validators.required],
         });
-        this.form.controls['firstname'].setValue(this.accountService.account.firstname);
-        this.form.controls['lastname'].setValue(this.accountService.account.lastname);
+        this.form.controls['firstName'].setValue(this.accountService.account.firstname);
+        this.form.controls['lastName'].setValue(this.accountService.account.lastname);
         this.httpClient.get(this.urls.apiUrl + '/ranks').subscribe((ranks: any[]) => {
             this.rank = ranks.find((x) => x.name === this.accountService.account.rank).abbreviation;
         });
@@ -56,8 +56,8 @@ export class ChangeFirstLastModalComponent implements OnInit {
     }
 
     get displayName(): string {
-        let firstName = titleCase(this.form.controls['firstname'].value);
-        let lastName = titleCase(this.form.controls['lastname'].value);
+        let firstName = titleCase(this.form.controls['firstName'].value);
+        let lastName = nameCase(this.form.controls['lastName'].value);
         return `${this.rank ? `${this.rank}.` : ''}${lastName}.${firstName ? firstName[0] : '?'}`;
     }
 }

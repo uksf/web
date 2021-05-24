@@ -7,6 +7,7 @@ import { SignalRService } from 'app/Services/signalr.service';
 import { AuditLog } from '../../../Models/Logging';
 import { PagedResult } from '../../../Models/PagedResult';
 import { AdminLogsComponent } from '../admin-logs/admin-logs.component';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
     selector: 'app-admin-audit-logs',
@@ -17,8 +18,8 @@ export class AdminAuditLogsComponent extends AdminLogsComponent implements OnIni
     auditLogDisplayedColumns = ['id', 'timestamp', 'who', 'message'];
     datasource: MatTableDataSource<AuditLog> = new MatTableDataSource<AuditLog>();
 
-    constructor(httpClient: HttpClient, urls: UrlService, dialog: MatDialog, signalrService: SignalRService) {
-        super(httpClient, urls, dialog, signalrService);
+    constructor(httpClient: HttpClient, urls: UrlService, dialog: MatDialog, signalrService: SignalRService, clipboard: Clipboard) {
+        super(httpClient, urls, dialog, signalrService, clipboard);
     }
 
     refreshData() {

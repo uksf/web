@@ -1,4 +1,4 @@
-@import "palettes.scss";
+@import 'palettes.scss';
 
 $light-theme-background: (
     status-bar: mat-color($light-pallette, 300),
@@ -32,7 +32,8 @@ $light-theme-background: (
 
 $light-theme-primary: mat-palette($mat-indigo, 500);
 $light-theme-accent: mat-palette($mat-amber, A200);
-$light-theme: mat-light-theme($light-theme-primary, $light-theme-accent);
+$light-theme-warn: mat-palette($mat-red, 800);
+$light-theme: mat-light-theme($light-theme-primary, $light-theme-accent, $light-theme-warn);
 
 $background: map-get($light-theme, background);
 $background: map_merge($background, $light-theme-background);

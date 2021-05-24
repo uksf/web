@@ -1,0 +1,37 @@
+h2 {
+    margin: auto 0 8px;
+}
+
+.container {
+    width: 90%;
+    max-width: 500px;
+    margin: 10px;
+    padding: 15px;
+}
+
+.options-container {
+    display: flex;
+    flex-direction: row;
+
+    .option-link {
+        display: block;
+        margin: auto;
+        line-height: 24px;
+        cursor: pointer;
+    }
+}
+
+.button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.invalid-message {
+    text-align: center;
+    width: 100%;
+}

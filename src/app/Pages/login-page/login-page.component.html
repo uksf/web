@@ -1,74 +1,7 @@
 <app-centre-wrapper>
     <mat-card class="container">
-        <form *ngIf="!reset">
-            <div *ngIf="isValidatingCode()">
-                <span>Login to validate {{validationTarget}}</span>
-                <br>
-            </div>
-            <form [formGroup]="form">
-                <div class="special-field-form-container">
-                    <label for="name">If you see this, keep this field blank</label>
-                    <input type="text" id="name" formControlName="name" tabindex="-1" autocomplete="off">
-                </div>
-                <mat-form-field class="full-width">
-                    <input matInput formControlName="userid" type="email" required placeholder="Email Address" autocomplete="username" (keydown.enter)="submit(); false">
-                </mat-form-field>
-                <br>
-                <mat-form-field class="full-width">
-                    <input matInput formControlName="password" type="password" required placeholder="Password" autocomplete="current-password" (keydown.enter)="submit(); false">
-                </mat-form-field>
-            </form>
-        </form>
-        <form *ngIf="reset">
-            <div>
-                <span>Enter your email and new password</span>
-                <br>
-            </div>
-            <form [formGroup]="form">
-                <div class="special-field-form-container">
-                    <label for="name">If you see this, keep this field blank</label>
-                    <input type="text" id="name" formControlName="name" tabindex="-1" autocomplete="off">
-                </div>
-                <mat-form-field class="full-width">
-                    <input matInput formControlName="userid" type="email" required placeholder="Email Address" autocomplete="username" (keydown.enter)="submit(); false">
-                </mat-form-field>
-                <br>
-                <mat-form-field class="full-width">
-                    <input matInput formControlName="password" type="password" required placeholder="New Password" autocomplete="new-password" (keydown.enter)="submit(); false">
-                </mat-form-field>
-                <br />
-                <mat-form-field class="full-width">
-                    <input matInput formControlName="confirmPass" type="password" required placeholder="Confirm New Password" autocomplete="new-password" (keydown.enter)="submit(); false">
-                </mat-form-field>
-            </form>
-        </form>
-        <div>
-            <table style="width: 100%;">
-                <tbody>
-                    <tr>
-                        <td style="width: 50%;">
-                            <mat-checkbox color="primary" [(ngModel)]="stayLogged">Stay logged in</mat-checkbox>
-                        </td>
-                        <td style="width: 50%; text-align: right;">
-                            <a style="cursor: pointer;" (click)="forgotPassword()">Forgot Password</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div *ngIf="loginError != ''">
-            <br>
-            <div class="invalid-message">
-                <span>{{loginError}}</span>
-            </div>
-        </div>
-        <br>
-        <form>
-            <div class="button-container">
-                <button mat-raised-button color="primary" type="button" (click)="submit()" [disabled]="!formValid()">
-                    {{(!reset ? "Login" : "Submit")}}
-                </button>
-            </div>
-        </form>
+        <app-login *ngIf="mode == 0" (onRequestPasswordReset)="setMode(1)"></app-login>
+        <app-request-password-reset *ngIf="mode == 1" (onReturnToLogin)="setMode(0)"></app-request-password-reset>
+        <app-password-reset *ngIf="mode == 2" [resetPasswordCode]="resetPasswordCode"></app-password-reset>
     </mat-card>
 </app-centre-wrapper>
