@@ -10,7 +10,7 @@ import { UksfError } from '../../Models/Response';
 export class AuthenticationService {
     constructor(private httpClient: HttpClient, private router: Router, private urls: UrlService, private sessionService: SessionService, private accountService: AccountService) {}
 
-    public login(email: string, password: string, stayLogged: boolean, callback: (any?) => void = null) {
+    public login(email: string, password: string, stayLogged: boolean, callback: (error?: UksfError) => void = null) {
         let body = { email: email, password: password };
 
         this.httpClient.post(`${this.urls.apiUrl}/auth/login`, body).subscribe(
@@ -24,7 +24,7 @@ export class AuthenticationService {
             (error: UksfError) => {
                 console.log(error.error);
                 if (callback) {
-                    callback(error.error);
+                    callback(error);
                 }
             }
         );
@@ -40,7 +40,7 @@ export class AuthenticationService {
         }
     }
 
-    public requestPasswordReset(email: string, callback: (any?) => void = null) {
+    public requestPasswordReset(email: string, callback: (error?: UksfError) => void = null) {
         let body = { email: email };
 
         this.httpClient.post(`${this.urls.apiUrl}/auth/passwordReset`, body).subscribe(
@@ -50,13 +50,13 @@ export class AuthenticationService {
             (error: UksfError) => {
                 console.log(error.error);
                 if (callback) {
-                    callback(error.error);
+                    callback(error);
                 }
             }
         );
     }
 
-    public passwordReset(email: string, password: string, resetPasswordCode: string, stayLogged: boolean, callback: (any?) => void = null) {
+    public passwordReset(email: string, password: string, resetPasswordCode: string, stayLogged: boolean, callback: (error?: UksfError) => void = null) {
         let body = { email: email, password: password };
 
         this.httpClient.post(`${this.urls.apiUrl}/auth/passwordReset/${resetPasswordCode}`, body).subscribe(
@@ -70,7 +70,7 @@ export class AuthenticationService {
             (error: UksfError) => {
                 console.log(error.error);
                 if (callback) {
-                    callback(error.error);
+                    callback(error);
                 }
             }
         );

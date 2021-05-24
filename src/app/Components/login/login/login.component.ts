@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PermissionsService } from '../../../Services/permissions.service';
 import { LoginPageComponent } from '../../../Pages/login-page/login-page.component';
 import { InstantErrorStateMatcher } from '../../../Services/formhelper.service';
+import { UksfError } from '../../../Models/Response';
 
 @Component({
     selector: 'app-login',
@@ -53,14 +54,14 @@ export class LoginComponent implements OnInit {
 
         this.pending = true;
         this.loginError = '';
-        this.auth.login(this.model.email, this.model.password, this.stayLogged, (error?: any) => {
+        this.auth.login(this.model.email, this.model.password, this.stayLogged, (error?: UksfError) => {
             if (!error) {
                 this.permissionsService.refresh().then(() => {
                     this.router.navigate([this.redirect]).then();
                 });
-            } else if (error.message) {
+            } else if (error.error) {
                 this.pending = false;
-                this.loginError = error.message;
+                this.loginError = error.error;
             } else {
                 this.pending = false;
                 this.loginError = 'Login failed';
