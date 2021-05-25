@@ -173,6 +173,7 @@ import { LoginComponent } from './Components/login/login/login.component';
 import { PasswordResetComponent } from './Components/login/reset-password/password-reset.component';
 import { MustMatchDirective } from './Directives/must-match.directive';
 import { ButtonPendingComponent } from './Components/button-pending/button-pending.component';
+import { ButtonSubmitComponent } from './Components/button-submit/button-submit.component';
 
 export function initPermissions(injector: Injector) {
     return () => {
@@ -390,6 +391,7 @@ export function tokenGetter() {
         RequestPasswordResetComponent,
         PasswordResetComponent,
         ButtonPendingComponent,
+        ButtonSubmitComponent,
     ],
     bootstrap: [AppComponent],
 })

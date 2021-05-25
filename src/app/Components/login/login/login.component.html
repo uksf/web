@@ -1,6 +1,6 @@
 <div>
     <h2 mat-dialog-title>Login</h2>
-    <form #form="ngForm">
+    <form #form="ngForm" (ngSubmit)="submit()">
         <div class="special-field-form-container">
             <label for="name">If you see this, keep this field blank</label>
             <input type="text" id="name" name="formName" [(ngModel)]="model.name" tabindex="-1" autocomplete="off" [maxLength]="0" />
@@ -41,6 +41,7 @@
                 <mat-error class="error-message" *ngIf="password.hasError(validation.type)">{{ validation.message }}</mat-error>
             </mat-error>
         </mat-form-field>
+        <app-button-submit></app-button-submit>
     </form>
     <div class="options-container">
         <mat-checkbox color="primary" [(ngModel)]="stayLogged">Stay logged in</mat-checkbox>
