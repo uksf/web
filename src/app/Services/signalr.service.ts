@@ -17,6 +17,7 @@ export class SignalRService {
                 transport: HttpTransportType.WebSockets,
                 logger: LogLevel.None,
             })
+            .withAutomaticReconnect()
             .build();
         this.waitForConnection(connection).then(() => {
             connection.onclose((error) => {
