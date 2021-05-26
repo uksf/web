@@ -1,7 +1,7 @@
 trigger:
 - main
 
-pool: Server
+pool: Vision
 
 jobs:
   - job: BuildPublish
