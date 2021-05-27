@@ -11,6 +11,9 @@ steps:
 
   - script: |
       npm install -g @angular/cli
+    displayName: 'npm install angular cli'
+
+  - script: |
       npm install
     displayName: 'npm install'
 
