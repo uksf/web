@@ -1,8 +1,9 @@
-@import "~@angular/material/theming";
+@import '~@angular/material/theming';
 @mixin header-bar-component-theme($theme) {
     $foreground: map-get($theme, foreground);
     $background: map-get($theme, background);
     $primary: map-get($theme, primary);
+    $warn: map-get($theme, warn);
 
     app-header-bar {
         .logo-wrapper {
@@ -15,6 +16,12 @@
 
         .mat-menu {
             background-color: mat-color($background, card);
+        }
+
+        @media only screen and (max-width: 768px) {
+            .development {
+                background-color: mat-color($warn);
+            }
         }
     }
 }

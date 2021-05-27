@@ -21,7 +21,7 @@
 
 .logo-wrapper {
     font-size: 28px;
-    padding: 0px;
+    padding: 0;
     height: 100%;
     align-items: center;
     display: flex;
@@ -49,7 +49,7 @@
 
 .button {
     flex: 1;
-    padding: 0px 10px 0 5px;
+    padding: 0 10px 0 5px;
     margin-right: 10px;
     min-width: fit-content;
 
@@ -78,7 +78,7 @@
         .mat-icon {
             font-size: 30px;
             width: 30px;
-            margin: 0px;
+            margin: 0;
             height: 30px;
         }
     }
@@ -92,8 +92,7 @@
     align-items: center;
     display: flex;
     height: 40px;
-    margin: 0 8px;
-    margin-right: 15px;
+    margin: 0 15px 0 8px;
 }
 
 a {
@@ -111,8 +110,8 @@ a {
 
     .logo-wrapper {
         position: absolute;
-        left: 0px;
-        top: 0px;
+        left: 0;
+        top: 0;
 
         .logo {
             height: 40px;
@@ -127,14 +126,14 @@ a {
 
     .button-wrapper {
         height: 100%;
-        margin: 5px 0px;
+        margin: 5px 0;
     }
 
     .button {
         padding: 0 16px;
 
         &:last-of-type {
-            margin-right: 0px;
+            margin-right: 0;
         }
     }
 
@@ -146,7 +145,7 @@ a {
     .notifications {
         position: absolute;
         right: 5px;
-        margin-right: 0px;
+        margin-right: 0;
     }
 
     .mat-icon {

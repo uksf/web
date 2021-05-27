@@ -174,16 +174,16 @@ import { PasswordResetComponent } from './Components/login/reset-password/passwo
 import { MustMatchDirective } from './Directives/must-match.directive';
 import { ButtonPendingComponent } from './Components/button-pending/button-pending.component';
 import { ButtonSubmitComponent } from './Components/button-submit/button-submit.component';
+import { AppSettingsService } from './Services/appSettingsService.service';
 
-export function initPermissions(injector: Injector) {
+export function initApp(appSettingsService: AppSettingsService, injector: Injector, countryPickerService: CountryPickerService) {
     return () => {
-        const permissionsService = injector.get(PermissionsService);
-        return permissionsService.refresh();
+        countryPickerService.load().then();
+        return appSettingsService.loadAppSettings().then(() => {
+            const permissionsService = injector.get(PermissionsService);
+            return permissionsService.refresh();
+        });
     };
-}
-
-export function initCountries(countryPickerService: CountryPickerService) {
-    return () => countryPickerService.load();
 }
 
 export function tokenGetter() {
@@ -192,6 +192,7 @@ export function tokenGetter() {
 
 @NgModule({
     providers: [
+        AppSettingsService,
         SessionService,
         AuthenticationService,
         AccountService,
@@ -206,14 +207,8 @@ export function tokenGetter() {
         DisplayNameService,
         {
             provide: APP_INITIALIZER,
-            useFactory: initPermissions,
-            deps: [Injector],
-            multi: true,
-        },
-        {
-            provide: APP_INITIALIZER,
-            useFactory: initCountries,
-            deps: [CountryPickerService],
+            useFactory: initApp,
+            deps: [AppSettingsService, Injector, CountryPickerService],
             multi: true,
         },
         { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
@@ -277,7 +272,7 @@ export function tokenGetter() {
         JwtModule.forRoot({
             config: {
                 tokenGetter: tokenGetter,
-                allowedDomains: ['localhost:5000', 'uk-sf.co.uk', 'www.uk-sf.co.uk', 'api.uk-sf.co.uk'],
+                allowedDomains: ['localhost:5000', 'localhost:5500', 'uk-sf.co.uk', 'www.uk-sf.co.uk', 'api.uk-sf.co.uk', 'dev.uk-sf.co.uk', 'api-dev.uk-sf.co.uk'],
             },
         }),
         NgxPermissionsModule.forRoot(),

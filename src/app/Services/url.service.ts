@@ -1,13 +1,11 @@
-import { Inject, Injectable } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
+import { Injectable } from '@angular/core';
+import { AppSettingsService } from './appSettingsService.service';
 
 @Injectable()
 export class UrlService {
-    public apiUrl = 'https://api.uk-sf.co.uk';
+    public apiUrl = 'http://localhost:5500';
 
-    constructor(@Inject(DOCUMENT) private document: any) {
-        if (this.document.location.hostname === 'localhost') {
-            this.apiUrl = 'http://localhost:5000';
-        }
+    constructor(appSettingsService: AppSettingsService) {
+        this.apiUrl = appSettingsService.appSetting('apiUrl');
     }
 }
