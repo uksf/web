@@ -1,8 +1,7 @@
 trigger:
 - main
 
-pool:
-  name: Server
+pool: Avengers
 
 steps:
   - task: NodeTool@0
