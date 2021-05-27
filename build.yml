@@ -3,9 +3,6 @@ trigger:
 
 pool: Avengers
 
-variables:
-  nodeModulesCache: $(System.DefaultWorkingDirectory)/node_modules
-
 jobs:
   - job: BuildPublish
     displayName: Build & Publish
@@ -17,14 +14,6 @@ jobs:
         inputs:
           versionSpec: '12.x'
         displayName: 'Install Node.js'
-
-      - task: Cache@2
-        inputs:
-          key: 'npm | "$(Agent.OS)" | package-lock.json'
-          restoreKeys: |
-            npm | "$(Agent.OS)"
-          path: $(nodeModulesCache)
-        displayName: Cache Node modules
 
       - script: |
           npm install
