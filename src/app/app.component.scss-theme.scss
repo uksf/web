@@ -1,28 +1,28 @@
 @use '~@angular/material' as mat;
 
 @mixin app-component-theme($theme) {
-  $foreground: map-get($theme, foreground);
-  $background: map-get($theme, background);
-  $color: mat.get-color-from-palette($foreground, base);
+    $foreground: map-get($theme, foreground);
+    $background: map-get($theme, background);
+    $color: mat.get-color-from-palette($foreground, base);
 
-  .wrapper {
-    color: $color;
-    background-color: mat.get-color-from-palette($background, background);
+    .wrapper {
+        color: $color;
+        background-color: mat.get-color-from-palette($background, background);
 
-    .header {
-      color: $color;
-      background-color: mat.get-color-from-palette($background, app-bar);
-    }
+        .header {
+            color: $color;
+            background-color: mat.get-color-from-palette($background, app-bar);
+        }
 
-    .sideboard {
-      color: $color;
-      background-color: mat.get-color-from-palette($background, side-bar);
-    }
+        .sideboard {
+            color: $color;
+            background-color: mat.get-color-from-palette($background, side-bar);
+        }
 
-    .board {
-      color: $color;
-      background-color: mat.get-color-from-palette($background, background);
-    }
+        .board {
+            color: $color;
+            background-color: mat.get-color-from-palette($background, background);
+        }
     }
 
     @media screen and (max-width: 1024px) {

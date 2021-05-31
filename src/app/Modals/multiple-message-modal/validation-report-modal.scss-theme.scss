@@ -7,15 +7,15 @@
 
     app-validation-report-modal {
         h3 {
-          color: mat.get-color-from-palette($primary);
+            color: mat.get-color-from-palette($primary);
         }
 
         .error {
-          color: mat.get-color-from-palette($warn);
+            color: mat.get-color-from-palette($warn);
         }
 
         a {
-          color: mat.get-color-from-palette($primary);
+            color: mat.get-color-from-palette($primary);
         }
     }
 }
