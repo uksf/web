@@ -1,10 +1,11 @@
+@use '~@angular/material' as mat;
 @import "~@angular/material/theming";
 @mixin connect-teamspeak-component-theme($theme) {
     $primary: map-get($theme, primary);
 
     app-teamspeak-connect {
         a {
-            color: mat-color($primary);
+          color: mat.get-color-from-palette($primary);
         }
     }
 }

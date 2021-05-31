@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import "~@angular/material/theming";
 @mixin footer-bar-component-theme($theme) {
     $foreground: map-get($theme, foreground);
@@ -5,19 +6,21 @@
     $primary: map-get($theme, primary);
 
     app-footer-bar {
-        background-color: mat-color($background, side-bar);
-        .flex-container {
-            .buttons-container {
-                a {
-                    i {
-                        color: mat-color($primary);
-                    }
-                }
+      background-color: mat.get-color-from-palette($background, side-bar);
+
+      .flex-container {
+        .buttons-container {
+          a {
+            i {
+              color: mat.get-color-from-palette($primary);
             }
-            .copyright {
-                background-color: transparent;
+          }
+        }
+
+        .copyright {
+          background-color: transparent;
                 p {
-                    color: mat-color($foreground, base);
+                  color: mat.get-color-from-palette($foreground, base);
                 }
             }
         }

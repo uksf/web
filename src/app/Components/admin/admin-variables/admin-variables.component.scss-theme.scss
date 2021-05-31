@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import '~@angular/material/theming';
 
 @mixin admin-variables-component-theme($theme) {
@@ -7,7 +8,7 @@
         .flex-container {
             .variables-container {
                 .variables-header {
-                    background-color: mat-color($background, background);
+                  background-color: mat.get-color-from-palette($background, background);
                 }
             }
         }

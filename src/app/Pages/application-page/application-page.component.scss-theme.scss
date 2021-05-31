@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import "~@angular/material/theming";
 
 @mixin application-page-component-theme($theme) {
@@ -7,29 +8,29 @@
 
     app-application-page {
         a {
-            color: mat-color($primary);
+          color: mat.get-color-from-palette($primary);
         }
 
         .progress-container-wrapper {
             .progress-container {
                 .box {
-                    background-color: mat-color($background, card);
-                    color: mat-color($foreground, base);
+                  background-color: mat.get-color-from-palette($background, card);
+                  color: mat.get-color-from-palette($foreground, base);
                 }
 
                 .enabled {
-                    background-color: mat-color($primary);
-                    color: mat-color($primary, default-contrast);
+                  background-color: mat.get-color-from-palette($primary);
+                  color: mat.get-color-from-palette($primary, default-contrast);
                 }
 
                 .complete {
-                    background-color: mat-color($background, 200);
+                  background-color: mat.get-color-from-palette($background, 200);
                 }
             }
         }
         
         h4 {
-            color: mat-color($primary);
+          color: mat.get-color-from-palette($primary);
         }
     }
 }

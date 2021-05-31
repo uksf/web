@@ -1,4 +1,4 @@
-@import '~@angular/material/theming';
+@use '~@angular/material' as mat;
 
 @mixin units-orbat-component-theme($theme) {
     $background: map-get($theme, background);
@@ -7,58 +7,58 @@
 
     app-units-orbat {
         ::-webkit-scrollbar-track {
-            background-color: mat-color($background, scroll-track);
+          background-color: mat.get-color-from-palette($background, scroll-track);
         }
 
         ::-webkit-scrollbar-thumb {
-            background-color: mat-color($background, scroll-thumb);
+          background-color: mat.get-color-from-palette($background, scroll-thumb);
         }
 
         .p-organizationchart {
             .p-organizationchart-line-down {
-                background-color: mat-color($background, org-line);
+              background-color: mat.get-color-from-palette($background, org-line);
             }
 
             .p-organizationchart-line-left {
-                border-right: 1px solid mat-color($background, org-line);
+              border-right: 1px solid mat.get-color-from-palette($background, org-line);
             }
 
             .p-organizationchart-line-top {
-                border-top: 1px solid mat-color($background, org-line);
+              border-top: 1px solid mat.get-color-from-palette($background, org-line);
             }
 
             .p-organizationchart-node-content {
-                border-color: mat-color($background, org-line);
+              border-color: mat.get-color-from-palette($background, org-line);
 
-                .p-node-toggler {
-                    color: mat-color($background, org-line);
+              .p-node-toggler {
+                color: mat.get-color-from-palette($background, org-line);
+              }
+
+              &.p-organizationchart-selectable-node {
+                &:hover {
+                  border-color: mat.get-color-from-palette($background, org-line);
+                  background-color: mat.get-color-from-palette($background, org-hover);
+                  color: mat.get-color-from-palette($foreground, base);
+
+                  h4 {
+                    color: mat.get-color-from-palette($primary);
+                  }
+
+                  a {
+                    color: mat.get-color-from-palette($primary);
+                  }
                 }
-
-                &.p-organizationchart-selectable-node {
-                    &:hover {
-                        border-color: mat-color($background, org-line);
-                        background-color: mat-color($background, org-hover);
-                        color: mat-color($foreground, base);
-
-                        h4 {
-                            color: mat-color($primary);
-                        }
-
-                        a {
-                            color: mat-color($primary);
-                        }
-                    }
                 }
             }
 
             .p-widget-content {
-                color: mat-color($foreground, base);
-                background-color: mat-color($background, org-content);
+              color: mat.get-color-from-palette($foreground, base);
+              background-color: mat.get-color-from-palette($background, org-content);
 
-                h4 {
-                    color: mat-color($foreground, base);
-                    background-color: transparent;
-                }
+              h4 {
+                color: mat.get-color-from-palette($foreground, base);
+                background-color: transparent;
+              }
             }
         }
     }

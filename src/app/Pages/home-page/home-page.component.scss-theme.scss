@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import "~@angular/material/theming";
 
 @mixin home-page-component-theme($theme) {
@@ -8,24 +9,24 @@
 
     app-home-page {
         .issues-container {
-            color: mat-color($primary, default-contrast);
+          color: mat.get-color-from-palette($primary, default-contrast);
         }
 
         .teamspeak-container {
-            background-color: mat-color($primary);
+          background-color: mat.get-color-from-palette($primary);
 
-            .teamspeak-header {
-                .teamspeak-text {
-                    color: mat-color($primary, default-contrast);
-                }
-
-                a {
-                    color: mat-color($primary, default-contrast);
-                }
+          .teamspeak-header {
+            .teamspeak-text {
+              color: mat.get-color-from-palette($primary, default-contrast);
             }
 
+            a {
+              color: mat.get-color-from-palette($primary, default-contrast);
+            }
+          }
+
             .teamspeak-content-container {
-                background-color: mat-color($background, card);
+              background-color: mat.get-color-from-palette($background, card);
             }
         }
     }

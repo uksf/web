@@ -1,4 +1,4 @@
-@import '~@angular/material/theming';
+@use '~@angular/material' as mat;
 
 @mixin recruitment-application-page-component-theme($theme) {
     $background: map-get($theme, background);
@@ -7,10 +7,10 @@
 
     app-recruitment-application-page {
         a {
-            color: mat-color($primary);
+          color: mat.get-color-from-palette($primary);
         }
         .p-rating-icon {
-            color: mat-color($primary);
+          color: mat.get-color-from-palette($primary);
         }
     }
 }

@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import "~@angular/material/theming";
 @mixin notifications-component-theme($theme) {
     $foreground: map-get($theme, foreground);
@@ -6,52 +7,52 @@
 
     app-notifications {
         .mat-icon.clear {
-            color: mat-color($primary, default-contrast);
+          color: mat.get-color-from-palette($primary, default-contrast);
         }
 
         .mat-badge-content {
-            background: red;
-            color: mat-color($foreground, base);
+          background: red;
+          color: mat.get-color-from-palette($foreground, base);
         }
 
         .notification-panel-header {
-            background-color: mat-color($primary);
+          background-color: mat.get-color-from-palette($primary);
         }
 
         .notification-card-container {
-            background-color: mat-color($background, card);
+          background-color: mat.get-color-from-palette($background, card);
         }
 
         ::-webkit-scrollbar-track {
-            background-color: mat-color($background, background);
+          background-color: mat.get-color-from-palette($background, background);
         }
 
         ::-webkit-scrollbar-thumb {
-            background-color: mat-color($background, hover);
+          background-color: mat.get-color-from-palette($background, hover);
         }
 
         .notification-header-text {
-            color: mat-color($primary, default-contrast);
+          color: mat.get-color-from-palette($primary, default-contrast);
         }
 
         .notification-card {
-            background-color: mat-color($background, card);
+          background-color: mat.get-color-from-palette($background, card);
         }
 
         .notification-card:hover {
-            background-color: mat-color($background, hover);
+          background-color: mat.get-color-from-palette($background, hover);
         }
 
         .notification-card-nohover {
-            background-color: mat-color($background, card);
+          background-color: mat.get-color-from-palette($background, card);
         }
 
         .notification-text {
-            color: mat-color($foreground, base);
+          color: mat.get-color-from-palette($foreground, base);
         }
 
         .notification-text-timestamp {
-            color: mat-color($foreground, base);
+          color: mat.get-color-from-palette($foreground, base);
         }
     }
 }

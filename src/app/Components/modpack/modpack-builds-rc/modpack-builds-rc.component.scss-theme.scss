@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import "~@angular/material/theming";
 
 @mixin modpack-builds-rc-component-theme($theme) {
@@ -8,27 +9,27 @@
 
     app-modpack-builds-rc {
         a {
-            color: mat-color($primary);
+          color: mat.get-color-from-palette($primary);
         }
 
         .flex-container {
             .history-container {
-                background-color: mat-color($background, app-bar);
+              background-color: mat.get-color-from-palette($background, app-bar);
 
-                .history-item {
-                    border-bottom: 1px solid mat-color($background, selected);
+              .history-item {
+                border-bottom: 1px solid mat.get-color-from-palette($background, selected);
 
-                    &.selected {
-                        background-color: mat-color($background, selected);
+                &.selected {
+                  background-color: mat.get-color-from-palette($background, selected);
 
-                        &.release {
-                            color: mat-color($primary, default);
-                        }
-                    }
+                  &.release {
+                    color: mat.get-color-from-palette($primary, default);
+                  }
+                }
 
-                    &:hover {
-                        background-color: mat-color($background, hover);
-                    }
+                &:hover {
+                  background-color: mat.get-color-from-palette($background, hover);
+                }
 
                     &.no-select {
                         border: unset;
@@ -42,31 +43,31 @@
 
             .release-container {
                 .build-footer {
-                    background-color: mat-color($background, dark-bar);
+                  background-color: mat.get-color-from-palette($background, dark-bar);
 
-                    .footer-item {
-                        &:nth-child(2) {
-                            border-left: 1px solid mat-color($background, selected);
-                        }
+                  .footer-item {
+                    &:nth-child(2) {
+                      border-left: 1px solid mat.get-color-from-palette($background, selected);
                     }
+                  }
                 }
             }
         }
 
         ::-webkit-scrollbar-track {
-            background-color: mat-color($background, side-bar);
+          background-color: mat.get-color-from-palette($background, side-bar);
         }
 
         ::-webkit-scrollbar-thumb {
-            background-color: mat-color($background, scroll-thumb);
+          background-color: mat.get-color-from-palette($background, scroll-thumb);
         }
 
         @media only screen and (max-width: 1024px) {
             .flex-container {
                 .history-container {
                     .history-item {
-                        border-bottom: unset;
-                        border-right: 1px solid mat-color($background, selected);
+                      border-bottom: unset;
+                      border-right: 1px solid mat.get-color-from-palette($background, selected);
                     }
                 }
             }

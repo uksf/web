@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import "~@angular/material/theming";
 @mixin request-loa-modal-component-theme($theme) {
     $foreground: map-get($theme, foreground);
@@ -7,7 +8,7 @@
 
     app-request-loa-modal {
         .invalid-message {
-            color: mat-color($warn);
+          color: mat.get-color-from-palette($warn);
         }
     }
 }

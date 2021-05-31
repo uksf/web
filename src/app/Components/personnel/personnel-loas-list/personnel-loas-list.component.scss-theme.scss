@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import "~@angular/material/theming";
 
 @mixin personnel-loas-list-component-theme($theme) {
@@ -8,7 +9,7 @@
         .list-container {
             .mat-card {
                 &.hover:hover {
-                    background-color: mat-color($background, hover);
+                  background-color: mat.get-color-from-palette($background, hover);
                 }
 
                 .header-container {

@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import "~@angular/material/theming";
 
 @mixin comment-display-component-theme($theme) {
@@ -8,25 +9,25 @@
     app-comment-display {
         .comment-form {
             button {
-                background-color: mat-color($background, selected);
+              background-color: mat.get-color-from-palette($background, selected);
             }
         }
         .comments-container {
             .comment-wrapper {
                 .author {
                     .author-string {
-                        color: mat-color($primary);
+                      color: mat.get-color-from-palette($primary);
                     }
 
                     .date-string {
-                        color: mat-color($background, hover);
+                      color: mat.get-color-from-palette($background, hover);
                     }
 
                     .delete-button {
                         background-color: transparent;
 
                         &:hover {
-                            color: mat-color($primary);
+                          color: mat.get-color-from-palette($primary);
                         }
                     }
 

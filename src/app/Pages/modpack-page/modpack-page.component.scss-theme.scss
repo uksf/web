@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import "~@angular/material/theming";
 
 @mixin modpack-page-component-theme($theme) {
@@ -6,15 +7,15 @@
 
     app-modpack-page {
         a {
-            color: mat-color($primary);
+          color: mat.get-color-from-palette($primary);
         }
     }
 
     ::-webkit-scrollbar-track {
-        background-color: mat-color($background, side-bar);
+      background-color: mat.get-color-from-palette($background, side-bar);
     }
 
     ::-webkit-scrollbar-thumb {
-        background-color: mat-color($background, scroll-thumb);
+      background-color: mat.get-color-from-palette($background, scroll-thumb);
     }
 }

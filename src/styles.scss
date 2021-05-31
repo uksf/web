@@ -1,8 +1,8 @@
-@import '~@angular/material/theming';
+@use '~@angular/material' as mat;
 @import '~@circlon/angular-tree-component/css/angular-tree-component.css';
 
 // Core
-@include mat-core();
+@include mat.core();
 
 // Themes
 @import 'darkTheme.scss';
@@ -110,7 +110,7 @@
 }
 
 .dark-theme {
-    @include angular-material-theme($dark-theme);
+    @include mat.all-component-themes($dark-theme);
     @include custom-components-theme($dark-theme);
 
     $foreground: map-get($dark-theme, foreground);
@@ -121,11 +121,11 @@
         padding: 0 0 12px 0;
 
         .mat-tab-link {
-            color: mat-color($foreground, base);
-            background-color: mat-color($background, background);
+            color: mat.get-color-from-palette($foreground, base);
+            background-color: mat.get-color-from-palette($background, background);
 
             &:hover {
-                background-color: mat-color($background, hover);
+                background-color: mat.get-color-from-palette($background, hover);
             }
         }
     }
@@ -135,11 +135,11 @@
     }
 
     .mat-button {
-        background-color: mat-color($background, selected);
+        background-color: mat.get-color-from-palette($background, selected);
     }
 
     input {
-        color: mat-color($foreground, base) !important;
+        color: mat.get-color-from-palette($foreground, base) !important;
         background-color: transparent !important;
     }
 
@@ -153,7 +153,7 @@
 }
 
 .light-theme {
-    @include angular-material-theme($light-theme);
+    @include mat.all-component-themes($light-theme);
     @include custom-components-theme($light-theme);
 
     $foreground: map-get($light-theme, foreground);
@@ -164,11 +164,11 @@
         padding: 0 0 12px 0;
 
         .mat-tab-link {
-            color: mat-color($foreground, base);
-            background-color: mat-color($background, background);
+            color: mat.get-color-from-palette($foreground, base);
+            background-color: mat.get-color-from-palette($background, background);
 
             &:hover {
-                background-color: mat-color($background, hover);
+                background-color: mat.get-color-from-palette($background, hover);
             }
         }
     }
@@ -178,11 +178,11 @@
     }
 
     .mat-button {
-        background-color: mat-color($background, selected);
+        background-color: mat.get-color-from-palette($background, selected);
     }
 
     input {
-        color: mat-color($foreground, base) !important;
+        color: mat.get-color-from-palette($foreground, base) !important;
         background-color: transparent !important;
     }
 

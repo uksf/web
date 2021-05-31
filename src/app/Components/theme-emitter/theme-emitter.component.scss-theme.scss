@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import "~@angular/material/theming";
 
 @mixin theme-emitter-component-theme($theme) {
@@ -8,19 +9,19 @@
 
     app-theme-emitter {
         .foreground {
-            color: mat-color($foreground, base);
+            color: mat.get-color-from-palette($foreground, base);
         }
         .primary {
-            color: mat-color($primary);
+            color: mat.get-color-from-palette($primary);
         }
         .primary-contrast {
-            color: mat-color($primary, default-contrast);
+            color: mat.get-color-from-palette($primary, default-contrast);
         }
         .accent {
-            color: mat-color($accent);
+            color: mat.get-color-from-palette($accent);
         }
         .warn {
-            color: mat-color($warn);
+            color: mat.get-color-from-palette($warn);
         }
     }
 }

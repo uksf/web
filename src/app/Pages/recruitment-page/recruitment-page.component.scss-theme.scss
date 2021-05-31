@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import "~@angular/material/theming";
 
 @mixin recruitment-page-component-theme($theme) {
@@ -7,11 +8,11 @@
 
     app-recruitment-page {
         a {
-            color: mat-color($primary);
+          color: mat.get-color-from-palette($primary);
         }
         .applications-container {
             .applicationCardOthers {
-                background-color: mat-color($background, dark-card);
+              background-color: mat.get-color-from-palette($background, dark-card);
             }
         }
     }

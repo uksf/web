@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import "~@angular/material/theming";
 
 @mixin login-page-component-theme($theme) {
@@ -8,10 +9,10 @@
 
     app-login-page {
         a {
-            color: mat-color($primary);
+          color: mat.get-color-from-palette($primary);
         }
         .invalid-message {
-            color: mat-color($warn);
+          color: mat.get-color-from-palette($warn);
         }
     }
 }

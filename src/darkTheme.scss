@@ -1,46 +1,47 @@
+@use '~@angular/material' as mat;
 @import 'palettes.scss';
 
 $dark-theme-background: (
-    status-bar: black,
-    footer-bar: black,
-    side-bar: mat-color($dark-pallette, A100),
-    app-bar: mat-color($dark-pallette, 500),
-    dark-bar: mat-color($dark-pallette, 800),
-    background: mat-color($dark-pallette, default),
-    hover: mat-color($dark-pallette, 100),
-    200: mat-color($dark-pallette, 200),
-    selected: mat-color($dark-pallette, 400),
-    card: mat-color($dark-pallette, 500),
-    dark-card: mat-color($dark-pallette, 600),
-    dialog: mat-color($dark-pallette, 500),
-    disabled-button: mat-color($dark-pallette, 100),
-    raised-button: mat-color($dark-pallette, 500),
-    focused-button: mat-color($dark-pallette, 100),
-    selected-button: mat-color($dark-pallette, 900),
-    selected-disabled-button: mat-color($dark-pallette, 800),
-    disabled-button-toggle: black,
-    unselected-chip: mat-color($dark-pallette, 700),
-    disabled-list-option: black,
-    org-line: mat-color($dark-pallette, 100),
-    org-content: mat-color($dark-pallette, 400),
-    org-hover: mat-color($dark-pallette, 200),
-    scroll-track: mat-color($dark-pallette, 500),
-    scroll-thumb: mat-color($dark-pallette, 100),
-    server: mat-color($dark-pallette, 500),
-    server-running: mat-color($dark-pallette, 400),
-    contrast: white,
+        status-bar: black,
+        footer-bar: black,
+        side-bar: mat.get-color-from-palette($dark-pallette, A100),
+        app-bar: mat.get-color-from-palette($dark-pallette, 500),
+        dark-bar: mat.get-color-from-palette($dark-pallette, 800),
+        background: mat.get-color-from-palette($dark-pallette, default),
+        hover: mat.get-color-from-palette($dark-pallette, 100),
+        200: mat.get-color-from-palette($dark-pallette, 200),
+        selected: mat.get-color-from-palette($dark-pallette, 400),
+        card: mat.get-color-from-palette($dark-pallette, 500),
+        dark-card: mat.get-color-from-palette($dark-pallette, 600),
+        dialog: mat.get-color-from-palette($dark-pallette, 500),
+        disabled-button: mat.get-color-from-palette($dark-pallette, 100),
+        raised-button: mat.get-color-from-palette($dark-pallette, 500),
+        focused-button: mat.get-color-from-palette($dark-pallette, 100),
+        selected-button: mat.get-color-from-palette($dark-pallette, 900),
+        selected-disabled-button: mat.get-color-from-palette($dark-pallette, 800),
+        disabled-button-toggle: black,
+        unselected-chip: mat.get-color-from-palette($dark-pallette, 700),
+        disabled-list-option: black,
+        org-line: mat.get-color-from-palette($dark-pallette, 100),
+        org-content: mat.get-color-from-palette($dark-pallette, 400),
+        org-hover: mat.get-color-from-palette($dark-pallette, 200),
+        scroll-track: mat.get-color-from-palette($dark-pallette, 500),
+        scroll-thumb: mat.get-color-from-palette($dark-pallette, 100),
+        server: mat.get-color-from-palette($dark-pallette, 500),
+        server-running: mat.get-color-from-palette($dark-pallette, 400),
+        contrast: white,
 );
 
 $dark-theme-primary: $gold-pallette;
-$dark-theme-accent: mat-palette($mat-blue, 900);
-$dark-theme-warn: mat-palette($mat-red, 800);
-$dark-theme: mat-dark-theme($dark-theme-primary, $dark-theme-accent, $dark-theme-warn);
+$dark-theme-accent: mat.define-palette(mat.$blue-palette, 900);
+$dark-theme-warn: mat.define-palette(mat.$red-palette, 800);
+$dark-theme: mat.define-dark-theme($dark-theme-primary, $dark-theme-accent, $dark-theme-warn);
 
 $background: map-get($dark-theme, background);
 $background: map_merge($background, $dark-theme-background);
 $dark-theme: map_merge(
-    $dark-theme,
-    (
-        background: $background,
-    )
+                $dark-theme,
+                (
+                        background: $background,
+                )
 );
