@@ -23,10 +23,12 @@
             ],
             "styles": [
               {
-                "input": "src/styles-app-loading.scss"
+                "input": "src/styles-app-loading.scss",
+                "inject": true
               },
               {
-                "input": "src/styles.scss"
+                "input": "src/styles.scss",
+                "inject": true
               }
             ],
             "scripts": [
@@ -46,7 +48,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,

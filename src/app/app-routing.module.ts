@@ -1,5 +1,5 @@
-import { NgModule, Injectable } from '@angular/core';
-import { RouterModule, Routes, ActivatedRouteSnapshot, RouterStateSnapshot, DefaultUrlSerializer, UrlTree } from '@angular/router';
+import { Injectable, NgModule } from '@angular/core';
+import { ActivatedRouteSnapshot, DefaultUrlSerializer, RouterModule, RouterStateSnapshot, Routes, UrlTree } from '@angular/router';
 import { HomePageComponent } from './Pages/home-page/home-page.component';
 import { LoginPageComponent } from './Pages/login-page/login-page.component';
 import { ProfilePageComponent } from './Pages/profile-page/profile-page.component';
@@ -85,7 +85,6 @@ const appRoutes: Routes = [
                 },
             },
         },
-        canActivate: [NgxPermissionsGuard],
     },
     {
         path: 'admin/logs',
@@ -238,7 +237,6 @@ const appRoutes: Routes = [
                 redirectTo: loginRedirect,
             },
         },
-        canActivate: [NgxPermissionsGuard],
     },
     {
         path: 'units/orbat',
@@ -309,7 +307,6 @@ const appRoutes: Routes = [
                 },
             },
         },
-        canActivate: [NgxPermissionsGuard],
     },
     {
         path: 'command/requests',
@@ -389,7 +386,6 @@ const appRoutes: Routes = [
                 },
             },
         },
-        canActivate: [NgxPermissionsGuard],
     },
     {
         path: 'operations/servers',
@@ -501,7 +497,6 @@ const appRoutes: Routes = [
                 },
             },
         },
-        canActivate: [NgxPermissionsGuard],
     },
     {
         path: 'personnel/loas',
@@ -580,7 +575,6 @@ const appRoutes: Routes = [
                 },
             },
         },
-        canActivate: [NgxPermissionsGuard],
     },
     {
         path: 'modpack/guide',
@@ -650,7 +644,7 @@ const appRoutes: Routes = [
 ];
 
 @NgModule({
-    imports: [RouterModule.forRoot(appRoutes)],
+    imports: [RouterModule.forRoot(appRoutes, { relativeLinkResolution: 'legacy' })],
     exports: [RouterModule],
 })
 export class AppRoutingModule {
