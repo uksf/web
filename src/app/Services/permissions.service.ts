@@ -1,4 +1,4 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { AccountService } from './account.service';
 import { SessionService } from './Authentication/session.service';
@@ -80,7 +80,7 @@ export class PermissionsService {
                             this.accountService.getAccount(
                                 (account) => {
                                     this.setPermissions(account);
-                                    resolve();
+                                    resolve(null);
                                 },
                                 () => {
                                     reject('Token invalid, resetting');
@@ -94,7 +94,7 @@ export class PermissionsService {
                 } else {
                     // not logged in
                     this.setUnlogged();
-                    resolve();
+                    resolve(null);
                 }
             });
             promise

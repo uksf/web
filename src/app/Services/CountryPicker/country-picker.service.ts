@@ -9,15 +9,15 @@ export class CountryPickerService {
 
     async load() {
         return new Promise((resolve, reject) => {
-            this.httpClient.get('assets/dist/countries.json').subscribe(
-                (countries: ICountry[]) => {
+            this.httpClient.get('assets/dist/countries.json').subscribe({
+                next: (countries: ICountry[]) => {
                     CountryPickerService.countries = countries;
-                    resolve();
+                    resolve(null);
                 },
-                () => {
+                error: () => {
                     reject('Failed to load country data');
-                }
-            );
+                },
+            });
         });
     }
 }

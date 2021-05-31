@@ -1,9 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AuthenticationService } from '../../Services/Authentication/authentication.service';
 import { ActivatedRoute, NavigationEnd, Router, RouterEvent } from '@angular/router';
-import { FormGroup, FormBuilder, Validators, ValidationErrors, AbstractControl } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
-import { PermissionsService } from '../../Services/permissions.service';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 
@@ -34,7 +30,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.destroyed.next();
+        this.destroyed.next(null);
         this.destroyed.complete();
     }
 
