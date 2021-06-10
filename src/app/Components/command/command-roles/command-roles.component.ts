@@ -1,18 +1,18 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '../../../Services/url.service';
-import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { Observable, of, timer } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
-import { InstantErrorStateMatcher } from 'app/Services/formhelper.service';
-import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
-import { MatDialog } from '@angular/material/dialog';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import {Component, OnInit} from '@angular/core';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {UrlService} from '../../../Services/url.service';
+import {AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationErrors, Validators} from '@angular/forms';
+import {Observable, of, timer} from 'rxjs';
+import {map, switchMap} from 'rxjs/operators';
+import {InstantErrorStateMatcher} from 'app/Services/formhelper.service';
+import {ConfirmationModalComponent} from 'app/Modals/confirmation-modal/confirmation-modal.component';
+import {MatDialog} from '@angular/material/dialog';
+import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 
 @Component({
     selector: 'app-command-roles',
     templateUrl: './command-roles.component.html',
-    styleUrls: ['../../../Pages/command-page/command-page.component.scss', './command-roles.component.css'],
+    styleUrls: ['../../../Pages/command-page/command-page.component.scss', './command-roles.component.css']
 })
 export class CommandRolesComponent implements OnInit {
     static theme;
@@ -35,7 +35,7 @@ export class CommandRolesComponent implements OnInit {
         });
         this.unitForm = formbuilder.group({
             name: ['', Validators.required, this.validateRole(1)],
-            roleType: [1,
+            roleType: [1]
         });
     }
 
@@ -52,17 +52,17 @@ export class CommandRolesComponent implements OnInit {
                 if (role.name === null) {
                     return of(false);
                 }
-                return this.httpClient.post(`${this.urls.apiUrl}/roles/${type}/${role.name}`, role).pipe(map((response) => (response ? true : false)));
+                return this.httpClient.post(`${this.urls.apiUrl}/roles/${type}/${role.name}`, role).pipe(map((response) => (!!response)));
             })
         );
     }
 
     addRole(type) {
-        let formString = null;
+        let formString;
         if (type === 0) {
-            formString = JSON.stringify(this.individualForm.getRawValue()).replace(/\n|\r/g, '');
+            formString = JSON.stringify(this.individualForm.getRawValue()).replace(/[\n\r]/g, '');
         } else {
-            formString = JSON.stringify(this.unitForm.getRawValue()).replace(/\n|\r/g, '');
+            formString = JSON.stringify(this.unitForm.getRawValue()).replace(/[\n\r]/g, '');
         }
         this.httpClient
             .put(`${this.urls.apiUrl}/roles`, formString, {

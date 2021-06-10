@@ -1,24 +1,24 @@
-import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '../../../Services/url.service';
-import { MatDialog } from '@angular/material/dialog';
-import { BehaviorSubject, Observable, of, timer } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
-import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
-import { CountryPickerService, ICountry } from 'app/Services/CountryPicker/country-picker.service';
-import { CountryImage } from 'app/Pipes/country.pipe';
-import { Router } from '@angular/router';
-import { ConfirmValidParentMatcher, InstantErrorStateMatcher } from '../../../Services/formhelper.service';
-import { nameCase, titleCase } from '../../../Services/helper.service';
-import { IDropdownElement } from '../../elements/dropdown/dropdown.component';
+import {Component, ElementRef, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
+import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators} from '@angular/forms';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {UrlService} from '../../../Services/url.service';
+import {MatDialog} from '@angular/material/dialog';
+import {BehaviorSubject, Observable, of, timer} from 'rxjs';
+import {map, switchMap} from 'rxjs/operators';
+import {MessageModalComponent} from 'app/Modals/message-modal/message-modal.component';
+import {CountryPickerService, ICountry} from 'app/Services/CountryPicker/country-picker.service';
+import {CountryImage} from 'app/Pipes/country.pipe';
+import {Router} from '@angular/router';
+import {ConfirmValidParentMatcher, InstantErrorStateMatcher} from '../../../Services/formhelper.service';
+import {nameCase, titleCase} from '../../../Services/helper.service';
+import {IDropdownElement} from '../../elements/dropdown/dropdown.component';
 
 function matchingPasswords(passwordKey: string, confirmPasswordKey: string) {
     return (group: FormGroup): { [key: string]: any } => {
         const password = group.controls[passwordKey];
         const confirmPassword = group.controls[confirmPasswordKey];
         if (password.value !== confirmPassword.value) {
-            return { mismatchedPasswords: true };
+            return {mismatchedPasswords: true};
         }
     };
 }
@@ -66,7 +66,7 @@ function validDob(dayKey: string, monthKey: string, yearKey: string) {
 @Component({
     selector: 'app-application-identity',
     templateUrl: './application-identity.component.html',
-    styleUrls: ['../../../Pages/application-page/application-page.component.scss', './applicatin-identity.component.scss'],
+    styleUrls: ['../../../Pages/application-page/application-page.component.scss', './application-identity.component.scss']
 })
 export class ApplicationIdentityComponent implements OnInit {
     @Output() nextEvent = new EventEmitter();
@@ -123,9 +123,9 @@ export class ApplicationIdentityComponent implements OnInit {
                     month: ['', Validators.required],
                     year: ['', Validators.required]
                 },
-                { validator: validDob('day', 'month', 'year') }
+                {validator: validDob('day', 'month', 'year')}
             ),
-            nation: ['],
+            nation: ['']
         });
     }
 

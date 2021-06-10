@@ -1,18 +1,18 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { InstantErrorStateMatcher } from 'app/Services/formhelper.service';
-import { Observable, of, timer } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '../../../Services/url.service';
-import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
-import { ResponseUnit, UnitBranch } from '../../../Models/Units';
-import { ConfirmationModalComponent } from '../../confirmation-modal/confirmation-modal.component';
+import {Component, Inject, OnInit} from '@angular/core';
+import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators} from '@angular/forms';
+import {InstantErrorStateMatcher} from 'app/Services/formhelper.service';
+import {Observable, of, timer} from 'rxjs';
+import {map, switchMap} from 'rxjs/operators';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {UrlService} from '../../../Services/url.service';
+import {MAT_DIALOG_DATA, MatDialog} from '@angular/material/dialog';
+import {ResponseUnit, UnitBranch} from '../../../Models/Units';
+import {ConfirmationModalComponent} from '../../confirmation-modal/confirmation-modal.component';
 
 @Component({
     selector: 'app-add-unit-modal',
     templateUrl: './add-unit-modal.component.html',
-    styleUrls: ['./add-unit-modal.component.css'],
+    styleUrls: ['./add-unit-modal.component.css']
 })
 export class AddUnitModalComponent implements OnInit {
     form: FormGroup;
@@ -135,8 +135,8 @@ export class AddUnitModalComponent implements OnInit {
             this.httpClient
                 .post(`${this.urls.apiUrl}/units`, formString, {
                     headers: new HttpHeaders({
-                        'Content-Type': 'application/jso',
-                    ),
+                        'Content-Type': 'application/json'
+                    })
                 })
                 .subscribe(() => {
                     this.dialog.closeAll();

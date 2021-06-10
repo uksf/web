@@ -1,13 +1,23 @@
-import { Component, ElementRef, EventEmitter, Input, NgZone, OnDestroy, Output, Renderer2, ViewChild } from '@angular/core';
-import { Subscription, timer } from 'rxjs';
-import { UploadEvent, UploadFile } from '../../../Services/fileUploadTypes.service';
+import {
+    Component,
+    ElementRef,
+    EventEmitter,
+    Input,
+    NgZone,
+    OnDestroy,
+    Output,
+    Renderer2,
+    ViewChild
+} from '@angular/core';
+import {Subscription, timer} from 'rxjs';
+import {UploadEvent, UploadFile} from '../../../Services/fileUploadTypes.service';
 
 @Component({
     selector: 'app-file-drop',
     templateUrl: './file-drop.component.html',
-    styleUrls: ['./file-drop.component.css'],
+    styleUrls: ['./file-drop.component.css']
 })
-export class FileDropComponnt implements OnDestroy {
+export class FileDropComponent implements OnDestroy {
     @ViewChild('dropZone') dropZone: ElementRef;
     @Input() headertext = '';
     @Input() customstyle = null;
@@ -21,10 +31,10 @@ export class FileDropComponnt implements OnDestroy {
     dragoverflag = false;
     globalDisable = false;
     numOfActiveReadEntries = 0;
-    globalStart = this.renderer.listen('document', 'dragstart', (evt) => {
+    globalStart = this.renderer.listen('document', 'dragstart', () => {
         this.globalDisable = true;
     });
-    globalEnd = this.renderer.listen('document', 'dragend', (evt) => {
+    globalEnd = this.renderer.listen('document', 'dragend', () => {
         this.globalDisable = false;
     });
 
@@ -60,21 +70,13 @@ export class FileDropComponnt implements OnDestroy {
         if (typeof DOMStringList !== 'undefined') {
             const dragDataType = dataTransfer.types;
             if (dragDataType.constructor === DOMStringList) {
-                if (dragDataType.contains('Files')) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return dragDataType.contains('Files');
             }
         }
         if (typeof Array !== 'undefined') {
             const dragDataType = dataTransfer.types;
             if (dragDataType.constructor === Array) {
-                if (dragDataType.indexOf('Files') !== -1) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return dragDataType.indexOf('Files') !== -1;
             }
         }
     }

@@ -1,5 +1,5 @@
-import { Application } from './Application';
-import { IDropdownElement } from '../Components/elements/dropdown/dropdown.component';
+import {Application} from './Application';
+import {IDropdownElement} from '../Components/elements/dropdown/dropdown.component';
 
 export enum MembershipState {
     UNCONFIRMED,
@@ -80,7 +80,7 @@ export class BasicAccount {
     public static mapToElement(account: BasicAccount): IDropdownElement {
         return {
             value: account.id,
-            displayValue: account.displayame,
+            displayValue: account.displayName
         };
     }
 }
