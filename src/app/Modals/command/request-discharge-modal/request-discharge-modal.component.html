@@ -1,29 +1,52 @@
 <h2 mat-dialog-title>Discharge Request</h2>
 <mat-dialog-content>
-    <form [formGroup]="form">
-        <div>
-            <div style="text-align: center;">
-                <div class="spinner-container" *ngIf="!possibleRecipients">
-                    <div class="spacer"></div>
-                    <mat-spinner></mat-spinner>
-                    <div class="spacer"></div>
-                </div>
-                <div *ngIf="possibleRecipients">
-                    <mat-form-field>
-                        <mat-select placeholder="Select recipient" formControlName="recipient">
-                            <mat-option *ngFor="let recipient of possibleRecipients" [value]="recipient.value">
-                                {{recipient.displayValue}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                    <br>
-                    <mat-form-field>
-                        <textarea matInput placeholder="Reason" formControlName="reason" matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="5"></textarea>
-                    </mat-form-field>
-                </div>
-            </div>
-            <button mat-raised-button color="primary" style="float: right;" [disabled]="!form.valid" (click)="submit()">Submit</button>
-            <br style="clear: both;">
+    <form #form="ngForm" (ngSubmit)="submit()">
+        <div *ngIf="!accounts" class="spinner-container">
+            <app-flex-filler></app-flex-filler>
+            <mat-spinner></mat-spinner>
+            <app-flex-filler></app-flex-filler>
+        </div>
+        <div *ngIf="accounts">
+            <app-autofocus-stop></app-autofocus-stop>
+            <app-dropdown
+                #accountName="ngModel"
+                [(ngModel)]="model.account"
+                [elementName]="'Recipient'"
+                [elements]="accounts"
+                [isRequired]="true"
+                [placeholder]="'Select recipient'"
+                id="accountName"
+                name="formAccount"
+            >
+                <ng-template #element let-element>
+                    {{ getAccountName(element) }}
+                </ng-template>
+            </app-dropdown>
+            <br />
+            <mat-form-field>
+                <textarea
+                    #reason="ngModel"
+                    [(ngModel)]="model.reason"
+                    id="reason"
+                    matAutosizeMaxRows="5"
+                    matAutosizeMinRows="2"
+                    matInput
+                    matTextareaAutosize
+                    name="formReason"
+                    placeholder="Reason"
+                    required
+                    type="text"
+                ></textarea>
+                <mat-error *ngFor="let validation of validationMessages.reason">
+                    <mat-error *ngIf="reason.hasError(validation.type)" class="error-message">{{ validation.message() }}</mat-error>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <br />
+        <app-form-value-debug-template></app-form-value-debug-template>
+        <div class="button-container">
+            <app-flex-filler></app-flex-filler>
+            <app-button-pending (click)="submit()" [disabled]="!form.valid" [pending]="pending">Submit </app-button-pending>
         </div>
     </form>
 </mat-dialog-content>

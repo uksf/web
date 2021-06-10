@@ -1,5 +1,5 @@
-import { Component, Output, ViewChild, EventEmitter, OnInit } from '@angular/core';
-import { FormBuilder, NgForm } from '@angular/forms';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { AuthenticationService } from '../../../Services/Authentication/authentication.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PermissionsService } from '../../../Services/permissions.service';
@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit {
         password: [{ type: 'required', message: 'Password is required' }],
     };
 
-    constructor(public formbuilder: FormBuilder, private auth: AuthenticationService, private route: ActivatedRoute, private router: Router, private permissionsService: PermissionsService) {}
+    constructor(private auth: AuthenticationService, private route: ActivatedRoute, private router: Router, private permissionsService: PermissionsService) {}
 
     ngOnInit() {
         const params = this.route.snapshot.queryParams;

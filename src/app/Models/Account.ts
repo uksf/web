@@ -1,4 +1,5 @@
 import { Application } from './Application';
+import { IDropdownElement } from '../Components/elements/dropdown/dropdown.component';
 
 export enum MembershipState {
     UNCONFIRMED,
@@ -65,4 +66,21 @@ export interface RosterAccount {
     rank: string;
     roleAssignment: string;
     unitAssignment: string;
+}
+
+export class BasicAccount {
+    id: string;
+    displayName: string;
+
+    public constructor(element: IDropdownElement) {
+        this.id = element.value;
+        this.displayName = element.displayValue;
+    }
+
+    public static mapToElement(account: BasicAccount): IDropdownElement {
+        return {
+            value: account.id,
+            displayValue: account.displayame,
+        };
+    }
 }

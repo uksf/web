@@ -1,11 +1,11 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { Component, Inject, OnInit } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { InstantErrorStateMatcher } from 'app/Services/formhelper.service';
 import { Observable, of, timer } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { ResponseUnit, UnitBranch } from '../../../Models/Units';
 import { ConfirmationModalComponent } from '../../confirmation-modal/confirmation-modal.component';
 
@@ -15,8 +15,9 @@ import { ConfirmationModalComponent } from '../../confirmation-modal/confirmatio
     styleUrls: ['./add-unit-modal.component.css'],
 })
 export class AddUnitModalComponent implements OnInit {
-    instantErrorStateMatcher = new InstantErrorStateMatcher();
     form: FormGroup;
+    instantErrorStateMatcher = new InstantErrorStateMatcher();
+    pending = false;
     branchTypes = [
         { value: UnitBranch.COMBAT, viewValue: 'Combat' },
         { value: UnitBranch.AUXILIARY, viewValue: 'Auxiliary' },
@@ -104,6 +105,11 @@ export class AddUnitModalComponent implements OnInit {
     }
 
     submit() {
+        if (!this.form.valid || !this.changesMade || this.pending) {
+            return;
+        }
+
+        this.pending = true;
         if (this.edit) {
             this.unit.name = this.form.controls['name'].value;
             this.unit.shortname = this.form.controls['shortname'].value;
@@ -120,26 +126,32 @@ export class AddUnitModalComponent implements OnInit {
                         'Content-Type': 'application/json',
                     }),
                 })
-                .subscribe((_) => {
+                .subscribe(() => {
                     this.dialog.closeAll();
+                    this.pending = false;
                 });
         } else {
             const formString = JSON.stringify(this.form.getRawValue()).replace(/[\n\r]/g, '');
             this.httpClient
                 .post(`${this.urls.apiUrl}/units`, formString, {
                     headers: new HttpHeaders({
-                        'Content-Type': 'application/json',
-                    }),
+                        'Content-Type': 'application/jso',
+                    ),
                 })
-                .subscribe((_) => {
+                .subscribe(() => {
                     this.dialog.closeAll();
+                    this.pending = false;
                 });
         }
     }
 
     delete() {
+        if (this.pending) {
+            return;
+        }
+
         const dialog = this.dialog.open(ConfirmationModalComponent, {
-            data: { message: `Are you sure you want to delete '${this.unit.name}'?` },
+            data: { message: `Are you sure you want to delete '${this.unit.name}'?` }
         });
         dialog.componentInstance.confirmEvent.subscribe(() => {
             this.httpClient.delete(`${this.urls.apiUrl}/units/${this.unit.id}`).subscribe((_) => {

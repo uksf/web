@@ -1,62 +1,100 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { NgForm } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
+import { InstantErrorStateMatcher } from '../../../Services/formhelper.service';
+import { BehaviorSubject } from 'rxjs';
+import { IDropdownElement, mapFromElement } from '../../../Components/elements/dropdown/dropdown.component';
+import { BasicAccount } from '../../../Models/Account';
+import { CommandRequest } from '../../../Models/CommandRequest';
+import { Unit } from '../../../Models/Units';
 
 @Component({
     selector: 'app-request-transfer-modal',
     templateUrl: './request-transfer-modal.component.html',
-    styleUrls: ['./request-transfer-modal.component.css'],
+    styleUrls: ['./request-transfer-modal.component.scss', '../../../Pages/command-page/command-page.component.scss'],
 })
 export class RequestTransferModalComponent implements OnInit {
-    form: FormGroup;
-    possibleUnits;
-    possibleRecipients;
+    @ViewChild(NgForm) form!: NgForm;
+    instantErrorStateMatcher = new InstantErrorStateMatcher();
+    pending = false;
+    model: FormModel = {
+        account: null,
+        unit: null,
+        reason: null,
+    };
+    accounts: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
+    units: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
+    validationMessages = {
+        reason: [{ type: 'required', message: () => 'A reason for the unit transfer is required' }],
+    };
 
-    ngOnInit() {}
+    constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService) {}
 
-    constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService, private formbuilder: FormBuilder) {
-        this.form = this.formbuilder.group(
-            {
-                recipient: ['', Validators.required],
-                value: ['', Validators.required],
-                reason: ['', Validators.required],
+    ngOnInit() {
+        this.httpClient.get(`${this.urlService.apiUrl}/accounts/under`).subscribe({
+            next: (accounts: BasicAccount[]) => {
+                this.accounts.next(accounts.map(BasicAccount.mapToElement));
+                this.accounts.complete();
             },
-            {}
-        );
-        this.httpClient.get(this.urlService.apiUrl + '/accounts/under').subscribe((response) => {
-            this.possibleRecipients = response;
         });
-        this.form.controls.value.disable();
+
+        this.units.next([]);
     }
 
-    onSelectRecipient(event) {
-        this.httpClient.get(`${this.urlService.apiUrl}/units?filter=available&accountId=${event.value}`).subscribe((response) => {
-            this.possibleUnits = response;
-            this.form.controls.value.enable();
+    onSelectAccount(element: IDropdownElement) {
+        if (element === null) {
+            this.units.next([]);
+            return;
+        }
+
+        this.httpClient.get(`${this.urlService.apiUrl}/units?filter=available&accountId=${mapFromElement(BasicAccount, element).id}`).subscribe({
+            next: (units: Unit[]) => {
+                this.units.next(units.map(Unit.mapToElement));
+            },
         });
     }
 
     submit() {
-        const formString = JSON.stringify(this.form.getRawValue()).replace(/\n|\r/g, '');
-        this.httpClient
-            .put(this.urlService.apiUrl + '/commandrequests/create/transfer', formString, {
-                headers: new HttpHeaders({
-                    'Content-Type': 'application/json',
-                }),
-            })
-            .subscribe(
-                (_) => {
-                    this.dialog.closeAll();
-                },
-                (error) => {
-                    this.dialog.closeAll();
-                    this.dialog.open(MessageModalComponent, {
-                        data: { message: error.error },
-                    });
-                }
-            );
+        if (!this.form.valid || this.pending) {
+            return;
+        }
+
+        const commandRequest: CommandRequest = {
+            recipient: mapFromElement(BasicAccount, this.model.account).id,
+            value: mapFromElement(Unit, this.model.unit).id,
+            reason: this.model.reason,
+        };
+
+        this.pending = true;
+        this.httpClient.put(`${this.urlService.apiUrl}/commandrequests/create/transfer`, commandRequest).subscribe({
+            next: () => {
+                this.dialog.closeAll();
+                this.pending = false;
+            },
+            error: (error) => {
+                this.dialog.closeAll();
+                this.pending = false;
+                this.dialog.open(MessageModalComponent, {
+                    data: { message: error.error },
+                });
+            },
+        });
     }
+
+    getAccountName(element: IDropdownElement): string {
+        return mapFromElement(BasicAccount, element).displayName;
+    }
+
+    getUnitName(element: IDropdownElement): string {
+        return mapFromElement(Unit, element).name;
+    }
+}
+
+interface FormModel {
+    account: IDropdownElement;
+    unit: IDropdownElement;
+    reason: string;
 }

@@ -1,59 +1,106 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HttpHeaders, HttpClient } from '@angular/common/http';
+import { NgForm } from '@angular/forms';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
+import { InstantErrorStateMatcher } from '../../../Services/formhelper.service';
+import { BehaviorSubject } from 'rxjs';
+import { IDropdownElement, mapFromElement } from '../../../Components/elements/dropdown/dropdown.component';
+import { BasicAccount } from '../../../Models/Account';
+import { CommandRequest } from '../../../Models/CommandRequest';
+import { Rank } from '../../../Models/Rank';
 
 @Component({
     selector: 'app-request-rank-modal',
     templateUrl: './request-rank-modal.component.html',
-    styleUrls: ['./request-rank-modal.component.css']
+    styleUrls: ['./request-rank-modal.component.scss', '../../../Pages/command-page/command-page.component.scss'],
 })
 export class RequestRankModalComponent implements OnInit {
-    form: FormGroup;
-    possibleRanks;
-    possibleRecipients;
+    @ViewChild(NgForm) form!: NgForm;
+    instantErrorStateMatcher = new InstantErrorStateMatcher();
+    pending = false;
+    model: FormModel = {
+        account: null,
+        rank: null,
+        reason: null,
+    };
+    accounts: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
+    ranks: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
+    validationMessages = {
+        reason: [{ type: 'required', message: () => 'A reason for the promotion/demotion is required' }],
+    };
 
-    ngOnInit() { }
+    constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService) {}
 
-    constructor(
-        private dialog: MatDialog,
-        private httpClient: HttpClient,
-        private urlService: UrlService,
-        private formbuilder: FormBuilder
-    ) {
-        this.form = this.formbuilder.group({
-            recipient: ['', Validators.required],
-            value: ['', Validators.required],
-            reason: ['', Validators.required]
-        }, {});
-        this.httpClient.get(this.urlService.apiUrl + '/accounts/under').subscribe(response => {
-            this.possibleRecipients = response;
+    ngOnInit() {
+        this.httpClient.get(`${this.urlService.apiUrl}/accounts/under`).subscribe({
+            next: (accounts: BasicAccount[]) => {
+                this.accounts.next(accounts.map(BasicAccount.mapToElement));
+                this.accounts.complete();
+            },
         });
-        this.form.controls.value.disable();
+
+        this.ranks.next([]);
     }
 
-    onSelectRecipient(event) {
-        this.httpClient.get(this.urlService.apiUrl + '/ranks/' + event.value).subscribe(response => {
-            this.possibleRanks = response;
-            this.form.controls.value.enable();
+    onSelectAccount(element: IDropdownElement) {
+        if (element === null) {
+            this.ranks.next([]);
+            return;
+        }
+
+        this.httpClient.get(`${this.urlService.apiUrl}/ranks/${mapFromElement(BasicAccount, element).id}`).subscribe({
+            next: (ranks: Rank[]) => {
+                this.ranks.next(ranks.map(Rank.mapToElement).reverse());
+            },
         });
     }
 
     submit() {
-        const formString = JSON.stringify(this.form.getRawValue()).replace(/\n|\r/g, '');
-        this.httpClient.put(this.urlService.apiUrl + '/commandrequests/create/rank', formString, {
-            headers: new HttpHeaders({
-                'Content-Type': 'application/json'
+        if (!this.form.valid || this.pending) {
+            return;
+        }
+
+        const commandRequest: CommandRequest = {
+            recipient: mapFromElement(BasicAccount, this.model.account).id,
+            value: mapFromElement(Rank, this.model.rank).name,
+            reason: this.model.reason,
+        };
+
+        this.pending = true;
+        this.httpClient
+            .put(`${this.urlService.apiUrl}/commandrequests/create/rank`, commandRequest, {
+                headers: new HttpHeaders({
+                    'Content-Type': 'application/json',
+                }),
             })
-        }).subscribe(_ => {
-            this.dialog.closeAll();
-        }, error => {
-            this.dialog.closeAll();
-            this.dialog.open(MessageModalComponent, {
-                data: { message: error.error }
+            .subscribe({
+                next: () => {
+                    this.dialog.closeAll();
+                    this.pending = false;
+                },
+                error: (error) => {
+                    this.dialog.closeAll();
+                    this.pending = false;
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: error.error },
+                    });
+                },
             });
-        });
     }
+
+    getAccountName(element: IDropdownElement): string {
+        return mapFromElement(BasicAccount, element).displayName;
+    }
+
+    getRankName(element: IDropdownElement): string {
+        return mapFromElement(Rank, element).name;
+    }
+}
+
+interface FormModel {
+    account: IDropdownElement;
+    rank: IDropdownElement;
+    reason: string;
 }

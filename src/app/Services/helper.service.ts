@@ -10,12 +10,6 @@ export function titleCase(string: string) {
     }
 
     string = string.trim();
-
-    const doubleBarrelParts = string.split('-');
-    if (doubleBarrelParts.length == 2) {
-        return `${titleCase(doubleBarrelParts[0])}-${titleCase(doubleBarrelParts[1])}`;
-    }
-
     return string[0].toUpperCase() + string.slice(1).toLowerCase();
 }
 

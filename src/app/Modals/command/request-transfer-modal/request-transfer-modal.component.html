@@ -1,30 +1,62 @@
 <h2 mat-dialog-title>Transfer Request</h2>
 <mat-dialog-content>
-    <form [formGroup]="form">
-        <div>
-            <div style="text-align: center;">
-                <mat-form-field>
-                    <mat-select placeholder="Select recipient" formControlName="recipient" (selectionChange)="onSelectRecipient($event)">
-                        <mat-option *ngFor="let recipient of possibleRecipients" [value]="recipient.value">
-                            {{recipient.displayValue}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <br>
-                <mat-form-field>
-                    <mat-select placeholder="Select new unit" formControlName="value">
-                        <mat-option *ngFor="let unit of possibleUnits" [value]="unit.id">
-                            {{unit.name}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <br>
-                <mat-form-field>
-                    <textarea matInput placeholder="Reason" formControlName="reason" matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="5"></textarea>
-                </mat-form-field>
-            </div>
-            <button mat-raised-button color="primary" style="float: right;" [disabled]="!form.valid" (click)="submit()">Submit</button>
-            <br style="clear: both;">
+    <form #form="ngForm" (ngSubmit)="submit()">
+        <app-autofocus-stop></app-autofocus-stop>
+        <app-dropdown
+            #accountName="ngModel"
+            (onSelectionChange)="onSelectAccount($event)"
+            [(ngModel)]="model.account"
+            [elementName]="'Recipient'"
+            [elements]="accounts"
+            [isRequired]="true"
+            [placeholder]="'Select recipient'"
+            id="accountName"
+            name="formAccount"
+        >
+            <ng-template #element let-element>
+                {{ getAccountName(element) }}
+            </ng-template>
+        </app-dropdown>
+        <br />
+        <app-dropdown
+            #unit="ngModel"
+            [(ngModel)]="model.unit"
+            [elementName]="'Unit'"
+            [elements]="units"
+            [isDisabled]="units.value.length === 0"
+            [isRequired]="true"
+            [placeholder]="'Select new unit'"
+            id="unit"
+            name="formUnit"
+        >
+            <ng-template #element let-element>
+                {{ getUnitName(element) }}
+            </ng-template>
+        </app-dropdown>
+        <br />
+        <mat-form-field>
+            <textarea
+                #reason="ngModel"
+                [(ngModel)]="model.reason"
+                id="reason"
+                matAutosizeMaxRows="5"
+                matAutosizeMinRows="2"
+                matInput
+                matTextareaAutosize
+                name="formReason"
+                placeholder="Reason"
+                required
+                type="text"
+            ></textarea>
+            <mat-error *ngFor="let validation of validationMessages.reason">
+                <mat-error *ngIf="reason.hasError(validation.type)" class="error-message">{{ validation.message() }}</mat-error>
+            </mat-error>
+        </mat-form-field>
+        <br />
+        <app-form-value-debug-template></app-form-value-debug-template>
+        <div class="button-container">
+            <app-flex-filler></app-flex-filler>
+            <app-button-pending (click)="submit()" [disabled]="!form.valid" [pending]="pending">Submit </app-button-pending>
         </div>
     </form>
 </mat-dialog-content>

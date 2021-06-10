@@ -34,8 +34,8 @@
 // Components
 @import 'app/Components/admin/admin-variables/admin-variables.component.scss-theme';
 @import 'app/Components/comment-display/comment-display.component.scss-theme.scss';
-@import 'app/Components/file-drop/file-drop.component.scss-theme.scss';
-@import 'app/Components/inline-edit/inline-edit.component.scss-theme.scss';
+@import 'app/Components/elements/file-drop/file-drop.component.scss-theme.scss';
+@import 'app/Components/elements/inline-edit/inline-edit.component.scss-theme.scss';
 @import 'app/Components/command/command-requests/command-request.component.scss-theme.scss';
 @import 'app/Components/command/command-units/command-units.component.scss-theme.scss';
 @import 'app/Components/modpack/modpack-builds-dev/modpack-builds-dev.component.scss-theme.scss';
@@ -46,7 +46,7 @@
 @import 'app/Components/operations/operations-servers/operations-servers.component.scss-theme.scss';
 @import 'app/Components/personnel/personnel-discharges/personnel-discharges.component.scss-theme.scss';
 @import 'app/Components/personnel/personnel-loas-list/personnel-loas-list.component.scss-theme.scss';
-@import 'app/Components/theme-emitter/theme-emitter.component.scss-theme.scss';
+@import 'app/Components/elements/theme-emitter/theme-emitter.component.scss-theme.scss';
 @import 'app/Components/units/units-orbat/units-orbat.component.scss-theme.scss';
 @import 'app/Components/units/units-orbat-aux/units-orbat-aux.component.scss-theme.scss';
 @import 'app/Components/units/units-roster/units-roster.component.scss-theme.scss';
@@ -227,5 +227,21 @@
 .mat-mini-fab,
 .mat-tab-label,
 .mat-tab-link {
-    font-weight: unset;
+  font-weight: unset;
+}
+
+.mat-autocomplete-panel {
+  max-height: 456px !important;
+}
+
+@media screen and (max-height: 800px) {
+  .mat-autocomplete-panel {
+    max-height: 312px !important;
+  }
+}
+
+@media screen and (max-height: 700px) {
+  .mat-autocomplete-panel {
+    max-height: 264px !important;
+  }
 }

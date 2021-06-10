@@ -14,7 +14,7 @@ import { ApplicationState } from '../../Models/Application';
     styleUrls: ['./application-page.component.scss'],
 })
 export class ApplicationPageComponent implements OnInit {
-    step = 1;
+    step = 2;
     email: string;
     details: any;
 

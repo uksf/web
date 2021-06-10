@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../Services/url.service';
 import { Router } from '@angular/router';
 import { AccountService } from '../../Services/account.service';
-import { ThemeEmitterComponent } from 'app/Components/theme-emitter/theme-emitter.component';
+import { ThemeEmitterComponent } from 'app/Components/elements/theme-emitter/theme-emitter.component';
 import { MembershipState } from '../../Models/Account';
 import { ApplicationsOverview, ApplicationState, CompletedApplication, WaitingApplication } from '../../Models/Application';
 import { AsyncSubject } from 'rxjs';

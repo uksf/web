@@ -1,11 +1,11 @@
 import { Component, Inject } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { InstantErrorStateMatcher } from 'app/Services/formhelper.service';
 import { Observable, of, timer } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
-import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-add-server-modal',
@@ -47,6 +47,7 @@ export class AddServerModalComponent {
     changes = new Set<string>();
     server;
     submitting = false;
+    private connectionId: string = '';
 
     constructor(
         formbuilder: FormBuilder,
@@ -71,6 +72,7 @@ export class AddServerModalComponent {
         if (data) {
             this.edit = true;
             this.server = data.server;
+            this.connectionId = data.connectionId;
             this.form.patchValue(this.server);
             Object.keys(this.form.controls).forEach((key) => {
                 this.form.get(key).valueChanges.subscribe((change) => {
@@ -83,28 +85,6 @@ export class AddServerModalComponent {
             });
         } else {
             this.changes.add('dummy');
-        }
-    }
-
-    private validateServer(control: AbstractControl): Observable<ValidationErrors> {
-        if (this.edit) {
-            return timer(200).pipe(
-                switchMap(() => {
-                    if (control.pristine || control.value === null) {
-                        return of(null);
-                    }
-                    return this.httpClient.post(`${this.urls.apiUrl}/gameservers/${control.value}`, this.server).pipe(map((response) => (response ? { serverTaken: true } : null)));
-                })
-            );
-        } else {
-            return timer(200).pipe(
-                switchMap(() => {
-                    if (control.pristine || control.value === null) {
-                        return of(null);
-                    }
-                    return this.httpClient.post(`${this.urls.apiUrl}/gameservers/${control.value}`, {}).pipe(map((response) => (response ? { serverTaken: true } : null)));
-                })
-            );
         }
     }
 
@@ -125,31 +105,71 @@ export class AddServerModalComponent {
                 .patch(`${this.urls.apiUrl}/gameservers`, this.server, {
                     headers: new HttpHeaders({
                         'Content-Type': 'application/json',
+                        'Hub-Connection-Id': this.connectionId,
                     }),
                 })
-                .subscribe(
-                    (environmentChanged: boolean) => {
+                .subscribe({
+                    next: (environmentChanged: boolean) => {
                         this.dialogRef.close(environmentChanged);
                     },
-                    (_) => {
+                    error: () => {
                         this.submitting = false;
-                    }
-                );
+                    },
+                });
         } else {
             this.httpClient
                 .put(`${this.urls.apiUrl}/gameservers`, JSON.stringify(this.form.getRawValue()), {
                     headers: new HttpHeaders({
                         'Content-Type': 'application/json',
-                    }),
+                        'Hub-Connection-Id': this.connectioId,
+                   }),
                 })
-                .subscribe(
-                    (_) => {
+                .subscribe({
+                    next: () => {
                         this.dialogRef.close(false);
                     },
-                    (_) => {
+                    error: () => {
                         this.submitting = false;
+                   },
+                });
+        }
+    }
+
+    private validateServer(control: AbstractControl): Observable<ValidationErrors> {
+        if (this.edit) {
+            return timer(200).pipe(
+                switchMap(() => {
+                    if (control.pristine || control.value === null) {
+                        return of(null);
                     }
-                );
+                    return this.httpClient
+                        .post(`${this.urls.apiUrl}/gameservers/${control.value}`, this.server, {
+                            headers: new HttpHeaders({
+                                'Hub-Connection-Id': this.connectioId,
+                           }),
+                        })
+                        .pipe(map((response) => (response ? { serverTaken: true } : null)));
+                })
+            );
+        } else {
+            return timer(200).pipe(
+                switchMap(() => {
+                    if (control.pristine || control.value === null) {
+                        return of(null);
+                    }
+                    return this.httpClient
+                        .post(
+                            `${this.urls.apiUrl}/gameservers/${control.value}`,
+                            {},
+                            {
+                                headers: new HttpHeaders({
+                                    'Hub-Connection-Id': this.connectioId,
+                               }),
+                            }
+                        )
+                        .pipe(map((response) => (response ? { serverTaken: true } : null)));
+                })
+            );
         }
     }
 }

@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MarkdownService } from 'ngx-markdown';
 import { ModpackBuild } from 'app/Models/ModpackBuild';
-import { ThemeEmitterComponent } from 'app/Components/theme-emitter/theme-emitter.component';
+import { ThemeEmitterComponent } from 'app/Components/elements/theme-emitter/theme-emitter.component';
 import { ModpackBuildResult } from 'app/Models/ModpackBuildResult';
 import { ModpackRc } from 'app/Models/ModpackRc';
 import { ModpackRcService } from 'app/Services/modpackRc.service';

@@ -25,5 +25,6 @@ export class CountryPickerService {
 export interface ICountry {
     value: string;
     name: string;
-    code: string;
+    code?: string;
+    image?: string;
 }

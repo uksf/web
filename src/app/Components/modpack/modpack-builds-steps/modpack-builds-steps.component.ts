@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { ModpackBuild } from 'app/Models/ModpackBuild';
 import { ModpackBuildStep } from 'app/Models/ModpackBuildStep';
-import { ThemeEmitterComponent } from 'app/Components/theme-emitter/theme-emitter.component';
+import { ThemeEmitterComponent } from 'app/Components/elements/theme-emitter/theme-emitter.component';
 import { ModpackBuildResult } from 'app/Models/ModpackBuildResult';
 import { ModpackBuildProcessService } from 'app/Services/modpackBuildProcess.service';
 import { ConnectionContainer, SignalRService } from 'app/Services/signalr.service';

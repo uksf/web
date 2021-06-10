@@ -1,5 +1,5 @@
 @use '~@angular/material' as mat;
-@import "~@angular/material/theming";
+@import '~@angular/material/theming';
 @mixin operations-servers-component-theme($theme) {
     $foreground: map-get($theme, foreground);
     $background: map-get($theme, background);
@@ -16,6 +16,7 @@
             .control-disabled {
                 color: red;
             }
+
             .refresh-button {
                 background-color: transparent;
             }
@@ -28,15 +29,15 @@
             background-color: mat.get-color-from-palette($background, server-running);
           }
 
-          .servers-list-header {
+          .server-header {
             button {
               background-color: transparent;
             }
 
-                .title-updating {
-                  color: mat.get-color-from-palette($primary);
-                }
+            .title-updating {
+              color: mat.get-color-from-palette($primary);
             }
+          }
         }
 
         .server-buttons {
@@ -62,7 +63,7 @@
             background-color: mat.get-color-from-palette($background, server-running);
           }
 
-          .servers-list-header {
+          .server-header {
             button {
               background-color: transparent;
             }

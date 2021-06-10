@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AddUnitModalComponent } from '../../../Modals/command/add-unit-modal/add-unit-modal.component';
-import { ITreeOptions, TreeNode, KEYS, TREE_ACTIONS } from '@circlon/angular-tree-component';
+import { ITreeOptions, KEYS, TREE_ACTIONS, TreeNode } from '@circlon/angular-tree-component';
 import { Permissions } from 'app/Services/permissions';
 import { PermissionsService } from 'app/Services/permissions.service';
 import { RequestUnitUpdateOrder, RequestUnitUpdateParent, ResponseUnit, ResponseUnitTreeDataSet } from '../../../Models/Units';
@@ -11,7 +11,7 @@ import { RequestUnitUpdateOrder, RequestUnitUpdateParent, ResponseUnit, Response
 @Component({
     selector: 'app-command-units',
     templateUrl: './command-units.component.html',
-    styleUrls: ['../../../Pages/command-page/command-page.component.css', './command-units.component.scss'],
+    styleUrls: ['../../../Pages/command-page/command-page.component.scss', './command-units.component.css'],
 })
 export class CommandUnitsComponent implements OnInit {
     @ViewChild('combatUnitsTree') combatUnitsTree: TreeNode;

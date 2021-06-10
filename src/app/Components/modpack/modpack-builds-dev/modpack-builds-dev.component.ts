@@ -1,6 +1,6 @@
-import { Component, ViewChild, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ModpackBuild } from 'app/Models/ModpackBuild';
-import { ThemeEmitterComponent } from 'app/Components/theme-emitter/theme-emitter.component';
+import { ThemeEmitterComponent } from 'app/Components/elements/theme-emitter/theme-emitter.component';
 import { ModpackBuildService } from 'app/Services/modpackBuild.service';
 import { ModpackBuildResult } from 'app/Models/ModpackBuildResult';
 import { MarkdownService } from 'ngx-markdown';

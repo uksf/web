@@ -1,8 +1,8 @@
 // Modules
-import { NgModule, APP_INITIALIZER, Injector } from '@angular/core';
+import { APP_INITIALIZER, Injector, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule, LowerCaseUrlSerializer } from './app-routing.module';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { JwtModule } from '@auth0/angular-jwt';
 import { NgxPermissionsModule } from 'ngx-permissions';
@@ -22,7 +22,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatNativeDateModule, MatRippleModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MAT_DATE_LOCALE, MatNativeDateModule, MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -53,15 +53,15 @@ import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MatMomentDateModule } from '@angular/m
 import { UrlService } from './Services/url.service';
 import { ProfilePageComponent } from './Pages/profile-page/profile-page.component';
 import { HomePageComponent } from './Pages/home-page/home-page.component';
-import { MainContentAreaComponent } from './Components/main-content-area/main-content-area.component';
-import { SideContentAreaComponent } from './Components/side-content-area/side-content-area.component';
+import { MainContentAreaComponent } from './Components/content-areas/main-content-area/main-content-area.component';
+import { SideContentAreaComponent } from './Components/content-areas/side-content-area/side-content-area.component';
 import { SideBarComponent } from './Components/side-bar/side-bar.component';
 import { LoginPageComponent } from './Pages/login-page/login-page.component';
 import { HeaderBarComponent } from './Components/header-bar/header-bar.component';
 import { FooterBarComponent } from './Components/footer-bar/footer-bar.component';
 import { RecruitmentPageComponent } from './Pages/recruitment-page/recruitment-page.component';
-import { CentreWrapperComponent } from './Components/centre-wrapper/centre-wrapper.component';
-import { DefaultContentAreasComponent } from './Components/default-content-areas/default-content-areas.component';
+import { CentreWrapperComponent } from './Components/elements/centre-wrapper/centre-wrapper.component';
+import { DefaultContentAreasComponent } from './Components/content-areas/default-content-areas/default-content-areas.component';
 import { RecruitmentApplicationPageComponent } from './Pages/recruitment-application-page/recruitment-application-page.component';
 import { LivePageComponent } from './Pages/live-page/live-page.component';
 import { UnitsPageComponent } from './Pages/units-page/units-page.component';
@@ -81,11 +81,9 @@ import { UnitPageComponent } from './Pages/unit-page/unit-page.component';
 import { ConnectTeamspeakModalComponent } from './Modals/connect-teamspeak-modal/connect-teamspeak-modal.component';
 import { ChangeFirstLastModalComponent } from './Modals/change-first-last-modal/change-first-last-modal.component';
 import { ChangePasswordModalComponent } from './Modals/change-password-modal/change-password-modal.component';
-import { ModifyUnitModalComponent } from './Modals/modify-unit-modal/modify-unit-modal.component';
-import { ModifyUnitMembersModalComponent } from './Modals/modify-unit-members-modal/modify-unit-members-modal.component';
 import { CreateOperationReportModalComponent } from './Modals/create-operation-report-modal/create-operation-report-modal.component';
 import { OprepPageComponent } from './Pages/oprep-page/oprep-page.component';
-import { FullContentAreaComponent } from './Components/full-content-area/full-content-area.component';
+import { FullContentAreaComponent } from './Components/content-areas/full-content-area/full-content-area.component';
 import { CreateOperationOrderComponent } from './Modals/create-operation-order/create-operation-order.component';
 import { NotificationsComponent } from './Components/notifications/notifications.component';
 import { AdminPageComponent } from './Pages/admin-page/admin-page.component';
@@ -102,8 +100,8 @@ import { CommandUnitsComponent } from './Components/command/command-units/comman
 import { CommandRolesComponent } from './Components/command/command-roles/command-roles.component';
 import { CommandRanksComponent } from './Components/command/command-ranks/command-ranks.component';
 import { AddRankModalComponent } from './Modals/command/add-rank-modal/add-rank-modal.component';
-import { FlexFillerComponent } from './Components/flex-filler/flex-filler.component';
-import { InlineEditComponent } from './Components/inline-edit/inline-edit.component';
+import { FlexFillerComponent } from './Components/elements/flex-filler/flex-filler.component';
+import { InlineEditComponent } from './Components/elements/inline-edit/inline-edit.component';
 import { RequestLoaModalComponent } from './Modals/command/request-loa-modal/request-loa-modal.component';
 import { RequestDischargeModalComponent } from './Modals/command/request-discharge-modal/request-discharge-modal.component';
 import { RequestRoleModalComponent } from './Modals/command/request-role-modal/request-role-modal.component';
@@ -124,9 +122,9 @@ import { AdminLogsComponent } from './Components/admin/admin-logs/admin-logs.com
 import { ConfirmationModalComponent } from './Modals/confirmation-modal/confirmation-modal.component';
 import { UrlSerializer } from '@angular/router';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { FileDropComponent } from './Components/file-drop/file-drop.component';
+import { FileDropComponent } from './Components/elements/file-drop/file-drop.component';
 import { MessageModalComponent } from './Modals/message-modal/message-modal.component';
-import { ThemeEmitterComponent } from './Components/theme-emitter/theme-emitter.component';
+import { ThemeEmitterComponent } from './Components/elements/theme-emitter/theme-emitter.component';
 import { AdminToolsComponent } from './Components/admin/admin-tools/admin-tools.component';
 import { AuthHttpInterceptor } from './Services/Authentication/auth-http-interceptor';
 import { CountryPickerService } from './Services/CountryPicker/country-picker.service';
@@ -137,7 +135,7 @@ import { ApplicationEmailConfirmationComponent } from './Components/application/
 import { ApplicationCommunicationsComponent } from './Components/application/application-communications/application-communications.component';
 import { ApplicationDetailsComponent } from './Components/application/application-details/application-details.component';
 import { ApplicationSubmitComponent } from './Components/application/application-submit/application-submit.component';
-import { CountryName, CountryImage } from './Pipes/country.pipe';
+import { CountryImage, CountryName } from './Pipes/country.pipe';
 import { ApplicationEditComponent } from './Components/application/application-edit/application-edit.component';
 import { ConnectTeamspeakComponent } from './Components/teamspeak-connect/teamspeak-connect.component';
 import { MaintenanceComponent } from './Components/maintenance/maintenance.component';
@@ -165,16 +163,20 @@ import { OrganizationChartModule } from 'primeng/organizationchart';
 import { EditorModule } from 'primeng/editor';
 import { ChartModule } from 'primeng/chart';
 import { RatingModule } from 'primeng/rating';
-import { ZonedTime, TimeAgoPipe } from './Pipes/time.pipe';
+import { TimeAgoPipe, ZonedTime } from './Pipes/time.pipe';
 import { AdminDiscordLogsComponent } from './Components/admin/admin-discord-logs/admin-discord-logs.component';
 import { CharacterBlockDirective } from './Directives/character-block.directive';
 import { RequestPasswordResetComponent } from './Components/login/request-password-reset/request-password-reset.component';
 import { LoginComponent } from './Components/login/login/login.component';
 import { PasswordResetComponent } from './Components/login/reset-password/password-reset.component';
 import { MustMatchDirective } from './Directives/must-match.directive';
-import { ButtonPendingComponent } from './Components/button-pending/button-pending.component';
-import { ButtonSubmitComponent } from './Components/button-submit/button-submit.component';
+import { ButtonPendingComponent } from './Components/elements/button-pending/button-pending.component';
+import { ButtonSubmitComponent } from './Components/elements/button-submit/button-submit.component';
 import { AppSettingsService } from './Services/appSettingsService.service';
+import { AutofocusStopComponent } from './Components/elements/autofocus-stop/autofocus-stop.component';
+import { DropdownComponent } from './Components/elements/dropdown/dropdown.component';
+import { MustSelectFromDropdownValidatorDirective } from './Directives/dropdown-validator.directive';
+import { ModelValueDebugComponent, ReactiveFormValueDebugComponent, TemplateFormValueDebugComponent } from './Components/elements/form-value-debug/form-value-debug.component';
 
 export function initApp(appSettingsService: AppSettingsService, injector: Injector, countryPickerService: CountryPickerService) {
     return () => {
@@ -318,8 +320,6 @@ export function tokenGetter() {
         ChangeFirstLastModalComponent,
         ChangePasswordModalComponent,
         CommentDisplayComponent,
-        ModifyUnitModalComponent,
-        ModifyUnitMembersModalComponent,
         CreateOperationReportModalComponent,
         OprepPageComponent,
         FullContentAreaComponent,
@@ -382,11 +382,17 @@ export function tokenGetter() {
         TimeAgoPipe,
         CharacterBlockDirective,
         MustMatchDirective,
+        MustSelectFromDropdownValidatorDirective,
         LoginComponent,
         RequestPasswordResetComponent,
         PasswordResetComponent,
         ButtonPendingComponent,
         ButtonSubmitComponent,
+        AutofocusStopComponent,
+        DropdownComponent,
+        ReactiveFormValueDebugComponent,
+        TemplateFormValueDebugComponent,
+        ModeValueDebugComponent,
     ],
     bootstrap: [AppComponent],
 })

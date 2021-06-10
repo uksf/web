@@ -1,13 +1,16 @@
-<h2 mat-dialog-title>Add Unit</h2>
+<h2 *ngIf="!edit" mat-dialog-title>Add Unit</h2>
+<h2 *ngIf="edit" mat-dialog-title>Edit Unit</h2>
 <mat-dialog-content>
     <form [formGroup]="form" class="container">
         <div style="text-align: center">
             <div class="container">
                 <h4>Required Fields</h4>
                 <mat-form-field class="normal">
-                    <input matInput formControlName="name" required placeholder="Unit Name" [errorStateMatcher]="instantErrorStateMatcher" />
+                    <input matInput formControlName="name" required placeholder="Unit Name"
+                           [errorStateMatcher]="instantErrorStateMatcher"/>
                     <mat-error *ngFor="let validation of validationMessages.name">
-                        <mat-error class="error-message" *ngIf="form.get('name').hasError(validation.type)">{{ validation.message }}</mat-error>
+                        <mat-error class="error-message"
+                                   *ngIf="form.get('name').hasError(validation.type)">{{ validation.message }}</mat-error>
                     </mat-error>
                 </mat-form-field>
                 <mat-form-field class="normal">
@@ -61,9 +64,13 @@
                 </mat-form-field>
             </div>
             <div class="button-container">
-                <button mat-raised-button *ngIf="edit" type="button" (click)="delete()" class="button-delete">Delete</button>
+                <button (click)="delete()" *ngIf="edit" [disabled]="pending" class="button-delete" mat-raised-button
+                        type="button">Delete
+                </button>
                 <app-flex-filler *ngIf="edit"></app-flex-filler>
-                <button mat-raised-button color="primary" #button (click)="submit(); button.disabled = true" [disabled]="!form.valid || !changesMade">Submit</button>
+                <app-button-pending (click)="submit()" [disabled]="!form.valid || !changesMade" [pending]="pending">
+                    Submit
+                </app-button-pending>
             </div>
         </div>
     </form>

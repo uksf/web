@@ -1,4 +1,6 @@
-export interface Unit {
+import { IDropdownElement } from '../Components/elements/dropdown/dropdown.component';
+
+export class Unit {
     id: string;
     branch: UnitBranch;
     callsign: string;
@@ -12,6 +14,18 @@ export interface Unit {
     order: number;
     members: string[];
     roles: { [id: string]: string };
+
+    public constructor(element: IDropdownElement) {
+        this.id = element.value;
+        this.name = element.displayValue;
+    }
+
+    public static mapToElement(unit: Unit): IDropdownElement {
+        return {
+            value: unit.id,
+            displayValue: unit.name,
+        };
+    }
 }
 
 export enum UnitBranch {

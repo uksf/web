@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AddServerModalComponent } from 'app/Modals/operations/add-server-modal/add-server-modal.component';
@@ -8,25 +8,26 @@ import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confir
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
 import { ValidationReportModalComponent } from 'app/Modals/multiple-message-modal/validation-report-modal.component';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { ConnectionContainer, SignalRService } from 'app/Services/signalr.service';
 import { Permissions } from 'app/Services/permissions';
 import { PermissionsService } from 'app/Services/permissions.service';
 import { UksfError } from '../../../Models/Response';
+import { IDropdownElement } from '../../elements/dropdown/dropdown.component';
 
 @Component({
     selector: 'app-operations-servers',
     templateUrl: './operations-servers.component.html',
-    styleUrls: ['../../../Pages/operations-page/operations-page.component.scss', './operations-servers.component.css'],
+    styleUrls: ['../../../Pages/operations-page/operations-page.component.scss', './operations-servers.component.scs'],
 })
 export class OperationsServersComponent implements OnInit, OnDestroy {
     static theme;
     @ViewChild('uploader') uploader: ElementRef;
     @ViewChild('serversContainer') serversContainer: ElementRef;
+    missions: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
     admin;
     servers;
     disabled = false;
-    missions;
     updatingOrder = false;
     uploadingFile;
     updating;
@@ -39,28 +40,53 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     dropZoneWidth = 0;
     private hubConnection: ConnectionContainer;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private signalrService: SignalRService, private permissions: PermissionsService) {
-        this.getServers();
-        this.getDisabledState();
+    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private signalrService: SignalRService, private permissions: PermissionsService) {}
+
+    private get headers(): HttpHeaders {
+        return new HttpHeaders({
+            'Hub-Connection-Id': this.hubConnection.connection.connectionId,
+        });
     }
 
     ngOnInit() {
-        window.setInterval(() => {
-            this.refreshUptimes();
-        }, 1000);
+        this.admin = this.permissions.hasPermission(Permissions.ADMIN);
 
         this.hubConnection = this.signalrService.connect(`servers`);
+
         this.hubConnection.connection.on('ReceiveDisabledState', (state) => {
             this.disabled = state as boolean;
         });
+        this.hubConnection.connection.on('ReceiveAnyUpdateIfNotCaller', (connectionId: string, skipRefresh: boolean) => {
+            if (connectionId !== this.hubConnection.connection.connectionId) {
+                this.getServers(skipRefresh);
+            }
+        });
+        this.hubConnection.connection.on('ReceiveServerUpdateIfNotCaller', (connectionId: string, serverId: string) => {
+            if (connectionId !== this.hubConnection.connection.connectionId) {
+                const server = this.servers.find((server) => server.id === serverId);
+                this.refreshServerStatus(server);
+            }
+        });
+        this.hubConnection.connection.on('ReceiveMissionsUpdateIfNotCaller', (connectionId: string, missions: IMission[]) => {
+            if (connectionId !== this.hubConnection.connection.connectionId) {
+                this.missions.next(missions.map(this.mapMissionElement));
+            }
+        });
         this.hubConnection.reconnectEvent.subscribe(() => {
+            this.getServers();
             this.getDisabledState();
         });
-        this.admin = this.permissions.hasPermission(Permissions.ADMIN);
+
+        this.getServers();
+        this.getDisabledState();
+
+        window.setInterval(() => {
+            this.refreshUptimes();
+        }, 1000);
     }
 
     ngOnDestroy() {
-        this.hubConnection.connection.stop();
+        this.hubConnection.connection.stop().then();
     }
 
     getServers(skip = false) {
@@ -68,11 +94,12 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
             this.updateRequest.unsubscribe();
         }
         this.updating = true;
-        this.updateRequest = this.httpClient.get(this.urls.apiUrl + '/gameservers').subscribe(
-            (response) => {
+        this.updateRequest = this.httpClient.get(this.urls.apiUrl + '/gameservers').subscribe({
+            next: (response) => {
                 this.servers = response['servers'];
-                this.missions = response['missions'];
                 this.instanceCount = response['instanceCount'];
+                this.missions.next(response['missions'].map(this.mapMissionElement));
+
                 if (skip) {
                     this.updating = false;
                     return;
@@ -81,30 +108,10 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                     this.refreshServerStatus(server);
                 });
             },
-            (_) => {
-                this.updating = false;
-            }
-        );
-    }
-
-    refreshServerStatus(server) {
-        if (server.request) {
-            server.request.unsubscribe();
-        }
-        this.updating = true;
-        server.updating = true;
-        server.request = this.httpClient.get(`${this.urls.apiUrl}/gameservers/status/${server.id}`).subscribe(
-            (response) => {
-                const serverIndex = this.servers.findIndex((x) => x.id === response['gameServer'].id);
-                this.servers[serverIndex] = response['gameServer'];
-                this.instanceCount = response['instanceCount'];
+            error: () => {
                 this.updating = false;
             },
-            (_) => {
-                server.updating = false;
-                this.updating = false;
-            }
-        );
+        });
     }
 
     refreshUptimes() {
@@ -149,8 +156,24 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         });
     }
 
-    toggleDisabledState() {
-        this.httpClient.post(this.urls.apiUrl + '/gameservers/disabled', { state: !this.disabled }).subscribe();
+    refreshServerStatus(server) {
+        if (server.request) {
+            server.request.unsubscribe();
+        }
+        this.updating = true;
+        server.updating = true;
+        server.request = this.httpClient.get(`${this.urls.apiUrl}/gameservers/status/${server.id}`).subscribe({
+            next: (response) => {
+                const serverIndex = this.servers.findIndex((x) => x.id === response['gameServer'].id);
+                this.servers[serverIndex] = response['gameServer'];
+                this.instanceCount = response['instanceCount'];
+                this.updating = false;
+            },
+            error: () => {
+                server.updating = false;
+                this.updating = false;
+            ,
+        });
     }
 
     get isDisabled() {
@@ -166,13 +189,18 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
             });
     }
 
+    toggleDisabledState() {
+        this.httpClient.post(this.urls.apiUrl + '/gameservers/disabled', { state: !this.disabled }, { headers: this.headers }).subscribe();
+    }
+
     editServer(event, server) {
         event.stopPropagation();
         this.dialog
             .open(AddServerModalComponent, {
                 data: {
                     server: server,
-                },
+                    connectionId: this.hubConnection.connection.connectionI,
+                ,
             })
             .afterClosed()
             .subscribe((environmentChanged: boolean) => {
@@ -190,7 +218,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
             data: { message: `Are you sure you want to delete '${server.name}'?` },
         });
         dialog.componentInstance.confirmEvent.subscribe(() => {
-            this.httpClient.delete(`${this.urls.apiUrl}/gameservers/${server.id}`).subscribe((response) => {
+            this.httpClient.delete(`${this.urls.apiUrl}/gameservers/${server.id}`, { headers: this.headers }).subscribe((response) => {
                 this.servers = response;
             });
         });
@@ -203,9 +231,32 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
             return;
         }
         this.updatingOrder = true;
-        this.httpClient.post(`${this.urls.apiUrl}/gameservers/order`, this.servers).subscribe((response) => {
+        this.httpClient.post(`${this.urls.apiUrl}/gameservers/order`, this.servers, { headers: this.headers }).subscribe((response) => {
             this.servers = response;
             this.updatingOrder = false;
+        });
+    }
+
+    showMissionReport(missionReports: any[]) {
+        const missionReport = missionReports.shift();
+        let reportDialogClose: Observable<any>;
+        if (missionReport.reports.length > 0) {
+            reportDialogClose = this.dialog
+                .open(ValidationReportModalComponent, {
+                    data: { title: `Mission file: ${missionReport.mission}`, messages: missionReport.reports }
+                })
+                .afterClosed();
+        } else {
+            reportDialogClose = this.dialog
+                .open(MessageModalComponent, {
+                    data: { message: `Successfully uploaded '${missionReport.mission}'` }
+                })
+                .afterClosed();
+        }
+        reportDialogClose.subscribe((_) => {
+            if (missionReports.length > 0) {
+                this.showMissionReport(missionReports);
+            }
         });
     }
 
@@ -223,55 +274,30 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         this.httpClient
             .post(`${this.urls.apiUrl}/gameservers/mission`, formData, {
                 reportProgress: true,
+                headers: this.headers
             })
-            .subscribe(
-                (response) => {
-                    this.missions = response['missions'];
+            .subscribe({
+                next: (response) => {
+                    this.missions.next(response['missions'].map(this.mapMissionElement));
                     const missionReports = response['missionReports'];
                     this.uploadingFile = false;
                     this.uploader.nativeElement.value = '';
                     this.showMissionReport(missionReports);
                 },
-                (error) => {
+                error: (error) => {
                     this.uploadingFile = false;
                     this.uploader.nativeElement.value = '';
                     this.showError(error, 'Max size for all selected files is 10MB');
                 }
-            );
+            });
     }
 
-    showMissionReport(missionReports: any[]) {
-        const missionReport = missionReports.shift();
-        let reportDialogClose: Observable<any>;
-        if (missionReport.reports.length > 0) {
-            reportDialogClose = this.dialog
-                .open(ValidationReportModalComponent, {
-                    data: { title: `Mission file: ${missionReport.mission}`, messages: missionReport.reports },
-                })
-                .afterClosed();
-        } else {
-            reportDialogClose = this.dialog
-                .open(MessageModalComponent, {
-                    data: { message: `Successfully uploaded '${missionReport.mission}'` },
-                })
-                .afterClosed();
-        }
-        reportDialogClose.subscribe((_) => {
-            if (missionReports.length > 0) {
-                this.showMissionReport(missionReports);
-            }
-        });
-    }
-
-    missionSelectionChange(event, server) {
-        if (!event.isUserInput) {
-            return;
-        }
-        server.missionSelection = event.source.value;
+    missionSelectionChange(dropdownElement: IDropdownElement, server) {
+        server.missionSelection = dropdownElement === null ? dropdownElement : dropdownElement.value;
     }
 
     showError(error, customMessage = '') {
-        let message = 'An error occured';
+        let message = 'An error occurred';
         if (customMessage) {
             message = customMessage;
         } else {
@@ -282,37 +308,14 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
             }
         }
         this.dialog.open(MessageModalComponent, {
-            data: { message: message },
+            data: { message: message }
         });
-    }
-
-    launch(server) {
-        server.updating = true;
-        this.httpClient.post(`${this.urls.apiUrl}/gameservers/launch/${server.id}`, { missionName: server.missionSelection }).subscribe(
-            (_) => {
-                server.updating = false;
-                this.refreshServerStatus(server);
-            },
-            (error: UksfError) => {
-                if (error.statusCode === 400 && error.detailCode === 1 && error.validation != null) {
-                    this.dialog.open(ValidationReportModalComponent, {
-                        data: { title: error.error, messages: error.validation.reports },
-                    });
-                } else {
-                    this.dialog.open(MessageModalComponent, {
-                        data: { message: error.error },
-                    });
-                }
-                server.updating = false;
-                this.refreshServerStatus(server);
-            }
-        );
     }
 
     stop(server) {
         if (server.status.players > 0) {
             const dialog = this.dialog.open(ConfirmationModalComponent, {
-                data: { message: `There are still ${server.status.players} players on '${server.name}'. Are you sure you want to stop the server?` },
+                data: { message: `There are still ${server.status.players} players on '${server.name}'. Are you sure you want to stop the server?` }
             });
             dialog.componentInstance.confirmEvent.subscribe(() => {
                 this.runStop(server);
@@ -322,21 +325,27 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         }
     }
 
-    runStop(server) {
+    launch(server) {
         server.updating = true;
-        this.httpClient.get(`${this.urls.apiUrl}/gameservers/stop/${server.id}`).subscribe(
-            (response) => {
-                const serverIndex = this.servers.findIndex((x) => x.id === response['gameServer'].id);
-                this.servers[serverIndex] = response['gameServer'];
-                this.instanceCount = response['instanceCount'];
-                this.servers[serverIndex].status.stopping = true;
+        this.httpClient.post(`${this.urls.apiUrl}/gameservers/launch/${server.id}`, { missionName: server.missionSelection }, { headers: this.headers }).subscribe({
+            next: () => {
+                server.updating = false;
+                this.refreshServerStatus(server);
             },
-            (error) => {
-                this.showError(error);
+            error: (error: UksfError) => {
+                if (error.statusCode === 400 && error.detailCode === 1 && error.validation != null) {
+                    this.dialog.open(ValidationReportModalComponent, {
+                        data: { title: error.error, messages: error.validation.reports }
+                    });
+                } else {
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: error.error }
+                    });
+                }
                 server.updating = false;
                 this.refreshServerStatus(server);
             }
-        );
+        });
     }
 
     kill(server, skip = true) {
@@ -345,43 +354,43 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
             return;
         }
         const dialog = this.dialog.open(ConfirmationModalComponent, {
-            data: { message: `Are you sure you want to kill '${server.name}'? This could have unexpected effects on the server` },
+            data: { message: `Are you sure you want to kill '${server.name}'? This could have unexpected effects on the server` }
         });
         dialog.componentInstance.confirmEvent.subscribe(() => {
             this.runKill(server);
         });
     }
 
-    runKill(server) {
+    runStop(server) {
         server.updating = true;
-        this.httpClient.get(`${this.urls.apiUrl}/gameservers/kill/${server.id}`).subscribe(
-            (response) => {
+        this.httpClient.get(`${this.urls.apiUrl}/gameservers/stop/${server.id}`, { headers: this.headers }).subscribe({
+            next: (response) => {
                 const serverIndex = this.servers.findIndex((x) => x.id === response['gameServer'].id);
                 this.servers[serverIndex] = response['gameServer'];
                 this.instanceCount = response['instanceCount'];
+                this.servers[serverIndex].status.stopping = true;
             },
-            (error) => {
+            error: (error) => {
                 this.showError(error);
                 server.updating = false;
                 this.refreshServerStatus(server);
             }
-        );
+        });
     }
 
-    killAll() {
-        const dialog = this.dialog.open(ConfirmationModalComponent, {
-            data: { message: `Are you sure you want to kill ${this.instanceCount} servers?\nThere could be players still on and this could have unexpected effects on the server` },
-        });
-        dialog.componentInstance.confirmEvent.subscribe(() => {
-            this.httpClient.get(`${this.urls.apiUrl}/gameservers/killall`).subscribe(
-                (_) => {
-                    this.getServers();
-                },
-                (error) => {
-                    this.showError(error);
-                    this.getServers();
-                }
-            );
+    runKill(server) {
+        server.updating = true;
+        this.httpClient.get(`${this.urls.apiUrl}/gameservers/kill/${server.id}`, { headers: this.headers }).subscribe({
+            next: (response) => {
+                const serverIndex = this.servers.findIndex((x) => x.id === response['gameServer'].id);
+                this.servers[serverIndex] = response['gameServer'];
+                this.instanceCount = response['instanceCount'];
+            },
+            error: (error) => {
+                this.showError(error);
+                server.updating = false;
+                this.refreshServerStatus(server);
+            }
         });
     }
 
@@ -473,11 +482,70 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         this.dropZoneWidth = 0;
     }
 
+    killAll() {
+        const dialog = this.dialog.open(ConfirmationModalComponent, {
+            data: { message: `Are you sure you want to kill ${this.instanceCount} servers?\nThere could be players still on and this could have unexpected effects on the server` }
+        });
+        dialog.componentInstance.confirmEvent.subscribe(() => {
+            this.httpClient.get(`${this.urls.apiUrl}/gameservers/killall`, { headers: this.headers }).subscribe({
+                next: () => {
+                    this.getServers();
+                },
+                error: (error) => {
+                    this.showError(error);
+                    this.getServers();
+                }
+            });
+        });
+    }
+
     onDragStarted(event) {
+        event.source._dragRef._preview.classList.add(OperationsServersComponent.theme + '-theme');
         event.source.element.nativeElement.classList.add(OperationsServersComponent.theme + '-theme');
     }
 
-    onDragStopped(event) {
-        event.item.element.nativeElement.classList.remove(OperationsServersComponent.theme + '-theme');
+    displayWithMission = (element: IDropdownElement): string => {
+        if (!element) {
+            return '';
+        }
+
+        const mission = this.mapMission(element);
+        return this.missionFormatter(mission.name, mission.map);
+    };
+
+    missionFilter = (element: IDropdownElement, filter: string): boolean => {
+        const mission = this.mapMission(element);
+        return mission.name.toLowerCase().includes(filter) || mission.path.toLowerCase().includes(filter);
+    };
+
+    missionMatcher = (element: IDropdownElement, match: string): boolean => {
+        const mission = this.mapMission(element);
+        return this.missionFormatter(mission.name.toLowerCase(), mission.map.toLowerCase()) === match;
+    };
+
+    mapMission(dropdownElement: IDropdownElement): IMission {
+        return {
+            path: dropdownElement.value,
+            name: dropdownElement.displayValue,
+            map: dropdownElement.data
+        };
     }
+
+    mapMissionElement(mission: IMission): IDropdownElement {
+        return {
+            value: mission.path,
+            displayValue: mission.name,
+            data: mission.map
+        };
+    }
+
+    missionFormatter(missionName: string, missionMap: string): string {
+        return `${missionName}.${missionMap}`;
+    }
+}
+
+interface IMission {
+    map: string;
+    name: string;
+    path: string;
 }

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpBackend, HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class AppSettingsService {
@@ -15,17 +16,14 @@ export class AppSettingsService {
     }
 
     public async loadAppSettings(): Promise<any> {
-        return this.httpClient
-            .get('assets/dist/appSettings.json')
-            .pipe((settings) => settings)
-            .toPromise()
-            .then((settings) => {
-                this.appSettings = settings;
+        const observable = this.httpClient.get('assets/dist/appSettings.json').pipe((settings) => settings);
+        return await firstValueFrom(observable).then((settings) => {
+            this.appSettings = settings;
 
-                if (this.appSetting('environment') === Environments.Development) {
-                    console.log(this.appSettings);
-                }
-            });
+            if (this.appSetting('environment') === Environments.Development) {
+                console.log(this.appSettings);
+            }
+        });
     }
 }
 

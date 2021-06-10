@@ -1,0 +1,29 @@
+<mat-form-field [ngClass]="formFieldClass">
+    <input [(ngModel)]="model" autocomplete="off" hidden tabindex="-1" />
+    <input
+        #textInput="ngModel"
+        (ngModelChange)="onTextModelChange()"
+        [(ngModel)]="textModel"
+        [disabled]="disabled"
+        [matAutocomplete]="auto"
+        [mustSelectFromDropdownElementDisplayWith]="displayWith"
+        [mustSelectFromDropdownElementMatcher]="elementMatcher"
+        [mustSelectFromDropdownElements]="allElements"
+        [placeholder]="placeholder"
+        [required]="required"
+        matInput
+        mustSelectFromDropdown
+        spellcheck="false"
+        type="text"
+    />
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelect($event)" [displayWith]="displayWith">
+        <cdk-virtual-scroll-viewport [maxBufferPx]="1000" [minBufferPx]="600" [ngStyle]="{ height: scrollPanelHeight }" itemSize="48">
+            <mat-option *cdkVirtualFor="let element of filteredElements | async" [ngClass]="optionClass" [value]="element">
+                <ng-container *ngIf="elementTemplateRef" [ngTemplateOutletContext]="{ $implicit: element }" [ngTemplateOutlet]="elementTemplateRef"></ng-container>
+            </mat-option>
+        </cdk-virtual-scroll-viewport>
+    </mat-autocomplete>
+    <mat-error *ngFor="let validation of validationMessages">
+        <mat-error *ngIf="showErrors && textInput.hasError(validation.type)" class="error-message">{{ validation.message() }}</mat-error>
+    </mat-error>
+</mat-form-field>
