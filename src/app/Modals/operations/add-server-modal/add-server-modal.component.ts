@@ -1,16 +1,16 @@
-import { Component, Inject } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { InstantErrorStateMatcher } from 'app/Services/formhelper.service';
-import { Observable, of, timer } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '../../../Services/url.service';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import {Component, Inject} from '@angular/core';
+import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators} from '@angular/forms';
+import {InstantErrorStateMatcher} from 'app/Services/formhelper.service';
+import {Observable, of, timer} from 'rxjs';
+import {map, switchMap} from 'rxjs/operators';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {UrlService} from '../../../Services/url.service';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 
 @Component({
     selector: 'app-add-server-modal',
     templateUrl: './add-server-modal.component.html',
-    styleUrls: ['./add-server-modal.component.css'],
+    styleUrls: ['./add-server-modal.component.css']
 })
 export class AddServerModalComponent {
     form: FormGroup;
@@ -121,8 +121,8 @@ export class AddServerModalComponent {
                 .put(`${this.urls.apiUrl}/gameservers`, JSON.stringify(this.form.getRawValue()), {
                     headers: new HttpHeaders({
                         'Content-Type': 'application/json',
-                        'Hub-Connection-Id': this.connectioId,
-                   }),
+                        'Hub-Connection-Id': this.connectionId
+                    })
                 })
                 .subscribe({
                     next: () => {
@@ -130,7 +130,7 @@ export class AddServerModalComponent {
                     },
                     error: () => {
                         this.submitting = false;
-                   },
+                    }
                 });
         }
     }
@@ -145,8 +145,8 @@ export class AddServerModalComponent {
                     return this.httpClient
                         .post(`${this.urls.apiUrl}/gameservers/${control.value}`, this.server, {
                             headers: new HttpHeaders({
-                                'Hub-Connection-Id': this.connectioId,
-                           }),
+                                'Hub-Connection-Id': this.connectionId
+                            })
                         })
                         .pipe(map((response) => (response ? { serverTaken: true } : null)));
                 })
@@ -163,8 +163,8 @@ export class AddServerModalComponent {
                             {},
                             {
                                 headers: new HttpHeaders({
-                                    'Hub-Connection-Id': this.connectioId,
-                               }),
+                                    'Hub-Connection-Id': this.connectionId
+                                })
                             }
                         )
                         .pipe(map((response) => (response ? { serverTaken: true } : null)));

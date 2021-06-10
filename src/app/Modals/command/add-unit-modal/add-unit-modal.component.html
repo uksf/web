@@ -6,11 +6,9 @@
             <div class="container">
                 <h4>Required Fields</h4>
                 <mat-form-field class="normal">
-                    <input matInput formControlName="name" required placeholder="Unit Name"
-                           [errorStateMatcher]="instantErrorStateMatcher"/>
+                    <input [errorStateMatcher]="instantErrorStateMatcher" formControlName="name" matInput placeholder="Unit Name" required />
                     <mat-error *ngFor="let validation of validationMessages.name">
-                        <mat-error class="error-message"
-                                   *ngIf="form.get('name').hasError(validation.type)">{{ validation.message }}</mat-error>
+                        <mat-error *ngIf="form.get('name').hasError(validation.type)" class="error-message">{{ validation.message }}</mat-error>
                     </mat-error>
                 </mat-form-field>
                 <mat-form-field class="normal">
@@ -64,13 +62,9 @@
                 </mat-form-field>
             </div>
             <div class="button-container">
-                <button (click)="delete()" *ngIf="edit" [disabled]="pending" class="button-delete" mat-raised-button
-                        type="button">Delete
-                </button>
+                <button (click)="delete()" *ngIf="edit" [disabled]="pending" class="button-delete" mat-raised-button type="button">Delete</button>
                 <app-flex-filler *ngIf="edit"></app-flex-filler>
-                <app-button-pending (click)="submit()" [disabled]="!form.valid || !changesMade" [pending]="pending">
-                    Submit
-                </app-button-pending>
+                <app-button-pending (click)="submit()" [disabled]="!form.valid || !changesMade" [pending]="pending"> Submit </app-button-pending>
             </div>
         </div>
     </form>

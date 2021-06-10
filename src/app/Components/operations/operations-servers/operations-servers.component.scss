@@ -1,54 +1,54 @@
 .column {
-  flex-direction: column;
+    flex-direction: column;
 }
 
 .icon {
-  line-height: 36px;
-  height: 36px;
-  padding: 0;
-  min-width: 36px;
-  align-self: center;
+    line-height: 36px;
+    height: 36px;
+    padding: 0;
+    min-width: 36px;
+    align-self: center;
 
-  &.delete {
-    color: red;
-  }
+    &.delete {
+        color: red;
+    }
 }
 
 .mat-raised-button {
-  margin-right: 5px;
+    margin-right: 5px;
 }
 
 .admin-container {
-  display: flex;
-  flex-direction: row;
+    display: flex;
+    flex-direction: row;
 
-  .control-disabled {
-    line-height: 36px;
-    margin-right: 10px;
-  }
+    .control-disabled {
+        line-height: 36px;
+        margin-right: 10px;
+    }
 
-  .refresh-button {
-    margin-right: 10px;
-  }
+    .refresh-button {
+        margin-right: 10px;
+    }
 }
 
 .server-updating {
-  animation: rotation 2s infinite linear;
-  -webkit-animation: rotation 2s infinite linear;
+    animation: rotation 2s infinite linear;
+    -webkit-animation: rotation 2s infinite linear;
 }
 
 .uploading-button {
-  width: 130px;
+    width: 130px;
 }
 
 .uploading-icon {
-  font-size: 34px;
-  line-height: 34px;
-  height: 34px;
-  min-width: 34px;
-  padding: 0;
-  animation: rotation 2s infinite linear;
-  -webkit-animation: rotation 2s infinite linear;
+    font-size: 34px;
+    line-height: 34px;
+    height: 34px;
+    min-width: 34px;
+    padding: 0;
+    animation: rotation 2s infinite linear;
+    -webkit-animation: rotation 2s infinite linear;
 }
 
 .servers-container {
@@ -67,77 +67,77 @@
 
 // Keep at root for .cdk-drag-preview
 .servers-list-item {
-  cursor: default;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 150px;
-  margin: 10px 10px 0 0;
-  padding: 10px;
-
-  .server-header {
-    display: flex;
-    flex-direction: row;
-
-    .handle {
-      cursor: pointer;
-      font-size: 30px;
-      margin-left: 10px;
-      width: 30px;
-    }
-
-    h3 {
-      margin-top: 8px;
-      margin-left: 10px;
-
-      &.title-started {
-        color: lightseagreen;
-      }
-
-      &.title-running {
-        color: green;
-      }
-
-      &.title-stopping {
-        color: red;
-      }
-    }
-  }
-
-  .server-container {
+    cursor: default;
     display: flex;
     flex-direction: column;
-    flex: 1;
+    width: 100%;
+    height: 150px;
+    margin: 10px 10px 0 0;
+    padding: 10px;
 
-    .server-details {
-      display: flex;
-      flex-direction: row;
-      flex: 1;
-      margin-left: 51px;
-
-      span {
-        margin-right: 15px;
-      }
-    }
-
-    .server-buttons {
-      display: flex;
-      flex-direction: row;
-
-      .admin {
+    .server-header {
         display: flex;
         flex-direction: row;
-      }
+
+        .handle {
+            cursor: pointer;
+            font-size: 30px;
+            margin-left: 10px;
+            width: 30px;
+        }
+
+        h3 {
+            margin-top: 8px;
+            margin-left: 10px;
+
+            &.title-started {
+                color: lightseagreen;
+            }
+
+            &.title-running {
+                color: green;
+            }
+
+            &.title-stopping {
+                color: red;
+            }
+        }
     }
-  }
+
+    .server-container {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+
+        .server-details {
+            display: flex;
+            flex-direction: row;
+            flex: 1;
+            margin-left: 51px;
+
+            span {
+                margin-right: 15px;
+            }
+        }
+
+        .server-buttons {
+            display: flex;
+            flex-direction: row;
+
+            .admin {
+                display: flex;
+                flex-direction: row;
+            }
+        }
+    }
 }
 
 ::ng-deep .mission-select {
-  top: -8px;
-  height: 36px;
-  width: 300px !important;
-  margin: 0 10px;
-  align-self: center;
+    top: -8px;
+    height: 36px;
+    width: 300px !important;
+    margin: 0 10px;
+    align-self: center;
 }
 
 .disabled {
@@ -170,26 +170,26 @@
 
 .fileDragging * {
     display: none;
-  pointer-events: none;
+    pointer-events: none;
 }
 
 .dropZone {
-  border-style: dashed;
-  border-width: 2px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
+    border-style: dashed;
+    border-width: 2px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
 
-  span {
-    text-align: center;
-    flex: 1;
-    font-size: 28px;
-  }
+    span {
+        text-align: center;
+        flex: 1;
+        font-size: 28px;
+    }
 }
 
 @media screen and (max-width: 600px) {
-  .server-buttons {
-    display: flex;
-    flex-direction: column;
-  }
+    .server-buttons {
+        display: flex;
+        flex-direction: column;
+    }
 }

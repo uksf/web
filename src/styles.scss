@@ -227,21 +227,21 @@
 .mat-mini-fab,
 .mat-tab-label,
 .mat-tab-link {
-  font-weight: unset;
+    font-weight: unset;
 }
 
 .mat-autocomplete-panel {
-  max-height: 456px !important;
+    max-height: 456px !important;
 }
 
 @media screen and (max-height: 800px) {
-  .mat-autocomplete-panel {
-    max-height: 312px !important;
-  }
+    .mat-autocomplete-panel {
+        max-height: 312px !important;
+    }
 }
 
 @media screen and (max-height: 700px) {
-  .mat-autocomplete-panel {
-    max-height: 264px !important;
-  }
+    .mat-autocomplete-panel {
+        max-height: 264px !important;
+    }
 }

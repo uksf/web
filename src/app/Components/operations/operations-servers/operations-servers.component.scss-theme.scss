@@ -8,8 +8,8 @@
 
     app-operations-servers {
         .uploading {
-          color: mat.get-color-from-palette($accent, default-contrast) !important;
-          background-color: mat.get-color-from-palette($accent) !important;
+            color: mat.get-color-from-palette($accent, default-contrast) !important;
+            background-color: mat.get-color-from-palette($accent) !important;
         }
 
         .admin-container {
@@ -23,21 +23,21 @@
         }
 
         .servers-list-item {
-          background-color: mat.get-color-from-palette($background, server);
+            background-color: mat.get-color-from-palette($background, server);
 
-          &.server-running {
-            background-color: mat.get-color-from-palette($background, server-running);
-          }
-
-          .server-header {
-            button {
-              background-color: transparent;
+            &.server-running {
+                background-color: mat.get-color-from-palette($background, server-running);
             }
 
-            .title-updating {
-              color: mat.get-color-from-palette($primary);
+            .server-header {
+                button {
+                    background-color: transparent;
+                }
+
+                .title-updating {
+                    color: mat.get-color-from-palette($primary);
+                }
             }
-          }
         }
 
         .server-buttons {
@@ -47,7 +47,7 @@
         }
 
         .dropZone {
-          border-color: mat.get-color-from-palette($primary);
+            border-color: mat.get-color-from-palette($primary);
         }
 
         h3 {
@@ -57,17 +57,17 @@
 
     &.cdk-drag-preview {
         .servers-list-item {
-          background-color: mat.get-color-from-palette($background, server);
+            background-color: mat.get-color-from-palette($background, server);
 
-          &.server-running {
-            background-color: mat.get-color-from-palette($background, server-running);
-          }
-
-          .server-header {
-            button {
-              background-color: transparent;
+            &.server-running {
+                background-color: mat.get-color-from-palette($background, server-running);
             }
-          }
+
+            .server-header {
+                button {
+                    background-color: transparent;
+                }
+            }
         }
 
         .server-buttons {
