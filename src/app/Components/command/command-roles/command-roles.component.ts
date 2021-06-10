@@ -1,13 +1,13 @@
-import {Component, OnInit} from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {UrlService} from '../../../Services/url.service';
-import {AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationErrors, Validators} from '@angular/forms';
-import {Observable, of, timer} from 'rxjs';
-import {map, switchMap} from 'rxjs/operators';
-import {InstantErrorStateMatcher} from 'app/Services/formhelper.service';
-import {ConfirmationModalComponent} from 'app/Modals/confirmation-modal/confirmation-modal.component';
-import {MatDialog} from '@angular/material/dialog';
-import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+import { Component, OnInit } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { UrlService } from '../../../Services/url.service';
+import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { Observable, of, timer } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
+import { InstantErrorStateMatcher } from 'app/Services/formhelper.service';
+import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
+import { MatDialog } from '@angular/material/dialog';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
     selector: 'app-command-roles',
@@ -25,13 +25,13 @@ export class CommandRolesComponent implements OnInit {
 
     validationMessages = [
         { type: 'required', message: 'Role is required' },
-        { type: 'roleTaken', message: 'That ole is already in use' },
+        { type: 'roleTaken', message: 'That ole is already in use' }
     ];
 
     constructor(formbuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {
         this.individualForm = formbuilder.group({
             name: ['', Validators.required, this.validateRole(0)],
-            roleType: [0],
+            roleType: [0]
         });
         this.unitForm = formbuilder.group({
             name: ['', Validators.required, this.validateRole(1)],
@@ -52,7 +52,7 @@ export class CommandRolesComponent implements OnInit {
                 if (role.name === null) {
                     return of(false);
                 }
-                return this.httpClient.post(`${this.urls.apiUrl}/roles/${type}/${role.name}`, role).pipe(map((response) => (!!response)));
+                return this.httpClient.post(`${this.urls.apiUrl}/roles/${type}/${role.name}`, role).pipe(map((response) => !!response));
             })
         );
     }

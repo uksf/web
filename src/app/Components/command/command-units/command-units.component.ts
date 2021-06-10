@@ -11,7 +11,7 @@ import { RequestUnitUpdateOrder, RequestUnitUpdateParent, ResponseUnit, Response
 @Component({
     selector: 'app-command-units',
     templateUrl: './command-units.component.html',
-    styleUrls: ['../../../Pages/command-page/command-page.component.scss', './command-units.component.css'],
+    styleUrls: ['../../../Pages/command-page/command-page.component.scss', './command-units.component.scss']
 })
 export class CommandUnitsComponent implements OnInit {
     @ViewChild('combatUnitsTree') combatUnitsTree: TreeNode;
@@ -20,13 +20,13 @@ export class CommandUnitsComponent implements OnInit {
         actionMapping: {
             mouse: {
                 click: null,
-                dblClick: TREE_ACTIONS.TOGGLE_EXPANDED,
+                dblClick: TREE_ACTIONS.TOGGLE_EXPANDED
             },
             keys: {
                 [KEYS.SPACE]: null,
-                [KEYS.ENTER]: null,
-            },
-        },
+                [KEYS.ENTER]: null
+            }
+        }
     };
     updatingOrder = false;
     combat: any[];
@@ -39,9 +39,9 @@ export class CommandUnitsComponent implements OnInit {
                 allowDrop: true,
                 actionMapping: {
                     mouse: {
-                        dblClick: TREE_ACTIONS.TOGGLE_EXPANDED,
-                    },
-                },
+                        dblClick: TREE_ACTIONS.TOGGLE_EXPANDED
+                    }
+                }
             };
         }
     }
@@ -88,8 +88,8 @@ export class CommandUnitsComponent implements OnInit {
             this.dialog
                 .open(AddUnitModalComponent, {
                     data: {
-                        unit: unit,
-                    },
+                        unit: unit
+                    }
                 })
                 .afterClosed()
                 .subscribe((_) => {
@@ -103,14 +103,14 @@ export class CommandUnitsComponent implements OnInit {
         if (event.from.parent.id !== event.to.parent.id) {
             const body: RequestUnitUpdateParent = {
                 index: event.to.index,
-                parentId: event.to.parent.id,
+                parentId: event.to.parent.id
             };
             this.httpClient.patch(`${this.urls.apiUrl}/units/${event.node.id}/parent`, body).subscribe((_) => {
                 this.getUnits();
             });
         } else {
             const body: RequestUnitUpdateOrder = {
-                index: event.to.index,
+                index: event.to.index
             };
             this.httpClient.patch(`${this.urls.apiUrl}/units/${event.node.id}/order`, body).subscribe((_) => {
                 this.getUnits();
