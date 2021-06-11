@@ -548,10 +548,10 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         return `${mission.map}, ${mission.name}`;
     }
 
-    getMissionTooltip(element: IDropdownElement): string {
+    getMissionTooltip = (element: IDropdownElement): string => {
         const mission = this.mapMission(element);
         return `${mission.map}, ${mission.name} - ${mission.path}`;
-    }
+    };
 }
 
 interface IMission {
