@@ -11,10 +11,10 @@ import { ApplicationState } from '../../Models/Application';
 @Component({
     selector: 'app-application-page',
     templateUrl: './application-page.component.html',
-    styleUrls: ['./application-page.component.scss'],
+    styleUrls: ['./application-page.component.scss']
 })
 export class ApplicationPageComponent implements OnInit {
-    step = 2;
+    step = 1;
     email: string;
     details: any;
 
@@ -88,7 +88,7 @@ export class ApplicationPageComponent implements OnInit {
     submit() {
         this.httpClient
             .post(this.urls.apiUrl + '/applications', this.details, {
-                headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+                headers: new HttpHeaders({ 'Content-Type': 'application/json' })
             })
             .subscribe(
                 () => {
@@ -98,7 +98,7 @@ export class ApplicationPageComponent implements OnInit {
                 },
                 (error) => {
                     this.dialog.open(MessageModalComponent, {
-                        data: { message: error.error },
+                        data: { message: error.error }
                     });
                 }
             );
