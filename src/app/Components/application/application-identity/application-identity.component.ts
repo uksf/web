@@ -1,24 +1,24 @@
-import {Component, ElementRef, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators} from '@angular/forms';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {UrlService} from '../../../Services/url.service';
-import {MatDialog} from '@angular/material/dialog';
-import {BehaviorSubject, Observable, of, timer} from 'rxjs';
-import {map, switchMap} from 'rxjs/operators';
-import {MessageModalComponent} from 'app/Modals/message-modal/message-modal.component';
-import {CountryPickerService, ICountry} from 'app/Services/CountryPicker/country-picker.service';
-import {CountryImage} from 'app/Pipes/country.pipe';
-import {Router} from '@angular/router';
-import {ConfirmValidParentMatcher, InstantErrorStateMatcher} from '../../../Services/formhelper.service';
-import {nameCase, titleCase} from '../../../Services/helper.service';
-import {IDropdownElement} from '../../elements/dropdown/dropdown.component';
+import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { UrlService } from '../../../Services/url.service';
+import { MatDialog } from '@angular/material/dialog';
+import { BehaviorSubject, Observable, of, timer } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
+import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
+import { CountryPickerService, ICountry } from 'app/Services/CountryPicker/country-picker.service';
+import { CountryImage } from 'app/Pipes/country.pipe';
+import { Router } from '@angular/router';
+import { ConfirmValidParentMatcher, InstantErrorStateMatcher } from '../../../Services/formhelper.service';
+import { nameCase, titleCase } from '../../../Services/helper.service';
+import { IDropdownElement } from '../../elements/dropdown/dropdown.component';
 
 function matchingPasswords(passwordKey: string, confirmPasswordKey: string) {
     return (group: FormGroup): { [key: string]: any } => {
         const password = group.controls[passwordKey];
         const confirmPassword = group.controls[confirmPasswordKey];
         if (password.value !== confirmPassword.value) {
-            return {mismatchedPasswords: true};
+            return { mismatchedPasswords: true };
         }
     };
 }
@@ -84,12 +84,12 @@ export class ApplicationIdentityComponent implements OnInit {
         email: [
             { type: 'required', message: 'Email is required' },
             { type: 'email', message: 'Enter a valid email' },
-            { type: 'emailTaken', message: 'That email has already been taken' },
+            { type: 'emailTaken', message: 'That email has already been taken' }
         ],
         password: [{ type: 'required', message: 'Password is required' }],
         confirmPassword: [
             { type: 'required', message: 'Confirm password is required' },
-            { type: 'mismatchedPasswords', message: 'Passwords are not the same' },
+            { type: 'mismatchedPasswords', message: 'Passwords are not the same' }
         ],
         dob: [
             { type: 'required', message: 'Date of Birth is required' },
@@ -100,8 +100,8 @@ export class ApplicationIdentityComponent implements OnInit {
             { type: 'month', message: 'Invalid date: Month should be between 1 and 12' },
             { type: 'monthday', message: "Invalid date: There aren't that many days in that month" },
             { type: 'febhigh', message: "Invalid date: February doesn't have that many days" },
-            { type: 'leap', message: "Invalid date: February only has a 29th day if it's a leap year" },
-        ],
+            { type: 'leap', message: "Invalid date: February only has a 29th day if it's a leap year" }
+        ]
     };
 
     constructor(public dialog: MatDialog, public formBuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private router: Router) {
@@ -111,7 +111,7 @@ export class ApplicationIdentityComponent implements OnInit {
             passwordGroup: formBuilder.group(
                 {
                     password: ['', Validators.required],
-                    confirmPassword: ['', Validators.required],
+                    confirmPassword: ['', Validators.required]
                 },
                 { validator: matchingPasswords('password', 'confirmPassword') }
             ),
@@ -123,7 +123,7 @@ export class ApplicationIdentityComponent implements OnInit {
                     month: ['', Validators.required],
                     year: ['', Validators.required]
                 },
-                {validator: validDob('day', 'month', 'year')}
+                { validator: validDob('day', 'month', 'year') }
             ),
             nation: ['']
         });
@@ -208,7 +208,7 @@ export class ApplicationIdentityComponent implements OnInit {
             DobYear: formObj.dobGroup.year,
             DobMonth: formObj.dobGroup.month,
             DobDay: formObj.dobGroup.day,
-            Nation: formObj.nation,
+            Nation: formObj.nation.value
         };
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
@@ -219,8 +219,8 @@ export class ApplicationIdentityComponent implements OnInit {
                     .open(MessageModalComponent, {
                         data: {
                             message: 'Your account has been successfully created.\n\nYou will now be redirected to log in, after which you can continue your application.',
-                            button: 'Continue',
-                        },
+                            button: 'Continue'
+                        }
                     })
                     .afterClosed()
                     .subscribe(() => {
@@ -229,7 +229,7 @@ export class ApplicationIdentityComponent implements OnInit {
             },
             (error) => {
                 this.dialog.open(MessageModalComponent, {
-                    data: { message: error.error },
+                    data: { message: error.error }
                 });
                 this.pending = false;
             }
