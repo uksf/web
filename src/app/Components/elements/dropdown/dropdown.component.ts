@@ -13,9 +13,9 @@ import { nextFrame } from '../../../Services/helper.service';
         {
             provide: NG_VALUE_ACCESSOR,
             useExisting: forwardRef(() => DropdownComponent),
-            multi: true,
-        },
-    ],
+            multi: true
+        }
+    ]
 })
 export class DropdownComponent implements OnInit, ControlValueAccessor {
     @ContentChild('element', { static: false }) elementTemplateRef: TemplateRef<IDropdownElement>;
@@ -27,6 +27,7 @@ export class DropdownComponent implements OnInit, ControlValueAccessor {
     @Input('displayWith') displayWith: (element: IDropdownElement) => string = this.displayElement;
     @Input('elementFilter') elementFilter: (element: IDropdownElement, filter: string) => boolean = this.filterElement;
     @Input('elementMatcher') elementMatcher: (element: IDropdownElement, match: string) => boolean = this.matchElement;
+    @Input('tooltip') tooltip: (element: IDropdownElement) => string | null = null;
     @Input('elementName') elementName: string;
     @Input('formFieldClass') formFieldClass: string;
     @Input('optionClass') optionClass: string;
@@ -36,7 +37,7 @@ export class DropdownComponent implements OnInit, ControlValueAccessor {
     filteredElements: Observable<IDropdownElement[]>;
     validationMessages = [
         { type: 'required', message: () => `${this.elementName} is required` },
-        { type: 'invalid', message: () => `Invalid ${this.elementName}. Please select one from the list` },
+        { type: 'invalid', message: () => `Invalid ${this.elementName}. Please select one from the list` }
     ];
     scrollPanelHeight = '456px';
     private cachedFilteredElements: IDropdownElement[];
@@ -77,7 +78,7 @@ export class DropdownComponent implements OnInit, ControlValueAccessor {
                 nextFrame(() => {
                     this.setScrollPanelHeight();
                 });
-            },
+            }
         });
     }
 
@@ -101,6 +102,14 @@ export class DropdownComponent implements OnInit, ControlValueAccessor {
 
     filterElement(element: IDropdownElement, filter: string): boolean {
         return element.displayValue.toLowerCase().includes(filter);
+    }
+
+    getTooltip(element: IDropdownElement): string | null {
+        if (this.tooltip === null) {
+            return null;
+        }
+
+        return this.tooltip(element);
     }
 
     onTextModelChange() {
