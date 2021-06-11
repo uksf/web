@@ -114,7 +114,7 @@
                                                 [placeholder]="'Select mission'"
                                                 [showErrors]="false"
                                             >
-                                                <ng-template #element let-element> {{ mapMission(element).map }} , {{ mapMission(element).name }} </ng-template>
+                                                <ng-template #element [matTooltip]="mapMission(element).path" let-element> {{ getMissionName(element) }} </ng-template>
                                             </app-dropdown>
                                             <button
                                                 (click)="launch(server)"

@@ -1,19 +1,19 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {UrlService} from '../../../Services/url.service';
-import {MatDialog} from '@angular/material/dialog';
-import {AddServerModalComponent} from 'app/Modals/operations/add-server-modal/add-server-modal.component';
-import {EditServerModsModalComponent} from 'app/Modals/operations/edit-server-mods-modal/edit-server-mods-modal.component';
-import {ConfirmationModalComponent} from 'app/Modals/confirmation-modal/confirmation-modal.component';
-import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
-import {MessageModalComponent} from 'app/Modals/message-modal/message-modal.component';
-import {ValidationReportModalComponent} from 'app/Modals/multiple-message-modal/validation-report-modal.component';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {ConnectionContainer, SignalRService} from 'app/Services/signalr.service';
-import {Permissions} from 'app/Services/permissions';
-import {PermissionsService} from 'app/Services/permissions.service';
-import {UksfError} from '../../../Models/Response';
-import {IDropdownElement} from '../../elements/dropdown/dropdown.component';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { UrlService } from '../../../Services/url.service';
+import { MatDialog } from '@angular/material/dialog';
+import { AddServerModalComponent } from 'app/Modals/operations/add-server-modal/add-server-modal.component';
+import { EditServerModsModalComponent } from 'app/Modals/operations/edit-server-mods-modal/edit-server-mods-modal.component';
+import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
+import { ValidationReportModalComponent } from 'app/Modals/multiple-message-modal/validation-report-modal.component';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { ConnectionContainer, SignalRService } from 'app/Services/signalr.service';
+import { Permissions } from 'app/Services/permissions';
+import { PermissionsService } from 'app/Services/permissions.service';
+import { UksfError } from '../../../Models/Response';
+import { IDropdownElement } from '../../elements/dropdown/dropdown.component';
 
 @Component({
     selector: 'app-operations-servers',
@@ -44,7 +44,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
 
     private get headers(): HttpHeaders {
         return new HttpHeaders({
-            'Hub-Connection-Id': this.hubConnection.connection.connectionId,
+            'Hub-Connection-Id': this.hubConnection.connection.connectionId
         });
     }
 
@@ -110,7 +110,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
             },
             error: () => {
                 this.updating = false;
-            },
+            }
         });
     }
 
@@ -215,7 +215,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     deleteServer(event, server) {
         event.stopPropagation();
         const dialog = this.dialog.open(ConfirmationModalComponent, {
-            data: { message: `Are you sure you want to delete '${server.name}'?` },
+            data: { message: `Are you sure you want to delete '${server.name}'?` }
         });
         dialog.componentInstance.confirmEvent.subscribe(() => {
             this.httpClient.delete(`${this.urls.apiUrl}/gameservers/${server.id}`, { headers: this.headers }).subscribe((response) => {
@@ -399,8 +399,8 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         this.dialog
             .open(EditServerModsModalComponent, {
                 data: {
-                    server: server,
-                },
+                    server: server
+                }
             })
             .afterClosed()
             .subscribe((_) => {
@@ -452,7 +452,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         }
         if (pboFiles.length === 0) {
             this.dialog.open(MessageModalComponent, {
-                data: { message: 'None of those files are PBOs files' },
+                data: { message: 'None of those files are PBOs files' }
             });
         } else {
             if (invalidFiles.length > 0) {
@@ -461,7 +461,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                     message += `\n${file.name}`;
                 });
                 const dialog = this.dialog.open(ConfirmationModalComponent, {
-                    data: { message: message },
+                    data: { message: message }
                 });
                 dialog.componentInstance.confirmEvent.subscribe(() => {
                     this.uploadFromDrop(pboFiles);
@@ -541,6 +541,11 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
 
     missionFormatter(missionName: string, missionMap: string): string {
         return `${missionName}.${missionMap}`;
+    }
+
+    getMissionName(element: IDropdownElement): string {
+        const mission = this.mapMission(element);
+        return `${mission.map}, ${mission.name}`;
     }
 }
 
