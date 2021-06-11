@@ -41,7 +41,6 @@ export class DropdownComponent implements OnInit, ControlValueAccessor {
     ];
     scrollPanelHeight = '456px';
     private cachedFilteredElements: IDropdownElement[];
-    private previousModel: IDropdownElement = undefined;
     private screenHeight: number = 1024;
 
     constructor() {}
@@ -55,11 +54,7 @@ export class DropdownComponent implements OnInit, ControlValueAccessor {
     set model(value: IDropdownElement) {
         this._model = value;
         this.onChange(this._model);
-
-        if (this._model != this.previousModel) {
-            this.onSelectionChange.next(this._model);
-            this.previousModel = this._model;
-        }
+        this.onSelectionChange.next(this._model);
     }
 
     ngOnInit(): void {
@@ -112,8 +107,8 @@ export class DropdownComponent implements OnInit, ControlValueAccessor {
         return this.tooltip(element);
     }
 
-    onTextModelChange() {
-        let filterValue = typeof this.textModel === 'string' ? this.textModel : (<IDropdownElement>this.textModel).displayValue;
+    onTextModelChange(textModel) {
+        let filterValue = typeof textModel === 'string' ? textModel : (<IDropdownElement>textModel).displayValue;
 
         this.filteredElements = this.elements.pipe(
             startWith(''),

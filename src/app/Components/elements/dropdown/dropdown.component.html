@@ -2,7 +2,7 @@
     <input [(ngModel)]="model" autocomplete="off" hidden tabindex="-1" />
     <input
         #textInput="ngModel"
-        (ngModelChange)="onTextModelChange()"
+        (ngModelChange)="onTextModelChange($event)"
         [(ngModel)]="textModel"
         [disabled]="disabled"
         [matAutocomplete]="auto"
@@ -21,7 +21,7 @@
             <mat-option
                 *cdkVirtualFor="let element of filteredElements | async"
                 [matTooltipDisabled]="tooltip === null"
-                [matTooltipShowDelay]="250"
+                [matTooltipShowDelay]="150"
                 [matTooltip]="getTooltip(element)"
                 [ngClass]="optionClass"
                 [value]="element"
