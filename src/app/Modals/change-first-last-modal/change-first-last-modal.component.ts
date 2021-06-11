@@ -8,7 +8,7 @@ import { nameCase, titleCase } from '../../Services/helper.service';
 @Component({
     selector: 'app-change-first-last-modal',
     templateUrl: './change-first-last-modal.component.html',
-    styleUrls: ['./change-first-last-modal.component.scss'],
+    styleUrls: ['./change-first-last-modal.component.scss']
 })
 export class ChangeFirstLastModalComponent implements OnInit {
     form: FormGroup;
@@ -19,12 +19,13 @@ export class ChangeFirstLastModalComponent implements OnInit {
     constructor(formbuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private accountService: AccountService) {
         this.form = formbuilder.group({
             firstName: ['', Validators.required],
-            lastName: ['', Validators.required],
+            lastName: ['', Validators.required]
         });
         this.form.controls['firstName'].setValue(this.accountService.account.firstname);
         this.form.controls['lastName'].setValue(this.accountService.account.lastname);
         this.httpClient.get(this.urls.apiUrl + '/ranks').subscribe((ranks: any[]) => {
-            this.rank = ranks.find((x) => x.name === this.accountService.account.rank).abbreviation;
+            const rank = ranks.find((x) => x.name === this.accountService.account.rank);
+            this.rank = rank ? rank.abbreviation : null;
         });
     }
 
@@ -37,8 +38,8 @@ export class ChangeFirstLastModalComponent implements OnInit {
         this.httpClient
             .put(this.urls.apiUrl + '/accounts/name', formString, {
                 headers: new HttpHeaders({
-                    'Content-Type': 'application/json',
-                }),
+                    'Content-Type': 'application/json'
+                })
             })
             .subscribe((_) => {
                 this.accountService.getAccount(() => {
