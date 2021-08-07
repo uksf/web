@@ -2,33 +2,34 @@
 @import 'palettes.scss';
 
 $light-theme-background: (
-        status-bar: mat.get-color-from-palette($light-pallette, 300),
-        footer-bar: black,
-        side-bar: mat.get-color-from-palette($light-pallette, 200),
-        app-bar: mat.get-color-from-palette($light-pallette, 100),
-        dark-bar: mat.get-color-from-palette($dark-pallette, 800),
-        background: mat.get-color-from-palette($light-pallette, 50),
-        hover: mat.get-color-from-palette($light-pallette, 400),
-        selected: mat.get-color-from-palette($light-pallette, 300),
-        card: white,
-        dark-card: mat.get-color-from-palette($light-pallette, 100),
-        dialog: white,
-        disabled-button: rgba(black, 0.12),
-        raised-button: white,
-        focused-button: mat.get-color-from-palette($light-pallette, 100),
-        selected-button: mat.get-color-from-palette($light-pallette, 300),
-        selected-disabled-button: mat.get-color-from-palette($light-pallette, 400),
-        disabled-button-toggle: mat.get-color-from-palette($light-pallette, 200),
-        unselected-chip: mat.get-color-from-palette($light-pallette, 300),
-        disabled-list-option: mat.get-color-from-palette($light-pallette, 200),
-        org-line: mat.get-color-from-palette($light-pallette, 900),
-        org-content: white,
-        org-hover: mat.get-color-from-palette($light-pallette, 200),
-        scroll-track: mat.get-color-from-palette($light-pallette, 200),
-        scroll-thumb: mat.get-color-from-palette($light-pallette, 400),
-        server: mat.get-color-from-palette($light-pallette, 200),
-        server-running: white,
-        contrast: black,
+    status-bar: mat.get-color-from-palette($light-pallette, 300),
+    footer-bar: black,
+    side-bar: mat.get-color-from-palette($light-pallette, 200),
+    app-bar: mat.get-color-from-palette($light-pallette, 100),
+    dark-bar: mat.get-color-from-palette($dark-pallette, 800),
+    background: mat.get-color-from-palette($light-pallette, 50),
+    hover: mat.get-color-from-palette($light-pallette, 400),
+    selected: mat.get-color-from-palette($light-pallette, 300),
+    card: white,
+    dark-card: mat.get-color-from-palette($light-pallette, 100),
+    dialog: white,
+    disabled-button: rgba(black, 0.12),
+    raised-button: white,
+    focused-button: mat.get-color-from-palette($light-pallette, 100),
+    selected-button: mat.get-color-from-palette($light-pallette, 300),
+    selected-disabled-button: mat.get-color-from-palette($light-pallette, 400),
+    disabled-button-toggle: mat.get-color-from-palette($light-pallette, 200),
+    unselected-chip: mat.get-color-from-palette($light-pallette, 300),
+    disabled-list-option: mat.get-color-from-palette($light-pallette, 200),
+    org-line: mat.get-color-from-palette($light-pallette, 900),
+    org-content: white,
+    org-hover: mat.get-color-from-palette($light-pallette, 200),
+    scroll-track: mat.get-color-from-palette($light-pallette, 200),
+    scroll-thumb: mat.get-color-from-palette($light-pallette, 400),
+    server: mat.get-color-from-palette($light-pallette, 200),
+    server-running: white,
+    contrast: black,
+    underline: rgba(0, 0, 0, 0.42)
 );
 
 $light-theme-primary: mat.define-palette(mat.$indigo-palette, 500);
@@ -41,6 +42,6 @@ $background: map_merge($background, $light-theme-background);
 $light-theme: map_merge(
     $light-theme,
     (
-        background: $background,
+        background: $background
     )
 );

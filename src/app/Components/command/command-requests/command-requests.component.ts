@@ -1,21 +1,21 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { MatDialog } from '@angular/material/dialog';
-import { UrlService } from '../../../Services/url.service';
-import { RequestRankModalComponent } from '../../../Modals/command/request-rank-modal/request-rank-modal.component';
-import { RequestTransferModalComponent } from '../../../Modals/command/request-transfer-modal/request-transfer-modal.component';
-import { RequestRoleModalComponent } from '../../../Modals/command/request-role-modal/request-role-modal.component';
-import { RequestUnitRoleModalComponent } from '../../../Modals/command/request-unit-role-modal/request-unit-role-modal.component';
-import { RequestDischargeModalComponent } from '../../../Modals/command/request-discharge-modal/request-discharge-modal.component';
-import { RequestUnitRemovalModalComponent } from 'app/Modals/command/request-unit-removal-modal/request-unit-removal-modal.component';
-import { ConnectionContainer, SignalRService } from 'app/Services/signalr.service';
-import { AccountService } from 'app/Services/account.service';
-import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {MatDialog} from '@angular/material/dialog';
+import {UrlService} from '../../../Services/url.service';
+import {RequestRankModalComponent} from '../../../Modals/command/request-rank-modal/request-rank-modal.component';
+import {RequestTransferModalComponent} from '../../../Modals/command/request-transfer-modal/request-transfer-modal.component';
+import {RequestRoleModalComponent} from '../../../Modals/command/request-role-modal/request-role-modal.component';
+import {RequestUnitRoleModalComponent} from '../../../Modals/command/request-unit-role-modal/request-unit-role-modal.component';
+import {RequestDischargeModalComponent} from '../../../Modals/command/request-discharge-modal/request-discharge-modal.component';
+import {RequestUnitRemovalModalComponent} from 'app/Modals/command/request-unit-removal-modal/request-unit-removal-modal.component';
+import {ConnectionContainer, SignalRService} from 'app/Services/signalr.service';
+import {AccountService} from 'app/Services/account.service';
+import {MessageModalComponent} from 'app/Modals/message-modal/message-modal.component';
 
 @Component({
     selector: 'app-command-requests',
     templateUrl: './command-requests.component.html',
-    styleUrls: ['../../../Pages/command-page/command-page.component.scss', './command-requests.component.css'],
+    styleUrls: ['../../../Pages/command-page/command-page.component.scss', './command-requests.component.css']
 })
 export class CommandRequestsComponent implements OnInit, OnDestroy {
     reviewState = ReviewState;
@@ -44,7 +44,7 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
 
     getRequests() {
         this.updating = true;
-        this.httpClient.get(this.urls.apiUrl + '/commandrequests').subscribe(
+        this.httpClient.get(`${this.urls.apiUrl}/commandrequests`).subscribe(
             (response) => {
                 this.myRequests = response['myRequests'];
                 this.otherRequests = response['otherRequests'];
@@ -77,8 +77,8 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
                 { reviewState: reviewState, overriden: overriden },
                 {
                     headers: new HttpHeaders({
-                        'Content-Type': 'application/json',
-                    }),
+                        'Content-Type': 'application/json'
+                    })
                 }
             )
             .subscribe(
@@ -86,7 +86,7 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
                 (error) => {
                     this.getRequests();
                     this.dialog.open(MessageModalComponent, {
-                        data: { message: error.error },
+                        data: { message: error.error }
                     });
                 }
             );
@@ -138,5 +138,5 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
 export enum ReviewState {
     APPROVED,
     REJECTED,
-    PENDING,
+    PENDING
 }

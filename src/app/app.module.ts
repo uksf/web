@@ -138,7 +138,7 @@ import {ApplicationSubmitComponent} from './Components/application/application-s
 import {CountryImage, CountryName} from './Pipes/country.pipe';
 import {ApplicationEditComponent} from './Components/application/application-edit/application-edit.component';
 import {ConnectTeamspeakComponent} from './Components/teamspeak-connect/teamspeak-connect.component';
-import {MaintenanceComponent} from './Components/maintenance/maintenance.component';
+import {MaintenanceComponent} from './Components/elements/maintenance/maintenance.component';
 import {ValidationReportModalComponent} from './Modals/multiple-message-modal/validation-report-modal.component';
 import {SignalRService} from './Services/signalr.service';
 import {AdminLauncherLogsComponent} from './Components/admin/admin-launcher-logs/admin-launcher-logs.component';
@@ -175,12 +175,20 @@ import {ButtonSubmitComponent} from './Components/elements/button-submit/button-
 import {AppSettingsService} from './Services/appSettingsService.service';
 import {AutofocusStopComponent} from './Components/elements/autofocus-stop/autofocus-stop.component';
 import {DropdownComponent} from './Components/elements/dropdown/dropdown.component';
+import {SelectionListComponent} from './Components/elements/selection-list/selection-list.component';
 import {MustSelectFromDropdownValidatorDirective} from './Directives/dropdown-validator.directive';
 import {
     ModelValueDebugComponent,
     ReactiveFormValueDebugComponent,
     TemplateFormValueDebugComponent
 } from './Components/elements/form-value-debug/form-value-debug.component';
+import {CommandMembersComponent} from './Components/command/command-members/command-members.component';
+import {PaginatorComponent} from './Components/elements/paginator/paginator.component';
+import {CommandMemberCardComponent} from './Components/command/command-members/command-member-card/command-member-card.component';
+import {CommandUnitGroupCardComponent} from './Components/command/command-members/command-unit-group-card/command-unit-group-card.component';
+import {SignalRHubsService} from './Services/signalrHubs.service';
+import {InlineDropdownComponent} from './Components/elements/inline-dropdown/inline-dropdown.component';
+import {DropdownBaseComponent} from './Components/elements/dropdown-base/dropdown-base.component';
 
 export function initApp(appSettingsService: AppSettingsService, injector: Injector, countryPickerService: CountryPickerService) {
     return () => {
@@ -207,6 +215,7 @@ export function tokenGetter() {
         NotificationsComponent,
         CountryPickerService,
         SignalRService,
+        SignalRHubsService,
         ModpackBuildService,
         ModpackRcService,
         ModpackBuildProcessService,
@@ -215,7 +224,7 @@ export function tokenGetter() {
             provide: APP_INITIALIZER,
             useFactory: initApp,
             deps: [AppSettingsService, Injector, CountryPickerService],
-            multi: true,
+            multi: true
         },
         { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
         { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
@@ -223,8 +232,8 @@ export function tokenGetter() {
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthHttpInterceptor,
-            multi: true,
-        },
+            multi: true
+        }
     ],
     imports: [
         BrowserModule,
@@ -278,11 +287,11 @@ export function tokenGetter() {
         JwtModule.forRoot({
             config: {
                 tokenGetter: tokenGetter,
-                allowedDomains: ['localhost:5000', 'localhost:5500', 'uk-sf.co.uk', 'www.uk-sf.co.uk', 'api.uk-sf.co.uk', 'dev.uk-sf.co.uk', 'api-dev.uk-sf.co.uk'],
-            },
+                allowedDomains: ['localhost:5000', 'localhost:5500', 'uk-sf.co.uk', 'www.uk-sf.co.uk', 'api.uk-sf.co.uk', 'dev.uk-sf.co.uk', 'api-dev.uk-sf.co.uk']
+            }
         }),
         NgxPermissionsModule.forRoot(),
-        MarkdownModule.forRoot(),
+        MarkdownModule.forRoot()
     ],
     declarations: [
         AppComponent,
@@ -394,11 +403,18 @@ export function tokenGetter() {
         ButtonSubmitComponent,
         AutofocusStopComponent,
         DropdownComponent,
+        DropdownBaseComponent,
+        InlineDropdownComponent,
         ReactiveFormValueDebugComponent,
         TemplateFormValueDebugComponent,
-        ModelValueDebugComponent
+        ModelValueDebugComponent,
+        CommandMembersComponent,
+        PaginatorComponent,
+        CommandMemberCardComponent,
+        CommandUnitGroupCardComponent,
+        SelectionListComponent
     ],
-    bootstrap: [AppComponent],
+    bootstrap: [AppComponent]
 })
 export class AppModule {
     constructor() {}

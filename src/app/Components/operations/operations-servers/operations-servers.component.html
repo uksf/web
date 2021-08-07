@@ -101,8 +101,8 @@
                                             </ng-template>
                                             <app-flex-filler></app-flex-filler>
                                             <app-dropdown
-                                                (onSelectionChange)="missionSelectionChange($event, server)"
                                                 *ngIf="!server.status.running && !server.status.started && !server.updating && !server.status.stopping"
+                                                [(ngModel)]="server.missionSelection"
                                                 [displayWith]="displayWithMission"
                                                 [elementFilter]="missionFilter"
                                                 [elementMatcher]="missionMatcher"

@@ -1,0 +1,79 @@
+:host {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-left: 0;
+    padding: 0 16px 16px;
+
+    .spinner-container {
+        display: flex;
+        justify-content: center;
+        margin: auto;
+    }
+
+    .members-list-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+
+        .members-list-header {
+            display: flex;
+            flex-direction: row;
+
+            .mat-icon-button {
+                background-color: transparent;
+
+                .mat-icon {
+                    margin: 0;
+                    height: 21px;
+                    line-height: 21px;
+                }
+            }
+
+            .members-list-header-buttons {
+                margin: auto;
+
+                .mat-raised-button {
+                    margin-left: 8px;
+
+                    .icon-right {
+                        margin-right: 6px;
+                    }
+                }
+            }
+
+            app-paginator {
+                margin: auto 0 auto 16px;
+            }
+
+            .unit-group-expand-container {
+                margin: auto;
+            }
+        }
+
+        .mat-card {
+            margin-bottom: 5px;
+        }
+
+        ::ng-deep .mat-expansion-panel-body {
+            padding: 0;
+            margin: 0;
+        }
+    }
+}
+
+::ng-deep .mat-menu-item {
+    ::ng-deep .icon-right {
+        margin-right: 6px;
+    }
+
+    ::ng-deep .item-text {
+        vertical-align: middle;
+    }
+}

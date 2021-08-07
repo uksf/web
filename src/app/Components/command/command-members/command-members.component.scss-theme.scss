@@ -1,0 +1,18 @@
+@use '~@angular/material' as mat;
+@import '~@angular/material/theming';
+@mixin command-members-component-theme($theme) {
+    $background: map-get($theme, background);
+    $primary: map-get($theme, primary);
+
+    app-command-members {
+        .flex-container {
+            .members-list-container {
+                .members-list-header {
+                    .mat-paginator {
+                        background-color: transparent;
+                    }
+                }
+            }
+        }
+    }
+}

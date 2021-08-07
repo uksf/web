@@ -1,11 +1,8 @@
 <app-default-content-areas>
-    <app-main-content-area style="grid-column: span 3;">
+    <app-main-content-area style="grid-column: span 3">
         <app-personnel-page></app-personnel-page>
         <div class="flex-container">
-            <div class="spinner-container" *ngIf="!activeLoas || !upcomingLoas || !pastLoas">
-                <mat-spinner></mat-spinner>
-            </div>
-            <div class="div-container" *ngIf="activeLoas && upcomingLoas && pastLoas">
+            <div class="div-container">
                 <div class="flex-container-slim">
                     <div class="loa-buttons-container">
                         <div>
@@ -13,28 +10,22 @@
                         </div>
                         <app-flex-filler></app-flex-filler>
                         <mat-form-field>
-                            <input matInput (keyup)="filter()" placeholder="Filter" [(ngModel)]="filterValue">
-                            <button mat-button *ngIf="filterValue" matSuffix mat-icon-button aria-label="Clear" (click)="filterValue = ''; filter(); $event.stopPropagation()">
+                            <input matInput (keyup)="filter()" placeholder="Filter" [(ngModel)]="filterString" />
+                            <button mat-button *ngIf="filterString" matSuffix mat-icon-button aria-label="Clear" (click)="filterString = ''; filter(); $event.stopPropagation()">
                                 <mat-icon>close</mat-icon>
                             </button>
                         </mat-form-field>
                         <div class="loa-filter-buttons-container">
-                            <button mat-raised-button class="loa-filter-button" [disabled]="mode == 'all'" (click)="getLOAs('all')">
-                                <mat-icon>people_outline</mat-icon>All
-                            </button>
-                            <button mat-raised-button class="loa-filter-button" [disabled]="mode == 'unit'" (click)="getLOAs('unit')">
-                                <mat-icon>people</mat-icon>Unit
-                            </button>
-                            <button mat-raised-button class="loa-filter-button" [disabled]="mode == 'you'" (click)="getLOAs('you')">
-                                <mat-icon>person</mat-icon>You
-                            </button>
+                            <button mat-raised-button class="loa-filter-button" [disabled]="viewMode == 'all'" (click)="changeViewMode('all')"><mat-icon>people_outline</mat-icon>All</button>
+                            <button mat-raised-button class="loa-filter-button" [disabled]="viewMode == 'coc'" (click)="changeViewMode('coc')"><mat-icon>people</mat-icon>My CoC</button>
+                            <button mat-raised-button class="loa-filter-button" [disabled]="viewMode == 'me'" (click)="changeViewMode('me')"><mat-icon>person</mat-icon>You</button>
                         </div>
                     </div>
-                    <br>
+                    <br />
                     <div>
-                        <app-personnel-loas-list [title]="'Active'" [completeLoas]="activeLoas" [filterString]="filterString" (deleteEvent)="delete($event)"></app-personnel-loas-list>
-                        <app-personnel-loas-list [title]="'Upcoming'" [completeLoas]="upcomingLoas" [filterString]="filterString" (deleteEvent)="delete($event)"></app-personnel-loas-list>
-                        <app-personnel-loas-list [title]="'Previous'" [completeLoas]="pastLoas" [filterString]="filterString" [deletable]="false"></app-personnel-loas-list>
+                        <app-personnel-loas-list [selectionMode]="'current'" (deleteEvent)="delete($event)"></app-personnel-loas-list>
+                        <app-personnel-loas-list [selectionMode]="'future'" (deleteEvent)="delete($event)"></app-personnel-loas-list>
+                        <app-personnel-loas-list [selectionMode]="'past'" [deletable]="false"></app-personnel-loas-list>
                     </div>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-import { IDropdownElement } from '../Components/elements/dropdown/dropdown.component';
+import {IDropdownElement} from '../Components/elements/dropdown-base/dropdown-base.component';
 
 export class Rank {
     name: string;
@@ -15,6 +15,7 @@ export class Rank {
         return {
             value: rank.name,
             displayValue: rank.name,
+            data: rank.abbreviation
         };
     }
 }

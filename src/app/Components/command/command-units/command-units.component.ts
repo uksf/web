@@ -1,12 +1,12 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { UrlService } from '../../../Services/url.service';
-import { MatDialog } from '@angular/material/dialog';
-import { AddUnitModalComponent } from '../../../Modals/command/add-unit-modal/add-unit-modal.component';
-import { ITreeOptions, KEYS, TREE_ACTIONS, TreeNode } from '@circlon/angular-tree-component';
-import { Permissions } from 'app/Services/permissions';
-import { PermissionsService } from 'app/Services/permissions.service';
-import { RequestUnitUpdateOrder, RequestUnitUpdateParent, ResponseUnit, ResponseUnitTreeDataSet } from '../../../Models/Units';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {UrlService} from '../../../Services/url.service';
+import {MatDialog} from '@angular/material/dialog';
+import {AddUnitModalComponent} from '../../../Modals/command/add-unit-modal/add-unit-modal.component';
+import {ITreeOptions, KEYS, TREE_ACTIONS, TreeNode} from '@circlon/angular-tree-component';
+import {Permissions} from 'app/Services/permissions';
+import {PermissionsService} from 'app/Services/permissions.service';
+import {RequestUnitUpdateOrder, RequestUnitUpdateParent, ResponseUnit, UnitTreeDataSet} from '../../../Models/Units';
 
 @Component({
     selector: 'app-command-units',
@@ -65,7 +65,7 @@ export class CommandUnitsComponent implements OnInit {
     }
 
     getUnits() {
-        this.httpClient.get(`${this.urls.apiUrl}/units/tree`).subscribe((response: ResponseUnitTreeDataSet) => {
+        this.httpClient.get(`${this.urls.apiUrl}/units/tree`).subscribe((response: UnitTreeDataSet) => {
             this.combat = response.combatNodes;
             this.auxiliary = response.auxiliaryNodes;
             setTimeout(() => {

@@ -1,0 +1,40 @@
+@use '~@angular/material' as mat;
+@import '~@angular/material/theming';
+@mixin command-member-card-component-theme($theme) {
+    $background: map-get($theme, background);
+    $primary: map-get($theme, primary);
+
+    app-command-member-card {
+        .member-panel {
+            &.hover {
+                background-color: mat.get-color-from-palette($background, hover);
+            }
+
+            .header-panel {
+                .header-title-container {
+                    .header-title {
+                        &.edit {
+                            &:hover {
+                                border-color: mat.get-color-from-palette($primary) !important;
+
+                                .underline {
+                                    background-color: mat.get-color-from-palette($background, underline);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            .member-panel-content-container {
+                .member-panel-content {
+                    .member-panel-content-item {
+                        .member-panel-content-elements {
+                            background-color: mat.get-color-from-palette($background, selected);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

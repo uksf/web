@@ -1,0 +1,30 @@
+.paginator-container {
+    display: flex;
+
+    .current-page {
+        margin-right: 6px;
+        align-self: center;
+    }
+
+    button {
+        margin-left: 6px;
+        padding: 0;
+        border-radius: 18px;
+        min-width: 36px;
+        height: 36px;
+
+        .mat-icon {
+            display: block;
+            height: 36px;
+            width: 36px;
+            line-height: 36px;
+            font-size: 30px;
+        }
+    }
+
+    mat-select {
+        width: 40px;
+        align-self: center;
+        margin-left: 12px;
+    }
+}

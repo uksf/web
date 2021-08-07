@@ -1,0 +1,42 @@
+<form [formGroup]="form" class="selection-list-form">
+    <div class="selection-list-container" [ngClass]="{ empty: listModel.length === 0 }">
+        <div class="selection-element" *ngFor="let element of listModel">
+            <span [matTooltipDisabled]="!element.disabled" [matTooltip]="listDisabledTooltip(element)" [ngClass]="{ disabled: element.disabled }">{{ element.displayValue }}</span>
+            <app-flex-filler></app-flex-filler>
+            <mat-icon class="remove" (click)="remove(element)">highlight_off</mat-icon>
+        </div>
+    </div>
+    <mat-form-field [ngClass]="formFieldClass">
+        <input #list formControlName="list" autocomplete="off" hidden tabindex="-1" name="list" />
+        <input
+            #textInput
+            formControlName="textInput"
+            (ngModelChange)="onTextModelChange($event)"
+            [matAutocomplete]="auto"
+            [placeholder]="placeholder"
+            matInput
+            spellcheck="false"
+            type="text"
+            name="textInput"
+            [errorStateMatcher]="listErrorStateMatcher"
+        />
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelect($event)" [displayWith]="displayWith" [autoActiveFirstOption]="true">
+            <cdk-virtual-scroll-viewport [maxBufferPx]="1000" [minBufferPx]="600" [ngStyle]="{ height: scrollPanelHeight }" itemSize="48">
+                <mat-option
+                    *cdkVirtualFor="let element of filteredElements | async"
+                    [matTooltipDisabled]="tooltip === null"
+                    [matTooltipShowDelay]="150"
+                    [matTooltip]="getElementTooltip(element)"
+                    [ngClass]="optionClass"
+                    [value]="element"
+                    [disabled]="getElementDisabled(element)"
+                >
+                    <ng-container *ngIf="elementTemplateRef" [ngTemplateOutletContext]="{ $implicit: element }" [ngTemplateOutlet]="elementTemplateRef"></ng-container>
+                </mat-option>
+            </cdk-virtual-scroll-viewport>
+        </mat-autocomplete>
+        <mat-error *ngFor="let validation of validationMessages">
+            <mat-error *ngIf="showErrors && form.get('list').hasError(validation.type)" class="error-message">{{ validation.message() }}</mat-error>
+        </mat-error>
+    </mat-form-field>
+</form>

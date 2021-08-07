@@ -1,0 +1,31 @@
+<div class="block">
+    <div *ngIf="editing">
+        <!--        <input [required]="required" (blur)="unfocus()" [name]="value" [(ngModel)]="value" [type]="type" [placeholder]="label" [class.invalid]="invalid" />-->
+        <app-dropdown
+            #inlineDropdownControl
+            #dropdownValue="ngModel"
+            (blur)="unfocus()"
+            [(ngModel)]="model.dropdownValue"
+            [placeholder]="placeholder"
+            [isRequired]="required"
+            [isDisabled]="disabled"
+            [showErrors]="showErrors"
+            [elements]="elements"
+            [tooltip]="tooltip"
+            [elementName]="elementName"
+            [formFieldClass]="formFieldClass"
+            [optionClass]="optionClass"
+            (onSelectionChange)="onSelectionChange.emit($event)"
+            id="dropdownValue"
+            name="formDropdownValue"
+        >
+            <ng-template #element let-element>
+                {{ getElementName(element) }}
+            </ng-template>
+        </app-dropdown>
+    </div>
+    <div *ngIf="!editing">
+        <span class="bold">{{ label }}</span>
+        <div class="inline-edit" title="Click to edit" (click)="edit(value); $event.stopPropagation()" (focus)="edit(value); $event.stopPropagation()" tabindex="0">{{ value }}</div>
+    </div>
+</div>

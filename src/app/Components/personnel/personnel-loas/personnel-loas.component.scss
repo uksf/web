@@ -1,3 +1,9 @@
+:host {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
 .loa-buttons-container {
     display: flex;
     align-items: center;
@@ -7,7 +13,6 @@
 
         .loa-filter-button {
             margin-right: 5px;
-            width: 80px;
             height: min-content;
 
             .mat-icon {

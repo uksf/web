@@ -1,14 +1,17 @@
 import {Application} from './Application';
-import {IDropdownElement} from '../Components/elements/dropdown/dropdown.component';
+import {IDropdownElement} from '../Components/elements/dropdown-base/dropdown-base.component';
+import {Rank} from './Rank';
+import {Role} from './Role';
+import {Unit} from './Units';
 
 export enum MembershipState {
     UNCONFIRMED,
     CONFIRMED,
     MEMBER,
-    DISCHARGED,
+    DISCHARGED
 }
 
-export interface Account {
+export class Account {
     id: string;
     application: Application;
     armaExperience: string;
@@ -34,6 +37,11 @@ export interface Account {
 
     displayName: string;
     permissions: AccountPermissions;
+
+    rankObject: Rank;
+    roleObject: Role;
+    unitObject: Unit;
+    unitObjects: Unit[];
 }
 
 export interface AccountPermissions {

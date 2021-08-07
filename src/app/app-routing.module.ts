@@ -1,48 +1,56 @@
-import { Injectable, NgModule } from '@angular/core';
-import { ActivatedRouteSnapshot, DefaultUrlSerializer, RouterModule, RouterStateSnapshot, Routes, UrlTree } from '@angular/router';
-import { HomePageComponent } from './Pages/home-page/home-page.component';
-import { LoginPageComponent } from './Pages/login-page/login-page.component';
-import { ProfilePageComponent } from './Pages/profile-page/profile-page.component';
-import { RecruitmentPageComponent } from './Pages/recruitment-page/recruitment-page.component';
-import { RecruitmentApplicationPageComponent } from './Pages/recruitment-application-page/recruitment-application-page.component';
-import { LivePageComponent } from './Pages/live-page/live-page.component';
-import { AboutPageComponent } from './Pages/about-page/about-page.component';
-import { DocsPageComponent } from './Pages/docs-page/docs-page.component';
-import { RulesPageComponent } from './Pages/rules-page/rules-page.component';
-import { PolicyPageComponent } from './Pages/policy-page/policy-page.component';
-import { InformationPageComponent } from './Pages/information-page/information-page.component';
-import { UnitPageComponent } from './Pages/unit-page/unit-page.component';
-import { OprepPageComponent } from './Pages/oprep-page/oprep-page.component';
-import { AdminErrorLogsComponent } from './Components/admin/admin-error-logs/admin-error-logs.component';
-import { AdminAuditLogsComponent } from './Components/admin/admin-audit-logs/admin-audit-logs.component';
-import { OpordPageComponent } from './Pages/opord-page/opord-page.component';
-import { UnitsOrbatComponent } from './Components/units/units-orbat/units-orbat.component';
-import { UnitsOrbatAuxComponent } from './Components/units/units-orbat-aux/units-orbat-aux.component';
-import { UnitsRosterComponent } from './Components/units/units-roster/units-roster.component';
-import { NgxPermissionsGuard } from 'ngx-permissions';
-import { CommandUnitsComponent } from './Components/command/command-units/command-units.component';
-import { CommandRanksComponent } from './Components/command/command-ranks/command-ranks.component';
-import { CommandRolesComponent } from './Components/command/command-roles/command-roles.component';
-import { CommandRequestsComponent } from './Components/command/command-requests/command-requests.component';
-import { OperationsActivityComponent } from './Components/operations/operations-activity/operations-activity.component';
-import { OperationsOrdersComponent } from './Components/operations/operations-orders/operations-orders.component';
-import { OperationsReportsComponent } from './Components/operations/operations-reports/operations-reports.component';
-import { OperationsServersComponent } from './Components/operations/operations-servers/operations-servers.component';
-import { AdminVariablesComponent } from './Components/admin/admin-variables/admin-variables.component';
-import { AdminLogsComponent } from './Components/admin/admin-logs/admin-logs.component';
-import { HttpClient } from '@angular/common/http';
-import { AdminToolsComponent } from './Components/admin/admin-tools/admin-tools.component';
-import { Permissions } from './Services/permissions';
-import { ApplicationPageComponent } from './Pages/application-page/application-page.component';
-import { AdminLauncherLogsComponent } from './Components/admin/admin-launcher-logs/admin-launcher-logs.component';
-import { PersonnelLoasComponent } from './Components/personnel/personnel-loas/personnel-loas.component';
-import { PersonnelDischargesComponent } from './Components/personnel/personnel-discharges/personnel-discharges.component';
-import { PersonnelActivityComponent } from './Components/personnel/personnel-activity/personnel-activity.component';
-import { ModpackGuideComponent } from './Components/modpack/modpack-guide/modpack-guide.component';
-import { ModpackReleasesComponent } from './Components/modpack/modpack-releases/modpack-releases.component';
-import { ModpackBuildsDevComponent } from './Components/modpack/modpack-builds-dev/modpack-builds-dev.component';
-import { ModpackBuildsRcComponent } from './Components/modpack/modpack-builds-rc/modpack-builds-rc.component';
-import { AdminDiscordLogsComponent } from './Components/admin/admin-discord-logs/admin-discord-logs.component';
+import {Injectable, NgModule} from '@angular/core';
+import {
+    ActivatedRouteSnapshot,
+    DefaultUrlSerializer,
+    RouterModule,
+    RouterStateSnapshot,
+    Routes,
+    UrlTree
+} from '@angular/router';
+import {HomePageComponent} from './Pages/home-page/home-page.component';
+import {LoginPageComponent} from './Pages/login-page/login-page.component';
+import {ProfilePageComponent} from './Pages/profile-page/profile-page.component';
+import {RecruitmentPageComponent} from './Pages/recruitment-page/recruitment-page.component';
+import {RecruitmentApplicationPageComponent} from './Pages/recruitment-application-page/recruitment-application-page.component';
+import {LivePageComponent} from './Pages/live-page/live-page.component';
+import {AboutPageComponent} from './Pages/about-page/about-page.component';
+import {DocsPageComponent} from './Pages/docs-page/docs-page.component';
+import {RulesPageComponent} from './Pages/rules-page/rules-page.component';
+import {PolicyPageComponent} from './Pages/policy-page/policy-page.component';
+import {InformationPageComponent} from './Pages/information-page/information-page.component';
+import {UnitPageComponent} from './Pages/unit-page/unit-page.component';
+import {OprepPageComponent} from './Pages/oprep-page/oprep-page.component';
+import {AdminErrorLogsComponent} from './Components/admin/admin-error-logs/admin-error-logs.component';
+import {AdminAuditLogsComponent} from './Components/admin/admin-audit-logs/admin-audit-logs.component';
+import {OpordPageComponent} from './Pages/opord-page/opord-page.component';
+import {UnitsOrbatComponent} from './Components/units/units-orbat/units-orbat.component';
+import {UnitsOrbatAuxComponent} from './Components/units/units-orbat-aux/units-orbat-aux.component';
+import {UnitsRosterComponent} from './Components/units/units-roster/units-roster.component';
+import {NgxPermissionsGuard} from 'ngx-permissions';
+import {CommandUnitsComponent} from './Components/command/command-units/command-units.component';
+import {CommandRanksComponent} from './Components/command/command-ranks/command-ranks.component';
+import {CommandRolesComponent} from './Components/command/command-roles/command-roles.component';
+import {CommandRequestsComponent} from './Components/command/command-requests/command-requests.component';
+import {OperationsActivityComponent} from './Components/operations/operations-activity/operations-activity.component';
+import {OperationsOrdersComponent} from './Components/operations/operations-orders/operations-orders.component';
+import {OperationsReportsComponent} from './Components/operations/operations-reports/operations-reports.component';
+import {OperationsServersComponent} from './Components/operations/operations-servers/operations-servers.component';
+import {AdminVariablesComponent} from './Components/admin/admin-variables/admin-variables.component';
+import {AdminLogsComponent} from './Components/admin/admin-logs/admin-logs.component';
+import {HttpClient} from '@angular/common/http';
+import {AdminToolsComponent} from './Components/admin/admin-tools/admin-tools.component';
+import {Permissions} from './Services/permissions';
+import {ApplicationPageComponent} from './Pages/application-page/application-page.component';
+import {AdminLauncherLogsComponent} from './Components/admin/admin-launcher-logs/admin-launcher-logs.component';
+import {PersonnelLoasComponent} from './Components/personnel/personnel-loas/personnel-loas.component';
+import {PersonnelDischargesComponent} from './Components/personnel/personnel-discharges/personnel-discharges.component';
+import {PersonnelActivityComponent} from './Components/personnel/personnel-activity/personnel-activity.component';
+import {ModpackGuideComponent} from './Components/modpack/modpack-guide/modpack-guide.component';
+import {ModpackReleasesComponent} from './Components/modpack/modpack-releases/modpack-releases.component';
+import {ModpackBuildsDevComponent} from './Components/modpack/modpack-builds-dev/modpack-builds-dev.component';
+import {ModpackBuildsRcComponent} from './Components/modpack/modpack-builds-rc/modpack-builds-rc.component';
+import {AdminDiscordLogsComponent} from './Components/admin/admin-discord-logs/admin-discord-logs.component';
+import {CommandMembersComponent} from './Components/command/command-members/command-members.component';
 
 const appRoutes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -55,10 +63,10 @@ const appRoutes: Routes = [
         data: {
             permissions: {
                 except: Permissions.UNLOGGED,
-                redirectTo: loginRedirect,
-            },
+                redirectTo: loginRedirect
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'profile/:id',
@@ -66,10 +74,10 @@ const appRoutes: Routes = [
         data: {
             permissions: {
                 except: Permissions.UNLOGGED,
-                redirectTo: loginRedirect,
-            },
+                redirectTo: loginRedirect
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'admin',
@@ -81,10 +89,10 @@ const appRoutes: Routes = [
                 redirectTo: {
                     ADMIN: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
-        },
+                    default: '/home'
+                }
+            }
+        }
     },
     {
         path: 'admin/logs',
@@ -96,11 +104,11 @@ const appRoutes: Routes = [
                 redirectTo: {
                     ADMIN: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'admin/errors',
@@ -112,11 +120,11 @@ const appRoutes: Routes = [
                 redirectTo: {
                     ADMIN: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'admin/audit',
@@ -128,11 +136,11 @@ const appRoutes: Routes = [
                 redirectTo: {
                     ADMIN: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'admin/discord',
@@ -144,11 +152,11 @@ const appRoutes: Routes = [
                 redirectTo: {
                     ADMIN: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'admin/launcher',
@@ -160,11 +168,11 @@ const appRoutes: Routes = [
                 redirectTo: {
                     ADMIN: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'admin/tools',
@@ -176,11 +184,11 @@ const appRoutes: Routes = [
                 redirectTo: {
                     ADMIN: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'admin/variables',
@@ -192,11 +200,11 @@ const appRoutes: Routes = [
                 redirectTo: {
                     ADMIN: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'recruitment',
@@ -205,10 +213,10 @@ const appRoutes: Routes = [
             permissions: {
                 only: Permissions.RECRUITER,
                 except: Permissions.UNLOGGED,
-                redirectTo: '/home',
-            },
+                redirectTo: '/home'
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'recruitment/:id',
@@ -219,11 +227,11 @@ const appRoutes: Routes = [
                 except: Permissions.UNLOGGED,
                 redirectTo: {
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     { path: 'information', component: InformationPageComponent },
     { path: 'about', redirectTo: 'information/about' },
@@ -234,9 +242,9 @@ const appRoutes: Routes = [
         data: {
             permissions: {
                 except: Permissions.UNLOGGED,
-                redirectTo: loginRedirect,
-            },
-        },
+                redirectTo: loginRedirect
+            }
+        }
     },
     {
         path: 'units/orbat',
@@ -244,10 +252,10 @@ const appRoutes: Routes = [
         data: {
             permissions: {
                 except: Permissions.UNLOGGED,
-                redirectTo: loginRedirect,
-            },
+                redirectTo: loginRedirect
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'units/auxiliary',
@@ -255,10 +263,10 @@ const appRoutes: Routes = [
         data: {
             permissions: {
                 except: Permissions.UNLOGGED,
-                redirectTo: loginRedirect,
-            },
+                redirectTo: loginRedirect
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'units/roster',
@@ -266,10 +274,10 @@ const appRoutes: Routes = [
         data: {
             permissions: {
                 except: Permissions.UNLOGGED,
-                redirectTo: loginRedirect,
-            },
+                redirectTo: loginRedirect
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'units/:id',
@@ -277,10 +285,10 @@ const appRoutes: Routes = [
         data: {
             permissions: {
                 except: Permissions.UNLOGGED,
-                redirectTo: loginRedirect,
-            },
+                redirectTo: loginRedirect
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'live',
@@ -288,10 +296,10 @@ const appRoutes: Routes = [
         data: {
             permissions: {
                 except: Permissions.UNLOGGED,
-                redirectTo: loginRedirect,
-            },
+                redirectTo: loginRedirect
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'command',
@@ -303,10 +311,10 @@ const appRoutes: Routes = [
                 redirectTo: {
                     COMMAND: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
-        },
+                    default: '/home'
+                }
+            }
+        }
     },
     {
         path: 'command/requests',
@@ -318,11 +326,27 @@ const appRoutes: Routes = [
                 redirectTo: {
                     COMMAND: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
+    },
+    {
+        path: 'command/members',
+        component: CommandMembersComponent,
+        data: {
+            permissions: {
+                only: Permissions.COMMAND,
+                except: Permissions.UNLOGGED,
+                redirectTo: {
+                    COMMAND: '/home',
+                    UNLOGGED: loginRedirect,
+                    default: '/home'
+                }
+            }
+        },
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'command/units',
@@ -334,11 +358,11 @@ const appRoutes: Routes = [
                 redirectTo: {
                     COMMAND: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'command/ranks',
@@ -350,11 +374,11 @@ const appRoutes: Routes = [
                 redirectTo: {
                     COMMAND: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'command/roles',
@@ -366,11 +390,11 @@ const appRoutes: Routes = [
                 redirectTo: {
                     COMMAND: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'operations',
@@ -382,10 +406,10 @@ const appRoutes: Routes = [
                 redirectTo: {
                     MEMBER: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
-        },
+                    default: '/home'
+                }
+            }
+        }
     },
     {
         path: 'operations/servers',
@@ -397,11 +421,11 @@ const appRoutes: Routes = [
                 redirectTo: {
                     SERVERS: '/operations/activity',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'operations/opords',
@@ -413,11 +437,11 @@ const appRoutes: Routes = [
                 redirectTo: {
                     MEMBER: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'operations/opreps',
@@ -429,11 +453,11 @@ const appRoutes: Routes = [
                 redirectTo: {
                     MEMBER: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'operations/opreps/:id',
@@ -445,11 +469,11 @@ const appRoutes: Routes = [
                 redirectTo: {
                     MEMBER: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'operations/opords/:id',
@@ -461,11 +485,11 @@ const appRoutes: Routes = [
                 redirectTo: {
                     MEMBER: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'operations/activity',
@@ -477,11 +501,11 @@ const appRoutes: Routes = [
                 redirectTo: {
                     MEMBER: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'personnel',
@@ -493,10 +517,10 @@ const appRoutes: Routes = [
                 redirectTo: {
                     MEMBER: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
-        },
+                    default: '/home'
+                }
+            }
+        }
     },
     {
         path: 'personnel/loas',
@@ -508,11 +532,11 @@ const appRoutes: Routes = [
                 redirectTo: {
                     MEMBER: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'personnel/activity',
@@ -524,11 +548,11 @@ const appRoutes: Routes = [
                 redirectTo: {
                     MEMBER: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'personnel/discharges',
@@ -540,11 +564,11 @@ const appRoutes: Routes = [
                 redirectTo: {
                     DISCHARGES: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'personnel/discharges/:filter',
@@ -556,11 +580,11 @@ const appRoutes: Routes = [
                 redirectTo: {
                     DISCHARGES: '/home',
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'modpack',
@@ -571,10 +595,10 @@ const appRoutes: Routes = [
                 redirectTo: {
                     UNLOGGED: loginRedirect,
                     UNCONFIRMED: '/home',
-                    default: '/home',
-                },
-            },
-        },
+                    default: '/home'
+                }
+            }
+        }
     },
     {
         path: 'modpack/guide',
@@ -585,11 +609,11 @@ const appRoutes: Routes = [
                 redirectTo: {
                     UNLOGGED: loginRedirect,
                     UNCONFIRMED: '/home',
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'modpack/releases',
@@ -600,11 +624,11 @@ const appRoutes: Routes = [
                 except: Permissions.UNLOGGED,
                 redirectTo: {
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'modpack/builds-dev',
@@ -615,11 +639,11 @@ const appRoutes: Routes = [
                 except: Permissions.UNLOGGED,
                 redirectTo: {
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'modpack/builds-rc',
@@ -630,22 +654,22 @@ const appRoutes: Routes = [
                 except: Permissions.UNLOGGED,
                 redirectTo: {
                     UNLOGGED: loginRedirect,
-                    default: '/home',
-                },
-            },
+                    default: '/home'
+                }
+            }
         },
-        canActivate: [NgxPermissionsGuard],
+        canActivate: [NgxPermissionsGuard]
     },
     { path: 'docs', component: DocsPageComponent },
     { path: 'docs/:id', component: DocsPageComponent },
     { path: 'policy', component: PolicyPageComponent },
     { path: 'rules', component: RulesPageComponent },
-    { path: '**', redirectTo: 'Login' },
+    { path: '**', redirectTo: 'Login' }
 ];
 
 @NgModule({
     imports: [RouterModule.forRoot(appRoutes)],
-    exports: [RouterModule],
+    exports: [RouterModule]
 })
 export class AppRoutingModule {
     static instance: AppRoutingModule;

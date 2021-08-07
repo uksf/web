@@ -4,6 +4,29 @@ export function nextFrame(callback: () => void) {
     }, 1);
 }
 
+export function debounce<T extends unknown[], U>(callback: (...args: T) => PromiseLike<U> | U, wait: number) {
+    let timer: any;
+
+    return (...args: T): Promise<U> => {
+        clearTimeout(timer);
+        return new Promise((resolve) => {
+            timer = setTimeout(() => resolve(callback(...args)), wait);
+        });
+    };
+}
+
+export function any<T = any>(arr: T[], predicate: (t: T) => boolean = Boolean) {
+    return arr.some(predicate);
+}
+
+export function all<T = any>(arr: T[], predicate: (t: T) => boolean = Boolean) {
+    return arr.every(predicate);
+}
+
+export function buildQuery(filter: string): string {
+    return filter.replace(/( ?)(and)( ?)/i, '&&').replace(/( ?)(or)( ?)/i, '||');
+}
+
 export function titleCase(string: string) {
     if (string === '') {
         return string;

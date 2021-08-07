@@ -1,4 +1,5 @@
-import { IDropdownElement } from '../Components/elements/dropdown/dropdown.component';
+import {Account} from './Account';
+import {IDropdownElement} from '../Components/elements/dropdown-base/dropdown-base.component';
 
 export class Unit {
     id: string;
@@ -15,6 +16,11 @@ export class Unit {
     members: string[];
     roles: { [id: string]: string };
 
+    parentUnit: Unit;
+    children: Unit[];
+    memberObjects: Account[];
+    memberRole: string;
+
     public constructor(element: IDropdownElement) {
         this.id = element.value;
         this.name = element.displayValue;
@@ -23,14 +29,14 @@ export class Unit {
     public static mapToElement(unit: Unit): IDropdownElement {
         return {
             value: unit.id,
-            displayValue: unit.name,
+            displayValue: unit.name
         };
     }
 }
 
 export enum UnitBranch {
     COMBAT,
-    AUXILIARY,
+    AUXILIARY
 }
 
 export interface ResponseUnit extends Unit {
@@ -45,15 +51,9 @@ export interface ResponseUnitMember {
     unitRole: string;
 }
 
-export interface ResponseUnitTree {
-    id: string;
-    name: string;
-    children: ResponseUnitTree[];
-}
-
-export interface ResponseUnitTreeDataSet {
-    auxiliaryNodes: ResponseUnitTree[];
-    combatNodes: ResponseUnitTree[];
+export interface UnitTreeDataSet {
+    auxiliaryNodes: Unit[];
+    combatNodes: Unit[];
 }
 
 export interface ResponseUnitChartNode {

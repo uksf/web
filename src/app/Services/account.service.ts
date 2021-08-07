@@ -1,11 +1,11 @@
-import { Injectable, EventEmitter } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { UrlService } from './url.service';
-import { ConnectTeamspeakModalComponent } from 'app/Modals/connect-teamspeak-modal/connect-teamspeak-modal.component';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
-import { SessionService } from './Authentication/session.service';
-import { Account, MembershipState } from '../Models/Account';
+import {EventEmitter, Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {UrlService} from './url.service';
+import {ConnectTeamspeakModalComponent} from 'app/Modals/connect-teamspeak-modal/connect-teamspeak-modal.component';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {ConfirmationModalComponent} from 'app/Modals/confirmation-modal/confirmation-modal.component';
+import {SessionService} from './Authentication/session.service';
+import {Account, MembershipState} from '../Models/Account';
 
 @Injectable()
 export class AccountService {
@@ -15,11 +15,11 @@ export class AccountService {
 
     constructor(private httpClient: HttpClient, private urls: UrlService, private sessionService: SessionService, public dialog: MatDialog) {}
 
-    public getAccount(callback: (arg0: Account) => void = null, callbackError: () => void = null) {
+    public getAccount(callback: (account: Account) => void = null, callbackError: () => void = null) {
         if (this.sessionService.hasStorageToken()) {
             const subscribable = this.httpClient.get(this.urls.apiUrl + '/accounts');
-            subscribable.subscribe(
-                (response: any) => {
+            subscribable.subscribe({
+                next: (response: any) => {
                     const account = response;
                     this.account = account;
                     this.checkConnections();
@@ -28,13 +28,13 @@ export class AccountService {
                     }
                     this.accountChange.emit(account);
                 },
-                (_) => {
+                error: () => {
                     this.clear();
                     if (callbackError) {
                         callbackError();
                     }
                 }
-            );
+            });
             return subscribable;
         }
     }
@@ -58,7 +58,7 @@ export class AccountService {
 
             if (!this.account.teamspeakIdentities || this.account.teamspeakIdentities.length === 0) {
                 this.openDialog = this.dialog.open(ConfirmationModalComponent, {
-                    data: { message: 'Your account does not have TeamSpeak connected. Press the button below to connect TeamSpeak', button: 'Connect TeamSpeak' },
+                    data: { message: 'Your account does not have TeamSpeak connected. Press the button below to connect TeamSpeak', button: 'Connect TeamSpeak' }
                 });
                 this.openDialog.componentInstance.confirmEvent.subscribe(() => {
                     this.openTeamspeakModal();
@@ -68,7 +68,7 @@ export class AccountService {
                 });
             } else if (!this.account.steamname) {
                 this.openDialog = this.dialog.open(ConfirmationModalComponent, {
-                    data: { message: 'Your account does not have Steam connected. Press the button below to connect Steam', button: 'Connect Steam' },
+                    data: { message: 'Your account does not have Steam connected. Press the button below to connect Steam', button: 'Connect Steam' }
                 });
                 this.openDialog.componentInstance.confirmEvent.subscribe(() => {
                     this.connectSteam();
@@ -78,7 +78,7 @@ export class AccountService {
                 });
             } else if (!this.account.discordId) {
                 this.openDialog = this.dialog.open(ConfirmationModalComponent, {
-                    data: { message: 'Your account does not have Discord connected. Press the button below to connect Discord', button: 'Connect Discord' },
+                    data: { message: 'Your account does not have Discord connected. Press the button below to connect Discord', button: 'Connect Discord' }
                 });
                 this.openDialog.componentInstance.confirmEvent.subscribe(() => {
                     this.connectDiscord();

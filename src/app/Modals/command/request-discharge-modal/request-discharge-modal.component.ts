@@ -1,19 +1,19 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { NgForm } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '../../../Services/url.service';
-import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
-import { InstantErrorStateMatcher } from '../../../Services/formhelper.service';
-import { BasicAccount } from '../../../Models/Account';
-import { CommandRequest } from '../../../Models/CommandRequest';
-import { IDropdownElement, mapFromElement } from '../../../Components/elements/dropdown/dropdown.component';
-import { BehaviorSubject } from 'rxjs';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
+import {NgForm} from '@angular/forms';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {UrlService} from '../../../Services/url.service';
+import {MessageModalComponent} from 'app/Modals/message-modal/message-modal.component';
+import {InstantErrorStateMatcher} from '../../../Services/formhelper.service';
+import {BasicAccount} from '../../../Models/Account';
+import {CommandRequest} from '../../../Models/CommandRequest';
+import {IDropdownElement, mapFromElement} from '../../../Components/elements/dropdown-base/dropdown-base.component';
+import {BehaviorSubject} from 'rxjs';
 
 @Component({
     selector: 'app-request-discharge-modal',
     templateUrl: './request-discharge-modal.component.html',
-    styleUrls: ['./request-discharge-modal.component.scss', '../../../Pages/command-page/command-page.component.scss'],
+    styleUrls: ['./request-discharge-modal.component.scss', '../../../Pages/command-page/command-page.component.scss']
 })
 export class RequestDischargeModalComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;
@@ -21,11 +21,11 @@ export class RequestDischargeModalComponent implements OnInit {
     pending = false;
     model: FormModel = {
         account: null,
-        reason: null,
+        reason: null
     };
     accounts: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
     validationMessages = {
-        reason: [{ type: 'required', message: () => 'A discharge reason is required' }],
+        reason: [{ type: 'required', message: () => 'A discharge reason is required' }]
     };
 
     constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService) {}
@@ -35,7 +35,7 @@ export class RequestDischargeModalComponent implements OnInit {
             next: (accounts: BasicAccount[]) => {
                 this.accounts.next(accounts.map(BasicAccount.mapToElement));
                 this.accounts.complete();
-            },
+            }
         });
     }
 
@@ -46,15 +46,15 @@ export class RequestDischargeModalComponent implements OnInit {
 
         const commandRequest: CommandRequest = {
             recipient: mapFromElement(BasicAccount, this.model.account).id,
-            reason: this.model.reason,
+            reason: this.model.reason
         };
 
         this.pending = true;
         this.httpClient
             .put(`${this.urlService.apiUrl}/commandrequests/create/discharge`, commandRequest, {
                 headers: new HttpHeaders({
-                    'Content-Type': 'application/json',
-                }),
+                    'Content-Type': 'application/json'
+                })
             })
             .subscribe({
                 next: () => {
@@ -65,9 +65,9 @@ export class RequestDischargeModalComponent implements OnInit {
                     this.dialog.closeAll();
                     this.pending = false;
                     this.dialog.open(MessageModalComponent, {
-                        data: { message: error.error },
+                        data: { message: error.error }
                     });
-                },
+                }
             });
     }
 

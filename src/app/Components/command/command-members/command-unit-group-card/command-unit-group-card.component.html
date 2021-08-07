@@ -1,0 +1,19 @@
+<mat-accordion class="unit-panel-container" [multi]="true" [hidden]="this.hideEmpty && isEmpty">
+    <mat-expansion-panel class="unit-panel" [togglePosition]="'before'" [expanded]="true">
+        <mat-expansion-panel-header [collapsedHeight]="'36px'" [expandedHeight]="'36px'">
+            <mat-panel-title>
+                {{ unit.preferShortname ? unit.shortname : unit.name }}
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="unit-panel-body">
+            <div class="members-container" *ngIf="unit.memberObjects.length > 0">
+                <mat-accordion [multi]="true">
+                    <app-command-member-card *ngFor="let member of unit.memberObjects; trackBy: trackByMemberId" [member]="member"></app-command-member-card>
+                </mat-accordion>
+            </div>
+            <div *ngIf="unit.children.length > 0">
+                <app-command-unit-group-card *ngFor="let child of unit.children" [unit]="child" [hideEmpty]="hideEmpty"></app-command-unit-group-card>
+            </div>
+        </div>
+    </mat-expansion-panel>
+</mat-accordion>

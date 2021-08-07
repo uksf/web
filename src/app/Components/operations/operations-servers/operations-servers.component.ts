@@ -1,19 +1,19 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '../../../Services/url.service';
-import { MatDialog } from '@angular/material/dialog';
-import { AddServerModalComponent } from 'app/Modals/operations/add-server-modal/add-server-modal.component';
-import { EditServerModsModalComponent } from 'app/Modals/operations/edit-server-mods-modal/edit-server-mods-modal.component';
-import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
-import { ValidationReportModalComponent } from 'app/Modals/multiple-message-modal/validation-report-modal.component';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { ConnectionContainer, SignalRService } from 'app/Services/signalr.service';
-import { Permissions } from 'app/Services/permissions';
-import { PermissionsService } from 'app/Services/permissions.service';
-import { UksfError } from '../../../Models/Response';
-import { IDropdownElement } from '../../elements/dropdown/dropdown.component';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {UrlService} from '../../../Services/url.service';
+import {MatDialog} from '@angular/material/dialog';
+import {AddServerModalComponent} from 'app/Modals/operations/add-server-modal/add-server-modal.component';
+import {EditServerModsModalComponent} from 'app/Modals/operations/edit-server-mods-modal/edit-server-mods-modal.component';
+import {ConfirmationModalComponent} from 'app/Modals/confirmation-modal/confirmation-modal.component';
+import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+import {MessageModalComponent} from 'app/Modals/message-modal/message-modal.component';
+import {ValidationReportModalComponent} from 'app/Modals/multiple-message-modal/validation-report-modal.component';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {ConnectionContainer, SignalRService} from 'app/Services/signalr.service';
+import {Permissions} from 'app/Services/permissions';
+import {PermissionsService} from 'app/Services/permissions.service';
+import {UksfError} from '../../../Models/Response';
+import {IDropdownElement} from '../../elements/dropdown-base/dropdown-base.component';
 
 @Component({
     selector: 'app-operations-servers',
@@ -292,10 +292,6 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
             });
     }
 
-    missionSelectionChange(dropdownElement: IDropdownElement, server) {
-        server.missionSelection = dropdownElement === null ? dropdownElement : dropdownElement.value;
-    }
-
     showError(error, customMessage = '') {
         let message = 'An error occurred';
         if (customMessage) {
@@ -327,7 +323,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
 
     launch(server) {
         server.updating = true;
-        this.httpClient.post(`${this.urls.apiUrl}/gameservers/launch/${server.id}`, { missionName: server.missionSelection }, { headers: this.headers }).subscribe({
+        this.httpClient.post(`${this.urls.apiUrl}/gameservers/launch/${server.id}`, { missionName: server.missionSelection.value }, { headers: this.headers }).subscribe({
             next: () => {
                 server.updating = false;
                 this.refreshServerStatus(server);

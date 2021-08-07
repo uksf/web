@@ -8,7 +8,7 @@
         <app-autofocus-stop></app-autofocus-stop>
         <app-dropdown
             #accountName="ngModel"
-            (onSelectionChange)="onSelectAccount($event)"
+            (ngModelChange)="onSelectAccount($event)"
             [(ngModel)]="model.account"
             [elementName]="'Recipient'"
             [elements]="accounts"
@@ -24,7 +24,7 @@
         <br />
         <app-dropdown
             #unit="ngModel"
-            (onSelectionChange)="onSelectUnit($event)"
+            (ngModelChange)="onSelectUnit($event)"
             [(ngModel)]="model.unit"
             [elementName]="'Unit'"
             [elements]="units"

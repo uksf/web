@@ -30,6 +30,7 @@ $dark-theme-background: (
     server: mat.get-color-from-palette($dark-pallette, 500),
     server-running: mat.get-color-from-palette($dark-pallette, 400),
     contrast: white,
+    underline: hsla(0, 0%, 100%, 0.7)
 );
 
 $dark-theme-primary: $gold-pallette;
@@ -42,6 +43,6 @@ $background: map_merge($background, $dark-theme-background);
 $dark-theme: map_merge(
     $dark-theme,
     (
-        background: $background,
+        background: $background
     )
 );

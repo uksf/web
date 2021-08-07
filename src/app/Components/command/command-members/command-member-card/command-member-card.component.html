@@ -1,0 +1,43 @@
+<mat-card class="member-panel" [ngClass]="{ hover: hover }">
+    <div class="header-panel">
+        <div class="header-title-container">
+            <div class="toggle" [@indicatorRotate]="toggleState" (click)="toggle($event)" (mouseenter)="onMouseOver()" (mouseleave)="onMouseLeave()">
+                <mat-icon color="primary">expand_more</mat-icon>
+            </div>
+            <div class="header-title hover" (click)="toggle($event)" (mouseenter)="onMouseOver()" (mouseleave)="onMouseLeave()">
+                <span>{{ member.lastname }}.{{ member.firstname[0] }}</span>
+            </div>
+            <div class="header-title edit" (click)="editRank(); $event.stopPropagation()">
+                <span>{{ member.rankObject.name }}</span>
+                <div class="underline"></div>
+            </div>
+            <div class="header-title edit" (click)="editRole(); $event.stopPropagation()">
+                <span>{{ member.roleObject.name }}</span>
+                <div class="underline"></div>
+            </div>
+            <div class="header-title edit" (click)="editUnit(); $event.stopPropagation()">
+                <span>{{ member.unitObject.name }}</span>
+                <div class="underline"></div>
+            </div>
+        </div>
+        <div class="header-button-container">
+            <mat-icon>more_horiz</mat-icon>
+        </div>
+    </div>
+
+    <div class="member-panel-content-container" *ngIf="expanded" [@bodyExpansion]>
+        <div class="member-panel-content">
+            <div class="member-panel-content-item left">
+                <h4>Units</h4>
+                <div class="member-panel-content-elements" *ngFor="let unit of member.unitObjects">
+                    <div>{{ unit.name }}</div>
+                    <div>{{ unit.memberRole }}</div>
+                </div>
+            </div>
+            <div class="member-panel-content-item right">
+                <h4>Training</h4>
+                <div class="member-panel-content-elements">Placeholder</div>
+            </div>
+        </div>
+    </div>
+</mat-card>

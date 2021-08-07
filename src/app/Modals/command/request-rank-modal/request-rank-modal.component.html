@@ -2,28 +2,28 @@
 <mat-dialog-content>
     <form #form="ngForm" (ngSubmit)="submit()">
         <app-autofocus-stop></app-autofocus-stop>
-        <app-dropdown
-            #accountName="ngModel"
-            (onSelectionChange)="onSelectAccount($event)"
-            [(ngModel)]="model.account"
+        <app-selection-list
+            #accountList="ngModel"
+            [(ngModel)]="model.accounts"
+            (ngModelChange)="onSelectAccount()"
             [elementName]="'Recipient'"
             [elements]="accounts"
-            [isRequired]="true"
-            [placeholder]="'Select recipient'"
-            id="accountName"
-            name="formAccount"
+            [clearOnSelect]="true"
+            [placeholder]="'Add recipient'"
+            [listDisabledTooltip]="getAccountTooltip"
+            id="accountList"
+            name="formAccountList"
         >
             <ng-template #element let-element>
                 {{ getAccountName(element) }}
             </ng-template>
-        </app-dropdown>
-        <br />
+        </app-selection-list>
         <app-dropdown
             #rank="ngModel"
             [(ngModel)]="model.rank"
+            (ngModelChange)="onSelectRank()"
             [elementName]="'Rank'"
             [elements]="ranks"
-            [isDisabled]="ranks.value.length === 0"
             [isRequired]="true"
             [placeholder]="'Select new rank'"
             id="rank"
@@ -33,7 +33,6 @@
                 {{ getRankName(element) }}
             </ng-template>
         </app-dropdown>
-        <br />
         <mat-form-field>
             <textarea
                 #reason="ngModel"

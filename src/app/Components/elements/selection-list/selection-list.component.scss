@@ -1,0 +1,41 @@
+.selection-list-form {
+    margin-bottom: 8px;
+
+    .selection-list-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 4px 0;
+
+        &.empty {
+            padding: 0;
+        }
+
+        .selection-element {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            padding: 8px 16px;
+            align-items: center;
+            margin-bottom: 4px;
+            border-radius: 4px;
+
+            .disabled {
+                text-decoration: line-through;
+            }
+
+            .remove {
+                cursor: pointer;
+            }
+        }
+    }
+
+    .mat-form-field {
+        width: 100%;
+    }
+}
+
+::ng-deep .cdk-virtual-scroll-orientation-vertical .cdk-virtual-scroll-content-wrapper {
+    width: 100%;
+    min-width: unset;
+}

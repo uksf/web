@@ -1,0 +1,110 @@
+.member-panel {
+    margin: 0 0 3px;
+    padding: 4px;
+
+    .header-panel {
+        display: flex;
+        padding: 0 16px 0 12px;
+
+        .header-title-container {
+            display: flex;
+            flex-direction: row;
+            flex: 1;
+            margin: auto;
+
+            .toggle {
+                margin: -4px 0 -4px -16px;
+                padding: 0 12px 0 12px;
+                display: flex;
+                cursor: pointer;
+
+                .mat-icon {
+                    font-size: 30px;
+                    height: 30px;
+                    width: 30px;
+                    margin: auto;
+                }
+            }
+
+            .header-title {
+                flex: 1;
+                flex-basis: 25%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                margin-right: 16px;
+                padding: 2px 4px;
+
+                &.hover {
+                    margin-top: -4px;
+                    margin-bottom: -4px;
+                    margin-right: 0;
+                    padding-right: 16px;
+                    cursor: pointer;
+                }
+
+                &.edit {
+                    cursor: pointer;
+                }
+
+                .underline {
+                    height: 1px;
+                    background-size: 4px 100%;
+                    background-repeat: repeat-x;
+                    bottom: 0;
+                    background-position: 0;
+                    position: relative;
+                    width: 100%;
+                    pointer-events: none;
+                    transform: scale3d(1, 1.0001, 1);
+                }
+            }
+        }
+
+        .header-button-container {
+            display: flex;
+        }
+    }
+
+    .member-panel-content-container {
+        .member-panel-content {
+            display: flex;
+            flex-direction: row;
+            padding: 16px;
+            height: 100%;
+
+            h4 {
+                font-size: 16px;
+                margin: 0 0 8px;
+            }
+
+            .member-panel-content-item {
+                flex: 0.5;
+                height: 100%;
+                width: 50%;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                padding: 4px;
+                margin-right: 4px;
+
+                &.left {
+                    margin-right: 4px;
+                }
+
+                &.right {
+                    margin-left: 4px;
+                }
+
+                .member-panel-content-elements {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    margin-top: 2px;
+                }
+            }
+        }
+    }
+}

@@ -1,8 +1,8 @@
-import { IDropdownElement } from '../Components/elements/dropdown/dropdown.component';
+import {IDropdownElement} from '../Components/elements/dropdown-base/dropdown-base.component';
 
 export enum RoleType {
     INDIVIDUAL,
-    UNIT,
+    UNIT
 }
 
 export class Role {
@@ -17,7 +17,7 @@ export class Role {
     public static mapToElement(role: Role): IDropdownElement {
         return {
             value: role.name,
-            displayValue: role.name,
+            displayValue: role.name
         };
     }
 }

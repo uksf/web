@@ -1,0 +1,28 @@
+.unit-panel-container {
+    .unit-panel {
+        background: transparent;
+        box-shadow: unset;
+        border-radius: 0;
+
+        &.mat-expansion-panel-spacing {
+            margin: 0;
+        }
+
+        .mat-expansion-panel-header {
+            padding: 0 0 0 8px;
+            width: 100%;
+
+            &:hover {
+                background: transparent;
+            }
+        }
+
+        .unit-panel-body {
+            margin: 0 0 0 12px;
+
+            .members-container {
+                padding-left: 20px;
+            }
+        }
+    }
+}

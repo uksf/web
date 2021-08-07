@@ -1,3 +1,9 @@
+.spinner-container1 {
+    display: flex;
+    justify-content: center;
+    margin: auto;
+}
+
 .list-container {
     margin-bottom: 20px;
 
@@ -5,6 +11,7 @@
         display: flex;
         flex-direction: row;
         align-items: center;
+        justify-content: space-between;
 
         h3 {
             margin: 12px 0;
@@ -34,7 +41,6 @@
 
                 .date-container {
                     display: flex;
-                    width: 204px;
                     align-items: center;
 
                     .title {
@@ -43,18 +49,24 @@
 
                         &.start {
                             justify-content: flex-start;
-                            min-width: 95px;
+                            width: 75px;
                         }
 
                         &.end {
                             justify-content: flex-end;
-                            min-width: 95px;
+                            width: 75px;
                         }
 
                         &.to {
                             justify-content: center;
-                            min-width: 14px;
-                            font-size: 13px;
+                            min-width: 20px;
+                            margin: 0 10px;
+
+                            .mat-icon {
+                                font-size: 20px;
+                                width: 20px;
+                                height: 20px;
+                            }
                         }
                     }
                 }
@@ -98,7 +110,7 @@
                 }
 
                 &::after {
-                    content: "";
+                    content: '';
                     border-style: solid;
                     border-width: 0 2px 2px 0;
                     display: inline-block;
@@ -114,7 +126,16 @@
         overflow: visible;
 
         .content-body {
-            padding: 0 20px 10px;
+            padding: 0 24px 16px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+
+            .requested {
+                display: flex;
+                flex-direction: column;
+                padding-bottom: 8px;
+            }
 
             .content {
                 display: flex;
@@ -124,58 +145,15 @@
                 align-items: center;
 
                 .reason {
+                    display: flex;
+                    flex-direction: column;
                     flex: 1;
-                }
-            }
-        }
-    }
-
-    .list-footer {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-
-        .pagination-container {
-            display: flex;
-            flex-direction: row;
-            flex: 1;
-            justify-content: flex-end;
-
-            span {
-                margin-right: 10px;
-                align-self: center;
-            }
-
-            button {
-                margin: 0px 5px 0 0;
-                padding: 0;
-                border-radius: 20px;
-                min-width: 40px;
-                height: 40px;
-
-                .next {
-                    border-style: solid;
-                    border-width: 0 2px 2px 0;
-                    display: inline-block;
-                    padding: 4px;
-                    transform: rotate(-45deg) translate(-1px, -1px);
-                    vertical-align: middle;
+                    padding-right: 16px;
                 }
 
-                .previous {
-                    border-style: solid;
-                    border-width: 0 2px 2px 0;
-                    display: inline-block;
-                    padding: 4px;
-                    transform: rotate(135deg) translate(-1px, -1px);
-                    vertical-align: middle;
+                .mat-raised-button {
+                    align-self: flex-end;
                 }
-            }
-
-            mat-select {
-                width: 40px;
-                align-self: center;
-                margin-left: 10px;
             }
         }
     }

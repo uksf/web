@@ -4,7 +4,7 @@
         <app-autofocus-stop></app-autofocus-stop>
         <app-dropdown
             #accountName="ngModel"
-            (onSelectionChange)="onSelectAccount($event)"
+            (ngModelChange)="onSelectAccount($event)"
             [(ngModel)]="model.account"
             [elementName]="'Recipient'"
             [elements]="accounts"
