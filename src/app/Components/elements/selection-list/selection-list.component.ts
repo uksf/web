@@ -78,7 +78,11 @@ export class SelectionListComponent extends DropdownBaseComponent implements OnI
     set listModel(value: IDropdownElement[]) {
         this._listModel = value;
         this.form.get('list').setValue(this._listModel);
-        this.form.get('textInput').markAsTouched();
+
+        if (value !== null && value.length > 0) {
+            this.form.get('textInput').markAsTouched();
+        }
+
         this.onListChange(value);
         this.revalidate();
     }

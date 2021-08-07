@@ -3,7 +3,7 @@
         <div class="selection-element" *ngFor="let element of listModel">
             <span [matTooltipDisabled]="!element.disabled" [matTooltip]="listDisabledTooltip(element)" [ngClass]="{ disabled: element.disabled }">{{ element.displayValue }}</span>
             <app-flex-filler></app-flex-filler>
-            <mat-icon class="remove" (click)="remove(element)">highlight_off</mat-icon>
+            <mat-icon class="remove" (click)="remove(element)" matTooltip="Remove from selection">highlight_off</mat-icon>
         </div>
     </div>
     <mat-form-field [ngClass]="formFieldClass">

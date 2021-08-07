@@ -7,15 +7,15 @@
             <div class="header-title hover" (click)="toggle($event)" (mouseenter)="onMouseOver()" (mouseleave)="onMouseLeave()">
                 <span>{{ member.lastname }}.{{ member.firstname[0] }}</span>
             </div>
-            <div class="header-title edit" (click)="editRank(); $event.stopPropagation()">
+            <div class="header-title edit" (click)="editRank(); $event.stopPropagation()" matTooltip="Click to edit rank">
                 <span>{{ member.rankObject.name }}</span>
                 <div class="underline"></div>
             </div>
-            <div class="header-title edit" (click)="editRole(); $event.stopPropagation()">
+            <div class="header-title edit" (click)="editRole(); $event.stopPropagation()" matTooltip="Click to edit role">
                 <span>{{ member.roleObject.name }}</span>
                 <div class="underline"></div>
             </div>
-            <div class="header-title edit" (click)="editUnit(); $event.stopPropagation()">
+            <div class="header-title edit" (click)="editUnit(); $event.stopPropagation()" matTooltip="Click to edit unit">
                 <span>{{ member.unitObject.name }}</span>
                 <div class="underline"></div>
             </div>
