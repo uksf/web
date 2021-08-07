@@ -1,9 +1,9 @@
-import {Component, ContentChild, ElementRef, HostListener, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {NgModel} from '@angular/forms';
-import {Observable, of} from 'rxjs';
-import {nextFrame} from '../../../Services/helper.service';
-import {map, startWith} from 'rxjs/operators';
-import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
+import { Component, ContentChild, ElementRef, HostListener, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { NgModel } from '@angular/forms';
+import { Observable, of } from 'rxjs';
+import { nextFrame } from '../../../Services/helper.service';
+import { map, startWith } from 'rxjs/operators';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
 @Component({
     template: ``

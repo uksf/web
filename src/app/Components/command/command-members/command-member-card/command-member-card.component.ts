@@ -1,11 +1,11 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {Account} from '../../../../Models/Account';
-import {expansionAnimations} from '../../../../Services/animations.service';
-import {MatDialog} from '@angular/material/dialog';
-import {RequestRankModalComponent} from '../../../../Modals/command/request-rank-modal/request-rank-modal.component';
-import {RequestRoleModalComponent} from '../../../../Modals/command/request-role-modal/request-role-modal.component';
-import {RequestTransferModalComponent} from '../../../../Modals/command/request-transfer-modal/request-transfer-modal.component';
-import {PreSelection} from '../../../../Models/Shared';
+import { Component, Input, OnInit } from '@angular/core';
+import { Account } from '../../../../Models/Account';
+import { expansionAnimations } from '../../../../Services/animations.service';
+import { MatDialog } from '@angular/material/dialog';
+import { RequestRankModalComponent } from '../../../../Modals/command/request-rank-modal/request-rank-modal.component';
+import { RequestRoleModalComponent } from '../../../../Modals/command/request-role-modal/request-role-modal.component';
+import { RequestTransferModalComponent } from '../../../../Modals/command/request-transfer-modal/request-transfer-modal.component';
+import { PreSelection } from '../../../../Models/Shared';
 
 @Component({
     selector: 'app-command-member-card',

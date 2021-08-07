@@ -1,6 +1,6 @@
-import {Injectable, OnDestroy, OnInit} from '@angular/core';
-import {ConnectionContainer, SignalRService} from './signalr.service';
-import {AccountService} from './account.service';
+import { Injectable, OnDestroy, OnInit } from '@angular/core';
+import { ConnectionContainer, SignalRService } from './signalr.service';
+import { AccountService } from './account.service';
 
 @Injectable()
 export class SignalRHubsService implements OnInit, OnDestroy {

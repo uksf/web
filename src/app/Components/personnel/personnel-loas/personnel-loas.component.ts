@@ -1,14 +1,14 @@
-import {Component, OnInit, QueryList, ViewChildren} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {UrlService} from '../../../Services/url.service';
-import {MatDialog} from '@angular/material/dialog';
-import {RequestLoaModalComponent} from '../../../Modals/command/request-loa-modal/request-loa-modal.component';
-import {ConfirmationModalComponent} from 'app/Modals/confirmation-modal/confirmation-modal.component';
-import {formatDate} from '@angular/common';
-import {Loa} from '../../../Models/Loa';
-import {PersonnelLoasListComponent} from '../personnel-loas-list/personnel-loas-list.component';
-import {Subject} from 'rxjs';
-import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
+import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { UrlService } from '../../../Services/url.service';
+import { MatDialog } from '@angular/material/dialog';
+import { RequestLoaModalComponent } from '../../../Modals/command/request-loa-modal/request-loa-modal.component';
+import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
+import { formatDate } from '@angular/common';
+import { Loa } from '../../../Models/Loa';
+import { PersonnelLoasListComponent } from '../personnel-loas-list/personnel-loas-list.component';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
     selector: 'app-personnel-loas',

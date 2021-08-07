@@ -1,16 +1,16 @@
-import {Component, Inject, OnInit, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialog} from '@angular/material/dialog';
-import {NgForm} from '@angular/forms';
-import {HttpClient} from '@angular/common/http';
-import {UrlService} from '../../../Services/url.service';
-import {MessageModalComponent} from 'app/Modals/message-modal/message-modal.component';
-import {BehaviorSubject} from 'rxjs';
-import {IDropdownElement, mapFromElement} from '../../../Components/elements/dropdown-base/dropdown-base.component';
-import {Account, BasicAccount} from '../../../Models/Account';
-import {CommandRequest} from '../../../Models/CommandRequest';
-import {Unit} from '../../../Models/Units';
-import {SelectionListComponent} from '../../../Components/elements/selection-list/selection-list.component';
-import {PreSelection} from '../../../Models/Shared';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
+import { NgForm } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { UrlService } from '../../../Services/url.service';
+import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
+import { BehaviorSubject } from 'rxjs';
+import { IDropdownElement, mapFromElement } from '../../../Components/elements/dropdown-base/dropdown-base.component';
+import { Account, BasicAccount } from '../../../Models/Account';
+import { CommandRequest } from '../../../Models/CommandRequest';
+import { Unit } from '../../../Models/Units';
+import { SelectionListComponent } from '../../../Components/elements/selection-list/selection-list.component';
+import { PreSelection } from '../../../Models/Shared';
 
 @Component({
     selector: 'app-request-transfer-modal',

@@ -1,8 +1,8 @@
-import {Application} from './Application';
-import {IDropdownElement} from '../Components/elements/dropdown-base/dropdown-base.component';
-import {Rank} from './Rank';
-import {Role} from './Role';
-import {Unit} from './Units';
+import { Application } from './Application';
+import { IDropdownElement } from '../Components/elements/dropdown-base/dropdown-base.component';
+import { Rank } from './Rank';
+import { Role } from './Role';
+import { Unit } from './Units';
 
 export enum MembershipState {
     UNCONFIRMED,

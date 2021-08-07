@@ -1,56 +1,49 @@
-import {Injectable, NgModule} from '@angular/core';
-import {
-    ActivatedRouteSnapshot,
-    DefaultUrlSerializer,
-    RouterModule,
-    RouterStateSnapshot,
-    Routes,
-    UrlTree
-} from '@angular/router';
-import {HomePageComponent} from './Pages/home-page/home-page.component';
-import {LoginPageComponent} from './Pages/login-page/login-page.component';
-import {ProfilePageComponent} from './Pages/profile-page/profile-page.component';
-import {RecruitmentPageComponent} from './Pages/recruitment-page/recruitment-page.component';
-import {RecruitmentApplicationPageComponent} from './Pages/recruitment-application-page/recruitment-application-page.component';
-import {LivePageComponent} from './Pages/live-page/live-page.component';
-import {AboutPageComponent} from './Pages/about-page/about-page.component';
-import {DocsPageComponent} from './Pages/docs-page/docs-page.component';
-import {RulesPageComponent} from './Pages/rules-page/rules-page.component';
-import {PolicyPageComponent} from './Pages/policy-page/policy-page.component';
-import {InformationPageComponent} from './Pages/information-page/information-page.component';
-import {UnitPageComponent} from './Pages/unit-page/unit-page.component';
-import {OprepPageComponent} from './Pages/oprep-page/oprep-page.component';
-import {AdminErrorLogsComponent} from './Components/admin/admin-error-logs/admin-error-logs.component';
-import {AdminAuditLogsComponent} from './Components/admin/admin-audit-logs/admin-audit-logs.component';
-import {OpordPageComponent} from './Pages/opord-page/opord-page.component';
-import {UnitsOrbatComponent} from './Components/units/units-orbat/units-orbat.component';
-import {UnitsOrbatAuxComponent} from './Components/units/units-orbat-aux/units-orbat-aux.component';
-import {UnitsRosterComponent} from './Components/units/units-roster/units-roster.component';
-import {NgxPermissionsGuard} from 'ngx-permissions';
-import {CommandUnitsComponent} from './Components/command/command-units/command-units.component';
-import {CommandRanksComponent} from './Components/command/command-ranks/command-ranks.component';
-import {CommandRolesComponent} from './Components/command/command-roles/command-roles.component';
-import {CommandRequestsComponent} from './Components/command/command-requests/command-requests.component';
-import {OperationsActivityComponent} from './Components/operations/operations-activity/operations-activity.component';
-import {OperationsOrdersComponent} from './Components/operations/operations-orders/operations-orders.component';
-import {OperationsReportsComponent} from './Components/operations/operations-reports/operations-reports.component';
-import {OperationsServersComponent} from './Components/operations/operations-servers/operations-servers.component';
-import {AdminVariablesComponent} from './Components/admin/admin-variables/admin-variables.component';
-import {AdminLogsComponent} from './Components/admin/admin-logs/admin-logs.component';
-import {HttpClient} from '@angular/common/http';
-import {AdminToolsComponent} from './Components/admin/admin-tools/admin-tools.component';
-import {Permissions} from './Services/permissions';
-import {ApplicationPageComponent} from './Pages/application-page/application-page.component';
-import {AdminLauncherLogsComponent} from './Components/admin/admin-launcher-logs/admin-launcher-logs.component';
-import {PersonnelLoasComponent} from './Components/personnel/personnel-loas/personnel-loas.component';
-import {PersonnelDischargesComponent} from './Components/personnel/personnel-discharges/personnel-discharges.component';
-import {PersonnelActivityComponent} from './Components/personnel/personnel-activity/personnel-activity.component';
-import {ModpackGuideComponent} from './Components/modpack/modpack-guide/modpack-guide.component';
-import {ModpackReleasesComponent} from './Components/modpack/modpack-releases/modpack-releases.component';
-import {ModpackBuildsDevComponent} from './Components/modpack/modpack-builds-dev/modpack-builds-dev.component';
-import {ModpackBuildsRcComponent} from './Components/modpack/modpack-builds-rc/modpack-builds-rc.component';
-import {AdminDiscordLogsComponent} from './Components/admin/admin-discord-logs/admin-discord-logs.component';
-import {CommandMembersComponent} from './Components/command/command-members/command-members.component';
+import { Injectable, NgModule } from '@angular/core';
+import { ActivatedRouteSnapshot, DefaultUrlSerializer, RouterModule, RouterStateSnapshot, Routes, UrlTree } from '@angular/router';
+import { HomePageComponent } from './Pages/home-page/home-page.component';
+import { LoginPageComponent } from './Pages/login-page/login-page.component';
+import { ProfilePageComponent } from './Pages/profile-page/profile-page.component';
+import { RecruitmentPageComponent } from './Pages/recruitment-page/recruitment-page.component';
+import { RecruitmentApplicationPageComponent } from './Pages/recruitment-application-page/recruitment-application-page.component';
+import { LivePageComponent } from './Pages/live-page/live-page.component';
+import { AboutPageComponent } from './Pages/about-page/about-page.component';
+import { DocsPageComponent } from './Pages/docs-page/docs-page.component';
+import { RulesPageComponent } from './Pages/rules-page/rules-page.component';
+import { PolicyPageComponent } from './Pages/policy-page/policy-page.component';
+import { InformationPageComponent } from './Pages/information-page/information-page.component';
+import { UnitPageComponent } from './Pages/unit-page/unit-page.component';
+import { OprepPageComponent } from './Pages/oprep-page/oprep-page.component';
+import { AdminErrorLogsComponent } from './Components/admin/admin-error-logs/admin-error-logs.component';
+import { AdminAuditLogsComponent } from './Components/admin/admin-audit-logs/admin-audit-logs.component';
+import { OpordPageComponent } from './Pages/opord-page/opord-page.component';
+import { UnitsOrbatComponent } from './Components/units/units-orbat/units-orbat.component';
+import { UnitsOrbatAuxComponent } from './Components/units/units-orbat-aux/units-orbat-aux.component';
+import { UnitsRosterComponent } from './Components/units/units-roster/units-roster.component';
+import { NgxPermissionsGuard } from 'ngx-permissions';
+import { CommandUnitsComponent } from './Components/command/command-units/command-units.component';
+import { CommandRanksComponent } from './Components/command/command-ranks/command-ranks.component';
+import { CommandRolesComponent } from './Components/command/command-roles/command-roles.component';
+import { CommandRequestsComponent } from './Components/command/command-requests/command-requests.component';
+import { OperationsActivityComponent } from './Components/operations/operations-activity/operations-activity.component';
+import { OperationsOrdersComponent } from './Components/operations/operations-orders/operations-orders.component';
+import { OperationsReportsComponent } from './Components/operations/operations-reports/operations-reports.component';
+import { OperationsServersComponent } from './Components/operations/operations-servers/operations-servers.component';
+import { AdminVariablesComponent } from './Components/admin/admin-variables/admin-variables.component';
+import { AdminLogsComponent } from './Components/admin/admin-logs/admin-logs.component';
+import { HttpClient } from '@angular/common/http';
+import { AdminToolsComponent } from './Components/admin/admin-tools/admin-tools.component';
+import { Permissions } from './Services/permissions';
+import { ApplicationPageComponent } from './Pages/application-page/application-page.component';
+import { AdminLauncherLogsComponent } from './Components/admin/admin-launcher-logs/admin-launcher-logs.component';
+import { PersonnelLoasComponent } from './Components/personnel/personnel-loas/personnel-loas.component';
+import { PersonnelDischargesComponent } from './Components/personnel/personnel-discharges/personnel-discharges.component';
+import { PersonnelActivityComponent } from './Components/personnel/personnel-activity/personnel-activity.component';
+import { ModpackGuideComponent } from './Components/modpack/modpack-guide/modpack-guide.component';
+import { ModpackReleasesComponent } from './Components/modpack/modpack-releases/modpack-releases.component';
+import { ModpackBuildsDevComponent } from './Components/modpack/modpack-builds-dev/modpack-builds-dev.component';
+import { ModpackBuildsRcComponent } from './Components/modpack/modpack-builds-rc/modpack-builds-rc.component';
+import { AdminDiscordLogsComponent } from './Components/admin/admin-discord-logs/admin-discord-logs.component';
+import { CommandMembersComponent } from './Components/command/command-members/command-members.component';
 
 const appRoutes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },

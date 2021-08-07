@@ -1,4 +1,4 @@
-import {Component, forwardRef, Input, OnInit, ViewChild} from '@angular/core';
+import { Component, forwardRef, Input, OnInit, ViewChild } from '@angular/core';
 import {
     AbstractControl,
     ControlContainer,
@@ -12,10 +12,10 @@ import {
     ValidationErrors,
     Validator
 } from '@angular/forms';
-import {MatAutocompleteSelectedEvent, MatAutocompleteTrigger} from '@angular/material/autocomplete';
-import {DropdownBaseComponent, IDropdownElement} from '../dropdown-base/dropdown-base.component';
-import {any, nextFrame} from '../../../Services/helper.service';
-import {ErrorStateMatcher} from '@angular/material/core';
+import { MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { DropdownBaseComponent, IDropdownElement } from '../dropdown-base/dropdown-base.component';
+import { any, nextFrame } from '../../../Services/helper.service';
+import { ErrorStateMatcher } from '@angular/material/core';
 
 export class SelectionListErrorStateMatcher implements ErrorStateMatcher {
     isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {

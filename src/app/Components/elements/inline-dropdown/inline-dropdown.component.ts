@@ -1,7 +1,7 @@
-import {Component, EventEmitter, forwardRef, HostListener, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {Observable} from 'rxjs';
-import {IDropdownElement} from '../dropdown-base/dropdown-base.component';
-import {NG_VALUE_ACCESSOR} from '@angular/forms';
+import { Component, EventEmitter, forwardRef, HostListener, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Observable } from 'rxjs';
+import { IDropdownElement } from '../dropdown-base/dropdown-base.component';
+import { NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
     selector: 'app-inline-dropdown',

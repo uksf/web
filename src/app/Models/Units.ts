@@ -1,5 +1,5 @@
-import {Account} from './Account';
-import {IDropdownElement} from '../Components/elements/dropdown-base/dropdown-base.component';
+import { Account } from './Account';
+import { IDropdownElement } from '../Components/elements/dropdown-base/dropdown-base.component';
 
 export class Unit {
     id: string;

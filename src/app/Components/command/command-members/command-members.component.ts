@@ -1,15 +1,15 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {HttpClient, HttpParams} from '@angular/common/http';
-import {UrlService} from '../../../Services/url.service';
-import {PagedResult} from '../../../Models/PagedResult';
-import {PagedEvent, PaginatorComponent} from '../../elements/paginator/paginator.component';
-import {Unit, UnitTreeDataSet} from '../../../Models/Units';
-import {Account} from '../../../Models/Account';
-import {buildQuery} from '../../../Services/helper.service';
-import {CommandUnitGroupCardComponent} from './command-unit-group-card/command-unit-group-card.component';
-import {SignalRHubsService} from '../../../Services/signalrHubs.service';
-import {Subject} from 'rxjs';
-import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { UrlService } from '../../../Services/url.service';
+import { PagedResult } from '../../../Models/PagedResult';
+import { PagedEvent, PaginatorComponent } from '../../elements/paginator/paginator.component';
+import { Unit, UnitTreeDataSet } from '../../../Models/Units';
+import { Account } from '../../../Models/Account';
+import { buildQuery } from '../../../Services/helper.service';
+import { CommandUnitGroupCardComponent } from './command-unit-group-card/command-unit-group-card.component';
+import { SignalRHubsService } from '../../../Services/signalrHubs.service';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
     selector: 'app-command-members',

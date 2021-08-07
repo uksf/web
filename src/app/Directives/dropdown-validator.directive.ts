@@ -1,6 +1,6 @@
-import {IDropdownElement} from '../Components/elements/dropdown-base/dropdown-base.component';
-import {Directive, Input} from '@angular/core';
-import {FormControl, NG_VALIDATORS, Validator} from '@angular/forms';
+import { IDropdownElement } from '../Components/elements/dropdown-base/dropdown-base.component';
+import { Directive, Input } from '@angular/core';
+import { FormControl, NG_VALIDATORS, Validator } from '@angular/forms';
 
 @Directive({
     selector: '[mustSelectFromDropdown]',

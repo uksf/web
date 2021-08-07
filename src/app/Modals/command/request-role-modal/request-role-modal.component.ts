@@ -1,16 +1,16 @@
-import {Component, Inject, OnInit, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialog} from '@angular/material/dialog';
-import {NgForm} from '@angular/forms';
-import {HttpClient} from '@angular/common/http';
-import {UrlService} from '../../../Services/url.service';
-import {BehaviorSubject} from 'rxjs';
-import {IDropdownElement, mapFromElement} from '../../../Components/elements/dropdown-base/dropdown-base.component';
-import {Account, BasicAccount} from '../../../Models/Account';
-import {Role, RolesDataset} from '../../../Models/Role';
-import {SelectionListComponent} from '../../../Components/elements/selection-list/selection-list.component';
-import {PreSelection} from '../../../Models/Shared';
-import {CommandRequest} from '../../../Models/CommandRequest';
-import {MessageModalComponent} from '../../message-modal/message-modal.component';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
+import { NgForm } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { UrlService } from '../../../Services/url.service';
+import { BehaviorSubject } from 'rxjs';
+import { IDropdownElement, mapFromElement } from '../../../Components/elements/dropdown-base/dropdown-base.component';
+import { Account, BasicAccount } from '../../../Models/Account';
+import { Role, RolesDataset } from '../../../Models/Role';
+import { SelectionListComponent } from '../../../Components/elements/selection-list/selection-list.component';
+import { PreSelection } from '../../../Models/Shared';
+import { CommandRequest } from '../../../Models/CommandRequest';
+import { MessageModalComponent } from '../../message-modal/message-modal.component';
 
 @Component({
     selector: 'app-request-role-modal',

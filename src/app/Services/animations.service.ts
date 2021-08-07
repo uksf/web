@@ -1,4 +1,4 @@
-import {animate, AnimationTriggerMetadata, state, style, transition, trigger} from '@angular/animations';
+import { animate, AnimationTriggerMetadata, state, style, transition, trigger } from '@angular/animations';
 
 export const expansionAnimations: {
     readonly indicatorRotate: AnimationTriggerMetadata;

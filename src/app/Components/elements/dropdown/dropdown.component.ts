@@ -1,14 +1,6 @@
-import {Component, forwardRef} from '@angular/core';
-import {
-    AbstractControl,
-    ControlContainer,
-    ControlValueAccessor,
-    NG_VALIDATORS,
-    NG_VALUE_ACCESSOR,
-    NgForm,
-    Validator
-} from '@angular/forms';
-import {DropdownBaseComponent, IDropdownElement} from '../dropdown-base/dropdown-base.component';
+import { Component, forwardRef } from '@angular/core';
+import { AbstractControl, ControlContainer, ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgForm, Validator } from '@angular/forms';
+import { DropdownBaseComponent, IDropdownElement } from '../dropdown-base/dropdown-base.component';
 
 @Component({
     selector: 'app-dropdown',

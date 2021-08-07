@@ -1,16 +1,16 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
-import {NgForm} from '@angular/forms';
-import {HttpClient} from '@angular/common/http';
-import {UrlService} from '../../../Services/url.service';
-import {MessageModalComponent} from 'app/Modals/message-modal/message-modal.component';
-import {InstantErrorStateMatcher} from '../../../Services/formhelper.service';
-import {BehaviorSubject} from 'rxjs';
-import {IDropdownElement, mapFromElement} from '../../../Components/elements/dropdown-base/dropdown-base.component';
-import {BasicAccount} from '../../../Models/Account';
-import {CommandRequest} from '../../../Models/CommandRequest';
-import {Role, RolesDataset} from '../../../Models/Role';
-import {Unit} from '../../../Models/Units';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { NgForm } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { UrlService } from '../../../Services/url.service';
+import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
+import { InstantErrorStateMatcher } from '../../../Services/formhelper.service';
+import { BehaviorSubject } from 'rxjs';
+import { IDropdownElement, mapFromElement } from '../../../Components/elements/dropdown-base/dropdown-base.component';
+import { BasicAccount } from '../../../Models/Account';
+import { CommandRequest } from '../../../Models/CommandRequest';
+import { Role, RolesDataset } from '../../../Models/Role';
+import { Unit } from '../../../Models/Units';
 
 @Component({
     selector: 'app-request-unit-role-modal',

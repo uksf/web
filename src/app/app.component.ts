@@ -1,14 +1,14 @@
-import {Component, EventEmitter, Inject, OnInit, PLATFORM_ID} from '@angular/core';
-import {HeaderBarComponent} from './Components/header-bar/header-bar.component';
-import {OverlayContainer} from '@angular/cdk/overlay';
-import {ProfilePageComponent} from './Pages/profile-page/profile-page.component';
-import {OperationsServersComponent} from './Components/operations/operations-servers/operations-servers.component';
-import {CommandRanksComponent} from './Components/command/command-ranks/command-ranks.component';
-import {CommandRolesComponent} from './Components/command/command-roles/command-roles.component';
-import {isPlatformBrowser} from '@angular/common';
-import {MatDialog} from '@angular/material/dialog';
-import {ConfirmationModalComponent} from './Modals/confirmation-modal/confirmation-modal.component';
-import {ConnectionContainer, SignalRService} from './Services/signalr.service';
+import { Component, EventEmitter, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { HeaderBarComponent } from './Components/header-bar/header-bar.component';
+import { OverlayContainer } from '@angular/cdk/overlay';
+import { ProfilePageComponent } from './Pages/profile-page/profile-page.component';
+import { OperationsServersComponent } from './Components/operations/operations-servers/operations-servers.component';
+import { CommandRanksComponent } from './Components/command/command-ranks/command-ranks.component';
+import { CommandRolesComponent } from './Components/command/command-roles/command-roles.component';
+import { isPlatformBrowser } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationModalComponent } from './Modals/confirmation-modal/confirmation-modal.component';
+import { ConnectionContainer, SignalRService } from './Services/signalr.service';
 
 @Component({
     selector: 'app',

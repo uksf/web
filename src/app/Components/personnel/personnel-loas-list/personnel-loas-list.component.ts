@@ -1,13 +1,13 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {Permissions} from 'app/Services/permissions';
-import {PermissionsService} from 'app/Services/permissions.service';
-import {PagedEvent, PaginatorComponent} from '../../elements/paginator/paginator.component';
-import {buildQuery} from '../../../Services/helper.service';
-import {HttpClient, HttpParams} from '@angular/common/http';
-import {PagedResult} from '../../../Models/PagedResult';
-import {UrlService} from '../../../Services/url.service';
-import {Loa, LoaReviewState} from '../../../Models/Loa';
-import {expansionAnimations} from '../../../Services/animations.service';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Permissions } from 'app/Services/permissions';
+import { PermissionsService } from 'app/Services/permissions.service';
+import { PagedEvent, PaginatorComponent } from '../../elements/paginator/paginator.component';
+import { buildQuery } from '../../../Services/helper.service';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { PagedResult } from '../../../Models/PagedResult';
+import { UrlService } from '../../../Services/url.service';
+import { Loa, LoaReviewState } from '../../../Models/Loa';
+import { expansionAnimations } from '../../../Services/animations.service';
 
 @Component({
     selector: 'app-personnel-loas-list',
