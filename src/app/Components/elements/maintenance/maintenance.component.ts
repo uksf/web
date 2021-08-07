@@ -7,7 +7,7 @@ import {Component, ElementRef, ViewChild} from '@angular/core';
 export class MaintenanceComponent {
     @ViewChild('maintenance', { read: ElementRef }) maintenance: ElementRef;
 
-    constructor() { }
+    constructor() {}
 
     ngAfterViewInit() {
         if (this.maintenance.nativeElement.parentElement.parentElement.children.length > 2) {
