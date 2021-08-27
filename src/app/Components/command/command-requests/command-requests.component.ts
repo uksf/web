@@ -11,6 +11,7 @@ import { RequestUnitRemovalModalComponent } from 'app/Modals/command/request-uni
 import { ConnectionContainer, SignalRService } from 'app/Services/signalr.service';
 import { AccountService } from 'app/Services/account.service';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
+import { RequestModalData } from '../../../Models/Shared';
 
 @Component({
     selector: 'app-command-requests',
@@ -93,7 +94,13 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
     }
 
     transferRequest(): void {
-        const dialog = this.dialog.open(RequestTransferModalComponent, {});
+        const data: RequestModalData = {
+            ids: [],
+            allowAuxiliaryUnits: true
+        };
+        const dialog = this.dialog.open(RequestTransferModalComponent, {
+            data: data
+        });
         dialog.afterClosed().subscribe((_) => {
             this.getRequests();
         });

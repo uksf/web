@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { RequestRankModalComponent } from '../../../../Modals/command/request-rank-modal/request-rank-modal.component';
 import { RequestRoleModalComponent } from '../../../../Modals/command/request-role-modal/request-role-modal.component';
 import { RequestTransferModalComponent } from '../../../../Modals/command/request-transfer-modal/request-transfer-modal.component';
-import { PreSelection } from '../../../../Models/Shared';
+import { RequestModalData } from '../../../../Models/Shared';
 
 @Component({
     selector: 'app-command-member-card',
@@ -23,7 +23,7 @@ export class CommandMemberCardComponent implements OnInit {
     ngOnInit(): void {}
 
     editRank() {
-        const data: PreSelection = {
+        const data: RequestModalData = {
             ids: [this.member.id]
         };
         this.dialog.open(RequestRankModalComponent, {
@@ -32,7 +32,7 @@ export class CommandMemberCardComponent implements OnInit {
     }
 
     editRole() {
-        const data: PreSelection = {
+        const data: RequestModalData = {
             ids: [this.member.id]
         };
         this.dialog.open(RequestRoleModalComponent, {
@@ -41,7 +41,7 @@ export class CommandMemberCardComponent implements OnInit {
     }
 
     editUnit() {
-        const data: PreSelection = {
+        const data: RequestModalData = {
             ids: [this.member.id]
         };
         this.dialog.open(RequestTransferModalComponent, {

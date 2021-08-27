@@ -10,7 +10,7 @@ import { Account, BasicAccount } from '../../../Models/Account';
 import { CommandRequest } from '../../../Models/CommandRequest';
 import { Unit } from '../../../Models/Units';
 import { SelectionListComponent } from '../../../Components/elements/selection-list/selection-list.component';
-import { PreSelection } from '../../../Models/Shared';
+import { RequestModalData } from '../../../Models/Shared';
 
 @Component({
     selector: 'app-request-transfer-modal',
@@ -21,6 +21,7 @@ export class RequestTransferModalComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;
     @ViewChild('accountList', { read: SelectionListComponent }) accountList: SelectionListComponent;
     pending: boolean = false;
+    allowAuxiliaryUnits: boolean = false;
     preSelection: string[] = [];
     model: FormModel = {
         accounts: [],
@@ -33,9 +34,10 @@ export class RequestTransferModalComponent implements OnInit {
         reason: [{ type: 'required', message: () => 'A reason for the unit transfer is required' }]
     };
 
-    constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService, @Inject(MAT_DIALOG_DATA) public data: PreSelection) {
+    constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService, @Inject(MAT_DIALOG_DATA) public data: RequestModalData) {
         if (data) {
             this.preSelection = data.ids;
+            this.allowAuxiliaryUnits = data.allowAuxiliaryUnits;
         }
     }
 
@@ -52,7 +54,8 @@ export class RequestTransferModalComponent implements OnInit {
             }
         });
 
-        this.httpClient.get(`${this.urlService.apiUrl}/units?filter=combat`).subscribe({
+        let unitsUrl = this.allowAuxiliaryUnits ? 'units' : 'units?filter=combat';
+        this.httpClient.get(`${this.urlService.apiUrl}/${unitsUrl}`).subscribe({
             next: (units: Unit[]) => {
                 this.units.next(units.map(Unit.mapToElement));
             }

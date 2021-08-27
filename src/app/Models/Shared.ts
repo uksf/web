@@ -1,3 +1,4 @@
-export interface PreSelection {
+export interface RequestModalData {
     ids: string[];
+    allowAuxiliaryUnits?: boolean;
 }

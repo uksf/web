@@ -8,7 +8,7 @@ import { IDropdownElement, mapFromElement } from '../../../Components/elements/d
 import { Account, BasicAccount } from '../../../Models/Account';
 import { Role, RolesDataset } from '../../../Models/Role';
 import { SelectionListComponent } from '../../../Components/elements/selection-list/selection-list.component';
-import { PreSelection } from '../../../Models/Shared';
+import { RequestModalData } from '../../../Models/Shared';
 import { CommandRequest } from '../../../Models/CommandRequest';
 import { MessageModalComponent } from '../../message-modal/message-modal.component';
 
@@ -33,7 +33,7 @@ export class RequestRoleModalComponent implements OnInit {
         reason: [{ type: 'required', message: () => 'A reason for the role assignment is required' }]
     };
 
-    constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService, @Inject(MAT_DIALOG_DATA) public data: PreSelection) {
+    constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService, @Inject(MAT_DIALOG_DATA) public data: RequestModalData) {
         if (data) {
             this.preSelection = data.ids;
         }
