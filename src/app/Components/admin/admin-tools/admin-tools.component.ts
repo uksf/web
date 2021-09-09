@@ -8,7 +8,7 @@ import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.co
 @Component({
     selector: 'app-admin-tools',
     templateUrl: './admin-tools.component.html',
-    styleUrls: ['../../../Pages/admin-page/admin-page.component.scss', './admin-tools.component.scss'],
+    styleUrls: ['../../../Pages/admin-page/admin-page.component.scss', './admin-tools.component.scss']
 })
 export class AdminToolsComponent {
     accountId;
@@ -25,6 +25,7 @@ export class AdminToolsComponent {
             { key: 'invalidate', title: 'Invalidate Data Caches', function: this.invalidateCaches, pending: false },
             { key: 'getDiscord', title: 'Get Discord Roles', function: this.getDiscordRoles, pending: false },
             { key: 'updateDiscord', title: 'Update Discord Users', function: this.updateDiscordRoles, pending: false },
+            { key: 'reloadTeamspeak', title: 'Reload TeamSpeak', function: this.reloadTeamspeak, pending: false }
         ];
 
         this.debugTools = [{ key: 'notification', title: 'Test Notification', function: this.testNotification, pending: false }];
@@ -43,56 +44,68 @@ export class AdminToolsComponent {
 
     invalidateCaches() {
         let tool = this.tools.find((x) => x.key === 'invalidate');
-        this.httpClient.get(`${this.urls.apiUrl}/data/invalidate`).subscribe(
-            (_) => {
+        this.httpClient.get(`${this.urls.apiUrl}/data/invalidate`).subscribe({
+            next: (_) => {
                 tool.pending = false;
             },
-            (_) => {
+            error: (_) => {
                 tool.pending = false;
             }
-        );
+        });
     }
 
     getDiscordRoles() {
         let tool = this.tools.find((x) => x.key === 'getDiscord');
-        this.httpClient.get(`${this.urls.apiUrl}/discord/roles`, { responseType: 'text' }).subscribe(
-            (response) => {
+        this.httpClient.get(`${this.urls.apiUrl}/discord/roles`, { responseType: 'text' }).subscribe({
+            next: (response) => {
                 this.dialog.open(MessageModalComponent, {
-                    data: { message: response },
+                    data: { message: response }
                 });
                 tool.pending = false;
             },
-            () => {
+            error: () => {
                 this.dialog.open(MessageModalComponent, {
-                    data: { message: 'Failed to get Discord roles' },
+                    data: { message: 'Failed to get Discord roles' }
                 });
                 tool.pending = false;
             }
-        );
+        });
     }
 
     updateDiscordRoles() {
         let tool = this.tools.find((x) => x.key === 'updateDiscord');
-        this.httpClient.get(`${this.urls.apiUrl}/discord/updateuserroles`).subscribe(
-            (_) => {
+        this.httpClient.get(`${this.urls.apiUrl}/discord/updateuserroles`).subscribe({
+            next: (_) => {
                 tool.pending = false;
             },
-            (_) => {
+            error: (_) => {
                 tool.pending = false;
             }
-        );
+        });
+    }
+
+    reloadTeamspeak() {
+        let tool = this.tools.find((x) => x.key === 'reloadTeamspeak');
+        this.httpClient.get(`${this.urls.apiUrl}/teamspeak/reload`).subscribe({
+            next: (_) => {
+                tool.pending = false;
+            },
+            error: (_) => {
+                tool.pending = false;
+            }
+        });
     }
 
     testNotification() {
         let tool = this.debugTools.find((x) => x.key === 'notification');
-        this.httpClient.get(`${this.urls.apiUrl}/debug/notifications-test`).subscribe(
-            (_) => {
+        this.httpClient.get(`${this.urls.apiUrl}/debug/notifications-test`).subscribe({
+            next: (_) => {
                 tool.pending = false;
             },
-            (_) => {
+            error: (_) => {
                 tool.pending = false;
             }
-        );
+        });
     }
 }
 
