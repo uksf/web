@@ -11,16 +11,16 @@ export class OperationsPageComponent {
     tabLinks = [
         // { label: 'OPORDs', link: '../opords' },
         // { label: 'OPREPs', link: '../opreps' },
-        { label: 'Activity', link: '../activity' }
+        // { label: 'Activity', link: '../activity' }
     ];
 
     constructor(private permissions: PermissionsService) {
         if (this.permissions.hasPermission(Permissions.SERVERS)) {
             this.tabLinks = [
-                { label: 'Servers', link: '../servers' },
+                { label: 'Servers', link: '../servers' }
                 // { label: 'OPORDs', link: '../opords' },
                 // { label: 'OPREPs', link: '../opreps' },
-                { label: 'Activity', link: '../activity' }
+                // { label: 'Activity', link: '../activity' }
             ];
         }
     }

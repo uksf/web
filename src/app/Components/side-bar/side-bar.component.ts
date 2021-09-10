@@ -11,7 +11,7 @@ import { ApplicationState } from '../../Models/Application';
 @Component({
     selector: 'app-side-bar',
     templateUrl: './side-bar.component.html',
-    styleUrls: ['./side-bar.component.scss'],
+    styleUrls: ['./side-bar.component.scss']
 })
 export class SideBarComponent {
     newVersion = false;
@@ -21,19 +21,19 @@ export class SideBarComponent {
         // { text: 'Docs', link: 'admin', icon: 'book' },
         // { text: 'Policy', link: 'policy', icon: 'gavel' },
         { text: 'Units', link: 'units', icon: 'memory' },
-        { text: 'Application', link: 'application', icon: 'contact_mail' },
+        { text: 'Application', link: 'application', icon: 'contact_mail' }
     ];
     private memberMenuStart = [
         { text: 'Home', link: 'home', icon: 'home' },
         // { text: 'Live', icon: 'satellite' }, // cast image also very good
         { text: 'Units', link: 'units', icon: 'memory' },
-        { text: 'Operations', link: 'operations', icon: 'public' },
-        { text: 'Personnel', link: 'personnel', icon: 'group' },
+        // { text: 'Operations', link: 'operations', icon: 'public' },
+        { text: 'Personnel', link: 'personnel', icon: 'group' }
         // { text: "Training", link: 'admin', icon: "explore" } disabled until implemented
     ];
     private memberMenuEnd = [
         { text: 'Modpack', link: 'modpack', icon: 'build' },
-        { text: 'Information', link: 'information', icon: 'layers' },
+        { text: 'Information', link: 'information', icon: 'layers' }
         // { text: "Statistics", link: 'admin', icon: "equalizer" }, disabled until implemented
     ];
     private notLoggedMenu = [
@@ -41,7 +41,7 @@ export class SideBarComponent {
         // { text: 'Docs', link: 'admin', icon: 'book' },
         // { text: 'Policy', link: 'policy', icon: 'gavel' },
         { text: 'About', link: 'information/about', icon: 'layers' },
-        { text: 'Application', link: 'application', icon: 'contact_mail' },
+        { text: 'Application', link: 'application', icon: 'contact_mail' }
     ];
     private currentPermissions;
     private currentAccount;
@@ -89,6 +89,9 @@ export class SideBarComponent {
         } else if (grantedPermissions[Permissions.MEMBER]) {
             let combinedArray = [];
             combinedArray = combinedArray.concat(this.memberMenuStart);
+            if (grantedPermissions[Permissions.SERVERS]) {
+                combinedArray.push({ text: 'Operations', link: 'operations', icon: 'public' });
+            }
             if (grantedPermissions[Permissions.RECRUITER]) {
                 combinedArray.push({ text: 'Recruitment', link: 'recruitment', icon: 'group_add' });
             }

@@ -394,10 +394,9 @@ const appRoutes: Routes = [
         redirectTo: 'operations/servers',
         data: {
             permissions: {
-                only: Permissions.MEMBER,
+                only: Permissions.SERVERS,
                 except: Permissions.UNLOGGED,
                 redirectTo: {
-                    MEMBER: '/home',
                     UNLOGGED: loginRedirect,
                     default: '/home'
                 }
@@ -412,7 +411,6 @@ const appRoutes: Routes = [
                 only: Permissions.SERVERS,
                 except: Permissions.UNLOGGED,
                 redirectTo: {
-                    SERVERS: '/operations/activity',
                     UNLOGGED: loginRedirect,
                     default: '/home'
                 }
@@ -428,7 +426,6 @@ const appRoutes: Routes = [
                 only: Permissions.MEMBER,
                 except: Permissions.UNLOGGED,
                 redirectTo: {
-                    MEMBER: '/home',
                     UNLOGGED: loginRedirect,
                     default: '/home'
                 }
@@ -436,70 +433,70 @@ const appRoutes: Routes = [
         },
         canActivate: [NgxPermissionsGuard]
     },
-    {
-        path: 'operations/opreps',
-        component: OperationsReportsComponent,
-        data: {
-            permissions: {
-                only: Permissions.MEMBER,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    MEMBER: '/home',
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'operations/opreps/:id',
-        component: OprepPageComponent,
-        data: {
-            permissions: {
-                only: Permissions.MEMBER,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    MEMBER: '/home',
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'operations/opords/:id',
-        component: OpordPageComponent,
-        data: {
-            permissions: {
-                only: Permissions.MEMBER,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    MEMBER: '/home',
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'operations/activity',
-        component: OperationsActivityComponent,
-        data: {
-            permissions: {
-                only: Permissions.MEMBER,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    MEMBER: '/home',
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
+    // {
+    //     path: 'operations/opreps',
+    //     component: OperationsReportsComponent,
+    //     data: {
+    //         permissions: {
+    //             only: Permissions.MEMBER,
+    //             except: Permissions.UNLOGGED,
+    //             redirectTo: {
+    //                 MEMBER: '/home',
+    //                 UNLOGGED: loginRedirect,
+    //                 default: '/home'
+    //             }
+    //         }
+    //     },
+    //     canActivate: [NgxPermissionsGuard]
+    // },
+    // {
+    //     path: 'operations/opreps/:id',
+    //     component: OprepPageComponent,
+    //     data: {
+    //         permissions: {
+    //             only: Permissions.MEMBER,
+    //             except: Permissions.UNLOGGED,
+    //             redirectTo: {
+    //                 MEMBER: '/home',
+    //                 UNLOGGED: loginRedirect,
+    //                 default: '/home'
+    //             }
+    //         }
+    //     },
+    //     canActivate: [NgxPermissionsGuard]
+    // },
+    // {
+    //     path: 'operations/opords/:id',
+    //     component: OpordPageComponent,
+    //     data: {
+    //         permissions: {
+    //             only: Permissions.MEMBER,
+    //             except: Permissions.UNLOGGED,
+    //             redirectTo: {
+    //                 MEMBER: '/home',
+    //                 UNLOGGED: loginRedirect,
+    //                 default: '/home'
+    //             }
+    //         }
+    //     },
+    //     canActivate: [NgxPermissionsGuard]
+    // },
+    // {
+    //     path: 'operations/activity',
+    //     component: OperationsActivityComponent,
+    //     data: {
+    //         permissions: {
+    //             only: Permissions.MEMBER,
+    //             except: Permissions.UNLOGGED,
+    //             redirectTo: {
+    //                 MEMBER: '/home',
+    //                 UNLOGGED: loginRedirect,
+    //                 default: '/home'
+    //             }
+    //         }
+    //     },
+    //     canActivate: [NgxPermissionsGuard]
+    // },
     {
         path: 'personnel',
         redirectTo: 'personnel/loas',
