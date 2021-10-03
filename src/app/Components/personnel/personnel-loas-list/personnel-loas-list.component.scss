@@ -30,7 +30,7 @@
         .header-container {
             display: flex;
             flex-direction: row;
-            padding: 0 20px;
+            padding: 0 24px 0 12px;
             height: 40px;
             line-height: 40px;
 
@@ -80,7 +80,6 @@
 
             .description-container {
                 display: flex;
-                margin-right: 10px;
             }
 
             .description {
@@ -94,15 +93,15 @@
                     margin-left: 16px;
                 }
 
-                &:last-of-type {
-                    min-width: 64px;
-                    max-width: 64px;
+                &.state-icon {
+                    margin-left: 8px;
                 }
             }
 
             .toggle {
                 height: fit-content;
                 align-self: center;
+                margin-right: 8px;
 
                 &.disable {
                     opacity: 0;
@@ -126,7 +125,7 @@
         overflow: visible;
 
         .content-body {
-            padding: 0 24px 16px;
+            padding: 0 24px 16px 32px;
             display: flex;
             flex-direction: column;
             flex: 1;
@@ -167,22 +166,27 @@
 
                 .title-container {
                     .date-container {
-                        width: 138px;
-
                         .title {
                             font-size: 11px;
 
                             &.start {
-                                min-width: 64px;
+                                width: 54px;
                             }
 
                             &.end {
-                                min-width: 64px;
+                                width: 54px;
                             }
 
                             &.to {
                                 min-width: 12px;
                                 font-size: 9px;
+                                margin: 0;
+
+                                .mat-icon {
+                                    font-size: 16px;
+                                    width: 16px;
+                                    height: 17px;
+                                }
                             }
                         }
                     }
@@ -194,30 +198,27 @@
 
                 .name {
                     font-size: 11px;
-                    margin-right: 8px;
-                }
-
-                .description-container {
-                    margin-right: 8px;
+                    margin-right: 4px;
                 }
 
                 .description {
                     font-size: 11px;
 
                     &.end {
-                        margin-left: 8px;
-                    }
-
-                    &:last-of-type {
-                        min-width: 46px;
-                        max-width: 46px;
+                        margin-left: 4px;
+                        white-space: nowrap;
                     }
                 }
             }
 
             .content-container {
                 .content-body {
-                    padding: 0 10px 5px;
+                    padding: 0 12px 8px 30px;
+
+                    .requested {
+                        font-size: 11px;
+                    }
+
                     .content {
                         font-size: 11px;
                     }

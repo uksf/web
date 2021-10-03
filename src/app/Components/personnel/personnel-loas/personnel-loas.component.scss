@@ -8,6 +8,10 @@
     display: flex;
     align-items: center;
 
+    .new-loa-button {
+        margin-right: 5px;
+    }
+
     .loa-filter-buttons-container {
         display: flex;
 
@@ -46,16 +50,8 @@
             margin-bottom: 5px;
         }
 
-        .loa-filter-buttons-container {
-        }
-
         .mat-form-field {
             width: 95%;
-
-            .mat-icon-button {
-                .mat-icon {
-                }
-            }
         }
     }
 }

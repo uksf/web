@@ -8,8 +8,9 @@
     </div>
     <p *ngIf="loaded && totalLoas == 0">No {{ selectionMode }} LOAs</p>
     <mat-accordion *ngIf="loaded && totalLoas > 0">
-        <mat-card *ngFor="let loa of loas; trackBy: trackByLoa; let loaIndex = index" (click)="activate(loaIndex)" [ngClass]="{ hover: loaIndex !== selectedIndex, disable: !canViewReason(loa) }">
+        <mat-card *ngFor="let loa of loas; trackBy: trackByLoa; let loaIndex = index" (click)="activate(loaIndex)" [ngClass]="{ hover: loaIndex !== selectedIndex }">
             <div class="header-container">
+                <div class="toggle" [@indicatorRotate]="getExpandedState(loaIndex)" [ngClass]="{ disable: !canViewReason(loa) }"></div>
                 <div class="title-container">
                     <div class="date-container">
                         <div class="title start">
@@ -30,14 +31,13 @@
                     <div *ngIf="loa.emergency" class="description end rejected">Emergency</div>
                     <div *ngIf="loa.late && !loa.emergency" class="description end pending">Late</div>
                     <div *ngIf="loa.longTerm" class="description end pending">Long Term</div>
-                    <div *ngIf="loa.state === loaReviewState.PENDING" class="description end pending">Pending</div>
-                    <div *ngIf="loa.state === loaReviewState.APPROVED" class="description end">Approved</div>
-                    <div *ngIf="loa.state === loaReviewState.REJECTED" class="description end rejected">Rejected</div>
+                    <div *ngIf="loa.state === loaReviewState.PENDING" class="description state-icon pending"><mat-icon>schedule</mat-icon></div>
+                    <div *ngIf="loa.state === loaReviewState.APPROVED" class="description state-icon approved"><mat-icon>check_circle_outline</mat-icon></div>
+                    <div *ngIf="loa.state === loaReviewState.REJECTED" class="description state-icon rejected"><mat-icon>remove_circle_outline</mat-icon></div>
                 </div>
-                <div class="toggle" [@indicatorRotate]="getExpandedState(loaIndex)" [ngClass]="{ disable: !canViewReason(loa) }"></div>
             </div>
 
-            <div class="content-container" *ngIf="loaIndex === selectedIndex" [@bodyExpansion]>
+            <div class="content-container" *ngIf="loaIndex === selectedIndex && canViewReason(loa)" [@bodyExpansion]>
                 <div class="content-body">
                     <div class="requested">
                         <span><b>Requested</b></span>

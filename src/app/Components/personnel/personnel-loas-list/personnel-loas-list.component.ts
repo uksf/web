@@ -58,6 +58,7 @@ export class PersonnelLoasListComponent implements OnInit {
             .subscribe({
                 next: (pagedLoas: PagedResult<Loa>) => {
                     this.loaded = true;
+                    this.selectedIndex = -1;
                     this.loas = pagedLoas.data;
                     this.totalLoas = pagedLoas.totalCount;
                 },
@@ -71,7 +72,6 @@ export class PersonnelLoasListComponent implements OnInit {
         this.pageIndex = pagedEvent.pageIndex;
         this.pageSize = pagedEvent.pageSize;
 
-        this.selectedIndex = -1;
         this.getLoas();
     }
 
