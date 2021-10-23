@@ -32,10 +32,14 @@
 @import 'app/Pages/units-page/units-page.component.scss-theme.scss';
 
 // Components
+@import 'app/Components/admin/admin-servers/admin-servers.component.scss-theme';
 @import 'app/Components/admin/admin-variables/admin-variables.component.scss-theme';
 @import 'app/Components/comment-display/comment-display.component.scss-theme.scss';
 @import 'app/Components/elements/file-drop/file-drop.component.scss-theme.scss';
 @import 'app/Components/elements/inline-edit/inline-edit.component.scss-theme.scss';
+@import 'app/Components/elements/loading-placeholder/loading-placeholder.component.scss-theme.scss';
+@import 'app/Components/elements/selection-list/selection-list.component.scss-theme';
+@import 'app/Components/elements/theme-emitter/theme-emitter.component.scss-theme.scss';
 @import 'app/Components/command/command-requests/command-request.component.scss-theme.scss';
 @import 'app/Components/command/command-members/command-members.component.scss-theme.scss';
 @import 'app/Components/command/command-members/command-member-card/command-member-card.component.scss-theme.scss';
@@ -48,8 +52,6 @@
 @import 'app/Components/operations/operations-servers/operations-servers.component.scss-theme.scss';
 @import 'app/Components/personnel/personnel-discharges/personnel-discharges.component.scss-theme.scss';
 @import 'app/Components/personnel/personnel-loas-list/personnel-loas-list.component.scss-theme.scss';
-@import 'app/Components/elements/selection-list/selection-list.component.scss-theme';
-@import 'app/Components/elements/theme-emitter/theme-emitter.component.scss-theme.scss';
 @import 'app/Components/units/units-orbat/units-orbat.component.scss-theme.scss';
 @import 'app/Components/units/units-orbat-aux/units-orbat-aux.component.scss-theme.scss';
 @import 'app/Components/units/units-roster/units-roster.component.scss-theme.scss';
@@ -86,10 +88,14 @@
     @include units-page-component-theme($theme);
 
     // Components
+    @include admin-servers-component-theme($theme);
     @include admin-variables-component-theme($theme);
     @include comment-display-component-theme($theme);
     @include file-drop-component-theme($theme);
     @include inline-edit-component-theme($theme);
+    @include loading-placeholder-component-theme($theme);
+    @include selection-list-component-theme($theme);
+    @include theme-emitter-component-theme($theme);
     @include command-request-component-theme($theme);
     @include command-members-component-theme($theme);
     @include command-member-card-component-theme($theme);
@@ -102,8 +108,6 @@
     @include operations-servers-component-theme($theme);
     @include personnel-discharges-component-theme($theme);
     @include personnel-loas-list-component-theme($theme);
-    @include selection-list-component-theme($theme);
-    @include theme-emitter-component-theme($theme);
     @include units-orbat-component-theme($theme);
     @include units-orbat-aux-component-theme($theme);
     @include units-roster-component-theme($theme);

@@ -44,14 +44,7 @@ export class AdminToolsComponent {
 
     invalidateCaches() {
         let tool = this.tools.find((x) => x.key === 'invalidate');
-        this.httpClient.get(`${this.urls.apiUrl}/data/invalidate`).subscribe({
-            next: (_) => {
-                tool.pending = false;
-            },
-            error: (_) => {
-                tool.pending = false;
-            }
-        });
+        this.httpClient.get(`${this.urls.apiUrl}/data/invalidate`).subscribe(this.setPending(tool));
     }
 
     getDiscordRoles() {
@@ -74,38 +67,28 @@ export class AdminToolsComponent {
 
     updateDiscordRoles() {
         let tool = this.tools.find((x) => x.key === 'updateDiscord');
-        this.httpClient.get(`${this.urls.apiUrl}/discord/updateuserroles`).subscribe({
-            next: (_) => {
-                tool.pending = false;
-            },
-            error: (_) => {
-                tool.pending = false;
-            }
-        });
+        this.httpClient.get(`${this.urls.apiUrl}/discord/updateuserroles`).subscribe(this.setPending(tool));
     }
 
     reloadTeamspeak() {
         let tool = this.tools.find((x) => x.key === 'reloadTeamspeak');
-        this.httpClient.get(`${this.urls.apiUrl}/teamspeak/reload`).subscribe({
-            next: (_) => {
-                tool.pending = false;
-            },
-            error: (_) => {
-                tool.pending = false;
-            }
-        });
+        this.httpClient.get(`${this.urls.apiUrl}/teamspeak/reload`).subscribe(this.setPending(tool));
     }
 
     testNotification() {
         let tool = this.debugTools.find((x) => x.key === 'notification');
-        this.httpClient.get(`${this.urls.apiUrl}/debug/notifications-test`).subscribe({
+        this.httpClient.get(`${this.urls.apiUrl}/debug/notifications-test`).subscribe(this.setPending(tool));
+    }
+
+    private setPending(tool: Tool) {
+        return {
             next: (_) => {
                 tool.pending = false;
             },
             error: (_) => {
                 tool.pending = false;
             }
-        });
+        };
     }
 }
 

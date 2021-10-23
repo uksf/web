@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 @Component({
     selector: 'app-admin-page',
     templateUrl: './admin-page.component.html',
-    styleUrls: ['./admin-page.component.scss'],
+    styleUrls: ['./admin-page.component.scss']
 })
 export class AdminPageComponent {
     tabLinks = [
@@ -14,6 +14,7 @@ export class AdminPageComponent {
         { label: 'Discord', link: '../discord' },
         { label: 'Tools', link: '../tools' },
         { label: 'Variables', link: '../variables' },
+        { label: 'Servers', link: '../servers' }
     ];
 
     constructor() {}

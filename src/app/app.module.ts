@@ -185,6 +185,8 @@ import { CommandUnitGroupCardComponent } from './Components/command/command-memb
 import { SignalRHubsService } from './Services/signalrHubs.service';
 import { InlineDropdownComponent } from './Components/elements/inline-dropdown/inline-dropdown.component';
 import { DropdownBaseComponent } from './Components/elements/dropdown-base/dropdown-base.component';
+import { AdminServersComponent } from './Components/admin/admin-servers/admin-servers.component';
+import { LoadingPlaceholderComponent } from './Components/elements/loading-placeholder/loading-placeholder.component';
 
 export function initApp(appSettingsService: AppSettingsService, injector: Injector, countryPickerService: CountryPickerService) {
     return () => {
@@ -408,7 +410,9 @@ export function tokenGetter() {
         PaginatorComponent,
         CommandMemberCardComponent,
         CommandUnitGroupCardComponent,
-        SelectionListComponent
+        SelectionListComponent,
+        AdminServersComponent,
+        LoadingPlaceholderComponent
     ],
     bootstrap: [AppComponent]
 })

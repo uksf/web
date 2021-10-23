@@ -1,5 +1,5 @@
 @use '~@angular/material' as mat;
-@import "~@angular/material/theming";
+@import '~@angular/material/theming';
 
 @mixin modpack-builds-steps-component-theme($theme) {
     $foreground: map-get($theme, foreground);
@@ -9,29 +9,29 @@
 
     app-modpack-builds-steps {
         a {
-          color: mat.get-color-from-palette($primary);
+            color: mat.get-color-from-palette($primary);
         }
 
         .log-container {
             .log-steps {
-              border-right: 1px solid mat.get-color-from-palette($background, selected);
+                border-right: 1px solid mat.get-color-from-palette($background, selected);
 
-              h3 {
-                border-bottom: 1px solid mat.get-color-from-palette($background, selected);
-              }
-
-              .log-step-item {
-                border-bottom: 1px solid mat.get-color-from-palette($background, selected);
-
-                &.selected {
-                  color: mat.get-color-from-palette($primary, default);
-                  background-color: mat.get-color-from-palette($background, selected);
+                h3 {
+                    border-bottom: 1px solid mat.get-color-from-palette($background, selected);
                 }
 
-                &:hover {
-                  background-color: mat.get-color-from-palette($background, hover);
+                .log-step-item {
+                    border-bottom: 1px solid mat.get-color-from-palette($background, selected);
+
+                    &.selected {
+                        color: mat.get-color-from-palette($primary, default);
+                        background-color: mat.get-color-from-palette($background, selected);
+                    }
+
+                    &:hover {
+                        background-color: mat.get-color-from-palette($background, hover);
+                    }
                 }
-              }
             }
 
             .log-output {
@@ -40,7 +40,7 @@
                         .mat-raised-button {
                             &.scroll {
                                 &.autoScroll {
-                                  background-color: mat.get-color-from-palette($background, selected);
+                                    background-color: mat.get-color-from-palette($background, selected);
                                 }
                             }
                         }
@@ -48,37 +48,37 @@
                 }
 
                 .build-log {
-                  color: mat.get-color-from-palette($background, contrast);
-                  background-color: transparent;
+                    color: mat.get-color-from-palette($background, contrast);
+                    background-color: transparent;
 
-                  .log-item {
-                    color: mat.get-color-from-palette($foreground, base);
-
-                    &.selected {
-                      background-color: mat.get-color-from-palette($background, selected);
-
-                      .link {
-                        color: mat.get-color-from-palette($background, contrast);
-                      }
-                    }
-
-                    &:hover {
-                      background-color: mat.get-color-from-palette($background, hover);
-
-                      &.selected {
-                        background-color: mat.get-color-from-palette($background, selected);
-                      }
-
-                      .link {
+                    .log-item {
                         color: mat.get-color-from-palette($foreground, base);
-                      }
-                    }
+
+                        &.selected {
+                            background-color: mat.get-color-from-palette($background, selected);
+
+                            .link {
+                                color: mat.get-color-from-palette($background, contrast);
+                            }
+                        }
+
+                        &:hover {
+                            background-color: mat.get-color-from-palette($background, hover);
+
+                            &.selected {
+                                background-color: mat.get-color-from-palette($background, selected);
+                            }
+
+                            .link {
+                                color: mat.get-color-from-palette($foreground, base);
+                            }
+                        }
 
                         .link {
                             color: transparent;
 
                             &:hover {
-                              color: mat.get-color-from-palette($primary);
+                                color: mat.get-color-from-palette($primary);
                             }
                         }
                     }
@@ -86,7 +86,7 @@
             }
 
             i {
-              color: mat.get-color-from-palette($background, contrast);
+                color: mat.get-color-from-palette($background, contrast);
             }
         }
     }

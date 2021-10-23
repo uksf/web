@@ -1,0 +1,6 @@
+<div *ngIf="loading; else notLoading">
+    <div class="loading1" [style.width.px]="width" [style.height.px]="height" *ngIf="loading"></div>
+</div>
+<ng-template #notLoading>
+    <ng-content *ngTemplateOutlet="elementTemplateRef"></ng-content>
+</ng-template>
