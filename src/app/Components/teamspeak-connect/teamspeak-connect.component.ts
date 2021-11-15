@@ -4,16 +4,16 @@ import { HttpHeaders } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
-import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
 import { AccountService } from 'app/Services/account.service';
 import { SignalRService, ConnectionContainer } from 'app/Services/signalr.service';
-import { nextFrame } from 'app/Services/helper.service';
-import { ErrorResponse, UksfError } from '../../Models/Response';
+import { any, nextFrame } from 'app/Services/helper.service';
+import { UksfError } from '../../Models/Response';
+import { TeamspeakClient } from '../../Models/TeamspeakClient';
 
 @Component({
     selector: 'app-teamspeak-connect',
     templateUrl: './teamspeak-connect.component.html',
-    styleUrls: ['./teamspeak-connect.component.scss'],
+    styleUrls: ['./teamspeak-connect.component.scss']
 })
 export class ConnectTeamspeakComponent {
     @Input() showCancel = false;
@@ -24,7 +24,7 @@ export class ConnectTeamspeakComponent {
     teamspeakForm: FormGroup;
     pending = false;
     state = 0;
-    clients = [];
+    clients: TeamspeakClient[] = [];
     errorMessage: string = 'Unknown error. Plase try again';
     private previousResponse = '-1';
     private hubConnection: ConnectionContainer;
@@ -40,11 +40,11 @@ export class ConnectTeamspeakComponent {
         private signalrService: SignalRService
     ) {
         this.formGroup = formBuilder.group({
-            code: ['', Validators.required],
+            code: ['', Validators.required]
         });
         this.teamspeakForm = formBuilder.group(
             {
-                teamspeakId: ['', Validators.required],
+                teamspeakId: ['', Validators.required]
             },
             {}
         );
@@ -79,19 +79,19 @@ export class ConnectTeamspeakComponent {
     }
 
     findTeamspeakClients() {
-        this.httpClient.get(this.urls.apiUrl + '/teamspeak/online').subscribe((response: any[]) => {
-            this.updateClients(response);
+        this.httpClient.get(this.urls.apiUrl + '/teamspeak/online').subscribe((clients: TeamspeakClient[]) => {
+            this.updateClients(clients);
         });
     }
 
-    updateClients(clients: any[]) {
+    updateClients(clients: TeamspeakClient[]) {
         if (this.previousResponse !== JSON.stringify(clients)) {
             this.clients = clients;
             const tsIds = this.accountService.account.teamspeakIdentities;
             if (tsIds && tsIds.length > 0) {
                 this.clients.forEach((client) => {
                     if (tsIds.indexOf(client.clientDbId) !== -1) {
-                        client.name = `${client.name} (Already connected to this account)`;
+                        client.clientName = `${client.clientName} (Already connected to this account)`;
                     }
                 });
             }
@@ -115,9 +115,10 @@ export class ConnectTeamspeakComponent {
     }
 
     changed(code: string) {
-        if (this.pending || code.length < 24 || code.length > 24) {
+        if (this.pending) {
             return;
         }
+
         nextFrame(() => {
             this.mergeChanged(() => {
                 this.validateCode(code);
@@ -135,28 +136,33 @@ export class ConnectTeamspeakComponent {
     }
 
     validateCode(code: string) {
+        const sanitisedCode = code.trim();
+        if (sanitisedCode.length !== 24) {
+            return;
+        }
+
         this.pending = true;
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
         this.httpClient
             .post(
                 this.urls.apiUrl + `/accounts/${this.accountService.account.id}/teamspeak/${this.teamspeakForm.value.teamspeakId}`,
                 {
-                    code: code,
+                    code: sanitisedCode
                 },
                 { headers: headers }
             )
-            .subscribe(
-                () => {
+            .subscribe({
+                next: () => {
                     this.pending = false;
                     this.connectedEvent.emit();
                     this.state = 2;
                 },
-                (error: UksfError) => {
+                error: (error: UksfError) => {
                     this.errorMessage = error.error;
                     this.state = 3;
                     this.formGroup.controls['code'].setValue('');
                     this.pending = false;
                 }
-            );
+            });
     }
 }

@@ -10,7 +10,7 @@ import { PermissionsService } from 'app/Services/permissions.service';
 @Component({
     selector: 'app-application-email-confirmation',
     templateUrl: './application-email-confirmation.component.html',
-    styleUrls: ['./application-email-confirmation.component.scss', '../../../Pages/application-page/application-page.component.scss'],
+    styleUrls: ['./application-email-confirmation.component.scss', '../../../Pages/application-page/application-page.component.scss']
 })
 export class ApplicationEmailConfirmationComponent {
     @Input() email: string;
@@ -21,7 +21,7 @@ export class ApplicationEmailConfirmationComponent {
 
     constructor(private httpClient: HttpClient, public formBuilder: FormBuilder, private urls: UrlService, public dialog: MatDialog, private permissionsService: PermissionsService) {
         this.formGroup = formBuilder.group({
-            code: ['', Validators.required],
+            code: ['', Validators.required]
         });
     }
 
@@ -29,11 +29,13 @@ export class ApplicationEmailConfirmationComponent {
         if (this.pending) {
             return;
         }
+
         this.validateCode(code);
     }
 
     validateCode(code: string) {
-        if (code.length !== 24) {
+        const sanitisedCode = code.trim();
+        if (sanitisedCode.length !== 24) {
             return;
         }
 
@@ -45,21 +47,21 @@ export class ApplicationEmailConfirmationComponent {
                 this.urls.apiUrl + '/accounts',
                 {
                     email: this.email,
-                    code: code,
+                    code: sanitisedCode
                 },
                 { headers: headers }
             )
-            .subscribe(
-                () => {
+            .subscribe({
+                next: () => {
                     this.permissionsService.refresh().then(() => {
                         this.pending = false;
                         this.confirmedEvent.emit();
                     });
                 },
-                (error) => {
+                error: (error) => {
                     this.dialog
                         .open(MessageModalComponent, {
-                            data: { message: error.message },
+                            data: { message: error.message }
                         })
                         .afterClosed()
                         .subscribe(() => {
@@ -68,22 +70,22 @@ export class ApplicationEmailConfirmationComponent {
                             this.pending = false;
                         });
                 }
-            );
+            });
     }
 
     resend() {
         this.pending = true;
-        this.httpClient.post(this.urls.apiUrl + '/accounts/resend-email-code', {}).subscribe(
-            () => {
+        this.httpClient.post(this.urls.apiUrl + '/accounts/resend-email-code', {}).subscribe({
+            next: () => {
                 this.dialog.open(MessageModalComponent, {
-                    data: { message: 'Resent email confirmation code' },
+                    data: { message: 'Resent email confirmation code' }
                 });
                 this.pending = false;
                 this.resent = true;
             },
-            () => {
+            error: () => {
                 this.pending = false;
             }
-        );
+        });
     }
 }
