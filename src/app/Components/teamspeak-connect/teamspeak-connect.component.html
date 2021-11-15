@@ -5,8 +5,8 @@
         <div class="row-container">
             <mat-form-field>
                 <mat-select placeholder="{{ clients.length === 0 ? 'TeamSpeak service not connected' : 'Select your TeamSpeak name' }}" formControlName="teamspeakId">
-                    <mat-option *ngFor="let client of clients" [value]="client.clientDbId">
-                        {{ client.clientName }}
+                    <mat-option *ngFor="let client of clients" [value]="client.clientDbId" [matTooltip]="getTooltip(client)">
+                        <span [ngClass]="{ 'account-connected': isConnectedToAccount(client), connected: isConnected(client) }">{{ client.clientName }}</span>
                     </mat-option>
                 </mat-select>
             </mat-form-field>

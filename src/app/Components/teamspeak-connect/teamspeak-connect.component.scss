@@ -13,7 +13,15 @@
     }
 
     button {
-        margin: auto 0px auto 5px;
+        margin: auto 0 auto 5px;
         height: fit-content;
     }
+}
+
+.account-connected {
+    color: goldenrod;
+}
+
+.connected {
+    color: red;
 }

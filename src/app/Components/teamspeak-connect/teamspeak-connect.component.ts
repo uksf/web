@@ -6,9 +6,9 @@ import { UrlService } from '../../Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AccountService } from 'app/Services/account.service';
 import { SignalRService, ConnectionContainer } from 'app/Services/signalr.service';
-import { any, nextFrame } from 'app/Services/helper.service';
+import { nextFrame } from 'app/Services/helper.service';
 import { UksfError } from '../../Models/Response';
-import { TeamspeakClient } from '../../Models/TeamspeakClient';
+import { TeamspeakConnectClient } from '../../Models/TeamspeakConnectClient';
 
 @Component({
     selector: 'app-teamspeak-connect',
@@ -24,8 +24,8 @@ export class ConnectTeamspeakComponent {
     teamspeakForm: FormGroup;
     pending = false;
     state = 0;
-    clients: TeamspeakClient[] = [];
-    errorMessage: string = 'Unknown error. Plase try again';
+    clients: TeamspeakConnectClient[] = [];
+    errorMessage: string = 'Unknown error. Please try again';
     private previousResponse = '-1';
     private hubConnection: ConnectionContainer;
     private updateTimeout: NodeJS.Timeout;
@@ -79,12 +79,12 @@ export class ConnectTeamspeakComponent {
     }
 
     findTeamspeakClients() {
-        this.httpClient.get(this.urls.apiUrl + '/teamspeak/online').subscribe((clients: TeamspeakClient[]) => {
+        this.httpClient.get(this.urls.apiUrl + '/teamspeak/online').subscribe((clients: TeamspeakConnectClient[]) => {
             this.updateClients(clients);
         });
     }
 
-    updateClients(clients: TeamspeakClient[]) {
+    updateClients(clients: TeamspeakConnectClient[]) {
         if (this.previousResponse !== JSON.stringify(clients)) {
             this.clients = clients;
             const tsIds = this.accountService.account.teamspeakIdentities;
@@ -92,6 +92,7 @@ export class ConnectTeamspeakComponent {
                 this.clients.forEach((client) => {
                     if (tsIds.indexOf(client.clientDbId) !== -1) {
                         client.clientName = `${client.clientName} (Already connected to this account)`;
+                        client.connectedToAccount = true;
                     }
                 });
             }
@@ -126,15 +127,6 @@ export class ConnectTeamspeakComponent {
         });
     }
 
-    private mergeChanged(callback: () => void) {
-        if (this.changedTimeout) {
-            clearTimeout(this.changedTimeout);
-        }
-        this.changedTimeout = setTimeout(() => {
-            callback();
-        }, 100);
-    }
-
     validateCode(code: string) {
         const sanitisedCode = code.trim();
         if (sanitisedCode.length !== 24) {
@@ -164,5 +156,34 @@ export class ConnectTeamspeakComponent {
                     this.pending = false;
                 }
             });
+    }
+
+    isConnectedToAccount(client: TeamspeakConnectClient): boolean {
+        return client.connected && client.connectedToAccount;
+    }
+
+    isConnected(client: TeamspeakConnectClient): boolean {
+        return client.connected && !this.isConnectedToAccount(client);
+    }
+
+    getTooltip(client: TeamspeakConnectClient): string {
+        if (this.isConnectedToAccount(client)) {
+            return 'This user is already connected to your account';
+        }
+
+        if (this.isConnected(client)) {
+            return 'This user is already connected to another account';
+        }
+
+        return 'This user is not connected to any account';
+    }
+
+    private mergeChanged(callback: () => void) {
+        if (this.changedTimeout) {
+            clearTimeout(this.changedTimeout);
+        }
+        this.changedTimeout = setTimeout(() => {
+            callback();
+        }, 100);
     }
 }
