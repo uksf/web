@@ -32,38 +32,32 @@ export class ApplicationDetailsComponent {
     rolePreferenceOptions = ['NCO', 'Officer', 'Aviation', 'Medic'];
 
     validation_messages = {
-        'armaExperience': [
-            { type: 'required', message: 'Details about your Arma experience are required' }
-        ], 'unitsExperience': [
-            { type: 'required', message: 'Details about your past Arma unit experience is required' }
-        ], 'background': [
-            { type: 'required', message: 'Some background info about yourself is required' }
-        ]
-    }
+        armaExperience: [{ type: 'required', message: 'Details about your Arma experience are required' }],
+        unitsExperience: [{ type: 'required', message: 'Details about your past Arma unit experience is required' }],
+        background: [{ type: 'required', message: 'Some background info about yourself is required' }]
+    };
 
-    constructor(
-        public formBuilder: FormBuilder,
-        public dialog: MatDialog
-    ) {
+    constructor(public formBuilder: FormBuilder, public dialog: MatDialog) {
         this.formGroup = formBuilder.group({
             name: ['', Validators.maxLength(0)],
             armaExperience: ['', Validators.required],
             unitsExperience: ['', Validators.required],
             background: ['', Validators.required],
-            militaryExperience: [''],
+            militaryExperience: [false],
             reference: ['', Validators.required]
         });
         const rolePreferenceControls: { [key: string]: AbstractControl } = {};
-        this.rolePreferenceOptions.forEach(x => {
+        this.rolePreferenceOptions.forEach((x) => {
             rolePreferenceControls[x] = new FormControl(false);
         });
         this.formGroup.addControl('rolePreferences', new FormGroup(rolePreferenceControls));
-
     }
 
     next() {
         // Honeypot field must be empty
-        if (this.formGroup.value.name !== '') { return; }
+        if (this.formGroup.value.name !== '') {
+            return;
+        }
         const formObj = this.convertRolePreferencesGroup();
         const formString = JSON.stringify(formObj).replace(/\n|\r/g, '');
         this.nextEvent.emit(formString);

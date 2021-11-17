@@ -62,7 +62,7 @@ export class ApplicationEditComponent {
             armaExperience: ['', Validators.required],
             unitsExperience: ['', Validators.required],
             background: ['', Validators.required],
-            militaryExperience: [''],
+            militaryExperience: [false],
             officer: [''],
             nco: [''],
             aviation: [''],
