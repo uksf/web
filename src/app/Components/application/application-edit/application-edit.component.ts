@@ -20,7 +20,7 @@ export class InstantErrorStateMatcher implements ErrorStateMatcher {
 @Component({
     selector: 'app-application-edit',
     templateUrl: './application-edit.component.html',
-    styleUrls: ['../../../Pages/application-page/application-page.component.scss', './application-edit.component.scss'],
+    styleUrls: ['../../../Pages/application-page/application-page.component.scss', './application-edit.component.scss']
 })
 export class ApplicationEditComponent {
     formGroup: FormGroup;
@@ -33,7 +33,7 @@ export class ApplicationEditComponent {
         { value: 'Instagram', viewValue: 'Instagram' },
         { value: 'Google', viewValue: 'Google' },
         { value: 'Friend', viewValue: 'Friend' },
-        { value: 'Other', viewValue: 'Other' },
+        { value: 'Other', viewValue: 'Other' }
     ];
     rolePreferenceOptions = ['NCO', 'Officer', 'Aviation', 'Medic'];
     original: string;
@@ -41,7 +41,7 @@ export class ApplicationEditComponent {
     validation_messages = {
         armaExperience: [{ type: 'required', message: 'Details about your Arma experience are required' }],
         unitsExperience: [{ type: 'required', message: 'Details about your past Arma unit experience is required' }],
-        background: [{ type: 'required', message: 'Some background info about yourself is required' }],
+        background: [{ type: 'required', message: 'Some background info about yourself is required' }]
     };
 
     constructor(
@@ -66,7 +66,7 @@ export class ApplicationEditComponent {
             officer: [''],
             nco: [''],
             aviation: [''],
-            reference: ['', Validators.required],
+            reference: ['', Validators.required]
         });
         const rolePreferenceControls: { [key: string]: AbstractControl } = {};
         this.rolePreferenceOptions.forEach((x) => {
@@ -109,27 +109,28 @@ export class ApplicationEditComponent {
         if (this.formGroup.value.name !== '') {
             return;
         }
+
         const formObj = this.convertRolePreferencesFromGroup();
         const formString = JSON.stringify(formObj).replace(/[\n\r]/g, '');
         this.httpClient
-            .post(this.urls.apiUrl + '/applications/update', formString, {
-                headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+            .put(`${this.urls.apiUrl}/accounts/${this.accountService.account.id}/application`, formString, {
+                headers: new HttpHeaders({ 'Content-Type': 'application/json' })
             })
-            .subscribe(
-                () => {
+            .subscribe({
+                next: () => {
                     this.accountService.getAccount(() => {
                         this.updateOriginal();
                     });
                     this.dialog.open(MessageModalComponent, {
-                        data: { message: 'Your application was successfully updated' },
+                        data: { message: 'Your application was successfully updated' }
                     });
                 },
-                (error) => {
+                error: () => {
                     this.dialog.open(MessageModalComponent, {
-                        data: { message: 'Failed to update application' },
+                        data: { message: 'Failed to update application' }
                     });
                 }
-            );
+            });
     }
 
     updateOriginal() {

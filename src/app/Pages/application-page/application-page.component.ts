@@ -87,20 +87,20 @@ export class ApplicationPageComponent implements OnInit {
 
     submit() {
         this.httpClient
-            .post(this.urls.apiUrl + '/applications', this.details, {
+            .post(`${this.urls.apiUrl}/accounts/${this.accountService.account.id}/application`, this.details, {
                 headers: new HttpHeaders({ 'Content-Type': 'application/json' })
             })
-            .subscribe(
-                () => {
+            .subscribe({
+                next: () => {
                     this.accountService.getAccount(() => {
                         this.next(null);
                     });
                 },
-                (error) => {
+                error: (error) => {
                     this.dialog.open(MessageModalComponent, {
                         data: { message: error.error }
                     });
                 }
-            );
+            });
     }
 }
