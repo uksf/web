@@ -78,6 +78,10 @@ export class AdminServersComponent implements OnInit {
     }
 
     isUpdateRequired(): boolean {
+        if (!this.latest || !this.current || !this.installed) {
+            return false;
+        }
+
         return !this.isLatestBuild() || !this.isLatestUpdate() || !this.isInstalled();
     }
 
