@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -16,8 +16,15 @@ export class AdminServersComponent implements OnInit {
     current: ServerInfrastructureCurrent;
     installed: ServerInfrastructureInstalled;
     updating: boolean = false;
+    forced: boolean = false;
 
     constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {}
+
+    @HostListener('window:keydown', ['$event'])
+    @HostListener('window:keyup', ['$event'])
+    onKey(event: KeyboardEvent) {
+        this.forced = event.shiftKey;
+    }
 
     ngOnInit(): void {
         this.getInfrastructureInfo();

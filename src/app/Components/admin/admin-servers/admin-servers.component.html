@@ -45,7 +45,7 @@
                 <span *ngIf="isUpdateRequired(); else updateNotRequired" class="update-info update-required">Yes</span>
                 <ng-template #updateNotRequired><span class="update-info update-not-required">No</span></ng-template>
             </div>
-            <app-button-pending (click)="update()" [pending]="updating" [disabled]="!latest || !isUpdateRequired()">Update</app-button-pending>
+            <app-button-pending (click)="update()" [pending]="updating" [disabled]="!forced && (!latest || !isUpdateRequired())">Update</app-button-pending>
         </div>
     </app-main-content-area>
 </app-default-content-areas>
