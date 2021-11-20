@@ -56,7 +56,7 @@
         <app-form-value-debug-template></app-form-value-debug-template>
         <div class="button-container">
             <app-flex-filler></app-flex-filler>
-            <app-button-pending (click)="submit()" [disabled]="!form.valid" [pending]="pending">Submit </app-button-pending>
+            <app-button-pending (clicked)="submit()" [disabled]="!form.valid" [pending]="pending">Submit </app-button-pending>
         </div>
     </form>
 </mat-dialog-content>

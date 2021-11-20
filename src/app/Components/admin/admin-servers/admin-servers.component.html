@@ -6,7 +6,7 @@
                 Build ID:
                 <app-loading-placeholder [width]="80" [height]="25" [loading]="!current">
                     <ng-template #element>
-                        <span [ngClass]="{ 'update-required': !isLatestBuild(), 'update-not-required': isLatestBuild() }" matTooltip="Current build ID">{{ current.currentBuild }}</span>
+                        <span [ngStyle]="{ color: getBuildColour() }" matTooltip="Current build ID">{{ current.currentBuild }}</span>
                     </ng-template>
                 </app-loading-placeholder>
                 <mat-icon>chevron_right</mat-icon>
@@ -20,9 +20,7 @@
                 Update Date:
                 <app-loading-placeholder [width]="80" [height]="25" [loading]="!current">
                     <ng-template #element>
-                        <span [ngClass]="{ 'update-required': !isLatestBuild(), 'update-not-required': isLatestBuild() }" matTooltip="Last updated date">{{
-                            current.currentUpdated | date: 'mediumDate'
-                        }}</span>
+                        <span [ngStyle]="{ color: getDateColour() }" matTooltip="Last updated date">{{ current.currentUpdated | date: 'mediumDate' }}</span>
                     </ng-template>
                 </app-loading-placeholder>
                 <mat-icon>chevron_right</mat-icon>
@@ -42,10 +40,9 @@
             </div>
             <div class="update-info-container">
                 Update required?
-                <span *ngIf="isUpdateRequired(); else updateNotRequired" class="update-info update-required">Yes</span>
-                <ng-template #updateNotRequired><span class="update-info update-not-required">No</span></ng-template>
+                <span [ngStyle]="{ color: getUpdateRequiredColour() }" class="update-info"> {{ getUpdateRequiredText() }}</span>
             </div>
-            <app-button-pending (click)="update()" [pending]="updating" [disabled]="!forced && (!latest || !isUpdateRequired())">Update</app-button-pending>
+            <app-button-pending (clicked)="update()" [pending]="updating" [disabled]="isUpdateDisabled()">Update</app-button-pending>
         </div>
     </app-main-content-area>
 </app-default-content-areas>

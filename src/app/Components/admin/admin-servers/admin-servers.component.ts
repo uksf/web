@@ -54,35 +54,43 @@ export class AdminServersComponent implements OnInit {
     }
 
     isLatestBuild(): boolean {
-        if (!this.latest || !this.current) {
-            return false;
-        }
-
         return this.latest.latestBuild === this.current.currentBuild;
     }
 
     isLatestUpdate(): boolean {
-        if (!this.latest || !this.current) {
-            return false;
-        }
-
         return this.current.currentUpdated >= this.latest.latestUpdate;
     }
 
     isInstalled(): boolean {
-        if (!this.installed) {
-            return false;
-        }
-
         return this.installed.installedVersion !== '0';
     }
 
-    isUpdateRequired(): boolean {
-        if (!this.latest || !this.current || !this.installed) {
-            return false;
-        }
+    getBuildColour(): string {
+        return this.current && this.latest ? (this.isLatestBuild() ? 'green' : 'red') : 'gray';
+    }
 
+    getDateColour(): string {
+        return this.current && this.latest ? (this.isLatestUpdate() ? 'green' : 'red') : 'gray';
+    }
+
+    allDataLoaded(): boolean {
+        return !!(this.current && this.latest && this.installed);
+    }
+
+    isUpdateRequired(): boolean {
         return !this.isLatestBuild() || !this.isLatestUpdate() || !this.isInstalled();
+    }
+
+    isUpdateDisabled(): boolean {
+        return this.allDataLoaded() ? !this.forced && !this.isUpdateRequired() : true;
+    }
+
+    getUpdateRequiredColour(): string {
+        return this.allDataLoaded() ? (this.isUpdateRequired() ? 'red' : 'green') : 'gray';
+    }
+
+    getUpdateRequiredText(): string {
+        return this.allDataLoaded() ? (this.isUpdateRequired() ? 'Yes' : 'No') : '...';
     }
 
     update() {

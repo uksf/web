@@ -11,14 +11,6 @@
                 span {
                     color: mat.get-color-from-palette($primary);
                 }
-
-                .update-required {
-                    color: red;
-                }
-
-                .update-not-required {
-                    color: green;
-                }
             }
         }
     }
