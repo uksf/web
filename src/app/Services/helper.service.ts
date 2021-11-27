@@ -24,7 +24,7 @@ export function all<T = any>(arr: T[], predicate: (t: T) => boolean = Boolean) {
 }
 
 export function buildQuery(filter: string): string {
-    return filter.replace(/( ?)(and)( ?)/i, '&&').replace(/( ?)(or)( ?)/i, '||');
+    return filter.replace(/( ?)(and)( ?)/gi, '&&').replace(/( ?)(or)( ?)/gi, '||');
 }
 
 export function titleCase(string: string) {
