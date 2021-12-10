@@ -28,8 +28,8 @@ export class ConnectTeamspeakComponent {
     errorMessage: string = 'Unknown error. Please try again';
     private previousResponse = '-1';
     private hubConnection: ConnectionContainer;
-    private updateTimeout: NodeJS.Timeout;
-    private changedTimeout: NodeJS.Timeout;
+    private updateTimeout: number;
+    private changedTimeout: number;
 
     constructor(
         private httpClient: HttpClient,

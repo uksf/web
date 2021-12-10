@@ -10,7 +10,7 @@ export interface FileSystemEntryMetadata {
 }
 
 export interface FileSystemDirectoryReader {
-    readEntries(successCallback: (result: FileSystemEntry[]) => void, errorCallback?: (error: DOMError) => void): void;
+    readEntries(successCallback: (result: FileSystemEntry[]) => void, errorCallback?: (error) => void): void;
 }
 
 export interface FileSystemFlags {
@@ -22,8 +22,8 @@ export interface FileSystemDirectoryEntry extends FileSystemEntry {
     isDirectory: true;
     isFile: false;
     createReader(): FileSystemDirectoryReader;
-    getFile(path?: string, options?: FileSystemFlags, successCallback?: (result: FileSystemFileEntry) => void, errorCallback?: (error: DOMError) => void): void;
-    getDirectory(path?: string, options?: FileSystemFlags, successCallback?: (result: FileSystemDirectoryEntry) => void, errorCallback?: (error: DOMError) => void): void;
+    getFile(path?: string, options?: FileSystemFlags, successCallback?: (result: FileSystemFileEntry) => void, errorCallback?: (error) => void): void;
+    getDirectory(path?: string, options?: FileSystemFlags, successCallback?: (result: FileSystemDirectoryEntry) => void, errorCallback?: (error) => void): void;
 }
 
 export interface FileSystemFileEntry extends FileSystemEntry {

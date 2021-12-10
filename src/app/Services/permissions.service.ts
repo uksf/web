@@ -15,7 +15,7 @@ export class PermissionsService {
     private jwtRolesKey = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
     private accountHubConnection: ConnectionContainer;
     private refreshing = false;
-    private updateTimeout: NodeJS.Timeout;
+    private updateTimeout: number;
     public accountUpdateEvent = new EventEmitter();
 
     constructor(

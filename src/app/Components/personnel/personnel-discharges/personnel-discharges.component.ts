@@ -11,7 +11,7 @@ import { nextFrame } from 'app/Services/helper.service';
 @Component({
     selector: 'app-personnel-discharges',
     templateUrl: './personnel-discharges.component.html',
-    styleUrls: ['../../../Pages/personnel-page/personnel-page.component.scss', './personnel-discharges.component.scss'],
+    styleUrls: ['../../../Pages/personnel-page/personnel-page.component.scss', './personnel-discharges.component.scss']
 })
 export class PersonnelDischargesComponent {
     @ViewChild(MatExpansionPanel) panel: MatExpansionPanel;
@@ -25,10 +25,10 @@ export class PersonnelDischargesComponent {
     lengths = [
         { value: 10, name: '10' },
         { value: 15, name: '15' },
-        { value: 30, name: '30' },
+        { value: 30, name: '30' }
     ];
     filterString = '';
-    private timeout: NodeJS.Timeout;
+    private timeout: number;
 
     constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private route: ActivatedRoute) {}
 
@@ -98,7 +98,7 @@ export class PersonnelDischargesComponent {
 
     openMessageDialog(message: any) {
         this.dialog.open(MessageModalComponent, {
-            data: { message: message },
+            data: { message: message }
         });
     }
 
@@ -110,7 +110,7 @@ export class PersonnelDischargesComponent {
             },
             (_) => {
                 this.dialog.open(MessageModalComponent, {
-                    data: { message: `Failed to reinstate ${dischargeCollection.name} as a member` },
+                    data: { message: `Failed to reinstate ${dischargeCollection.name} as a member` }
                 });
             }
         );
@@ -120,14 +120,14 @@ export class PersonnelDischargesComponent {
         event.stopPropagation();
         this.dialog
             .open(TextInputModalComponent, {
-                data: { message: 'Please provide a reason for the reinstate request' },
+                data: { message: 'Please provide a reason for the reinstate request' }
             })
             .componentInstance.confirmEvent.subscribe((reason: string) => {
                 this.httpClient
                     .put(this.urls.apiUrl + '/commandrequests/create/reinstate', JSON.stringify({ recipient: dischargeCollection.accountId, reason: reason }), {
                         headers: new HttpHeaders({
-                            'Content-Type': 'application/json',
-                        }),
+                            'Content-Type': 'application/json'
+                        })
                     })
                     .subscribe(
                         (_) => {
@@ -137,8 +137,8 @@ export class PersonnelDischargesComponent {
                                     JSON.stringify({ recipient: dischargeCollection.accountId, type: 'Reinstate Member', displayValue: 'Member', displayFrom: 'Discharged' }),
                                     {
                                         headers: new HttpHeaders({
-                                            'Content-Type': 'application/json',
-                                        }),
+                                            'Content-Type': 'application/json'
+                                        })
                                     }
                                 )
                                 .subscribe((response: boolean) => {
@@ -147,7 +147,7 @@ export class PersonnelDischargesComponent {
                         },
                         (_) => {
                             this.dialog.open(MessageModalComponent, {
-                                data: { message: `Failed to create request to reinstate ${dischargeCollection.name} as a member` },
+                                data: { message: `Failed to create request to reinstate ${dischargeCollection.name} as a member` }
                             });
                         }
                     );
