@@ -223,7 +223,7 @@
                         <div class="state-container">
                             <h4 *ngIf="accountService.account.settings.sr1Enabled" class="enabled">You are taking applicatons</h4>
                             <h4 *ngIf="!accountService.account.settings.sr1Enabled" class="disabled">You are not taking applicatons</h4>
-                            <button mat-raised-button color="primary" class="state-button" (click)="setSr1Enabled()">
+                            <button mat-raised-button color="primary" class="state-button" (click)="setAccountSr1Enabled()">
                                 <span *ngIf="accountService.account.settings.sr1Enabled; else enable">Disable</span>
                                 <ng-template #enable>Enable</ng-template>
                             </button>

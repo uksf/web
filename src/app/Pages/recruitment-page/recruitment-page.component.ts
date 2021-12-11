@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../Services/url.service';
 import { Router } from '@angular/router';
 import { AccountService } from '../../Services/account.service';
 import { ThemeEmitterComponent } from 'app/Components/elements/theme-emitter/theme-emitter.component';
-import { MembershipState } from '../../Models/Account';
+import { AccountSettings, MembershipState } from '../../Models/Account';
 import { ApplicationsOverview, ApplicationState, CompletedApplication, WaitingApplication } from '../../Models/Application';
 import { AsyncSubject } from 'rxjs';
 import { OnlineState } from '../../Models/OnlineState';
@@ -13,7 +13,7 @@ import { Dictionary } from '../../Models/Dictionary';
 @Component({
     selector: 'app-recruitment-page',
     templateUrl: './recruitment-page.component.html',
-    styleUrls: ['./recruitment-page.component.scss'],
+    styleUrls: ['./recruitment-page.component.scss']
 })
 export class RecruitmentPageComponent implements OnInit {
     @ViewChild(ThemeEmitterComponent) theme: ThemeEmitterComponent;
@@ -38,7 +38,7 @@ export class RecruitmentPageComponent implements OnInit {
     lengths = [
         { value: 25, name: '25' },
         { value: 50, name: '50' },
-        { value: 100, name: '100' },
+        { value: 100, name: '100' }
     ];
     private timeout;
     applicationState = ApplicationState;
@@ -102,27 +102,21 @@ export class RecruitmentPageComponent implements OnInit {
             : this.theme.foregroundColor;
     }
 
-    setSr1Enabled(recruiter = null) {
-        let value = false;
-        if (recruiter == null) {
-            recruiter = this.accountService.account;
-            value = !recruiter.settings.sr1Enabled;
-        } else {
-            recruiter = recruiter.account;
-            value = recruiter.settings.sr1Enabled;
-        }
+    setSr1Enabled(recruiter) {
+        this.httpClient.put(`${this.urls.apiUrl}/accounts/${recruiter.account.id}/updatesetting`, recruiter.account.settings).subscribe((settings: AccountSettings) => {
+            recruiter.account.settings = settings;
+        });
+    }
 
-        this.httpClient
-            .post(this.urls.apiUrl + '/accounts/updatesetting/' + recruiter.id, {
-                name: 'sr1Enabled',
-                value: value,
-            })
-            .subscribe((_) => {
-                recruiter = this.activity.find((x) => x.account.id === recruiter.id);
-                if (recruiter !== undefined) {
-                    recruiter.account.settings.sr1Enabled = value;
-                }
-            });
+    setAccountSr1Enabled() {
+        this.accountService.account.settings.sr1Enabled = !this.accountService.account.settings.sr1Enabled;
+
+        this.httpClient.put(`${this.urls.apiUrl}/accounts/${this.accountService.account.id}/updatesetting`, this.accountService.account.settings).subscribe((settings: AccountSettings) => {
+            const recruiter = this.activity.find((x) => x.account.id === this.accountService.account.id);
+            if (recruiter !== undefined) {
+                recruiter.account.settings = settings;
+            }
+        });
     }
 
     openApplication(application) {

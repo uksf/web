@@ -82,25 +82,20 @@
         <div class="flex-container settings">
             <mat-card *ngIf="!accountId || isAdmin">
                 <h3>Settings</h3>
-                <br />
                 <form [formGroup]="settingsFormGroup">
                     <div>
-                        <mat-checkbox color="primary" formControlName="notificationsEmail" matTooltip="Receive email notifications" (change)="changeSetting('notificationsEmail')">
-                            Email notifications
-                        </mat-checkbox>
+                        <mat-checkbox color="primary" formControlName="notificationsEmail" matTooltip="Receive email notifications" (change)="changeSetting()"> Email notifications </mat-checkbox>
                         <br />
                     </div>
                     <div>
-                        <mat-checkbox color="primary" formControlName="notificationsTeamspeak" matTooltip="Receive TeamSpeak notifications" (change)="changeSetting('notificationsTeamspeak')">
+                        <mat-checkbox color="primary" formControlName="notificationsTeamspeak" matTooltip="Receive TeamSpeak notifications" (change)="changeSetting()">
                             TeamSpeak notifications
                         </mat-checkbox>
                         <br />
                     </div>
                     <ng-template [ngxPermissionsOnly]="['RECRUITER']">
                         <div>
-                            <mat-checkbox color="primary" formControlName="sr1Enabled" matTooltip="Toggle taking SR1 applications" (change)="changeSetting('sr1Enabled')">
-                                Taking applications
-                            </mat-checkbox>
+                            <mat-checkbox color="primary" formControlName="sr1Enabled" matTooltip="Toggle taking SR1 applications" (change)="changeSetting()"> Taking applications </mat-checkbox>
                         </div>
                     </ng-template>
                 </form>

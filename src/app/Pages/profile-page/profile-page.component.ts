@@ -19,7 +19,7 @@ import { MembershipState } from '../../Models/Account';
 @Component({
     selector: 'app-profile-page',
     templateUrl: './profile-page.component.html',
-    styleUrls: ['./profile-page.component.scss'],
+    styleUrls: ['./profile-page.component.scss']
 })
 export class ProfilePageComponent implements OnInit {
     static otherTheme;
@@ -47,8 +47,9 @@ export class ProfilePageComponent implements OnInit {
         this.settingsFormGroup = this.formbuilder.group({
             notificationsEmail: [''],
             notificationsTeamspeak: [''],
-            sr1Enabled: [''],
+            sr1Enabled: ['']
         });
+
         this.countries = CountryPickerService.countries;
 
         this.isNco = this.permissions.hasPermission(Permissions.NCO);
@@ -64,7 +65,7 @@ export class ProfilePageComponent implements OnInit {
                     this.getAccount();
                     this.dialog
                         .open(MessageModalComponent, {
-                            data: { message: 'Steam failed to connect' },
+                            data: { message: 'Steam failed to connect' }
                         })
                         .afterClosed()
                         .subscribe(() => {
@@ -79,7 +80,7 @@ export class ProfilePageComponent implements OnInit {
                             this.getAccount();
                             this.dialog
                                 .open(MessageModalComponent, {
-                                    data: { message: 'Steam successfully connected' },
+                                    data: { message: 'Steam successfully connected' }
                                 })
                                 .afterClosed()
                                 .subscribe(() => {
@@ -92,7 +93,7 @@ export class ProfilePageComponent implements OnInit {
                             this.getAccount();
                             this.dialog
                                 .open(MessageModalComponent, {
-                                    data: { message: error.error },
+                                    data: { message: error.error }
                                 })
                                 .afterClosed()
                                 .subscribe(() => {
@@ -109,7 +110,7 @@ export class ProfilePageComponent implements OnInit {
                     this.getAccount();
                     this.dialog
                         .open(MessageModalComponent, {
-                            data: { message: 'Discord failed to connect' },
+                            data: { message: 'Discord failed to connect' }
                         })
                         .afterClosed()
                         .subscribe(() => {
@@ -126,7 +127,7 @@ export class ProfilePageComponent implements OnInit {
                             if (added === 'true') {
                                 this.dialog
                                     .open(MessageModalComponent, {
-                                        data: { message: 'Discord successfully connected' },
+                                        data: { message: 'Discord successfully connected' }
                                     })
                                     .afterClosed()
                                     .subscribe(() => {
@@ -136,8 +137,8 @@ export class ProfilePageComponent implements OnInit {
                                 const modal = this.dialog.open(ConfirmationModalComponent, {
                                     data: {
                                         message: "Discord successfully connected\n\nWe were unable to add you to our Discord server.\nPlease join by pressing 'Join Discord'",
-                                        button: 'Join Discord',
-                                    },
+                                        button: 'Join Discord'
+                                    }
                                 });
                                 modal.afterClosed().subscribe(() => {
                                     this.accountService.checkConnections();
@@ -153,7 +154,7 @@ export class ProfilePageComponent implements OnInit {
                             this.getAccount();
                             this.dialog
                                 .open(MessageModalComponent, {
-                                    data: { message: error.error },
+                                    data: { message: error.error }
                                 })
                                 .afterClosed()
                                 .subscribe(() => {
@@ -240,8 +241,8 @@ export class ProfilePageComponent implements OnInit {
                         '\nWe can read no more information about your account than this.' +
                         '\n\nPlease note this is done on the official Steam website, meaning we have zero interaction with your login process.' +
                         '\nIf you have any concerns about this process, please contact UKSF Staff for assistance.',
-                    button: 'Continue',
-                },
+                    button: 'Continue'
+                }
             })
             .componentInstance.confirmEvent.subscribe(() => {
                 window.location.href = this.urls.apiUrl + '/steamconnection';
@@ -258,8 +259,8 @@ export class ProfilePageComponent implements OnInit {
                         '\nWe can read no more information about your account than this.' +
                         '\n\nPlease note this is done on the official Discord website, meaning we have zero interaction with your login process.' +
                         '\nIf you have any concerns about this process, please contact UKSF Staff for assistance.',
-                    button: 'Continue',
-                },
+                    button: 'Continue'
+                }
             })
             .componentInstance.confirmEvent.subscribe(() => {
                 window.location.href = this.urls.apiUrl + '/discordconnection';
@@ -286,16 +287,11 @@ export class ProfilePageComponent implements OnInit {
         this.settingsFormGroup.controls['sr1Enabled'].setValue(this.account.settings['sr1Enabled']);
     }
 
-    changeSetting(settingName) {
-        this.settingsFormGroup.controls[settingName].disable();
-        this.httpClient
-            .post(this.urls.apiUrl + '/accounts/updatesetting/' + this.account.id, {
-                name: settingName,
-                value: this.settingsFormGroup.controls[settingName].value,
-            })
-            .subscribe(() => {
-                this.getAccount(true);
-                this.settingsFormGroup.controls[settingName].enable();
-            });
+    changeSetting() {
+        this.settingsFormGroup.disable();
+        this.httpClient.put(`${this.urls.apiUrl}/accounts/${this.account.id}/updatesetting`, this.settingsFormGroup.value).subscribe(() => {
+            this.getAccount(true);
+            this.settingsFormGroup.enable();
+        });
     }
 }
