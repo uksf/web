@@ -10,7 +10,7 @@
                 <button mat-raised-button color="primary" (click)="unitRemovalRequest()">Unit Removal</button>
                 <button mat-raised-button color="primary" (click)="dischargeRequest()">Discharge</button>
             </div>
-            <br />
+            <br></br>
             <div class="requests-container" *ngIf="myRequests.length == 0 && otherRequests.length > 0">
                 <h3>You have no pending command requests</h3>
             </div>
@@ -37,13 +37,13 @@
                                 <div class="request-info-details-fromto">
                                     <span class="request-detail">
                                         <b>From:</b>
-                                        <span *ngIf="isDate(request.data.displayFrom); else nonDateFrom"> {{ request.data.displayFrom | date: 'mediumDate' }}</span>
+                                        <span *ngIf="isLoa(request); else nonDateFrom"> {{ request.data.displayFrom | date: 'mediumDate' }}</span>
                                         <ng-template #nonDateFrom> {{ request.data.displayFrom }}</ng-template>
                                     </span>
                                     <div class="request-spacer"></div>
                                     <span class="request-detail">
                                         <b>To:</b>
-                                        <span *ngIf="isDate(request.data.displayValue); else nonDateTo"> {{ request.data.displayValue | date: 'mediumDate' }}</span>
+                                        <span *ngIf="isLoa(request); else nonDateTo"> {{ request.data.displayValue | date: 'mediumDate' }}</span>
                                         <ng-template #nonDateTo> {{ request.data.displayValue }}</ng-template>
                                     </span>
                                     <div class="request-spacer"></div>
@@ -140,13 +140,13 @@
                                 <div class="request-info-details-fromto">
                                     <span class="request-detail">
                                         <b>From:</b>
-                                        <span *ngIf="isDate(request.data.displayFrom); else nonDateFromOther"> {{ request.data.displayFrom | date: 'mediumDate' }}</span>
+                                        <span *ngIf="isLoa(request); else nonDateFromOther"> {{ request.data.displayFrom | date: 'mediumDate' }}</span>
                                         <ng-template #nonDateFromOther> {{ request.data.displayFrom }}</ng-template>
                                     </span>
                                     <div class="request-spacer"></div>
                                     <span class="request-detail">
                                         <b>To:</b>
-                                        <span *ngIf="isDate(request.data.displayValue); else nonDateToOther"> {{ request.data.displayValue | date: 'mediumDate' }}</span>
+                                        <span *ngIf="isLoa(request); else nonDateToOther"> {{ request.data.displayValue | date: 'mediumDate' }}</span>
                                         <ng-template #nonDateToOther> {{ request.data.displayValue }}</ng-template>
                                     </span>
                                     <div class="request-spacer"></div>

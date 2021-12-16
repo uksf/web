@@ -17,9 +17,7 @@ export class RequestLoaModalComponent implements OnInit {
     form: FormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     validationMessages = {
-        'reason': [
-            { type: 'required', message: 'Reason is required' },
-        ]
+        reason: [{ type: 'required', message: 'Reason is required' }]
     };
     start: Moment = moment();
     end: Moment = moment();
@@ -32,11 +30,7 @@ export class RequestLoaModalComponent implements OnInit {
     submitting = false;
     mobile = false;
 
-    constructor(
-        private dialog: MatDialog,
-        private formbuilder: FormBuilder,
-        private httpClient: HttpClient,
-        private urlService: UrlService) {
+    constructor(private dialog: MatDialog, private formbuilder: FormBuilder, private httpClient: HttpClient, private urlService: UrlService) {
         this.form = this.formbuilder.group({
             reason: ['', Validators.required],
             start: [{ value: '', disabled: true }, Validators.required],
@@ -44,10 +38,10 @@ export class RequestLoaModalComponent implements OnInit {
             emergency: [''],
             late: ['']
         });
-        this.form.controls['start'].valueChanges.subscribe(_ => {
+        this.form.controls['start'].valueChanges.subscribe((_) => {
             this.datesValid = this.validateDates();
         });
-        this.form.controls['end'].valueChanges.subscribe(_ => {
+        this.form.controls['end'].valueChanges.subscribe((_) => {
             this.datesValid = this.validateDates();
         });
     }
@@ -70,7 +64,7 @@ export class RequestLoaModalComponent implements OnInit {
             if (startNoTime.isBefore(nowNoTime)) {
                 this.invalidMessage = 'Start date cannot be in the past';
                 return false;
-            } else if (startNoTime.isSame(nowNoTime) && ((this.start.day() === 6 || this.start.day() === 3) && moment.utc().hour() >= 12)) {
+            } else if (startNoTime.isSame(nowNoTime) && (this.start.day() === 6 || this.start.day() === 3) && moment.utc().hour() >= 12) {
                 this.late = true;
             } else {
                 this.late = false;
@@ -112,25 +106,35 @@ export class RequestLoaModalComponent implements OnInit {
     }
 
     submit() {
-        if (this.submitting) { return; }
+        if (this.submitting) {
+            return;
+        }
         this.submitting = true;
         this.setTimeValues();
         this.form.value['start'] = this.start;
         this.form.value['end'] = this.end;
         this.form.controls['late'].setValue(this.late);
-        const formString = JSON.stringify(this.form.getRawValue()).replace(/\n|\r/g, '');
-        this.httpClient.put(this.urlService.apiUrl + '/commandrequests/create/loa', formString, {
-            headers: new HttpHeaders({
-                'Content-Type': 'application/json'
+        const formString = JSON.stringify(this.form.getRawValue()).replace(/[\n\r]/g, '');
+        this.httpClient
+            .put(this.urlService.apiUrl + '/commandrequests/create/loa', formString, {
+                headers: new HttpHeaders({
+                    'Content-Type': 'application/json'
+                })
             })
-        }).subscribe(_ => {
-            this.dialog.closeAll();
-        }, error => {
-            this.dialog.open(MessageModalComponent, {
-                data: { message: error.error }
-            }).afterClosed().subscribe(() => {
-                this.submitting = false;
-            });
-        });
+            .subscribe(
+                (_) => {
+                    this.dialog.closeAll();
+                },
+                (error) => {
+                    this.dialog
+                        .open(MessageModalComponent, {
+                            data: { message: error.error }
+                        })
+                        .afterClosed()
+                        .subscribe(() => {
+                            this.submitting = false;
+                        });
+                }
+            );
     }
 }
