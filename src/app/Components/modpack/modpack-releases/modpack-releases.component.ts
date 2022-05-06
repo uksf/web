@@ -10,7 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 @Component({
     selector: 'app-modpack-releases',
     templateUrl: './modpack-releases.component.html',
-    styleUrls: ['../../../Pages/modpack-page/modpack-page.component.scss', './modpack-releases.component.scss', './modpack-releases.component.scss-theme.scss'],
+    styleUrls: ['../../../Pages/modpack-page/modpack-page.component.scss', './modpack-releases.component.scss', './modpack-releases.component.scss-theme.scss']
 })
 export class ModpackReleasesComponent implements OnInit {
     releases: ModpackRelease[] = [];
@@ -33,6 +33,11 @@ export class ModpackReleasesComponent implements OnInit {
 
     ngOnInit(): void {
         this.getReleases();
+        const linkRenderer = this.markdownService.renderer.link;
+        this.markdownService.renderer.link = (href, title, text) => {
+            const html = linkRenderer.call(this.markdownService.renderer, href, title, text);
+            return html.replace(/^<a /, '<a target="_blank" rel="nofollow" ');
+        };
     }
 
     get publicReleases(): ModpackRelease[] {
