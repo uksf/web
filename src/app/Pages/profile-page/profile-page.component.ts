@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../Services/url.service';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -22,8 +22,6 @@ import { MembershipState } from '../../Models/Account';
     styleUrls: ['./profile-page.component.scss']
 })
 export class ProfilePageComponent implements OnInit {
-    static otherTheme;
-    static themeUpdateEvent: EventEmitter<null>;
     countries: ICountry[];
     membershipState = MembershipState;
     account;
@@ -265,14 +263,6 @@ export class ProfilePageComponent implements OnInit {
             .componentInstance.confirmEvent.subscribe(() => {
                 window.location.href = this.urls.apiUrl + '/discordconnection';
             });
-    }
-
-    get otherTheme() {
-        return ProfilePageComponent.otherTheme;
-    }
-
-    toggleTheme() {
-        ProfilePageComponent.themeUpdateEvent.emit();
     }
 
     private populateSettings() {

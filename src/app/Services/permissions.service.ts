@@ -27,7 +27,13 @@ export class PermissionsService {
         private urls: UrlService,
         private authenticationService: AuthenticationService,
         private jwtHelperService: JwtHelperService
-    ) {
+    ) {}
+
+    connect() {
+        if (this.accountHubConnection !== undefined) {
+            this.accountHubConnection.connection.stop().then();
+        }
+
         this.waitForId().then((id) => {
             this.accountHubConnection = this.signalrService.connect(`account?userId=${id}`);
             this.accountHubConnection.connection.on('ReceiveAccountUpdate', () => {
@@ -80,6 +86,7 @@ export class PermissionsService {
                             this.accountService.getAccount(
                                 (account) => {
                                     this.setPermissions(account);
+                                    this.connect();
                                     resolve(null);
                                 },
                                 () => {

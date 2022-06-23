@@ -1,7 +1,5 @@
 import { Component, EventEmitter, Inject, OnInit, PLATFORM_ID } from '@angular/core';
-import { HeaderBarComponent } from './Components/header-bar/header-bar.component';
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { ProfilePageComponent } from './Pages/profile-page/profile-page.component';
 import { OperationsServersComponent } from './Components/operations/operations-servers/operations-servers.component';
 import { CommandRanksComponent } from './Components/command/command-ranks/command-ranks.component';
 import { CommandRolesComponent } from './Components/command/command-roles/command-roles.component';
@@ -19,30 +17,14 @@ export class AppComponent implements OnInit {
     static themeUpdatedEvent: EventEmitter<null>;
     static utilityHubConnection: ConnectionContainer;
     theme;
-    otherTheme;
 
     constructor(private overlayContainer: OverlayContainer, @Inject(PLATFORM_ID) private platformId, private dialog: MatDialog, private signalrService: SignalRService) {
         AppComponent.themeUpdatedEvent = new EventEmitter();
     }
 
     ngOnInit() {
-        // let storedTheme = localStorage.getItem('theme');
-        // this.updateOtherTheme();
-        // if (!storedTheme) {
-        //     localStorage.setItem('theme', 'dark');
-        //     storedTheme = localStorage.getItem('theme');
-        // }
         this.theme = 'dark';
-        // this.updateOtherTheme();
         this.updateTheme();
-        HeaderBarComponent.themeUpdateEvent = new EventEmitter();
-        ProfilePageComponent.themeUpdateEvent = new EventEmitter();
-        HeaderBarComponent.themeUpdateEvent.subscribe(() => {
-            this.updateTheme(this.otherTheme);
-        });
-        ProfilePageComponent.themeUpdateEvent.subscribe(() => {
-            this.updateTheme(this.otherTheme);
-        });
 
         this.checkBrowser();
         AppComponent.utilityHubConnection = this.signalrService.connect('utility');
@@ -50,8 +32,6 @@ export class AppComponent implements OnInit {
 
     updateTheme(newTheme = 'dark') {
         this.theme = newTheme;
-        this.updateOtherTheme();
-        this.overlayContainer.getContainerElement().classList.remove(this.otherTheme + '-theme');
         this.overlayContainer.getContainerElement().classList.add(this.theme + '-theme');
         localStorage.setItem('theme', this.theme);
         this.updateThemeSubscribers();
@@ -61,17 +41,7 @@ export class AppComponent implements OnInit {
         OperationsServersComponent.theme = this.theme;
         CommandRanksComponent.theme = this.theme;
         CommandRolesComponent.theme = this.theme;
-        HeaderBarComponent.otherTheme = this.otherTheme;
-        ProfilePageComponent.otherTheme = this.otherTheme;
         AppComponent.themeUpdatedEvent.emit();
-    }
-
-    updateOtherTheme() {
-        if (this.theme === 'light') {
-            this.otherTheme = 'dark';
-        } else {
-            this.otherTheme = 'light';
-        }
     }
 
     get Theme() {

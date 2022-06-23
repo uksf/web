@@ -12,5 +12,31 @@
                 <app-button-pending *ngFor="let tool of debugTools" (clicked)="runFunction(tool)" [pending]="tool.pending" [disabled]="true">{{ tool.title }}</app-button-pending>
             </div>
         </div>
+        <ng-template [ngxPermissionsOnly]="['SUPERADMIN']">
+            <div class="flex-container no-padding-left">
+                <h4>SuperAdmin Tools</h4>
+                <form #form="ngForm" class="flex-container flex-row min-width">
+                    <app-autofocus-stop></app-autofocus-stop>
+                    <app-dropdown
+                        #accountId="ngModel"
+                        class="dropdown"
+                        [(ngModel)]="model.accountId"
+                        [elementName]="'Account'"
+                        [elements]="accounts"
+                        [isRequired]="true"
+                        [placeholder]="'Select account to impersonate'"
+                        id="account"
+                        name="formAccount"
+                    >
+                        <ng-template #element let-element>
+                            {{ getAccountName(element) }}
+                        </ng-template>
+                    </app-dropdown>
+                    <div class="button-container">
+                        <app-button-pending (clicked)="impersonate()" [pending]="impersonationPending" [disabled]="!form.valid">Impersonate</app-button-pending>
+                    </div>
+                </form>
+            </div>
+        </ng-template>
     </app-main-content-area>
 </app-default-content-areas>

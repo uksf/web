@@ -23,5 +23,8 @@
         .warn {
             color: mat.get-color-from-palette($warn);
         }
+        .warn-contrast {
+            color: mat.get-color-from-palette($warn, default-contrast);
+        }
     }
 }

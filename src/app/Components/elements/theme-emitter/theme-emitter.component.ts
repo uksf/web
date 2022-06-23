@@ -1,5 +1,5 @@
-import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
-import {AppComponent} from 'app/app.component';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AppComponent } from 'app/app.component';
 
 @Component({
     selector: 'app-theme-emitter',
@@ -12,11 +12,13 @@ export class ThemeEmitterComponent implements AfterViewInit {
     @ViewChild('primaryContrast') primaryContrastElement: ElementRef;
     @ViewChild('accent') accentElement: ElementRef;
     @ViewChild('warn') warnElement: ElementRef;
+    @ViewChild('warnContrast') warnContrastElement: ElementRef;
     foregroundColor: string;
     primaryColor: string;
     primaryContrastColor: string;
     accentColor: string;
     warnColor: string;
+    warnContrastColor: string;
 
     constructor() {
         AppComponent.themeUpdatedEvent.subscribe(() => {
@@ -32,5 +34,6 @@ export class ThemeEmitterComponent implements AfterViewInit {
         this.primaryContrastColor = getComputedStyle(this.primaryContrastElement.nativeElement).color;
         this.accentColor = getComputedStyle(this.accentElement.nativeElement).color;
         this.warnColor = getComputedStyle(this.primaryElement.nativeElement).color;
+        this.warnContrastColor = getComputedStyle(this.warnContrastElement.nativeElement).color;
     }
 }

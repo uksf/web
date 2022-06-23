@@ -22,7 +22,7 @@
             </button>
         </ng-template>
         <ng-template [ngxPermissionsExcept]="['UNLOGGED']">
-            <button mat-raised-button [color]="profileColor" class="button profile" [matMenuTriggerFor]="menu">
+            <button mat-raised-button color="{{ profileColor }}" class="button profile" [matMenuTriggerFor]="menu">
                 <mat-icon>account_circle</mat-icon>
             </button>
         </ng-template>

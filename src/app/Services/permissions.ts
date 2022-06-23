@@ -5,6 +5,7 @@ export class Permissions {
     public static readonly UNCONFIRMED = 'UNCONFIRMED';
 
     // API
+    public static readonly SUPERADMIN = 'SUPERADMIN';
     public static readonly ADMIN = 'ADMIN';
     public static readonly COMMAND = 'COMMAND';
     public static readonly NCO = 'NCO';
@@ -26,6 +27,7 @@ export class Permissions {
 
         let lookup: Record<string, string[]> = {};
 
+        lookup[Permissions.SUPERADMIN] = [Permissions.SUPERADMIN];
         lookup[Permissions.ADMIN] = [Permissions.ADMIN];
         lookup[Permissions.COMMAND] = [Permissions.COMMAND, Permissions.ACTIVITY];
         lookup[Permissions.NCO] = [Permissions.NCO, Permissions.SERVERS, Permissions.ACTIVITY, Permissions.DISCHARGES];

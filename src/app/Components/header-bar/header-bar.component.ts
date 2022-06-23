@@ -1,24 +1,29 @@
-import { Component, OnInit, HostListener, EventEmitter } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { AccountService } from '../../Services/account.service';
 import { MatDialog } from '@angular/material/dialog';
 import { RequestLoaModalComponent } from '../../Modals/command/request-loa-modal/request-loa-modal.component';
 import { PermissionsService } from '../../Services/permissions.service';
 import { AppSettingsService, Environments } from '../../Services/appSettingsService.service';
+import { AuthenticationService } from '../../Services/Authentication/authentication.service';
 
 @Component({
     selector: 'app-header-bar',
     templateUrl: './header-bar.component.html',
-    styleUrls: ['./header-bar.component.scss'],
+    styleUrls: ['./header-bar.component.scss']
 })
 export class HeaderBarComponent implements OnInit {
-    static otherTheme;
-    static themeUpdateEvent: EventEmitter<null>;
     environments = Environments;
     mobile = false;
     mobileSmall = false;
     currentEnvironment: string;
 
-    constructor(private permissionsService: PermissionsService, private accountService: AccountService, private dialog: MatDialog, appSettings: AppSettingsService) {
+    constructor(
+        private permissionsService: PermissionsService,
+        private accountService: AccountService,
+        private dialog: MatDialog,
+        appSettings: AppSettingsService,
+        private auth: AuthenticationService
+    ) {
         this.currentEnvironment = appSettings.appSetting('environment');
     }
 
@@ -37,10 +42,6 @@ export class HeaderBarComponent implements OnInit {
         this.dialog.open(RequestLoaModalComponent, {});
     }
 
-    toggleTheme() {
-        HeaderBarComponent.themeUpdateEvent.emit();
-    }
-
     logout() {
         this.permissionsService.revoke();
     }
@@ -54,10 +55,6 @@ export class HeaderBarComponent implements OnInit {
     }
 
     get profileColor() {
-        return this.currentEnvironment === Environments.Development ? 'warn' : 'primary';
-    }
-
-    get otherTheme() {
-        return HeaderBarComponent.otherTheme;
+        return this.auth.isImpersonated() ? 'impersonated' : this.currentEnvironment === Environments.Development ? 'warn' : 'primary';
     }
 }
