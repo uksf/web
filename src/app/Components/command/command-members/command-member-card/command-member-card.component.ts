@@ -6,6 +6,8 @@ import { RequestRankModalComponent } from '../../../../Modals/command/request-ra
 import { RequestRoleModalComponent } from '../../../../Modals/command/request-role-modal/request-role-modal.component';
 import { RequestTransferModalComponent } from '../../../../Modals/command/request-transfer-modal/request-transfer-modal.component';
 import { RequestModalData } from '../../../../Models/Shared';
+import { HttpClient } from '@angular/common/http';
+import { UrlService } from '../../../../Services/url.service';
 
 @Component({
     selector: 'app-command-member-card',
@@ -17,8 +19,9 @@ export class CommandMemberCardComponent implements OnInit {
     @Input('member') member: Account;
     expanded: boolean = false;
     hover: boolean = false;
+    qualificationsPending: boolean = false;
 
-    constructor(private dialog: MatDialog) {}
+    constructor(private dialog: MatDialog, private httpClient: HttpClient, private urls: UrlService) {}
 
     ngOnInit(): void {}
 
@@ -49,6 +52,18 @@ export class CommandMemberCardComponent implements OnInit {
         });
     }
 
+    updateQualifications() {
+        this.qualificationsPending = true;
+        this.httpClient.put(`${this.urls.apiUrl}/accounts/${this.member.id}/qualifications`, this.member.qualifications).subscribe({
+            next: () => {
+                this.qualificationsPending = false;
+            },
+            error: () => {
+                this.qualificationsPending = false;
+            }
+        });
+    }
+
     toggle(event) {
         this.expanded = !this.expanded;
 
@@ -65,5 +80,9 @@ export class CommandMemberCardComponent implements OnInit {
 
     get toggleState(): string {
         return this.expanded ? 'expanded' : 'collapsed';
+    }
+
+    get displayName(): string {
+        return `${this.member.lastname}.${this.member.firstname[0]}`;
     }
 }

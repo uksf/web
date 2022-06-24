@@ -5,7 +5,7 @@
                 <mat-icon color="primary">expand_more</mat-icon>
             </div>
             <div class="header-title hover" (click)="toggle($event)" (mouseenter)="onMouseOver()" (mouseleave)="onMouseLeave()">
-                <span>{{ member.lastname }}.{{ member.firstname[0] }}</span>
+                <span>{{ displayName }}</span>
             </div>
             <div class="header-title edit" (click)="editRank(); $event.stopPropagation()" matTooltip="Click to edit rank">
                 <span>{{ member.rankObject.name }}</span>
@@ -25,7 +25,7 @@
         </div>
     </div>
 
-    <div class="member-panel-content-container" *ngIf="expanded" [@bodyExpansion]>
+    <div class="member-panel-content-container" *ngIf="expanded" [@bodyExpansion]="expanded">
         <div class="member-panel-content">
             <div class="member-panel-content-item left">
                 <h4>Units</h4>
@@ -37,6 +37,31 @@
             <div class="member-panel-content-item right">
                 <h4>Training</h4>
                 <div class="member-panel-content-elements">Placeholder</div>
+            </div>
+            <div class="member-panel-content-item right small">
+                <h4>Qualifications</h4>
+                <div class="member-panel-content-elements">
+                    <mat-checkbox
+                        color="primary"
+                        [(ngModel)]="member.qualifications.medic"
+                        (change)="updateQualifications()"
+                        [disabled]="qualificationsPending"
+                        matTooltip="When enabled, {{ displayName }} will be assigned as a medic in-game"
+                    >
+                        Medic
+                    </mat-checkbox>
+                </div>
+                <div class="member-panel-content-elements">
+                    <mat-checkbox
+                        color="primary"
+                        [(ngModel)]="member.qualifications.engineer"
+                        (change)="updateQualifications()"
+                        [disabled]="qualificationsPending"
+                        matTooltip="When enabled, {{ displayName }} will be assigned as an engineer in-game"
+                    >
+                        Engineer
+                    </mat-checkbox>
+                </div>
             </div>
         </div>
     </div>

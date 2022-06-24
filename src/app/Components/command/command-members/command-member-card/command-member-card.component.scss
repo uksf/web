@@ -96,6 +96,10 @@
                     margin-left: 4px;
                 }
 
+                &.small {
+                    flex: 0.3;
+                }
+
                 .member-panel-content-elements {
                     display: flex;
                     flex-direction: row;

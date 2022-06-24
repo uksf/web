@@ -236,6 +236,19 @@
     }
 }
 
+.member-panel-content-elements {
+    .mat-checkbox-layout {
+        margin: 0;
+
+        .mat-checkbox-label {
+            color: white;
+            font-size: 14px;
+            font-weight: 300;
+            line-height: 20px;
+        }
+    }
+}
+
 .mat-button,
 .mat-raised-button,
 .mat-icon-button,

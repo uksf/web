@@ -34,6 +34,7 @@ export class Account {
     teamspeakIdentities: number[];
     unitAssignment: string;
     unitsExperience: string;
+    qualifications: AccountQualifications;
 
     displayName: string;
     permissions: AccountPermissions;
@@ -59,6 +60,11 @@ export interface AccountSettings {
     notificationsEmail: boolean;
     notificationsTeamspeak: boolean;
     sr1Enabled: boolean;
+}
+
+export interface AccountQualifications {
+    medic: boolean;
+    engineer: boolean;
 }
 
 export interface ServiceRecordEntry {
