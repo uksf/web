@@ -15,12 +15,13 @@ import { MembershipState } from '../../Models/Account';
 import { AsyncSubject } from 'rxjs';
 import { ApplicationState, DetailedApplication, Recruiter } from '../../Models/Application';
 import { OnlineState } from '../../Models/OnlineState';
+import { MessageModalComponent } from '../../Modals/message-modal/message-modal.component';
 
 @Component({
     selector: 'app-recruitment-application-page',
     templateUrl: './recruitment-application-page.component.html',
     styleUrls: ['./recruitment-application-page.component.scss'],
-    providers: [DatePipe],
+    providers: [DatePipe]
 })
 export class RecruitmentApplicationPageComponent {
     @ViewChild('recruiterCommentsDisplay') recruiterCommentDisplay: CommentDisplayComponent;
@@ -55,7 +56,7 @@ export class RecruitmentApplicationPageComponent {
                 sociability: [],
                 maturity: [],
                 skills: [],
-                criticism: [],
+                criticism: []
             },
             {}
         );
@@ -74,7 +75,7 @@ export class RecruitmentApplicationPageComponent {
         this.httpClient.get(this.urls.apiUrl + '/recruitment/' + this.accountId).subscribe((response: DetailedApplication) => {
             const application = response;
             if (application.account.id === this.accountService.account.id && application.account.application.state === ApplicationState.WAITING) {
-                this.router.navigate(['/application']);
+                this.router.navigate(['/application']).then();
                 return;
             }
 
@@ -93,7 +94,7 @@ export class RecruitmentApplicationPageComponent {
                 }
                 this.updating = false;
             } else {
-                this.router.navigate(['/home']);
+                this.router.navigate(['/home']).then();
             }
         });
 
@@ -117,44 +118,53 @@ export class RecruitmentApplicationPageComponent {
 
     setNewRecruiter(newRecruiter: any) {
         this.updating = true;
-        this.httpClient.post(this.urls.apiUrl + '/recruitment/recruiter/' + this.accountId, { newRecruiter: newRecruiter }).subscribe(
-            () => {
+        this.httpClient.post(this.urls.apiUrl + '/recruitment/recruiter/' + this.accountId, { newRecruiter: newRecruiter }).subscribe({
+            next: () => {
                 this.getApplication();
                 this.recruiterCommentDisplay.getCanPostComment();
                 this.applicationCommentDisplay.getCanPostComment();
             },
-            (_) => {
+            error: (error) => {
                 this.updating = false;
+                this.dialog.open(MessageModalComponent, {
+                    data: { message: error }
+                });
             }
-        );
+        });
     }
 
     applyRating(e1: { value: any }, e2: any) {
         this.updating = true;
-        this.httpClient.post(this.urls.apiUrl + '/recruitment/ratings/' + this.accountId, { key: e2, value: e1.value }).subscribe(
-            () => {},
-            (_) => {
+        this.httpClient.post(this.urls.apiUrl + '/recruitment/ratings/' + this.accountId, { key: e2, value: e1.value }).subscribe({
+            next: () => {},
+            error: (error) => {
                 this.updating = false;
+                this.dialog.open(MessageModalComponent, {
+                    data: { message: error }
+                });
             }
-        );
+        });
     }
 
     updateApplicationState(updatedState: ApplicationState) {
         this.updating = true;
-        this.httpClient.post(this.urls.apiUrl + '/recruitment/' + this.accountId, { updatedState: updatedState }).subscribe(
-            () => {
+        this.httpClient.post(this.urls.apiUrl + '/recruitment/' + this.accountId, { updatedState: updatedState }).subscribe({
+            next: () => {
                 this.getApplication();
             },
-            (_) => {
+            error: (error) => {
                 this.updating = false;
+                this.dialog.open(MessageModalComponent, {
+                    data: { message: error }
+                });
             }
-        );
+        });
     }
 
     resetApplicationToCandidate() {
         this.dialog
             .open(ConfirmationModalComponent, {
-                data: { message: `Are you sure you want to reset ${this.application.displayName} to a Candidate?\nThis will remove any rank, unit, and role assignments.` },
+                data: { message: `Are you sure you want to reset ${this.application.displayName} to a Candidate?\nThis will remove any rank, unit, and role assignments.` }
             })
             .componentInstance.confirmEvent.subscribe(() => {
                 this.updateApplicationState(ApplicationState.WAITING);
@@ -162,11 +172,15 @@ export class RecruitmentApplicationPageComponent {
     }
 
     isAcceptableAge() {
-        return this.application.age.years >= 16 || (this.application.age.years === 15 && this.application.age.months === 11);
+        return this.application.age.years >= this.application.acceptableAge || (this.application.age.years === this.application.acceptableAge - 1 && this.application.age.months === 11);
     }
 
     getAgeColour() {
-        return this.application.age.years >= 16 ? 'green' : this.application.age.years === 15 && this.application.age.months === 11 ? 'goldenrod' : 'red';
+        return this.application.age.years >= this.application.acceptableAge
+            ? 'green'
+            : this.application.age.years === this.application.acceptableAge - 1 && this.application.age.months === 11
+            ? 'goldenrod'
+            : 'red';
     }
 
     getDiscordName(discordState) {

@@ -3,7 +3,7 @@ import { Account } from './Account';
 export enum ApplicationState {
     ACCEPTED,
     REJECTED,
-    WAITING,
+    WAITING
 }
 
 export interface Application {
@@ -20,6 +20,7 @@ export interface DetailedApplication {
     account: Account;
     displayName: string;
     age: ApplicationAge;
+    acceptableAge: number;
     daysProcessing: number;
     daysProcessed: number;
     nextCandidateOp: string;
