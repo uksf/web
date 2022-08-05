@@ -72,7 +72,7 @@
                 <mat-card *ngFor="let serviceItem of account.serviceRecord" class="service-record">
                     <span>{{ serviceItem.occurence }}</span>
                     <app-flex-filler></app-flex-filler>
-                    <span class="date">{{ serviceItem.timestamp | date: 'mediumDate':'GMT' }}</span>
+                    <span class="date">{{ serviceItem.timestamp | date: 'mediumDate':'Europe/London' }}</span>
                 </mat-card>
             </div>
         </div>

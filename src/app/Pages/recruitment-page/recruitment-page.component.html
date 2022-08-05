@@ -29,7 +29,7 @@
                                 </div>
                                 <div class="item applied">
                                     <b>Applied: </b>
-                                    <small>{{ application.account.application.dateCreated | date: 'mediumDate':'GMT' }}</small>
+                                    <small>{{ application.account.application.dateCreated | date: 'mediumDate':'Europe/London' }}</small>
                                 </div>
                             </div>
                             <div class="row bottom">
@@ -86,7 +86,7 @@
                                 </div>
                                 <div class="item applied">
                                     <b>Applied: </b>
-                                    <small>{{ application.account.application.dateCreated | date: 'mediumDate':'GMT' }}</small>
+                                    <small>{{ application.account.application.dateCreated | date: 'mediumDate':'Europe/London' }}</small>
                                 </div>
                             </div>
                             <div class="row bottom">
@@ -189,7 +189,7 @@
                             </div>
                             <div class="item applied">
                                 <b>Applied: </b>
-                                <small>{{ application.account.application.dateCreated | date: 'mediumDate':'GMT' }}</small>
+                                <small>{{ application.account.application.dateCreated | date: 'mediumDate':'Europe/London' }}</small>
                             </div>
                             <div class="item accepted">
                                 <span *ngIf="application.account.application.state == applicationState.ACCEPTED; else rejected">
@@ -198,7 +198,7 @@
                                 <ng-template #rejected>
                                     <b>Rejected: </b>
                                 </ng-template>
-                                <small>{{ application.account.application.dateAccepted | date: 'mediumDate':'GMT' }}</small>
+                                <small>{{ application.account.application.dateAccepted | date: 'mediumDate':'Europe/London' }}</small>
                             </div>
                             <div class="item processed">
                                 <b>Processed: </b>

@@ -100,7 +100,7 @@
                         </div>
                         <div class="flex-container flex-row no-padding margin-bottom">
                             <div class="header"><b>Date of Birth</b></div>
-                            <div>{{ application.account.dob | date: 'd MMM y':'GMT' }}</div>
+                            <div>{{ application.account.dob | date: 'd MMM y':'Europe/London' }}</div>
                         </div>
                         <div class="flex-container flex-row no-padding margin-bottom">
                             <div class="header"><b>Age</b></div>
@@ -260,7 +260,7 @@
                     <mat-card>
                         <div class="flex-container flex-row flex-grow no-padding margin-bottom">
                             <div class="header"><b>Date Applied</b></div>
-                            <div>{{ application.account.application.dateCreated | date: 'd MMM y':'GMT' }}</div>
+                            <div>{{ application.account.application.dateCreated | date: 'd MMM y':'Europe/London' }}</div>
                         </div>
                         <div *ngIf="application.account.application.state == applicationState.WAITING">
                             <div class="flex-container flex-row flex-grow no-padding margin-bottom">
@@ -275,7 +275,7 @@
                         <div *ngIf="application.account.application.state != applicationState.WAITING">
                             <div class="flex-container flex-row flex-grow no-padding margin-bottom">
                                 <div class="header"><b>Date Processed</b></div>
-                                <div>{{ application.account.application.dateAccepted | date: 'd MMM y':'GMT' }}</div>
+                                <div>{{ application.account.application.dateAccepted | date: 'd MMM y':'Europe/London' }}</div>
                             </div>
                             <div class="flex-container flex-row flex-grow no-padding margin-bottom">
                                 <div class="header"><b>Processing Duration</b></div>

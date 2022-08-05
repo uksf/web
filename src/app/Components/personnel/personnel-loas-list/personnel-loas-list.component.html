@@ -14,11 +14,11 @@
                 <div class="title-container">
                     <div class="date-container">
                         <div class="title start">
-                            {{ loa.start | date: 'dd MMM yy':'GMT' }}
+                            {{ loa.start | date: 'dd MMM yy':'Europe/London' }}
                         </div>
                         <div class="title to"><mat-icon>east</mat-icon></div>
                         <div class="title end">
-                            {{ loa.end | date: 'dd MMM yy':'GMT' }}
+                            {{ loa.end | date: 'dd MMM yy':'Europe/London' }}
                         </div>
                     </div>
                     <mat-divider [vertical]="true"></mat-divider>
@@ -41,7 +41,7 @@
                 <div class="content-body">
                     <div class="requested">
                         <span><b>Requested</b></span>
-                        <span>{{ loa.submitted | date: 'dd/MM/yyyy HH:mm':'GMT' }}</span>
+                        <span>{{ loa.submitted | date: 'dd/MM/yyyy HH:mm':'Europe/London' }}</span>
                     </div>
                     <div class="content">
                         <div class="reason">

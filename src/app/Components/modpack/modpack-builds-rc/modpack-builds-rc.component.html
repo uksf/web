@@ -79,7 +79,7 @@
                 <app-flex-filler></app-flex-filler>
                 <div class="build-footer" *ngIf="selectedBuild">
                     <div class="footer-item">
-                        {{ selectedBuild.startTime | date: 'dd MMM HH:mm':'GMT' }}
+                        {{ selectedBuild.startTime | date: 'dd MMM HH:mm':'Europe/London' }}
                     </div>
                     <div class="footer-item" *ngIf="selectedBuild.finished">
                         {{ duration }}
