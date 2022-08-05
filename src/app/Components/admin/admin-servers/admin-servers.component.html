@@ -20,13 +20,13 @@
                 Update Date:
                 <app-loading-placeholder [width]="80" [height]="25" [loading]="!current">
                     <ng-template #element>
-                        <span [ngStyle]="{ color: getDateColour() }" matTooltip="Last updated date">{{ current.currentUpdated | date: 'mediumDate' }}</span>
+                        <span [ngStyle]="{ color: getDateColour() }" matTooltip="Last updated date">{{ current.currentUpdated | date: 'mediumDate':'GMT' }}</span>
                     </ng-template>
                 </app-loading-placeholder>
                 <mat-icon>chevron_right</mat-icon>
                 <app-loading-placeholder [width]="100" [height]="25" [loading]="!latest">
                     <ng-template #element>
-                        <span matTooltip="Most recent release date">{{ latest.latestUpdate | date: 'mediumDate' }}</span>
+                        <span matTooltip="Most recent release date">{{ latest.latestUpdate | date: 'mediumDate':'GMT' }}</span>
                     </ng-template>
                 </app-loading-placeholder>
             </div>

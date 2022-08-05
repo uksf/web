@@ -16,7 +16,7 @@ export function passwordMatcher(form: AbstractControl) {
 @Component({
     selector: 'app-change-password-modal',
     templateUrl: './change-password-modal.component.html',
-    styleUrls: ['./change-password-modal.component.css'],
+    styleUrls: ['./change-password-modal.component.scss']
 })
 export class ChangePasswordModalComponent implements OnInit {
     public form: FormGroup;
@@ -25,7 +25,7 @@ export class ChangePasswordModalComponent implements OnInit {
         this.form = formbuilder.group(
             {
                 password: ['', Validators.required],
-                confirmPass: ['', Validators.required],
+                confirmPass: ['', Validators.required]
             },
             { validator: passwordMatcher }
         );
@@ -40,8 +40,8 @@ export class ChangePasswordModalComponent implements OnInit {
         this.httpClient
             .put(this.urls.apiUrl + '/accounts/password', formString, {
                 headers: new HttpHeaders({
-                    'Content-Type': 'application/json',
-                }),
+                    'Content-Type': 'application/json'
+                })
             })
             .subscribe((_) => {
                 this.dialog.closeAll();

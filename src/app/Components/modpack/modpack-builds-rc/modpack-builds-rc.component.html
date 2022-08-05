@@ -50,16 +50,10 @@
                             </div>
                             <app-flex-filler></app-flex-filler>
                             <ng-template [ngxPermissionsOnly]="['ADMIN']">
-                                <button mat-raised-button color="primary" *ngIf="!selectedBuild.finished && !cancelling" (click)="cancelBuild()">
-                                    Cancel Build
-                                </button>
-                                <button mat-raised-button color="primary" *ngIf="canRebuild()" (click)="rebuild()">
-                                    Rebuild
-                                </button>
+                                <button mat-raised-button color="primary" *ngIf="!selectedBuild.finished && !cancelling" (click)="cancelBuild()">Cancel Build</button>
+                                <button mat-raised-button color="primary" *ngIf="canRebuild()" (click)="rebuild()">Rebuild</button>
                             </ng-template>
-                            <button mat-raised-button color="primary" *ngIf="selectedBuild.steps.length > 0" (click)="openLog()">
-                                Build Log
-                            </button>
+                            <button mat-raised-button color="primary" *ngIf="selectedBuild.steps.length > 0" (click)="openLog()">Build Log</button>
                         </div>
                     </div>
                     <div class="build-content">
@@ -85,7 +79,7 @@
                 <app-flex-filler></app-flex-filler>
                 <div class="build-footer" *ngIf="selectedBuild">
                     <div class="footer-item">
-                        {{ selectedBuild.startTime | date: 'dd MMM HH:mm' }}
+                        {{ selectedBuild.startTime | date: 'dd MMM HH:mm':'GMT' }}
                     </div>
                     <div class="footer-item" *ngIf="selectedBuild.finished">
                         {{ duration }}

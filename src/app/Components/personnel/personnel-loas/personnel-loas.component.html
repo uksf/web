@@ -21,7 +21,7 @@
                             <button mat-raised-button class="loa-filter-button" [disabled]="viewMode == 'me'" (click)="changeViewMode('me')"><mat-icon>person</mat-icon>You</button>
                         </div>
                     </div>
-                    <br />
+                    <h6>All dates and times are in GMT</h6>
                     <div>
                         <app-personnel-loas-list [selectionMode]="'current'" (deleteEvent)="delete($event)"></app-personnel-loas-list>
                         <app-personnel-loas-list [selectionMode]="'future'" (deleteEvent)="delete($event)"></app-personnel-loas-list>

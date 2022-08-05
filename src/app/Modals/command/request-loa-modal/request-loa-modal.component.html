@@ -1,28 +1,31 @@
 <h2 mat-dialog-title>LOA Request</h2>
+<h6>Dates should be considered as GMT</h6>
 <mat-dialog-content>
     <form [formGroup]="form" class="container">
         <div class="container-body">
             <mat-form-field>
-                <input matInput placeholder="Reason" formControlName="reason">
+                <input matInput placeholder="Reason" formControlName="reason" />
                 <mat-error *ngFor="let validation of validationMessages.reason">
-                    <mat-error class="error-message" *ngIf="form.get('reason').hasError(validation.type)">{{validation.message}}</mat-error>
+                    <mat-error class="error-message" *ngIf="form.get('reason').hasError(validation.type)">{{ validation.message }}</mat-error>
                 </mat-error>
             </mat-form-field>
             <mat-form-field>
-                <div (click)="pickerStart.open()"><input matInput [matDatepicker]="pickerStart" placeholder="Start date" formControlName="start" [min]="minStartDate" [max]="maxStartDate" ng-model-options="{timezone: 'utc'}"></div>
+                <div (click)="pickerStart.open()">
+                    <input matInput [matDatepicker]="pickerStart" placeholder="Start date" formControlName="start" [min]="minStartDate" [max]="maxStartDate" ng-model-options="{timezone: 'utc'}" />
+                </div>
                 <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
                 <mat-datepicker [touchUi]="mobile" #pickerStart disabled="false"></mat-datepicker>
             </mat-form-field>
-            <br>
+            <br />
             <mat-form-field>
-                <div (click)="pickerEnd.open()"><input matInput [matDatepicker]="pickerEnd" placeholder="End date" formControlName="end" [min]="minEndDate"></div>
+                <div (click)="pickerEnd.open()"><input matInput [matDatepicker]="pickerEnd" placeholder="End date (inclusive)" formControlName="end" [min]="minEndDate" /></div>
                 <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
                 <mat-datepicker [touchUi]="mobile" #pickerEnd disabled="false"></mat-datepicker>
             </mat-form-field>
             <mat-checkbox color="primary" formControlName="emergency" *ngIf="late" matTooltip="If this is an emergency, tick this box">Emergency</mat-checkbox>
         </div>
         <div class="invalid-message" *ngIf="invalidMessage">
-            <span>{{invalidMessage}}</span>
+            <span>{{ invalidMessage }}</span>
         </div>
         <div class="button-container">
             <button mat-raised-button color="primary" type="button" #button (click)="submit()" [disabled]="!form.valid || !datesValid || submitting">Submit</button>

@@ -26,7 +26,7 @@
                     <ng-container matColumnDef="timestamp">
                         <mat-header-cell *matHeaderCellDef mat-sort-header> Timestamp </mat-header-cell>
                         <mat-cell *matCellDef="let row"
-                            ><span>{{ row.timestamp | date: 'dd/MM/yy HH:mm:ss' }}</span></mat-cell
+                            ><span>{{ row.timestamp | date: 'dd/MM/yy HH:mm:ss':'GMT' }}</span></mat-cell
                         >
                     </ng-container>
                     <ng-container matColumnDef="userId">

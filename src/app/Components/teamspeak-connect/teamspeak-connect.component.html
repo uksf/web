@@ -11,8 +11,8 @@
                 </mat-select>
             </mat-form-field>
             <app-flex-filler></app-flex-filler>
-            <button mat-raised-button color="primary" [disabled]="!teamspeakForm.value.teamspeakId || clients.length === 0" (click)="requestCode()">Request Code</button>
             <button mat-raised-button color="warn" *ngIf="showCancel" (click)="cancel()">Cancel</button>
+            <button mat-raised-button color="primary" [disabled]="!teamspeakForm.value.teamspeakId || clients.length === 0" (click)="requestCode()">Request Code</button>
         </div>
     </form>
 </div>

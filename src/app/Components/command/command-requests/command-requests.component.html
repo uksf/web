@@ -32,18 +32,18 @@
                                     <div class="request-spacer"></div>
                                     <span class="request-detail"> <b>Recipient:</b> {{ request.data.displayRecipient }} </span>
                                     <div class="request-spacer"></div>
-                                    <span class="request-detail"> <b>Date Created:</b> {{ request.data.dateCreated | date: 'mediumDate' }} </span>
+                                    <span class="request-detail"> <b>Date Created:</b> {{ request.data.dateCreated | date: 'mediumDate':'GMT' }} </span>
                                 </div>
                                 <div class="request-info-details-fromto">
                                     <span class="request-detail">
                                         <b>From:</b>
-                                        <span *ngIf="isLoa(request); else nonDateFrom"> {{ request.data.displayFrom | date: 'mediumDate' }}</span>
+                                        <span *ngIf="isLoa(request); else nonDateFrom"> {{ request.data.displayFrom | date: 'mediumDate':'GMT' }}</span>
                                         <ng-template #nonDateFrom> {{ request.data.displayFrom }}</ng-template>
                                     </span>
                                     <div class="request-spacer"></div>
                                     <span class="request-detail">
                                         <b>To:</b>
-                                        <span *ngIf="isLoa(request); else nonDateTo"> {{ request.data.displayValue | date: 'mediumDate' }}</span>
+                                        <span *ngIf="isLoa(request); else nonDateTo"> {{ request.data.displayValue | date: 'mediumDate':'GMT' }}</span>
                                         <ng-template #nonDateTo> {{ request.data.displayValue }}</ng-template>
                                     </span>
                                     <div class="request-spacer"></div>
@@ -135,18 +135,18 @@
                                     <div class="request-spacer"></div>
                                     <span class="request-detail"> <b>Recipient:</b> {{ request.data.displayRecipient }} </span>
                                     <div class="request-spacer"></div>
-                                    <span class="request-detail"> <b>Date Created:</b> {{ request.data.dateCreated | date: 'mediumDate' }} </span>
+                                    <span class="request-detail"> <b>Date Created:</b> {{ request.data.dateCreated | date: 'mediumDate':'GMT' }} </span>
                                 </div>
                                 <div class="request-info-details-fromto">
                                     <span class="request-detail">
                                         <b>From:</b>
-                                        <span *ngIf="isLoa(request); else nonDateFromOther"> {{ request.data.displayFrom | date: 'mediumDate' }}</span>
+                                        <span *ngIf="isLoa(request); else nonDateFromOther"> {{ request.data.displayFrom | date: 'mediumDate':'GMT' }}</span>
                                         <ng-template #nonDateFromOther> {{ request.data.displayFrom }}</ng-template>
                                     </span>
                                     <div class="request-spacer"></div>
                                     <span class="request-detail">
                                         <b>To:</b>
-                                        <span *ngIf="isLoa(request); else nonDateToOther"> {{ request.data.displayValue | date: 'mediumDate' }}</span>
+                                        <span *ngIf="isLoa(request); else nonDateToOther"> {{ request.data.displayValue | date: 'mediumDate':'GMT' }}</span>
                                         <ng-template #nonDateToOther> {{ request.data.displayValue }}</ng-template>
                                     </span>
                                     <div class="request-spacer"></div>

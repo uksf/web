@@ -54,7 +54,7 @@ export class PersonnelLoasComponent implements OnInit {
     delete(loa: Loa) {
         const dialog = this.dialog.open(ConfirmationModalComponent, {
             data: {
-                message: `Are you sure you want to delete LOA for '${loa.name}' from '${formatDate(loa.start, 'd MMM y', 'en-GB', '+0000')}' to '${formatDate(loa.end, 'd MMM y', 'en-GB', '+0000')}'?`
+                message: `Are you sure you want to delete LOA for '${loa.name}' from '${formatDate(loa.start, 'd MMM y', 'en-GB', 'UTC')}' to '${formatDate(loa.end, 'd MMM y', 'en-GB', 'UTC')}'?`
             }
         });
         dialog.componentInstance.confirmEvent.subscribe(() => {
