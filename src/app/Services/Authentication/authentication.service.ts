@@ -7,6 +7,10 @@ import { AccountService } from '../account.service';
 import { UksfError } from '../../Models/Response';
 import { JwtHelperService } from '@auth0/angular-jwt';
 
+export interface TokenResponse {
+    token: string;
+}
+
 @Injectable()
 export class AuthenticationService {
     private impersonatingUserIdClaimKey = 'impersonator';
@@ -24,8 +28,9 @@ export class AuthenticationService {
         let body = { email: email, password: password };
 
         this.httpClient.post(`${this.urls.apiUrl}/auth/login`, body).subscribe({
-            next: (response) => {
-                this.sessionService.setSessionToken(response);
+            next: (response: TokenResponse) => {
+                console.log(response);
+                this.sessionService.setSessionToken(response.token);
                 if (stayLogged) {
                     this.sessionService.setStorageToken();
                 }
@@ -70,8 +75,8 @@ export class AuthenticationService {
         let body = { email: email, password: password };
 
         this.httpClient.post(`${this.urls.apiUrl}/auth/passwordReset/${resetPasswordCode}`, body).subscribe({
-            next: (response) => {
-                this.sessionService.setSessionToken(response);
+            next: (response: TokenResponse) => {
+                this.sessionService.setSessionToken(response.token);
                 if (stayLogged) {
                     this.sessionService.setStorageToken();
                 }
@@ -88,8 +93,8 @@ export class AuthenticationService {
 
     public refresh(callback: () => void, errorCallback: (error: string) => void) {
         this.httpClient.get(`${this.urls.apiUrl}/auth/refresh`).subscribe({
-            next: (response: any) => {
-                this.sessionService.setSessionToken(response);
+            next: (response: TokenResponse) => {
+                this.sessionService.setSessionToken(response.token);
                 this.sessionService.setStorageToken();
                 callback();
             },
@@ -101,8 +106,8 @@ export class AuthenticationService {
 
     public impersonate(accountId: string, callback: () => void, errorCallback: (error: string) => void) {
         this.httpClient.get(`${this.urls.apiUrl}/auth/impersonate?accountId=${accountId}`).subscribe({
-            next: (impersonatedToken: string) => {
-                this.sessionService.setSessionToken(impersonatedToken);
+            next: (impersonatedToken: TokenResponse) => {
+                this.sessionService.setSessionToken(impersonatedToken.token);
                 this.sessionService.setStorageToken();
                 callback();
             },

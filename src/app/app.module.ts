@@ -72,7 +72,7 @@ import { OperationsPageComponent } from './Pages/operations-page/operations-page
 import { PolicyPageComponent } from './Pages/policy-page/policy-page.component';
 import { InformationPageComponent } from './Pages/information-page/information-page.component';
 import { ModpackPageComponent } from './Pages/modpack-page/modpack-page.component';
-import 'chart.js/dist/Chart.min.js';
+// import 'chart.js/dist/Chart.min.js';
 import { CommandPageComponent } from './Pages/command-page/command-page.component';
 import { TocList } from './Components/toc-list/toc-list.component';
 import { CommentDisplayComponent } from './Components/comment-display/comment-display.component';
@@ -285,7 +285,7 @@ export function tokenGetter() {
         JwtModule.forRoot({
             config: {
                 tokenGetter: tokenGetter,
-                allowedDomains: ['localhost:5000', 'localhost:5500', 'uk-sf.co.uk', 'www.uk-sf.co.uk', 'api.uk-sf.co.uk', 'dev.uk-sf.co.uk', 'api-dev.uk-sf.co.uk']
+                allowedDomains: ['localhost:5500', 'host.docker.internal:5500', 'uk-sf.co.uk', 'www.uk-sf.co.uk', 'api.uk-sf.co.uk', 'dev.uk-sf.co.uk', 'api-dev.uk-sf.co.uk']
             }
         }),
         NgxPermissionsModule.forRoot(),
