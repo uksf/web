@@ -4,13 +4,15 @@ import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateIssueModalComponent } from '../../Modals/create-issue-modal/create-issue-modal.component';
 import { ConnectionContainer, SignalRService } from 'app/Services/signalr.service';
+import { NewIssueType } from '../../Models/Issues';
 
 @Component({
     selector: 'app-home-page',
     templateUrl: './home-page.component.html',
-    styleUrls: ['./home-page.component.scss'],
+    styleUrls: ['./home-page.component.scss']
 })
 export class HomePageComponent implements OnInit {
+    newIssueTypeEnum = NewIssueType;
     commanders;
     recruiters;
     members;
@@ -49,11 +51,9 @@ export class HomePageComponent implements OnInit {
         return this._time;
     }
 
-    openIssueModal(type) {
+    openIssueModal(type: NewIssueType) {
         this.dialog.open(CreateIssueModalComponent, {
-            data: {
-                type: type,
-            },
+            data: type
         });
     }
 

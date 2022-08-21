@@ -1,0 +1,12 @@
+@use '@angular/material' as mat;
+@import '@angular/material/theming';
+
+@mixin create-issue-modal-component-theme($theme) {
+    $primary: map-get($theme, primary);
+
+    app-create-issue-modal {
+        a {
+            color: mat.get-color-from-palette($primary);
+        }
+    }
+}

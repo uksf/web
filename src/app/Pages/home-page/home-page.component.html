@@ -36,13 +36,13 @@
         <div class="flex-container">
             <ng-template [ngxPermissionsOnly]="['MEMBER']">
                 <div class="issues-container">
-                    <button mat-raised-button color="primary" class="issues-button" (click)="openIssueModal(0)">
+                    <button mat-raised-button color="primary" class="issues-button" (click)="openIssueModal(newIssueTypeEnum.WEBSITE)">
                         <div>
                             <i class="material-icons">feedback</i>
                             <span>Report website issue</span>
                         </div>
                     </button>
-                    <button mat-raised-button color="primary" class="issues-button" (click)="openIssueModal(1)">
+                    <button mat-raised-button color="primary" class="issues-button" (click)="openIssueModal(newIssueTypeEnum.MODPACK)">
                         <div>
                             <i class="material-icons">feedback</i>
                             <span>Report modpack issue</span>
