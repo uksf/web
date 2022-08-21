@@ -22,8 +22,8 @@ export class CreateIssueModalComponent implements OnInit {
     };
     type: NewIssueType = NewIssueType.WEBSITE;
     body = '';
-    issueUrl = 'https://github.com/uksf/website-issues/issues/202';
     pending = false;
+    issueUrl = undefined;
     error = undefined;
 
     constructor(formbuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, @Inject(MAT_DIALOG_DATA) public data: NewIssueType) {
