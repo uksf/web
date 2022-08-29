@@ -25,6 +25,13 @@
             <mat-checkbox color="primary" formControlName="acre">Force ACRE build</mat-checkbox>
             <mat-checkbox color="primary" formControlName="air">Force Air build</mat-checkbox>
         </div>
+        <mat-form-field class="normal">
+            <mat-select placeholder="Configuration" formControlName="configuration" [errorStateMatcher]="instantErrorStateMatcher">
+                <mat-option *ngFor="let configuration of configurations" [value]="configuration">
+                    {{ configuration }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
         <app-flex-filler></app-flex-filler>
         <div class="button-container">
             <button

@@ -3,4 +3,5 @@ export interface NewBuild {
     ace: boolean;
     acre: boolean;
     air: boolean;
+    configuration: string;
 }
