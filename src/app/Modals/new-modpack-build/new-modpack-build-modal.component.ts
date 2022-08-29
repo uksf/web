@@ -31,6 +31,7 @@ export class NewModpackBuildModalComponent {
     constructor(private formBuilder: FormBuilder, public dialogRef: MatDialogRef<NewModpackBuildModalComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
         this.branches = data.branches;
         this.form = this.formBuilder.group({
+            configuration: ['Development', Validators.required],
             referenceGroup: this.formBuilder.group(
                 {
                     branch: ['No branch'],
@@ -40,8 +41,7 @@ export class NewModpackBuildModalComponent {
             ),
             ace: [false],
             acre: [false],
-            air: [false],
-            configuration: ['Development', Validators.required]
+            air: [false]
         });
     }
 
