@@ -35,7 +35,7 @@
     "core-js": "^3.19.3",
     "eslint": "^8.4.1",
     "express": "^4.17.1",
-    "moment-timezone": "^0.5.34",
+    "moment-timezone": "^0.5.35",
     "ngx-markdown": "^13.0.0",
     "ngx-permissions": "^13.0.1",
     "primeicons": "^5.0.0",
