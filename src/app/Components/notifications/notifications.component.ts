@@ -8,7 +8,7 @@ import { AccountService } from 'app/Services/account.service';
 @Component({
     selector: 'app-notifications',
     templateUrl: './notifications.component.html',
-    styleUrls: ['./notifications.component.scss'],
+    styleUrls: ['./notifications.component.scss']
 })
 export class NotificationsComponent implements OnInit, OnDestroy {
     panel = false;
@@ -103,7 +103,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
                 this.unreadTimeout = setTimeout(() => {
                     this.httpClient
                         .post(this.urlService.apiUrl + '/notifications/read', {
-                            notifications: this.unreadNotifications,
+                            notifications: this.unreadNotifications
                         })
                         .subscribe((_) => {
                             this.unreadTimeout = null;
@@ -132,7 +132,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         const clear = notification ? [notification] : this.notifications;
         this.httpClient
             .post(this.urlService.apiUrl + '/notifications/clear', {
-                clear: clear,
+                notifications: clear
             })
             .subscribe();
     }
