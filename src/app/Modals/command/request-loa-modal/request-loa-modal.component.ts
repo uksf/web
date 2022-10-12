@@ -35,8 +35,8 @@ export class RequestLoaModalComponent implements OnInit {
             reason: ['', Validators.required],
             start: [{ value: '', disabled: true }, Validators.required],
             end: [{ value: '', disabled: true }, Validators.required],
-            emergency: [''],
-            late: ['']
+            emergency: [false],
+            late: [false]
         });
         this.form.controls['start'].valueChanges.subscribe((_) => {
             this.datesValid = this.validateDates();
@@ -114,18 +114,24 @@ export class RequestLoaModalComponent implements OnInit {
         this.form.value['start'] = this.start;
         this.form.value['end'] = this.end;
         this.form.controls['late'].setValue(this.late);
-        const formString = JSON.stringify(this.form.getRawValue()).replace(/[\n\r]/g, '');
+        const body = {
+            reason: this.form.value['reason'],
+            start: this.start,
+            end: this.end,
+            emergency: this.form.value['emergency'],
+            late: this.late
+        };
         this.httpClient
-            .put(this.urlService.apiUrl + '/commandrequests/create/loa', formString, {
+            .put(this.urlService.apiUrl + '/commandrequests/create/loa', body, {
                 headers: new HttpHeaders({
                     'Content-Type': 'application/json'
                 })
             })
-            .subscribe(
-                (_) => {
+            .subscribe({
+                next: (_) => {
                     this.dialog.closeAll();
                 },
-                (error) => {
+                error: (error) => {
                     this.dialog
                         .open(MessageModalComponent, {
                             data: { message: error.error }
@@ -135,6 +141,6 @@ export class RequestLoaModalComponent implements OnInit {
                             this.submitting = false;
                         });
                 }
-            );
+            });
     }
 }
