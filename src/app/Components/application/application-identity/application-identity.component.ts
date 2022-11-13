@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 import { ConfirmValidParentMatcher, InstantErrorStateMatcher } from '../../../Services/formhelper.service';
 import { nameCase, titleCase } from '../../../Services/helper.service';
 import { IDropdownElement } from '../../elements/dropdown-base/dropdown-base.component';
+import { CreateAccount } from '../../../Models/Account';
 
 function matchingPasswords(passwordKey: string, confirmPasswordKey: string) {
     return (group: FormGroup): { [key: string]: any } => {
@@ -86,10 +87,12 @@ export class ApplicationIdentityComponent implements OnInit {
             { type: 'email', message: 'Enter a valid email' },
             { type: 'emailTaken', message: 'That email has already been taken' }
         ],
-        password: [{ type: 'required', message: 'Password is required' }],
+        password: [
+            { type: 'required', message: 'Password is required' },
+            { type: 'minlength', message: 'Password must be 12 characters or more' }
+        ],
         confirmPassword: [
-            { type: 'required', message: 'Confirm password is required' },
-            { type: 'mismatchedPasswords', message: 'Passwords are not the same' }
+            { type: 'mismatchedPasswords', message: 'Passwords must match' }
         ],
         dob: [
             { type: 'required', message: 'Date of Birth is required' },
@@ -110,8 +113,8 @@ export class ApplicationIdentityComponent implements OnInit {
             email: ['', [Validators.required, Validators.email], this.validateEmail.bind(this)],
             passwordGroup: formBuilder.group(
                 {
-                    password: ['', Validators.required],
-                    confirmPassword: ['', Validators.required]
+                    password: ['', [Validators.required, Validators.minLength(12)]],
+                    confirmPassword: ['']
                 },
                 { validator: matchingPasswords('password', 'confirmPassword') }
             ),
@@ -200,15 +203,15 @@ export class ApplicationIdentityComponent implements OnInit {
 
         this.pending = true;
         const formObj = this.formGroup.getRawValue();
-        let body = {
-            Email: formObj.email,
-            Password: formObj.passwordGroup.password,
-            FirstName: formObj.firstName,
-            LastName: formObj.lastName,
-            DobYear: formObj.dobGroup.year,
-            DobMonth: formObj.dobGroup.month,
-            DobDay: formObj.dobGroup.day,
-            Nation: formObj.nation.value
+        const body: CreateAccount = {
+            email: formObj.email,
+            password: formObj.passwordGroup.password,
+            firstName: formObj.firstName,
+            lastName: formObj.lastName,
+            dobYear: formObj.dobGroup.year,
+            dobMonth: formObj.dobGroup.month,
+            dobDay: formObj.dobGroup.day,
+            nation: formObj.nation.value
         };
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 

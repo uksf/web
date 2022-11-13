@@ -11,6 +11,17 @@ export enum MembershipState {
     DISCHARGED
 }
 
+export interface CreateAccount {
+    dobDay: number;
+    dobMonth: number;
+    dobYear: number;
+    email: string;
+    firstName: string;
+    lastName: string;
+    nation: string;
+    password: string;
+}
+
 export class Account {
     id: string;
     application: Application;
