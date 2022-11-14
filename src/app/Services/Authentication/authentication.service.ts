@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { UrlService } from '../url.service';
 import { SessionService } from './session.service';
 import { AccountService } from '../account.service';
 import { UksfError } from '../../Models/Response';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { CreateAccount } from '../../Models/Account';
 
 export interface TokenResponse {
     token: string;
@@ -99,6 +100,19 @@ export class AuthenticationService {
             },
             error: (error: UksfError) => {
                 errorCallback(error.error);
+            }
+        });
+    }
+
+    public createAccount(createAccountBody: CreateAccount, success: () => void, error: (errorMessage: string) => void) {
+        this.httpClient.post(this.urls.apiUrl + '/accounts/create', createAccountBody, { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }).subscribe({
+            next: (response: TokenResponse) => {
+                this.sessionService.setSessionToken(response.token);
+                this.sessionService.setStorageToken();
+                success();
+            },
+            error: (errorValue: UksfError) => {
+                error(errorValue.error);
             }
         });
     }

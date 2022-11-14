@@ -80,7 +80,7 @@
         </div>
         <br />
         <div class="button-next">
-            <button mat-raised-button color="primary" [disabled]="!formGroup.valid" (click)="submit()">Submit</button>
+            <app-button-pending (clicked)="submit()" [disabled]="!formGroup.valid">Submit</app-button-pending>
         </div>
     </form>
 </mat-card>

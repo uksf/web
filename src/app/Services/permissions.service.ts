@@ -75,6 +75,7 @@ export class PermissionsService {
         if (this.refreshing) {
             return;
         }
+
         this.refreshing = true;
         try {
             const promise = new Promise((resolve, reject) => {

@@ -58,8 +58,9 @@ export class ApplicationDetailsComponent {
         if (this.formGroup.value.name !== '') {
             return;
         }
+
         const formObj = this.convertRolePreferencesGroup();
-        const formString = JSON.stringify(formObj).replace(/\n|\r/g, '');
+        const formString = JSON.stringify(formObj).replace(/[\n\r]/g, '');
         this.nextEvent.emit(formString);
     }
 

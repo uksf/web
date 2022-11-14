@@ -24,6 +24,7 @@ export class InstantErrorStateMatcher implements ErrorStateMatcher {
 })
 export class ApplicationEditComponent {
     formGroup: FormGroup;
+    pending: boolean = false;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     referenceOptions = [
         { value: 'Recruiter', viewValue: 'Recruiter' },
@@ -110,6 +111,7 @@ export class ApplicationEditComponent {
             return;
         }
 
+        this.pending = true;
         const formObj = this.convertRolePreferencesFromGroup();
         const formString = JSON.stringify(formObj).replace(/[\n\r]/g, '');
         this.httpClient
@@ -118,6 +120,7 @@ export class ApplicationEditComponent {
             })
             .subscribe({
                 next: () => {
+                    this.pending = false;
                     this.accountService.getAccount(() => {
                         this.updateOriginal();
                     });
@@ -126,6 +129,7 @@ export class ApplicationEditComponent {
                     });
                 },
                 error: () => {
+                    this.pending = false;
                     this.dialog.open(MessageModalComponent, {
                         data: { message: 'Failed to update application' }
                     });

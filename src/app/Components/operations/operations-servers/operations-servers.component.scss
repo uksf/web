@@ -132,7 +132,7 @@
     }
 }
 
-::ng-deep .mission-select {
+:host ::ng-deep .mission-select {
     top: -8px;
     height: 36px;
     width: 300px !important;

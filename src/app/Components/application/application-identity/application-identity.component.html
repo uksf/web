@@ -16,7 +16,9 @@
             <mat-form-field class="normal">
                 <input matInput formControlName="password" type="password" required placeholder="Password (min 12 chars)" autocomplete="new-password" [errorStateMatcher]="instantErrorStateMatcher" />
                 <mat-error *ngFor="let validation of validation_messages.password">
-                    <mat-error class="error-message" *ngIf="formGroup.get('passwordGroup').hasError(validation.type) || formGroup.get('passwordGroup.password').hasError(validation.type)">{{ validation.message }}</mat-error>
+                    <mat-error class="error-message" *ngIf="formGroup.get('passwordGroup').hasError(validation.type) || formGroup.get('passwordGroup.password').hasError(validation.type)">{{
+                        validation.message
+                    }}</mat-error>
                 </mat-error>
             </mat-form-field>
             <br />
@@ -73,8 +75,10 @@
         </app-dropdown>
         <br />
         <app-form-value-debug-reactive [form]="formGroup"></app-form-value-debug-reactive>
-        <div class="button-next">
-            <button (click)="next()" [disabled]="!formGroup.valid || pending || validating" color="primary" mat-raised-button>Next</button>
+        <div class="button-next button-container">
+            <app-button-pending (clicked)="previous()" [disabled]="pending">Previous</app-button-pending>
+            <app-flex-filler></app-flex-filler>
+            <app-button-pending (clicked)="next()" [pending]="pending" [disabled]="!formGroup.valid || pending || validating">Next</app-button-pending>
         </div>
     </form>
 </mat-card>

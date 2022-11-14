@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from 'app/Services/url.service';
@@ -15,10 +14,9 @@ import { ApplicationState } from '../../Models/Application';
 })
 export class ApplicationPageComponent implements OnInit {
     step = 1;
-    email: string;
     details: any;
 
-    constructor(private httpClient: HttpClient, public formBuilder: FormBuilder, private urls: UrlService, public dialog: MatDialog, private accountService: AccountService) {}
+    constructor(private httpClient: HttpClient, private urls: UrlService, public dialog: MatDialog, private accountService: AccountService) {}
 
     ngOnInit() {
         this.checkStep();
@@ -31,7 +29,6 @@ export class ApplicationPageComponent implements OnInit {
                 this.step = 7;
             } else if (this.accountService.account.membershipState === MembershipState.UNCONFIRMED) {
                 // Needs to confirm email
-                this.email = this.accountService.account.email;
                 this.step = 3;
             } else if (this.accountService.account.membershipState === MembershipState.CONFIRMED && !this.connected()) {
                 // Needs to connect communications
@@ -66,11 +63,15 @@ export class ApplicationPageComponent implements OnInit {
         return this.accountService.account.application && this.accountService.account.application.state === ApplicationState.WAITING;
     }
 
+    previous() {
+        setTimeout(() => {
+            this.step--;
+            this.checkStep();
+        }, 1);
+    }
+
     next(event) {
         setTimeout(() => {
-            if (this.step === 2) {
-                this.email = event.email;
-            }
             if (this.step === 5) {
                 this.details = event;
             }

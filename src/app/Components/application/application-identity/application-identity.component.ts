@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject, Observable, of, timer } from 'rxjs';
@@ -8,11 +8,12 @@ import { map, switchMap } from 'rxjs/operators';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
 import { CountryPickerService, ICountry } from 'app/Services/CountryPicker/country-picker.service';
 import { CountryImage } from 'app/Pipes/country.pipe';
-import { Router } from '@angular/router';
 import { ConfirmValidParentMatcher, InstantErrorStateMatcher } from '../../../Services/formhelper.service';
 import { nameCase, titleCase } from '../../../Services/helper.service';
 import { IDropdownElement } from '../../elements/dropdown-base/dropdown-base.component';
 import { CreateAccount } from '../../../Models/Account';
+import { AuthenticationService } from '../../../Services/Authentication/authentication.service';
+import { PermissionsService } from '../../../Services/permissions.service';
 
 function matchingPasswords(passwordKey: string, confirmPasswordKey: string) {
     return (group: FormGroup): { [key: string]: any } => {
@@ -71,6 +72,7 @@ function validDob(dayKey: string, monthKey: string, yearKey: string) {
 })
 export class ApplicationIdentityComponent implements OnInit {
     @Output() nextEvent = new EventEmitter();
+    @Output() previousEvent = new EventEmitter();
     @ViewChild('day') dobDay: ElementRef;
     @ViewChild('month') dobMonth: ElementRef;
     @ViewChild('year') dobYear: ElementRef;
@@ -91,9 +93,7 @@ export class ApplicationIdentityComponent implements OnInit {
             { type: 'required', message: 'Password is required' },
             { type: 'minlength', message: 'Password must be 12 characters or more' }
         ],
-        confirmPassword: [
-            { type: 'mismatchedPasswords', message: 'Passwords must match' }
-        ],
+        confirmPassword: [{ type: 'mismatchedPasswords', message: 'Passwords must match' }],
         dob: [
             { type: 'required', message: 'Date of Birth is required' },
             { type: 'nan', message: 'Invalid date: Not a number' },
@@ -107,7 +107,14 @@ export class ApplicationIdentityComponent implements OnInit {
         ]
     };
 
-    constructor(public dialog: MatDialog, public formBuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private router: Router) {
+    constructor(
+        public dialog: MatDialog,
+        public formBuilder: FormBuilder,
+        private httpClient: HttpClient,
+        private urls: UrlService,
+        private authenticationService: AuthenticationService,
+        private permissionsService: PermissionsService
+    ) {
         this.formGroup = formBuilder.group({
             name: ['', Validators.maxLength(0)],
             email: ['', [Validators.required, Validators.email], this.validateEmail.bind(this)],
@@ -213,30 +220,26 @@ export class ApplicationIdentityComponent implements OnInit {
             dobDay: formObj.dobGroup.day,
             nation: formObj.nation.value
         };
-        const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-        this.httpClient.put(this.urls.apiUrl + '/accounts', body, { headers: headers }).subscribe(
+        this.authenticationService.createAccount(
+            body,
             () => {
-                this.pending = false;
-                this.dialog
-                    .open(MessageModalComponent, {
-                        data: {
-                            message: 'Your account has been successfully created.\n\nYou will now be redirected to log in, after which you can continue your application.',
-                            button: 'Continue'
-                        }
-                    })
-                    .afterClosed()
-                    .subscribe(() => {
-                        this.router.navigate(['/login'], { queryParams: { redirect: 'application' } }).then();
-                    });
+                this.permissionsService.refresh().then(() => {
+                    this.pending = false;
+                    this.nextEvent.emit();
+                });
             },
             (error) => {
                 this.dialog.open(MessageModalComponent, {
-                    data: { message: error.error }
+                    data: { message: error }
                 });
                 this.pending = false;
             }
         );
+    }
+
+    previous() {
+        this.previousEvent.emit();
     }
 
     get displayName(): string {

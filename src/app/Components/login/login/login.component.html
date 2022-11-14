@@ -41,7 +41,7 @@
                 <mat-error class="error-message" *ngIf="password.hasError(validation.type)">{{ validation.message }}</mat-error>
             </mat-error>
         </mat-form-field>
-        <app-button-submit></app-button-submit>
+        <app-button-hidden-submit></app-button-hidden-submit>
     </form>
     <div class="options-container">
         <mat-checkbox color="primary" [(ngModel)]="stayLogged">Stay logged in</mat-checkbox>

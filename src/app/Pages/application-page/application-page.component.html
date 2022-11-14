@@ -1,12 +1,12 @@
 <app-default-content-areas>
-    <app-main-content-area style="grid-column: span 3;">
+    <app-main-content-area style="grid-column: span 3">
         <div class="flex-container">
             <mat-card *ngIf="step != 7">
                 <h2>Application to join UKSF</h2>
                 <p *ngIf="loggedOut()">
                     If you have already started an application, please <a [routerLink]="['/login']" [queryParams]="{ redirect: 'application' }">login</a> to continue the application
                 </p>
-                <p>You may edit certain parts of the application after submitting</p>
+                <p>You may edit the 'Details' part of your application after submitting</p>
                 <p>If you require help, contact an SR1 (Red 'R' tag) on our <a href="ts3server://uk-sf.co.uk">TeamSpeak (uk-sf.co.uk)</a></p>
                 <p>Or you can talk with us in the 'newcomers' channel on our <a target="_blank" href="http://discord.uk-sf.co.uk">Discord</a></p>
             </mat-card>
@@ -26,10 +26,10 @@
                 <app-application-info (nextEvent)="next($event)"></app-application-info>
             </div>
             <div *ngIf="step == 2">
-                <app-application-identity (nextEvent)="next($event)"></app-application-identity>
+                <app-application-identity (nextEvent)="next($event)" (previousEvent)="previous()"></app-application-identity>
             </div>
             <div *ngIf="step == 3">
-                <app-application-email-confirmation (confirmedEvent)="check()" [email]="email"></app-application-email-confirmation>
+                <app-application-email-confirmation (confirmedEvent)="check()"></app-application-email-confirmation>
             </div>
             <div *ngIf="step == 4">
                 <app-application-communications (nextEvent)="next($event)"></app-application-communications>

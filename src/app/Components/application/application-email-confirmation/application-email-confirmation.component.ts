@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, Input } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpHeaders } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
@@ -6,6 +6,7 @@ import { UrlService } from '../../../Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
 import { PermissionsService } from 'app/Services/permissions.service';
+import { AccountService } from '../../../Services/account.service';
 
 @Component({
     selector: 'app-application-email-confirmation',
@@ -13,13 +14,19 @@ import { PermissionsService } from 'app/Services/permissions.service';
     styleUrls: ['./application-email-confirmation.component.scss', '../../../Pages/application-page/application-page.component.scss']
 })
 export class ApplicationEmailConfirmationComponent {
-    @Input() email: string;
     @Output() confirmedEvent = new EventEmitter();
     formGroup: FormGroup;
     pending = false;
     resent = false;
 
-    constructor(private httpClient: HttpClient, public formBuilder: FormBuilder, private urls: UrlService, public dialog: MatDialog, private permissionsService: PermissionsService) {
+    constructor(
+        private httpClient: HttpClient,
+        public formBuilder: FormBuilder,
+        private urls: UrlService,
+        public dialog: MatDialog,
+        public accountService: AccountService,
+        private permissionsService: PermissionsService
+    ) {
         this.formGroup = formBuilder.group({
             code: ['', Validators.required]
         });
@@ -44,9 +51,9 @@ export class ApplicationEmailConfirmationComponent {
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
         this.httpClient
             .post(
-                this.urls.apiUrl + '/accounts',
+                this.urls.apiUrl + '/accounts/code',
                 {
-                    email: this.email,
+                    email: this.accountService.account.email,
                     code: sanitisedCode
                 },
                 { headers: headers }

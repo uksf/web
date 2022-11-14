@@ -171,7 +171,7 @@ import { LoginComponent } from './Components/login/login/login.component';
 import { PasswordResetComponent } from './Components/login/reset-password/password-reset.component';
 import { MustMatchDirective } from './Directives/must-match.directive';
 import { ButtonPendingComponent } from './Components/elements/button-pending/button-pending.component';
-import { ButtonSubmitComponent } from './Components/elements/button-submit/button-submit.component';
+import { ButtonHiddenSubmitComponent } from './Components/elements/button-submit/button-hidden-submit.component';
 import { AppSettingsService } from './Services/appSettingsService.service';
 import { AutofocusStopComponent } from './Components/elements/autofocus-stop/autofocus-stop.component';
 import { DropdownComponent } from './Components/elements/dropdown/dropdown.component';
@@ -398,7 +398,7 @@ export function tokenGetter() {
         RequestPasswordResetComponent,
         PasswordResetComponent,
         ButtonPendingComponent,
-        ButtonSubmitComponent,
+        ButtonHiddenSubmitComponent,
         AutofocusStopComponent,
         DropdownComponent,
         DropdownBaseComponent,
