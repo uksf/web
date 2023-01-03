@@ -71,8 +71,8 @@
                                         </div>
                                         <app-flex-filler></app-flex-filler>
                                         <div class="server-buttons">
-                                            <ng-template [ngxPermissionsOnly]="['ADMIN']">
-                                                <div class="admin">
+                                            <div class="admin">
+                                                <ng-template [ngxPermissionsOnly]="['ADMIN']">
                                                     <button
                                                         (click)="deleteServer($event, server)"
                                                         [disabled]="server.updating || server.status.running || server.status.started || server.status.stopping"
@@ -89,6 +89,8 @@
                                                     >
                                                         <mat-icon matTooltip="Edit game server">edit</mat-icon>
                                                     </button>
+                                                </ng-template>
+                                                <ng-template [ngxPermissionsOnly]="['SR5']">
                                                     <button
                                                         (click)="editServerMods($event, server)"
                                                         [disabled]="server.updating || server.status.running || server.status.started || server.status.stopping"
@@ -97,8 +99,8 @@
                                                     >
                                                         <mat-icon matTooltip="Edit game server mods">extension </mat-icon>
                                                     </button>
-                                                </div>
-                                            </ng-template>
+                                                </ng-template>
+                                            </div>
                                             <app-flex-filler></app-flex-filler>
                                             <app-dropdown
                                                 *ngIf="!server.status.running && !server.status.started && !server.updating && !server.status.stopping"

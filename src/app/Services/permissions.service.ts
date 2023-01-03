@@ -9,6 +9,7 @@ import { UrlService } from './url.service';
 import { AuthenticationService } from './Authentication/authentication.service';
 import { Account, MembershipState } from '../Models/Account';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { AppSettingsService, Environments } from './appSettingsService.service';
 
 @Injectable()
 export class PermissionsService {
@@ -26,7 +27,8 @@ export class PermissionsService {
         private httpClient: HttpClient,
         private urls: UrlService,
         private authenticationService: AuthenticationService,
-        private jwtHelperService: JwtHelperService
+        private jwtHelperService: JwtHelperService,
+        private appSettings: AppSettingsService
     ) {}
 
     connect() {
@@ -150,6 +152,10 @@ export class PermissionsService {
         } else {
             // unconfirmed, any else
             this.ngxPermissionsService.addPermission(Permissions.UNCONFIRMED);
+        }
+
+        if (this.appSettings.appSetting('environment') === Environments.Development) {
+            console.log(this.getPermissions());
         }
     }
 

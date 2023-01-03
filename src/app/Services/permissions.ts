@@ -18,6 +18,7 @@ export class Permissions {
     // Frontend only
     public static readonly ACTIVITY = 'ACTIVITY';
     public static readonly DISCHARGES = 'DISCHARGES';
+    public static readonly SR5 = 'SR5';
     public static readonly UNLOGGED = 'UNLOGGED';
 
     public static LookUp(): Record<string, string[]> {
@@ -34,7 +35,7 @@ export class Permissions {
         lookup[Permissions.PERSONNEL] = [Permissions.PERSONNEL];
         lookup[Permissions.RECRUITER] = [Permissions.RECRUITER, Permissions.ACTIVITY, Permissions.DISCHARGES];
         lookup[Permissions.RECRUITER_LEAD] = [Permissions.RECRUITER_LEAD];
-        lookup[Permissions.SERVERS] = [Permissions.SERVERS];
+        lookup[Permissions.SERVERS] = [Permissions.SERVERS, Permissions.SR5];
         lookup[Permissions.TESTER] = [Permissions.TESTER];
 
         this.lookup = lookup;

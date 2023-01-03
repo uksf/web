@@ -11,7 +11,7 @@ import { PermissionsService } from '../../../Services/permissions.service';
 @Component({
     selector: 'app-modpack-builds-dev',
     templateUrl: './modpack-builds-dev.component.html',
-    styleUrls: ['../../../Pages/modpack-page/modpack-page.component.scss', './modpack-builds-dev.component.scss', './modpack-builds-dev.component.scss-theme.scss'],
+    styleUrls: ['../../../Pages/modpack-page/modpack-page.component.scss', './modpack-builds-dev.component.scss', './modpack-builds-dev.component.scss-theme.scss']
 })
 export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
     @ViewChild(ThemeEmitterComponent) theme: ThemeEmitterComponent;
@@ -151,7 +151,7 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
     }
 
     get commit() {
-        return this.selectedBuild.commit.after.substr(0, 7);
+        return this.selectedBuild.commit.after.substring(0, 7);
     }
 
     anyWarning(build: ModpackBuild): boolean {
