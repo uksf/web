@@ -1,0 +1,57 @@
+<div class="folder-header-container">
+    <div class="folder-header-line"></div>
+    <div *ngIf="isEmpty" class="folder-toggle-line"></div>
+    <div (mouseenter)="onMouseOver()" (mouseleave)="onMouseLeave()" [ngClass]="{ hover: hover || menuOpen }" class="folder-header">
+        <div (click)="toggle($event)" *ngIf="!isEmpty" [ngClass]="{ blank: isEmpty }" class="folder-toggle">
+            <div [ngClass]="{ hidden: isEmpty }" class="indicator-container">
+                <mat-icon [@indicatorRotate]="toggleState" class="indicator" color="primary">expand_more</mat-icon>
+            </div>
+            <mat-icon>folder</mat-icon>
+        </div>
+        <mat-icon *ngIf="isEmpty" class="folder-icon">folder</mat-icon>
+        <span class="folder-name">{{ folderMetadata.name }}</span>
+        <div *ngIf="folderMetadata.canWrite" [ngClass]="{ hover: hover || menuOpen }" class="folder-header-button-container">
+            <div class="icon-container">
+                <mat-icon (click)="addDocument()" matTooltip="Create new document">add</mat-icon>
+            </div>
+            <div class="icon-container">
+                <mat-icon (menuClosed)="menuClosed()" (menuOpened)="menuOpened()" [matMenuTriggerFor]="folderMenu"> more_horiz </mat-icon>
+            </div>
+            <mat-menu #folderMenu="matMenu" class="folder-header-menu">
+                <button (click)="addFolder()" mat-menu-item>
+                    <mat-icon matTooltip="Create new folder">add</mat-icon>
+                    <span>Add folder</span>
+                </button>
+                <button (click)="editFolder()" mat-menu-item>
+                    <mat-icon matTooltip="Edit folder">mode_edit</mat-icon>
+                    <span>Edit folder</span>
+                </button>
+                <button (click)="deleteFolder()" mat-menu-item>
+                    <mat-icon matTooltip="Delete folder">highlight_off</mat-icon>
+                    <span>Delete folder</span>
+                </button>
+            </mat-menu>
+        </div>
+    </div>
+</div>
+
+<div [@folderExpansion]="expanded" [ngClass]="{ hidden: !expanded }" class="folder-panel">
+    <div class="folder-panel-line-container">
+        <div class="folder-panel-line"></div>
+    </div>
+    <div class="folder-panel-body">
+        <app-docs-folder
+            (refresh)="refresh.emit()"
+            *ngFor="let childFolder of getFolderChildren; trackBy: trackByFolderId"
+            [allDocumentMetadata]="allFolderMetadata"
+            [folderMetadata]="childFolder"
+        ></app-docs-folder>
+        <app-docs-document
+            (refresh)="refresh.emit()"
+            *ngFor="let document of folderMetadata.documents; trackBy: trackByDocumentId"
+            [allDocumentMetadata]="allFolderMetadata"
+            [documentMetadata]="document"
+            [folderMetadata]="folderMetadata"
+        ></app-docs-document>
+    </div>
+</div>

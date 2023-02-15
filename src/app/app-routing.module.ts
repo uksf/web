@@ -247,6 +247,21 @@ const appRoutes: Routes = [
     { path: 'about', redirectTo: 'information/about' },
     { path: 'information/about', component: AboutPageComponent },
     {
+        path: 'information/docs',
+        component: DocsPageComponent,
+        data: {
+            permissions: {
+                except: [Permissions.UNLOGGED, Permissions.UNCONFIRMED],
+                redirectTo: {
+                    UNLOGGED: loginRedirect,
+                    UNCONFIRMED: '/home',
+                    default: '/home'
+                }
+            }
+        },
+        canActivate: [NgxPermissionsGuard]
+    },
+    {
         path: 'units',
         redirectTo: 'units/orbat',
         data: {
@@ -667,8 +682,6 @@ const appRoutes: Routes = [
         },
         canActivate: [NgxPermissionsGuard]
     },
-    { path: 'docs', component: DocsPageComponent },
-    { path: 'docs/:id', component: DocsPageComponent },
     { path: 'policy', component: PolicyPageComponent },
     { path: 'rules', component: RulesPageComponent },
     { path: '**', redirectTo: 'Login' }

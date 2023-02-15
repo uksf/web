@@ -10,7 +10,8 @@ import {
     NG_VALUE_ACCESSOR,
     NgForm,
     ValidationErrors,
-    Validator
+    Validator,
+    ValidatorFn
 } from '@angular/forms';
 import { MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { DropdownBaseComponent, IDropdownElement } from '../dropdown-base/dropdown-base.component';
@@ -23,14 +24,19 @@ export class SelectionListErrorStateMatcher implements ErrorStateMatcher {
     }
 }
 
-export function SelectionListValidator(control: AbstractControl): ValidationErrors | null {
-    if (!control.value) {
-        return null;
-    }
+export function SelectionListValidator(required: boolean): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+        if (!control.value) {
+            return null;
+        }
 
-    const list = control.value;
-    const anyDisabled = any(list, (element: IDropdownElement) => element.disabled);
-    return anyDisabled ? { someDisabled: true } : list.length === 0 ? { noneSelected: true } : null;
+        const list = control.value;
+        if (any(list, (element: IDropdownElement) => element.disabled)) {
+            return { someDisabled: true };
+        }
+
+        return list.length === 0 && required ? { noneSelected: true } : null;
+    };
 }
 
 @Component({
@@ -52,11 +58,11 @@ export function SelectionListValidator(control: AbstractControl): ValidationErro
     viewProviders: [{ provide: ControlContainer, useExisting: FormGroup }]
 })
 export class SelectionListComponent extends DropdownBaseComponent implements OnInit, ControlValueAccessor, Validator {
-    @Input('listDisabledTooltip') listDisabledTooltip: (element: IDropdownElement) => string;
+    @Input('listDisabledTooltip') listDisabledTooltip: (element: IDropdownElement) => string = () => '';
     @ViewChild(MatAutocompleteTrigger) autocomplete: MatAutocompleteTrigger;
     form: FormGroup = new FormGroup({
         textInput: new FormControl({ value: '', disabled: this.disabled }),
-        list: new FormControl([], SelectionListValidator)
+        list: new FormControl([], SelectionListValidator(this.required))
     });
     listErrorStateMatcher = new SelectionListErrorStateMatcher();
     validationMessages = [
@@ -130,6 +136,10 @@ export class SelectionListComponent extends DropdownBaseComponent implements OnI
     };
 
     writeValue(value: any) {
+        if (value === null) {
+            return;
+        }
+
         this.listModel = value;
     }
 

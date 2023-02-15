@@ -21,7 +21,7 @@
         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelect($event)" [displayWith]="displayWith" [autoActiveFirstOption]="true">
             <cdk-virtual-scroll-viewport [maxBufferPx]="1000" [minBufferPx]="600" [ngStyle]="{ height: scrollPanelHeight }" itemSize="48">
                 <mat-option
-                    *cdkVirtualFor="let element of filteredElements | async"
+                    *cdkVirtualFor="let element of filteredElements | async; trackBy: trackBy"
                     [matTooltipDisabled]="tooltip === null"
                     [matTooltipShowDelay]="150"
                     [matTooltip]="getElementTooltip(element)"

@@ -76,9 +76,9 @@
         <br />
         <app-form-value-debug-reactive [form]="formGroup"></app-form-value-debug-reactive>
         <div class="button-next button-container">
-            <app-button-pending (clicked)="previous()" [disabled]="pending">Previous</app-button-pending>
+            <app-button (clicked)="previous()" [disabled]="pending">Previous</app-button>
             <app-flex-filler></app-flex-filler>
-            <app-button-pending (clicked)="next()" [pending]="pending" [disabled]="!formGroup.valid || pending || validating">Next</app-button-pending>
+            <app-button (clicked)="next()" [disabled]="!formGroup.valid || pending || validating" [pending]="pending"> Next </app-button>
         </div>
     </form>
 </mat-card>

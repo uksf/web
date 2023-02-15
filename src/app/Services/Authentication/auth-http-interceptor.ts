@@ -23,7 +23,7 @@ export class AuthHttpInterceptor implements HttpInterceptor {
                     return;
                 }
 
-                return throwError(errorResponse.error);
+                return throwError(() => errorResponse.error);
             })
         );
     }

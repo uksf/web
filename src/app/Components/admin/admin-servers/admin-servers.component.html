@@ -4,13 +4,13 @@
         <div class="update-container">
             <div class="update-info-container">
                 Build ID:
-                <app-loading-placeholder [width]="80" [height]="25" [loading]="!current">
+                <app-loading-placeholder [height]="'25px'" [loading]="!current" [width]="'80px'">
                     <ng-template #element>
                         <span [ngStyle]="{ color: getBuildColour() }" matTooltip="Current build ID">{{ current.currentBuild }}</span>
                     </ng-template>
                 </app-loading-placeholder>
                 <mat-icon>chevron_right</mat-icon>
-                <app-loading-placeholder [width]="75" [height]="25" [loading]="!latest">
+                <app-loading-placeholder [height]="'25px'" [loading]="!latest" [width]="'75px'">
                     <ng-template #element>
                         <span matTooltip="Latest build ID">{{ latest.latestBuild }}</span>
                     </ng-template>
@@ -18,13 +18,13 @@
             </div>
             <div class="update-info-container">
                 Update Date:
-                <app-loading-placeholder [width]="80" [height]="25" [loading]="!current">
+                <app-loading-placeholder [height]="'25px'" [loading]="!current" [width]="'80px'">
                     <ng-template #element>
                         <span [ngStyle]="{ color: getDateColour() }" matTooltip="Last updated date">{{ current.currentUpdated | date: 'mediumDate':'Europe/London' }}</span>
                     </ng-template>
                 </app-loading-placeholder>
                 <mat-icon>chevron_right</mat-icon>
-                <app-loading-placeholder [width]="100" [height]="25" [loading]="!latest">
+                <app-loading-placeholder [height]="'25px'" [loading]="!latest" [width]="'100px'">
                     <ng-template #element>
                         <span matTooltip="Most recent release date">{{ latest.latestUpdate | date: 'mediumDate':'Europe/London' }}</span>
                     </ng-template>
@@ -32,7 +32,7 @@
             </div>
             <div class="update-info-container">
                 Installed Arma version:
-                <app-loading-placeholder [width]="35" [height]="25" [loading]="!installed">
+                <app-loading-placeholder [height]="'25px'" [loading]="!installed" [width]="'35px'">
                     <ng-template #element>
                         <span>{{ installed.installedVersion }}</span>
                     </ng-template>
@@ -42,7 +42,7 @@
                 Update required?
                 <span [ngStyle]="{ color: getUpdateRequiredColour() }" class="update-info"> {{ getUpdateRequiredText() }}</span>
             </div>
-            <app-button-pending (clicked)="update()" [pending]="updating" [disabled]="isUpdateDisabled()">Update</app-button-pending>
+            <app-button (clicked)="update()" [disabled]="isUpdateDisabled()" [pending]="updating">Update</app-button>
         </div>
     </app-main-content-area>
 </app-default-content-areas>

@@ -1,0 +1,23 @@
+@use '@angular/material' as mat;
+@import '@angular/material/theming';
+
+@mixin docs-content-component-theme($theme) {
+    $background: map-get($theme, background);
+    $primary: map-get($theme, primary);
+
+    app-docs-content {
+        .content-container {
+            .content {
+                textarea {
+                    background-color: mat.get-color-from-palette($background, app-bar);
+                }
+
+                markdown {
+                    h4 {
+                        color: mat.get-color-from-palette($primary, default);
+                    }
+                }
+            }
+        }
+    }
+}

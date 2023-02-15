@@ -4,12 +4,12 @@
         <h4>Current user ID: {{ accountId }}</h4>
         <h4>Tools</h4>
         <div class="flex-container flex-row flex-wrap">
-            <app-button-pending *ngFor="let tool of tools" (clicked)="runFunction(tool)" [pending]="tool.pending">{{ tool.title }}</app-button-pending>
+            <app-button (clicked)="runFunction(tool)" *ngFor="let tool of tools" [pending]="tool.pending">{{ tool.title }}</app-button>
         </div>
         <div class="flex-container no-padding-left" *ngIf="debug">
             <h4>Debug Tools</h4>
             <div class="flex-container flex-row flex-wrap">
-                <app-button-pending *ngFor="let tool of debugTools" (clicked)="runFunction(tool)" [pending]="tool.pending" [disabled]="true">{{ tool.title }}</app-button-pending>
+                <app-button (clicked)="runFunction(tool)" *ngFor="let tool of debugTools" [disabled]="true" [pending]="tool.pending">{{ tool.title }}</app-button>
             </div>
         </div>
         <ng-template [ngxPermissionsOnly]="['SUPERADMIN']">
@@ -33,7 +33,7 @@
                         </ng-template>
                     </app-dropdown>
                     <div class="button-container">
-                        <app-button-pending (clicked)="impersonate()" [pending]="impersonationPending" [disabled]="!form.valid">Impersonate</app-button-pending>
+                        <app-button (clicked)="impersonate()" [disabled]="!form.valid" [pending]="impersonationPending"> Impersonate </app-button>
                     </div>
                 </form>
             </div>

@@ -35,6 +35,10 @@
 @import 'app/Components/admin/admin-servers/admin-servers.component.scss-theme';
 @import 'app/Components/admin/admin-variables/admin-variables.component.scss-theme';
 @import 'app/Components/comment-display/comment-display.component.scss-theme.scss';
+@import 'app/Components/docs/docs-content/docs-content.component.scss-theme';
+@import 'app/Components/docs/docs-sidebar/docs-sidebar.component.scss-theme';
+@import 'app/Components/docs/docs-sidebar/docs-folder/docs-folder.component.scss-theme';
+@import 'app/Components/docs/docs-sidebar/docs-document/docs-document.component.scss-theme';
 @import 'app/Components/elements/file-drop/file-drop.component.scss-theme.scss';
 @import 'app/Components/elements/inline-edit/inline-edit.component.scss-theme.scss';
 @import 'app/Components/elements/loading-placeholder/loading-placeholder.component.scss-theme.scss';
@@ -92,6 +96,10 @@
     @include admin-servers-component-theme($theme);
     @include admin-variables-component-theme($theme);
     @include comment-display-component-theme($theme);
+    @include docs-sidebar-component-theme($theme);
+    @include docs-folder-component-theme($theme);
+    @include docs-document-component-theme($theme);
+    @include docs-content-component-theme($theme);
     @include file-drop-component-theme($theme);
     @include inline-edit-component-theme($theme);
     @include loading-placeholder-component-theme($theme);

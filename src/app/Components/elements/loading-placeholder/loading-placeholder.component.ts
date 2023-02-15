@@ -1,16 +1,13 @@
-import { Component, ContentChild, ElementRef, EventEmitter, Input, NgZone, OnDestroy, Output, Renderer2, TemplateRef, ViewChild } from '@angular/core';
-import { Subscription, timer } from 'rxjs';
-import { UploadEvent, UploadFile } from '../../../Services/fileUploadTypes.service';
-import type { IDropdownElement } from '../dropdown-base/dropdown-base.component';
+import { Component, ContentChild, Input, TemplateRef } from '@angular/core';
 
 @Component({
     selector: 'app-loading-placeholder',
     templateUrl: './loading-placeholder.component.html',
-    styleUrls: ['./loading-placeholder.component.css']
+    styleUrls: ['./loading-placeholder.component.scss']
 })
 export class LoadingPlaceholderComponent {
-    @Input('width') width: number = 64;
-    @Input('height') height: number = 16;
+    @Input('width') width: string = '64px';
+    @Input('height') height: string = '16px';
     @Input('loading') loading: boolean = true;
     @ContentChild('element', { static: false }) elementTemplateRef: TemplateRef<any>;
 

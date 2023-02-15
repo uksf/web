@@ -1,0 +1,22 @@
+<div *ngIf="!documentMetadata" class="content-placeholder">
+    <h3>Select a document from the left</h3>
+</div>
+<div *ngIf="documentMetadata" class="content-container">
+    <div class="content-header">
+        <h3>{{ documentMetadata.name }}</h3>
+        <app-flex-filler></app-flex-filler>
+        <div *ngIf="documentMetadata.canWrite && documentContent" class="buttons-container">
+            <app-button (clicked)="edit()" *ngIf="!editing">Edit</app-button>
+            <app-button (clicked)="save()" *ngIf="editing" [disabled]="false" [pending]="pending">Save</app-button>
+        </div>
+    </div>
+
+    <app-loading-placeholder [height]="'24px'" [loading]="!documentContent" [width]="'75%'">
+        <ng-template #element>
+            <div class="content">
+                <markdown *ngIf="!editing" [data]="documentContentMarkdown" [inline]="true" ngPreserveWhitespaces></markdown>
+                <textarea *ngIf="editing" [(ngModel)]="documentContent.text" ngPreserveWhitespaces type="text" wrap="soft"></textarea>
+            </div>
+        </ng-template>
+    </app-loading-placeholder>
+</div>

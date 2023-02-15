@@ -1,0 +1,36 @@
+<mat-card class="permissions-container">
+    <h4 class="permissions-title">{{ title }}</h4>
+    <form #form="ngForm">
+        <app-selection-list
+            #unitsList="ngModel"
+            (ngModelChange)="onSelectUnit($event)"
+            [(ngModel)]="model.units"
+            [clearOnSelect]="true"
+            [elementName]="'Unit'"
+            [elements]="units"
+            [isRequired]="false"
+            [placeholder]="'Select units'"
+            id="unitList"
+            name="formUnitList"
+        >
+            <ng-template #element let-element>
+                {{ getUnitName(element) }}
+            </ng-template>
+        </app-selection-list>
+        <app-dropdown
+            #rank="ngModel"
+            (ngModelChange)="onSelectRank($event)"
+            [(ngModel)]="model.rank"
+            [elementName]="'Rank'"
+            [elements]="ranks"
+            [isRequired]="false"
+            [placeholder]="'Select rank'"
+            id="rank"
+            name="formRank"
+        >
+            <ng-template #element let-element>
+                {{ getRankName(element) }}
+            </ng-template>
+        </app-dropdown>
+    </form>
+</mat-card>

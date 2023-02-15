@@ -1,0 +1,37 @@
+@use '@angular/material' as mat;
+@import '@angular/material/theming';
+
+@mixin docs-sidebar-component-theme($theme) {
+    $background: map-get($theme, background);
+    $primary: map-get($theme, primary);
+
+    app-docs-sidebar {
+        .sidebar-container {
+            background-color: mat.get-color-from-palette($background, app-bar);
+
+            .sidebar-header {
+                .add-icon-container {
+                    &:hover {
+                        background-color: mat.get-color-from-palette($primary);
+
+                        .mat-icon {
+                            color: mat.get-color-from-palette($background, app-bar);
+                        }
+                    }
+
+                    .mat-icon {
+                        color: mat.get-color-from-palette($background, contrast);
+                    }
+                }
+            }
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: mat.get-color-from-palette($background, side-bar);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: mat.get-color-from-palette($background, scroll-thumb);
+        }
+    }
+}

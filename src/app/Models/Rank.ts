@@ -1,6 +1,7 @@
 import { IDropdownElement } from '../Components/elements/dropdown-base/dropdown-base.component';
 
 export class Rank {
+    id: string;
     name: string;
     abbreviation: string;
     discordRoleId: string;

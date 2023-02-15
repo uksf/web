@@ -4,7 +4,7 @@
     $background: map-get($theme, background);
 
     app-loading-placeholder {
-        .loading1 {
+        .loading-shimmer {
             background-color: mat.get-color-from-palette($background, 550);
             background-image: linear-gradient(60deg, mat.get-color-from-palette($background, 550), mat.get-color-from-palette($background, 600), mat.get-color-from-palette($background, 550));
         }

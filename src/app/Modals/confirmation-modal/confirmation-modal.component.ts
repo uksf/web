@@ -4,7 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 @Component({
     selector: 'app-confirmation-modal',
     templateUrl: './confirmation-modal.component.html',
-    styleUrls: ['./confirmation-modal.component.css']
+    styleUrls: ['./confirmation-modal.component.scss']
 })
 export class ConfirmationModalComponent implements OnInit {
     text;
@@ -12,14 +12,14 @@ export class ConfirmationModalComponent implements OnInit {
     @Output() confirmEvent = new EventEmitter();
     @Output() cancelEvent = new EventEmitter();
 
-    constructor(public dialogRef: MatDialogRef<ConfirmationModalComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
+    constructor(public dialogRef: MatDialogRef<ConfirmationModalComponent>, @Inject(MAT_DIALOG_DATA) public data: ConfirmationModalData) {
         this.text = data.message;
         if (data.button) {
             this.button = data.button;
         }
     }
 
-    ngOnInit() { }
+    ngOnInit() {}
 
     confirm() {
         this.dialogRef.close();
@@ -32,3 +32,7 @@ export class ConfirmationModalComponent implements OnInit {
     }
 }
 
+export class ConfirmationModalData {
+    message: string;
+    button?: string;
+}

@@ -74,12 +74,18 @@ export class CommandMembersComponent implements OnInit {
 
     getMembers() {
         const query = buildQuery(this.filterString);
+        let pageIndex = this.pageIndex;
+        let pageSize = this.pageSize;
+        if (this.groupByUnit) {
+            pageIndex = 0;
+            pageSize = 500;
+        }
 
         this.httpClient
             .get(`${this.urls.apiUrl}/command/members`, {
                 params: new HttpParams()
-                    .set('page', this.pageIndex + 1)
-                    .set('pageSize', this.pageSize)
+                    .set('page', pageIndex + 1)
+                    .set('pageSize', pageSize)
                     .set('query', query)
                     .set('sortMode', this.sortMode)
                     .set('sortDirection', this.sortDirection)
@@ -129,14 +135,6 @@ export class CommandMembersComponent implements OnInit {
 
     toggleGroupByUnit() {
         this.groupByUnit = !this.groupByUnit;
-
-        if (this.groupByUnit) {
-            this.pageIndex = 0;
-            this.pageSize = 100;
-        } else {
-            this.pageIndex = this.paginator.pageIndex;
-            this.pageSize = this.paginator.pageSize;
-        }
 
         this.getMembers();
     }

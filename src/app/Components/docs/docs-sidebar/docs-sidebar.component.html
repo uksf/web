@@ -1,0 +1,25 @@
+<div class="sidebar-container">
+    <!--    <app-loading-placeholder [loading]="!docsMetadata">-->
+    <!--        <ng-template #element>-->
+    <!--            <span>item</span>-->
+    <!--        </ng-template>-->
+    <!--    </app-loading-placeholder>-->
+    <div class="sidebar-header">
+        <div class="icon-container">
+            <mat-icon color="primary">article_outline</mat-icon>
+        </div>
+        <span>Docs</span>
+        <app-flex-filler></app-flex-filler>
+        <div class="add-icon-container">
+            <mat-icon (click)="addFolder()" matTooltip="Create new folder">add</mat-icon>
+        </div>
+    </div>
+    <div class="sidebar-content">
+        <app-docs-folder
+            (refresh)="refresh.emit()"
+            *ngFor="let rootFolder of getRootFolders; trackBy: trackById"
+            [allDocumentMetadata]="allFolderMetadata"
+            [folderMetadata]="rootFolder"
+        ></app-docs-folder>
+    </div>
+</div>

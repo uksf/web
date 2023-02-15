@@ -64,7 +64,7 @@
             <div class="button-container">
                 <button (click)="delete()" *ngIf="edit" [disabled]="pending" class="button-delete" mat-raised-button type="button">Delete</button>
                 <app-flex-filler *ngIf="edit"></app-flex-filler>
-                <app-button-pending (clicked)="submit()" [disabled]="!form.valid || !changesMade" [pending]="pending"> Submit </app-button-pending>
+                <app-button (clicked)="submit()" [disabled]="!form.valid || !changesMade" [pending]="pending"> Submit </app-button>
             </div>
         </div>
     </form>

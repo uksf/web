@@ -54,7 +54,8 @@ export class RequestRankModalComponent implements OnInit {
 
         this.httpClient.get(`${this.urlService.apiUrl}/ranks`).subscribe({
             next: (ranks: Rank[]) => {
-                this.ranks.next(ranks.map(Rank.mapToElement).reverse());
+                let elements = ranks.map(Rank.mapToElement).reverse();
+                this.ranks.next(elements);
             }
         });
     }

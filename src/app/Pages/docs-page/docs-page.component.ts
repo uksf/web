@@ -1,44 +1,50 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../Services/url.service';
+import { DocumentMetadata, FolderMetadata } from '../../Models/Documents';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'app-docs-page',
     templateUrl: './docs-page.component.html',
-    styleUrls: ['./docs-page.component.css'],
+    styleUrls: ['./docs-page.component.scss']
 })
-export class DocsPageComponent implements OnInit, OnDestroy {
-    toc;
-    doc;
-    private sub;
+export class DocsPageComponent implements OnInit {
+    allFolderMetadata: FolderMetadata[] = [];
+    selectedDocumentMetadata: DocumentMetadata;
 
-    constructor(private route: ActivatedRoute, private router: Router, private httpClient: HttpClient, private urlService: UrlService) {
-        this.httpClient.get(this.urlService.apiUrl + '/Docs').subscribe((data) => {
-            this.toc = data;
-            this.router.navigate(['/docs/' + this.toc[0].name]);
-        });
+    constructor(private httpClient: HttpClient, private urls: UrlService, private route: ActivatedRoute) {}
 
-        if (this.route.snapshot.params.id) {
-            this.httpClient.get(this.urlService.apiUrl + '/Docs/' + this.route.snapshot.params.id).subscribe((data: any) => {
-                this.doc = data.doc;
-            });
-        } else {
-            this.doc = 'select a document';
-        }
-        this.sub = router.events.subscribe((val) => {
-            // see also
-            if (val instanceof NavigationEnd) {
-                this.httpClient.get(this.urlService.apiUrl + '/Docs/' + this.route.snapshot.params.id).subscribe((data: any) => {
-                    this.doc = data.doc;
+    ngOnInit(): void {
+        this.getAllFoldersMetadata();
+
+        this.route.queryParams.subscribe((params) => {
+            const folder = params.folder;
+            const document = params.document;
+
+            if (folder && document) {
+                this.httpClient.get(`${this.urls.apiUrl}/docs/folders/${folder}/documents/${document}`).subscribe({
+                    next: (documentMetadata: DocumentMetadata) => {
+                        this.selectedDocumentMetadata = documentMetadata;
+                    },
+                    error: () => {}
                 });
+            } else {
+                this.selectedDocumentMetadata = null;
             }
         });
     }
 
-    ngOnInit() {}
+    getAllFoldersMetadata() {
+        this.httpClient.get(`${this.urls.apiUrl}/docs/folders`).subscribe({
+            next: (allFolderMetadata: FolderMetadata[]) => {
+                this.allFolderMetadata = allFolderMetadata;
+            },
+            error: () => {}
+        });
+    }
 
-    ngOnDestroy() {
-        this.sub.unsubscribe();
+    refresh() {
+        this.getAllFoldersMetadata();
     }
 }

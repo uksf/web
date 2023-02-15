@@ -9,6 +9,10 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { MarkdownModule } from 'ngx-markdown';
 import { TreeModule } from '@circlon/angular-tree-component';
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import 'chart.js/dist/Chart.min.js';
+import { EditorModule } from 'primeng/editor';
+import { ChartModule } from 'primeng/chart';
+import { RatingModule } from 'primeng/rating';
 
 // Services
 import { AuthenticationService } from './Services/Authentication/authentication.service';
@@ -72,7 +76,6 @@ import { OperationsPageComponent } from './Pages/operations-page/operations-page
 import { PolicyPageComponent } from './Pages/policy-page/policy-page.component';
 import { InformationPageComponent } from './Pages/information-page/information-page.component';
 import { ModpackPageComponent } from './Pages/modpack-page/modpack-page.component';
-import 'chart.js/dist/Chart.min.js';
 import { CommandPageComponent } from './Pages/command-page/command-page.component';
 import { TocList } from './Components/toc-list/toc-list.component';
 import { CommentDisplayComponent } from './Components/comment-display/comment-display.component';
@@ -160,9 +163,6 @@ import { NewModpackBuildModalComponent } from './Modals/new-modpack-build/new-mo
 import { ModpackBuildsStepsComponent } from './Components/modpack/modpack-builds-steps/modpack-builds-steps.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { OrganizationChartModule } from 'primeng/organizationchart';
-import { EditorModule } from 'primeng/editor';
-import { ChartModule } from 'primeng/chart';
-import { RatingModule } from 'primeng/rating';
 import { TimeAgoPipe, ZonedTime } from './Pipes/time.pipe';
 import { AdminDiscordLogsComponent } from './Components/admin/admin-discord-logs/admin-discord-logs.component';
 import { CharacterBlockDirective } from './Directives/character-block.directive';
@@ -170,7 +170,7 @@ import { RequestPasswordResetComponent } from './Components/login/request-passwo
 import { LoginComponent } from './Components/login/login/login.component';
 import { PasswordResetComponent } from './Components/login/reset-password/password-reset.component';
 import { MustMatchDirective } from './Directives/must-match.directive';
-import { ButtonPendingComponent } from './Components/elements/button-pending/button-pending.component';
+import { ButtonComponent } from './Components/elements/button-pending/button.component';
 import { ButtonHiddenSubmitComponent } from './Components/elements/button-submit/button-hidden-submit.component';
 import { AppSettingsService } from './Services/appSettingsService.service';
 import { AutofocusStopComponent } from './Components/elements/autofocus-stop/autofocus-stop.component';
@@ -187,6 +187,13 @@ import { InlineDropdownComponent } from './Components/elements/inline-dropdown/i
 import { DropdownBaseComponent } from './Components/elements/dropdown-base/dropdown-base.component';
 import { AdminServersComponent } from './Components/admin/admin-servers/admin-servers.component';
 import { LoadingPlaceholderComponent } from './Components/elements/loading-placeholder/loading-placeholder.component';
+import { DocsSidebarComponent } from './Components/docs/docs-sidebar/docs-sidebar.component';
+import { DocsContentComponent } from './Components/docs/docs-content/docs-content.component';
+import { DocsFolderComponent } from './Components/docs/docs-sidebar/docs-folder/docs-folder.component';
+import { CreateDocumentModalComponent } from './Modals/docs/create-document-modal/create-document-modal.component';
+import { DocsPermissionsComponent } from './Components/docs/docs-permissions/docs-permissions.component';
+import { CreateFolderModalComponent } from './Modals/docs/create-folder-modal/create-folder-modal.component';
+import { DocsDocumentComponent } from './Components/docs/docs-sidebar/docs-document/docs-document.component';
 
 export function initApp(appSettingsService: AppSettingsService, injector: Injector, countryPickerService: CountryPickerService) {
     return () => {
@@ -397,7 +404,7 @@ export function tokenGetter() {
         LoginComponent,
         RequestPasswordResetComponent,
         PasswordResetComponent,
-        ButtonPendingComponent,
+        ButtonComponent,
         ButtonHiddenSubmitComponent,
         AutofocusStopComponent,
         DropdownComponent,
@@ -412,7 +419,14 @@ export function tokenGetter() {
         CommandUnitGroupCardComponent,
         SelectionListComponent,
         AdminServersComponent,
-        LoadingPlaceholderComponent
+        LoadingPlaceholderComponent,
+        DocsSidebarComponent,
+        DocsContentComponent,
+        DocsFolderComponent,
+        DocsDocumentComponent,
+        CreateDocumentModalComponent,
+        CreateFolderModalComponent,
+        DocsPermissionsComponent
     ],
     bootstrap: [AppComponent]
 })

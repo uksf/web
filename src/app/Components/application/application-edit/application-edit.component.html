@@ -124,7 +124,7 @@
                 <br />
                 <br />
                 <div class="button-next">
-                    <app-button-pending (clicked)="update()" [pending]="pending" [disabled]="!formGroup.valid || !changesMade">Update</app-button-pending>
+                    <app-button (clicked)="update()" [disabled]="!formGroup.valid || !changesMade" [pending]="pending"> Update </app-button>
                 </div>
             </form>
         </mat-card>

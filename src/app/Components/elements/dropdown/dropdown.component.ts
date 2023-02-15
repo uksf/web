@@ -26,16 +26,20 @@ export class DropdownComponent extends DropdownBaseComponent implements ControlV
     }
 
     get model(): IDropdownElement {
-        return this._model;
+        return super.model;
     }
 
     set model(value: IDropdownElement) {
-        this._model = value;
+        super.model = value;
         this.onChange(this._model);
     }
 
     writeValue(value: any) {
         this.model = value;
+        if (value) {
+            this.textInput.control.setValue(value);
+            this.textInput.control.markAsTouched();
+        }
     }
 
     registerOnTouched() {}

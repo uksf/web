@@ -10,7 +10,7 @@
             <input matInput formControlName="code" required placeholder="Enter confirmation code" (ngModelChange)="changed($event)" autocomplete="off" />
         </mat-form-field>
         <div class="button-next">
-            <app-button-pending (clicked)="resend()" [pending]="pending" [disabled]="pending || resent">Resend Code</app-button-pending>
+            <app-button (clicked)="resend()" [disabled]="pending || resent" [pending]="pending">Resend Code</app-button>
         </div>
     </form>
 </mat-card>

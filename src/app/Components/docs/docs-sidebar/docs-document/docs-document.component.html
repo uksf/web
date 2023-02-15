@@ -1,0 +1,20 @@
+<div class="document-container-line"></div>
+<div (click)="selectDocument()" (mouseenter)="onMouseOver()" (mouseleave)="onMouseLeave()" [ngClass]="{ hover: hover || menuOpen, selected: selected && !(hover || menuOpen) }" class="document-title">
+    <mat-icon>description</mat-icon>
+    <span class="document-name">{{ documentMetadata.name }}</span>
+    <div *ngIf="documentMetadata.canWrite" [ngClass]="{ hover: hover || menuOpen }" class="document-title-button-container">
+        <div class="icon-container">
+            <mat-icon (click)="$event.stopPropagation()" (menuClosed)="menuClosed()" (menuOpened)="menuOpened()" [matMenuTriggerFor]="documentMenu">more_horiz </mat-icon>
+        </div>
+        <mat-menu #documentMenu="matMenu" class="document-menu">
+            <button (click)="editDocument()" mat-menu-item>
+                <mat-icon matTooltip="Edit document">mode_edit</mat-icon>
+                <span>Edit document</span>
+            </button>
+            <button (click)="deleteDocument()" mat-menu-item>
+                <mat-icon matTooltip="Delete document">highlight_off</mat-icon>
+                <span>Delete document</span>
+            </button>
+        </mat-menu>
+    </div>
+</div>

@@ -22,12 +22,13 @@ export class DropdownBaseComponent implements OnInit {
     @Input('elementMatcher') elementMatcher: (element: IDropdownElement, match: string) => boolean = this.matchElement;
     @Input('elementDisabled') elementDisabled: (element: IDropdownElement) => boolean = null;
     @Input('tooltip') tooltip: (element: IDropdownElement) => string | null = null;
+    @Input('trackBy') trackBy: (index: number, element: IDropdownElement) => string = this.trackByDefault;
     @Input('elementName') elementName: string;
     @Input('formFieldClass') formFieldClass: string;
     @Input('optionClass') optionClass: string;
     @Input('clearOnSelect') clearOnSelect: boolean = false;
     @Input() textModel = '';
-    _model = null;
+    _model: IDropdownElement = null;
     allElements: IDropdownElement[];
     filteredElements: Observable<IDropdownElement[]>;
     validationMessages = [
@@ -159,6 +160,10 @@ export class DropdownBaseComponent implements OnInit {
         this.scrollPanelHeight = `${scrollPanelHeight}px`;
     }
 
+    trackByDefault(index: number, element: IDropdownElement): string {
+        return element.value;
+    }
+
     public isTouched(): boolean {
         if (!this.textInput) {
             return false;
@@ -176,5 +181,5 @@ export interface IDropdownElement {
 }
 
 export function mapFromElement<T>(type: { new (...args): T }, element: IDropdownElement): T {
-    return new type(element);
+    return element === null ? null : new type(element);
 }

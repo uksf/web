@@ -14,12 +14,12 @@
         <p>You must connect this account to your Steam account. We only store your steam64 ID in our database to allow our recruitment staff to contact you easily.</p>
         <p>This button will redirect this page where you will need to login through Steam. Once logged in, you will be automatically redirected to this application page.</p>
         <p>If you are not redirected correctly at any stage, please contact an admin.</p>
-        <app-button-pending (clicked)="connectSteam()">Connect Steam</app-button-pending>
+        <app-button (clicked)="connectSteam()">Connect Steam</app-button>
     </div>
     <div *ngIf="mode === 'discord'">
         <p>You must connect this account to your Discord account. We only store your Discord ID in our database.</p>
         <p>This button will redirect this page where you will need to login through Discord. Once logged in, you will be automatically redirected to this application page.</p>
         <p>If you are not redirected correctly at any stage, please contact an admin.</p>
-        <app-button-pending (clicked)="connectDiscord()">Connect Discord</app-button-pending>
+        <app-button (clicked)="connectDiscord()">Connect Discord</app-button>
     </div>
 </mat-card>

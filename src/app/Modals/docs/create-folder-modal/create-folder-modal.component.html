@@ -1,0 +1,31 @@
+<h2 *ngIf="!initialData" mat-dialog-title>Create new folder</h2>
+<h2 *ngIf="initialData" mat-dialog-title>Edit folder</h2>
+<mat-dialog-content>
+    <form #form="ngForm" (ngSubmit)="submit()">
+        <mat-form-field class="full-width">
+            <input #name="ngModel" [(ngModel)]="model.name" [errorStateMatcher]="instantErrorStateMatcher" id="name" matInput name="formName" placeholder="Folder name" required type="text" />
+            <mat-error *ngFor="let validation of validationMessages.name">
+                <mat-error *ngIf="name.hasError(validation.type)" class="error-message">{{ validation.message }}</mat-error>
+            </mat-error>
+        </mat-form-field>
+        <div class="permissions-container">
+            <app-docs-permissions [(ngModel)]="model.readPermissions" [initialData]="initialData?.readPermissions" [type]="'read'" name="formReadPermissions"></app-docs-permissions>
+            <app-docs-permissions [(ngModel)]="model.writePermissions" [initialData]="initialData?.writePermissions" [type]="'write'" name="formWritePermissions"></app-docs-permissions>
+        </div>
+        <div class="hint">
+            <div>Leaving permissions blank will allow anyone to view and edit this folder and its documents</div>
+            <br />
+            <div>Selecting a rank will require members to be at least that rank</div>
+            <br />
+            <div>Selecting units will require members to be in one of those units or their sub-units to view this folder, or their parent units to edit this folder</div>
+            <div>For example, selecting 'Strike Element' for read permissions will allow members of Guardian 1 and below to view this folder</div>
+            <div>For example, selecting 'Strike Element' for write permissions will allow members of SFSG and above to edit this folder</div>
+        </div>
+        <app-model-value-debug [model]="model"></app-model-value-debug>
+        <div class="button-container">
+            <app-flex-filler></app-flex-filler>
+            <app-button (clicked)="submit()" *ngIf="!initialData" [disabled]="!form.valid" [pending]="pending">Create </app-button>
+            <app-button (clicked)="submit()" *ngIf="initialData" [disabled]="!form.valid" [pending]="pending">Confirm </app-button>
+        </div>
+    </form>
+</mat-dialog-content>
