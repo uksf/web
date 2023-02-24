@@ -26,6 +26,18 @@
             }
         }
 
+        .sidebar-collapse-container {
+            .sidebar-collapse-button {
+                .sidebar-collapse-icon {
+                    background-color: mat.get-color-from-palette($primary);
+
+                    .mat-icon {
+                        color: mat.get-color-from-palette($background, app-bar);
+                    }
+                }
+            }
+        }
+
         ::-webkit-scrollbar-track {
             background-color: mat.get-color-from-palette($background, side-bar);
         }

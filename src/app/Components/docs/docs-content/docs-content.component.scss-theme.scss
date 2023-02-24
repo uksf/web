@@ -7,17 +7,15 @@
 
     app-docs-content {
         .content-container {
-            .content {
-                textarea {
-                    background-color: mat.get-color-from-palette($background, app-bar);
-                }
-
-                markdown {
-                    h4 {
-                        color: mat.get-color-from-palette($primary, default);
-                    }
-                }
-            }
+            background-color: mat.get-color-from-palette($background, 600);
         }
+    }
+
+    ::-webkit-scrollbar-track {
+        background-color: mat.get-color-from-palette($background, side-bar);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: mat.get-color-from-palette($background, scroll-thumb);
     }
 }

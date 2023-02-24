@@ -194,6 +194,7 @@ import { CreateDocumentModalComponent } from './Modals/docs/create-document-moda
 import { DocsPermissionsComponent } from './Components/docs/docs-permissions/docs-permissions.component';
 import { CreateFolderModalComponent } from './Modals/docs/create-folder-modal/create-folder-modal.component';
 import { DocsDocumentComponent } from './Components/docs/docs-sidebar/docs-document/docs-document.component';
+import { QuillModule } from 'ngx-quill';
 
 export function initApp(appSettingsService: AppSettingsService, injector: Injector, countryPickerService: CountryPickerService) {
     return () => {
@@ -296,7 +297,8 @@ export function tokenGetter() {
             }
         }),
         NgxPermissionsModule.forRoot(),
-        MarkdownModule.forRoot()
+        MarkdownModule.forRoot(),
+        QuillModule.forRoot()
     ],
     declarations: [
         AppComponent,

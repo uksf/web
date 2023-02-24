@@ -11,10 +11,9 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 @Component({
     selector: 'app-command-ranks',
     templateUrl: './command-ranks.component.html',
-    styleUrls: ['../../../Pages/command-page/command-page.component.scss', './command-ranks.component.css'],
+    styleUrls: ['../../../Pages/command-page/command-page.component.scss', './command-ranks.component.scss']
 })
 export class CommandRanksComponent implements OnInit {
-    static theme;
     ranks;
     updatingOrder = false;
 
@@ -30,8 +29,8 @@ export class CommandRanksComponent implements OnInit {
                 return this.httpClient
                     .post(`${this.urls.apiUrl}/ranks`, rank, {
                         headers: new HttpHeaders({
-                            'Content-Type': 'application/json',
-                        }),
+                            'Content-Type': 'application/json'
+                        })
                     })
                     .pipe(map((response) => (response ? true : false)));
             })
@@ -59,8 +58,8 @@ export class CommandRanksComponent implements OnInit {
             this.httpClient
                 .patch(`${this.urls.apiUrl}/ranks`, rank, {
                     headers: new HttpHeaders({
-                        'Content-Type': 'application/json',
-                    }),
+                        'Content-Type': 'application/json'
+                    })
                 })
                 .subscribe((response) => {
                     this.ranks = response;
@@ -71,7 +70,7 @@ export class CommandRanksComponent implements OnInit {
     deleteRank(event, rank) {
         event.stopPropagation();
         const dialog = this.dialog.open(ConfirmationModalComponent, {
-            data: { message: `Are you sure you want to delete '${rank.name}'?` },
+            data: { message: `Are you sure you want to delete '${rank.name}'?` }
         });
         dialog.componentInstance.confirmEvent.subscribe(() => {
             this.httpClient.delete(`${this.urls.apiUrl}/ranks/${rank.id}`).subscribe((response) => {
@@ -94,10 +93,7 @@ export class CommandRanksComponent implements OnInit {
     }
 
     onDragStarted(event) {
-        event.source.element.nativeElement.classList.add(CommandRanksComponent.theme + '-theme');
-    }
-
-    onDragStopped(event) {
-        event.item.element.nativeElement.classList.remove(CommandRanksComponent.theme + '-theme');
+        event.source._dragRef._preview.classList.add('dark-theme');
+        event.source.element.nativeElement.classList.add('dark-theme');
     }
 }

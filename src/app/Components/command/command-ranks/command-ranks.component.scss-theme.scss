@@ -1,0 +1,16 @@
+@use '@angular/material' as mat;
+@import '@angular/material/theming';
+
+@mixin command-ranks-component-theme($theme) {
+    $background: map-get($theme, background);
+    $primary: map-get($theme, primary);
+
+    app-command-ranks {
+    }
+
+    &.cdk-drag-preview {
+        &.ranks-list-item {
+            background-color: mat.get-color-from-palette($background, card);
+        }
+    }
+}

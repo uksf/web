@@ -12,10 +12,9 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 @Component({
     selector: 'app-command-roles',
     templateUrl: './command-roles.component.html',
-    styleUrls: ['../../../Pages/command-page/command-page.component.scss', './command-roles.component.css']
+    styleUrls: ['../../../Pages/command-page/command-page.component.scss', './command-roles.component.scss']
 })
 export class CommandRolesComponent implements OnInit {
-    static theme;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     individualForm: FormGroup;
     unitForm: FormGroup;
@@ -146,10 +145,7 @@ export class CommandRolesComponent implements OnInit {
     }
 
     onDragStarted(event) {
-        event.source.element.nativeElement.classList.add(CommandRolesComponent.theme + '-theme');
-    }
-
-    onDragStopped(event) {
-        event.item.element.nativeElement.classList.remove(CommandRolesComponent.theme + '-theme');
+        event.source._dragRef._preview.classList.add('dark-theme');
+        event.source.element.nativeElement.classList.add('dark-theme');
     }
 }

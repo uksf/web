@@ -6,7 +6,7 @@ import { UrlService } from '../../../Services/url.service';
 import { InstantErrorStateMatcher } from 'app/Services/formhelper.service';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
 import { Moment } from 'moment';
-import * as moment from 'moment';
+import moment from 'moment';
 
 @Component({
     selector: 'app-request-loa-modal',

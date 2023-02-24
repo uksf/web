@@ -14,6 +14,7 @@ import { Permissions } from 'app/Services/permissions';
 import { PermissionsService } from 'app/Services/permissions.service';
 import { UksfError } from '../../../Models/Response';
 import { IDropdownElement } from '../../elements/dropdown-base/dropdown-base.component';
+import { OrderUpdateRequest } from '../../../Models/OrderUpdateRequest';
 
 @Component({
     selector: 'app-operations-servers',
@@ -21,7 +22,6 @@ import { IDropdownElement } from '../../elements/dropdown-base/dropdown-base.com
     styleUrls: ['../../../Pages/operations-page/operations-page.component.scss', './operations-servers.component.scss']
 })
 export class OperationsServersComponent implements OnInit, OnDestroy {
-    static theme;
     @ViewChild('uploader') uploader: ElementRef;
     @ViewChild('serversContainer') serversContainer: ElementRef;
     missions: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
@@ -225,13 +225,15 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     }
 
     onMove(event: CdkDragDrop<string[]>) {
-        const before = JSON.stringify(this.servers);
-        moveItemInArray(this.servers, event.previousIndex, event.currentIndex);
-        if (before === JSON.stringify(this.servers)) {
+        if (event.previousIndex === event.currentIndex) {
             return;
         }
+
         this.updatingOrder = true;
-        this.httpClient.post(`${this.urls.apiUrl}/gameservers/order`, this.servers, { headers: this.headers }).subscribe((response) => {
+        moveItemInArray(this.servers, event.previousIndex, event.currentIndex);
+
+        const body: OrderUpdateRequest = { previousIndex: event.previousIndex, newIndex: event.currentIndex };
+        this.httpClient.patch(`${this.urls.apiUrl}/gameservers/order`, body, { headers: this.headers }).subscribe((response) => {
             this.servers = response;
             this.updatingOrder = false;
         });
@@ -496,8 +498,8 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     }
 
     onDragStarted(event) {
-        event.source._dragRef._preview.classList.add(OperationsServersComponent.theme + '-theme');
-        event.source.element.nativeElement.classList.add(OperationsServersComponent.theme + '-theme');
+        event.source._dragRef._preview.classList.add('dark-theme');
+        event.source.element.nativeElement.classList.add('dark-theme');
     }
 
     displayWithMission = (element: IDropdownElement): string => {

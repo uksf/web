@@ -18,7 +18,7 @@ export class DocsFolderComponent {
     @Input('allDocumentMetadata') allFolderMetadata: FolderMetadata[];
     @Input('folderMetadata') folderMetadata: FolderMetadata;
     @Output('refresh') refresh = new EventEmitter();
-    expanded: boolean = true;
+    expanded: boolean = false;
     hover: boolean = false;
     menuOpen: boolean = false;
 

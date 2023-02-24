@@ -1,5 +1,5 @@
 <app-default-content-areas>
-    <app-main-content-area style="grid-column: span 3;">
+    <app-main-content-area style="grid-column: span 3">
         <app-command-page></app-command-page>
         <div class="flex-container">
             <div class="spinner-container" *ngIf="!ranks">
@@ -10,28 +10,42 @@
                     <div>
                         <button mat-raised-button color="primary" (click)="addRank()">Add Rank</button>
                     </div>
-                    <br>
+                    <br />
                     <div class="ranks-list" cdkDropList (cdkDropListDropped)="onMove($event)" [cdkDropListDisabled]="updatingOrder" [class.disabled]="updatingOrder">
-                        <div class="ranks-list-item" *ngFor="let rank of ranks" cdkDrag (cdkDragStarted)="onDragStarted($event)" (cdkDragDropped)="onDragStopped($event)">
-                            <mat-card>
+                        <div (cdkDragStarted)="onDragStarted($event)" *ngFor="let rank of ranks" cdkDrag>
+                            <mat-card class="ranks-list-item">
                                 <span class="handle" cdkDragHandle>=</span>
-                                <app-inline-edit class="name" [(ngModel)]="rank.name" [required]="true" type="text" [validator]="validateInlineRank(rank)" (finishedEvent)="editRank($event)"></app-inline-edit>
+                                <app-inline-edit
+                                    (finishedEvent)="editRank($event)"
+                                    [(ngModel)]="rank.name"
+                                    [required]="true"
+                                    [validator]="validateInlineRank(rank)"
+                                    class="name"
+                                    type="text"
+                                ></app-inline-edit>
                                 <app-inline-edit class="abbreviation" [(ngModel)]="rank.abbreviation" [required]="true" type="text" (finishedEvent)="editRank($event)"></app-inline-edit>
-                                <app-inline-edit class="teamspeakGroup" [(ngModel)]="rank.teamspeakGroup" [required]="true" type="text" [validator]="validateInlineRank(rank)" (finishedEvent)="editRank($event)"></app-inline-edit>
+                                <app-inline-edit
+                                    (finishedEvent)="editRank($event)"
+                                    [(ngModel)]="rank.teamspeakGroup"
+                                    [required]="true"
+                                    [validator]="validateInlineRank(rank)"
+                                    class="teamspeakGroup"
+                                    type="text"
+                                ></app-inline-edit>
                                 <app-inline-edit class="discordRoleId" [(ngModel)]="rank.discordRoleId" type="text" (finishedEvent)="editRank($event)"></app-inline-edit>
                                 <app-flex-filler></app-flex-filler>
-                                <mat-icon class="delete-icon" (click)="deleteRank($event, rank)">highlight_off</mat-icon>
+                                <mat-icon (click)="deleteRank($event, rank)" class="delete-icon">highlight_off </mat-icon>
                             </mat-card>
                         </div>
                     </div>
                 </ng-template>
                 <ng-template [ngxPermissionsExcept]="['ADMIN']">
-                    <br>
+                    <br />
                     <div class="ranks-list">
-                        <div class="ranks-list-item" *ngFor="let rank of ranks">
-                            <mat-card>
-                                <span class="name">{{rank.name}}</span>
-                                <span class="abbreviation">{{rank.abbreviation}}</span>
+                        <div *ngFor="let rank of ranks">
+                            <mat-card class="ranks-list-item">
+                                <span class="name">{{ rank.name }}</span>
+                                <span class="abbreviation">{{ rank.abbreviation }}</span>
                             </mat-card>
                         </div>
                     </div>

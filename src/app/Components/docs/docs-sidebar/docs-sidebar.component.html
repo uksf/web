@@ -1,9 +1,4 @@
-<div class="sidebar-container">
-    <!--    <app-loading-placeholder [loading]="!docsMetadata">-->
-    <!--        <ng-template #element>-->
-    <!--            <span>item</span>-->
-    <!--        </ng-template>-->
-    <!--    </app-loading-placeholder>-->
+<div [@collapsed]="collapsedState" class="sidebar-container">
     <div class="sidebar-header">
         <div class="icon-container">
             <mat-icon color="primary">article_outline</mat-icon>
@@ -21,5 +16,12 @@
             [allDocumentMetadata]="allFolderMetadata"
             [folderMetadata]="rootFolder"
         ></app-docs-folder>
+    </div>
+</div>
+<div [@buttonTranslate]="collapsedState" class="sidebar-collapse-container">
+    <div (click)="toggleCollapse()" (mouseenter)="onMouseOver()" (mouseleave)="onMouseLeave()" [matTooltip]="tooltip" class="sidebar-collapse-button">
+        <div [@buttonExpansion]="collapseHoverState" class="sidebar-collapse-icon">
+            <mat-icon [@indicatorRotate]="collapsedState">expand_more</mat-icon>
+        </div>
     </div>
 </div>

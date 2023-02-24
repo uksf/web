@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DisplayNameService } from './displayName.service';
-import * as moment from 'moment';
+import moment from 'moment';
 import { ModpackBuild } from 'app/Models/ModpackBuild';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from './url.service';
@@ -52,7 +52,7 @@ export class ModpackBuildProcessService {
     newBuild(callback: () => void) {
         this.dialog
             .open(NewModpackBuildModalComponent, {
-                data: { branches: this.branches },
+                data: { branches: this.branches }
             })
             .componentInstance.runEvent.subscribe((newBuild: NewBuild) => {
                 // get request for new build
@@ -62,7 +62,7 @@ export class ModpackBuildProcessService {
                     },
                     (error) => {
                         this.dialog.open(MessageModalComponent, {
-                            data: { message: error.error },
+                            data: { message: error.error }
                         });
                     }
                 );

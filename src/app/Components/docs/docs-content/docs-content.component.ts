@@ -1,24 +1,22 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { DocumentContent, DocumentMetadata, UpdateDocumentContentRequest } from '../../../Models/Documents';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { MessageModalComponent } from '../../../Modals/message-modal/message-modal.component';
 import { MatDialog } from '@angular/material/dialog';
-import { MarkdownService } from 'ngx-markdown';
 
 @Component({
     selector: 'app-docs-content',
     templateUrl: './docs-content.component.html',
-    styleUrls: ['./docs-content.component.scss']
+    styleUrls: ['./docs-content.component.scss', './docs-content.quill.scss']
 })
 export class DocsContentComponent implements OnChanges {
     @Input('documentMetadata') documentMetadata: DocumentMetadata;
     documentContent: DocumentContent;
-    documentContentMarkdown: string;
     editing: boolean = false;
     pending: boolean = false;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private markdownService: MarkdownService) {}
+    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (!this.documentMetadata) {
@@ -28,21 +26,16 @@ export class DocsContentComponent implements OnChanges {
 
         this.httpClient.get(`${this.urls.apiUrl}/docs/folders/${this.documentMetadata.folder}/documents/${this.documentMetadata.id}/content`).subscribe({
             next: (content: DocumentContent) => {
+                this.editing = false;
                 this.documentContent = content;
-                this.renderMarkdown();
             },
-            error: () => {}
+            error: (error) => {
+                this.editing = false;
+                this.dialog.open(MessageModalComponent, {
+                    data: { message: error.error }
+                });
+            }
         });
-
-        const linkRenderer = this.markdownService.renderer.link;
-        this.markdownService.renderer.link = (href, title, text) => {
-            const html = linkRenderer.call(this.markdownService.renderer, href, title, text);
-            return html.replace(/^<a /, '<a target="_blank" rel="nofollow" ');
-        };
-    }
-
-    renderMarkdown() {
-        this.documentContentMarkdown = this.markdownService.compile(this.documentContent.text);
     }
 
     edit() {
@@ -50,6 +43,10 @@ export class DocsContentComponent implements OnChanges {
     }
 
     save() {
+        if (this.pending) {
+            return;
+        }
+
         this.editing = false;
         this.pending = true;
 
@@ -67,7 +64,6 @@ export class DocsContentComponent implements OnChanges {
                 next: (content: DocumentContent) => {
                     this.pending = false;
                     this.documentContent = content;
-                    this.renderMarkdown();
                 },
                 error: (error) => {
                     this.pending = false;
@@ -76,5 +72,9 @@ export class DocsContentComponent implements OnChanges {
                     });
                 }
             });
+    }
+
+    onContentChanged(event) {
+        // console.log(event);
     }
 }

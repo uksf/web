@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, NgZone, OnDestroy, Pipe, PipeTransform } from '@angular/core';
-import * as moment from 'moment-timezone';
+import moment from 'moment-timezone';
 
 @Pipe({ name: 'zonedTime' })
 export class ZonedTime implements PipeTransform {

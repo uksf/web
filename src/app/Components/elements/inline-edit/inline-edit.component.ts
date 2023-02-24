@@ -5,14 +5,14 @@ import { Observable } from 'rxjs';
 const INLINE_EDIT_CONTROL_VALUE_ACCESSOR = {
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => InlineEditComponent),
-    multi: true,
+    multi: true
 };
 
 @Component({
     selector: 'app-inline-edit',
     templateUrl: './inline-edit.component.html',
     providers: [INLINE_EDIT_CONTROL_VALUE_ACCESSOR],
-    styleUrls: ['./inline-edit.component.css'],
+    styleUrls: ['./inline-edit.component.css']
 })
 export class InlineEditComponent implements ControlValueAccessor, OnInit {
     @ViewChild('inlineEditControl') inlineEditControl;

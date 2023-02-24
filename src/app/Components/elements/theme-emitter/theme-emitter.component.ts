@@ -1,5 +1,4 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { AppComponent } from 'app/app.component';
 
 @Component({
     selector: 'app-theme-emitter',
@@ -20,13 +19,7 @@ export class ThemeEmitterComponent implements AfterViewInit {
     warnColor: string;
     warnContrastColor: string;
 
-    constructor() {
-        AppComponent.themeUpdatedEvent.subscribe(() => {
-            setTimeout(() => {
-                this.ngAfterViewInit();
-            }, 1);
-        });
-    }
+    constructor() {}
 
     ngAfterViewInit() {
         this.foregroundColor = getComputedStyle(this.foregroundElement.nativeElement).color;

@@ -1,8 +1,5 @@
-import { Component, EventEmitter, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { OperationsServersComponent } from './Components/operations/operations-servers/operations-servers.component';
-import { CommandRanksComponent } from './Components/command/command-ranks/command-ranks.component';
-import { CommandRolesComponent } from './Components/command/command-roles/command-roles.component';
 import { isPlatformBrowser } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationModalComponent } from './Modals/confirmation-modal/confirmation-modal.component';
@@ -14,38 +11,15 @@ import { ConnectionContainer, SignalRService } from './Services/signalr.service'
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-    static themeUpdatedEvent: EventEmitter<null>;
     static utilityHubConnection: ConnectionContainer;
-    theme;
 
-    constructor(private overlayContainer: OverlayContainer, @Inject(PLATFORM_ID) private platformId, private dialog: MatDialog, private signalrService: SignalRService) {
-        AppComponent.themeUpdatedEvent = new EventEmitter();
-    }
+    constructor(private overlayContainer: OverlayContainer, @Inject(PLATFORM_ID) private platformId, private dialog: MatDialog, private signalrService: SignalRService) {}
 
     ngOnInit() {
-        this.theme = 'dark';
-        this.updateTheme();
+        this.overlayContainer.getContainerElement().classList.add('dark-theme');
 
         this.checkBrowser();
         AppComponent.utilityHubConnection = this.signalrService.connect('utility');
-    }
-
-    updateTheme(newTheme = 'dark') {
-        this.theme = newTheme;
-        this.overlayContainer.getContainerElement().classList.add(this.theme + '-theme');
-        localStorage.setItem('theme', this.theme);
-        this.updateThemeSubscribers();
-    }
-
-    updateThemeSubscribers() {
-        OperationsServersComponent.theme = this.theme;
-        CommandRanksComponent.theme = this.theme;
-        CommandRolesComponent.theme = this.theme;
-        AppComponent.themeUpdatedEvent.emit();
-    }
-
-    get Theme() {
-        return this.theme;
     }
 
     checkBrowser() {

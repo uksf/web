@@ -1,0 +1,94 @@
+@use '@angular/material' as mat;
+@import '@angular/material/theming';
+
+@mixin docs-content-quill-theme($theme) {
+    $background: map-get($theme, background);
+    $primary: map-get($theme, primary);
+
+    app-docs-content {
+        .content-view {
+            .ngx-quill-view {
+                background-color: mat.get-color-from-palette($background, 800);
+                color: mat.get-color-from-palette($background, contrast);
+
+                .ql-editor {
+                    background-image: linear-gradient(0deg, mat.get-color-from-palette($background, background), mat.get-color-from-palette($background, background));
+                }
+            }
+        }
+
+        .content-editor {
+            .ql-container {
+                background-color: mat.get-color-from-palette($background, 800);
+                color: mat.get-color-from-palette($background, contrast);
+
+                .ql-editor {
+                    background-image: linear-gradient(0deg, mat.get-color-from-palette($background, background), mat.get-color-from-palette($background, background));
+                }
+            }
+        }
+    }
+
+    .ql-snow {
+        a {
+            color: mat.get-color-from-palette($primary) !important;
+
+            &.ql-action,
+            &.ql-remove {
+                color: white !important;
+
+                &:hover {
+                    color: mat.get-color-from-palette($primary) !important;
+                }
+            }
+        }
+
+        .ql-toolbar,
+        &.ql-toolbar {
+            :is(button, .ql-picker-label, .ql-picker-item):is(:hover, :focus, .ql-active, .ql-selected) {
+                color: mat.get-color-from-palette($primary) !important;
+
+                .ql-stroke {
+                    stroke: mat.get-color-from-palette($primary) !important;
+                }
+
+                .ql-fill {
+                    fill: mat.get-color-from-palette($primary) !important;
+                }
+            }
+        }
+
+        .ql-stroke,
+        .ql-stroke-miter {
+            stroke: white;
+        }
+
+        .ql-fill {
+            fill: white;
+        }
+
+        .ql-picker,
+        .ql-tooltip {
+            color: white;
+        }
+
+        .ql-picker-options {
+            background-color: mat.get-color-from-palette($background, 600);
+            border-color: mat.get-color-from-palette($background, 600) !important;
+        }
+
+        .ql-tooltip {
+            background-color: mat.get-color-from-palette($background, 600);
+            border-color: mat.get-color-from-palette($background, 600);
+            box-shadow: 0 0 2px #000;
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: mat.get-color-from-palette($background, side-bar);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: mat.get-color-from-palette($background, scroll-thumb);
+        }
+    }
+}

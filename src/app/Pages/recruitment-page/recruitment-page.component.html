@@ -29,7 +29,7 @@
                                 </div>
                                 <div class="item applied">
                                     <b>Applied: </b>
-                                    <small>{{ application.account.application.dateCreated | date: 'mediumDate':'Europe/London' }}</small>
+                                    <small>{{ application.account.application.dateCreated | date : 'mediumDate' : 'Europe/London' }}</small>
                                 </div>
                             </div>
                             <div class="row bottom">
@@ -86,7 +86,7 @@
                                 </div>
                                 <div class="item applied">
                                     <b>Applied: </b>
-                                    <small>{{ application.account.application.dateCreated | date: 'mediumDate':'Europe/London' }}</small>
+                                    <small>{{ application.account.application.dateCreated | date : 'mediumDate' : 'Europe/London' }}</small>
                                 </div>
                             </div>
                             <div class="row bottom">
@@ -126,7 +126,7 @@
                         <div class="history-header-part search">
                             <mat-form-field>
                                 <input matInput #searchInput type="text" placeholder="Search" [(ngModel)]="searchValue" (ngModelChange)="search($event)" />
-                                <button mat-raised-button *ngIf="searchValue" matSuffix mat-icon-button aria-label="Clear" (click)="searchValue = ''; search('')">
+                                <button (click)="searchValue = ''; search('')" *ngIf="searchValue" aria-label="Clear" mat-raised-button matSuffix>
                                     <mat-icon>close</mat-icon>
                                 </button>
                             </mat-form-field>
@@ -189,7 +189,7 @@
                             </div>
                             <div class="item applied">
                                 <b>Applied: </b>
-                                <small>{{ application.account.application.dateCreated | date: 'mediumDate':'Europe/London' }}</small>
+                                <small>{{ application.account.application.dateCreated | date : 'mediumDate' : 'Europe/London' }}</small>
                             </div>
                             <div class="item accepted">
                                 <span *ngIf="application.account.application.state == applicationState.ACCEPTED; else rejected">
@@ -198,7 +198,7 @@
                                 <ng-template #rejected>
                                     <b>Rejected: </b>
                                 </ng-template>
-                                <small>{{ application.account.application.dateAccepted | date: 'mediumDate':'Europe/London' }}</small>
+                                <small>{{ application.account.application.dateAccepted | date : 'mediumDate' : 'Europe/London' }}</small>
                             </div>
                             <div class="item processed">
                                 <b>Processed: </b>
