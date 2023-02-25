@@ -18,6 +18,7 @@ export class DocsFolderComponent {
     @Input('allDocumentMetadata') allFolderMetadata: FolderMetadata[];
     @Input('folderMetadata') folderMetadata: FolderMetadata;
     @Output('refresh') refresh = new EventEmitter();
+    @Output('expandFolder') expandFolder = new EventEmitter();
     expanded: boolean = false;
     hover: boolean = false;
     menuOpen: boolean = false;
@@ -36,6 +37,11 @@ export class DocsFolderComponent {
         this.expanded = !this.expanded;
 
         event.stopPropagation();
+    }
+
+    expandSelf() {
+        this.expanded = true;
+        this.expandFolder.emit();
     }
 
     onMouseOver() {

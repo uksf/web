@@ -6,33 +6,35 @@
     $primary: map-get($theme, primary);
 
     app-docs-sidebar {
-        .sidebar-container {
+        .sidebar-layout {
             background-color: mat.get-color-from-palette($background, app-bar);
 
-            .sidebar-header {
-                .add-icon-container {
-                    &:hover {
+            .sidebar-container {
+                .sidebar-header {
+                    .add-icon-container {
+                        &:hover {
+                            background-color: mat.get-color-from-palette($primary);
+
+                            .mat-icon {
+                                color: mat.get-color-from-palette($background, app-bar);
+                            }
+                        }
+
+                        .mat-icon {
+                            color: mat.get-color-from-palette($background, contrast);
+                        }
+                    }
+                }
+            }
+
+            .sidebar-collapse-container {
+                .sidebar-collapse-button {
+                    .sidebar-collapse-icon {
                         background-color: mat.get-color-from-palette($primary);
 
                         .mat-icon {
                             color: mat.get-color-from-palette($background, app-bar);
                         }
-                    }
-
-                    .mat-icon {
-                        color: mat.get-color-from-palette($background, contrast);
-                    }
-                }
-            }
-        }
-
-        .sidebar-collapse-container {
-            .sidebar-collapse-button {
-                .sidebar-collapse-icon {
-                    background-color: mat.get-color-from-palette($primary);
-
-                    .mat-icon {
-                        color: mat.get-color-from-palette($background, app-bar);
                     }
                 }
             }

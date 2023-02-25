@@ -8,7 +8,7 @@ import { collapseAnimations } from '../../../Services/animations.service';
     selector: 'app-docs-sidebar',
     templateUrl: './docs-sidebar.component.html',
     styleUrls: ['./docs-sidebar.component.scss'],
-    animations: [collapseAnimations.buttonExpansion, collapseAnimations.indicatorRotate, collapseAnimations.collapsed, collapseAnimations.buttonTranslate]
+    animations: [collapseAnimations.buttonExpansion, collapseAnimations.indicatorRotate, collapseAnimations.collapsed]
 })
 export class DocsSidebarComponent implements OnInit {
     @Input('allDocumentMetadata') allFolderMetadata: FolderMetadata[];

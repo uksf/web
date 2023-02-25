@@ -19,6 +19,7 @@ export class DocsDocumentComponent implements OnChanges {
     @Input('folderMetadata') folderMetadata: FolderMetadata;
     @Input('documentMetadata') documentMetadata: DocumentMetadata;
     @Output('refresh') refresh = new EventEmitter();
+    @Output('expandFolder') expandFolder = new EventEmitter();
     hover: boolean = false;
     menuOpen: boolean = false;
     selected: boolean = false;
@@ -33,11 +34,46 @@ export class DocsDocumentComponent implements OnChanges {
 
                 if (folder && document) {
                     this.selected = folder === this.folderMetadata?.id && document === this.documentMetadata?.id;
+                    this.showSelfInFolderTree();
                 } else {
                     this.selected = false;
                 }
             });
         }
+    }
+
+    selectDocument() {
+        if (this.selected) {
+            this.close();
+        } else {
+            this.open();
+        }
+    }
+
+    open() {
+        this.router
+            .navigate([], {
+                relativeTo: this.route,
+                queryParams: { folder: this.folderMetadata.id, document: this.documentMetadata.id }
+            })
+            .then();
+    }
+
+    close() {
+        this.router
+            .navigate([], {
+                relativeTo: this.route,
+                queryParams: { folder: null, document: null }
+            })
+            .then();
+    }
+
+    showSelfInFolderTree() {
+        if (!this.selected) {
+            return;
+        }
+
+        this.expandFolder.emit();
     }
 
     onMouseOver() {
@@ -85,31 +121,5 @@ export class DocsDocumentComponent implements OnChanges {
                     }
                 });
             });
-    }
-
-    selectDocument() {
-        if (this.selected) {
-            this.close();
-        } else {
-            this.open();
-        }
-    }
-
-    open() {
-        this.router
-            .navigate([], {
-                relativeTo: this.route,
-                queryParams: { folder: this.folderMetadata.id, document: this.documentMetadata.id }
-            })
-            .then();
-    }
-
-    close() {
-        this.router
-            .navigate([], {
-                relativeTo: this.route,
-                queryParams: { folder: null, document: null }
-            })
-            .then();
     }
 }

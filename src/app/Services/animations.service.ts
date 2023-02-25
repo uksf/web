@@ -63,14 +63,13 @@ export const folderAnimations: {
 export const collapseAnimations: {
     readonly indicatorRotate: AnimationTriggerMetadata;
     readonly buttonExpansion: AnimationTriggerMetadata;
-    readonly buttonTranslate: AnimationTriggerMetadata;
     readonly collapsed: AnimationTriggerMetadata;
 } = {
     /** Animation that rotates the indicator arrow. */
     indicatorRotate: trigger('indicatorRotate', [
-        state('collapsed', style({ transform: 'rotate(270deg)' })),
-        state('expanded', style({ transform: 'rotate(90deg)' })),
-        transition('expanded <=> collapsed', animate('100ms cubic-bezier(0.4,0.0,0.2,1)'))
+        state('collapsed', style({ transform: 'rotateZ(270deg)' })),
+        state('expanded', style({ transform: 'rotateZ(90deg)' })),
+        transition('expanded <=> collapsed', animate('150ms'))
     ]),
 
     /** Animation that expands and collapses the button. */
@@ -87,38 +86,27 @@ export const collapseAnimations: {
                 width: '24px'
             })
         ),
-        transition('expanded <=> collapsed', [animate('0.1s')])
+        transition('expanded <=> collapsed', [animate('100ms')])
     ]),
-    buttonTranslate: trigger('buttonTranslate', [
-        state(
-            'expanded',
-            style({
-                transform: 'translateX(300px)'
-            })
-        ),
-        state(
-            'collapsed',
-            style({
-                transform: 'translateX(0px)'
-            })
-        ),
-        transition('expanded <=> collapsed', [animate('500ms cubic-bezier(0,0.2,0.0,1)')])
-    ]),
+
+    /** Animation that expands and collapses the sidebar. */
     collapsed: trigger('collapsed', [
         state(
             'expanded',
             style({
                 width: '300px',
-                visibility: 'visible'
+                visibility: 'visible',
+                transform: 'translateX(0px)'
             })
         ),
         state(
             'collapsed',
             style({
                 width: '0',
-                visibility: 'hidden'
+                visibility: 'hidden',
+                transform: 'translateX(-7px)'
             })
         ),
-        transition('expanded <=> collapsed', [animate('500ms cubic-bezier(0,0.2,0,1)')])
+        transition('expanded <=> collapsed', [animate('300ms cubic-bezier(0.35, -0.1, 0.25, 1)')])
     ])
 };

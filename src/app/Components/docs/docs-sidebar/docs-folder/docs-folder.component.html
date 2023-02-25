@@ -45,6 +45,7 @@
             *ngFor="let childFolder of getFolderChildren; trackBy: trackByFolderId"
             [allDocumentMetadata]="allFolderMetadata"
             [folderMetadata]="childFolder"
+            (expandFolder)="expandSelf()"
         ></app-docs-folder>
         <app-docs-document
             (refresh)="refresh.emit()"
@@ -52,6 +53,7 @@
             [allDocumentMetadata]="allFolderMetadata"
             [documentMetadata]="document"
             [folderMetadata]="folderMetadata"
+            (expandFolder)="expandSelf()"
         ></app-docs-document>
     </div>
 </div>

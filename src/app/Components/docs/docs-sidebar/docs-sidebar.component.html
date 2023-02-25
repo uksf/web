@@ -1,27 +1,29 @@
-<div [@collapsed]="collapsedState" class="sidebar-container">
-    <div class="sidebar-header">
-        <div class="icon-container">
-            <mat-icon color="primary">article_outline</mat-icon>
+<div class="sidebar-layout">
+    <div [@collapsed]="collapsedState" class="sidebar-container">
+        <div class="sidebar-header">
+            <div class="icon-container">
+                <mat-icon color="primary">article_outline</mat-icon>
+            </div>
+            <span>Docs</span>
+            <app-flex-filler></app-flex-filler>
+            <div class="add-icon-container">
+                <mat-icon (click)="addFolder()" matTooltip="Create new folder">add</mat-icon>
+            </div>
         </div>
-        <span>Docs</span>
-        <app-flex-filler></app-flex-filler>
-        <div class="add-icon-container">
-            <mat-icon (click)="addFolder()" matTooltip="Create new folder">add</mat-icon>
+        <div class="sidebar-content">
+            <app-docs-folder
+                (refresh)="refresh.emit()"
+                *ngFor="let rootFolder of getRootFolders; trackBy: trackById"
+                [allDocumentMetadata]="allFolderMetadata"
+                [folderMetadata]="rootFolder"
+            ></app-docs-folder>
         </div>
     </div>
-    <div class="sidebar-content">
-        <app-docs-folder
-            (refresh)="refresh.emit()"
-            *ngFor="let rootFolder of getRootFolders; trackBy: trackById"
-            [allDocumentMetadata]="allFolderMetadata"
-            [folderMetadata]="rootFolder"
-        ></app-docs-folder>
-    </div>
-</div>
-<div [@buttonTranslate]="collapsedState" class="sidebar-collapse-container">
-    <div (click)="toggleCollapse()" (mouseenter)="onMouseOver()" (mouseleave)="onMouseLeave()" [matTooltip]="tooltip" class="sidebar-collapse-button">
-        <div [@buttonExpansion]="collapseHoverState" class="sidebar-collapse-icon">
-            <mat-icon [@indicatorRotate]="collapsedState">expand_more</mat-icon>
+    <div class="sidebar-collapse-container">
+        <div (click)="toggleCollapse()" (mouseenter)="onMouseOver()" (mouseleave)="onMouseLeave()" [matTooltip]="tooltip" class="sidebar-collapse-button">
+            <div [@buttonExpansion]="collapseHoverState" class="sidebar-collapse-icon">
+                <mat-icon [@indicatorRotate]="collapsedState">expand_more</mat-icon>
+            </div>
         </div>
     </div>
 </div>
