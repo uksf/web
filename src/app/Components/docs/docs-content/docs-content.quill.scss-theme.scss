@@ -45,6 +45,8 @@
 
         .ql-toolbar,
         &.ql-toolbar {
+            background-color: mat.get-color-from-palette($background, 600);
+
             :is(button, .ql-picker-label, .ql-picker-item):is(:hover, :focus, .ql-active, .ql-selected) {
                 color: mat.get-color-from-palette($primary) !important;
 
