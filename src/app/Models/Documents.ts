@@ -28,6 +28,7 @@ export class DocumentMetadata {
 export class DocumentPermissions {
     units: string[] = [];
     rank: string;
+    selectedUnitsOnly: boolean;
 }
 
 export class CreateDocumentRequest {

@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 import { IDropdownElement, mapFromElement } from '../../elements/dropdown-base/dropdown-base.component';
 import { Rank } from '../../../Models/Rank';
 import { Unit } from '../../../Models/Units';
-import { ControlContainer, ControlValueAccessor, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgForm } from '@angular/forms';
+import { ControlContainer, ControlValueAccessor, FormGroup, NG_VALUE_ACCESSOR, NgForm } from '@angular/forms';
 import { DocumentPermissions } from '../../../Models/Documents';
 
 @Component({
@@ -27,13 +27,15 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
     @Input('initialData') initialData: DocumentPermissions = null;
     model: FormModel = {
         units: [],
-        rank: null
+        rank: null,
+        selectedUnitsOnly: false
     };
     ranks: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
     units: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
     _value: FormModel = {
         units: [],
-        rank: null
+        rank: null,
+        selectedUnitsOnly: false
     };
     onChange: any = () => {};
 
@@ -47,6 +49,10 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
 
                 if (this.initialData?.units.length > 0) {
                     this.model.units = elements.filter((x) => this.initialData.units.includes(x.value));
+                }
+
+                if (this.initialData?.selectedUnitsOnly) {
+                    this.model.selectedUnitsOnly = this.initialData.selectedUnitsOnly;
                 }
             }
         });
@@ -68,6 +74,10 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
 
     onSelectRank(element: IDropdownElement) {
         this.value.rank = element;
+    }
+
+    onSelectUnitsOnlyChange() {
+        this.value.selectedUnitsOnly = this.model.selectedUnitsOnly;
     }
 
     getRankName(element: IDropdownElement): string {
@@ -109,4 +119,5 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
 interface FormModel {
     units: IDropdownElement[];
     rank: IDropdownElement;
+    selectedUnitsOnly: boolean;
 }

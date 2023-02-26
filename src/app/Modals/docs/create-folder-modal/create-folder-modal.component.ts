@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
-import { DocumentPermissions, CreateFolderRequest } from '../../../Models/Documents';
+import { CreateFolderRequest, DocumentPermissions } from '../../../Models/Documents';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MessageModalComponent } from '../../message-modal/message-modal.component';
 import { NgForm } from '@angular/forms';
@@ -23,15 +23,17 @@ export class CreateFolderModalComponent implements OnInit {
         name: '',
         readPermissions: {
             units: [],
-            rank: null
+            rank: null,
+            selectedUnitsOnly: false
         },
         writePermissions: {
             units: [],
-            rank: null
+            rank: null,
+            selectedUnitsOnly: false
         }
     };
     validationMessages = {
-        name: [{ type: 'required', message: 'Document name is required' }]
+        name: [{ type: 'required', message: 'Folder name is required' }]
     };
     pending: boolean = false;
     parent: string = '000000000000000000000000';
@@ -60,11 +62,13 @@ export class CreateFolderModalComponent implements OnInit {
             name: this.model.name,
             readPermissions: {
                 units: this.model.readPermissions.units.map((x) => mapFromElement(Unit, x).id),
-                rank: mapFromElement(Rank, this.model.readPermissions.rank)?.name
+                rank: mapFromElement(Rank, this.model.readPermissions.rank)?.name,
+                selectedUnitsOnly: this.model.readPermissions.selectedUnitsOnly
             },
             writePermissions: {
                 units: this.model.writePermissions.units.map((x) => mapFromElement(Unit, x).id),
-                rank: mapFromElement(Rank, this.model.writePermissions.rank)?.name
+                rank: mapFromElement(Rank, this.model.writePermissions.rank)?.name,
+                selectedUnitsOnly: this.model.writePermissions.selectedUnitsOnly
             }
         };
 
@@ -107,10 +111,12 @@ interface FormModel {
     readPermissions: {
         units: IDropdownElement[];
         rank: IDropdownElement;
+        selectedUnitsOnly: boolean;
     };
     writePermissions: {
         units: IDropdownElement[];
         rank: IDropdownElement;
+        selectedUnitsOnly: boolean;
     };
 }
 

@@ -69,6 +69,7 @@ export class DocsFolderComponent {
             })
             .afterClosed()
             .subscribe((_) => {
+                this.expandSelf();
                 this.refresh.emit();
             });
     }
@@ -113,6 +114,7 @@ export class DocsFolderComponent {
             })
             .afterClosed()
             .subscribe((_) => {
+                this.expandSelf();
                 this.refresh.emit();
             });
     }
