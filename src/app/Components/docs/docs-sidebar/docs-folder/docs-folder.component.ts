@@ -40,8 +40,10 @@ export class DocsFolderComponent {
     }
 
     expandSelf() {
-        this.expanded = true;
-        this.expandFolder.emit();
+        setTimeout((_) => {
+            this.expanded = true;
+            this.expandFolder.emit();
+        });
     }
 
     onMouseOver() {

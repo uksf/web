@@ -7,7 +7,9 @@
 
     app-docs-content {
         .content-container {
-            background-color: mat.get-color-from-palette($background, 600);
+            .content-header {
+                background-color: mat.get-color-from-palette($background, 600);
+            }
         }
     }
 

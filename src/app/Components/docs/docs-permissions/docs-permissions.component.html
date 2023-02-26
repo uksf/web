@@ -1,7 +1,15 @@
 <mat-card class="permissions-container">
     <h4 class="permissions-title">{{ title }}</h4>
     <form #form="ngForm">
-        <mat-checkbox (change)="onSelectUnitsOnlyChange()" [(ngModel)]="model.selectedUnitsOnly" color="primary" name="formSelectedUnitsOnly">Selected Units Only </mat-checkbox>
+        <mat-checkbox
+            (change)="onSelectUnitsOnlyChange()"
+            [(ngModel)]="model.selectedUnitsOnly"
+            color="primary"
+            matTooltip="Enabling this will require members to be only in any of the selected units. Parent/sub units will not be checked"
+            name="formSelectedUnitsOnly"
+        >
+            Selected Units Only
+        </mat-checkbox>
         <app-selection-list
             #unitsList="ngModel"
             (ngModelChange)="onSelectUnit($event)"

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../Services/url.service';
 import { DocumentMetadata, FolderMetadata } from '../../Models/Documents';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
     selector: 'app-docs-page',
@@ -13,11 +13,25 @@ export class DocsPageComponent implements OnInit {
     allFolderMetadata: FolderMetadata[] = [];
     selectedDocumentMetadata: DocumentMetadata;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private route: ActivatedRoute) {}
+    constructor(private httpClient: HttpClient, private urls: UrlService, private route: ActivatedRoute, private router: Router) {}
 
     ngOnInit(): void {
         this.getAllFoldersMetadata();
+    }
 
+    getAllFoldersMetadata() {
+        this.httpClient.get(`${this.urls.apiUrl}/docs/folders`).subscribe({
+            next: (allFolderMetadata: FolderMetadata[]) => {
+                this.allFolderMetadata = allFolderMetadata;
+                this.setSelectedDocument();
+            },
+            error: () => {
+                this.setSelectedDocument();
+            }
+        });
+    }
+
+    setSelectedDocument() {
         this.route.queryParams.subscribe((params) => {
             const folder = params.folder;
             const document = params.document;
@@ -27,21 +41,24 @@ export class DocsPageComponent implements OnInit {
                     next: (documentMetadata: DocumentMetadata) => {
                         this.selectedDocumentMetadata = documentMetadata;
                     },
-                    error: () => {}
+                    error: () => {
+                        this.resetSelectedDocument();
+                    }
                 });
             } else {
-                this.selectedDocumentMetadata = null;
+                this.resetSelectedDocument();
             }
         });
     }
 
-    getAllFoldersMetadata() {
-        this.httpClient.get(`${this.urls.apiUrl}/docs/folders`).subscribe({
-            next: (allFolderMetadata: FolderMetadata[]) => {
-                this.allFolderMetadata = allFolderMetadata;
-            },
-            error: () => {}
-        });
+    resetSelectedDocument() {
+        this.selectedDocumentMetadata = null;
+        this.router
+            .navigate([], {
+                relativeTo: this.route,
+                queryParams: { folder: null, document: null }
+            })
+            .then();
     }
 
     refresh() {
