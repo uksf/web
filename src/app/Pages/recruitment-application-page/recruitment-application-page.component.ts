@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, HostListener, ViewChild } from '@angular/core';
 import { DatePipe, Location } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { UrlService } from '../../Services/url.service';
@@ -38,6 +38,7 @@ export class RecruitmentApplicationPageComponent {
     updating: boolean;
     teamspeakState: AsyncSubject<OnlineState> = new AsyncSubject<OnlineState>();
     discordState: AsyncSubject<OnlineState> = new AsyncSubject<OnlineState>();
+    adminOverride: boolean = false;
 
     constructor(
         private httpClient: HttpClient,
@@ -69,6 +70,12 @@ export class RecruitmentApplicationPageComponent {
         }
 
         this.getApplication();
+    }
+
+    @HostListener('window:keydown', ['$event'])
+    @HostListener('window:keyup', ['$event'])
+    onKey(event: KeyboardEvent) {
+        this.adminOverride = event.shiftKey && this.permissions.hasPermission(Permissions.SUPERADMIN);
     }
 
     getApplication() {
@@ -172,15 +179,11 @@ export class RecruitmentApplicationPageComponent {
     }
 
     isAcceptableAge() {
-        return this.application.age.years >= this.application.acceptableAge || (this.application.age.years === this.application.acceptableAge - 1 && this.application.age.months === 11);
+        return this.adminOverride || this.isApplicationAcceptableAge() || this.isApplicationJustAcceptableAge();
     }
 
     getAgeColour() {
-        return this.application.age.years >= this.application.acceptableAge
-            ? 'green'
-            : this.application.age.years === this.application.acceptableAge - 1 && this.application.age.months === 11
-            ? 'goldenrod'
-            : 'red';
+        return this.isApplicationAcceptableAge() ? 'green' : this.isApplicationJustAcceptableAge() ? 'goldenrod' : 'red';
     }
 
     getDiscordName(discordState) {
@@ -195,5 +198,13 @@ export class RecruitmentApplicationPageComponent {
 
     back() {
         this.router.navigate(['/recruitment']);
+    }
+
+    private isApplicationAcceptableAge() {
+        return this.application.age.years >= this.application.acceptableAge;
+    }
+
+    private isApplicationJustAcceptableAge() {
+        return this.application.age.years === this.application.acceptableAge - 1 && this.application.age.months === 11;
     }
 }
