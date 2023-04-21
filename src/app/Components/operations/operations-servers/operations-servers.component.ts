@@ -289,7 +289,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                 error: (error) => {
                     this.uploadingFile = false;
                     this.uploader.nativeElement.value = '';
-                    this.showError(error, 'Max size for all selected files is 10MB');
+                    this.showError(error, 'Max size for all selected files is 50MB');
                 }
             });
     }
