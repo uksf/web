@@ -286,7 +286,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                     this.uploader.nativeElement.value = '';
                     this.showMissionReport(missionReports);
                 },
-                error: (error) => {
+                error: (error: UksfError) => {
                     this.uploadingFile = false;
                     this.uploader.nativeElement.value = '';
                     this.showError(error, 'Max size for all selected files is 50MB');
@@ -294,16 +294,14 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
             });
     }
 
-    showError(error, customMessage = '') {
+    showError(error, fallbackMessage = '') {
         let message = 'An error occurred';
-        if (customMessage) {
-            message = customMessage;
-        } else {
-            if (error.error && typeof error.error === 'string') {
-                message = error.error;
-            } else if (error.message) {
-                message = error.message;
-            }
+        if (error.error && typeof error.error === 'string') {
+            message = error.error;
+        } else if (error.message) {
+            message = error.message;
+        } else if (fallbackMessage) {
+            message = fallbackMessage;
         }
         this.dialog.open(MessageModalComponent, {
             data: { message: message }
