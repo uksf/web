@@ -2,28 +2,29 @@
 <mat-dialog-content>
     <form [formGroup]="form" class="container">
         <mat-form-field class="normal">
-            <input #input matInput formControlName="name" required placeholder="Rank Name" [errorStateMatcher]="instantErrorStateMatcher">
+            <input #input [errorStateMatcher]="instantErrorStateMatcher" formControlName="name" matInput placeholder="Rank Name" required />
             <mat-error *ngFor="let validation of validationMessages.name">
-                <mat-error class="error-message" *ngIf="form.get('name').hasError(validation.type)">{{validation.message}}</mat-error>
+                <mat-error *ngIf="form.get('name').hasError(validation.type)" class="error-message">{{ validation.message }}</mat-error>
             </mat-error>
         </mat-form-field>
         <mat-form-field class="normal">
-            <input #input matInput formControlName="abbreviation" required placeholder="Abbreviation" [errorStateMatcher]="instantErrorStateMatcher">
+            <input #input [errorStateMatcher]="instantErrorStateMatcher" formControlName="abbreviation" matInput placeholder="Abbreviation" required />
             <mat-error *ngFor="let validation of validationMessages.abbreviation">
-                <mat-error class="error-message" *ngIf="form.get('abbreviation').hasError(validation.type)">{{validation.message}}</mat-error>
+                <mat-error *ngIf="form.get('abbreviation').hasError(validation.type)" class="error-message">{{ validation.message }}</mat-error>
             </mat-error>
         </mat-form-field>
         <mat-form-field class="normal">
-            <input #input matInput formControlName="teamspeakGroup" placeholder="TeamSpeak Group ID" type="number" [errorStateMatcher]="instantErrorStateMatcher">
+            <input #input [errorStateMatcher]="instantErrorStateMatcher" formControlName="teamspeakGroup" matInput placeholder="TeamSpeak Group ID" />
             <mat-error *ngFor="let validation of validationMessages.teamspeakGroup">
-                <mat-error class="error-message" *ngIf="form.get('teamspeakGroup').hasError(validation.type)">{{validation.message}}</mat-error>
+                <mat-error *ngIf="form.get('teamspeakGroup').hasError(validation.type)" class="error-message">{{ validation.message }}</mat-error>
             </mat-error>
         </mat-form-field>
         <mat-form-field class="normal">
-            <input #input matInput formControlName="discordRoleId" placeholder="Discord Role ID">
+            <input #input formControlName="discordRoleId" matInput placeholder="Discord Role ID" />
         </mat-form-field>
         <div class="button-container">
-            <button mat-raised-button color="primary" type="button" #button (click)="submit(); button.disabled = true" [disabled]="!form.valid">Submit</button>
+            <app-flex-filler></app-flex-filler>
+            <app-button (clicked)="submit()" [disabled]="!form.valid" [pending]="pending">Submit</app-button>
         </div>
     </form>
 </mat-dialog-content>

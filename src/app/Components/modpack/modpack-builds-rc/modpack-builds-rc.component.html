@@ -61,12 +61,12 @@
                         <div class="build-changelog">
                             <markdown ngPreserveWhitespaces [data]="changesMarkdown"></markdown>
                         </div>
-                        <div *ngIf="selectedBuild.environment !== gameEnvironment.RELEASE && additionalChangesMarkdown !== ''">
-                            <h3 class="build-description">Additional changes since {{ previousRelease() }}</h3>
-                            <div class="build-changelog">
-                                <markdown ngPreserveWhitespaces [data]="additionalChangesMarkdown"></markdown>
-                            </div>
-                        </div>
+                        <!--                        <div *ngIf="selectedBuild.environment !== gameEnvironment.RELEASE && additionalChangesMarkdown !== ''">-->
+                        <!--                            <h3 class="build-description">Additional changes since {{ previousRelease() }}</h3>-->
+                        <!--                            <div class="build-changelog">-->
+                        <!--                                <markdown ngPreserveWhitespaces [data]="additionalChangesMarkdown"></markdown>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
                     </div>
                 </div>
                 <app-modpack-builds-steps

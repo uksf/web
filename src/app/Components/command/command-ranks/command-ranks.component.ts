@@ -27,7 +27,7 @@ export class CommandRanksComponent implements OnInit {
         return timer(200).pipe(
             switchMap(() => {
                 return this.httpClient
-                    .post(`${this.urls.apiUrl}/ranks`, rank, {
+                    .post(`${this.urls.apiUrl}/ranks/exists`, rank, {
                         headers: new HttpHeaders({
                             'Content-Type': 'application/json'
                         })
