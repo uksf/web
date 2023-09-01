@@ -16,10 +16,40 @@
                             </button>
                         </mat-form-field>
                         <div class="loa-filter-buttons-container">
-                            <button mat-raised-button class="loa-filter-button" [disabled]="viewMode == 'all'" (click)="changeViewMode('all')"><mat-icon>people_outline</mat-icon>All</button>
-                            <button mat-raised-button class="loa-filter-button" [disabled]="viewMode == 'coc'" (click)="changeViewMode('coc')"><mat-icon>people</mat-icon>My CoC</button>
-                            <button mat-raised-button class="loa-filter-button" [disabled]="viewMode == 'me'" (click)="changeViewMode('me')"><mat-icon>person</mat-icon>You</button>
+                            <button [matMenuTriggerFor]="viewModeMenu" mat-raised-button>
+                                <mat-icon class="icon-right">{{ viewMode.icon }}</mat-icon>
+                                <span class="item-text">{{ viewMode.name }}</span>
+                            </button>
+                            <mat-menu #viewModeMenu="matMenu">
+                                <button (click)="changeViewMode(mode)" *ngFor="let mode of viewModes" [disabled]="viewMode.mode === mode.mode" mat-menu-item>
+                                    <mat-icon class="icon-right">{{ mode.icon }}</mat-icon>
+                                    <span class="item-text">{{ mode.name }}</span>
+                                </button>
+                            </mat-menu>
+                            <button [matMenuTriggerFor]="dateModeMenu" mat-raised-button>
+                                <mat-icon class="icon-right">{{ dateMode.icon }}</mat-icon>
+                                <span class="item-text">{{ dateMode.name }}{{ getDisplayForDateMode(dateMode.mode) }}</span>
+                            </button>
+                            <mat-menu #dateModeMenu="matMenu">
+                                <button (click)="changeDateMode(mode)" *ngFor="let mode of dateModes" [disabled]="dateMode.mode === mode.mode" mat-menu-item>
+                                    <mat-icon class="icon-right">{{ mode.icon }}</mat-icon>
+                                    <span class="item-text">{{ mode.name }}</span>
+                                </button>
+                            </mat-menu>
                         </div>
+                        <mat-form-field *ngIf="dateMode.mode === 'select'" class="select-date-picker">
+                            <input
+                                (click)="datePicker.open()"
+                                (dateInput)="update()"
+                                [(ngModel)]="selectedDate"
+                                [matDatepicker]="datePicker"
+                                matInput
+                                ng-model-options="{timezone: 'utc'}"
+                                placeholder="Select date"
+                            />
+                            <mat-datepicker-toggle [for]="datePicker" matSuffix></mat-datepicker-toggle>
+                            <mat-datepicker #datePicker [touchUi]="mobile"></mat-datepicker>
+                        </mat-form-field>
                     </div>
                     <h6>All dates and times are in GMT</h6>
                     <div>

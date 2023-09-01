@@ -8,6 +8,8 @@ import { PagedResult } from '../../../Models/PagedResult';
 import { UrlService } from '../../../Services/url.service';
 import { Loa, LoaReviewState } from '../../../Models/Loa';
 import { expansionAnimations } from '../../../Services/animations.service';
+import { ModeItem } from '../personnel-loas/personnel-loas.component';
+import { Moment } from 'moment/moment';
 
 @Component({
     selector: 'app-personnel-loas-list',
@@ -19,8 +21,9 @@ export class PersonnelLoasListComponent implements OnInit {
     @ViewChild(PaginatorComponent) paginator: PaginatorComponent;
     @Input() selectionMode: string;
     @Input() viewMode: string = 'all';
-    @Input() deletable = true;
-    @Output() deleteEvent = new EventEmitter();
+    @Input() dateMode: string = 'all';
+    @Input() deletable: boolean = true;
+    @Output() deleteEvent: EventEmitter<any> = new EventEmitter();
     loaded: boolean = false;
     loaReviewState = LoaReviewState;
     loas: Loa[] = [];
@@ -28,8 +31,9 @@ export class PersonnelLoasListComponent implements OnInit {
     pageIndex: number = 0;
     pageSize: number = 15;
     filterString: string = '';
+    selectedDate?: Moment;
 
-    selectedIndex = -1;
+    selectedIndex: number = -1;
 
     constructor(private httpClient: HttpClient, private urls: UrlService, private permissions: PermissionsService) {}
 
@@ -37,23 +41,32 @@ export class PersonnelLoasListComponent implements OnInit {
         this.getLoas();
     }
 
-    update(viewMode: string, filter: string) {
-        this.viewMode = viewMode;
+    update(newDateMode: ModeItem, newViewMode: ModeItem, filter: string, newSelectedDate?: Moment) {
+        this.dateMode = newDateMode.mode;
+        this.viewMode = newViewMode.mode;
         this.filterString = filter;
+        this.selectedDate = newSelectedDate;
         this.getLoas();
     }
 
     getLoas() {
-        const query = buildQuery(this.filterString);
+        const query: string = buildQuery(this.filterString);
+
+        let httpParams: HttpParams = new HttpParams()
+            .set('page', this.pageIndex + 1)
+            .set('pageSize', this.pageSize)
+            .set('query', query)
+            .set('selectionMode', this.selectionMode)
+            .set('dateMode', this.dateMode)
+            .set('viewMode', this.viewMode);
+
+        if (this.selectedDate) {
+            httpParams = httpParams.set('selectedDate', this.selectedDate.toISOString());
+        }
 
         this.httpClient
             .get(`${this.urls.apiUrl}/loa`, {
-                params: new HttpParams()
-                    .set('page', this.pageIndex + 1)
-                    .set('pageSize', this.pageSize)
-                    .set('query', query)
-                    .set('selectionMode', this.selectionMode)
-                    .set('viewMode', this.viewMode)
+                params: httpParams
             })
             .subscribe({
                 next: (pagedLoas: PagedResult<Loa>) => {
