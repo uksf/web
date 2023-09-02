@@ -34,7 +34,7 @@ export class PersonnelLoasComponent implements OnInit {
         { mode: 'all', name: 'All', icon: 'calendar_view_month' },
         { mode: 'today', name: 'Today', icon: 'today' },
         { mode: 'nextOp', name: 'Next Op', icon: 'public' },
-        { mode: 'nextTraining', name: 'Next Training', icon: 'cycle' },
+        { mode: 'nextTraining', name: 'Next Training', icon: 'school' },
         { mode: 'select', name: 'Select Date', icon: 'date_range' }
     ];
     viewMode: ModeItem;
