@@ -8,8 +8,13 @@ import { PagedResult } from '../../../Models/PagedResult';
 import { UrlService } from '../../../Services/url.service';
 import { Loa, LoaReviewState } from '../../../Models/Loa';
 import { expansionAnimations } from '../../../Services/animations.service';
-import { ModeItem } from '../personnel-loas/personnel-loas.component';
+import { DateMode, DateModeItem, ViewMode, ViewModeItem } from '../personnel-loas/personnel-loas.component';
 import { Moment } from 'moment/moment';
+import { UksfError } from '../../../Models/Response';
+import { MessageModalComponent } from '../../../Modals/message-modal/message-modal.component';
+import { MatDialog } from '@angular/material/dialog';
+
+export type SelectionMode = 'current' | 'future' | 'past';
 
 @Component({
     selector: 'app-personnel-loas-list',
@@ -19,9 +24,9 @@ import { Moment } from 'moment/moment';
 })
 export class PersonnelLoasListComponent implements OnInit {
     @ViewChild(PaginatorComponent) paginator: PaginatorComponent;
-    @Input() selectionMode: string;
-    @Input() viewMode: string = 'all';
-    @Input() dateMode: string = 'all';
+    @Input() selectionMode: SelectionMode = 'current';
+    @Input() viewMode: ViewMode = 'all';
+    @Input() dateMode: DateMode = 'all';
     @Input() deletable: boolean = true;
     @Output() deleteEvent: EventEmitter<any> = new EventEmitter();
     loaded: boolean = false;
@@ -35,13 +40,13 @@ export class PersonnelLoasListComponent implements OnInit {
 
     selectedIndex: number = -1;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private permissions: PermissionsService) {}
+    constructor(private httpClient: HttpClient, private urls: UrlService, private permissions: PermissionsService, private dialog: MatDialog) {}
 
     ngOnInit(): void {
         this.getLoas();
     }
 
-    update(newDateMode: ModeItem, newViewMode: ModeItem, filter: string, newSelectedDate?: Moment) {
+    update(newDateMode: DateModeItem, newViewMode: ViewModeItem, filter: string, newSelectedDate?: Moment) {
         this.dateMode = newDateMode.mode;
         this.viewMode = newViewMode.mode;
         this.filterString = filter;
@@ -75,7 +80,10 @@ export class PersonnelLoasListComponent implements OnInit {
                     this.loas = pagedLoas.data;
                     this.totalLoas = pagedLoas.totalCount;
                 },
-                error: () => {
+                error: (error: UksfError) => {
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: error.error }
+                    });
                     this.loaded = true;
                 }
             });

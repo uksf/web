@@ -11,8 +11,17 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import moment, { Moment } from 'moment';
 
-export interface ModeItem {
-    mode: string;
+export type ViewMode = 'all' | 'coc' | 'mine';
+export type DateMode = 'all' | 'nextOp' | 'nextTraining' | 'select';
+
+export interface ViewModeItem {
+    mode: ViewMode;
+    name: string;
+    icon: string;
+}
+
+export interface DateModeItem {
+    mode: DateMode;
     name: string;
     icon: string;
 }
@@ -25,22 +34,21 @@ export interface ModeItem {
 export class PersonnelLoasComponent implements OnInit {
     @ViewChildren(PersonnelLoasListComponent) loaLists: QueryList<PersonnelLoasListComponent>;
     mobile = false;
-    viewModes: ModeItem[] = [
+    viewModes: ViewModeItem[] = [
         { mode: 'all', name: 'All', icon: 'people_outline' },
         { mode: 'coc', name: 'My CoC', icon: 'people' },
         { mode: 'mine', name: 'Mine', icon: 'person' }
     ];
-    dateModes: ModeItem[] = [
+    dateModes: DateModeItem[] = [
         { mode: 'all', name: 'All', icon: 'calendar_view_month' },
-        { mode: 'today', name: 'Today', icon: 'today' },
         { mode: 'nextOp', name: 'Next Op', icon: 'public' },
         { mode: 'nextTraining', name: 'Next Training', icon: 'school' },
         { mode: 'select', name: 'Select Date', icon: 'date_range' }
     ];
-    viewMode: ModeItem;
-    dateMode: ModeItem;
+    viewMode: ViewModeItem;
+    dateMode: DateModeItem;
     filterString: string = '';
-    selectedDate?: Moment = moment();
+    selectedDate?: Moment = this.getUkNow();
     private filterSubject = new Subject<string>();
 
     constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {
@@ -65,14 +73,14 @@ export class PersonnelLoasComponent implements OnInit {
         this.loaLists.forEach((x) => x.update(this.dateMode, this.viewMode, this.filterString, this.selectedDate));
     }
 
-    changeViewMode(newViewMode: ModeItem) {
+    changeViewMode(newViewMode: ViewModeItem) {
         this.viewMode = newViewMode;
         this.update();
     }
 
-    changeDateMode(newDateMode: ModeItem) {
+    changeDateMode(newDateMode: DateModeItem) {
         if (newDateMode.mode === 'select') {
-            this.selectedDate = moment();
+            this.selectedDate = this.getUkNow();
         } else {
             this.selectedDate = null;
         }
@@ -109,8 +117,6 @@ export class PersonnelLoasComponent implements OnInit {
 
     getDisplayForDateMode(dateMode: string): string {
         switch (dateMode) {
-            case 'today':
-                return ` (${moment().format('DD MMM')})`;
             case 'nextOp':
                 return ` (${this.getNextDayOfWeek(6).format('DD MMM yy')})`;
             case 'nextTraining':
@@ -123,7 +129,7 @@ export class PersonnelLoasComponent implements OnInit {
     }
 
     private getNextDayOfWeek(dayOfWeek: number) {
-        const today = moment();
+        const today = this.getUkNow();
         const currentDayOfWeek = today.isoWeekday();
 
         if (currentDayOfWeek <= dayOfWeek) {
@@ -131,5 +137,9 @@ export class PersonnelLoasComponent implements OnInit {
         } else {
             return today.add(1, 'weeks').isoWeekday(dayOfWeek);
         }
+    }
+
+    private getUkNow() {
+        return moment().tz('Europe/London');
     }
 }

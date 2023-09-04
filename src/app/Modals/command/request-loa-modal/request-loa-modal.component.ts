@@ -1,12 +1,11 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { InstantErrorStateMatcher } from 'app/Services/formhelper.service';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
-import { Moment } from 'moment';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 
 @Component({
     selector: 'app-request-loa-modal',
@@ -19,10 +18,10 @@ export class RequestLoaModalComponent implements OnInit {
     validationMessages = {
         reason: [{ type: 'required', message: 'Reason is required' }]
     };
-    start: Moment = moment();
-    end: Moment = moment();
-    minStartDate: Moment = moment();
-    minEndDate: Moment = moment();
+    start: Moment = this.getUkNow();
+    end: Moment = this.getUkNow();
+    minStartDate: Moment = this.getUkNow();
+    minEndDate: Moment = this.getUkNow();
     maxStartDate: Moment;
     late = false;
     datesValid = false;
@@ -33,8 +32,8 @@ export class RequestLoaModalComponent implements OnInit {
     constructor(private dialog: MatDialog, private formbuilder: FormBuilder, private httpClient: HttpClient, private urlService: UrlService) {
         this.form = this.formbuilder.group({
             reason: ['', Validators.required],
-            start: [{ value: '', disabled: true }, Validators.required],
-            end: [{ value: '', disabled: true }, Validators.required],
+            start: [{ value: '' }, Validators.required],
+            end: [{ value: '' }, Validators.required],
             emergency: [false],
             late: [false]
         });
@@ -57,14 +56,16 @@ export class RequestLoaModalComponent implements OnInit {
 
     validateDates() {
         this.setTimeValues();
-        const nowNoTime = moment.utc().hours(0).minutes(0).seconds(0).milliseconds(0);
+        const nowUk = this.getUkNow();
+        const nowNoTime = nowUk.hours(0).minutes(0).seconds(0).milliseconds(0);
+
         if (this.start) {
             const startNoTime = this.start.clone().hours(0).minutes(0).seconds(0).milliseconds(0);
             this.minEndDate = moment(startNoTime);
             if (startNoTime.isBefore(nowNoTime)) {
                 this.invalidMessage = 'Start date cannot be in the past';
                 return false;
-            } else if (startNoTime.isSame(nowNoTime) && (this.start.day() === 6 || this.start.day() === 3) && moment.utc().hour() >= 12) {
+            } else if (startNoTime.isSame(nowNoTime) && (this.start.day() === 6 || this.start.day() === 3) && nowUk.hour() >= 12) {
                 this.late = true;
             } else {
                 this.late = false;
@@ -73,6 +74,7 @@ export class RequestLoaModalComponent implements OnInit {
         } else {
             return false;
         }
+
         if (this.end) {
             const endNoTime = this.end.clone().hours(0).minutes(0).seconds(0).milliseconds(0);
             this.maxStartDate = moment(endNoTime);
@@ -90,6 +92,7 @@ export class RequestLoaModalComponent implements OnInit {
         } else {
             return false;
         }
+
         this.invalidMessage = '';
         return true;
     }
@@ -142,5 +145,9 @@ export class RequestLoaModalComponent implements OnInit {
                         });
                 }
             });
+    }
+
+    private getUkNow() {
+        return moment().tz('Europe/London');
     }
 }

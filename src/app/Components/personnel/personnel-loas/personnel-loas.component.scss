@@ -14,7 +14,6 @@
 
     .loa-filter-buttons-container {
         display: flex;
-        //margin: auto;
 
         .mat-raised-button {
             margin-left: 8px;
@@ -59,5 +58,15 @@
         .mat-form-field {
             width: 95%;
         }
+    }
+}
+
+::ng-deep .mat-menu-item {
+    ::ng-deep .icon-right {
+        margin-right: 6px;
+    }
+
+    ::ng-deep .item-text {
+        vertical-align: middle;
     }
 }
