@@ -13,7 +13,7 @@
             <app-docs-permissions [(ngModel)]="model.writePermissions" [initialData]="initialData?.writePermissions" [type]="'write'" name="formWritePermissions"></app-docs-permissions>
         </div>
         <div class="hint">
-            <div>Leaving permissions blank will allow anyone to view and edit this folder and its documents</div>
+            <div>Leaving read permissions blank will allow anyone to view this folder and its documents</div>
             <br />
             <div>Selecting a rank will require members to be at least that rank</div>
             <div>Selecting units will require members to be in one of those units or their sub-units to view this folder, or their parent units to edit this folder</div>
@@ -23,7 +23,7 @@
         <div class="button-container">
             <app-flex-filler></app-flex-filler>
             <app-button (clicked)="submit()" *ngIf="!initialData" [disabled]="!form.valid" [pending]="pending">Create </app-button>
-            <app-button (clicked)="submit()" *ngIf="initialData" [disabled]="!form.valid" [pending]="pending">Confirm </app-button>
+            <app-button (clicked)="submit()" *ngIf="initialData" [disabled]="!form.valid" [pending]="pending">Save </app-button>
         </div>
     </form>
 </mat-dialog-content>

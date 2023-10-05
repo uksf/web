@@ -1,4 +1,4 @@
-import { Component, forwardRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, forwardRef, Input, OnInit, Type, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { BehaviorSubject } from 'rxjs';
@@ -7,6 +7,10 @@ import { Rank } from '../../../Models/Rank';
 import { Unit } from '../../../Models/Units';
 import { ControlContainer, ControlValueAccessor, FormGroup, NG_VALUE_ACCESSOR, NgForm } from '@angular/forms';
 import { DocumentPermissions } from '../../../Models/Documents';
+import { AccountService } from '../../../Services/account.service';
+import { Account } from '../../../Models/Account';
+
+export type PermissionsType = 'read' | 'write';
 
 @Component({
     selector: 'app-docs-permissions',
@@ -15,7 +19,7 @@ import { DocumentPermissions } from '../../../Models/Documents';
     providers: [
         {
             provide: NG_VALUE_ACCESSOR,
-            useExisting: forwardRef(() => DocsPermissionsComponent),
+            useExisting: forwardRef((): Type<any> => DocsPermissionsComponent),
             multi: true
         }
     ],
@@ -23,7 +27,7 @@ import { DocumentPermissions } from '../../../Models/Documents';
 })
 export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
     @ViewChild(NgForm) form!: NgForm;
-    @Input('type') type: string = 'read';
+    @Input('type') type: PermissionsType = 'read';
     @Input('initialData') initialData: DocumentPermissions = null;
     model: FormModel = {
         units: [],
@@ -37,18 +41,23 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
         rank: null,
         selectedUnitsOnly: false
     };
-    onChange: any = () => {};
 
-    constructor(private httpClient: HttpClient, private urlService: UrlService) {}
+    constructor(private httpClient: HttpClient, private urlService: UrlService, private accountService: AccountService) {}
+
+    onChange: any = (): void => {};
 
     ngOnInit(): void {
         this.httpClient.get(`${this.urlService.apiUrl}/units`).subscribe({
-            next: (units: Unit[]) => {
-                let elements = units.map(Unit.mapToElement);
+            next: (units: Unit[]): void => {
+                let elements: IDropdownElement[] = units.map(Unit.mapToElement);
                 this.units.next(elements);
 
                 if (this.initialData?.units.length > 0) {
-                    this.model.units = elements.filter((x) => this.initialData.units.includes(x.value));
+                    this.model.units = elements.filter((x: IDropdownElement): boolean => this.initialData.units.includes(x.value));
+                } else {
+                    this.accountService.getAccount((account: Account): void => {
+                        this.model.units = elements.filter((x: IDropdownElement): boolean => x.displayValue === account.unitAssignment);
+                    });
                 }
 
                 if (this.initialData?.selectedUnitsOnly) {
@@ -57,26 +66,26 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
             }
         });
         this.httpClient.get(`${this.urlService.apiUrl}/ranks`).subscribe({
-            next: (ranks: Rank[]) => {
-                let elements = ranks.map(Rank.mapToElement).reverse();
+            next: (ranks: Rank[]): void => {
+                let elements: IDropdownElement[] = ranks.map(Rank.mapToElement).reverse();
                 this.ranks.next(elements);
 
                 if (this.initialData?.rank) {
-                    this.model.rank = elements.find((x) => x.value === this.initialData.rank);
+                    this.model.rank = elements.find((x: IDropdownElement): boolean => x.value === this.initialData.rank);
                 }
             }
         });
     }
 
-    onSelectUnit(elements: IDropdownElement[]) {
+    onSelectUnit(elements: IDropdownElement[]): void {
         this.value.units = elements;
     }
 
-    onSelectRank(element: IDropdownElement) {
+    onSelectRank(element: IDropdownElement): void {
         this.value.rank = element;
     }
 
-    onSelectUnitsOnlyChange() {
+    onSelectUnitsOnlyChange(): void {
         this.value.selectedUnitsOnly = this.model.selectedUnitsOnly;
     }
 
@@ -101,7 +110,7 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
         this.onChange(this._value);
     }
 
-    writeValue(value: any) {
+    writeValue(value: any): void {
         if (value === null) {
             return;
         }
@@ -109,11 +118,11 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
         this.value = value;
     }
 
-    registerOnChange(func) {
+    registerOnChange(func): void {
         this.onChange = func;
     }
 
-    registerOnTouched() {}
+    registerOnTouched(): void {}
 }
 
 interface FormModel {
