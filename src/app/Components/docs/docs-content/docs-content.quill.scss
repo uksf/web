@@ -4,10 +4,8 @@
         border-radius: 0;
 
         .ql-editor {
-            padding: 16px calc(12%);
-            background-position: calc(50%) 0;
-            background-size: 88% 100%;
-            background-repeat: no-repeat;
+            padding: 32px;
+            word-break: break-word;
         }
     }
 }
@@ -26,10 +24,8 @@
         overflow-y: hidden;
 
         .ql-editor {
-            padding: 16px calc(12%);
-            background-position: calc(50%) 0;
-            background-size: 88% 100%;
-            background-repeat: no-repeat;
+            padding: 32px;
+            word-break: break-word;
         }
 
         .ql-tooltip {
@@ -38,6 +34,10 @@
             &::before {
                 content: 'URL:';
             }
+        }
+
+        .ql-clipboard {
+            position: fixed;
         }
     }
 }

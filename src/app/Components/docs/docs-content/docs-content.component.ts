@@ -28,6 +28,7 @@ export class DocsContentComponent implements OnChanges {
             next: (content: DocumentContent) => {
                 this.editing = false;
                 this.documentContent = content;
+                console.log('update');
             },
             error: (error) => {
                 this.editing = false;

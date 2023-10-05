@@ -50,16 +50,21 @@ h3 {
     .content {
         flex-grow: 1;
         display: flex;
-        overflow-y: hidden;
+        overflow-y: scroll;
+        height: 100%;
 
         .content-view {
             flex: 1;
+            max-width: 900px;
+            margin: auto;
         }
 
         .content-editor {
             flex: 1;
             display: flex;
             flex-direction: column;
+            max-width: 900px;
+            margin: auto;
         }
     }
 }

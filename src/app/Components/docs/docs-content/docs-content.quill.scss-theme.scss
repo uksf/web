@@ -6,24 +6,26 @@
     $primary: map-get($theme, primary);
 
     app-docs-content {
+        background-color: mat.get-color-from-palette($background, 800);
+
         .content-view {
             .ngx-quill-view {
-                background-color: mat.get-color-from-palette($background, 800);
+                background-color: mat.get-color-from-palette($background, background);
                 color: mat.get-color-from-palette($background, contrast);
 
                 .ql-editor {
-                    background-image: linear-gradient(0deg, mat.get-color-from-palette($background, background), mat.get-color-from-palette($background, background));
+                    //background-image: linear-gradient(0deg, mat.get-color-from-palette($background, background), mat.get-color-from-palette($background, background));
                 }
             }
         }
 
         .content-editor {
             .ql-container {
-                background-color: mat.get-color-from-palette($background, 800);
+                background-color: mat.get-color-from-palette($background, background); // 800
                 color: mat.get-color-from-palette($background, contrast);
 
                 .ql-editor {
-                    background-image: linear-gradient(0deg, mat.get-color-from-palette($background, background), mat.get-color-from-palette($background, background));
+                    //background-image: linear-gradient(0deg, mat.get-color-from-palette($background, background), mat.get-color-from-palette($background, background));
                 }
             }
         }
