@@ -52,12 +52,14 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
                 let elements: IDropdownElement[] = units.map(Unit.mapToElement);
                 this.units.next(elements);
 
-                if (this.initialData?.units.length > 0) {
-                    this.model.units = elements.filter((x: IDropdownElement): boolean => this.initialData.units.includes(x.value));
-                } else {
+                if (this.initialData === null) {
                     this.accountService.getAccount((account: Account): void => {
                         this.model.units = elements.filter((x: IDropdownElement): boolean => x.displayValue === account.unitAssignment);
                     });
+                } else {
+                    if (this.initialData.units.length > 0) {
+                        this.model.units = elements.filter((x: IDropdownElement): boolean => this.initialData.units.includes(x.value));
+                    }
                 }
 
                 if (this.initialData?.selectedUnitsOnly) {
