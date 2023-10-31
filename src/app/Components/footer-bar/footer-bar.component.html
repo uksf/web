@@ -16,7 +16,13 @@
             <i class="fab fa-youtube"></i>
         </a>
     </div>
-    <div class="copyright">
+    <div *ngIf="!mobile && !mobileSmall" class="copyright">
         <p>© Copyright UKSF 2011-2023</p>
+    </div>
+    <div *ngIf="mobile" class="copyright">
+        <p>© UKSF 2011-2023</p>
+    </div>
+    <div *ngIf="mobileSmall" class="copyright">
+        <p>© UKSF</p>
     </div>
 </div>
