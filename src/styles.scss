@@ -59,9 +59,9 @@
 @import 'app/Components/operations/operations-servers/operations-servers.component.scss-theme.scss';
 @import 'app/Components/personnel/personnel-discharges/personnel-discharges.component.scss-theme.scss';
 @import 'app/Components/personnel/personnel-loas-list/personnel-loas-list.component.scss-theme.scss';
+@import 'app/Components/personnel/personnel-roster/personnel-roster.component.scss-theme';
 @import 'app/Components/units/units-orbat/units-orbat.component.scss-theme.scss';
 @import 'app/Components/units/units-orbat-aux/units-orbat-aux.component.scss-theme.scss';
-@import 'app/Components/units/units-roster/units-roster.component.scss-theme.scss';
 
 // Modals
 @import 'app/Modals/command/add-unit-modal/add-unit-modal.component.scss-theme.scss';
@@ -123,9 +123,9 @@
     @include operations-servers-component-theme($theme);
     @include personnel-discharges-component-theme($theme);
     @include personnel-loas-list-component-theme($theme);
+    @include personnel-roster-component-theme($theme);
     @include units-orbat-component-theme($theme);
     @include units-orbat-aux-component-theme($theme);
-    @include units-roster-component-theme($theme);
 
     // Modals
     @include add-unit-modal-component-theme($theme);

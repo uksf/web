@@ -9,7 +9,7 @@ import { PermissionsService } from 'app/Services/permissions.service';
 })
 export class PersonnelPageComponent {
     tabLinks = [
-        { label: 'LOAs', link: '../loas' },
+        { label: 'LOAs', link: '../loas' }
         // { label: 'Activity', link: '../activity' }
     ];
 
@@ -18,7 +18,8 @@ export class PersonnelPageComponent {
             this.tabLinks = [
                 { label: 'LOAs', link: '../loas' },
                 // { label: 'Activity', link: '../activity' },
-                { label: 'Discharges', link: '../discharges' }
+                { label: 'Discharges', link: '../discharges' },
+                { label: 'Roster', link: '../roster' }
             ];
         }
     }

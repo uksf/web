@@ -12,21 +12,17 @@ import { RulesPageComponent } from './Pages/rules-page/rules-page.component';
 import { PolicyPageComponent } from './Pages/policy-page/policy-page.component';
 import { InformationPageComponent } from './Pages/information-page/information-page.component';
 import { UnitPageComponent } from './Pages/unit-page/unit-page.component';
-import { OprepPageComponent } from './Pages/oprep-page/oprep-page.component';
 import { AdminErrorLogsComponent } from './Components/admin/admin-error-logs/admin-error-logs.component';
 import { AdminAuditLogsComponent } from './Components/admin/admin-audit-logs/admin-audit-logs.component';
-import { OpordPageComponent } from './Pages/opord-page/opord-page.component';
 import { UnitsOrbatComponent } from './Components/units/units-orbat/units-orbat.component';
 import { UnitsOrbatAuxComponent } from './Components/units/units-orbat-aux/units-orbat-aux.component';
-import { UnitsRosterComponent } from './Components/units/units-roster/units-roster.component';
+import { PersonnelRosterComponent } from './Components/personnel/personnel-roster/personnel-roster.component';
 import { NgxPermissionsGuard } from 'ngx-permissions';
 import { CommandUnitsComponent } from './Components/command/command-units/command-units.component';
 import { CommandRanksComponent } from './Components/command/command-ranks/command-ranks.component';
 import { CommandRolesComponent } from './Components/command/command-roles/command-roles.component';
 import { CommandRequestsComponent } from './Components/command/command-requests/command-requests.component';
-import { OperationsActivityComponent } from './Components/operations/operations-activity/operations-activity.component';
 import { OperationsOrdersComponent } from './Components/operations/operations-orders/operations-orders.component';
-import { OperationsReportsComponent } from './Components/operations/operations-reports/operations-reports.component';
 import { OperationsServersComponent } from './Components/operations/operations-servers/operations-servers.component';
 import { AdminVariablesComponent } from './Components/admin/admin-variables/admin-variables.component';
 import { AdminLogsComponent } from './Components/admin/admin-logs/admin-logs.component';
@@ -285,17 +281,6 @@ const appRoutes: Routes = [
     {
         path: 'units/auxiliary',
         component: UnitsOrbatAuxComponent,
-        data: {
-            permissions: {
-                except: Permissions.UNLOGGED,
-                redirectTo: loginRedirect
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'units/roster',
-        component: UnitsRosterComponent,
         data: {
             permissions: {
                 except: Permissions.UNLOGGED,
@@ -604,6 +589,17 @@ const appRoutes: Routes = [
                     UNLOGGED: loginRedirect,
                     default: '/home'
                 }
+            }
+        },
+        canActivate: [NgxPermissionsGuard]
+    },
+    {
+        path: 'personnel/roster',
+        component: PersonnelRosterComponent,
+        data: {
+            permissions: {
+                except: Permissions.UNLOGGED,
+                redirectTo: loginRedirect
             }
         },
         canActivate: [NgxPermissionsGuard]

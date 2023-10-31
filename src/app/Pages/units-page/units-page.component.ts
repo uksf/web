@@ -8,8 +8,7 @@ import { Component } from '@angular/core';
 export class UnitsPageComponent {
     tabLinks = [
         { label: 'ORBAT', link: '../orbat' },
-        { label: 'Auxiliary ORBAT', link: '../auxiliary' },
-        { label: 'Roster', link: '../roster' }
+        { label: 'Auxiliary ORBAT', link: '../auxiliary' }
     ];
 
     constructor() {}

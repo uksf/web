@@ -2,15 +2,15 @@ import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { MatTableDataSource } from '@angular/material/table';
-import { CountryPickerService, ICountry } from 'app/Services/CountryPicker/country-picker.service';
+import { CountryPickerService, ICountry } from '../../../Services/CountryPicker/country-picker.service';
 import { RosterAccount } from '../../../Models/Account';
 
 @Component({
-    selector: 'app-units-roster',
-    templateUrl: './units-roster.component.html',
-    styleUrls: ['../../../Pages/units-page/units-page.component.scss', './units-roster.component.scss'],
+    selector: 'app-personnel-roster',
+    templateUrl: './personnel-roster.component.html',
+    styleUrls: ['../../../Pages/units-page/units-page.component.scss', './personnel-roster.component.scss']
 })
-export class UnitsRosterComponent {
+export class PersonnelRosterComponent {
     public countries: ICountry[];
     displayedColumns = ['nation', 'name', 'rank', 'roleAssignment', 'unitAssignment'];
     rosterData: MatTableDataSource<RosterAccount>;
