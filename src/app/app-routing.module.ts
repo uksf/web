@@ -257,6 +257,7 @@ const appRoutes: Routes = [
         },
         canActivate: [NgxPermissionsGuard]
     },
+    { path: 'units/roster', redirectTo: 'personnel/roster' },
     {
         path: 'units',
         redirectTo: 'units/orbat',
@@ -593,7 +594,6 @@ const appRoutes: Routes = [
         },
         canActivate: [NgxPermissionsGuard]
     },
-    { path: 'units/roster', redirectTo: 'personnel/roster' },
     {
         path: 'personnel/roster',
         component: PersonnelRosterComponent,
