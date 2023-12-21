@@ -7,6 +7,8 @@ import { ConfirmationModalComponent, ConfirmationModalData } from '../../../../M
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../../Services/url.service';
 import { CreateFolderModalComponent, FolderModalData } from '../../../../Modals/docs/create-folder-modal/create-folder-modal.component';
+import { UksfError } from '../../../../Models/Response';
+import { MessageModalComponent } from '../../../../Modals/message-modal/message-modal.component';
 
 @Component({
     selector: 'app-docs-folder',
@@ -100,7 +102,11 @@ export class DocsFolderComponent {
                     next: () => {
                         this.refresh.emit();
                     },
-                    error: () => {
+                    error: (error: UksfError) => {
+                        this.dialog.open(MessageModalComponent, {
+                            data: { message: error.error }
+                        });
+
                         this.refresh.emit();
                     }
                 });

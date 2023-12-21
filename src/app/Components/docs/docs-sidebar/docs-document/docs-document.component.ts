@@ -7,6 +7,8 @@ import { ConfirmationModalComponent, ConfirmationModalData } from '../../../../M
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../../Services/url.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UksfError } from '../../../../Models/Response';
+import { MessageModalComponent } from '../../../../Modals/message-modal/message-modal.component';
 
 @Component({
     selector: 'app-docs-document',
@@ -116,7 +118,11 @@ export class DocsDocumentComponent implements OnChanges {
                     next: () => {
                         this.refresh.emit();
                     },
-                    error: () => {
+                    error: (error: UksfError) => {
+                        this.dialog.open(MessageModalComponent, {
+                            data: { message: error.error }
+                        });
+
                         this.refresh.emit();
                     }
                 });

@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { MessageModalComponent } from '../../../Modals/message-modal/message-modal.component';
 import { MatDialog } from '@angular/material/dialog';
+import { UksfError } from '../../../Models/Response';
 
 @Component({
     selector: 'app-docs-content',
@@ -30,7 +31,7 @@ export class DocsContentComponent implements OnChanges {
                 this.documentContent = content;
                 console.log('update');
             },
-            error: (error) => {
+            error: (error: UksfError) => {
                 this.editing = false;
                 this.dialog.open(MessageModalComponent, {
                     data: { message: error.error }

@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { CreateDocumentRequest, DocumentPermissions, FolderMetadata } from '../../../Models/Documents';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { MessageModalComponent } from '../../message-modal/message-modal.component';
 import { NgForm } from '@angular/forms';
 import { UrlService } from '../../../Services/url.service';
@@ -10,6 +10,7 @@ import { IDropdownElement, mapFromElement } from '../../../Components/elements/d
 import { Unit } from '../../../Models/Units';
 import { Rank } from '../../../Models/Rank';
 import { Observable } from 'rxjs';
+import { defaultHeaders } from '../../../Services/constants';
 
 @Component({
     selector: 'app-create-document-modal',
@@ -88,17 +89,13 @@ export class CreateDocumentModalComponent implements OnInit {
 
     create(createDocumentRequest: CreateDocumentRequest): Observable<any> {
         return this.httpClient.post(`${this.urlService.apiUrl}/docs/folders/${this.folderMetadata.id}/documents`, createDocumentRequest, {
-            headers: new HttpHeaders({
-                'Content-Type': 'application/json'
-            })
+            headers: defaultHeaders
         });
     }
 
     edit(createDocumentRequest: CreateDocumentRequest): Observable<any> {
         return this.httpClient.put(`${this.urlService.apiUrl}/docs/folders/${this.folderMetadata.id}/documents/${this.initialData.id}`, createDocumentRequest, {
-            headers: new HttpHeaders({
-                'Content-Type': 'application/json'
-            })
+            headers: defaultHeaders
         });
     }
 }

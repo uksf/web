@@ -3,6 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../Services/url.service';
 import { DocumentMetadata, FolderMetadata } from '../../Models/Documents';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UksfError } from '../../Models/Response';
+import { MessageModalComponent } from '../../Modals/message-modal/message-modal.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-docs-page',
@@ -13,7 +16,7 @@ export class DocsPageComponent implements OnInit {
     allFolderMetadata: FolderMetadata[] = [];
     selectedDocumentMetadata: DocumentMetadata;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private route: ActivatedRoute, private router: Router) {}
+    constructor(private httpClient: HttpClient, private urls: UrlService, private route: ActivatedRoute, private router: Router, private dialog: MatDialog) {}
 
     ngOnInit(): void {
         this.getAllFoldersMetadata();
@@ -41,7 +44,11 @@ export class DocsPageComponent implements OnInit {
                     next: (documentMetadata: DocumentMetadata) => {
                         this.selectedDocumentMetadata = documentMetadata;
                     },
-                    error: () => {
+                    error: (error: UksfError) => {
+                        this.dialog.open(MessageModalComponent, {
+                            data: { message: error.error }
+                        });
+
                         this.resetSelectedDocument();
                     }
                 });
