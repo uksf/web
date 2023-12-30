@@ -16,7 +16,6 @@
                 </div>
                 <div class="release-content">
                     <div class="release-date released">Released {{ selectedRelease.timestamp | date: 'dd MMM y':'Europe/London' }}</div>
-                    <h4 class="release-description" *ngIf="selectedRelease.description">{{ selectedRelease.description }}</h4>
                     <h3>Changelog</h3>
                     <div class="release-changelog">
                         <markdown ngPreserveWhitespaces [data]="changelogMarkdown"></markdown>
@@ -29,28 +28,23 @@
                     <app-flex-filler></app-flex-filler>
                     <div class="buttons">
                         <ng-template [ngxPermissionsOnly]="['ADMIN']">
-                            <button mat-raised-button color="primary" *ngIf="!editing" (click)="regenerateChangelog()">Regenerate Changelog</button>
-                            <button mat-raised-button color="primary" *ngIf="!editing" (click)="edit()">Edit Draft</button>
-                            <button mat-raised-button color="primary" *ngIf="editing" (click)="save()">Save Draft</button>
-                            <button mat-raised-button color="primary" *ngIf="editing" (click)="togglePreview()">Toggle Preview</button>
-                            <button mat-raised-button color="primary" *ngIf="editing" (click)="discard()">Discard Changes</button>
-                            <button mat-raised-button color="primary" *ngIf="!editing" (click)="release()">Release</button>
+                            <app-button (click)="regenerateChangelog()" *ngIf="!editing">Regenerate Changelog </app-button>
+                            <app-button (click)="edit()" *ngIf="!editing">Edit Draft</app-button>
+                            <app-button (click)="save()" *ngIf="editing">Save Draft</app-button>
+                            <app-button (click)="togglePreview()" *ngIf="editing">Toggle Preview</app-button>
+                            <app-button (click)="discard()" *ngIf="editing">Discard Changes</app-button>
+                            <app-button (clicked)="release()" *ngIf="!editing" [pending]="releasing">Release </app-button>
                         </ng-template>
                     </div>
                 </div>
                 <div class="release-content" *ngIf="!editing">
                     <div class="release-date">Draft created {{ selectedRelease.timestamp | date: 'dd MMM y':'Europe/London' }}</div>
-                    <h4 class="release-description" *ngIf="selectedRelease.description">{{ selectedRelease.description }}</h4>
                     <h3>Changelog</h3>
                     <div class="release-changelog">
                         <markdown ngPreserveWhitespaces [data]="changelogMarkdown"></markdown>
                     </div>
                 </div>
                 <div class="release-content" *ngIf="editing">
-                    <div class="release-description" *ngIf="!preview">
-                        <textarea [(ngModel)]="descriptionEditing" type="text" placeholder="Release description" rows="3" maxlength="200" wrap="soft" (input)="validateDescription($event)"></textarea>
-                    </div>
-                    <h4 class="release-description" *ngIf="preview">{{ descriptionEditing }}</h4>
                     <h3>Changelog</h3>
                     <div class="release-changelog" *ngIf="!preview">
                         <textarea [(ngModel)]="changelogEditing" type="text" placeholder="Changelog" maxlength="5000" wrap="soft"></textarea>

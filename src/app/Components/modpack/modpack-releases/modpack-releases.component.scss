@@ -83,21 +83,6 @@
                 }
             }
 
-            .release-description {
-                line-height: 24px;
-                white-space: pre-wrap;
-
-                textarea {
-                    width: 100%;
-                    height: 100px;
-                    padding: 5px;
-                    margin-top: 4px;
-                    font-size: 18px;
-                    line-height: 20px;
-                    resize: none;
-                }
-            }
-
             .release-changelog {
                 padding: 0 0 16px;
                 flex: 1;

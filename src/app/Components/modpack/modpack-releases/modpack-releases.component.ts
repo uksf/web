@@ -17,7 +17,7 @@ export class ModpackReleasesComponent implements OnInit {
     selectedReleaseVersion = '';
     editing = false;
     preview = false;
-    descriptionEditing: string;
+    releasing = false;
     changelogEditing: string;
     changelogStaging: string;
     changelogMarkdown: string;
@@ -82,7 +82,6 @@ export class ModpackReleasesComponent implements OnInit {
     }
 
     regenerateChangelog() {
-        // get request to regenerate changelog
         this.httpClient.get(this.urls.apiUrl + `/modpack/release/${this.selectedReleaseVersion}/changelog`).subscribe((release: ModpackRelease) => {
             this.patchRelease(release);
             this.changelogMarkdown = this.markdownService.compile(this.selectedRelease.changelog);
@@ -91,7 +90,6 @@ export class ModpackReleasesComponent implements OnInit {
 
     edit() {
         this.editing = true;
-        this.descriptionEditing = this.selectedRelease.description;
         this.changelogStaging = this.selectedRelease.changelog;
         this.formatChangelog(this.editing);
     }
@@ -107,42 +105,26 @@ export class ModpackReleasesComponent implements OnInit {
     save() {
         this.editing = false;
         this.preview = false;
-        this.selectedRelease.description = this.descriptionEditing;
         this.formatChangelog(this.editing);
         this.selectedRelease.changelog = this.changelogStaging;
         this.changelogMarkdown = this.markdownService.compile(this.selectedRelease.changelog);
-        // patch changes
         this.httpClient.patch(this.urls.apiUrl + `/modpack/release/${this.selectedRelease.version}`, this.selectedRelease).subscribe(() => {});
     }
 
     discard() {
         this.editing = false;
         this.preview = false;
-        this.descriptionEditing = '';
         this.changelogEditing = '';
         this.changelogStaging = '';
         this.changelogMarkdown = this.markdownService.compile(this.selectedRelease.changelog);
     }
 
     release() {
-        // get request for release
+        this.releasing = true;
         this.httpClient.get(this.urls.apiUrl + `/modpack/release/${this.selectedRelease.version}`).subscribe(() => {
             this.router.navigate(['/modpack/builds-rc'], { queryParams: { version: this.selectedRelease.version, log: true } });
+            this.releasing = false;
         });
-    }
-
-    validateDescription(event: any) {
-        const text = (event.target as HTMLTextAreaElement).value;
-        const parts = text.split('\n');
-        if (parts.length > 3) {
-            const newText = parts.reduce((result, line, lineNumber) => {
-                if (lineNumber < 3) {
-                    return result.concat('\n').concat(line);
-                }
-                return result.concat(line);
-            });
-            (event.target as HTMLTextAreaElement).value = newText;
-        }
     }
 
     formatChangelog(editing: boolean) {
