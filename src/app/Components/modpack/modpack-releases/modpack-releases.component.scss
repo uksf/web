@@ -52,7 +52,7 @@
                 display: flex;
                 flex-direction: row;
 
-                .mat-raised-button {
+                app-button {
                     margin-left: 5px;
                     height: fit-content;
                     align-self: center;
@@ -159,7 +159,7 @@
                     justify-content: center;
                     flex-wrap: wrap;
 
-                    .mat-raised-button {
+                    app-button {
                         margin: 0 2.5px;
                     }
                 }
@@ -214,7 +214,7 @@
         .release-container {
             .release-header {
                 .buttons {
-                    .mat-raised-button {
+                    app-button {
                         margin-top: 5px;
                     }
                 }
