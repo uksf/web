@@ -40,7 +40,7 @@ export class RequestRoleModalComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.httpClient.get(`${this.urlService.apiUrl}/accounts/under`).subscribe({
+        this.httpClient.get(`${this.urlService.apiUrl}/accounts/members`).subscribe({
             next: (accounts: BasicAccount[]) => {
                 const elements = accounts.map(BasicAccount.mapToElement);
                 this.accounts.next(elements);

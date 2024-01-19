@@ -31,7 +31,7 @@ export class RequestDischargeModalComponent implements OnInit {
     constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService) {}
 
     ngOnInit(): void {
-        this.httpClient.get(`${this.urlService.apiUrl}/accounts/under?reverse=true`).subscribe({
+        this.httpClient.get(`${this.urlService.apiUrl}/accounts/members?reverse=true`).subscribe({
             next: (accounts: BasicAccount[]) => {
                 this.accounts.next(accounts.map(BasicAccount.mapToElement));
                 this.accounts.complete();

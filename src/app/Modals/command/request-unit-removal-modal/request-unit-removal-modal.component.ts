@@ -34,7 +34,7 @@ export class RequestUnitRemovalModalComponent implements OnInit {
     constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService) {}
 
     ngOnInit() {
-        this.httpClient.get(`${this.urlService.apiUrl}/accounts/under`).subscribe({
+        this.httpClient.get(`${this.urlService.apiUrl}/accounts/members`).subscribe({
             next: (accounts: BasicAccount[]) => {
                 this.accounts.next(accounts.map(BasicAccount.mapToElement));
                 this.accounts.complete();
