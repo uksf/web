@@ -29,11 +29,14 @@ export class DocsPageComponent implements OnInit {
                 this.setSelectedDocument();
             },
             error: (error: UksfError) => {
-                this.dialog.open(MessageModalComponent, {
-                    data: { message: error.error }
-                });
-
-                this.setSelectedDocument();
+                this.dialog
+                    .open(MessageModalComponent, {
+                        data: { message: error.error }
+                    })
+                    .afterClosed()
+                    .subscribe(() => {
+                        this.setSelectedDocument();
+                    });
             }
         });
     }
