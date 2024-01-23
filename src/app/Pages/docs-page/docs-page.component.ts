@@ -28,15 +28,8 @@ export class DocsPageComponent implements OnInit {
                 this.allFolderMetadata = allFolderMetadata;
                 this.setSelectedDocument();
             },
-            error: (error: UksfError) => {
-                this.dialog
-                    .open(MessageModalComponent, {
-                        data: { message: error.error }
-                    })
-                    .afterClosed()
-                    .subscribe(() => {
-                        this.setSelectedDocument();
-                    });
+            error: () => {
+                this.setSelectedDocument();
             }
         });
     }

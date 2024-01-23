@@ -247,10 +247,10 @@ const appRoutes: Routes = [
         component: DocsPageComponent,
         data: {
             permissions: {
-                except: [Permissions.UNLOGGED, Permissions.UNCONFIRMED],
+                only: Permissions.MEMBER,
+                except: Permissions.UNLOGGED,
                 redirectTo: {
                     UNLOGGED: loginRedirect,
-                    UNCONFIRMED: '/home',
                     default: '/home'
                 }
             }
