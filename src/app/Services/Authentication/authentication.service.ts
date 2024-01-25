@@ -45,11 +45,15 @@ export class AuthenticationService {
         });
     }
 
-    public logout(redirect?: string) {
+    public logout(redirectUrl?: string) {
         this.sessionService.removeTokens();
         this.accountService.clear();
-        if (redirect && redirect !== '/login') {
-            this.finish('/login', { queryParams: { redirect: redirect } });
+        if (redirectUrl.includes('redirect')) {
+            return;
+        }
+
+        if (redirectUrl && redirectUrl !== '/login') {
+            this.finish('/login', { queryParams: { redirect: redirectUrl } });
         } else {
             this.finish('/login');
         }

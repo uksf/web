@@ -127,6 +127,10 @@ export class PermissionsService {
     }
 
     public revoke(redirectAfterLogin?: string) {
+        if (this.hasPermission(Permissions.UNLOGGED)) {
+            return;
+        }
+
         this.authenticationService.logout(redirectAfterLogin);
         this.setUnlogged();
     }
