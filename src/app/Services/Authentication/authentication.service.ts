@@ -48,7 +48,7 @@ export class AuthenticationService {
     public logout(redirectUrl?: string) {
         this.sessionService.removeTokens();
         this.accountService.clear();
-        if (redirectUrl.includes('redirect')) {
+        if (redirectUrl && redirectUrl.includes('redirect')) {
             return;
         }
 
