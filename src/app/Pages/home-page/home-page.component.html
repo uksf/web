@@ -34,22 +34,6 @@
     </app-main-content-area>
     <app-side-content-area>
         <div class="flex-container">
-            <ng-template [ngxPermissionsOnly]="['MEMBER']">
-                <div class="issues-container">
-                    <button mat-raised-button color="primary" class="issues-button" (click)="openIssueModal(newIssueTypeEnum.WEBSITE)">
-                        <div>
-                            <i class="material-icons">feedback</i>
-                            <span>Report website issue</span>
-                        </div>
-                    </button>
-                    <button mat-raised-button color="primary" class="issues-button" (click)="openIssueModal(newIssueTypeEnum.MODPACK)">
-                        <div>
-                            <i class="material-icons">feedback</i>
-                            <span>Report modpack issue</span>
-                        </div>
-                    </button>
-                </div>
-            </ng-template>
             <mat-card class="teamspeak-container">
                 <div class="teamspeak-header">
                     <span class="teamspeak-text">TeamSpeak Online (<a href="ts3server://uk-sf.co.uk">Join</a>)</span>

@@ -1,10 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UrlService } from '../../Services/url.service';
 import { HttpClient } from '@angular/common/http';
-import { MatDialog } from '@angular/material/dialog';
-import { CreateIssueModalComponent } from '../../Modals/create-issue-modal/create-issue-modal.component';
 import { ConnectionContainer, SignalRService } from 'app/Services/signalr.service';
-import { NewIssueType } from '../../Models/Issues';
 
 @Component({
     selector: 'app-home-page',
@@ -12,7 +9,6 @@ import { NewIssueType } from '../../Models/Issues';
     styleUrls: ['./home-page.component.scss']
 })
 export class HomePageComponent implements OnInit {
-    newIssueTypeEnum = NewIssueType;
     commanders;
     recruiters;
     members;
@@ -23,7 +19,7 @@ export class HomePageComponent implements OnInit {
     private hubConnection: ConnectionContainer;
     private updateTimeout;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private signalrService: SignalRService) {
+    constructor(private httpClient: HttpClient, private urls: UrlService, private signalrService: SignalRService) {
         this._time = new Date();
         setInterval(() => {
             this._time = new Date();
@@ -49,12 +45,6 @@ export class HomePageComponent implements OnInit {
 
     get time() {
         return this._time;
-    }
-
-    openIssueModal(type: NewIssueType) {
-        this.dialog.open(CreateIssueModalComponent, {
-            data: type
-        });
     }
 
     private mergeUpdates(callback: () => void) {

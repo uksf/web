@@ -16,10 +16,10 @@ export class PersonnelPageComponent {
     constructor(private permissions: PermissionsService) {
         if (this.permissions.hasPermission(Permissions.DISCHARGES)) {
             this.tabLinks = [
+                { label: 'Roster', link: '../roster' },
                 { label: 'LOAs', link: '../loas' },
                 // { label: 'Activity', link: '../activity' },
-                { label: 'Discharges', link: '../discharges' },
-                { label: 'Roster', link: '../roster' }
+                { label: 'Discharges', link: '../discharges' }
             ];
         }
     }

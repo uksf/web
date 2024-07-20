@@ -112,7 +112,6 @@ import { RequestTransferModalComponent } from './Modals/command/request-transfer
 import { RequestUnitRoleModalComponent } from './Modals/command/request-unit-role-modal/request-unit-role-modal.component';
 import { CommandRequestsComponent } from './Components/command/command-requests/command-requests.component';
 import { AddUnitModalComponent } from './Modals/command/add-unit-modal/add-unit-modal.component';
-import { CreateIssueModalComponent } from './Modals/create-issue-modal/create-issue-modal.component';
 import { OperationsActivityComponent } from './Components/operations/operations-activity/operations-activity.component';
 import { OperationsOrdersComponent } from './Components/operations/operations-orders/operations-orders.component';
 import { OperationsReportsComponent } from './Components/operations/operations-reports/operations-reports.component';
@@ -358,7 +357,6 @@ export function tokenGetter() {
         AddRankModalComponent,
         AddUnitModalComponent,
         InlineEditComponent,
-        CreateIssueModalComponent,
         OperationsActivityComponent,
         OperationsOrdersComponent,
         OperationsReportsComponent,
