@@ -23,9 +23,9 @@ export class AdminToolsComponent {
     accountId;
     tools: Tool[] = [];
     debugTools: Tool[] = [];
-    debug = false;
-    impersonationPending = false;
-    model = {
+    debug: boolean = false;
+    impersonationPending: boolean = false;
+    model: { accountId: undefined } = {
         accountId: undefined
     };
     accounts: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
@@ -47,6 +47,12 @@ export class AdminToolsComponent {
             { key: 'invalidate', title: 'Invalidate Data Caches', function: this.invalidateCaches, pending: false },
             { key: 'getDiscord', title: 'Get Discord Roles', function: this.getDiscordRoles, pending: false },
             { key: 'updateDiscord', title: 'Update Discord Users', function: this.updateDiscordRoles, pending: false },
+            {
+                key: 'deleteGithubIssueCommand',
+                title: 'Delete Discord Github Issue Command',
+                function: this.deleteGithubIssueCommand,
+                pending: false
+            },
             { key: 'reloadTeamspeak', title: 'Reload TeamSpeak', function: this.reloadTeamspeak, pending: false }
         ];
         this.debugTools = [{ key: 'notification', title: 'Test Notification', function: this.testNotification, pending: false }];
@@ -58,10 +64,10 @@ export class AdminToolsComponent {
         }
     }
 
-    getAccounts() {
+    getAccounts(): void {
         this.httpClient.get(`${this.urlService.apiUrl}/accounts/active`).subscribe({
-            next: (accounts: BasicAccount[]) => {
-                const elements = accounts.map(BasicAccount.mapToElement);
+            next: (accounts: BasicAccount[]): void => {
+                const elements: IDropdownElement[] = accounts.map(BasicAccount.mapToElement);
                 this.accounts.next(elements);
                 this.accounts.complete();
             }
@@ -72,7 +78,7 @@ export class AdminToolsComponent {
         return mapFromElement(BasicAccount, element).displayName;
     }
 
-    runFunction(tool) {
+    runFunction(tool): void {
         if (tool.pending) {
             return;
         }
@@ -81,21 +87,21 @@ export class AdminToolsComponent {
         tool.function.call(this);
     }
 
-    invalidateCaches() {
-        let tool = this.tools.find((x) => x.key === 'invalidate');
+    invalidateCaches(): void {
+        let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'invalidate');
         this.httpClient.get(`${this.urlService.apiUrl}/data/invalidate`).subscribe(this.setPending(tool));
     }
 
-    getDiscordRoles() {
-        let tool = this.tools.find((x) => x.key === 'getDiscord');
+    getDiscordRoles(): void {
+        let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'getDiscord');
         this.httpClient.get(`${this.urlService.apiUrl}/discord/roles`, { responseType: 'text' }).subscribe({
-            next: (response) => {
+            next: (response: string): void => {
                 this.dialog.open(MessageModalComponent, {
                     data: { message: response }
                 });
                 tool.pending = false;
             },
-            error: () => {
+            error: (): void => {
                 this.dialog.open(MessageModalComponent, {
                     data: { message: 'Failed to get Discord roles' }
                 });
@@ -104,33 +110,38 @@ export class AdminToolsComponent {
         });
     }
 
-    updateDiscordRoles() {
-        let tool = this.tools.find((x) => x.key === 'updateDiscord');
+    updateDiscordRoles(): void {
+        let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'updateDiscord');
         this.httpClient.get(`${this.urlService.apiUrl}/discord/updateuserroles`).subscribe(this.setPending(tool));
     }
 
-    reloadTeamspeak() {
-        let tool = this.tools.find((x) => x.key === 'reloadTeamspeak');
+    deleteGithubIssueCommand(): void {
+        let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'deleteGithubIssueCommand');
+        this.httpClient.delete(`${this.urlService.apiUrl}/discord/commands/newGithubIssue`).subscribe(this.setPending(tool));
+    }
+
+    reloadTeamspeak(): void {
+        let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'reloadTeamspeak');
         this.httpClient.get(`${this.urlService.apiUrl}/teamspeak/reload`).subscribe(this.setPending(tool));
     }
 
-    testNotification() {
-        let tool = this.debugTools.find((x) => x.key === 'notification');
+    testNotification(): void {
+        let tool: Tool = this.debugTools.find((x: Tool): boolean => x.key === 'notification');
         this.httpClient.get(`${this.urlService.apiUrl}/debug/notifications-test`).subscribe(this.setPending(tool));
     }
 
-    impersonate() {
+    impersonate(): void {
         this.impersonationPending = true;
         this.auth.impersonate(
             mapFromElement(BasicAccount, this.model.accountId).id,
-            () => {
+            (): void => {
                 this.impersonationPending = false;
 
-                this.permissions.refresh().then(() => {
+                this.permissions.refresh().then((): void => {
                     this.router.navigate(['/home']).then();
                 });
             },
-            (error) => {
+            (error: string): void => {
                 this.impersonationPending = false;
                 this.dialog.open(MessageModalComponent, {
                     data: { message: error }
@@ -139,12 +150,12 @@ export class AdminToolsComponent {
         );
     }
 
-    private setPending(tool: Tool) {
+    private setPending(tool: Tool): { next: (_) => void; error: (_) => void } {
         return {
-            next: (_) => {
+            next: (_): void => {
                 tool.pending = false;
             },
-            error: (_) => {
+            error: (_): void => {
                 tool.pending = false;
             }
         };
