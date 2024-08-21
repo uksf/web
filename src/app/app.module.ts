@@ -194,6 +194,9 @@ import { DocsPermissionsComponent } from './Components/docs/docs-permissions/doc
 import { CreateFolderModalComponent } from './Modals/docs/create-folder-modal/create-folder-modal.component';
 import { DocsDocumentComponent } from './Components/docs/docs-sidebar/docs-document/docs-document.component';
 import { QuillModule } from 'ngx-quill';
+import { CommandTrainingComponent } from './Components/command/command-training/command-training.component';
+import { AddTrainingModalComponent } from './Modals/command/add-training-modal/add-training-modal.component';
+import { EditMemberTrainingModalComponent } from './Modals/command/edit-member-training-modal/edit-member-training-modal.component';
 
 export function initApp(appSettingsService: AppSettingsService, injector: Injector, countryPickerService: CountryPickerService) {
     return () => {
@@ -354,8 +357,11 @@ export function tokenGetter() {
         CommandUnitsComponent,
         CommandRolesComponent,
         CommandRanksComponent,
+        CommandTrainingComponent,
         AddRankModalComponent,
         AddUnitModalComponent,
+        AddTrainingModalComponent,
+        EditMemberTrainingModalComponent,
         InlineEditComponent,
         OperationsActivityComponent,
         OperationsOrdersComponent,

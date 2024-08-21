@@ -24,7 +24,7 @@ export class CommandRolesComponent implements OnInit {
 
     validationMessages = [
         { type: 'required', message: 'Role is required' },
-        { type: 'roleTaken', message: 'That ole is already in use' }
+        { type: 'roleTaken', message: 'That role is already in use' }
     ];
 
     constructor(formbuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {

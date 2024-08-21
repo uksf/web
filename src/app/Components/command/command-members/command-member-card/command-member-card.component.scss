@@ -107,8 +107,35 @@
                     padding: 4px 8px;
                     border-radius: 4px;
                     margin-top: 2px;
+
+                    &.edit {
+                        display: flex;
+                        align-items: center;
+                        background: transparent;
+                        border-style: dashed;
+                        border-width: 1px;
+                        border-radius: 4px;
+                        cursor: pointer;
+
+                        span {
+                            text-align: center;
+                            flex: 1;
+                        }
+                    }
+                }
+
+                .member-panel-content-elements-container {
+                    display: flex;
+                    flex-direction: column;
+                    max-height: 270px;
+                    overflow-y: auto;
                 }
             }
         }
     }
+}
+
+::-webkit-scrollbar {
+    width: 7px;
+    padding-left: 2px;
 }

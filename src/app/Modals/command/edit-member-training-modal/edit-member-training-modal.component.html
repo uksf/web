@@ -1,0 +1,18 @@
+<h2 mat-dialog-title>Edit Training for {{ name }}</h2>
+<mat-dialog-content>
+    <div *ngIf="availableTrainings" class="flex-container">
+        <div class="trainings-list-container">
+            <div *ngFor="let training of availableTrainings" class="trainings-list-item-container">
+                <div class="trainings-list-item">
+                    <span>{{ training.name }}</span>
+                </div>
+                <app-flex-filler></app-flex-filler>
+                <mat-checkbox [(ngModel)]="training.selected" color="primary"></mat-checkbox>
+            </div>
+        </div>
+        <div class="button-container">
+            <app-flex-filler></app-flex-filler>
+            <button (click)="save()" [disabled]="!changes" color="primary" mat-raised-button>Save</button>
+        </div>
+    </div>
+</mat-dialog-content>

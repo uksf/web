@@ -41,6 +41,7 @@ import { ModpackBuildsRcComponent } from './Components/modpack/modpack-builds-rc
 import { AdminDiscordLogsComponent } from './Components/admin/admin-discord-logs/admin-discord-logs.component';
 import { CommandMembersComponent } from './Components/command/command-members/command-members.component';
 import { AdminServersComponent } from './Components/admin/admin-servers/admin-servers.component';
+import { CommandTrainingComponent } from './Components/command/command-training/command-training.component';
 
 const appRoutes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -394,6 +395,22 @@ const appRoutes: Routes = [
     {
         path: 'command/roles',
         component: CommandRolesComponent,
+        data: {
+            permissions: {
+                only: Permissions.COMMAND,
+                except: Permissions.UNLOGGED,
+                redirectTo: {
+                    COMMAND: '/home',
+                    UNLOGGED: loginRedirect,
+                    default: '/home'
+                }
+            }
+        },
+        canActivate: [NgxPermissionsGuard]
+    },
+    {
+        path: 'command/training',
+        component: CommandTrainingComponent,
         data: {
             permissions: {
                 only: Permissions.COMMAND,

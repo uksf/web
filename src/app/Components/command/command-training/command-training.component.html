@@ -1,0 +1,56 @@
+<app-default-content-areas>
+    <app-main-content-area style="grid-column: span 3">
+        <app-command-page></app-command-page>
+        <div class="flex-container">
+            <div *ngIf="!trainings" class="spinner-container">
+                <mat-spinner></mat-spinner>
+            </div>
+            <div *ngIf="trainings">
+                <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                    <div>
+                        <button (click)="addTraining()" color="primary" mat-raised-button>Add Training</button>
+                    </div>
+                    <br />
+                    <div class="trainings-list">
+                        <mat-card class="trainings-list-item header">
+                            <span class="name">Name</span>
+                            <span class="shortName">Short Name</span>
+                            <span class="teamspeakGroup">TS Group ID</span>
+                            <span class="filler"></span>
+                        </mat-card>
+                        <div *ngFor="let training of trainings" cdkDrag>
+                            <mat-card class="trainings-list-item">
+                                <app-inline-edit
+                                    (finishedEvent)="editTraining($event)"
+                                    [(ngModel)]="training.name"
+                                    [required]="true"
+                                    [validator]="validateInlineTraining(training.name)"
+                                    class="name"
+                                    type="text"
+                                ></app-inline-edit>
+                                <app-inline-edit
+                                    (finishedEvent)="editTraining($event)"
+                                    [(ngModel)]="training.shortName"
+                                    [required]="true"
+                                    [validator]="validateInlineTraining(training.shortName)"
+                                    class="shortName"
+                                    type="text"
+                                ></app-inline-edit>
+                                <app-inline-edit
+                                    (finishedEvent)="editTraining($event)"
+                                    [(ngModel)]="training.teamspeakGroup"
+                                    [required]="true"
+                                    [validator]="validateInlineTraining(training.teamspeakGroup)"
+                                    class="teamspeakGroup"
+                                    type="text"
+                                ></app-inline-edit>
+                                <app-flex-filler></app-flex-filler>
+                                <mat-icon (click)="deleteTraining($event, training)" class="delete-icon">highlight_off </mat-icon>
+                            </mat-card>
+                        </div>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    </app-main-content-area>
+</app-default-content-areas>

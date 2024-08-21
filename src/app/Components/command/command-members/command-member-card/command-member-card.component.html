@@ -20,9 +20,9 @@
                 <div class="underline"></div>
             </div>
         </div>
-        <div class="header-button-container">
-            <mat-icon>more_horiz</mat-icon>
-        </div>
+        <!--        <div class="header-button-container">-->
+        <!--            <mat-icon>more_horiz</mat-icon>-->
+        <!--        </div>-->
     </div>
 
     <div class="member-panel-content-container" *ngIf="expanded" [@bodyExpansion]="expanded">
@@ -36,7 +36,14 @@
             </div>
             <div class="member-panel-content-item right">
                 <h4>Training</h4>
-                <div class="member-panel-content-elements">Placeholder</div>
+                <div class="member-panel-content-elements-container">
+                    <div *ngFor="let training of member.trainings" class="member-panel-content-elements">
+                        <div>{{ training.name }}</div>
+                    </div>
+                </div>
+                <div (click)="editTraining()" class="member-panel-content-elements edit">
+                    <span>Add / Remove</span>
+                </div>
             </div>
             <div class="member-panel-content-item right small">
                 <h4>Qualifications</h4>

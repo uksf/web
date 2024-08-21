@@ -11,7 +11,8 @@ export class CommandPageComponent {
         { label: 'Members', link: '../members' },
         { label: 'Units', link: '../units' },
         { label: 'Ranks', link: '../ranks' },
-        { label: 'Roles', link: '../roles' }
+        { label: 'Roles', link: '../roles' },
+        { label: 'Training', link: '../training' }
     ];
 
     constructor() {}

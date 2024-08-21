@@ -8,6 +8,8 @@ import { RequestTransferModalComponent } from '../../../../Modals/command/reques
 import { RequestModalData } from '../../../../Models/Shared';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../../Services/url.service';
+import { EditMemberTrainingModalData } from '../../../../Models/Training';
+import { EditMemberTrainingModalComponent } from '../../../../Modals/command/edit-member-training-modal/edit-member-training-modal.component';
 
 @Component({
     selector: 'app-command-member-card',
@@ -61,6 +63,17 @@ export class CommandMemberCardComponent implements OnInit {
             error: () => {
                 this.qualificationsPending = false;
             }
+        });
+    }
+
+    editTraining() {
+        const data: EditMemberTrainingModalData = {
+            accountId: this.member.id,
+            name: `${this.member.lastname}.${this.member.firstname[0]}`,
+            trainings: this.member.trainings
+        };
+        this.dialog.open(EditMemberTrainingModalComponent, {
+            data: data
         });
     }
 

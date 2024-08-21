@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>Add Training</h2>
+<mat-dialog-content>
+    <form [formGroup]="form" class="container">
+        <mat-form-field class="normal">
+            <input #input [errorStateMatcher]="instantErrorStateMatcher" formControlName="name" matInput placeholder="Training Name" required />
+            <mat-error *ngFor="let validation of validationMessages.name">
+                <mat-error *ngIf="form.get('name').hasError(validation.type)" class="error-message">{{ validation.message }} </mat-error>
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="normal">
+            <input #input [errorStateMatcher]="instantErrorStateMatcher" formControlName="shortName" matInput placeholder="Short Name" />
+            <mat-error *ngFor="let validation of validationMessages.shortName">
+                <mat-error *ngIf="form.get('shortName').hasError(validation.type)" class="error-message">{{ validation.message }} </mat-error>
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="normal">
+            <input #input [errorStateMatcher]="instantErrorStateMatcher" formControlName="teamspeakGroup" matInput placeholder="TeamSpeak Group ID" />
+            <mat-error *ngFor="let validation of validationMessages.teamspeakGroup">
+                <mat-error *ngIf="form.get('teamspeakGroup').hasError(validation.type)" class="error-message">{{ validation.message }} </mat-error>
+            </mat-error>
+        </mat-form-field>
+        <div class="button-container">
+            <app-flex-filler></app-flex-filler>
+            <app-button (clicked)="submit()" [disabled]="!form.valid" [pending]="pending">Submit</app-button>
+        </div>
+    </form>
+</mat-dialog-content>

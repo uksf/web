@@ -1,0 +1,48 @@
+.mat-dialog-content {
+    overflow: hidden;
+}
+
+h2 {
+    margin: 0;
+}
+
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    min-width: 450px;
+    max-height: 600px;
+
+    .trainings-list-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow-y: auto;
+        padding: 4px 8px 16px 6px;
+
+        .trainings-list-item-container {
+            display: flex;
+            flex-direction: row;
+
+            .trainings-list-item {
+                display: flex;
+                flex-direction: row;
+                width: 100%;
+                margin-left: 4px;
+                font-size: 16px;
+            }
+
+            .mat-checkbox {
+                margin: auto 6px auto 0;
+            }
+        }
+    }
+
+    .button-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        min-height: fit-content;
+        padding: 0 8px;
+    }
+}

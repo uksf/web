@@ -3,6 +3,7 @@ import { IDropdownElement } from '../Components/elements/dropdown-base/dropdown-
 import { Rank } from './Rank';
 import { Role } from './Role';
 import { Unit } from './Units';
+import { Training } from './Training';
 
 export enum MembershipState {
     UNCONFIRMED,
@@ -46,6 +47,7 @@ export class Account {
     unitAssignment: string;
     unitsExperience: string;
     qualifications: AccountQualifications;
+    trainings: Training[];
 
     displayName: string;
     permissions: AccountPermissions;
