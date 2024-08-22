@@ -29,7 +29,7 @@
         <div class="member-panel-content">
             <div class="member-panel-content-item left">
                 <h4>Units</h4>
-                <div class="member-panel-content-elements" *ngFor="let unit of member.unitObjects">
+                <div *ngFor="let unit of member.unitObjects" class="member-panel-content-element">
                     <div>{{ unit.name }}</div>
                     <div>{{ unit.memberRole }}</div>
                 </div>
@@ -37,17 +37,17 @@
             <div class="member-panel-content-item right">
                 <h4>Training</h4>
                 <div class="member-panel-content-elements-container">
-                    <div *ngFor="let training of member.trainings" class="member-panel-content-elements">
+                    <div *ngFor="let training of member.trainings" class="member-panel-content-element training">
                         <div>{{ training.name }}</div>
                     </div>
                 </div>
-                <div (click)="editTraining()" class="member-panel-content-elements edit">
+                <div (click)="editTraining()" class="member-panel-content-element edit">
                     <span>Add / Remove</span>
                 </div>
             </div>
             <div class="member-panel-content-item right small">
                 <h4>Qualifications</h4>
-                <div class="member-panel-content-elements">
+                <div class="member-panel-content-element">
                     <mat-checkbox
                         color="primary"
                         [(ngModel)]="member.qualifications.medic"
@@ -58,7 +58,7 @@
                         Medic
                     </mat-checkbox>
                 </div>
-                <div class="member-panel-content-elements">
+                <div class="member-panel-content-element">
                     <mat-checkbox
                         color="primary"
                         [(ngModel)]="member.qualifications.engineer"

@@ -18,7 +18,7 @@ h2 {
         flex-direction: column;
         height: 100%;
         overflow-y: auto;
-        padding: 4px 8px 16px 6px;
+        padding: 0 6px;
 
         .trainings-list-item-container {
             display: flex;
@@ -28,12 +28,17 @@ h2 {
                 display: flex;
                 flex-direction: row;
                 width: 100%;
-                margin-left: 4px;
+                padding-left: 4px;
                 font-size: 16px;
+                line-height: 16px;
+
+                span {
+                    margin: auto 0;
+                }
             }
 
             .mat-checkbox {
-                margin: auto 6px auto 0;
+                padding: 6px;
             }
         }
     }
@@ -45,4 +50,17 @@ h2 {
         min-height: fit-content;
         padding: 8px 0;
     }
+}
+
+::-webkit-scrollbar {
+    width: 7px;
+    padding-left: 2px;
+}
+
+::-webkit-scrollbar-track {
+    border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 2px;
 }

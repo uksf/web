@@ -207,7 +207,13 @@
     }
 }
 
-.member-panel-content-elements {
+.trainings-list-item-container {
+    .mat-checkbox-layout {
+        margin-bottom: 0;
+    }
+}
+
+.member-panel-content-element {
     .mat-checkbox-layout {
         margin: 0;
 
