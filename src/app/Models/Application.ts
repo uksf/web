@@ -35,7 +35,7 @@ export interface ApplicationAge {
     months: number;
 }
 
-export interface WaitingApplication {
+export interface ActiveApplication {
     account: Account;
     steamProfile: string;
     daysProcessing: number;
@@ -50,14 +50,8 @@ export interface CompletedApplication {
     recruiter: string;
 }
 
-export interface ApplicationsOverview {
-    waiting: WaitingApplication[];
-    allWaiting: WaitingApplication[];
-    complete: CompletedApplication[];
-    recruiters: string[];
-}
-
 export interface Recruiter {
     id: string;
     name: string;
+    active: boolean;
 }

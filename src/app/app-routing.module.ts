@@ -3,8 +3,8 @@ import { ActivatedRouteSnapshot, DefaultUrlSerializer, RouterModule, RouterState
 import { HomePageComponent } from './Pages/home-page/home-page.component';
 import { LoginPageComponent } from './Pages/login-page/login-page.component';
 import { ProfilePageComponent } from './Pages/profile-page/profile-page.component';
-import { RecruitmentPageComponent } from './Pages/recruitment-page/recruitment-page.component';
-import { RecruitmentApplicationPageComponent } from './Pages/recruitment-application-page/recruitment-application-page.component';
+import { RecruitmentPageComponent } from './recruitment/recruitment-page/recruitment-page.component';
+import { RecruitmentApplicationPageComponent } from './recruitment/recruitment-application-page/recruitment-application-page.component';
 import { LivePageComponent } from './Pages/live-page/live-page.component';
 import { AboutPageComponent } from './Pages/about-page/about-page.component';
 import { DocsPageComponent } from './Pages/docs-page/docs-page.component';

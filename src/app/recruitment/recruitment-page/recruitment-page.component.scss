@@ -2,14 +2,14 @@ app-side-content-area {
     td.tr-stats {
         margin: 2px 5px;
         padding: 2px 5px;
-        border: 0px;
+        border: 0;
         text-align: center;
     }
 
     .td-stats-checkbox {
         margin: 2px 5px;
-        padding: 2px 5px 2px 0px;
-        border: 0px;
+        padding: 2px 5px 2px 0;
+        border: 0;
         text-align: center;
     }
 }
@@ -94,13 +94,14 @@ app-side-content-area {
             display: flex;
             flex-direction: row;
             margin-top: 10px;
+            margin-bottom: 5px;
 
             .history-header-part-container {
                 display: flex;
                 flex-direction: row;
 
                 h3 {
-                    margin-right: 15px;
+                    margin: auto 15px auto 0;
                 }
 
                 &.actions {
@@ -112,7 +113,6 @@ app-side-content-area {
                 }
 
                 .history-header-part {
-                    margin: 5px 0;
                     align-self: center;
                     display: flex;
                     flex-direction: row;
@@ -145,12 +145,11 @@ app-side-content-area {
                             margin-left: 10px;
                         }
                     }
+                }
 
-                    &.pagination {
-                        .mat-select {
-                            margin: auto 0;
-                        }
-                    }
+                app-paginator {
+                    margin: auto 0;
+                    padding-left: 4px;
                 }
             }
         }
@@ -211,13 +210,13 @@ app-side-content-area {
 
         .enabled {
             color: green;
-            margin: 0px;
+            margin: 0;
             flex: 1;
         }
 
         .disabled {
             color: red;
-            margin: 0px;
+            margin: 0;
             flex: 1;
         }
     }
@@ -266,6 +265,12 @@ app-side-content-area {
                         }
                     }
                 }
+
+                &.statistics {
+                    .statistics-container {
+                        padding: 2px;
+                    }
+                }
             }
         }
     }
@@ -285,7 +290,7 @@ app-side-content-area {
 
 @media screen and (max-width: 1450px) {
     app-default-content-areas {
-        grid-template-areas: "main" "side";
+        grid-template-areas: 'main' 'side';
         grid-template-columns: auto;
         grid-template-rows: auto auto;
     }
@@ -535,11 +540,11 @@ app-side-content-area {
             .history-applications {
                 .history-application {
                     .name {
-                        flex-basis: 0%;
+                        flex-basis: 0;
                     }
 
                     .details {
-                        flex-basis: 0%;
+                        flex-basis: 0;
 
                         .item {
                             &.applied {

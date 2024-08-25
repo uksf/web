@@ -32,8 +32,8 @@ export class RequestLoaModalComponent implements OnInit {
     constructor(private dialog: MatDialog, private formbuilder: FormBuilder, private httpClient: HttpClient, private urlService: UrlService) {
         this.form = this.formbuilder.group({
             reason: ['', Validators.required],
-            start: [{ value: '' }, Validators.required],
-            end: [{ value: '' }, Validators.required],
+            start: ['', Validators.required],
+            end: ['', Validators.required],
             emergency: [false],
             late: [false]
         });

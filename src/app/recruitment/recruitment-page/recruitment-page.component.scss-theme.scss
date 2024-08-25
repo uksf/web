@@ -1,5 +1,5 @@
-@use '@angular/material' as mat;
-@import "@angular/material/theming";
+@use '../../../../node_modules/@angular/material/index' as mat;
+@import '../../../../node_modules/@angular/material/theming';
 
 @mixin recruitment-page-component-theme($theme) {
     $background: map-get($theme, background);
@@ -8,11 +8,11 @@
 
     app-recruitment-page {
         a {
-          color: mat.get-color-from-palette($primary);
+            color: mat.get-color-from-palette($primary);
         }
         .applications-container {
             .applicationCardOthers {
-              background-color: mat.get-color-from-palette($background, dark-card);
+                background-color: mat.get-color-from-palette($background, dark-card);
             }
         }
     }

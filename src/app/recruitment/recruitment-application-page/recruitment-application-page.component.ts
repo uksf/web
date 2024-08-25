@@ -1,21 +1,20 @@
 import { Component, HostListener, ViewChild } from '@angular/core';
-import { DatePipe, Location } from '@angular/common';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 import { UrlService } from '../../Services/url.service';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommentDisplayComponent } from '../../Components/comment-display/comment-display.component';
 import { AccountService } from '../../Services/account.service';
-import { Permissions } from 'app/Services/permissions';
-import { CountryPickerService, ICountry } from 'app/Services/CountryPicker/country-picker.service';
-import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
 import { MatDialog } from '@angular/material/dialog';
-import { PermissionsService } from 'app/Services/permissions.service';
 import { MembershipState } from '../../Models/Account';
 import { AsyncSubject } from 'rxjs';
 import { ApplicationState, DetailedApplication, Recruiter } from '../../Models/Application';
 import { OnlineState } from '../../Models/OnlineState';
 import { MessageModalComponent } from '../../Modals/message-modal/message-modal.component';
+import { CountryPickerService, ICountry } from '../../Services/CountryPicker/country-picker.service';
+import { PermissionsService } from '../../Services/permissions.service';
+import { ConfirmationModalComponent } from '../../Modals/confirmation-modal/confirmation-modal.component';
+import { Permissions } from '../../Services/permissions';
 
 @Component({
     selector: 'app-recruitment-application-page',
@@ -31,36 +30,24 @@ export class RecruitmentApplicationPageComponent {
     countries: ICountry[];
     accountId: string;
     application: DetailedApplication;
-    ratingsForm: FormGroup;
+    otherRolePreferenceOptions: string[];
     recruiters: Recruiter[];
-    ratings: any;
     selected: any;
     updating: boolean;
     teamspeakState: AsyncSubject<OnlineState> = new AsyncSubject<OnlineState>();
     discordState: AsyncSubject<OnlineState> = new AsyncSubject<OnlineState>();
     adminOverride: boolean = false;
+    rolePreferenceOptions: string[] = ['NCO', 'Officer', 'Aviation', 'Medic'];
 
     constructor(
         private httpClient: HttpClient,
         private urls: UrlService,
-        private formbuilder: FormBuilder,
         private route: ActivatedRoute,
         private router: Router,
         private permissions: PermissionsService,
         private accountService: AccountService,
-        private location: Location,
         private dialog: MatDialog
     ) {
-        this.ratingsForm = this.formbuilder.group(
-            {
-                attitude: [],
-                sociability: [],
-                maturity: [],
-                skills: [],
-                criticism: []
-            },
-            {}
-        );
         this.countries = CountryPickerService.countries;
 
         if (this.route.snapshot.params.id) {
@@ -79,7 +66,7 @@ export class RecruitmentApplicationPageComponent {
     }
 
     getApplication() {
-        this.httpClient.get(this.urls.apiUrl + '/recruitment/' + this.accountId).subscribe((response: DetailedApplication) => {
+        this.httpClient.get(this.urls.apiUrl + '/recruitment/applications/' + this.accountId).subscribe((response: DetailedApplication) => {
             const application = response;
             if (application.account.id === this.accountService.account.id && application.account.application.state === ApplicationState.WAITING) {
                 this.router.navigate(['/application']).then();
@@ -91,11 +78,14 @@ export class RecruitmentApplicationPageComponent {
                 this.permissions.hasAnyPermissionOf([Permissions.RECRUITER, Permissions.RECRUITER_LEAD, Permissions.COMMAND, Permissions.ADMIN])
             ) {
                 this.application = application;
-                this.ratingsForm.patchValue(this.application.account.application.ratings);
+                this.otherRolePreferenceOptions = this.rolePreferenceOptions.filter((x: string) => !application.account.rolePreferences.includes(x));
+
+                this.getTeamspeakState();
+                this.getDiscordState();
 
                 if (this.permissions.hasPermission(Permissions.RECRUITER_LEAD)) {
                     this.httpClient.get(this.urls.apiUrl + '/recruitment/recruiters').subscribe((recruiters: Recruiter[]) => {
-                        this.recruiters = recruiters;
+                        this.recruiters = recruiters.filter((x: Recruiter) => x.active);
                         this.selected = this.application.recruiterId;
                     });
                 }
@@ -104,9 +94,6 @@ export class RecruitmentApplicationPageComponent {
                 this.router.navigate(['/home']).then();
             }
         });
-
-        this.getTeamspeakState();
-        this.getDiscordState();
     }
 
     getTeamspeakState() {
@@ -125,7 +112,7 @@ export class RecruitmentApplicationPageComponent {
 
     setNewRecruiter(newRecruiter: any) {
         this.updating = true;
-        this.httpClient.post(this.urls.apiUrl + '/recruitment/recruiter/' + this.accountId, { newRecruiter: newRecruiter }).subscribe({
+        this.httpClient.post(`${this.urls.apiUrl}/recruitment/applications/${this.accountId}/recruiter`, { newRecruiter: newRecruiter }).subscribe({
             next: () => {
                 this.getApplication();
                 this.recruiterCommentDisplay.getCanPostComment();
@@ -140,22 +127,9 @@ export class RecruitmentApplicationPageComponent {
         });
     }
 
-    applyRating(e1: { value: any }, e2: any) {
-        this.updating = true;
-        this.httpClient.post(this.urls.apiUrl + '/recruitment/ratings/' + this.accountId, { key: e2, value: e1.value }).subscribe({
-            next: () => {},
-            error: (error) => {
-                this.updating = false;
-                this.dialog.open(MessageModalComponent, {
-                    data: { message: error }
-                });
-            }
-        });
-    }
-
     updateApplicationState(updatedState: ApplicationState) {
         this.updating = true;
-        this.httpClient.post(this.urls.apiUrl + '/recruitment/' + this.accountId, { updatedState: updatedState }).subscribe({
+        this.httpClient.post(`${this.urls.apiUrl}/recruitment/applications/${this.accountId}`, { updatedState: updatedState }).subscribe({
             next: () => {
                 this.getApplication();
             },
