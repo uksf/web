@@ -30,7 +30,7 @@ export class DocsSidebarComponent implements OnInit {
     }
 
     get getRootFolders(): FolderMetadata[] {
-        if (this.allFolderMetadata === []) {
+        if (this.allFolderMetadata.length === 0) {
             return [];
         }
 

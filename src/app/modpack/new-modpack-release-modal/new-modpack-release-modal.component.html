@@ -5,9 +5,15 @@
     <span class="select-version">Select new version</span>
     <form [formGroup]="form" class="form-container">
         <mat-radio-group class="versions-container" formControlName="version">
-            <mat-radio-button color="primary" value="{{ major }}">{{ major }}</mat-radio-button>
-            <mat-radio-button color="primary" value="{{ minor }}">{{ minor }}</mat-radio-button>
-            <mat-radio-button color="primary" value="{{ patch }}">{{ patch }}</mat-radio-button>
+            <mat-radio-button #majorSelection color="primary" value="{{ major }}"
+                ><span [ngClass]="{ selected: majorSelection.checked }" class="version-label">{{ major }}</span>
+            </mat-radio-button>
+            <mat-radio-button #minorSelection color="primary" value="{{ minor }}"
+                ><span [ngClass]="{ selected: minorSelection.checked }" class="version-label">{{ minor }}</span>
+            </mat-radio-button>
+            <mat-radio-button #patchSelection color="primary" value="{{ patch }}"
+                ><span [ngClass]="{ selected: patchSelection.checked }" class="version-label">{{ patch }}</span>
+            </mat-radio-button>
         </mat-radio-group>
         <app-flex-filler></app-flex-filler>
         <div class="button-container">

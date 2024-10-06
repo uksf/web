@@ -8,6 +8,20 @@
             .previous-version {
                 color: mat.get-color-from-palette($primary);
             }
+
+            .form-container {
+                .versions-container {
+                    .mat-radio-button {
+                        .version-label {
+                            color: white;
+
+                            &.selected {
+                                color: mat.get-color-from-palette($primary);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
