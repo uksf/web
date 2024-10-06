@@ -1,21 +1,21 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { ModpackBuild } from 'app/Models/ModpackBuild';
-import { ModpackBuildStep } from 'app/Models/ModpackBuildStep';
-import { ThemeEmitterComponent } from 'app/Components/elements/theme-emitter/theme-emitter.component';
-import { ModpackBuildResult } from 'app/Models/ModpackBuildResult';
-import { ModpackBuildProcessService } from 'app/Services/modpackBuildProcess.service';
-import { ConnectionContainer, SignalRService } from 'app/Services/signalr.service';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import { nextFrame } from 'app/Services/helper.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Permissions } from '../../../Services/permissions';
-import { PermissionsService } from '../../../Services/permissions.service';
-import { GameEnvironment } from '../../../Models/GameEnvironment';
+import { Permissions } from '../../Services/permissions';
+import { PermissionsService } from '../../Services/permissions.service';
+import { GameEnvironment } from '../../Models/GameEnvironment';
+import { ThemeEmitterComponent } from '../../Components/elements/theme-emitter/theme-emitter.component';
+import { ModpackBuild } from '../models/ModpackBuild';
+import { ModpackBuildResult } from '../models/ModpackBuildResult';
+import { ConnectionContainer, SignalRService } from '../../Services/signalr.service';
+import { ModpackBuildProcessService } from '../modpackBuildProcess.service';
+import { ModpackBuildStep } from '../models/ModpackBuildStep';
+import { nextFrame } from '../../Services/helper.service';
 
 @Component({
     selector: 'app-modpack-builds-steps',
     templateUrl: './modpack-builds-steps.component.html',
-    styleUrls: ['../../../Pages/modpack-page/modpack-page.component.scss', './modpack-builds-steps.component.scss', './modpack-builds-steps.component.scss-theme.scss'],
+    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-builds-steps.component.scss', './modpack-builds-steps.component.scss-theme.scss']
 })
 export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges {
     @ViewChild(ThemeEmitterComponent)
@@ -43,7 +43,7 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
         private permissions: PermissionsService
     ) {}
 
-    get selectedStep(): ModpackBuildStep {
+    get selectedStep() {
         return this.build && this.build.steps.length > this.selectedStepIndex ? this.build.steps[this.selectedStepIndex] : undefined;
     }
 
@@ -52,17 +52,17 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
     }
 
     get anyWarning() {
-        return this.build.steps.findIndex((x) => x.buildResult === ModpackBuildResult.WARNING) !== -1;
+        return this.build.steps.findIndex((x: ModpackBuildStep) => x.buildResult === ModpackBuildResult.WARNING) !== -1;
     }
 
-    ngOnInit(): void {
+    ngOnInit() {
         this.connect();
         if (this.build.steps.length > 0) {
             this.chooseStep();
         }
     }
 
-    ngOnDestroy(): void {
+    ngOnDestroy() {
         this.disconnect();
     }
 
@@ -79,7 +79,7 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
             this.chooseStep();
 
             if (!this.build.finished) {
-                this.hubConnection = this.signalrService.connect(`builds?buildId=${this.build.id}`);
+                this.hubConnection = this.signalrService.connect(`modpack?buildId=${this.build.id}`);
                 this.hubConnection.connection.on('ReceiveBuildStep', (step: ModpackBuildStep) => {
                     if (JSON.stringify(step) !== JSON.stringify(this.build.steps[step.index])) {
                         this.build.steps.splice(step.index, 1, step);
@@ -106,7 +106,7 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
         this.router.navigate([], {
             relativeTo: this.route,
             queryParams: { step: null, line: null },
-            queryParamsHandling: 'merge',
+            queryParamsHandling: 'merge'
         });
         this.ignoreUpdates = false;
         this.overrideAutomaticStepChoose = false;
@@ -202,7 +202,7 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
             this.router.navigate([], {
                 relativeTo: this.route,
                 queryParams: { step: null, line: null },
-                queryParamsHandling: 'merge',
+                queryParamsHandling: 'merge'
             });
         } else {
             this.selectedLogIndex = index;
@@ -211,9 +211,9 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
                 relativeTo: this.route,
                 queryParams: {
                     step: this.selectedStepIndex + 1,
-                    line: this.selectedLogIndex + 1,
+                    line: this.selectedLogIndex + 1
                 },
-                queryParamsHandling: 'merge',
+                queryParamsHandling: 'merge'
             });
         }
     }

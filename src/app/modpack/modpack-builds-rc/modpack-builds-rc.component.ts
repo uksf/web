@@ -1,18 +1,18 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MarkdownService } from 'ngx-markdown';
-import { ModpackBuild } from 'app/Models/ModpackBuild';
-import { ThemeEmitterComponent } from 'app/Components/elements/theme-emitter/theme-emitter.component';
-import { ModpackBuildResult } from 'app/Models/ModpackBuildResult';
-import { ModpackRc } from 'app/Models/ModpackRc';
-import { ModpackRcService } from 'app/Services/modpackRc.service';
-import { ModpackBuildProcessService } from 'app/Services/modpackBuildProcess.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GameEnvironment } from 'app/Models/GameEnvironment';
+import { ThemeEmitterComponent } from '../../Components/elements/theme-emitter/theme-emitter.component';
+import { ModpackBuildResult } from '../models/ModpackBuildResult';
+import { GameEnvironment } from '../../Models/GameEnvironment';
+import { ModpackBuildProcessService } from '../modpackBuildProcess.service';
+import { ModpackRcService } from '../modpackRc.service';
+import { ModpackRc } from '../models/ModpackRc';
+import { ModpackBuild } from '../models/ModpackBuild';
 
 @Component({
     selector: 'app-modpack-builds-rc',
     templateUrl: './modpack-builds-rc.component.html',
-    styleUrls: ['../../../Pages/modpack-page/modpack-page.component.scss', './modpack-builds-rc.component.scss', './modpack-builds-rc.component.scss-theme.scss'],
+    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-builds-rc.component.scss', './modpack-builds-rc.component.scss-theme.scss']
 })
 export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
     @ViewChild(ThemeEmitterComponent) theme: ThemeEmitterComponent;
@@ -62,7 +62,7 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
     }
 
     get selectedRc(): ModpackRc {
-        return this.rcs.find((x) => x.version === this.selectedRcVersion);
+        return this.rcs.find((x: ModpackRc) => x.version === this.selectedRcVersion);
     }
 
     get selectedBuild(): ModpackBuild {

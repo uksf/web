@@ -1,10 +1,9 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { SignalRService, ConnectionContainer } from './signalr.service';
-import { ModpackRc } from 'app/Models/ModpackRc';
-import { ModpackBuild } from 'app/Models/ModpackBuild';
+import { ConnectionContainer, SignalRService } from '../Services/signalr.service';
+import { ModpackRc } from './models/ModpackRc';
+import { ModpackBuild } from './models/ModpackBuild';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from './url.service';
-import { ModpackRelease } from '../Models/ModpackRelease';
+import { UrlService } from '../Services/url.service';
 
 @Injectable()
 export class ModpackRcService implements OnDestroy {
@@ -20,7 +19,7 @@ export class ModpackRcService implements OnDestroy {
     connect(callback: () => void, newBuildCallback: (string) => void) {
         this.getData(callback);
 
-        this.hubConnection = this.signalrService.connect(`builds`);
+        this.hubConnection = this.signalrService.connect(`modpack`);
         this.hubConnection.connection.on('ReceiveReleaseCandidateBuild', (build: ModpackBuild) => {
             this.patchBuild(build);
             newBuildCallback(build.version);

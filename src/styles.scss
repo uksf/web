@@ -21,7 +21,7 @@
 @import 'app/Pages/home-page/home-page.component.scss-theme.scss';
 @import 'app/Pages/information-page/information-page.component.scss-theme.scss';
 @import 'app/Pages/login-page/login-page.component.scss-theme.scss';
-@import 'app/Pages/modpack-page/modpack-page.component.scss-theme.scss';
+@import 'app/modpack/modpack-page/modpack-page.component.scss-theme.scss';
 @import 'app/Pages/application-page/application-page.component.scss-theme.scss';
 @import 'app/Pages/operations-page/operations-page.component.scss-theme.scss';
 @import 'app/Pages/personnel-page/personnel-page.component.scss-theme.scss';
@@ -51,11 +51,6 @@
 @import 'app/Components/command/command-ranks/command-ranks.component.scss-theme.scss';
 @import 'app/Components/command/command-roles/command-roles.component.scss-theme.scss';
 @import 'app/Components/command/command-units/command-units.component.scss-theme.scss';
-@import 'app/Components/modpack/modpack-builds-dev/modpack-builds-dev.component.scss-theme.scss';
-@import 'app/Components/modpack/modpack-builds-rc/modpack-builds-rc.component.scss-theme.scss';
-@import 'app/Components/modpack/modpack-builds-steps/modpack-builds-steps.component.scss-theme.scss';
-@import 'app/Components/modpack/modpack-guide/modpack-guide.component.scss-theme.scss';
-@import 'app/Components/modpack/modpack-releases/modpack-releases.component.scss-theme.scss';
 @import 'app/Components/operations/operations-servers/operations-servers.component.scss-theme.scss';
 @import 'app/Components/personnel/personnel-discharges/personnel-discharges.component.scss-theme.scss';
 @import 'app/Components/personnel/personnel-loas-list/personnel-loas-list.component.scss-theme.scss';
@@ -68,6 +63,14 @@
 @import 'app/Modals/operations/edit-server-mods-modal/edit-server-mods-modal.component.scss-theme.scss';
 @import 'app/Modals/command/request-loa-modal/request-loa-modal.component.scss-theme.scss';
 @import 'app/Modals/multiple-message-modal/validation-report-modal.scss-theme';
+
+// Modpack
+@import 'app/modpack/modpack-builds-dev/modpack-builds-dev.component.scss-theme.scss';
+@import 'app/modpack/modpack-builds-rc/modpack-builds-rc.component.scss-theme.scss';
+@import 'app/modpack/modpack-builds-steps/modpack-builds-steps.component.scss-theme.scss';
+@import 'app/modpack/modpack-guide/modpack-guide.component.scss-theme.scss';
+@import 'app/modpack/modpack-releases/modpack-releases.component.scss-theme.scss';
+@import 'app/modpack/new-modpack-release-modal/new-modpack-release-modal.component.scss-theme.scss';
 
 // Add components themes
 @mixin custom-components-theme($theme) {
@@ -114,11 +117,6 @@
     @include command-ranks-component-theme($theme);
     @include command-roles-component-theme($theme);
     @include command-units-component-theme($theme);
-    @include modpack-builds-dev-component-theme($theme);
-    @include modpack-builds-rc-component-theme($theme);
-    @include modpack-builds-steps-component-theme($theme);
-    @include modpack-guide-component-theme($theme);
-    @include modpack-releases-component-theme($theme);
     @include operations-servers-component-theme($theme);
     @include personnel-discharges-component-theme($theme);
     @include personnel-loas-list-component-theme($theme);
@@ -131,6 +129,14 @@
     @include edit-server-mods-modal-component-theme($theme);
     @include request-loa-modal-component-theme($theme);
     @include validation-report-modal-component-theme($theme);
+
+    // Modpack
+    @include modpack-builds-dev-component-theme($theme);
+    @include modpack-builds-rc-component-theme($theme);
+    @include modpack-builds-steps-component-theme($theme);
+    @include modpack-guide-component-theme($theme);
+    @include modpack-releases-component-theme($theme);
+    @include new-modpack-release-modal-component-theme($theme);
 }
 
 .dark-theme {

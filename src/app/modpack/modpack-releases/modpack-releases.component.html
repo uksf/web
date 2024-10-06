@@ -3,7 +3,15 @@
         <app-modpack-page></app-modpack-page>
         <div class="flex-container no-padding-left">
             <div class="release-history-container">
-                <div class="release-history-item" [ngClass]="{ selected: selectedReleaseVersion === release.version }" *ngFor="let release of publicReleases" (click)="select(release.version)">
+                <ng-template [ngxPermissionsOnly]="['ADMIN']">
+                    <div class="new-button">
+                        <button (click)="newRelease()" [disabled]="latestReleaseIsDraft" color="primary" mat-raised-button>New</button>
+                        <button (click)="newRelease()" [disabled]="latestReleaseIsDraft" color="primary" mat-icon-button>
+                            <mat-icon>add_circle</mat-icon>
+                        </button>
+                    </div>
+                </ng-template>
+                <div (click)="selectRelease(release.version)" *ngFor="let release of publicReleases" [ngClass]="{ selected: selectedReleaseVersion === release.version }" class="release-history-item">
                     <i *ngIf="release.isDraft">{{ release.version }}</i>
                     <span *ngIf="!release.isDraft">{{ release.version }}</span>
                 </div>
@@ -28,12 +36,12 @@
                     <app-flex-filler></app-flex-filler>
                     <div class="buttons">
                         <ng-template [ngxPermissionsOnly]="['ADMIN']">
-                            <app-button (click)="regenerateChangelog()" *ngIf="!editing">Regenerate Changelog </app-button>
-                            <app-button (click)="edit()" *ngIf="!editing">Edit Draft</app-button>
-                            <app-button (click)="save()" *ngIf="editing">Save Draft</app-button>
-                            <app-button (click)="togglePreview()" *ngIf="editing">Toggle Preview</app-button>
-                            <app-button (click)="discard()" *ngIf="editing">Discard Changes</app-button>
-                            <app-button (clicked)="release()" *ngIf="!editing" [pending]="releasing">Release </app-button>
+                            <app-button (click)="regenerateChangelog()" *ngIf="!editing" [pending]="savingChangelog"> Regenerate Changelog </app-button>
+                            <app-button (click)="edit()" *ngIf="!editing" [disabled]="savingChangelog">Edit Draft </app-button>
+                            <app-button (click)="save()" *ngIf="editing" [pending]="savingChangelog">Save Draft </app-button>
+                            <app-button (click)="togglePreview()" *ngIf="editing" [disabled]="savingChangelog">Toggle Preview </app-button>
+                            <app-button (click)="discard()" *ngIf="editing" [disabled]="savingChangelog">Discard Changes </app-button>
+                            <app-button (clicked)="release()" *ngIf="!editing" [disabled]="savingChangelog" [pending]="releasing">Release </app-button>
                         </ng-template>
                     </div>
                 </div>

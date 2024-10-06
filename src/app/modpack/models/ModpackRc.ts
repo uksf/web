@@ -1,4 +1,3 @@
-import { ModpackBuildStep } from './ModpackBuildStep';
 import { ModpackBuild } from './ModpackBuild';
 
 export interface ModpackRc {

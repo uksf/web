@@ -1,17 +1,17 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ModpackBuild } from 'app/Models/ModpackBuild';
-import { ThemeEmitterComponent } from 'app/Components/elements/theme-emitter/theme-emitter.component';
-import { ModpackBuildService } from 'app/Services/modpackBuild.service';
-import { ModpackBuildResult } from 'app/Models/ModpackBuildResult';
 import { MarkdownService } from 'ngx-markdown';
-import { ModpackBuildProcessService } from 'app/Services/modpackBuildProcess.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PermissionsService } from '../../../Services/permissions.service';
+import { PermissionsService } from '../../Services/permissions.service';
+import { ThemeEmitterComponent } from '../../Components/elements/theme-emitter/theme-emitter.component';
+import { ModpackBuildResult } from '../models/ModpackBuildResult';
+import { ModpackBuildService } from '../modpackBuild.service';
+import { ModpackBuildProcessService } from '../modpackBuildProcess.service';
+import { ModpackBuild } from '../models/ModpackBuild';
 
 @Component({
     selector: 'app-modpack-builds-dev',
     templateUrl: './modpack-builds-dev.component.html',
-    styleUrls: ['../../../Pages/modpack-page/modpack-page.component.scss', './modpack-builds-dev.component.scss', './modpack-builds-dev.component.scss-theme.scss']
+    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-builds-dev.component.scss', './modpack-builds-dev.component.scss-theme.scss']
 })
 export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
     @ViewChild(ThemeEmitterComponent) theme: ThemeEmitterComponent;
@@ -67,8 +67,8 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
         return this.modpackBuildService.builds;
     }
 
-    get selectedBuild(): ModpackBuild {
-        return this.builds.find((x) => x.id === this.selectedBuildId);
+    get selectedBuild() {
+        return this.builds.find((x: ModpackBuild) => x.id === this.selectedBuildId);
     }
 
     checkRoute() {

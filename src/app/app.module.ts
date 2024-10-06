@@ -75,7 +75,7 @@ import { RulesPageComponent } from './Pages/rules-page/rules-page.component';
 import { OperationsPageComponent } from './Pages/operations-page/operations-page.component';
 import { PolicyPageComponent } from './Pages/policy-page/policy-page.component';
 import { InformationPageComponent } from './Pages/information-page/information-page.component';
-import { ModpackPageComponent } from './Pages/modpack-page/modpack-page.component';
+import { ModpackPageComponent } from './modpack/modpack-page/modpack-page.component';
 import { CommandPageComponent } from './Pages/command-page/command-page.component';
 import { TocList } from './Components/toc-list/toc-list.component';
 import { CommentDisplayComponent } from './Components/comment-display/comment-display.component';
@@ -150,16 +150,11 @@ import { PersonnelLoasComponent } from './Components/personnel/personnel-loas/pe
 import { PersonnelActivityComponent } from './Components/personnel/personnel-activity/personnel-activity.component';
 import { PersonnelLoasListComponent } from './Components/personnel/personnel-loas-list/personnel-loas-list.component';
 import { TextInputModalComponent } from './Modals/text-input-modal/text-input-modal.component';
-import { ModpackGuideComponent } from './Components/modpack/modpack-guide/modpack-guide.component';
-import { ModpackReleasesComponent } from './Components/modpack/modpack-releases/modpack-releases.component';
-import { ModpackBuildsDevComponent } from './Components/modpack/modpack-builds-dev/modpack-builds-dev.component';
-import { ModpackBuildsRcComponent } from './Components/modpack/modpack-builds-rc/modpack-builds-rc.component';
-import { ModpackBuildService } from './Services/modpackBuild.service';
-import { ModpackRcService } from './Services/modpackRc.service';
+import { ModpackBuildService } from './modpack/modpackBuild.service';
+import { ModpackRcService } from './modpack/modpackRc.service';
 import { DisplayNameService } from './Services/displayName.service';
-import { ModpackBuildProcessService } from './Services/modpackBuildProcess.service';
-import { NewModpackBuildModalComponent } from './Modals/new-modpack-build/new-modpack-build-modal.component';
-import { ModpackBuildsStepsComponent } from './Components/modpack/modpack-builds-steps/modpack-builds-steps.component';
+import { ModpackBuildProcessService } from './modpack/modpackBuildProcess.service';
+import { NewModpackBuildModalComponent } from './modpack/new-modpack-build-modal/new-modpack-build-modal.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { OrganizationChartModule } from 'primeng/organizationchart';
 import { TimeAgoPipe, ZonedTime } from './Pipes/time.pipe';
@@ -197,6 +192,13 @@ import { QuillModule } from 'ngx-quill';
 import { CommandTrainingComponent } from './Components/command/command-training/command-training.component';
 import { AddTrainingModalComponent } from './Modals/command/add-training-modal/add-training-modal.component';
 import { EditMemberTrainingModalComponent } from './Modals/command/edit-member-training-modal/edit-member-training-modal.component';
+import { ModpackGuideComponent } from './modpack/modpack-guide/modpack-guide.component';
+import { ModpackReleasesComponent } from './modpack/modpack-releases/modpack-releases.component';
+import { ModpackBuildsDevComponent } from './modpack/modpack-builds-dev/modpack-builds-dev.component';
+import { ModpackBuildsRcComponent } from './modpack/modpack-builds-rc/modpack-builds-rc.component';
+import { ModpackBuildsStepsComponent } from './modpack/modpack-builds-steps/modpack-builds-steps.component';
+import { NewModpackReleaseModalComponent } from './modpack/new-modpack-release-modal/new-modpack-release-modal.component';
+import { ModpackReleaseService } from './modpack/modpackRelease.service';
 
 export function initApp(appSettingsService: AppSettingsService, injector: Injector, countryPickerService: CountryPickerService) {
     return () => {
@@ -227,6 +229,7 @@ export function tokenGetter() {
         ModpackBuildService,
         ModpackRcService,
         ModpackBuildProcessService,
+        ModpackReleaseService,
         DisplayNameService,
         {
             provide: APP_INITIALIZER,
@@ -403,6 +406,7 @@ export function tokenGetter() {
         ModpackBuildsRcComponent,
         ModpackBuildsStepsComponent,
         NewModpackBuildModalComponent,
+        NewModpackReleaseModalComponent,
         TimeAgoPipe,
         CharacterBlockDirective,
         MustMatchDirective,

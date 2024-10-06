@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { PermissionsService } from 'app/Services/permissions.service';
-import { Permissions } from 'app/Services/permissions';
+import { PermissionsService } from '../../Services/permissions.service';
+import { Permissions } from '../../Services/permissions';
 
 @Component({
     selector: 'app-modpack-page',
     templateUrl: './modpack-page.component.html',
-    styleUrls: ['./modpack-page.component.scss', './modpack-page.component.scss-theme.scss'],
+    styleUrls: ['./modpack-page.component.scss', './modpack-page.component.scss-theme.scss']
 })
 export class ModpackPageComponent {
     tabLinks = [{ label: 'Guide', link: '../guide' }];
@@ -16,7 +16,7 @@ export class ModpackPageComponent {
                 { label: 'Guide', link: '../guide' },
                 { label: 'Releases', link: '../releases' },
                 { label: 'Dev Builds', link: '../builds-dev' },
-                { label: 'RC Builds', link: '../builds-rc' },
+                { label: 'RC Builds', link: '../builds-rc' }
             ];
         }
     }

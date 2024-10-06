@@ -16,6 +16,23 @@
         top: 123px;
         bottom: 0;
 
+        .new-button {
+            display: flex;
+            justify-content: center;
+
+            .mat-raised-button {
+                margin: 10px 0;
+                line-height: 30px;
+                align-self: center;
+            }
+
+            .mat-icon-button {
+                display: none;
+                line-height: 30px;
+                height: 30px;
+            }
+        }
+
         .release-history-item {
             height: 50px;
             font-size: 20px;

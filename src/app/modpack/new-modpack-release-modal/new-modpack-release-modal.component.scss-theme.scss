@@ -1,0 +1,13 @@
+@use '@angular/material' as mat;
+
+@mixin new-modpack-release-modal-component-theme($theme) {
+    $primary: map-get($theme, primary);
+
+    app-new-modpack-release-modal {
+        .mat-dialog-content {
+            .previous-version {
+                color: mat.get-color-from-palette($primary);
+            }
+        }
+    }
+}

@@ -1,0 +1,21 @@
+@use '../../../../node_modules/@angular/material/index' as mat;
+@import '../../../../node_modules/@angular/material/theming';
+
+@mixin modpack-page-component-theme($theme) {
+    $primary: map-get($theme, primary);
+    $background: map-get($theme, background);
+
+    app-modpack-page {
+        a {
+            color: mat.get-color-from-palette($primary);
+        }
+    }
+
+    ::-webkit-scrollbar-track {
+        background-color: mat.get-color-from-palette($background, side-bar);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: mat.get-color-from-palette($background, scroll-thumb);
+    }
+}

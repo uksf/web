@@ -1,8 +1,8 @@
-import { Component, Inject, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Inject, Output } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, Validators, ValidationErrors } from '@angular/forms';
-import { InstantErrorStateMatcher } from 'app/Services/formhelper.service';
-import { NewBuild } from '../../Models/NewBuild';
+import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { NewBuild } from '../models/NewBuild';
+import { InstantErrorStateMatcher } from '../../Services/formhelper.service';
 
 function onlyOne(form: FormGroup): ValidationErrors | null {
     if (form && form.controls['branch'].value !== '' && form.controls['branch'].value !== 'No branch' && form.controls['commitId'].value !== '') {

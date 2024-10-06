@@ -1,0 +1,17 @@
+<h2 mat-dialog-title>New Release</h2>
+<mat-dialog-content>
+    <span>Previous version</span>
+    <span class="previous-version">{{ previousVersion }}</span>
+    <span class="select-version">Select new version</span>
+    <form [formGroup]="form" class="form-container">
+        <mat-radio-group class="versions-container" formControlName="version">
+            <mat-radio-button color="primary" value="{{ major }}">{{ major }}</mat-radio-button>
+            <mat-radio-button color="primary" value="{{ minor }}">{{ minor }}</mat-radio-button>
+            <mat-radio-button color="primary" value="{{ patch }}">{{ patch }}</mat-radio-button>
+        </mat-radio-group>
+        <app-flex-filler></app-flex-filler>
+        <div class="button-container">
+            <button (click)="run()" [disabled]="submitting || !form.valid" color="primary" mat-raised-button type="button">Create</button>
+        </div>
+    </form>
+</mat-dialog-content>

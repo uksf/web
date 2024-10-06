@@ -1,0 +1,35 @@
+.mat-dialog-content {
+    overflow: unset;
+    display: flex;
+    flex-direction: column;
+
+    span {
+        font-size: 16px;
+
+        &.previous-version {
+            padding-bottom: 12px;
+        }
+    }
+
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        padding-top: 8px;
+
+        .versions-container {
+            display: flex;
+            flex-direction: column;
+
+            .mat-radio-button {
+                padding-bottom: 8px;
+            }
+        }
+    }
+
+    .button-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+    }
+}

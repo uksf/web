@@ -34,14 +34,14 @@ import { AdminLauncherLogsComponent } from './Components/admin/admin-launcher-lo
 import { PersonnelLoasComponent } from './Components/personnel/personnel-loas/personnel-loas.component';
 import { PersonnelDischargesComponent } from './Components/personnel/personnel-discharges/personnel-discharges.component';
 import { PersonnelActivityComponent } from './Components/personnel/personnel-activity/personnel-activity.component';
-import { ModpackGuideComponent } from './Components/modpack/modpack-guide/modpack-guide.component';
-import { ModpackReleasesComponent } from './Components/modpack/modpack-releases/modpack-releases.component';
-import { ModpackBuildsDevComponent } from './Components/modpack/modpack-builds-dev/modpack-builds-dev.component';
-import { ModpackBuildsRcComponent } from './Components/modpack/modpack-builds-rc/modpack-builds-rc.component';
 import { AdminDiscordLogsComponent } from './Components/admin/admin-discord-logs/admin-discord-logs.component';
 import { CommandMembersComponent } from './Components/command/command-members/command-members.component';
 import { AdminServersComponent } from './Components/admin/admin-servers/admin-servers.component';
 import { CommandTrainingComponent } from './Components/command/command-training/command-training.component';
+import { ModpackGuideComponent } from './modpack/modpack-guide/modpack-guide.component';
+import { ModpackReleasesComponent } from './modpack/modpack-releases/modpack-releases.component';
+import { ModpackBuildsDevComponent } from './modpack/modpack-builds-dev/modpack-builds-dev.component';
+import { ModpackBuildsRcComponent } from './modpack/modpack-builds-rc/modpack-builds-rc.component';
 
 const appRoutes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },

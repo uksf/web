@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { DisplayNameService } from './displayName.service';
+import { DisplayNameService } from '../Services/displayName.service';
 import moment from 'moment';
-import { ModpackBuild } from 'app/Models/ModpackBuild';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from './url.service';
+import { UrlService } from '../Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
-import { NewModpackBuildModalComponent } from 'app/Modals/new-modpack-build/new-modpack-build-modal.component';
-import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
-import { NewBuild } from '../Models/NewBuild';
+import { NewBuild } from './models/NewBuild';
+import { ModpackBuild } from './models/ModpackBuild';
+import { NewModpackBuildModalComponent } from './new-modpack-build-modal/new-modpack-build-modal.component';
+import { MessageModalComponent } from '../Modals/message-modal/message-modal.component';
 
 @Injectable()
 export class ModpackBuildProcessService {
