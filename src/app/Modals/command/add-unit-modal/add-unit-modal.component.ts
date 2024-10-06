@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators} from '@angular/forms';
+import {AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {InstantErrorStateMatcher} from 'app/Services/formhelper.service';
 import {Observable, of, timer} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
@@ -15,7 +15,7 @@ import {ConfirmationModalComponent} from '../../confirmation-modal/confirmation-
     styleUrls: ['./add-unit-modal.component.css']
 })
 export class AddUnitModalComponent implements OnInit {
-    form: FormGroup;
+    form: UntypedFormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     pending = false;
     branchTypes = [
@@ -42,7 +42,7 @@ export class AddUnitModalComponent implements OnInit {
     edit = false;
     original;
 
-    constructor(formbuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: any) {
+    constructor(formbuilder: UntypedFormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: any) {
         this.form = formbuilder.group({
             name: ['', Validators.required, this.validateUnit.bind(this)],
             shortname: ['', Validators.required, this.validateUnit.bind(this)],

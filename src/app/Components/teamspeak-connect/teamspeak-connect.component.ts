@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter, Input } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { HttpHeaders } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../Services/url.service';
@@ -20,8 +20,8 @@ export class ConnectTeamspeakComponent {
     @Output() connectedEvent = new EventEmitter();
     @Output() confirmedEvent = new EventEmitter();
     @Output() cancelEvent = new EventEmitter();
-    formGroup: FormGroup;
-    teamspeakForm: FormGroup;
+    formGroup: UntypedFormGroup;
+    teamspeakForm: UntypedFormGroup;
     pending = false;
     state = 0;
     clients: TeamspeakConnectClient[] = [];
@@ -33,7 +33,7 @@ export class ConnectTeamspeakComponent {
 
     constructor(
         private httpClient: HttpClient,
-        public formBuilder: FormBuilder,
+        public formBuilder: UntypedFormBuilder,
         private urls: UrlService,
         public dialog: MatDialog,
         private accountService: AccountService,

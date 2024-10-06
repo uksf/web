@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 
 @Component({
     selector: 'app-text-input-modal',
@@ -12,16 +12,16 @@ export class TextInputModalComponent implements OnInit {
     @Output() cancelEvent = new EventEmitter();
     message;
     input;
-    form: FormGroup;
+    form: UntypedFormGroup;
 
-    constructor(formbuilder: FormBuilder, public dialogRef: MatDialogRef<TextInputModalComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
+    constructor(formbuilder: UntypedFormBuilder, public dialogRef: MatDialogRef<TextInputModalComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
         this.message = data.message;
         this.form = formbuilder.group({
             input: ['', Validators.required]
         });
     }
 
-    ngOnInit() { }
+    ngOnInit() {}
 
     confirm() {
         this.confirmEvent.emit(this.input);
@@ -33,4 +33,3 @@ export class TextInputModalComponent implements OnInit {
         this.dialogRef.close();
     }
 }
-

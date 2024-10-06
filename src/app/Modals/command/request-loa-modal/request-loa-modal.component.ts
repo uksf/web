@@ -1,6 +1,6 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { InstantErrorStateMatcher } from 'app/Services/formhelper.service';
@@ -13,7 +13,7 @@ import moment, { Moment } from 'moment';
     styleUrls: ['./request-loa-modal.component.scss']
 })
 export class RequestLoaModalComponent implements OnInit {
-    form: FormGroup;
+    form: UntypedFormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     validationMessages = {
         reason: [{ type: 'required', message: 'Reason is required' }]
@@ -29,7 +29,7 @@ export class RequestLoaModalComponent implements OnInit {
     submitting = false;
     mobile = false;
 
-    constructor(private dialog: MatDialog, private formbuilder: FormBuilder, private httpClient: HttpClient, private urlService: UrlService) {
+    constructor(private dialog: MatDialog, private formbuilder: UntypedFormBuilder, private httpClient: HttpClient, private urlService: UrlService) {
         this.form = this.formbuilder.group({
             reason: ['', Validators.required],
             start: ['', Validators.required],

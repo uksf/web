@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Inject, Output } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { InstantErrorStateMatcher } from '../../Services/formhelper.service';
 import { ModpackRelease } from '../models/ModpackRelease';
 
@@ -11,7 +11,7 @@ import { ModpackRelease } from '../models/ModpackRelease';
 })
 export class NewModpackReleaseModalComponent {
     @Output() completedEvent: any = new EventEmitter<string>();
-    form: FormGroup;
+    form: UntypedFormGroup;
     instantErrorStateMatcher: InstantErrorStateMatcher = new InstantErrorStateMatcher();
     previousVersion: string;
     major: string;
@@ -20,7 +20,7 @@ export class NewModpackReleaseModalComponent {
     submitting: boolean = false;
 
     constructor(
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         public dialogRef: MatDialogRef<NewModpackReleaseModalComponent>,
         @Inject(MAT_DIALOG_DATA)
         public data: {

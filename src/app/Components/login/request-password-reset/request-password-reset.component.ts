@@ -1,5 +1,5 @@
 import { Component, Output, ViewChild, EventEmitter } from '@angular/core';
-import { FormBuilder, NgForm } from '@angular/forms';
+import { UntypedFormBuilder, NgForm } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { InstantErrorStateMatcher } from '../../../Services/formhelper.service';
@@ -8,7 +8,7 @@ import { AuthenticationService } from '../../../Services/Authentication/authenti
 @Component({
     selector: 'app-request-password-reset',
     templateUrl: './request-password-reset.component.html',
-    styleUrls: ['./request-password-reset.component.scss', '../../../Pages/login-page/login-page.component.scss'],
+    styleUrls: ['./request-password-reset.component.scss', '../../../Pages/login-page/login-page.component.scss']
 })
 export class RequestPasswordResetComponent {
     @ViewChild(NgForm) form!: NgForm;
@@ -18,16 +18,16 @@ export class RequestPasswordResetComponent {
     sent = false;
     model: FormModel = {
         name: null,
-        email: null,
+        email: null
     };
     validationMessages = {
         email: [
             { type: 'required', message: 'Email address is required' },
-            { type: 'email', message: 'Email address is invalid' },
-        ],
+            { type: 'email', message: 'Email address is invalid' }
+        ]
     };
 
-    constructor(public formbuilder: FormBuilder, private auth: AuthenticationService) {}
+    constructor(public formbuilder: UntypedFormBuilder, private auth: AuthenticationService) {}
 
     submit() {
         // Honeypot field must be empty

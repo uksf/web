@@ -1,10 +1,10 @@
 import { Component, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl, FormGroupDirective, NgForm } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, UntypedFormControl, FormGroupDirective, NgForm } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 
 export class InstantErrorStateMatcher implements ErrorStateMatcher {
-    isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+    isErrorState(control: UntypedFormControl | null, form: FormGroupDirective | NgForm | null): boolean {
         return !!(control && !control.valid && (control.dirty || control.touched));
     }
 }
@@ -16,13 +16,10 @@ export class InstantErrorStateMatcher implements ErrorStateMatcher {
 })
 export class ApplicationSubmitComponent {
     @Output() submitEvent = new EventEmitter();
-    formGroup: FormGroup;
+    formGroup: UntypedFormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
 
-    constructor(
-        public formBuilder: FormBuilder,
-        public dialog: MatDialog
-    ) {
+    constructor(public formBuilder: UntypedFormBuilder, public dialog: MatDialog) {
         this.formGroup = formBuilder.group({
             playstyle: ['', Validators.required],
             dedication: ['', Validators.required],

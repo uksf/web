@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { InstantErrorStateMatcher } from 'app/Services/formhelper.service';
 import { Observable, of, timer } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
@@ -13,7 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
     styleUrls: ['./add-training-modal.component.css']
 })
 export class AddTrainingModalComponent {
-    form: FormGroup;
+    form: UntypedFormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     pending = false;
 
@@ -26,7 +26,7 @@ export class AddTrainingModalComponent {
         teamspeakGroup: [{ type: 'trainingTaken', message: 'That ID is already in use' }]
     };
 
-    constructor(formbuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {
+    constructor(formbuilder: UntypedFormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {
         this.form = formbuilder.group({
             name: ['', Validators.required, this.validateTraining.bind(this)],
             shortName: ['', null, this.validateTraining.bind(this)],

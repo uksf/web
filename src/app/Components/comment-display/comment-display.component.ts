@@ -2,7 +2,7 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { AccountService } from '../../Services/account.service';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../Services/url.service';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { SignalRService, ConnectionContainer } from 'app/Services/signalr.service';
 import { TimeAgoPipe } from '../../Pipes/time.pipe';
 import { ObjectId } from '../../Models/ObjectId';
@@ -12,7 +12,7 @@ import { UksfError } from '../../Models/Response';
     selector: 'app-comment-display',
     templateUrl: './comment-display.component.html',
     styleUrls: ['./comment-display.component.scss'],
-    providers: [TimeAgoPipe],
+    providers: [TimeAgoPipe]
 })
 export class CommentDisplayComponent implements OnInit, OnDestroy {
     @Input() threadId: string;
@@ -22,10 +22,10 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
     comments = [];
     commentForm;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private formbuilder: FormBuilder, private accountService: AccountService, private signalrService: SignalRService) {
+    constructor(private httpClient: HttpClient, private urls: UrlService, private formbuilder: UntypedFormBuilder, private accountService: AccountService, private signalrService: SignalRService) {
         this.commentForm = this.formbuilder.group(
             {
-                commentContent: ['', Validators.maxLength(1000)],
+                commentContent: ['', Validators.maxLength(1000)]
             },
             {}
         );

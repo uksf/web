@@ -1,5 +1,5 @@
 import {Component, Inject} from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators} from '@angular/forms';
+import {AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {InstantErrorStateMatcher} from 'app/Services/formhelper.service';
 import {Observable, of, timer} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
@@ -13,7 +13,7 @@ import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog
     styleUrls: ['./add-server-modal.component.css']
 })
 export class AddServerModalComponent {
-    form: FormGroup;
+    form: UntypedFormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     environments = [
         { value: 0, viewValue: 'Release' },
@@ -50,7 +50,7 @@ export class AddServerModalComponent {
     private connectionId: string = '';
 
     constructor(
-        formbuilder: FormBuilder,
+        formbuilder: UntypedFormBuilder,
         private dialog: MatDialog,
         private dialogRef: MatDialogRef<AddServerModalComponent>,
         private httpClient: HttpClient,

@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '../../Services/Authentication/authentication.service';
 import { UrlService } from '../../Services/url.service';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 
 @Component({
     selector: 'app-live-page',
@@ -15,16 +15,15 @@ export class LivePageComponent implements OnInit, OnDestroy {
     subscription: Subscription;
     messages: string[];
 
-    ngOnInit() { }
+    ngOnInit() {}
 
-    constructor(
-        private httpClient: HttpClient,
-        private auth: AuthenticationService,
-        private urls: UrlService,
-        private formbuilder: FormBuilder) {
-        this.terminalForm = this.formbuilder.group({
-            terminalInput: ['', Validators.required]
-        }, {});
+    constructor(private httpClient: HttpClient, private auth: AuthenticationService, private urls: UrlService, private formbuilder: UntypedFormBuilder) {
+        this.terminalForm = this.formbuilder.group(
+            {
+                terminalInput: ['', Validators.required]
+            },
+            {}
+        );
         this.messages = new Array();
     }
 
@@ -35,14 +34,15 @@ export class LivePageComponent implements OnInit, OnDestroy {
     }
 
     sendTerminal() {
-        this.httpClient.post(
-            this.urls.apiUrl + '/terminaljobs', this.terminalForm.controls.terminalInput.value.split(' ')
-        ).subscribe(response => {
-            this.messages.push('Command complete, response was : \n' + response['result']);
-        }, () => {
-            const commandResponse = 'server did not accept command';
-            this.messages.push('Command complete, response was : \n' + commandResponse);
-        });
+        this.httpClient.post(this.urls.apiUrl + '/terminaljobs', this.terminalForm.controls.terminalInput.value.split(' ')).subscribe(
+            (response) => {
+                this.messages.push('Command complete, response was : \n' + response['result']);
+            },
+            () => {
+                const commandResponse = 'server did not accept command';
+                this.messages.push('Command complete, response was : \n' + commandResponse);
+            }
+        );
         this.terminalForm.controls.terminalInput.setValue('');
     }
 }

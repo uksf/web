@@ -94,7 +94,6 @@
       }
     }
   },
-  "defaultProject": "uksf",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",

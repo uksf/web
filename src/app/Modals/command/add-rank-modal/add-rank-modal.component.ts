@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { InstantErrorStateMatcher } from 'app/Services/formhelper.service';
 import { Observable, of, timer } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
@@ -13,7 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
     styleUrls: ['./add-rank-modal.component.css']
 })
 export class AddRankModalComponent implements OnInit {
-    form: FormGroup;
+    form: UntypedFormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     pending = false;
 
@@ -26,7 +26,7 @@ export class AddRankModalComponent implements OnInit {
         teamspeakGroup: [{ type: 'rankTaken', message: 'That ID is already in use' }]
     };
 
-    constructor(formbuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {
+    constructor(formbuilder: UntypedFormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {
         this.form = formbuilder.group({
             name: ['', Validators.required, this.validateRank.bind(this)],
             abbreviation: ['', Validators.required],

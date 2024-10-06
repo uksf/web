@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 import { IDropdownElement, mapFromElement } from '../../elements/dropdown-base/dropdown-base.component';
 import { Rank } from '../../../Models/Rank';
 import { Unit } from '../../../Models/Units';
-import { ControlContainer, ControlValueAccessor, FormGroup, NG_VALUE_ACCESSOR, NgForm } from '@angular/forms';
+import { ControlContainer, ControlValueAccessor, UntypedFormGroup, NG_VALUE_ACCESSOR, NgForm } from '@angular/forms';
 import { DocumentPermissions } from '../../../Models/Documents';
 import { AccountService } from '../../../Services/account.service';
 import { Account } from '../../../Models/Account';
@@ -23,7 +23,7 @@ export type PermissionsType = 'read' | 'write';
             multi: true
         }
     ],
-    viewProviders: [{ provide: ControlContainer, useExisting: FormGroup }]
+    viewProviders: [{ provide: ControlContainer, useExisting: UntypedFormGroup }]
 })
 export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
     @ViewChild(NgForm) form!: NgForm;

@@ -3,8 +3,8 @@ import {
     AbstractControl,
     ControlContainer,
     ControlValueAccessor,
-    FormControl,
-    FormGroup,
+    UntypedFormControl,
+    UntypedFormGroup,
     FormGroupDirective,
     NG_VALIDATORS,
     NG_VALUE_ACCESSOR,
@@ -19,7 +19,7 @@ import { any, nextFrame } from '../../../Services/helper.service';
 import { ErrorStateMatcher } from '@angular/material/core';
 
 export class SelectionListErrorStateMatcher implements ErrorStateMatcher {
-    isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+    isErrorState(control: UntypedFormControl | null, form: FormGroupDirective | NgForm | null): boolean {
         return !!(control && (control.dirty || control.touched) && control.parent.get('list').errors !== null);
     }
 }
@@ -55,14 +55,14 @@ export function SelectionListValidator(required: boolean): ValidatorFn {
             multi: true
         }
     ],
-    viewProviders: [{ provide: ControlContainer, useExisting: FormGroup }]
+    viewProviders: [{ provide: ControlContainer, useExisting: UntypedFormGroup }]
 })
 export class SelectionListComponent extends DropdownBaseComponent implements OnInit, ControlValueAccessor, Validator {
     @Input('listDisabledTooltip') listDisabledTooltip: (element: IDropdownElement) => string = () => '';
     @ViewChild(MatAutocompleteTrigger) autocomplete: MatAutocompleteTrigger;
-    form: FormGroup = new FormGroup({
-        textInput: new FormControl({ value: '', disabled: this.disabled }),
-        list: new FormControl([], SelectionListValidator(this.required))
+    form: UntypedFormGroup = new UntypedFormGroup({
+        textInput: new UntypedFormControl({ value: '', disabled: this.disabled }),
+        list: new UntypedFormControl([], SelectionListValidator(this.required))
     });
     listErrorStateMatcher = new SelectionListErrorStateMatcher();
     validationMessages = [

@@ -6,7 +6,7 @@ import { AccountService } from '../../Services/account.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConnectTeamspeakModalComponent } from '../../Modals/connect-teamspeak-modal/connect-teamspeak-modal.component';
 import { ChangePasswordModalComponent } from '../../Modals/change-password-modal/change-password-modal.component';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ChangeFirstLastModalComponent } from '../../Modals/change-first-last-modal/change-first-last-modal.component';
 import { Permissions } from 'app/Services/permissions';
 import { CountryPickerService, ICountry } from 'app/Services/CountryPicker/country-picker.service';
@@ -26,7 +26,7 @@ export class ProfilePageComponent implements OnInit {
     membershipState = MembershipState;
     account;
     accountId: string;
-    settingsFormGroup: FormGroup;
+    settingsFormGroup: UntypedFormGroup;
     accountSubscription: Subscription;
     isNco: boolean;
     isAdmin: boolean;
@@ -39,7 +39,7 @@ export class ProfilePageComponent implements OnInit {
         private httpClient: HttpClient,
         private urls: UrlService,
         private router: Router,
-        private formbuilder: FormBuilder,
+        private formbuilder: UntypedFormBuilder,
         private permissions: PermissionsService
     ) {
         this.settingsFormGroup = this.formbuilder.group({

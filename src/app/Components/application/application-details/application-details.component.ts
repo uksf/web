@@ -1,10 +1,10 @@
 import { Component, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl, FormGroupDirective, NgForm, AbstractControl } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, UntypedFormControl, FormGroupDirective, NgForm, AbstractControl } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 
 export class InstantErrorStateMatcher implements ErrorStateMatcher {
-    isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+    isErrorState(control: UntypedFormControl | null, form: FormGroupDirective | NgForm | null): boolean {
         return !!(control && !control.valid && (control.dirty || control.touched));
     }
 }
@@ -16,7 +16,7 @@ export class InstantErrorStateMatcher implements ErrorStateMatcher {
 })
 export class ApplicationDetailsComponent {
     @Output() nextEvent = new EventEmitter();
-    formGroup: FormGroup;
+    formGroup: UntypedFormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     referenceOptions = [
         { value: 'Recruiter', viewValue: 'Recruiter' },
@@ -37,7 +37,7 @@ export class ApplicationDetailsComponent {
         background: [{ type: 'required', message: 'Some background info about yourself is required' }]
     };
 
-    constructor(public formBuilder: FormBuilder, public dialog: MatDialog) {
+    constructor(public formBuilder: UntypedFormBuilder, public dialog: MatDialog) {
         this.formGroup = formBuilder.group({
             name: ['', Validators.maxLength(0)],
             armaExperience: ['', Validators.required],
@@ -48,9 +48,9 @@ export class ApplicationDetailsComponent {
         });
         const rolePreferenceControls: { [key: string]: AbstractControl } = {};
         this.rolePreferenceOptions.forEach((x) => {
-            rolePreferenceControls[x] = new FormControl(false);
+            rolePreferenceControls[x] = new UntypedFormControl(false);
         });
-        this.formGroup.addControl('rolePreferences', new FormGroup(rolePreferenceControls));
+        this.formGroup.addControl('rolePreferences', new UntypedFormGroup(rolePreferenceControls));
     }
 
     next() {
@@ -67,7 +67,7 @@ export class ApplicationDetailsComponent {
     convertRolePreferencesGroup(): any {
         const formObj = this.formGroup.getRawValue();
         const rolePreferences = [];
-        const rolePreferencesGroup: FormGroup = this.formGroup.controls['rolePreferences'] as FormGroup;
+        const rolePreferencesGroup: UntypedFormGroup = this.formGroup.controls['rolePreferences'] as UntypedFormGroup;
         for (const key in rolePreferencesGroup.controls) {
             if (rolePreferencesGroup.controls.hasOwnProperty(key)) {
                 const control = rolePreferencesGroup.controls[key];

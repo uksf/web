@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../Services/url.service';
 import { AccountService } from '../../Services/account.service';
@@ -11,12 +11,12 @@ import { nameCase, titleCase } from '../../Services/helper.service';
     styleUrls: ['./change-first-last-modal.component.scss']
 })
 export class ChangeFirstLastModalComponent implements OnInit {
-    form: FormGroup;
+    form: UntypedFormGroup;
     changed = false;
     original;
     rank;
 
-    constructor(formbuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private accountService: AccountService) {
+    constructor(formbuilder: UntypedFormBuilder, private httpClient: HttpClient, private urls: UrlService, private accountService: AccountService) {
         this.form = formbuilder.group({
             firstName: ['', Validators.required],
             lastName: ['', Validators.required]

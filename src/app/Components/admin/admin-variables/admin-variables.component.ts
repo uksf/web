@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatAccordion } from '@angular/material/expansion';
 import { Observable, timer, of } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
-import { FormGroup, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { InstantErrorStateMatcher } from 'app/Services/formhelper.service';
 import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
 import { VariableItem } from 'app/Models/VariableItem';
@@ -13,12 +13,12 @@ import { VariableItem } from 'app/Models/VariableItem';
 @Component({
     selector: 'app-admin-variables',
     templateUrl: './admin-variables.component.html',
-    styleUrls: ['../../../Pages/admin-page/admin-page.component.scss', './admin-variables.component.scss'],
+    styleUrls: ['../../../Pages/admin-page/admin-page.component.scss', './admin-variables.component.scss']
 })
 export class AdminVariablesComponent implements OnInit {
     @ViewChild(MatAccordion) accordion: MatAccordion;
     expanded = false;
-    form: FormGroup;
+    form: UntypedFormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     updating;
     variables: VariableItem[];
@@ -27,15 +27,15 @@ export class AdminVariablesComponent implements OnInit {
     validationMessages = {
         key: [
             { type: 'required', message: 'Key is required' },
-            { type: 'keyTaken', message: 'That key is already in use' },
+            { type: 'keyTaken', message: 'That key is already in use' }
         ],
-        item: [{ type: 'required', message: 'Item is required' }],
+        item: [{ type: 'required', message: 'Item is required' }]
     };
 
-    constructor(formbuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {
+    constructor(formbuilder: UntypedFormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {
         this.form = formbuilder.group({
             key: ['', Validators.required, this.validateVariable.bind(this)],
-            item: ['', Validators.required],
+            item: ['', Validators.required]
         });
     }
 
@@ -85,8 +85,8 @@ export class AdminVariablesComponent implements OnInit {
         this.httpClient
             .put(`${this.urls.apiUrl}/variables`, formString, {
                 headers: new HttpHeaders({
-                    'Content-Type': 'application/json',
-                }),
+                    'Content-Type': 'application/json'
+                })
             })
             .subscribe(
                 (_) => {
@@ -116,8 +116,8 @@ export class AdminVariablesComponent implements OnInit {
         this.httpClient
             .patch(`${this.urls.apiUrl}/variables`, variable, {
                 headers: new HttpHeaders({
-                    'Content-Type': 'application/json',
-                }),
+                    'Content-Type': 'application/json'
+                })
             })
             .subscribe(
                 () => {
@@ -132,7 +132,7 @@ export class AdminVariablesComponent implements OnInit {
     deleteVariable(event, variable: VariableItem) {
         event.stopPropagation();
         const dialog = this.dialog.open(ConfirmationModalComponent, {
-            data: { message: `Are you sure you want to delete '${variable.key}'? This action could break functionality` },
+            data: { message: `Are you sure you want to delete '${variable.key}'? This action could break functionality` }
         });
         dialog.componentInstance.confirmEvent.subscribe(() => {
             this.updating = true;

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../Services/url.service';
 import { AuthenticationService } from '../../Services/Authentication/authentication.service';
@@ -19,9 +19,9 @@ export function passwordMatcher(form: AbstractControl) {
     styleUrls: ['./change-password-modal.component.scss']
 })
 export class ChangePasswordModalComponent implements OnInit {
-    public form: FormGroup;
+    public form: UntypedFormGroup;
 
-    constructor(public formbuilder: FormBuilder, private httpClient: HttpClient, private permissionsService: PermissionsService, private urls: UrlService, public dialog: MatDialog) {
+    constructor(public formbuilder: UntypedFormBuilder, private httpClient: HttpClient, private permissionsService: PermissionsService, private urls: UrlService, public dialog: MatDialog) {
         this.form = formbuilder.group(
             {
                 password: ['', Validators.required],

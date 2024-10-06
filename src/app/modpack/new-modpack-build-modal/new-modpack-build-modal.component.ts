@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Inject, Output } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { NewBuild } from '../models/NewBuild';
 import { InstantErrorStateMatcher } from '../../Services/formhelper.service';
 
-function onlyOne(form: FormGroup): ValidationErrors | null {
+function onlyOne(form: UntypedFormGroup): ValidationErrors | null {
     if (form && form.controls['branch'].value !== '' && form.controls['branch'].value !== 'No branch' && form.controls['commitId'].value !== '') {
         return { both: true };
     }
@@ -19,7 +19,7 @@ function onlyOne(form: FormGroup): ValidationErrors | null {
 })
 export class NewModpackBuildModalComponent {
     @Output() runEvent = new EventEmitter<NewBuild>();
-    form: FormGroup;
+    form: UntypedFormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     validationMessages = {
         commitId: [{ type: 'pattern', message: 'Commit ID format is invalid' }]
@@ -28,7 +28,7 @@ export class NewModpackBuildModalComponent {
     branches: string[] = [];
     submitting = false;
 
-    constructor(private formBuilder: FormBuilder, public dialogRef: MatDialogRef<NewModpackBuildModalComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
+    constructor(private formBuilder: UntypedFormBuilder, public dialogRef: MatDialogRef<NewModpackBuildModalComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
         this.branches = data.branches;
         this.form = this.formBuilder.group({
             configuration: ['Development', Validators.required],

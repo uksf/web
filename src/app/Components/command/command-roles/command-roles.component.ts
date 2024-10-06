@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
-import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, AsyncValidatorFn, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Observable, of, timer } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { InstantErrorStateMatcher } from 'app/Services/formhelper.service';
@@ -16,8 +16,8 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 })
 export class CommandRolesComponent implements OnInit {
     instantErrorStateMatcher = new InstantErrorStateMatcher();
-    individualForm: FormGroup;
-    unitForm: FormGroup;
+    individualForm: UntypedFormGroup;
+    unitForm: UntypedFormGroup;
     individualRoles: any;
     unitRoles: any;
     updatingOrder = false;
@@ -27,7 +27,7 @@ export class CommandRolesComponent implements OnInit {
         { type: 'roleTaken', message: 'That role is already in use' }
     ];
 
-    constructor(formbuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {
+    constructor(formbuilder: UntypedFormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {
         this.individualForm = formbuilder.group({
             name: ['', Validators.required, this.validateRole(0)],
             roleType: [0]

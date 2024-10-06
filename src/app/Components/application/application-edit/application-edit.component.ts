@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl, FormGroupDirective, NgForm, AbstractControl } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, UntypedFormControl, FormGroupDirective, NgForm, AbstractControl } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AccountService } from 'app/Services/account.service';
@@ -12,7 +12,7 @@ import { Permissions } from 'app/Services/permissions';
 import { ApplicationState } from '../../../Models/Application';
 
 export class InstantErrorStateMatcher implements ErrorStateMatcher {
-    isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+    isErrorState(control: UntypedFormControl | null, form: FormGroupDirective | NgForm | null): boolean {
         return !!(control && !control.valid && (control.dirty || control.touched));
     }
 }
@@ -23,7 +23,7 @@ export class InstantErrorStateMatcher implements ErrorStateMatcher {
     styleUrls: ['../../../Pages/application-page/application-page.component.scss', './application-edit.component.scss']
 })
 export class ApplicationEditComponent {
-    formGroup: FormGroup;
+    formGroup: UntypedFormGroup;
     pending: boolean = false;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     referenceOptions = [
@@ -46,7 +46,7 @@ export class ApplicationEditComponent {
     };
 
     constructor(
-        public formBuilder: FormBuilder,
+        public formBuilder: UntypedFormBuilder,
         public dialog: MatDialog,
         private httpClient: HttpClient,
         private urls: UrlService,
@@ -71,9 +71,9 @@ export class ApplicationEditComponent {
         });
         const rolePreferenceControls: { [key: string]: AbstractControl } = {};
         this.rolePreferenceOptions.forEach((x) => {
-            rolePreferenceControls[x] = new FormControl(false);
+            rolePreferenceControls[x] = new UntypedFormControl(false);
         });
-        this.formGroup.addControl('rolePreferences', new FormGroup(rolePreferenceControls));
+        this.formGroup.addControl('rolePreferences', new UntypedFormGroup(rolePreferenceControls));
 
         this.updateOriginal();
         this.permissions.accountUpdateEvent.subscribe(() => {
@@ -153,7 +153,7 @@ export class ApplicationEditComponent {
     convertRolePreferencesFromGroup(): any {
         const formObj = this.formGroup.getRawValue();
         const rolePreferences = [];
-        const rolePreferencesGroup: FormGroup = this.formGroup.controls['rolePreferences'] as FormGroup;
+        const rolePreferencesGroup: UntypedFormGroup = this.formGroup.controls['rolePreferences'] as UntypedFormGroup;
 
         for (const key in rolePreferencesGroup.controls) {
             if (rolePreferencesGroup.controls.hasOwnProperty(key)) {
@@ -169,7 +169,7 @@ export class ApplicationEditComponent {
 
     convertRolePreferencesToGroup() {
         const rolePreferences = this.accountService.account.rolePreferences;
-        const rolePreferencesGroup: FormGroup = this.formGroup.controls['rolePreferences'] as FormGroup;
+        const rolePreferencesGroup: UntypedFormGroup = this.formGroup.controls['rolePreferences'] as UntypedFormGroup;
 
         this.rolePreferenceOptions.forEach((rolePreferenceOption) => {
             if (rolePreferences.includes(rolePreferenceOption)) {

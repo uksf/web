@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../Services/url.service';
 
 @Component({
     selector: 'app-create-operation-order',
     templateUrl: './create-operation-order.component.html',
-    styleUrls: ['./create-operation-order.component.css'],
+    styleUrls: ['./create-operation-order.component.css']
 })
 export class CreateOperationOrderComponent implements OnInit {
     opordform;
 
-    constructor(private formbuilder: FormBuilder, private httpClient: HttpClient, private urlService: UrlService) {
+    constructor(private formbuilder: UntypedFormBuilder, private httpClient: HttpClient, private urlService: UrlService) {
         this.opordform = this.formbuilder.group(
             {
                 name: ['', Validators.required],
@@ -20,7 +20,7 @@ export class CreateOperationOrderComponent implements OnInit {
                 end: ['', Validators.required],
                 start: ['', Validators.required],
                 endtime: ['', [Validators.required, Validators.pattern('([0-9][0-9][0-5][0-9])|([0-9][0-9]60)'), Validators.max(2400)]],
-                starttime: ['', [Validators.required, Validators.pattern('([0-9][0-9][0-5][0-9])|([0-9][0-9]60)'), Validators.max(2400)]],
+                starttime: ['', [Validators.required, Validators.pattern('([0-9][0-9][0-5][0-9])|([0-9][0-9]60)'), Validators.max(2400)]]
             },
             {}
         );

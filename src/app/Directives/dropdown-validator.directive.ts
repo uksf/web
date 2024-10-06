@@ -1,6 +1,6 @@
 import { IDropdownElement } from '../Components/elements/dropdown-base/dropdown-base.component';
 import { Directive, Input } from '@angular/core';
-import { FormControl, NG_VALIDATORS, Validator } from '@angular/forms';
+import { UntypedFormControl, NG_VALIDATORS, Validator } from '@angular/forms';
 
 @Directive({
     selector: '[mustSelectFromDropdown]',
@@ -11,7 +11,7 @@ export class MustSelectFromDropdownValidatorDirective implements Validator {
     @Input('mustSelectFromDropdownElementMatcher') elementMatcher: (element: IDropdownElement, match: string) => boolean;
     @Input('mustSelectFromDropdownElementDisplayWith') elementDisplayWith: (element: IDropdownElement) => string;
 
-    validate(control: FormControl) {
+    validate(control: UntypedFormControl) {
         if (!control || !control.value) {
             return null;
         }

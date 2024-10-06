@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -16,7 +16,7 @@ import { AuthenticationService } from '../../../Services/Authentication/authenti
 import { PermissionsService } from '../../../Services/permissions.service';
 
 function matchingPasswords(passwordKey: string, confirmPasswordKey: string) {
-    return (group: FormGroup): { [key: string]: any } => {
+    return (group: UntypedFormGroup): { [key: string]: any } => {
         const password = group.controls[passwordKey];
         const confirmPassword = group.controls[confirmPasswordKey];
         if (password.value !== confirmPassword.value) {
@@ -26,7 +26,7 @@ function matchingPasswords(passwordKey: string, confirmPasswordKey: string) {
 }
 
 function validDob(dayKey: string, monthKey: string, yearKey: string) {
-    return (group: FormGroup): { [key: string]: any } => {
+    return (group: UntypedFormGroup): { [key: string]: any } => {
         if (group.controls[dayKey].value === '' || group.controls[monthKey].value === '' || group.controls[yearKey].value === '') {
             return;
         }
@@ -76,7 +76,7 @@ export class ApplicationIdentityComponent implements OnInit {
     @ViewChild('day') dobDay: ElementRef;
     @ViewChild('month') dobMonth: ElementRef;
     @ViewChild('year') dobYear: ElementRef;
-    formGroup: FormGroup;
+    formGroup: UntypedFormGroup;
     pending = false;
     confirmValidParentMatcher = new ConfirmValidParentMatcher();
     instantErrorStateMatcher = new InstantErrorStateMatcher();
@@ -109,7 +109,7 @@ export class ApplicationIdentityComponent implements OnInit {
 
     constructor(
         public dialog: MatDialog,
-        public formBuilder: FormBuilder,
+        public formBuilder: UntypedFormBuilder,
         private httpClient: HttpClient,
         private urls: UrlService,
         private authenticationService: AuthenticationService,

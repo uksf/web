@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { HttpHeaders } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
@@ -15,13 +15,13 @@ import { AccountService } from '../../../Services/account.service';
 })
 export class ApplicationEmailConfirmationComponent {
     @Output() confirmedEvent = new EventEmitter();
-    formGroup: FormGroup;
+    formGroup: UntypedFormGroup;
     pending = false;
     resent = false;
 
     constructor(
         private httpClient: HttpClient,
-        public formBuilder: FormBuilder,
+        public formBuilder: UntypedFormBuilder,
         private urls: UrlService,
         public dialog: MatDialog,
         public accountService: AccountService,
