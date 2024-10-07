@@ -64,16 +64,25 @@ export class ModpackReleaseService implements OnDestroy {
             .open(NewModpackReleaseModalComponent, {
                 data: { previousRelease: this.releases[0] }
             })
-            .componentInstance.completedEvent.subscribe((version: string) => {
-                this.httpClient.post(this.urls.apiUrl + `/modpack/releases/${version}`, {}).subscribe({
-                    next: callback,
-                    error: (error: UksfError) => {
-                        this.dialog.open(MessageModalComponent, {
-                            data: { message: error.error }
-                        });
-                    }
+            .componentInstance.successEvent.subscribe(callback);
+    }
+
+    createNewRelease(version: string, callback: () => void) {
+        this.httpClient.post(this.urls.apiUrl + `/modpack/releases/${version}`, {}).subscribe({
+            next: () => {
+                this.dialog.closeAll();
+                this.dialog.open(MessageModalComponent, {
+                    data: { message: `Version ${version} created` }
                 });
-            });
+                callback();
+            },
+            error: (error: UksfError) => {
+                this.dialog.closeAll();
+                this.dialog.open(MessageModalComponent, {
+                    data: { message: error.error }
+                });
+            }
+        });
     }
 
     release(version: string, callback: () => void) {

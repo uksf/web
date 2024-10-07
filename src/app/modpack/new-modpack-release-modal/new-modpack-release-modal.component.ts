@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Inject, Output } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { InstantErrorStateMatcher } from '../../Services/formhelper.service';
 import { ModpackRelease } from '../models/ModpackRelease';
+import { ModpackReleaseService } from '../modpackRelease.service';
 
 @Component({
     selector: 'app-new-modpack-release-modal',
@@ -10,7 +11,7 @@ import { ModpackRelease } from '../models/ModpackRelease';
     styleUrls: ['./new-modpack-release-modal.component.scss']
 })
 export class NewModpackReleaseModalComponent {
-    @Output() completedEvent: any = new EventEmitter<string>();
+    @Output() successEvent: any = new EventEmitter();
     form: UntypedFormGroup;
     instantErrorStateMatcher: InstantErrorStateMatcher = new InstantErrorStateMatcher();
     previousVersion: string;
@@ -21,7 +22,7 @@ export class NewModpackReleaseModalComponent {
 
     constructor(
         private formBuilder: UntypedFormBuilder,
-        public dialogRef: MatDialogRef<NewModpackReleaseModalComponent>,
+        private modpackReleaseService: ModpackReleaseService,
         @Inject(MAT_DIALOG_DATA)
         public data: {
             previousRelease: ModpackRelease;
@@ -39,10 +40,11 @@ export class NewModpackReleaseModalComponent {
         });
     }
 
-    run() {
+    create() {
         this.submitting = true;
-        const formValue = this.form.getRawValue();
-        this.dialogRef.close();
-        this.completedEvent.emit(formValue.version);
+        const formValue: any = this.form.getRawValue();
+        this.modpackReleaseService.createNewRelease(formValue.version, () => {
+            this.successEvent.emit();
+        });
     }
 }

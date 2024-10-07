@@ -17,7 +17,7 @@
         </mat-radio-group>
         <app-flex-filler></app-flex-filler>
         <div class="button-container">
-            <button (click)="run()" [disabled]="submitting || !form.valid" color="primary" mat-raised-button type="button">Create</button>
+            <app-button (click)="create()" [disabled]="!form.valid" [pending]="submitting">Create</app-button>
         </div>
     </form>
 </mat-dialog-content>
