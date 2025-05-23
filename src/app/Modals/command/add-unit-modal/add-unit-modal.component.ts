@@ -1,13 +1,13 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators} from '@angular/forms';
-import {InstantErrorStateMatcher} from 'app/Services/formhelper.service';
-import {Observable, of, timer} from 'rxjs';
-import {map, switchMap} from 'rxjs/operators';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {UrlService} from '../../../Services/url.service';
-import {MAT_DIALOG_DATA, MatDialog} from '@angular/material/dialog';
-import {ResponseUnit, UnitBranch} from '../../../Models/Units';
-import {ConfirmationModalComponent} from '../../confirmation-modal/confirmation-modal.component';
+import { Component, Inject, OnInit } from '@angular/core';
+import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { InstantErrorStateMatcher } from 'app/Services/formhelper.service';
+import { Observable, of, timer } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { UrlService } from '../../../Services/url.service';
+import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
+import { ResponseUnit, UnitBranch } from '../../../Models/Units';
+import { ConfirmationModalComponent } from '../../confirmation-modal/confirmation-modal.component';
 
 @Component({
     selector: 'app-add-unit-modal',
@@ -20,21 +20,21 @@ export class AddUnitModalComponent implements OnInit {
     pending = false;
     branchTypes = [
         { value: UnitBranch.COMBAT, viewValue: 'Combat' },
-        { value: UnitBranch.AUXILIARY, viewValue: 'Auxiliary' },
+        { value: UnitBranch.AUXILIARY, viewValue: 'Auxiliary' }
     ];
     validationMessages = {
         name: [
             { type: 'required', message: 'Name is required' },
-            { type: 'unitTaken', message: 'That name is already in use' },
+            { type: 'unitTaken', message: 'That name is already in use' }
         ],
         shortname: [
             { type: 'required', message: 'Short name is required' },
-            { type: 'unitTaken', message: 'That name is already in use' },
+            { type: 'unitTaken', message: 'That name is already in use' }
         ],
         parent: [{ type: 'required', message: 'Parent is required' }],
         teamspeakGroup: [{ type: 'unitTaken', message: 'That TeamSpeak ID is already in use' }],
         discordRoleId: [{ type: 'unitTaken', message: 'That Discord ID is already in use' }],
-        callsign: [{ type: 'unitTaken', message: 'That callsign is already in use' }],
+        callsign: [{ type: 'unitTaken', message: 'That callsign is already in use' }]
     };
     units: ResponseUnit[];
     availableParentUnits: ResponseUnit[] = [];
@@ -52,7 +52,7 @@ export class AddUnitModalComponent implements OnInit {
             discordRoleId: ['', null, this.validateUnit.bind(this)],
             callsign: ['', null, this.validateUnit.bind(this)],
             icon: [''],
-            preferShortname: [false],
+            preferShortname: [false]
         });
         if (data) {
             this.edit = true;
@@ -74,6 +74,7 @@ export class AddUnitModalComponent implements OnInit {
     }
 
     resolveAvailableParentUnits() {
+        console.log(this.units);
         this.availableParentUnits = this.units.filter((x) => x.branch === this.form.controls['branch'].value);
         if (!this.edit) {
             this.form.controls['parent'].setValue(this.availableParentUnits[0].id);
@@ -82,7 +83,10 @@ export class AddUnitModalComponent implements OnInit {
                 return;
             }
 
+            console.log(this.unit);
+            console.log(this.availableParentUnits);
             this.availableParentUnits = this.availableParentUnits.filter((x) => x.id !== this.unit.id);
+            console.log(this.availableParentUnits);
             if (this.availableParentUnits.find((x) => x.id === this.unit.parent)) {
                 this.form.controls['parent'].setValue(this.unit.parent);
             } else {
@@ -123,8 +127,8 @@ export class AddUnitModalComponent implements OnInit {
             this.httpClient
                 .put(`${this.urls.apiUrl}/units/${this.unit.id}`, this.unit, {
                     headers: new HttpHeaders({
-                        'Content-Type': 'application/json',
-                    }),
+                        'Content-Type': 'application/json'
+                    })
                 })
                 .subscribe(() => {
                     this.dialog.closeAll();

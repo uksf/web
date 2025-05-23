@@ -53,7 +53,8 @@ export class AdminToolsComponent {
                 function: this.deleteGithubIssueCommand,
                 pending: false
             },
-            { key: 'reloadTeamspeak', title: 'Reload TeamSpeak', function: this.reloadTeamspeak, pending: false }
+            { key: 'reloadTeamspeak', title: 'Reload TeamSpeak', function: this.reloadTeamspeak, pending: false },
+            { key: 'emergencyCleanup', title: 'Emergency Cleanup Stuck Builds', function: this.emergencyCleanupStuckBuilds, pending: false }
         ];
         this.debugTools = [{ key: 'notification', title: 'Test Notification', function: this.testNotification, pending: false }];
 
@@ -128,6 +129,24 @@ export class AdminToolsComponent {
     testNotification(): void {
         let tool: Tool = this.debugTools.find((x: Tool): boolean => x.key === 'notification');
         this.httpClient.get(`${this.urlService.apiUrl}/debug/notifications-test`).subscribe(this.setPending(tool));
+    }
+
+    emergencyCleanupStuckBuilds(): void {
+        let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'emergencyCleanup');
+        this.httpClient.post(`${this.urlService.apiUrl}/modpack/builds/emergency-cleanup`, {}).subscribe({
+            next: (response: any): void => {
+                this.dialog.open(MessageModalComponent, {
+                    data: { message: response.message }
+                });
+                tool.pending = false;
+            },
+            error: (): void => {
+                this.dialog.open(MessageModalComponent, {
+                    data: { message: 'Failed to perform emergency cleanup' }
+                });
+                tool.pending = false;
+            }
+        });
     }
 
     impersonate(): void {
