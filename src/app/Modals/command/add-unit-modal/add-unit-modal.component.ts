@@ -20,7 +20,8 @@ export class AddUnitModalComponent implements OnInit {
     pending = false;
     branchTypes = [
         { value: UnitBranch.COMBAT, viewValue: 'Combat' },
-        { value: UnitBranch.AUXILIARY, viewValue: 'Auxiliary' }
+        { value: UnitBranch.AUXILIARY, viewValue: 'Auxiliary' },
+        { value: UnitBranch.SECONDARY, viewValue: 'Secondary' }
     ];
     validationMessages = {
         name: [

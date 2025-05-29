@@ -95,6 +95,7 @@ import { AdminAuditLogsComponent } from './Components/admin/admin-audit-logs/adm
 import { OpordPageComponent } from './Pages/opord-page/opord-page.component';
 import { UnitsOrbatComponent } from './Components/units/units-orbat/units-orbat.component';
 import { UnitsOrbatAuxComponent } from './Components/units/units-orbat-aux/units-orbat-aux.component';
+import { UnitsOrbatSecondaryComponent } from './Components/units/units-orbat-secondary/units-orbat-secondary.component';
 import { PersonnelRosterComponent } from './Components/personnel/personnel-roster/personnel-roster.component';
 import { AccountService } from './Services/account.service';
 import { PermissionsService } from './Services/permissions.service';
@@ -340,6 +341,7 @@ export function tokenGetter() {
         UnitPageComponent,
         UnitsOrbatComponent,
         UnitsOrbatAuxComponent,
+        UnitsOrbatSecondaryComponent,
         PersonnelRosterComponent,
         ConnectTeamspeakModalComponent,
         ChangeFirstLastModalComponent,

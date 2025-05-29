@@ -12,6 +12,7 @@ import { ConnectionContainer, SignalRService } from 'app/Services/signalr.servic
 import { AccountService } from 'app/Services/account.service';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
 import { RequestModalData } from '../../../Models/Shared';
+import { UnitBranch } from '../../../Models/Units';
 
 @Component({
     selector: 'app-command-requests',
@@ -93,7 +94,7 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
     transferRequest(): void {
         const data: RequestModalData = {
             ids: [],
-            allowAuxiliaryUnits: true
+            allowedBranches: [UnitBranch.COMBAT, UnitBranch.AUXILIARY, UnitBranch.SECONDARY]
         };
         const dialog = this.dialog.open(RequestTransferModalComponent, {
             data: data

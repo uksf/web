@@ -1,4 +1,6 @@
+import { UnitBranch } from './Units';
+
 export interface RequestModalData {
     ids: string[];
-    allowAuxiliaryUnits?: boolean;
+    allowedBranches?: UnitBranch[];
 }

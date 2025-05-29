@@ -57,6 +57,7 @@
 @import 'app/Components/personnel/personnel-roster/personnel-roster.component.scss-theme';
 @import 'app/Components/units/units-orbat/units-orbat.component.scss-theme.scss';
 @import 'app/Components/units/units-orbat-aux/units-orbat-aux.component.scss-theme.scss';
+@import 'app/Components/units/units-orbat-secondary/units-orbat-secondary.component.scss-theme.scss';
 
 // Modals
 @import 'app/Modals/command/add-unit-modal/add-unit-modal.component.scss-theme.scss';
@@ -123,6 +124,7 @@
     @include personnel-roster-component-theme($theme);
     @include units-orbat-component-theme($theme);
     @include units-orbat-aux-component-theme($theme);
+    @include units-orbat-secondary-component-theme($theme);
 
     // Modals
     @include add-unit-modal-component-theme($theme);

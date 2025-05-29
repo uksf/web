@@ -2,10 +2,10 @@
     <app-main-content-area style="grid-column: span 3">
         <app-command-page></app-command-page>
         <div class="flex-container">
-            <div class="spinner-container" *ngIf="!combat || !auxiliary">
+            <div class="spinner-container" *ngIf="!combat || !auxiliary || !secondary">
                 <mat-spinner></mat-spinner>
             </div>
-            <div *ngIf="combat && auxiliary">
+            <div *ngIf="combat && auxiliary && secondary">
                 <div>
                     <button mat-raised-button color="primary" (click)="addUnit()">Add Unit</button>
                 </div>
@@ -20,6 +20,12 @@
                         <h3>Auxiliary Units</h3>
                         <mat-card>
                             <tree-root #auxiliaryUnitsTree [nodes]="auxiliary" [options]="options" (activate)="editUnit($event)" (moveNode)="onMove($event)"></tree-root>
+                        </mat-card>
+                    </div>
+                    <div class="column-container">
+                        <h3>Secondary Units</h3>
+                        <mat-card>
+                            <tree-root #secondaryUnitsTree [nodes]="secondary" [options]="options" (activate)="editUnit($event)" (moveNode)="onMove($event)"></tree-root>
                         </mat-card>
                     </div>
                 </div>

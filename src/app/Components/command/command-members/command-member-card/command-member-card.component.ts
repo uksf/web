@@ -10,6 +10,7 @@ import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../../Services/url.service';
 import { EditMemberTrainingModalData } from '../../../../Models/Training';
 import { EditMemberTrainingModalComponent } from '../../../../Modals/command/edit-member-training-modal/edit-member-training-modal.component';
+import { UnitBranch } from '../../../../Models/Units';
 
 @Component({
     selector: 'app-command-member-card',
@@ -47,7 +48,8 @@ export class CommandMemberCardComponent implements OnInit {
 
     editUnit() {
         const data: RequestModalData = {
-            ids: [this.member.id]
+            ids: [this.member.id],
+            allowedBranches: [UnitBranch.COMBAT, UnitBranch.AUXILIARY, UnitBranch.SECONDARY]
         };
         this.dialog.open(RequestTransferModalComponent, {
             data: data

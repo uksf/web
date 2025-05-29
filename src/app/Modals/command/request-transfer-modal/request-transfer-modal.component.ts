@@ -4,11 +4,11 @@ import { NgForm } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, forkJoin, of } from 'rxjs';
 import { IDropdownElement, mapFromElement } from '../../../Components/elements/dropdown-base/dropdown-base.component';
 import { Account, BasicAccount } from '../../../Models/Account';
 import { CommandRequest } from '../../../Models/CommandRequest';
-import { Unit } from '../../../Models/Units';
+import { Unit, UnitBranch } from '../../../Models/Units';
 import { SelectionListComponent } from '../../../Components/elements/selection-list/selection-list.component';
 import { RequestModalData } from '../../../Models/Shared';
 
@@ -21,7 +21,7 @@ export class RequestTransferModalComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;
     @ViewChild('accountList', { read: SelectionListComponent }) accountList: SelectionListComponent;
     pending: boolean = false;
-    allowAuxiliaryUnits: boolean = false;
+    allowedBranches: UnitBranch[] = [UnitBranch.COMBAT];
     preSelection: string[] = [];
     model: FormModel = {
         accounts: [],
@@ -37,7 +37,11 @@ export class RequestTransferModalComponent implements OnInit {
     constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService, @Inject(MAT_DIALOG_DATA) public data: RequestModalData) {
         if (data) {
             this.preSelection = data.ids;
-            this.allowAuxiliaryUnits = data.allowAuxiliaryUnits;
+            
+            // Use allowedBranches if provided, otherwise default to combat only
+            if (data.allowedBranches) {
+                this.allowedBranches = data.allowedBranches;
+            }
         }
     }
 
@@ -54,12 +58,42 @@ export class RequestTransferModalComponent implements OnInit {
             }
         });
 
-        let unitsUrl = this.allowAuxiliaryUnits ? 'units' : 'units?filter=combat';
-        this.httpClient.get(`${this.urlService.apiUrl}/${unitsUrl}`).subscribe({
-            next: (units: Unit[]) => {
-                this.units.next(units.map(Unit.mapToElement));
-            }
-        });
+        // Fetch units based on allowed branches
+        if (this.allowedBranches.length === 3) {
+            // If all branches are allowed, fetch without filter
+            this.httpClient.get<Unit[]>(`${this.urlService.apiUrl}/units`).subscribe({
+                next: (units: Unit[]) => {
+                    this.units.next(units.map(Unit.mapToElement));
+                }
+            });
+        } else {
+            // Make separate API calls for each branch since the API only supports one filter at a time
+            const requests = this.allowedBranches.map(branch => {
+                const branchName = this.getBranchName(branch);
+                return this.httpClient.get<Unit[]>(`${this.urlService.apiUrl}/units?filter=${branchName}`);
+            });
+
+            forkJoin(requests).subscribe({
+                next: (branchResults) => {
+                    // Combine results from all branch requests using concat instead of flat() for compatibility
+                    const allUnits = [].concat(...branchResults);
+                    this.units.next(allUnits.map(Unit.mapToElement));
+                },
+                error: (error) => {
+                    console.error('Error fetching units:', error);
+                    this.units.next([]);
+                }
+            });
+        }
+    }
+
+    private getBranchName(branch: UnitBranch): string {
+        switch (branch) {
+            case UnitBranch.COMBAT: return 'combat';
+            case UnitBranch.AUXILIARY: return 'auxiliary';
+            case UnitBranch.SECONDARY: return 'secondary';
+            default: return '';
+        }
     }
 
     onSelectAccount() {

@@ -16,6 +16,7 @@ import { RequestUnitUpdateOrder, RequestUnitUpdateParent, ResponseUnit, UnitTree
 export class CommandUnitsComponent implements OnInit {
     @ViewChild('combatUnitsTree') combatUnitsTree: TreeNode;
     @ViewChild('auxiliaryUnitsTree') auxiliaryUnitsTree: TreeNode;
+    @ViewChild('secondaryUnitsTree') secondaryUnitsTree: TreeNode;
     options: ITreeOptions = {
         actionMapping: {
             mouse: {
@@ -31,6 +32,7 @@ export class CommandUnitsComponent implements OnInit {
     updatingOrder = false;
     combat: any[];
     auxiliary: any[];
+    secondary: any[];
 
     constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private permissions: PermissionsService) {
         if (permissions.hasPermission(Permissions.ADMIN)) {
@@ -54,6 +56,7 @@ export class CommandUnitsComponent implements OnInit {
         this.updatingOrder = false;
         this.combatUnitsTree.treeModel.expandAll();
         this.auxiliaryUnitsTree.treeModel.expandAll();
+        this.secondaryUnitsTree.treeModel.expandAll();
         if (this.combatUnitsTree.treeModel.getFocusedNode()) {
             this.combatUnitsTree.treeModel.getFocusedNode().toggleActivated();
             this.combatUnitsTree.treeModel.getFocusedNode().blur();
@@ -62,12 +65,17 @@ export class CommandUnitsComponent implements OnInit {
             this.auxiliaryUnitsTree.treeModel.getFocusedNode().toggleActivated();
             this.auxiliaryUnitsTree.treeModel.getFocusedNode().blur();
         }
+        if (this.secondaryUnitsTree.treeModel.getFocusedNode()) {
+            this.secondaryUnitsTree.treeModel.getFocusedNode().toggleActivated();
+            this.secondaryUnitsTree.treeModel.getFocusedNode().blur();
+        }
     }
 
     getUnits() {
         this.httpClient.get(`${this.urls.apiUrl}/units/tree`).subscribe((response: UnitTreeDataSet) => {
             this.combat = response.combatNodes;
             this.auxiliary = response.auxiliaryNodes;
+            this.secondary = response.secondaryNodes;
             setTimeout(() => {
                 this.resetTree();
             }, 100);

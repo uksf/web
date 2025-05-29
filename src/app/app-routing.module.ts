@@ -16,6 +16,7 @@ import { AdminErrorLogsComponent } from './Components/admin/admin-error-logs/adm
 import { AdminAuditLogsComponent } from './Components/admin/admin-audit-logs/admin-audit-logs.component';
 import { UnitsOrbatComponent } from './Components/units/units-orbat/units-orbat.component';
 import { UnitsOrbatAuxComponent } from './Components/units/units-orbat-aux/units-orbat-aux.component';
+import { UnitsOrbatSecondaryComponent } from './Components/units/units-orbat-secondary/units-orbat-secondary.component';
 import { PersonnelRosterComponent } from './Components/personnel/personnel-roster/personnel-roster.component';
 import { NgxPermissionsGuard } from 'ngx-permissions';
 import { CommandUnitsComponent } from './Components/command/command-units/command-units.component';
@@ -283,6 +284,17 @@ const appRoutes: Routes = [
     {
         path: 'units/auxiliary',
         component: UnitsOrbatAuxComponent,
+        data: {
+            permissions: {
+                except: Permissions.UNLOGGED,
+                redirectTo: loginRedirect
+            }
+        },
+        canActivate: [NgxPermissionsGuard]
+    },
+    {
+        path: 'units/secondary',
+        component: UnitsOrbatSecondaryComponent,
         data: {
             permissions: {
                 except: Permissions.UNLOGGED,

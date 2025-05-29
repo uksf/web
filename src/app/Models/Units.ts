@@ -36,7 +36,8 @@ export class Unit {
 
 export enum UnitBranch {
     COMBAT,
-    AUXILIARY
+    AUXILIARY,
+    SECONDARY
 }
 
 export interface ResponseUnit extends Unit {
@@ -54,6 +55,7 @@ export interface ResponseUnitMember {
 export interface UnitTreeDataSet {
     auxiliaryNodes: Unit[];
     combatNodes: Unit[];
+    secondaryNodes: Unit[];
 }
 
 export interface ResponseUnitChartNode {

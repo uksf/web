@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../../Services/url.service';
 import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
 import { InstantErrorStateMatcher } from '../../../Services/formhelper.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, forkJoin } from 'rxjs';
 import { IDropdownElement, mapFromElement } from '../../../Components/elements/dropdown-base/dropdown-base.component';
 import { BasicAccount } from '../../../Models/Account';
 import { Unit } from '../../../Models/Units';
@@ -50,9 +50,21 @@ export class RequestUnitRemovalModalComponent implements OnInit {
             return;
         }
 
-        this.httpClient.get(`${this.urlService.apiUrl}/units?filter=auxiliary&accountId=${mapFromElement(BasicAccount, element).id}`).subscribe({
-            next: (units: Unit[]) => {
-                this.units.next(units.map(Unit.mapToElement));
+        const accountId = mapFromElement(BasicAccount, element).id;
+        
+        // Make separate API calls for auxiliary and secondary units since the API only supports one filter at a time
+        const auxiliaryRequest = this.httpClient.get<Unit[]>(`${this.urlService.apiUrl}/units?filter=auxiliary&accountId=${accountId}`);
+        const secondaryRequest = this.httpClient.get<Unit[]>(`${this.urlService.apiUrl}/units?filter=secondary&accountId=${accountId}`);
+
+        forkJoin([auxiliaryRequest, secondaryRequest]).subscribe({
+            next: ([auxiliaryUnits, secondaryUnits]) => {
+                // Combine the results from both calls
+                const allUnits = [...auxiliaryUnits, ...secondaryUnits];
+                this.units.next(allUnits.map(Unit.mapToElement));
+            },
+            error: (error) => {
+                console.error('Error fetching units:', error);
+                this.units.next([]);
             }
         });
     }
