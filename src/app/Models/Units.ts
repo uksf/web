@@ -1,6 +1,13 @@
 import { Account } from './Account';
 import { IDropdownElement } from '../Components/elements/dropdown-base/dropdown-base.component';
 
+export interface ChainOfCommand {
+    oneIC: string | null;
+    twoIC: string | null;
+    threeIC: string | null;
+    ncoIC: string | null;
+}
+
 export class Unit {
     id: string;
     branch: UnitBranch;
@@ -15,6 +22,7 @@ export class Unit {
     order: number;
     members: string[];
     roles: { [id: string]: string };
+    chainOfCommand: ChainOfCommand;
 
     parentUnit: Unit;
     children: Unit[];
