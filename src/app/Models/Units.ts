@@ -2,10 +2,10 @@ import { Account } from './Account';
 import { IDropdownElement } from '../Components/elements/dropdown-base/dropdown-base.component';
 
 export interface ChainOfCommand {
-    oneIC: string | null;
-    twoIC: string | null;
-    threeIC: string | null;
-    ncoIC: string | null;
+    first: string | null;
+    second: string | null;
+    third: string | null;
+    nco: string | null;
 }
 
 export class Unit {

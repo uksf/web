@@ -34,6 +34,9 @@ export class RequestUnitRoleModalComponent implements OnInit {
         reason: [{ type: 'required', message: () => 'A reason for the unit role assignment is required' }]
     };
 
+    // Store the actual Unit objects to access chainOfCommand data
+    private unitObjects: Unit[] = [];
+
     constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService) {}
 
     ngOnInit() {
@@ -52,11 +55,13 @@ export class RequestUnitRoleModalComponent implements OnInit {
         if (element === null) {
             this.units.next([]);
             this.roles.next([]);
+            this.unitObjects = [];
             return;
         }
 
         this.httpClient.get(`${this.urlService.apiUrl}/units?accountId=${mapFromElement(BasicAccount, element).id}`).subscribe({
             next: (units: Unit[]) => {
+                this.unitObjects = units;
                 this.units.next(units.map(Unit.mapToElement));
             }
         });
@@ -68,15 +73,41 @@ export class RequestUnitRoleModalComponent implements OnInit {
             return;
         }
 
-        const accountId = mapFromElement(BasicAccount, this.model.account).id;
-        const unitId = mapFromElement(Unit, element).id;
-        this.httpClient.get(`${this.urlService.apiUrl}/roles?id=${accountId}&unitId=${unitId}`).subscribe({
-            next: (rolesDataset: RolesDataset) => {
-                const elements = rolesDataset.unitRoles.map(Role.mapToElement);
-                elements.unshift({ value: 'None', displayValue: 'None' });
-                this.roles.next(elements);
-            }
-        });
+        const selectedAccountId = mapFromElement(BasicAccount, this.model.account).id;
+        const selectedUnit = this.unitObjects.find(unit => unit.id === element.value);
+        
+        if (!selectedUnit) {
+            this.roles.next([]);
+            return;
+        }
+
+        // Build available roles from chain of command
+        const availableRoles: IDropdownElement[] = [];
+        
+        // Add "None" option to unset role
+        availableRoles.push({ value: 'None', displayValue: 'None' });
+
+        // Check which positions are available based on chainOfCommand
+        const chainOfCommand = selectedUnit.chainOfCommand;
+        
+        // Only show positions that are either empty or not occupied by the selected member
+        if (!chainOfCommand.first || chainOfCommand.first !== selectedAccountId) {
+            availableRoles.push({ value: '1iC', displayValue: '1iC' });
+        }
+        
+        if (!chainOfCommand.second || chainOfCommand.second !== selectedAccountId) {
+            availableRoles.push({ value: '2iC', displayValue: '2iC' });
+        }
+        
+        if (!chainOfCommand.third || chainOfCommand.third !== selectedAccountId) {
+            availableRoles.push({ value: '3iC', displayValue: '3iC' });
+        }
+        
+        if (!chainOfCommand.nco || chainOfCommand.nco !== selectedAccountId) {
+            availableRoles.push({ value: 'NCOiC', displayValue: 'NCOiC' });
+        }
+
+        this.roles.next(availableRoles);
     }
 
     submit() {
