@@ -15,6 +15,15 @@
 .ranks-list-item {
     font-size: 16px;
     width: fit-content;
+
+    &.header {
+        display: flex;
+        background-color: transparent;
+
+        span {
+            font-weight: bold;
+        }
+    }
 }
 
 .handle {
@@ -31,6 +40,11 @@
     width: 800px;
     margin-bottom: 1px;
     height: 36px;
+}
+
+.filler {
+    flex: 1;
+    flex-basis: 5%;
 }
 
 .name {

@@ -12,6 +12,13 @@
                     </div>
                     <br />
                     <div class="ranks-list" cdkDropList (cdkDropListDropped)="onMove($event)" [cdkDropListDisabled]="updatingOrder" [class.disabled]="updatingOrder">
+                        <mat-card class="ranks-list-item header">
+                            <span class="filler"></span>
+                            <span class="name" style="flex-basis: 38%">Name</span>
+                            <span class="abbreviation" style="flex-basis: 19%">Abbreviation</span>
+                            <span class="teamspeakGroup" style="flex-basis: 14%">TS Group ID</span>
+                            <span class="discordRoleId" style="flex-basis: 27%">Discord Role ID</span>
+                        </mat-card>
                         <div (cdkDragStarted)="onDragStarted($event)" *ngFor="let rank of ranks" cdkDrag>
                             <mat-card class="ranks-list-item">
                                 <span class="handle" cdkDragHandle>=</span>

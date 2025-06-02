@@ -18,7 +18,7 @@
                             <span class="teamspeakGroup">TS Group ID</span>
                             <span class="filler"></span>
                         </mat-card>
-                        <div *ngFor="let training of trainings" cdkDrag>
+                        <div *ngFor="let training of trainings">
                             <mat-card class="trainings-list-item">
                                 <app-inline-edit
                                     (finishedEvent)="editTraining($event)"
