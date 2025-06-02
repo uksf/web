@@ -54,7 +54,7 @@ export class RequestRoleModalComponent implements OnInit {
 
         this.httpClient.get(`${this.urlService.apiUrl}/roles`).subscribe({
             next: (rolesDataset: RolesDataset) => {
-                const elements = rolesDataset.individualRoles.map(Role.mapToElement);
+                const elements = rolesDataset.roles.map(Role.mapToElement);
                 elements.unshift({ value: 'None', displayValue: 'None' });
                 this.roles.next(elements);
             }

@@ -9,7 +9,7 @@ import { BehaviorSubject } from 'rxjs';
 import { IDropdownElement, mapFromElement } from '../../../Components/elements/dropdown-base/dropdown-base.component';
 import { BasicAccount } from '../../../Models/Account';
 import { CommandRequest } from '../../../Models/CommandRequest';
-import { Role, RolesDataset } from '../../../Models/Role';
+import { Role } from '../../../Models/Role';
 import { Unit } from '../../../Models/Units';
 
 @Component({

@@ -23,6 +23,5 @@ export class Role {
 }
 
 export interface RolesDataset {
-    individualRoles: Role[];
-    unitRoles: Role[];
+    roles: Role[];
 }
