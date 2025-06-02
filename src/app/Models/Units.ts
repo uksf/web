@@ -57,7 +57,7 @@ export interface ResponseUnit extends Unit {
 export interface ResponseUnitMember {
     name: string;
     role: string;
-    unitRole: string;
+    chainOfCommandPosition: string;
 }
 
 export interface UnitTreeDataSet {

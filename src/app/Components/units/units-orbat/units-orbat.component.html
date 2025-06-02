@@ -17,7 +17,7 @@
                                 <tr *ngFor="let unitMember of node.data.members">
                                     <div class="row-container">
                                         <td style="padding-right: 3px">
-                                            <b class="unit-role">{{ unitMember.unitRole }}</b>
+                                            <b class="unit-role">{{ unitMember.chainOfCommandPosition?.charAt(0) }}</b>
                                         </td>
                                         <app-flex-filler></app-flex-filler>
                                         <td class="name">{{ unitMember.name }}</td>

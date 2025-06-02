@@ -110,7 +110,7 @@ import { RequestLoaModalComponent } from './Modals/command/request-loa-modal/req
 import { RequestDischargeModalComponent } from './Modals/command/request-discharge-modal/request-discharge-modal.component';
 import { RequestRoleModalComponent } from './Modals/command/request-role-modal/request-role-modal.component';
 import { RequestTransferModalComponent } from './Modals/command/request-transfer-modal/request-transfer-modal.component';
-import { RequestUnitRoleModalComponent } from './Modals/command/request-unit-role-modal/request-unit-role-modal.component';
+import { RequestChainOfCommandPositionModalComponent } from './Modals/command/request-chain-of-command-position-modal/request-chain-of-command-position-modal.component';
 import { CommandRequestsComponent } from './Components/command/command-requests/command-requests.component';
 import { AddUnitModalComponent } from './Modals/command/add-unit-modal/add-unit-modal.component';
 import { OperationsActivityComponent } from './Components/operations/operations-activity/operations-activity.component';
@@ -336,7 +336,7 @@ export function tokenGetter() {
         RequestRoleModalComponent,
         RequestLoaModalComponent,
         RequestDischargeModalComponent,
-        RequestUnitRoleModalComponent,
+        RequestChainOfCommandPositionModalComponent,
         RequestTransferModalComponent,
         UnitPageComponent,
         UnitsOrbatComponent,

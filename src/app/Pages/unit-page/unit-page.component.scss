@@ -9,9 +9,10 @@
         text-decoration: none;
     }
 
-    .mat-column-unitRole {
+    .mat-column-chainOfCommandPosition {
         flex: 0 0 70px;
         padding-left: 0;
         justify-content: space-evenly;
+        max-width: 75px;
     }
 }

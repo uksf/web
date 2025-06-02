@@ -13,7 +13,7 @@ import { ResponseUnit } from '../../Models/Units';
 })
 export class UnitPageComponent {
     unit: ResponseUnit;
-    displayedColumns = ['unitRole', 'name', 'role'];
+    displayedColumns = ['chainOfCommandPosition', 'name', 'role'];
     private id: string;
 
     constructor(private route: ActivatedRoute, private httpClient: HttpClient, private urls: UrlService, public dialog: MatDialog, private location: Location) {
@@ -23,10 +23,6 @@ export class UnitPageComponent {
                 this.unit = unit;
             });
         });
-    }
-
-    resolveUnitRole(unitRole: string): string {
-        return unitRole === 'N' ? 'NCOiC' : unitRole === '' ? '' : `${unitRole}iC`;
     }
 
     back() {

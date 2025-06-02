@@ -180,6 +180,6 @@ export interface IDropdownElement {
     disabled?: boolean;
 }
 
-export function mapFromElement<T>(type: { new (...args): T }, element: IDropdownElement): T {
+export function mapFromElement<T>(type: { new (...args: any[]): T }, element: IDropdownElement): T {
     return element === null ? null : new type(element);
 }

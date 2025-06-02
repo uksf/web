@@ -125,7 +125,7 @@ export class RequestLoaModalComponent implements OnInit {
             late: this.late
         };
         this.httpClient
-            .put(this.urlService.apiUrl + '/commandrequests/create/loa', body, {
+            .post(this.urlService.apiUrl + '/commandrequests/create/loa', body, {
                 headers: new HttpHeaders({
                     'Content-Type': 'application/json'
                 })

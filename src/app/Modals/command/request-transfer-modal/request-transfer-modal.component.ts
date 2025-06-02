@@ -138,7 +138,7 @@ export class RequestTransferModalComponent implements OnInit {
             };
 
             this.pending = true;
-            this.httpClient.put(`${this.urlService.apiUrl}/commandrequests/create/transfer`, commandRequest).subscribe({
+            this.httpClient.post(`${this.urlService.apiUrl}/commandrequests/create/transfer`, commandRequest).subscribe({
                 next: () => {
                     this.dialog.closeAll();
                     this.pending = false;

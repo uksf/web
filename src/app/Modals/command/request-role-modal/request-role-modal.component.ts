@@ -103,7 +103,7 @@ export class RequestRoleModalComponent implements OnInit {
             };
 
             this.pending = true;
-            this.httpClient.put(this.urlService.apiUrl + '/commandrequests/create/role', commandRequest).subscribe({
+            this.httpClient.post(this.urlService.apiUrl + '/commandrequests/create/role', commandRequest).subscribe({
                 next: () => {
                     this.dialog.closeAll();
                     this.pending = false;

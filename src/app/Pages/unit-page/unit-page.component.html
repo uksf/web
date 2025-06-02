@@ -26,9 +26,9 @@
             <h3>Members</h3>
             <div class="example-container mat-elevation-z8">
                 <mat-table [dataSource]="unit.unitMembers">
-                    <ng-container matColumnDef="unitRole">
+                    <ng-container matColumnDef="chainOfCommandPosition">
                         <mat-header-cell *matHeaderCellDef></mat-header-cell>
-                        <mat-cell *matCellDef="let element">{{ resolveUnitRole(element.unitRole) }}</mat-cell>
+                        <mat-cell *matCellDef="let element">{{ element.chainOfCommandPosition }}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="name">
                         <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>

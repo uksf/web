@@ -81,7 +81,7 @@ export class RequestUnitRemovalModalComponent implements OnInit {
         };
 
         this.pending = true;
-        this.httpClient.put(this.urlService.apiUrl + '/commandrequests/create/unitremoval', commandRequest).subscribe({
+        this.httpClient.post(this.urlService.apiUrl + '/commandrequests/create/unitremoval', commandRequest).subscribe({
             next: () => {
                 this.dialog.closeAll();
                 this.pending = false;

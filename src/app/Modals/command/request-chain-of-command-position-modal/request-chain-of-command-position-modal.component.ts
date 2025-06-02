@@ -13,25 +13,25 @@ import { Role, RolesDataset } from '../../../Models/Role';
 import { Unit } from '../../../Models/Units';
 
 @Component({
-    selector: 'app-request-unit-role-modal',
-    templateUrl: './request-unit-role-modal.component.html',
-    styleUrls: ['./request-unit-role-modal.component.scss', '../../../Pages/command-page/command-page.component.scss']
+    selector: 'app-request-chain-of-command-position-modal',
+    templateUrl: './request-chain-of-command-position-modal.component.html',
+    styleUrls: ['./request-chain-of-command-position-modal.component.scss', '../../../Pages/command-page/command-page.component.scss']
 })
-export class RequestUnitRoleModalComponent implements OnInit {
+export class RequestChainOfCommandPositionModalComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     pending = false;
     model: FormModel = {
         account: null,
         unit: null,
-        role: null,
+        position: null,
         reason: null
     };
     accounts: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
     units: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
-    roles: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
+    positions: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
     validationMessages = {
-        reason: [{ type: 'required', message: () => 'A reason for the unit role assignment is required' }]
+        reason: [{ type: 'required', message: () => 'A reason for the chain of command position assignment is required' }]
     };
 
     // Store the actual Unit objects to access chainOfCommand data
@@ -48,13 +48,13 @@ export class RequestUnitRoleModalComponent implements OnInit {
         });
 
         this.units.next([]);
-        this.roles.next([]);
+        this.positions.next([]);
     }
 
     onSelectAccount(element: IDropdownElement) {
         if (element === null) {
             this.units.next([]);
-            this.roles.next([]);
+            this.positions.next([]);
             this.unitObjects = [];
             return;
         }
@@ -69,7 +69,7 @@ export class RequestUnitRoleModalComponent implements OnInit {
 
     onSelectUnit(element: IDropdownElement) {
         if (element === null) {
-            this.roles.next([]);
+            this.positions.next([]);
             return;
         }
 
@@ -77,37 +77,37 @@ export class RequestUnitRoleModalComponent implements OnInit {
         const selectedUnit = this.unitObjects.find(unit => unit.id === element.value);
         
         if (!selectedUnit) {
-            this.roles.next([]);
+            this.positions.next([]);
             return;
         }
 
-        // Build available roles from chain of command
-        const availableRoles: IDropdownElement[] = [];
+        // Build available positions from chain of command
+        const availablePositions: IDropdownElement[] = [];
         
-        // Add "None" option to unset role
-        availableRoles.push({ value: 'None', displayValue: 'None' });
+        // Add "None" option to unset position
+        availablePositions.push({ value: 'None', displayValue: 'None' });
 
         // Check which positions are available based on chainOfCommand
         const chainOfCommand = selectedUnit.chainOfCommand;
         
         // Only show positions that are either empty or not occupied by the selected member
         if (!chainOfCommand.first || chainOfCommand.first !== selectedAccountId) {
-            availableRoles.push({ value: '1iC', displayValue: '1iC' });
+            availablePositions.push({ value: '1iC', displayValue: '1iC' });
         }
         
         if (!chainOfCommand.second || chainOfCommand.second !== selectedAccountId) {
-            availableRoles.push({ value: '2iC', displayValue: '2iC' });
+            availablePositions.push({ value: '2iC', displayValue: '2iC' });
         }
         
         if (!chainOfCommand.third || chainOfCommand.third !== selectedAccountId) {
-            availableRoles.push({ value: '3iC', displayValue: '3iC' });
+            availablePositions.push({ value: '3iC', displayValue: '3iC' });
         }
         
         if (!chainOfCommand.nco || chainOfCommand.nco !== selectedAccountId) {
-            availableRoles.push({ value: 'NCOiC', displayValue: 'NCOiC' });
+            availablePositions.push({ value: 'NCOiC', displayValue: 'NCOiC' });
         }
 
-        this.roles.next(availableRoles);
+        this.positions.next(availablePositions);
     }
 
     submit() {
@@ -118,12 +118,12 @@ export class RequestUnitRoleModalComponent implements OnInit {
         const commandRequest: CommandRequest = {
             recipient: mapFromElement(BasicAccount, this.model.account).id,
             value: mapFromElement(Role, this.model.unit).name,
-            secondaryValue: mapFromElement(Role, this.model.role).name,
+            secondaryValue: mapFromElement(Role, this.model.position).name,
             reason: this.model.reason
         };
 
         this.pending = true;
-        this.httpClient.put(this.urlService.apiUrl + '/commandrequests/create/unitrole', commandRequest).subscribe({
+        this.httpClient.post(this.urlService.apiUrl + '/commandrequests/create/chainofcommandposition', commandRequest).subscribe({
             next: () => {
                 this.dialog.closeAll();
                 this.pending = false;
@@ -146,7 +146,7 @@ export class RequestUnitRoleModalComponent implements OnInit {
         return mapFromElement(Unit, element).name;
     }
 
-    getRoleName(element: IDropdownElement): string {
+    getPositionName(element: IDropdownElement): string {
         return mapFromElement(Role, element).name;
     }
 }
@@ -154,6 +154,6 @@ export class RequestUnitRoleModalComponent implements OnInit {
 interface FormModel {
     account: IDropdownElement;
     unit: IDropdownElement;
-    role: IDropdownElement;
+    position: IDropdownElement;
     reason: string;
-}
+} 

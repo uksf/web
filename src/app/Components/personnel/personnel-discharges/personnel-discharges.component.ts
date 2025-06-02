@@ -124,7 +124,7 @@ export class PersonnelDischargesComponent {
             })
             .componentInstance.confirmEvent.subscribe((reason: string) => {
                 this.httpClient
-                    .put(this.urls.apiUrl + '/commandrequests/create/reinstate', JSON.stringify({ recipient: dischargeCollection.accountId, reason: reason }), {
+                    .post(this.urls.apiUrl + '/commandrequests/create/reinstate', JSON.stringify({ recipient: dischargeCollection.accountId, reason: reason }), {
                         headers: new HttpHeaders({
                             'Content-Type': 'application/json'
                         })

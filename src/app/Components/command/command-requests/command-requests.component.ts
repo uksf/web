@@ -5,7 +5,7 @@ import { UrlService } from '../../../Services/url.service';
 import { RequestRankModalComponent } from '../../../Modals/command/request-rank-modal/request-rank-modal.component';
 import { RequestTransferModalComponent } from '../../../Modals/command/request-transfer-modal/request-transfer-modal.component';
 import { RequestRoleModalComponent } from '../../../Modals/command/request-role-modal/request-role-modal.component';
-import { RequestUnitRoleModalComponent } from '../../../Modals/command/request-unit-role-modal/request-unit-role-modal.component';
+import { RequestChainOfCommandPositionModalComponent } from '../../../Modals/command/request-chain-of-command-position-modal/request-chain-of-command-position-modal.component';
 import { RequestDischargeModalComponent } from '../../../Modals/command/request-discharge-modal/request-discharge-modal.component';
 import { RequestUnitRemovalModalComponent } from 'app/Modals/command/request-unit-removal-modal/request-unit-removal-modal.component';
 import { ConnectionContainer, SignalRService } from 'app/Services/signalr.service';
@@ -17,7 +17,7 @@ import { UnitBranch } from '../../../Models/Units';
 @Component({
     selector: 'app-command-requests',
     templateUrl: './command-requests.component.html',
-    styleUrls: ['../../../Pages/command-page/command-page.component.scss', './command-requests.component.css']
+    styleUrls: ['../../../Pages/command-page/command-page.component.scss', './command-requests.component.scss']
 })
 export class CommandRequestsComponent implements OnInit, OnDestroy {
     reviewState = ReviewState;
@@ -118,8 +118,8 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
         });
     }
 
-    unitRoleRequest() {
-        const dialog = this.dialog.open(RequestUnitRoleModalComponent, {});
+    chainOfCommandPositionRequest() {
+        const dialog = this.dialog.open(RequestChainOfCommandPositionModalComponent, {});
         dialog.afterClosed().subscribe((_) => {
             this.getRequests();
         });

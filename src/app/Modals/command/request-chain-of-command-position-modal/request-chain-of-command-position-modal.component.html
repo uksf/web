@@ -1,9 +1,5 @@
-<h2 mat-dialog-title>Unit Role Request</h2>
+<h2 mat-dialog-title>Chain of Command Position Request</h2>
 <mat-dialog-content>
-    <p class="hint-text">
-        <span>The following form allows assignment of a command role inside a unit.</span>
-        <br /><span>This is not to be confused with an individual's role assignment, for example Gunner</span>
-    </p>
     <form #form="ngForm" (ngSubmit)="submit()">
         <app-autofocus-stop></app-autofocus-stop>
         <app-dropdown
@@ -40,18 +36,18 @@
         </app-dropdown>
         <br />
         <app-dropdown
-            #role="ngModel"
-            [(ngModel)]="model.role"
-            [elementName]="'Role'"
-            [elements]="roles"
-            [isDisabled]="roles.value.length === 0"
+            #position="ngModel"
+            [(ngModel)]="model.position"
+            [elementName]="'Position'"
+            [elements]="positions"
+            [isDisabled]="positions.value.length === 0"
             [isRequired]="true"
-            [placeholder]="'Select new role'"
-            id="role"
-            name="formRole"
+            [placeholder]="'Select new position'"
+            id="position"
+            name="formPosition"
         >
             <ng-template #element let-element>
-                {{ getRoleName(element) }}
+                {{ getPositionName(element) }}
             </ng-template>
         </app-dropdown>
         <br />
@@ -80,4 +76,4 @@
             <app-button (clicked)="submit()" [disabled]="!form.valid" [pending]="pending">Submit</app-button>
         </div>
     </form>
-</mat-dialog-content>
+</mat-dialog-content> 

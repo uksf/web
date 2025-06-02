@@ -100,7 +100,7 @@ export class RequestRankModalComponent implements OnInit {
 
             this.pending = true;
             this.httpClient
-                .put(`${this.urlService.apiUrl}/commandrequests/create/rank`, commandRequest, {
+                .post(`${this.urlService.apiUrl}/commandrequests/create/rank`, commandRequest, {
                     headers: new HttpHeaders({
                         'Content-Type': 'application/json'
                     })

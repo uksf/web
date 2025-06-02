@@ -51,7 +51,7 @@ export class RequestDischargeModalComponent implements OnInit {
 
         this.pending = true;
         this.httpClient
-            .put(`${this.urlService.apiUrl}/commandrequests/create/discharge`, commandRequest, {
+            .post(`${this.urlService.apiUrl}/commandrequests/create/discharge`, commandRequest, {
                 headers: new HttpHeaders({
                     'Content-Type': 'application/json'
                 })
