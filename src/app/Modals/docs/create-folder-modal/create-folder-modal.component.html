@@ -2,12 +2,29 @@
 <h2 *ngIf="initialData" mat-dialog-title>Edit folder</h2>
 <mat-dialog-content>
     <form #form="ngForm" (ngSubmit)="submit()" class="form-container">
-        <mat-form-field class="full-width">
-            <input #name="ngModel" [(ngModel)]="model.name" [errorStateMatcher]="instantErrorStateMatcher" id="name" matInput name="formName" placeholder="Folder name" required type="text" />
-            <mat-error *ngFor="let validation of validationMessages.name">
-                <mat-error *ngIf="name.hasError(validation.type)" class="error-message">{{ validation.message }}</mat-error>
-            </mat-error>
-        </mat-form-field>
+        <div class="basics-container">
+            <mat-form-field>
+                <input #name="ngModel" [(ngModel)]="model.name" [errorStateMatcher]="instantErrorStateMatcher" id="name" matInput name="formName" placeholder="Folder name" required type="text" />
+                <mat-error *ngFor="let validation of validationMessages.name">
+                    <mat-error *ngIf="name.hasError(validation.type)" class="error-message">{{ validation.message }}</mat-error>
+                </mat-error>
+            </mat-form-field>
+            <app-dropdown
+                #owner="ngModel"
+                [(ngModel)]="model.owner"
+                [elementName]="'Owner'"
+                [elements]="accounts"
+                [isRequired]="true"
+                [placeholder]="'Select owner'"
+                required
+                id="owner"
+                name="formOwner"
+            >
+                <ng-template #element let-element>
+                    {{ getAccountName(element) }}
+                </ng-template>
+            </app-dropdown>
+        </div>
         <div class="permissions-container">
             <app-docs-permissions [(ngModel)]="model.viewerPermissions" [initialData]="initialData?.roleBasedPermissions?.viewers" [inheritedPermissions]="inheritedPermissions?.viewers" [type]="'viewers'" name="formViewerPermissions"></app-docs-permissions>
             <app-docs-permissions [(ngModel)]="model.collaboratorPermissions" [initialData]="initialData?.roleBasedPermissions?.collaborators" [inheritedPermissions]="inheritedPermissions?.collaborators" [type]="'collaborators'" name="formCollaboratorPermissions"></app-docs-permissions>

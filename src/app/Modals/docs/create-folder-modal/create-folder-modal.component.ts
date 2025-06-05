@@ -9,8 +9,10 @@ import { InstantErrorStateMatcher } from '../../../Services/formhelper.service';
 import { IDropdownElement, mapFromElement } from '../../../Components/elements/dropdown-base/dropdown-base.component';
 import { Unit } from '../../../Models/Units';
 import { Rank } from '../../../Models/Rank';
-import { Observable } from 'rxjs';
+import { BasicAccount } from '../../../Models/Account';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { defaultHeaders } from '../../../Services/constants';
+import { AccountService } from '../../../Services/account.service';
 
 @Component({
     selector: 'app-create-folder-modal',
@@ -22,6 +24,7 @@ export class CreateFolderModalComponent implements OnInit {
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     model: FormModel = {
         name: '',
+        owner: null,
         viewerPermissions: {
             units: [],
             rank: null,
@@ -42,8 +45,9 @@ export class CreateFolderModalComponent implements OnInit {
     parent: string;
     inheritedPermissions: RoleBasedDocumentPermissions;
     initialData: InitialFolderData = null;
+    accounts: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
 
-    constructor(private httpClient: HttpClient, private urlService: UrlService, private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: FolderModalData) {
+    constructor(private httpClient: HttpClient, private urlService: UrlService, private dialog: MatDialog, private accountService: AccountService, @Inject(MAT_DIALOG_DATA) public data: FolderModalData) {
         this.parent = data.parent;
         this.inheritedPermissions = data.inheritedPermissions;
 
@@ -53,7 +57,23 @@ export class CreateFolderModalComponent implements OnInit {
         }
     }
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this.httpClient.get(`${this.urlService.apiUrl}/accounts/members`).subscribe({
+            next: (accounts: BasicAccount[]) => {
+                const elements = accounts.map(BasicAccount.mapToElement);
+                this.accounts.next(elements);
+                this.accounts.complete();
+
+                // Set default owner to current user for new folders, or populate from initialData for editing
+                if (this.initialData?.owner) {
+                    this.model.owner = elements.find(element => element.value === this.initialData.owner) || null;
+                } else {
+                    const currentUser = this.accountService.account;
+                    this.model.owner = elements.find(element => element.value === currentUser?.id) || null;
+                }
+            }
+        });
+    }
 
     submit(): void {
         this.pending = true;
@@ -61,6 +81,7 @@ export class CreateFolderModalComponent implements OnInit {
         const request: CreateFolderRequest = {
             parent: this.parent,
             name: this.model.name,
+            owner: mapFromElement(BasicAccount, this.model.owner).id,
             roleBasedPermissions: {
                 viewers: {
                     units: this.model.viewerPermissions.inherit ? [] : this.model.viewerPermissions.units.map((x) => mapFromElement(Unit, x).id),
@@ -100,10 +121,15 @@ export class CreateFolderModalComponent implements OnInit {
             }
         });
     }
+
+    getAccountName(element: IDropdownElement): string {
+        return mapFromElement(BasicAccount, element).displayName;
+    }
 }
 
 interface FormModel {
     name: string;
+    owner: IDropdownElement;
     viewerPermissions: {
         units: IDropdownElement[];
         rank: IDropdownElement;
@@ -127,5 +153,6 @@ export class FolderModalData {
 export class InitialFolderData {
     id: string;
     name?: string;
+    owner?: string;
     roleBasedPermissions?: RoleBasedDocumentPermissions;
 }

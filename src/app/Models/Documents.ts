@@ -48,12 +48,14 @@ export class PermissionRole {
 
 export class CreateDocumentRequest {
     name: string;
+    owner: string;
     roleBasedPermissions: RoleBasedDocumentPermissions;
 }
 
 export class CreateFolderRequest {
     parent: string;
     name: string;
+    owner: string;
     roleBasedPermissions: RoleBasedDocumentPermissions;
 }
 

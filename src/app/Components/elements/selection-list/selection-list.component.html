@@ -10,7 +10,10 @@
     </div>
     <mat-form-field [ngClass]="formFieldClass">
         <input #list formControlName="list" autocomplete="off" hidden tabindex="-1" name="list" />
-        <input #textInput formControlName="textInput" (ngModelChange)="onTextModelChange($event)" [matAutocomplete]="auto" [placeholder]="placeholder" [required]="required" matInput spellcheck="false" type="text" name="textInput" [errorStateMatcher]="listErrorStateMatcher" [disabled]="disabled" />
+        <input #textInput formControlName="textInput" [(ngModel)]="textModel" (ngModelChange)="onTextModelChange($event)" [matAutocomplete]="auto" [placeholder]="placeholder" [required]="required" matInput spellcheck="false" type="text" name="textInput" [errorStateMatcher]="listErrorStateMatcher" [disabled]="disabled" />
+        <button (click)="textModel = ''; onTextModelChange('')" *ngIf="textModel" aria-label="Clear" mat-button mat-icon-button matSuffix matTooltip="Clear">
+            <mat-icon>close</mat-icon>
+        </button>
         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelect($event)" [displayWith]="displayWith" [autoActiveFirstOption]="true">
             <cdk-virtual-scroll-viewport [maxBufferPx]="1000" [minBufferPx]="600" [ngStyle]="{ height: scrollPanelHeight }" itemSize="48">
                 <mat-option *cdkVirtualFor="let element of filteredElements | async; trackBy: trackBy" [matTooltipDisabled]="tooltip === null" [matTooltipShowDelay]="150" [matTooltip]="getElementTooltip(element)" [ngClass]="optionClass" [value]="element" [disabled]="getElementDisabled(element)">

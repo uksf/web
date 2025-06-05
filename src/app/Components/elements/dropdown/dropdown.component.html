@@ -18,6 +18,9 @@
             type="text"
             name="textInput"
         />
+        <button (click)="textModel = ''; onTextModelChange('')" *ngIf="textModel" aria-label="Clear" mat-button mat-icon-button matSuffix matTooltip="Clear">
+            <mat-icon>close</mat-icon>
+        </button>
         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelect($event)" [displayWith]="displayWith" [autoActiveFirstOption]="true">
             <cdk-virtual-scroll-viewport [maxBufferPx]="1000" [minBufferPx]="600" [ngStyle]="{ height: scrollPanelHeight }" itemSize="48">
                 <mat-option

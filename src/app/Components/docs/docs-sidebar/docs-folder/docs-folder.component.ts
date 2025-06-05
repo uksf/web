@@ -124,7 +124,7 @@ export class DocsFolderComponent {
             .open<CreateDocumentModalComponent, DocumentModalData>(CreateDocumentModalComponent, {
                 data: {
                     folderMetadata: this.folderMetadata,
-                    inheritedPermissions: this.folderMetadata.inheritedPermissions
+                    inheritedPermissions: this.folderMetadata.effectivePermissions
                 }
             })
             .afterClosed()

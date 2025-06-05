@@ -33,6 +33,17 @@
 
     .mat-form-field {
         width: 100%;
+        
+        .mat-icon-button {
+            background-color: transparent;
+            margin-left: -21px;
+
+            .mat-icon {
+                margin: 0;
+                height: 21px;
+                line-height: 21px;
+            }
+        }
     }
 }
 

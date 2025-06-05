@@ -8,7 +8,6 @@ import { Unit } from '../../../Models/Units';
 import { ControlContainer, ControlValueAccessor, UntypedFormGroup, NG_VALUE_ACCESSOR, NgForm } from '@angular/forms';
 import { PermissionRole } from '../../../Models/Documents';
 import { AccountService } from '../../../Services/account.service';
-import { Account } from '../../../Models/Account';
 
 export type PermissionsType = 'viewers' | 'collaborators';
 
@@ -45,7 +44,7 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
     private _customValues: FormModel | null = null; // Store custom values before inheriting
     private onChange: any = (): void => {};
     
-    constructor(private httpClient: HttpClient, private urlService: UrlService, private accountService: AccountService) {}
+    constructor(private httpClient: HttpClient, private urlService: UrlService) {}
 
     ngOnInit(): void {
         this.loadDropdownData();

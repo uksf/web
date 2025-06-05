@@ -125,13 +125,14 @@ export class DropdownBaseComponent implements OnInit {
 
     onTextModelChange(textModel) {
         let filterValue = typeof textModel === 'string' ? textModel : (<IDropdownElement>textModel).displayValue;
+        let filterValueLower = filterValue.toLowerCase();
 
         this.filteredElements = this.elements.pipe(
             startWith(''),
-            map(() => this.filterElements(filterValue.toLowerCase()))
+            map(() => this.filterElements(filterValueLower))
         );
 
-        const element = this.allElements.find((element: IDropdownElement) => this.elementMatcher(element, filterValue.toLowerCase()));
+        const element = this.allElements.find((element: IDropdownElement) => this.elementMatcher(element, filterValueLower));
         this.model = element ? element : null;
     }
 

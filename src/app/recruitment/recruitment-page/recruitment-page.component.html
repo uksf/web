@@ -126,7 +126,7 @@
                         <div class="history-header-part search">
                             <mat-form-field>
                                 <input (keyup)="filter()" [(ngModel)]="filterString" matInput matTooltip="Use operators 'AND' or 'OR' to combine filters" placeholder="Filter" />
-                                <button (click)="filterString = ''; filter(); $event.stopPropagation()" *ngIf="filterString" aria-label="Clear" mat-button mat-icon-button matSuffix>
+                                <button (click)="filterString = ''; filter(); $event.stopPropagation()" *ngIf="filterString" aria-label="Clear" mat-button mat-icon-button matSuffix matTooltip="Clear">
                                     <mat-icon>close</mat-icon>
                                 </button>
                             </mat-form-field>

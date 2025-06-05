@@ -10,6 +10,16 @@
             width: 100%;
         }
 
+        .basics-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+
+            app-dropdown {
+                flex: 1;
+            }
+        }
+
         .permissions-container {
             flex: 1;
             display: flex;
