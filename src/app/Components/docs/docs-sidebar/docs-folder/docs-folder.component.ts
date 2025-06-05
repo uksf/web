@@ -68,7 +68,8 @@ export class DocsFolderComponent {
         this.dialog
             .open<CreateFolderModalComponent, FolderModalData>(CreateFolderModalComponent, {
                 data: {
-                    parent: this.folderMetadata.id
+                    parent: this.folderMetadata.id,
+                    inheritedPermissions: this.folderMetadata.inheritedPermissions
                 }
             })
             .afterClosed()
@@ -82,8 +83,13 @@ export class DocsFolderComponent {
         this.dialog
             .open<CreateFolderModalComponent, FolderModalData>(CreateFolderModalComponent, {
                 data: {
-                    parent: this.folderMetadata.id,
-                    initialData: this.folderMetadata
+                    parent: this.folderMetadata.parent,
+                    inheritedPermissions: this.folderMetadata.inheritedPermissions,
+                    initialData: {
+                        id: this.folderMetadata.id,
+                        name: this.folderMetadata.name,
+                        roleBasedPermissions: this.folderMetadata.roleBasedPermissions
+                    }
                 }
             })
             .afterClosed()
@@ -117,7 +123,8 @@ export class DocsFolderComponent {
         this.dialog
             .open<CreateDocumentModalComponent, DocumentModalData>(CreateDocumentModalComponent, {
                 data: {
-                    folderMetadata: this.folderMetadata
+                    folderMetadata: this.folderMetadata,
+                    inheritedPermissions: this.folderMetadata.inheritedPermissions
                 }
             })
             .afterClosed()

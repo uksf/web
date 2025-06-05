@@ -1,7 +1,7 @@
 <h2 *ngIf="!initialData" mat-dialog-title>Create new document</h2>
 <h2 *ngIf="initialData" mat-dialog-title>Edit document</h2>
 <mat-dialog-content>
-    <form #form="ngForm" (ngSubmit)="submit()">
+    <form #form="ngForm" (ngSubmit)="submit()" class="form-container">
         <mat-form-field class="full-width">
             <input #name="ngModel" [(ngModel)]="model.name" [errorStateMatcher]="instantErrorStateMatcher" id="name" matInput name="formName" placeholder="Document name" required type="text" />
             <mat-error *ngFor="let validation of validationMessages.name">
@@ -9,13 +9,8 @@
             </mat-error>
         </mat-form-field>
         <div class="permissions-container">
-            <app-docs-permissions [(ngModel)]="model.readPermissions" [initialData]="initialData?.readPermissions" [type]="'read'" name="formReadPermissions"></app-docs-permissions>
-            <app-docs-permissions [(ngModel)]="model.writePermissions" [initialData]="initialData?.writePermissions" [type]="'write'" name="formWritePermissions"></app-docs-permissions>
-        </div>
-        <div class="hint">
-            <div>Selecting a rank will require members to be at least that rank to view/edit this document</div>
-            <div>Selecting units will require members to be in one of those units or their sub-units to view this document, or their parent units to edit this document</div>
-            <div>When both units and rank are selected, both are required for a member to have permission</div>
+            <app-docs-permissions [(ngModel)]="model.viewerPermissions" [initialData]="initialData?.roleBasedPermissions?.viewers" [inheritedPermissions]="inheritedPermissions?.viewers" [type]="'viewers'" name="formViewerPermissions"></app-docs-permissions>
+            <app-docs-permissions [(ngModel)]="model.collaboratorPermissions" [initialData]="initialData?.roleBasedPermissions?.collaborators" [inheritedPermissions]="inheritedPermissions?.collaborators" [type]="'collaborators'" name="formCollaboratorPermissions"></app-docs-permissions>
         </div>
         <app-model-value-debug [model]="model"></app-model-value-debug>
         <div class="button-container">

@@ -99,7 +99,12 @@ export class DocsDocumentComponent implements OnChanges {
             .open<CreateDocumentModalComponent, DocumentModalData>(CreateDocumentModalComponent, {
                 data: {
                     folderMetadata: this.folderMetadata,
-                    initialData: this.documentMetadata
+                    inheritedPermissions: this.documentMetadata.inheritedPermissions,
+                    initialData: {
+                        id: this.documentMetadata.id,
+                        name: this.documentMetadata.name,
+                        roleBasedPermissions: this.documentMetadata.roleBasedPermissions
+                    }
                 }
             })
             .afterClosed()

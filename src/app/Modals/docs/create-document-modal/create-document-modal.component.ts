@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
-import { CreateDocumentRequest, DocumentPermissions, FolderMetadata } from '../../../Models/Documents';
+import { CreateDocumentRequest, RoleBasedDocumentPermissions, FolderMetadata, PermissionRole } from '../../../Models/Documents';
 import { HttpClient } from '@angular/common/http';
 import { MessageModalComponent } from '../../message-modal/message-modal.component';
 import { NgForm } from '@angular/forms';
@@ -22,15 +22,17 @@ export class CreateDocumentModalComponent implements OnInit {
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     model: FormModel = {
         name: '',
-        readPermissions: {
+        viewerPermissions: {
             units: [],
             rank: null,
-            selectedUnitsOnly: false
+            inherit: false,
+            expandToSubUnits: true
         },
-        writePermissions: {
+        collaboratorPermissions: {
             units: [],
             rank: null,
-            selectedUnitsOnly: false
+            inherit: false,
+            expandToSubUnits: true
         }
     };
     validationMessages = {
@@ -38,10 +40,12 @@ export class CreateDocumentModalComponent implements OnInit {
     };
     pending: boolean = false;
     folderMetadata: FolderMetadata;
+    inheritedPermissions: RoleBasedDocumentPermissions;
     initialData: InitialDocumentData = null;
 
     constructor(private httpClient: HttpClient, private urlService: UrlService, private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: DocumentModalData) {
         this.folderMetadata = data.folderMetadata;
+        this.inheritedPermissions = data.inheritedPermissions;
 
         if (data?.initialData) {
             this.initialData = data.initialData;
@@ -51,77 +55,76 @@ export class CreateDocumentModalComponent implements OnInit {
 
     ngOnInit(): void {}
 
-    submit() {
-        if (!this.form.valid || this.pending) {
-            return;
-        }
+    submit(): void {
+        this.pending = true;
 
-        const createDocumentRequest: CreateDocumentRequest = {
+        const request: CreateDocumentRequest = {
             name: this.model.name,
-            readPermissions: {
-                units: this.model.readPermissions.units.map((x) => mapFromElement(Unit, x).id),
-                rank: mapFromElement(Rank, this.model.readPermissions.rank)?.name,
-                selectedUnitsOnly: this.model.readPermissions.selectedUnitsOnly
-            },
-            writePermissions: {
-                units: this.model.writePermissions.units.map((x) => mapFromElement(Unit, x).id),
-                rank: mapFromElement(Rank, this.model.writePermissions.rank)?.name,
-                selectedUnitsOnly: this.model.writePermissions.selectedUnitsOnly
+            roleBasedPermissions: {
+                viewers: {
+                    units: this.model.viewerPermissions.inherit ? [] : this.model.viewerPermissions.units.map((x) => mapFromElement(Unit, x).id),
+                    rank: this.model.viewerPermissions.inherit ? '' : (mapFromElement(Rank, this.model.viewerPermissions.rank)?.name || ''),
+                    expandToSubUnits: this.model.viewerPermissions.inherit ? true : this.model.viewerPermissions.expandToSubUnits
+                },
+                collaborators: {
+                    units: this.model.collaboratorPermissions.inherit ? [] : this.model.collaboratorPermissions.units.map((x) => mapFromElement(Unit, x).id),
+                    rank: this.model.collaboratorPermissions.inherit ? '' : (mapFromElement(Rank, this.model.collaboratorPermissions.rank)?.name || ''),
+                    expandToSubUnits: this.model.collaboratorPermissions.inherit ? true : this.model.collaboratorPermissions.expandToSubUnits
+                }
             }
         };
 
-        this.pending = true;
-        const request = this.initialData ? this.edit(createDocumentRequest) : this.create(createDocumentRequest);
-        request.subscribe({
-            next: () => {
-                this.dialog.closeAll();
+        let request$: Observable<any>;
+
+        if (this.initialData) {
+            request$ = this.httpClient.put(`${this.urlService.apiUrl}/docs/folders/${this.folderMetadata.id}/documents/${this.initialData.id}`, request, {
+                headers: defaultHeaders
+            });
+        } else {
+            request$ = this.httpClient.post(`${this.urlService.apiUrl}/docs/folders/${this.folderMetadata.id}/documents`, request, {
+                headers: defaultHeaders
+            });
+        }
+
+        request$.subscribe({
+            next: (_) => {
                 this.pending = false;
+                this.dialog.closeAll();
             },
             error: (error) => {
-                this.dialog.closeAll();
                 this.pending = false;
                 this.dialog.open(MessageModalComponent, {
-                    data: { message: error.error }
+                    data: { message: error.error.error }
                 });
             }
-        });
-    }
-
-    create(createDocumentRequest: CreateDocumentRequest): Observable<any> {
-        return this.httpClient.post(`${this.urlService.apiUrl}/docs/folders/${this.folderMetadata.id}/documents`, createDocumentRequest, {
-            headers: defaultHeaders
-        });
-    }
-
-    edit(createDocumentRequest: CreateDocumentRequest): Observable<any> {
-        return this.httpClient.put(`${this.urlService.apiUrl}/docs/folders/${this.folderMetadata.id}/documents/${this.initialData.id}`, createDocumentRequest, {
-            headers: defaultHeaders
         });
     }
 }
 
 interface FormModel {
     name: string;
-    readPermissions: {
+    viewerPermissions: {
         units: IDropdownElement[];
         rank: IDropdownElement;
-        selectedUnitsOnly: boolean;
+        inherit: boolean;
+        expandToSubUnits: boolean;
     };
-    writePermissions: {
+    collaboratorPermissions: {
         units: IDropdownElement[];
         rank: IDropdownElement;
-        selectedUnitsOnly: boolean;
+        inherit: boolean;
+        expandToSubUnits: boolean;
     };
 }
 
 export class DocumentModalData {
     folderMetadata: FolderMetadata;
     initialData?: InitialDocumentData;
+    inheritedPermissions?: RoleBasedDocumentPermissions;
 }
 
 export class InitialDocumentData {
     id: string;
     name?: string;
-    readPermissions?: DocumentPermissions;
-    writePermissions?: DocumentPermissions;
+    roleBasedPermissions?: RoleBasedDocumentPermissions;
 }

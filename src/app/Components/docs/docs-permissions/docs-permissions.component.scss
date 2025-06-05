@@ -1,4 +1,20 @@
 .permissions-container {
     display: flex;
     flex-direction: column;
+
+    .permissions-form {
+        display: flex;
+        flex-direction: column;
+
+        .permissions-header {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            margin-bottom: 16px;
+
+            .mat-checkbox {
+                margin: 8px 0 auto 0
+            }
+        }
+    }
 }

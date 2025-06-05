@@ -39,6 +39,19 @@ export class DropdownComponent extends DropdownBaseComponent implements ControlV
         if (value) {
             this.textInput.control.setValue(value);
             this.textInput.control.markAsTouched();
+        } else {
+            this.textModel = '';
+            if (this.textInput) {
+                this.textInput.control.setValue('');
+                this.textInput.control.markAsUntouched();
+            } else {
+                setTimeout(() => {
+                    if (this.textInput) {
+                        this.textInput.control.setValue('');
+                        this.textInput.control.markAsUntouched();
+                    }
+                });
+            }
         }
     }
 

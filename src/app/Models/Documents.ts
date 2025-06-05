@@ -5,8 +5,13 @@ export class FolderMetadata {
     fullPath: string;
     created: Date;
     creator: string;
-    readPermissions: DocumentPermissions = new DocumentPermissions();
-    writePermissions: DocumentPermissions = new DocumentPermissions();
+    
+    // NEW: Role-based permissions
+    owner: string;
+    roleBasedPermissions: RoleBasedDocumentPermissions = new RoleBasedDocumentPermissions();
+    effectivePermissions: RoleBasedDocumentPermissions = new RoleBasedDocumentPermissions();
+    inheritedPermissions: RoleBasedDocumentPermissions = new RoleBasedDocumentPermissions();
+    
     documents: DocumentMetadata[] = [];
     canWrite: boolean;
     children: FolderMetadata[] = [];
@@ -20,28 +25,36 @@ export class DocumentMetadata {
     created: Date;
     lastUpdated: Date;
     creator: string;
-    readPermissions: DocumentPermissions = new DocumentPermissions();
-    writePermissions: DocumentPermissions = new DocumentPermissions();
+    
+    // NEW: Role-based permissions
+    owner: string;
+    roleBasedPermissions: RoleBasedDocumentPermissions = new RoleBasedDocumentPermissions();
+    effectivePermissions: RoleBasedDocumentPermissions = new RoleBasedDocumentPermissions();
+    inheritedPermissions: RoleBasedDocumentPermissions = new RoleBasedDocumentPermissions();
+    
     canWrite: boolean;
 }
 
-export class DocumentPermissions {
+export class RoleBasedDocumentPermissions {
+    viewers: PermissionRole = new PermissionRole();
+    collaborators: PermissionRole = new PermissionRole();
+}
+
+export class PermissionRole {
     units: string[] = [];
-    rank: string;
-    selectedUnitsOnly: boolean;
+    rank: string = '';
+    expandToSubUnits: boolean = true;
 }
 
 export class CreateDocumentRequest {
     name: string;
-    readPermissions: DocumentPermissions;
-    writePermissions: DocumentPermissions;
+    roleBasedPermissions: RoleBasedDocumentPermissions;
 }
 
 export class CreateFolderRequest {
     parent: string;
     name: string;
-    readPermissions: DocumentPermissions;
-    writePermissions: DocumentPermissions;
+    roleBasedPermissions: RoleBasedDocumentPermissions;
 }
 
 export class DocumentContent {

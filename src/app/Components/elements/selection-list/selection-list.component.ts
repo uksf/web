@@ -1,4 +1,4 @@
-import { Component, forwardRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, forwardRef, Input, OnInit, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import {
     AbstractControl,
     ControlContainer,
@@ -57,7 +57,7 @@ export function SelectionListValidator(required: boolean): ValidatorFn {
     ],
     viewProviders: [{ provide: ControlContainer, useExisting: UntypedFormGroup }]
 })
-export class SelectionListComponent extends DropdownBaseComponent implements OnInit, ControlValueAccessor, Validator {
+export class SelectionListComponent extends DropdownBaseComponent implements OnInit, OnChanges, ControlValueAccessor, Validator {
     @Input('listDisabledTooltip') listDisabledTooltip: (element: IDropdownElement) => string = () => '';
     @ViewChild(MatAutocompleteTrigger) autocomplete: MatAutocompleteTrigger;
     form: UntypedFormGroup = new UntypedFormGroup({
@@ -99,8 +99,17 @@ export class SelectionListComponent extends DropdownBaseComponent implements OnI
 
     ngOnInit(): void {
         this.elementDisabled = this.getDisabled;
-
         super.ngOnInit();
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.disabled && this.form) {
+            if (this.disabled) {                
+                this.form.get('textInput').disable();
+            } else {
+                this.form.get('textInput').enable();
+            }
+        }
     }
 
     onSelect(event: MatAutocompleteSelectedEvent) {

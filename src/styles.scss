@@ -37,6 +37,7 @@
 @import 'app/Components/comment-display/comment-display.component.scss-theme.scss';
 @import 'app/Components/docs/docs-content/docs-content.component.scss-theme';
 @import 'app/Components/docs/docs-content/docs-content.quill.scss-theme';
+@import 'app/Components/docs/docs-permissions/docs-permissions.component.scss-theme';
 @import 'app/Components/docs/docs-sidebar/docs-sidebar.component.scss-theme';
 @import 'app/Components/docs/docs-sidebar/docs-folder/docs-folder.component.scss-theme';
 @import 'app/Components/docs/docs-sidebar/docs-document/docs-document.component.scss-theme';
@@ -107,6 +108,7 @@
     @include docs-document-component-theme($theme);
     @include docs-content-component-theme($theme);
     @include docs-content-quill-theme($theme);
+    @include docs-permissions-component-theme($theme);
     @include file-drop-component-theme($theme);
     @include inline-edit-component-theme($theme);
     @include loading-placeholder-component-theme($theme);

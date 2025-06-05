@@ -1,0 +1,14 @@
+@use '@angular/material' as mat;
+@import '@angular/material/theming';
+
+@mixin docs-permissions-component-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+    $primary: map-get($theme, primary);
+
+    app-docs-permissions {
+        .permissions-container {
+            background-color: mat.get-color-from-palette($background, 475);
+        }
+    }
+} 

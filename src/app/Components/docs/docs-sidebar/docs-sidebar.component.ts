@@ -22,7 +22,11 @@ export class DocsSidebarComponent implements OnInit {
 
     addFolder() {
         this.dialog
-            .open(CreateFolderModalComponent)
+            .open(CreateFolderModalComponent, {
+                data: {
+                    parent: '000000000000000000000000'
+                }
+            })
             .afterClosed()
             .subscribe((_) => {
                 this.refresh.emit();
