@@ -75,7 +75,6 @@ export class AddUnitModalComponent implements OnInit {
     }
 
     resolveAvailableParentUnits() {
-        console.log(this.units);
         this.availableParentUnits = this.units.filter((x) => x.branch === this.form.controls['branch'].value);
         if (!this.edit) {
             this.form.controls['parent'].setValue(this.availableParentUnits[0].id);
@@ -84,10 +83,7 @@ export class AddUnitModalComponent implements OnInit {
                 return;
             }
 
-            console.log(this.unit);
-            console.log(this.availableParentUnits);
             this.availableParentUnits = this.availableParentUnits.filter((x) => x.id !== this.unit.id);
-            console.log(this.availableParentUnits);
             if (this.availableParentUnits.find((x) => x.id === this.unit.parent)) {
                 this.form.controls['parent'].setValue(this.unit.parent);
             } else {
