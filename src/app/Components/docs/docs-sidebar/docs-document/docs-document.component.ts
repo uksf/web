@@ -103,6 +103,7 @@ export class DocsDocumentComponent implements OnChanges {
                     initialData: {
                         id: this.documentMetadata.id,
                         name: this.documentMetadata.name,
+                        owner: this.documentMetadata.owner,
                         roleBasedPermissions: this.documentMetadata.roleBasedPermissions
                     }
                 }

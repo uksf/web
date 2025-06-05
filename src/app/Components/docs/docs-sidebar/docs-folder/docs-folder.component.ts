@@ -88,6 +88,7 @@ export class DocsFolderComponent {
                     initialData: {
                         id: this.folderMetadata.id,
                         name: this.folderMetadata.name,
+                        owner: this.folderMetadata.owner,
                         roleBasedPermissions: this.folderMetadata.roleBasedPermissions
                     }
                 }

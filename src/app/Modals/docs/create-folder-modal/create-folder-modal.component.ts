@@ -65,7 +65,7 @@ export class CreateFolderModalComponent implements OnInit {
                 this.accounts.complete();
 
                 // Set default owner to current user for new folders, or populate from initialData for editing
-                if (this.initialData?.owner) {
+                if (this.initialData) {
                     this.model.owner = elements.find(element => element.value === this.initialData.owner) || null;
                 } else {
                     const currentUser = this.accountService.account;
@@ -153,6 +153,6 @@ export class FolderModalData {
 export class InitialFolderData {
     id: string;
     name?: string;
-    owner?: string;
+    owner: string;
     roleBasedPermissions?: RoleBasedDocumentPermissions;
 }
