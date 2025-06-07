@@ -21,4 +21,8 @@ export class FooterBarComponent implements OnInit {
         this.mobile = window.screen.width <= 768 && window.screen.width > 375;
         this.mobileSmall = window.screen.width <= 375;
     }
+
+    getCurrentYear(): number {
+        return new Date().getFullYear();
+    }
 }
