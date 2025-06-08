@@ -25,15 +25,15 @@
                 </ng-template>
             </app-dropdown>
         </div>
-        <div class="permissions-container">
+        <mat-accordion class="permissions-container" [multi]="true">
             <app-docs-permissions [(ngModel)]="model.viewerPermissions" [initialData]="initialData?.roleBasedPermissions?.viewers" [inheritedPermissions]="inheritedPermissions?.viewers" [type]="'viewers'" name="formViewerPermissions"></app-docs-permissions>
             <app-docs-permissions [(ngModel)]="model.collaboratorPermissions" [initialData]="initialData?.roleBasedPermissions?.collaborators" [inheritedPermissions]="inheritedPermissions?.collaborators" [type]="'collaborators'" name="formCollaboratorPermissions"></app-docs-permissions>
-        </div>
+        </mat-accordion>
         <app-model-value-debug [model]="model"></app-model-value-debug>
         <div class="button-container">
             <app-flex-filler></app-flex-filler>
-            <app-button (clicked)="submit()" *ngIf="!initialData" [disabled]="!form.valid" [pending]="pending">Create </app-button>
-            <app-button (clicked)="submit()" *ngIf="initialData" [disabled]="!form.valid" [pending]="pending">Save </app-button>
+            <app-button (clicked)="submit()" *ngIf="!initialData" [disabled]="!form.valid" [pending]="pending">Create</app-button>
+            <app-button (clicked)="submit()" *ngIf="initialData" [disabled]="!form.valid" [pending]="pending">Save</app-button>
         </div>
     </form>
 </mat-dialog-content>

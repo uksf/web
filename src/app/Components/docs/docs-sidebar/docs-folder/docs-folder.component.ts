@@ -65,11 +65,16 @@ export class DocsFolderComponent {
     }
 
     addFolder() {
+        let inheritedPermissions = this.folderMetadata.inheritedPermissions;
+        if (this.folderMetadata.parent === '000000000000000000000000') {
+            inheritedPermissions = this.folderMetadata.roleBasedPermissions;
+        }
+
         this.dialog
             .open<CreateFolderModalComponent, FolderModalData>(CreateFolderModalComponent, {
                 data: {
                     parent: this.folderMetadata.id,
-                    inheritedPermissions: this.folderMetadata.inheritedPermissions
+                    inheritedPermissions: inheritedPermissions
                 }
             })
             .afterClosed()

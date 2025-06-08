@@ -5,13 +5,15 @@ import { BehaviorSubject, forkJoin } from 'rxjs';
 import { IDropdownElement, mapFromElement } from '../../elements/dropdown-base/dropdown-base.component';
 import { Rank } from '../../../Models/Rank';
 import { Unit } from '../../../Models/Units';
+import { BasicAccount } from '../../../Models/Account';
 import { ControlContainer, ControlValueAccessor, UntypedFormGroup, NG_VALUE_ACCESSOR, NgForm } from '@angular/forms';
 import { PermissionRole } from '../../../Models/Documents';
-import { AccountService } from '../../../Services/account.service';
+import { MatExpansionPanel } from '@angular/material/expansion';
 
 export type PermissionsType = 'viewers' | 'collaborators';
 
 interface FormModel {
+    members: IDropdownElement[];
     units: IDropdownElement[];
     rank: IDropdownElement;
     inherit: boolean;
@@ -29,16 +31,18 @@ interface FormModel {
             multi: true
         }
     ],
-    viewProviders: [{ provide: ControlContainer, useExisting: UntypedFormGroup }]
+    viewProviders: [{ provide: ControlContainer, useExisting: UntypedFormGroup }, MatExpansionPanel]
 })
 export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
     @ViewChild(NgForm) form!: NgForm;
     @Input('type') type: PermissionsType = 'viewers';
     @Input('initialData') initialData: PermissionRole = null;
     @Input('inheritedPermissions') inheritedPermissions: PermissionRole = null;
-    
+    @Input('expanded') expanded: boolean = false;
+    @ViewChild(MatExpansionPanel) panel!: MatExpansionPanel;
     ranks: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
     units: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
+    members: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
     
     private _value: FormModel = this.createEmptyFormModel();
     private _customValues: FormModel | null = null; // Store custom values before inheriting
@@ -53,11 +57,13 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
     private loadDropdownData(): void {
         forkJoin({
             units: this.httpClient.get<Unit[]>(`${this.urlService.apiUrl}/units`),
-            ranks: this.httpClient.get<Rank[]>(`${this.urlService.apiUrl}/ranks`)
+            ranks: this.httpClient.get<Rank[]>(`${this.urlService.apiUrl}/ranks`),
+            members: this.httpClient.get<BasicAccount[]>(`${this.urlService.apiUrl}/accounts/members`)
         }).subscribe({
-            next: ({ units, ranks }) => {
+            next: ({ units, ranks, members }) => {
                 this.units.next(units.map(Unit.mapToElement));
                 this.ranks.next(ranks.map(Rank.mapToElement).reverse());
+                this.members.next(members.map(BasicAccount.mapToElement));
                 this.initializeFormValues();
             }
         });
@@ -76,8 +82,10 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
     private setValuesFromInitialData(): void {
         const unitElements = this.units.value;
         const rankElements = this.ranks.value;
+        const memberElements = this.members.value;
 
         this.value = {
+            members: this.filterElementsByValues(memberElements, this.initialData.members || []),
             units: this.filterElementsByValues(unitElements, this.initialData.units),
             rank: this.findElementByValue(rankElements, this.initialData.rank),
             inherit: false,
@@ -88,8 +96,10 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
     private setInheritedValues(): void {
         const unitElements = this.units.value;
         const rankElements = this.ranks.value;
+        const memberElements = this.members.value;
 
         this.value = {
+            members: this.filterElementsByValues(memberElements, this.inheritedPermissions?.members || []),
             units: this.filterElementsByValues(unitElements, this.inheritedPermissions?.units || []),
             rank: this.findElementByValue(rankElements, this.inheritedPermissions?.rank),
             inherit: true,
@@ -103,6 +113,7 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
 
     private createEmptyFormModel(): FormModel {
         return {
+            members: [],
             units: [],
             rank: null,
             inherit: false,
@@ -124,16 +135,18 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
         if (this.value.inherit) {
             // Store current custom values before switching to inherited values
             this._customValues = {
+                members: [...this.value.members],
                 units: [...this.value.units],
                 rank: this.value.rank,
-                inherit: false,
+                inherit: this.value.inherit,
                 expandToSubUnits: this.value.expandToSubUnits
             };
             this.setInheritedValues();
         } else {
+            this.expanded = true;
             // When unchecking inherit, restore custom values if they exist
             if (this._customValues) {
-                this.value = { ...this._customValues, inherit: false };
+                this.value = { ...this._customValues, inherit: this.value.inherit };
             } else if (this.hasInitialData) {
                 // Fallback to initial data if no custom values were stored
                 this.setValuesFromInitialData();
@@ -142,6 +155,10 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
                 this.setDefaultValues();
             }
         }
+    }
+
+    onSelectMember(elements: IDropdownElement[]): void {
+        this.value = { ...this.value, members: elements };
     }
 
     onSelectUnit(elements: IDropdownElement[]): void {
@@ -154,6 +171,10 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
 
     onExpandToSubUnitsChange(value: boolean): void {
         this.value = { ...this.value, expandToSubUnits: value };
+    }
+
+    getMemberName(element: IDropdownElement): string {
+        return mapFromElement(BasicAccount, element).displayName;
     }
 
     getRankName(element: IDropdownElement): string {
@@ -174,13 +195,15 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
 
     get hasInheritedPermissions(): boolean {
         return this.inheritedPermissions && 
-            ((this.inheritedPermissions.units && this.inheritedPermissions.units.length > 0) ||
+            ((this.inheritedPermissions.members && this.inheritedPermissions.members.length > 0) ||
+             (this.inheritedPermissions.units && this.inheritedPermissions.units.length > 0) ||
              (this.inheritedPermissions.rank && this.inheritedPermissions.rank.trim() !== ''));
     }
 
     private get hasInitialData(): boolean {
         return this.initialData && 
-            ((this.initialData.units && this.initialData.units.length > 0) || 
+            ((this.initialData.members && this.initialData.members.length > 0) ||
+             (this.initialData.units && this.initialData.units.length > 0) || 
              (this.initialData.rank && this.initialData.rank.trim() !== ''));
     }
 
@@ -204,4 +227,9 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
     }
 
     registerOnTouched(): void {}
+
+    stopEventPropagation(event: Event): void {
+        event.stopPropagation();
+        // Don't preventDefault() to allow checkbox to work normally
+    }
 }

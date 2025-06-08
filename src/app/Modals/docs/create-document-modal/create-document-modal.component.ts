@@ -26,12 +26,14 @@ export class CreateDocumentModalComponent implements OnInit {
         name: '',
         owner: null,
         viewerPermissions: {
+            members: [],
             units: [],
             rank: null,
             inherit: false,
             expandToSubUnits: true
         },
         collaboratorPermissions: {
+            members: [],
             units: [],
             rank: null,
             inherit: false,
@@ -83,11 +85,13 @@ export class CreateDocumentModalComponent implements OnInit {
             owner: mapFromElement(BasicAccount, this.model.owner).id,
             roleBasedPermissions: {
                 viewers: {
+                    members: this.model.viewerPermissions.inherit ? [] : this.model.viewerPermissions.members.map((x) => mapFromElement(BasicAccount, x).id),
                     units: this.model.viewerPermissions.inherit ? [] : this.model.viewerPermissions.units.map((x) => mapFromElement(Unit, x).id),
                     rank: this.model.viewerPermissions.inherit ? '' : (mapFromElement(Rank, this.model.viewerPermissions.rank)?.name || ''),
                     expandToSubUnits: this.model.viewerPermissions.inherit ? true : this.model.viewerPermissions.expandToSubUnits
                 },
                 collaborators: {
+                    members: this.model.collaboratorPermissions.inherit ? [] : this.model.collaboratorPermissions.members.map((x) => mapFromElement(BasicAccount, x).id),
                     units: this.model.collaboratorPermissions.inherit ? [] : this.model.collaboratorPermissions.units.map((x) => mapFromElement(Unit, x).id),
                     rank: this.model.collaboratorPermissions.inherit ? '' : (mapFromElement(Rank, this.model.collaboratorPermissions.rank)?.name || ''),
                     expandToSubUnits: this.model.collaboratorPermissions.inherit ? true : this.model.collaboratorPermissions.expandToSubUnits
@@ -130,12 +134,14 @@ interface FormModel {
     name: string;
     owner: IDropdownElement;
     viewerPermissions: {
+        members: IDropdownElement[];
         units: IDropdownElement[];
         rank: IDropdownElement;
         inherit: boolean;
         expandToSubUnits: boolean;
     };
     collaboratorPermissions: {
+        members: IDropdownElement[];
         units: IDropdownElement[];
         rank: IDropdownElement;
         inherit: boolean;

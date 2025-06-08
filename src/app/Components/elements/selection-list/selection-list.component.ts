@@ -59,6 +59,8 @@ export function SelectionListValidator(required: boolean): ValidatorFn {
 })
 export class SelectionListComponent extends DropdownBaseComponent implements OnInit, OnChanges, ControlValueAccessor, Validator {
     @Input('listDisabledTooltip') listDisabledTooltip: (element: IDropdownElement) => string = () => '';
+    @Input('listPosition') listPosition: string ='top';
+    @Input('inputTooltip') inputTooltip: string = '';
     @ViewChild(MatAutocompleteTrigger) autocomplete: MatAutocompleteTrigger;
     form: UntypedFormGroup = new UntypedFormGroup({
         textInput: new UntypedFormControl({ value: '', disabled: this.disabled }),
@@ -106,6 +108,7 @@ export class SelectionListComponent extends DropdownBaseComponent implements OnI
         if (changes.disabled && this.form) {
             if (this.disabled) {                
                 this.form.get('textInput').disable();
+                this.form.get('textInput').setValue('');
             } else {
                 this.form.get('textInput').enable();
             }

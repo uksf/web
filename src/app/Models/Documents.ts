@@ -41,6 +41,7 @@ export class RoleBasedDocumentPermissions {
 }
 
 export class PermissionRole {
+    members: string[] = [];
     units: string[] = [];
     rank: string = '';
     expandToSubUnits: boolean = true;

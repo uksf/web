@@ -1,25 +1,94 @@
-<mat-card class="permissions-container">
-    <form #form="ngForm" class="permissions-form">
+<mat-expansion-panel [(expanded)]="expanded">
+    <mat-expansion-panel-header>
         <div class="permissions-header">
             <h4 class="permissions-title">{{ title }}</h4>
-            <mat-checkbox *ngIf="hasInheritedPermissions" [(ngModel)]="model.inherit" (ngModelChange)="onInheritPermissionsChange()" color="primary" labelPosition="before" matTooltip="Permissions will be inherited from the parent folder when enabled. Disable this to set custom permissions" name="formInherit">
-                Inherit from parent
-            </mat-checkbox>
+            <span *ngIf="model.inherit && !expanded">
+                Inherited from parent
+            </span>
         </div>
-        
-        
-        <mat-checkbox [(ngModel)]="model.expandToSubUnits" (ngModelChange)="onExpandToSubUnitsChange($event)" color="primary" matTooltip="When enabled, permissions will also apply to all sub-units of the selected units" [disabled]="model.inherit" name="formExpandToSubUnits">
-            Expand to sub-units
+    </mat-expansion-panel-header>
+
+    <form #form="ngForm" class="permissions-form">
+        <mat-checkbox
+            *ngIf="hasInheritedPermissions"
+            [(ngModel)]="model.inherit"
+            (ngModelChange)="onInheritPermissionsChange()"
+            color="primary"
+            labelPosition="after"
+            matTooltip="Permissions will be inherited from the parent folder when enabled. Disable this to set custom permissions"
+            name="formInherit"
+        >
+            Inherit from parent
         </mat-checkbox>
-        <app-selection-list #unitsList="ngModel" (ngModelChange)="onSelectUnit($event)" [(ngModel)]="model.units" [clearOnSelect]="true" [elementName]="'Unit'" [elements]="units" [isRequired]="false" [placeholder]="'Select units'" [isDisabled]="model.inherit" id="unitList" name="formUnitList">
-            <ng-template #element let-element>
-                <span>{{ getUnitName(element) }}</span>
-            </ng-template>
-        </app-selection-list>
-        <app-dropdown #rank="ngModel" (ngModelChange)="onSelectRank($event)" [(ngModel)]="model.rank" [elementName]="'Rank'" [elements]="ranks" [isRequired]="false" [placeholder]="'Select minimum rank'" [isDisabled]="model.inherit" id="rank" name="formRank">
-            <ng-template #element let-element>
-                <span>{{ getRankName(element) }}</span>
-            </ng-template>
-        </app-dropdown>
+        <div class="permissions-section-container" [hidden]="!expanded">
+            <div class="permissions-section">
+                <app-dropdown
+                    #rank="ngModel"
+                    (ngModelChange)="onSelectRank($event)"
+                    [(ngModel)]="model.rank"
+                    [elementName]="'Rank'"
+                    [elements]="ranks"
+                    [isRequired]="false"
+                    [placeholder]="'Select minimum rank'"
+                    [isDisabled]="model.inherit"
+                    id="rank"
+                    name="formRank"
+                >
+                    <ng-template #element let-element>
+                        <span>{{ getRankName(element) }}</span>
+                    </ng-template>
+                </app-dropdown>
+                <app-selection-list
+                    #unitsList="ngModel"
+                    (ngModelChange)="onSelectUnit($event)"
+                    [(ngModel)]="model.units"
+                    [clearOnSelect]="true"
+                    [elementName]="'Unit'"
+                    [elements]="units"
+                    [isRequired]="false"
+                    [placeholder]="'Select units'"
+                    [isDisabled]="model.inherit"
+                    [listPosition]="'bottom'"
+                    id="unitList"
+                    name="formUnitList"
+                >
+                    <ng-template #element let-element>
+                        <span>{{ getUnitName(element) }}</span>
+                    </ng-template>
+                </app-selection-list>
+                <mat-checkbox
+                    [(ngModel)]="model.expandToSubUnits"
+                    (ngModelChange)="onExpandToSubUnitsChange($event)"
+                    color="primary"
+                    matTooltip="When enabled, permissions will also apply to all sub-units of the selected units"
+                    [disabled]="model.inherit"
+                    name="formExpandToSubUnits"
+                >
+                    Expand to sub-units
+                </mat-checkbox>
+            </div>
+            <mat-divider [vertical]="true"></mat-divider>
+            <div class="permissions-section">
+                <app-selection-list
+                    #membersList="ngModel"
+                    (ngModelChange)="onSelectMember($event)"
+                    [(ngModel)]="model.members"
+                    [clearOnSelect]="true"
+                    [elementName]="'Member'"
+                    [elements]="members"
+                    [isRequired]="false"
+                    [placeholder]="'Select members'"
+                    [isDisabled]="model.inherit"
+                    [listPosition]="'bottom'"
+                    [inputTooltip]="'Selecting members will ignore Units and Minimum Rank'"
+                    id="membersList"
+                    name="formMembersList"
+                >
+                    <ng-template #element let-element>
+                        <span>{{ getMemberName(element) }}</span>
+                    </ng-template>
+                </app-selection-list>
+            </div>
+        </div>
     </form>
-</mat-card>
+</mat-expansion-panel>

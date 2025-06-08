@@ -1,5 +1,5 @@
 <form [formGroup]="form" class="selection-list-form">
-    <div class="selection-list-container" [ngClass]="{ empty: listModel.length === 0, disabled: disabled }">
+    <div *ngIf="listPosition === 'top'" class="selection-list-container" [ngClass]="{ empty: listModel.length === 0, disabled: disabled }">
         <div class="selection-element" *ngFor="let element of listModel">
             <span [matTooltipDisabled]="!element.disabled" [matTooltip]="listDisabledTooltip(element)" [ngClass]="{ disabled: element.disabled }">{{ element.displayValue }}</span>
             <app-flex-filler></app-flex-filler>
@@ -10,8 +10,8 @@
     </div>
     <mat-form-field [ngClass]="formFieldClass">
         <input #list formControlName="list" autocomplete="off" hidden tabindex="-1" name="list" />
-        <input #textInput formControlName="textInput" [(ngModel)]="textModel" (ngModelChange)="onTextModelChange($event)" [matAutocomplete]="auto" [placeholder]="placeholder" [required]="required" matInput spellcheck="false" type="text" name="textInput" [errorStateMatcher]="listErrorStateMatcher" [disabled]="disabled" />
-        <button (click)="textModel = ''; onTextModelChange('')" *ngIf="textModel" aria-label="Clear" mat-button mat-icon-button matSuffix matTooltip="Clear">
+        <input #textInput formControlName="textInput" [(ngModel)]="textModel" (ngModelChange)="onTextModelChange($event)" [matAutocomplete]="auto" [placeholder]="placeholder" [required]="required" matInput spellcheck="false" type="text" name="textInput" [errorStateMatcher]="listErrorStateMatcher" [attr.disabled]="disabled" [matTooltip]="inputTooltip" />
+        <button (click)="textModel = ''; onTextModelChange('')" *ngIf="textModel && !disabled" aria-label="Clear" mat-button mat-icon-button matSuffix matTooltip="Clear">
             <mat-icon>close</mat-icon>
         </button>
         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelect($event)" [displayWith]="displayWith" [autoActiveFirstOption]="true">
@@ -25,4 +25,13 @@
             <mat-error *ngIf="showErrors && form.get('list').hasError(validation.type)" class="error-message">{{ validation.message() }}</mat-error>
         </mat-error>
     </mat-form-field>
+    <div *ngIf="listPosition === 'bottom'" class="selection-list-container" [ngClass]="{ empty: listModel.length === 0, disabled: disabled }">
+        <div class="selection-element" *ngFor="let element of listModel">
+            <span [matTooltipDisabled]="!element.disabled" [matTooltip]="listDisabledTooltip(element)" [ngClass]="{ disabled: element.disabled }">{{ element.displayValue }}</span>
+            <app-flex-filler></app-flex-filler>
+            <mat-icon *ngIf="!disabled" class="remove" (click)="remove(element)" matTooltip="Remove from selection">
+                highlight_off
+            </mat-icon>
+        </div>
+    </div>
 </form>

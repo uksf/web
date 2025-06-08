@@ -1,7 +1,5 @@
 .mat-dialog-content {
     display: flex;
-    min-width: 600px;
-    width: 900px;
 
     .form-container {
         flex: 1;
@@ -19,24 +17,23 @@
                 flex: 1;
             }
         }
-    
+
         .permissions-container {
             flex: 1;
             display: flex;
-            flex-direction: row;
-            padding: 24px 0;
-            justify-content: space-between;
-    
+            flex-direction: column;
+            padding: 8px 0;
+
             app-docs-permissions {
-                flex: 0.49;
+                flex: 1;
             }
         }
-    
+
         .button-container {
             display: flex;
             flex-direction: row;
         }
-    
+
         .hint {
             font-style: italic;
         }

@@ -27,7 +27,7 @@ export class DropdownBaseComponent implements OnInit {
     @Input('formFieldClass') formFieldClass: string;
     @Input('optionClass') optionClass: string;
     @Input('clearOnSelect') clearOnSelect: boolean = false;
-    @Input() textModel = '';
+    @Input('textModel') textModel: string = '';
     _model: IDropdownElement = null;
     allElements: IDropdownElement[];
     filteredElements: Observable<IDropdownElement[]>;
