@@ -200,6 +200,7 @@ import { ModpackBuildsRcComponent } from './modpack/modpack-builds-rc/modpack-bu
 import { ModpackBuildsStepsComponent } from './modpack/modpack-builds-steps/modpack-builds-steps.component';
 import { NewModpackReleaseModalComponent } from './modpack/new-modpack-release-modal/new-modpack-release-modal.component';
 import { ModpackReleaseService } from './modpack/modpackRelease.service';
+import { AnsiToHtmlPipe } from './Pipes/AnsiToHtml.pipe';
 
 export function initApp(appSettingsService: AppSettingsService, injector: Injector, countryPickerService: CountryPickerService) {
     return () => {
@@ -438,7 +439,8 @@ export function tokenGetter() {
         DocsDocumentComponent,
         CreateDocumentModalComponent,
         CreateFolderModalComponent,
-        DocsPermissionsComponent
+        DocsPermissionsComponent,
+        AnsiToHtmlPipe
     ],
     bootstrap: [AppComponent]
 })

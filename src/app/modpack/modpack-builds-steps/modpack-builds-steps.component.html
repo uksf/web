@@ -45,16 +45,10 @@
                 </div>
                 <app-flex-filler></app-flex-filler>
                 <ng-template [ngIf]="canControl">
-                    <button mat-raised-button color="primary" *ngIf="!build.finished && !cancelling" (click)="cancelBuild()">
-                        Cancel Build
-                    </button>
-                    <button mat-raised-button color="primary" *ngIf="rebuildCondition()" (click)="rebuild()">
-                        Rebuild
-                    </button>
+                    <button mat-raised-button color="primary" *ngIf="!build.finished && !cancelling" (click)="cancelBuild()">Cancel Build</button>
+                    <button mat-raised-button color="primary" *ngIf="rebuildCondition()" (click)="rebuild()">Rebuild</button>
                 </ng-template>
-                <button mat-raised-button color="primary" (click)="closeLog()">
-                    Close Log
-                </button>
+                <button mat-raised-button color="primary" (click)="closeLog()">Close Log</button>
                 <button
                     mat-raised-button
                     color="primary"
@@ -72,23 +66,15 @@
         <cdk-virtual-scroll-viewport itemSize="20" class="build-log">
             <div class="log-item" *ngIf="selectedStep.logs.length === 0">
                 <div class="index">0</div>
-                <div class="text" *ngIf="!build.running && !build.finished">
-                    Waiting for build to start...
-                </div>
-                <div class="text" style="color: #0c78ff;" *ngIf="selectedStep.index > 0 && build.running">
-                    Waiting for previous step to finish...
-                </div>
-                <div class="text" style="color: red;" *ngIf="build.buildResult === modpackBuildResult.FAILED">
-                    Build failed
-                </div>
-                <div class="text" style="color: goldenrod;" *ngIf="build.buildResult === modpackBuildResult.CANCELLED">
-                    Build cancelled
-                </div>
+                <div class="text" *ngIf="!build.running && !build.finished">Waiting for build to start...</div>
+                <div class="text" style="color: #0c78ff" *ngIf="selectedStep.index > 0 && build.running">Waiting for previous step to finish...</div>
+                <div class="text" style="color: red" *ngIf="build.buildResult === modpackBuildResult.FAILED">Build failed</div>
+                <div class="text" style="color: goldenrod" *ngIf="build.buildResult === modpackBuildResult.CANCELLED">Build cancelled</div>
             </div>
             <div class="log-item" [ngClass]="{ selected: selectedLogIndex === logIndex }" *cdkVirtualFor="let log of selectedStep.logs; let logIndex = index">
                 <div class="index">{{ logIndex + 1 }}</div>
                 <div class="text" [style.color]="getLogItemColour(logIndex)">
-                    {{ log.text }}
+                    <span [innerHTML]="log.text | ansiToHtml"></span>
                 </div>
                 <mat-icon class="link" *ngIf="log.text && build.finished" (click)="selectLogLine(logIndex)" [matTooltip]="selectedLogIndex === logIndex ? 'Deselect line' : 'Copy link to line'"
                     >link</mat-icon
