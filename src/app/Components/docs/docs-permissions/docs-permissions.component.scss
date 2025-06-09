@@ -1,6 +1,6 @@
 .mat-expansion-panel {
     min-width: 800px;
-    margin-bottom: 8px;
+    margin-bottom: 0px;
 
     &.mat-expansion-panel-spacing {
         margin: 0px;
@@ -8,6 +8,10 @@
 
     .mat-expansion-panel-header.mat-expanded {
         height: 48px;
+
+        &:hover {
+            border-radius: 0px;
+        }
     }
 
     .permissions-header {
@@ -19,7 +23,7 @@
 
         span {
             font-style: italic;
-            font-size: 12px;
+            font-size: 14px;
             margin: auto 0;
         }
     }
@@ -27,6 +31,7 @@
     .permissions-form {
         display: flex;
         flex-direction: column;
+        padding-top: 8px;
     
         .mat-checkbox {
             width: fit-content;
