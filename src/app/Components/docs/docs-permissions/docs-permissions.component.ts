@@ -6,8 +6,8 @@ import { IDropdownElement, mapFromElement } from '../../elements/dropdown-base/d
 import { Rank } from '../../../Models/Rank';
 import { Unit } from '../../../Models/Units';
 import { BasicAccount } from '../../../Models/Account';
-import { ControlContainer, ControlValueAccessor, UntypedFormGroup, NG_VALUE_ACCESSOR, NgForm } from '@angular/forms';
-import { PermissionRole } from '../../../Models/Documents';
+import { ControlContainer, ControlValueAccessor, NG_VALUE_ACCESSOR, NgForm, UntypedFormGroup } from '@angular/forms';
+import { DocumentPermission } from '../../../Models/Documents';
 import { MatExpansionPanel } from '@angular/material/expansion';
 
 export type PermissionsType = 'viewers' | 'collaborators';
@@ -36,18 +36,18 @@ interface FormModel {
 export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
     @ViewChild(NgForm) form!: NgForm;
     @Input('type') type: PermissionsType = 'viewers';
-    @Input('initialData') initialData: PermissionRole = null;
-    @Input('inheritedPermissions') inheritedPermissions: PermissionRole = null;
+    @Input('initialData') initialData: DocumentPermission = null;
+    @Input('inheritedPermissions') inheritedPermissions: DocumentPermission = null;
     @Input('expanded') expanded: boolean = false;
     @ViewChild(MatExpansionPanel) panel!: MatExpansionPanel;
     ranks: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
     units: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
     members: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
-    
+
     private _value: FormModel = this.createEmptyFormModel();
     private _customValues: FormModel | null = null; // Store custom values before inheriting
     private onChange: any = (): void => {};
-    
+
     constructor(private httpClient: HttpClient, private urlService: UrlService) {}
 
     ngOnInit(): void {
@@ -121,14 +121,22 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
         };
     }
 
-    private filterElementsByValues(elements: IDropdownElement[], values: string[]): IDropdownElement[] {
-        if (!values || values.length === 0) return [];
-        return elements.filter(element => values.includes(element.value));
+    get hasInheritedPermissions(): boolean {
+        return (
+            this.inheritedPermissions &&
+            ((this.inheritedPermissions.members && this.inheritedPermissions.members.length > 0) ||
+                (this.inheritedPermissions.units && this.inheritedPermissions.units.length > 0) ||
+                (this.inheritedPermissions.rank && this.inheritedPermissions.rank.trim() !== ''))
+        );
     }
 
-    private findElementByValue(elements: IDropdownElement[], value: string): IDropdownElement | null {
-        if (!value || value.trim() === '') return null;
-        return elements.find(element => element.value === value) || null;
+    private get hasInitialData(): boolean {
+        return (
+            this.initialData &&
+            ((this.initialData.members && this.initialData.members.length > 0) ||
+                (this.initialData.units && this.initialData.units.length > 0) ||
+                (this.initialData.rank && this.initialData.rank.trim() !== ''))
+        );
     }
 
     onInheritPermissionsChange(): void {
@@ -193,18 +201,14 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
         return this.value;
     }
 
-    get hasInheritedPermissions(): boolean {
-        return this.inheritedPermissions && 
-            ((this.inheritedPermissions.members && this.inheritedPermissions.members.length > 0) ||
-             (this.inheritedPermissions.units && this.inheritedPermissions.units.length > 0) ||
-             (this.inheritedPermissions.rank && this.inheritedPermissions.rank.trim() !== ''));
+    private filterElementsByValues(elements: IDropdownElement[], values: string[]): IDropdownElement[] {
+        if (!values || values.length === 0) return [];
+        return elements.filter((element) => values.includes(element.value));
     }
 
-    private get hasInitialData(): boolean {
-        return this.initialData && 
-            ((this.initialData.members && this.initialData.members.length > 0) ||
-             (this.initialData.units && this.initialData.units.length > 0) || 
-             (this.initialData.rank && this.initialData.rank.trim() !== ''));
+    private findElementByValue(elements: IDropdownElement[], value: string): IDropdownElement | null {
+        if (!value || value.trim() === '') return null;
+        return elements.find((element) => element.value === value) || null;
     }
 
     get value(): FormModel {
@@ -227,9 +231,4 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
     }
 
     registerOnTouched(): void {}
-
-    stopEventPropagation(event: Event): void {
-        event.stopPropagation();
-        // Don't preventDefault() to allow checkbox to work normally
-    }
 }

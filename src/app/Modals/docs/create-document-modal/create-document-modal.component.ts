@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
-import { CreateDocumentRequest, RoleBasedDocumentPermissions, FolderMetadata, PermissionRole } from '../../../Models/Documents';
+import { CreateDocumentRequest, DocumentPermissions, FolderMetadata } from '../../../Models/Documents';
 import { HttpClient } from '@angular/common/http';
 import { MessageModalComponent } from '../../message-modal/message-modal.component';
 import { NgForm } from '@angular/forms';
@@ -45,11 +45,17 @@ export class CreateDocumentModalComponent implements OnInit {
     };
     pending: boolean = false;
     folderMetadata: FolderMetadata;
-    inheritedPermissions: RoleBasedDocumentPermissions;
+    inheritedPermissions: DocumentPermissions;
     initialData: InitialDocumentData = null;
     accounts: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
 
-    constructor(private httpClient: HttpClient, private urlService: UrlService, private dialog: MatDialog, private accountService: AccountService, @Inject(MAT_DIALOG_DATA) public data: DocumentModalData) {
+    constructor(
+        private httpClient: HttpClient,
+        private urlService: UrlService,
+        private dialog: MatDialog,
+        private accountService: AccountService,
+        @Inject(MAT_DIALOG_DATA) public data: DocumentModalData
+    ) {
         this.folderMetadata = data.folderMetadata;
         this.inheritedPermissions = data.inheritedPermissions;
 
@@ -68,10 +74,10 @@ export class CreateDocumentModalComponent implements OnInit {
 
                 // Set default owner to current user for new documents, or populate from initialData for editing
                 if (this.initialData) {
-                    this.model.owner = elements.find(element => element.value === this.initialData.owner) || null;
+                    this.model.owner = elements.find((element) => element.value === this.initialData.owner) || null;
                 } else {
                     const currentUser = this.accountService.account;
-                    this.model.owner = elements.find(element => element.value === currentUser?.id) || null;
+                    this.model.owner = elements.find((element) => element.value === currentUser?.id) || null;
                 }
             }
         });
@@ -83,17 +89,17 @@ export class CreateDocumentModalComponent implements OnInit {
         const request: CreateDocumentRequest = {
             name: this.model.name,
             owner: mapFromElement(BasicAccount, this.model.owner).id,
-            roleBasedPermissions: {
+            permissions: {
                 viewers: {
                     members: this.model.viewerPermissions.inherit ? [] : this.model.viewerPermissions.members.map((x) => mapFromElement(BasicAccount, x).id),
                     units: this.model.viewerPermissions.inherit ? [] : this.model.viewerPermissions.units.map((x) => mapFromElement(Unit, x).id),
-                    rank: this.model.viewerPermissions.inherit ? '' : (mapFromElement(Rank, this.model.viewerPermissions.rank)?.name || ''),
+                    rank: this.model.viewerPermissions.inherit ? '' : mapFromElement(Rank, this.model.viewerPermissions.rank)?.name || '',
                     expandToSubUnits: this.model.viewerPermissions.inherit ? true : this.model.viewerPermissions.expandToSubUnits
                 },
                 collaborators: {
                     members: this.model.collaboratorPermissions.inherit ? [] : this.model.collaboratorPermissions.members.map((x) => mapFromElement(BasicAccount, x).id),
                     units: this.model.collaboratorPermissions.inherit ? [] : this.model.collaboratorPermissions.units.map((x) => mapFromElement(Unit, x).id),
-                    rank: this.model.collaboratorPermissions.inherit ? '' : (mapFromElement(Rank, this.model.collaboratorPermissions.rank)?.name || ''),
+                    rank: this.model.collaboratorPermissions.inherit ? '' : mapFromElement(Rank, this.model.collaboratorPermissions.rank)?.name || '',
                     expandToSubUnits: this.model.collaboratorPermissions.inherit ? true : this.model.collaboratorPermissions.expandToSubUnits
                 }
             }
@@ -152,12 +158,12 @@ interface FormModel {
 export class DocumentModalData {
     folderMetadata: FolderMetadata;
     initialData?: InitialDocumentData;
-    inheritedPermissions?: RoleBasedDocumentPermissions;
+    inheritedPermissions?: DocumentPermissions;
 }
 
 export class InitialDocumentData {
     id: string;
     name?: string;
     owner?: string;
-    roleBasedPermissions?: RoleBasedDocumentPermissions;
+    permissions?: DocumentPermissions;
 }

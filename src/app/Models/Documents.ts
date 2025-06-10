@@ -5,13 +5,12 @@ export class FolderMetadata {
     fullPath: string;
     created: Date;
     creator: string;
-    
-    // NEW: Role-based permissions
+
     owner: string;
-    roleBasedPermissions: RoleBasedDocumentPermissions = new RoleBasedDocumentPermissions();
-    effectivePermissions: RoleBasedDocumentPermissions = new RoleBasedDocumentPermissions();
-    inheritedPermissions: RoleBasedDocumentPermissions = new RoleBasedDocumentPermissions();
-    
+    permissions: DocumentPermissions = new DocumentPermissions();
+    effectivePermissions: DocumentPermissions = new DocumentPermissions();
+    inheritedPermissions: DocumentPermissions = new DocumentPermissions();
+
     documents: DocumentMetadata[] = [];
     canWrite: boolean;
     children: FolderMetadata[] = [];
@@ -25,22 +24,21 @@ export class DocumentMetadata {
     created: Date;
     lastUpdated: Date;
     creator: string;
-    
-    // NEW: Role-based permissions
+
     owner: string;
-    roleBasedPermissions: RoleBasedDocumentPermissions = new RoleBasedDocumentPermissions();
-    effectivePermissions: RoleBasedDocumentPermissions = new RoleBasedDocumentPermissions();
-    inheritedPermissions: RoleBasedDocumentPermissions = new RoleBasedDocumentPermissions();
-    
+    permissions: DocumentPermissions = new DocumentPermissions();
+    effectivePermissions: DocumentPermissions = new DocumentPermissions();
+    inheritedPermissions: DocumentPermissions = new DocumentPermissions();
+
     canWrite: boolean;
 }
 
-export class RoleBasedDocumentPermissions {
-    viewers: PermissionRole = new PermissionRole();
-    collaborators: PermissionRole = new PermissionRole();
+export class DocumentPermissions {
+    viewers: DocumentPermission = new DocumentPermission();
+    collaborators: DocumentPermission = new DocumentPermission();
 }
 
-export class PermissionRole {
+export class DocumentPermission {
     members: string[] = [];
     units: string[] = [];
     rank: string = '';
@@ -50,14 +48,14 @@ export class PermissionRole {
 export class CreateDocumentRequest {
     name: string;
     owner: string;
-    roleBasedPermissions: RoleBasedDocumentPermissions;
+    permissions: DocumentPermissions;
 }
 
 export class CreateFolderRequest {
     parent: string;
     name: string;
     owner: string;
-    roleBasedPermissions: RoleBasedDocumentPermissions;
+    permissions: DocumentPermissions;
 }
 
 export class DocumentContent {

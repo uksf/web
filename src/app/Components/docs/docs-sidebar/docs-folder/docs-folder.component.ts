@@ -67,7 +67,7 @@ export class DocsFolderComponent {
     addFolder() {
         let inheritedPermissions = this.folderMetadata.inheritedPermissions;
         if (this.folderMetadata.parent === '000000000000000000000000') {
-            inheritedPermissions = this.folderMetadata.roleBasedPermissions;
+            inheritedPermissions = this.folderMetadata.permissions;
         }
 
         this.dialog
@@ -94,7 +94,7 @@ export class DocsFolderComponent {
                         id: this.folderMetadata.id,
                         name: this.folderMetadata.name,
                         owner: this.folderMetadata.owner,
-                        roleBasedPermissions: this.folderMetadata.roleBasedPermissions
+                        permissions: this.folderMetadata.permissions
                     }
                 }
             })
