@@ -30,7 +30,7 @@ export class Permissions {
 
         lookup[Permissions.SUPERADMIN] = [Permissions.SUPERADMIN];
         lookup[Permissions.ADMIN] = [Permissions.ADMIN];
-        lookup[Permissions.COMMAND] = [Permissions.COMMAND, Permissions.ACTIVITY];
+        lookup[Permissions.COMMAND] = [Permissions.COMMAND, Permissions.SERVERS, Permissions.ACTIVITY];
         lookup[Permissions.NCO] = [Permissions.NCO, Permissions.SERVERS, Permissions.ACTIVITY, Permissions.DISCHARGES];
         lookup[Permissions.PERSONNEL] = [Permissions.PERSONNEL];
         lookup[Permissions.RECRUITER] = [Permissions.RECRUITER, Permissions.ACTIVITY, Permissions.DISCHARGES];
