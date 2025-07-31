@@ -135,6 +135,9 @@
                                                 [ngClass]="{'control-button-running': server.status.running && !server.status.stopping && server.status.parsedUptime === '00:00:00'}" [disabled]="server.updating || isDisabled" (click)="stop(server, true)">Stop</button>
                                             <button mat-raised-button color="primary" *ngIf="server.status.started || server.status.stopping" [ngClass]="{'control-button-running': server.status.started || server.status.stopping || server.status.parsedUptime === '00:00:00'}"
                                                 [disabled]="server.updating || isDisabled" (click)="kill(server)">Kill</button> -->
+                                            <span *ngIf="server.launchedBy && (server.status.started || server.status.running)" class="launched-by"
+                                                ><b>Launched by:</b> {{ server.launchedBy | displayName | async }}</span
+                                            >
                                             <button
                                                 (click)="kill(server, true)"
                                                 *ngIf="server.status.started || server.status.running"

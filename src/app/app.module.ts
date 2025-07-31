@@ -201,6 +201,7 @@ import { ModpackBuildsStepsComponent } from './modpack/modpack-builds-steps/modp
 import { NewModpackReleaseModalComponent } from './modpack/new-modpack-release-modal/new-modpack-release-modal.component';
 import { ModpackReleaseService } from './modpack/modpackRelease.service';
 import { AnsiToHtmlPipe } from './Pipes/AnsiToHtml.pipe';
+import { DisplayName } from './Pipes/displayName.pipe';
 
 export function initApp(appSettingsService: AppSettingsService, injector: Injector, countryPickerService: CountryPickerService) {
     return () => {
@@ -305,7 +306,8 @@ export function tokenGetter() {
         }),
         NgxPermissionsModule.forRoot(),
         MarkdownModule.forRoot(),
-        QuillModule.forRoot()
+        QuillModule.forRoot(),
+        DisplayName
     ],
     declarations: [
         AppComponent,

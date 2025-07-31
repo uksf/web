@@ -6,25 +6,29 @@ import { UrlService } from './url.service';
 export class DisplayNameService {
     constructor(private httpClient: HttpClient, private urls: UrlService) {}
 
-    getName(id: string): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
+    getName(id: string) {
+        return new Promise<string>((resolve: (value: PromiseLike<string> | string) => void, reject: (reason?: any) => void) => {
             if (!id) {
                 reject();
                 return;
             }
 
-            this.httpClient.get(this.urls.apiUrl + `/displayName/${id}`).subscribe(
-                (name: string) => {
-                    if (name) {
-                        resolve(name);
-                    } else {
+            this.httpClient
+                .get(this.urls.apiUrl + `/displayName/${id}`, {
+                    responseType: 'text'
+                })
+                .subscribe({
+                    next: (name: string) => {
+                        if (name) {
+                            resolve(name);
+                        } else {
+                            reject();
+                        }
+                    },
+                    error: () => {
                         reject();
                     }
-                },
-                () => {
-                    reject();
-                }
-            );
+                });
         });
     }
 }
