@@ -28,7 +28,7 @@
         </div>
         <div class="flex-container instagram-feed" *ngIf="instagramImages.length > 0">
             <div class="instagram-image" *ngFor="let instagramImage of instagramImages">
-                <a target="_blank" href="{{ instagramImage.permalink }}"><img [src]="instagramImage.base64" alt="Instagram image {{ instagramImage.permalink }}" /></a>
+                <img [src]="instagramImage.base64" alt="UKSF Image" />
             </div>
         </div>
     </app-main-content-area>
