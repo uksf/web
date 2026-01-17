@@ -438,17 +438,17 @@ const appRoutes: Routes = [
     },
     {
         path: 'operations',
-        redirectTo: 'operations/servers',
-        data: {
-            permissions: {
-                only: Permissions.SERVERS,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        }
+        redirectTo: 'operations/servers'
+        // data: {
+        //     permissions: {
+        //         only: Permissions.SERVERS,
+        //         except: Permissions.UNLOGGED,
+        //         redirectTo: {
+        //             UNLOGGED: loginRedirect,
+        //             default: '/operations/aar'
+        //         }
+        //     }
+        // }
     },
     {
         path: 'operations/servers',
@@ -459,7 +459,7 @@ const appRoutes: Routes = [
                 except: Permissions.UNLOGGED,
                 redirectTo: {
                     UNLOGGED: loginRedirect,
-                    default: '/home'
+                    default: '/operations/aar'
                 }
             }
         },

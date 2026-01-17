@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { Permissions } from 'app/Services/permissions';
-import { PermissionsService } from 'app/Services/permissions.service';
+import { Permissions } from '../../Services/permissions';
+import { PermissionsService } from '../../Services/permissions.service';
 
 @Component({
     selector: 'app-operations-page',
