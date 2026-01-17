@@ -23,8 +23,8 @@ import { CommandUnitsComponent } from './Components/command/command-units/comman
 import { CommandRanksComponent } from './Components/command/command-ranks/command-ranks.component';
 import { CommandRolesComponent } from './Components/command/command-roles/command-roles.component';
 import { CommandRequestsComponent } from './Components/command/command-requests/command-requests.component';
-import { OperationsOrdersComponent } from './Components/operations/operations-orders/operations-orders.component';
 import { OperationsServersComponent } from './Components/operations/operations-servers/operations-servers.component';
+import { OperationsAarComponent } from './Components/operations/operations-aar/operations-aar.component';
 import { AdminVariablesComponent } from './Components/admin/admin-variables/admin-variables.component';
 import { AdminLogsComponent } from './Components/admin/admin-logs/admin-logs.component';
 import { HttpClient } from '@angular/common/http';
@@ -466,8 +466,8 @@ const appRoutes: Routes = [
         canActivate: [NgxPermissionsGuard]
     },
     {
-        path: 'operations/opords',
-        component: OperationsOrdersComponent,
+        path: 'operations/aar',
+        component: OperationsAarComponent,
         data: {
             permissions: {
                 only: Permissions.MEMBER,
@@ -480,6 +480,21 @@ const appRoutes: Routes = [
         },
         canActivate: [NgxPermissionsGuard]
     },
+    // {
+    //     path: 'operations/opords',
+    //     component: OperationsOrdersComponent,
+    //     data: {
+    //         permissions: {
+    //             only: Permissions.MEMBER,
+    //             except: Permissions.UNLOGGED,
+    //             redirectTo: {
+    //                 UNLOGGED: loginRedirect,
+    //                 default: '/home'
+    //             }
+    //         }
+    //     },
+    //     canActivate: [NgxPermissionsGuard]
+    // },
     // {
     //     path: 'operations/opreps',
     //     component: OperationsReportsComponent,

@@ -50,7 +50,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MatMomentDateModule } from '@angular/material-moment-adapter';
 
@@ -202,6 +202,7 @@ import { NewModpackReleaseModalComponent } from './modpack/new-modpack-release-m
 import { ModpackReleaseService } from './modpack/modpackRelease.service';
 import { AnsiToHtmlPipe } from './Pipes/AnsiToHtml.pipe';
 import { DisplayName } from './Pipes/displayName.pipe';
+import { OperationsAarComponent } from './Components/operations/operations-aar/operations-aar.component';
 
 export function initApp(appSettingsService: AppSettingsService, injector: Injector, countryPickerService: CountryPickerService) {
     return () => {
@@ -307,7 +308,8 @@ export function tokenGetter() {
         NgxPermissionsModule.forRoot(),
         MarkdownModule.forRoot(),
         QuillModule.forRoot(),
-        DisplayName
+        DisplayName,
+        NgOptimizedImage
     ],
     declarations: [
         AppComponent,
@@ -375,6 +377,7 @@ export function tokenGetter() {
         OperationsOrdersComponent,
         OperationsReportsComponent,
         OperationsServersComponent,
+        OperationsAarComponent,
         AddServerModalComponent,
         RequestUnitRemovalModalComponent,
         AdminVariablesComponent,

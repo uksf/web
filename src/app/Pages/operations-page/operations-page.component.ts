@@ -16,12 +16,10 @@ export class OperationsPageComponent {
 
     constructor(private permissions: PermissionsService) {
         if (this.permissions.hasPermission(Permissions.SERVERS)) {
-            this.tabLinks = [
-                { label: 'Servers', link: '../servers' }
-                // { label: 'OPORDs', link: '../opords' },
-                // { label: 'OPREPs', link: '../opreps' },
-                // { label: 'Activity', link: '../activity' }
-            ];
+            this.tabLinks.push({ label: 'Servers', link: '../servers' });
+        }
+        if (this.permissions.hasPermission(Permissions.MEMBER)) {
+            this.tabLinks.push({ label: 'AAR', link: '../aar' });
         }
     }
 }
