@@ -27,7 +27,7 @@ export class SideBarComponent {
         { text: 'Home', link: 'home', icon: 'home' },
         // { text: 'Live', icon: 'satellite' }, // cast image also very good
         { text: 'Units', link: 'units', icon: 'memory' },
-        // { text: 'Operations', link: 'operations', icon: 'public' },
+        { text: 'Operations', link: 'operations', icon: 'public' },
         { text: 'Personnel', link: 'personnel', icon: 'group' }
         // { text: "Training", link: 'admin', icon: "explore" } disabled until implemented
     ];
@@ -89,9 +89,6 @@ export class SideBarComponent {
         } else if (grantedPermissions[Permissions.MEMBER]) {
             let combinedArray = [];
             combinedArray = combinedArray.concat(this.memberMenuStart);
-            if (grantedPermissions[Permissions.SERVERS]) {
-                combinedArray.push({ text: 'Operations', link: 'operations', icon: 'public' });
-            }
             if (grantedPermissions[Permissions.RECRUITER]) {
                 combinedArray.push({ text: 'Recruitment', link: 'recruitment', icon: 'group_add' });
             }

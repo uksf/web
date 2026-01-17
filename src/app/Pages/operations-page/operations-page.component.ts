@@ -8,18 +8,11 @@ import { PermissionsService } from 'app/Services/permissions.service';
     styleUrls: ['./operations-page.component.scss']
 })
 export class OperationsPageComponent {
-    tabLinks = [
-        // { label: 'OPORDs', link: '../opords' },
-        // { label: 'OPREPs', link: '../opreps' },
-        // { label: 'Activity', link: '../activity' }
-    ];
+    tabLinks: { label: string; link: string }[] = [{ label: 'AAR', link: '../aar' }];
 
     constructor(private permissions: PermissionsService) {
         if (this.permissions.hasPermission(Permissions.SERVERS)) {
-            this.tabLinks.push({ label: 'Servers', link: '../servers' });
-        }
-        if (this.permissions.hasPermission(Permissions.MEMBER)) {
-            this.tabLinks.push({ label: 'AAR', link: '../aar' });
+            this.tabLinks.unshift({ label: 'Servers', link: '../servers' });
         }
     }
 }
