@@ -16,11 +16,11 @@ jobs:
         displayName: 'Install Node.js'
 
       - script: |
-          npm install
-        displayName: 'npm install'
+          bun install
+        displayName: 'bun install'
 
       - script: |
-          ng build -c production --aot --build-optimizer --optimization
+          bun x ng build -c production --aot --build-optimizer --optimization
         displayName: 'ng build'
 
       - task: ArchiveFiles@2
