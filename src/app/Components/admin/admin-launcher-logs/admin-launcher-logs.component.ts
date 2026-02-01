@@ -15,7 +15,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
     styleUrls: ['../../../Pages/admin-page/admin-page.component.scss', './admin-launcher-logs.component.scss'],
 })
 export class AdminLauncherLogsComponent extends AdminLogsComponent implements OnInit, OnDestroy {
-    launcherLogDisplayedColumns = ['id', 'timestamp', 'userId', 'name', 'version', 'message'];
+    launcherLogDisplayedColumns = ['timestamp', 'userId', 'name', 'version', 'message'];
     datasource: MatTableDataSource<LauncherLog> = new MatTableDataSource<LauncherLog>();
 
     constructor(httpClient: HttpClient, urls: UrlService, dialog: MatDialog, signalrService: SignalRService, clipboard: Clipboard) {

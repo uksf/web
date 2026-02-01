@@ -15,7 +15,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
     styleUrls: ['../../../Pages/admin-page/admin-page.component.scss', './admin-discord-logs.component.scss'],
 })
 export class AdminDiscordLogsComponent extends AdminLogsComponent implements OnInit, OnDestroy {
-    launcherLogDisplayedColumns = ['id', 'timestamp', 'discordUserEventType', 'instigatorId', 'instigatorName', 'channelName', 'name', 'message'];
+    launcherLogDisplayedColumns = ['timestamp', 'discordUserEventType', 'instigatorId', 'instigatorName', 'channelName', 'name', 'message'];
     datasource: MatTableDataSource<DiscordLog> = new MatTableDataSource<DiscordLog>();
 
     constructor(httpClient: HttpClient, urls: UrlService, dialog: MatDialog, signalrService: SignalRService, clipboard: Clipboard) {

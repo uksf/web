@@ -30,7 +30,7 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
     protected filterSubject = new Subject<string>();
     filter = '';
     dataLoaded = false;
-    logDisplayedColumns = ['id', 'timestamp', 'level', 'message'];
+    logDisplayedColumns = ['timestamp', 'level', 'message'];
     datasource: MatTableDataSource<BasicLog> = new MatTableDataSource<BasicLog>();
 
     constructor(httpClient: HttpClient, urls: UrlService, dialog: MatDialog, signalrService: SignalRService, private clipboard: Clipboard) {
@@ -109,6 +109,17 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
                 return 'WARNING';
             case LogLevel.ERROR:
                 return 'ERROR';
+        }
+    }
+
+    levelClass(level: LogLevel) {
+        switch (level) {
+            case LogLevel.ERROR:
+                return 'log-level-error';
+            case LogLevel.WARNING:
+                return 'log-level-warning';
+            default:
+                return '';
         }
     }
 }

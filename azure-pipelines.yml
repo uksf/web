@@ -1,0 +1,247 @@
+trigger:
+  - main
+
+pool: Avengers
+
+variables:
+  artifactName: 'UKSF.Web'
+
+stages:
+  - stage: Build
+    displayName: Build
+    jobs:
+      - job: BuildPublish
+        displayName: Build & Publish
+        steps:
+          - checkout: self
+            clean: false
+
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '17.x'
+            displayName: 'Install Node.js'
+
+          - script: |
+              bun install
+            displayName: 'bun install'
+
+          - script: |
+              bun x ng build -c production --aot --build-optimizer --optimization
+            displayName: 'ng build'
+
+          - task: ArchiveFiles@2
+            displayName: 'Zip Web Artifact'
+            inputs:
+              rootFolderOrFile: 'dist'
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: '$(Build.ArtifactStagingDirectory)/UKSF.Web.zip'
+              replaceExistingArchive: true
+
+          - publish: '$(Build.ArtifactStagingDirectory)/UKSF.Web.zip'
+            displayName: 'Publish Artifact'
+            artifact: $(artifactName)
+
+  - stage: DeployDev
+    displayName: Deploy to Dev
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    variables:
+      - group: 'UKSF Web - Dev'
+      - name: deployPath
+        value: 'C:\Server\Nginx\html-dev'
+    jobs:
+      - deployment: DeployDev
+        displayName: Deploy to Dev
+        environment: 'UKSF-Dev'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: $(artifactName)
+
+                - task: PowerShell@2
+                  displayName: 'Clean Old Files'
+                  inputs:
+                    targetType: 'inline'
+                    script: |
+                      $deployPath = "$(deployPath)"
+
+                      if (Test-Path $deployPath) {
+                          Write-Host "Cleaning old files from: $deployPath"
+
+                          $patterns = @(
+                              "main*.js",
+                              "polyfills*.js",
+                              "runtime*.js",
+                              "scripts*.js",
+                              "styles*.css"
+                          )
+
+                          foreach ($pattern in $patterns) {
+                              $files = Get-ChildItem -Path $deployPath -Filter $pattern -ErrorAction SilentlyContinue
+                              foreach ($file in $files) {
+                                  Write-Host "Deleting: $($file.FullName)"
+                                  Remove-Item $file.FullName -Force
+                              }
+                          }
+                      } else {
+                          Write-Host "Deploy path does not exist, skipping cleanup"
+                      }
+
+                - task: ExtractFiles@1
+                  displayName: 'Extract Files'
+                  inputs:
+                    archiveFilePatterns: '$(Pipeline.Workspace)/$(artifactName)/UKSF.Web.zip'
+                    destinationFolder: '$(deployPath)'
+                    cleanDestinationFolder: false
+                    overwriteExistingFiles: true
+
+                - task: FileTransform@1
+                  displayName: 'File Transform'
+                  inputs:
+                    folderPath: '$(deployPath)'
+                    fileType: 'json'
+                    targetFiles: 'appSettings.json'
+
+                - task: PowerShell@2
+                  displayName: 'Increment Version'
+                  inputs:
+                    targetType: 'inline'
+                    script: |
+                      $apiUrl = "$(apiUrl)"
+                      $email = "$(adminEmail)"
+                      $password = "$(adminPassword)"
+
+                      Write-Host "Incrementing version via API..."
+
+                      try {
+                          # Login to get token
+                          $loginBody = @{
+                              email = $email
+                              password = $password
+                          } | ConvertTo-Json
+
+                          $loginResponse = Invoke-RestMethod -Uri "$apiUrl/login" -Method Post -Body $loginBody -ContentType "application/json"
+                          $token = $loginResponse.access_token
+
+                          if (-not $token) {
+                              Write-Error "Failed to get access token"
+                              exit 1
+                          }
+
+                          # Increment version
+                          $headers = @{
+                              Authorization = "Bearer $token"
+                          }
+
+                          $versionResponse = Invoke-RestMethod -Uri "$apiUrl/utility/version" -Method Put -Headers $headers
+                          Write-Host "Version incremented: $versionResponse"
+                      }
+                      catch {
+                          Write-Error "Failed to increment version: $_"
+                          exit 1
+                      }
+
+  - stage: DeployProd
+    displayName: Deploy to Production
+    dependsOn: DeployDev
+    condition: succeeded()
+    variables:
+      - group: 'UKSF Web - Production'
+      - name: deployPath
+        value: 'C:\Server\Nginx\html'
+    jobs:
+      - deployment: DeployProd
+        displayName: Deploy to Production
+        environment: 'UKSF-Production'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: $(artifactName)
+
+                - task: PowerShell@2
+                  displayName: 'Clean Old Files'
+                  inputs:
+                    targetType: 'inline'
+                    script: |
+                      $deployPath = "$(deployPath)"
+
+                      if (Test-Path $deployPath) {
+                          Write-Host "Cleaning old files from: $deployPath"
+
+                          $patterns = @(
+                              "main*.js",
+                              "polyfills*.js",
+                              "runtime*.js",
+                              "scripts*.js",
+                              "styles*.css"
+                          )
+
+                          foreach ($pattern in $patterns) {
+                              $files = Get-ChildItem -Path $deployPath -Filter $pattern -ErrorAction SilentlyContinue
+                              foreach ($file in $files) {
+                                  Write-Host "Deleting: $($file.FullName)"
+                                  Remove-Item $file.FullName -Force
+                              }
+                          }
+                      } else {
+                          Write-Host "Deploy path does not exist, skipping cleanup"
+                      }
+
+                - task: ExtractFiles@1
+                  displayName: 'Extract Files'
+                  inputs:
+                    archiveFilePatterns: '$(Pipeline.Workspace)/$(artifactName)/UKSF.Web.zip'
+                    destinationFolder: '$(deployPath)'
+                    cleanDestinationFolder: false
+                    overwriteExistingFiles: true
+
+                - task: FileTransform@1
+                  displayName: 'File Transform'
+                  inputs:
+                    folderPath: '$(deployPath)'
+                    fileType: 'json'
+                    targetFiles: 'appSettings.json'
+
+                - task: PowerShell@2
+                  displayName: 'Increment Version'
+                  inputs:
+                    targetType: 'inline'
+                    script: |
+                      $apiUrl = "$(apiUrl)"
+                      $email = "$(adminEmail)"
+                      $password = "$(adminPassword)"
+
+                      Write-Host "Incrementing version via API..."
+
+                      try {
+                          # Login to get token
+                          $loginBody = @{
+                              email = $email
+                              password = $password
+                          } | ConvertTo-Json
+
+                          $loginResponse = Invoke-RestMethod -Uri "$apiUrl/login" -Method Post -Body $loginBody -ContentType "application/json"
+                          $token = $loginResponse.access_token
+
+                          if (-not $token) {
+                              Write-Error "Failed to get access token"
+                              exit 1
+                          }
+
+                          # Increment version
+                          $headers = @{
+                              Authorization = "Bearer $token"
+                          }
+
+                          $versionResponse = Invoke-RestMethod -Uri "$apiUrl/utility/version" -Method Put -Headers $headers
+                          Write-Host "Version incremented: $versionResponse"
+                      }
+                      catch {
+                          Write-Error "Failed to increment version: $_"
+                          exit 1
+                      }

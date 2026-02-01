@@ -15,7 +15,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
     styleUrls: ['../../../Pages/admin-page/admin-page.component.scss', './admin-audit-logs.component.scss'],
 })
 export class AdminAuditLogsComponent extends AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
-    auditLogDisplayedColumns = ['id', 'timestamp', 'who', 'message'];
+    auditLogDisplayedColumns = ['timestamp', 'who', 'message'];
     datasource: MatTableDataSource<AuditLog> = new MatTableDataSource<AuditLog>();
 
     constructor(httpClient: HttpClient, urls: UrlService, dialog: MatDialog, signalrService: SignalRService, clipboard: Clipboard) {

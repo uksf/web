@@ -17,12 +17,6 @@
             </div>
             <div class="table-container mat-elevation-z8">
                 <mat-table [dataSource]="datasource" matSort>
-                    <ng-container matColumnDef="id">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header> ID </mat-header-cell>
-                        <mat-cell *matCellDef="let row"
-                            ><span>{{ row.id }}</span></mat-cell
-                        >
-                    </ng-container>
                     <ng-container matColumnDef="timestamp">
                         <mat-header-cell *matHeaderCellDef mat-sort-header> Timestamp </mat-header-cell>
                         <mat-cell *matCellDef="let row"
@@ -31,7 +25,7 @@
                     </ng-container>
                     <ng-container matColumnDef="level">
                         <mat-header-cell *matHeaderCellDef mat-sort-header> Level </mat-header-cell>
-                        <mat-cell *matCellDef="let row"
+                        <mat-cell *matCellDef="let row" [ngClass]="levelClass(row.level)"
                             ><span>{{ levelToString(row.level) }}</span></mat-cell
                         >
                     </ng-container>

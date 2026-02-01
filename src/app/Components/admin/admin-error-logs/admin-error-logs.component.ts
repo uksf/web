@@ -15,7 +15,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
     styleUrls: ['../../../Pages/admin-page/admin-page.component.scss', './admin-error-logs.component.scss'],
 })
 export class AdminErrorLogsComponent extends AdminLogsComponent implements OnInit, OnDestroy {
-    errorLogDisplayedColumns = ['id', 'timestamp', 'statusCode', 'method', 'url', 'endpointName', 'userId', 'name', 'message', 'exception'];
+    errorLogDisplayedColumns = ['timestamp', 'statusCode', 'method', 'url', 'endpointName', 'userId', 'name', 'message', 'exception'];
     datasource: MatTableDataSource<ErrorLog> = new MatTableDataSource<ErrorLog>();
 
     constructor(httpClient: HttpClient, urls: UrlService, dialog: MatDialog, signalrService: SignalRService, clipboard: Clipboard) {

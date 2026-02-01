@@ -1,0 +1,22 @@
+.mat-dialog-content {
+    overflow: unset;
+    display: flex;
+    flex-direction: column;
+    min-width: 600px;
+
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+
+        .normal {
+            width: 100%;
+        }
+    }
+
+    .button-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+    }
+}

@@ -1,0 +1,15 @@
+<h2 mat-dialog-title>Install Workshop Mod</h2>
+<mat-dialog-content>
+    <form [formGroup]="form" class="form-container">
+        <mat-form-field class="normal">
+            <input matInput formControlName="steamId" placeholder="Steam ID or Workshop Link" [errorStateMatcher]="instantErrorStateMatcher" />
+            <mat-error *ngFor="let validation of validationMessages.steamId">
+                <mat-error class="error-message" *ngIf="form.get('steamId').hasError(validation.type)">{{ validation.message }}</mat-error>
+            </mat-error>
+        </mat-form-field>
+        <app-flex-filler></app-flex-filler>
+        <div class="button-container">
+            <app-button (click)="install()" [disabled]="!form.valid" [pending]="submitting">Install</app-button>
+        </div>
+    </form>
+</mat-dialog-content>
