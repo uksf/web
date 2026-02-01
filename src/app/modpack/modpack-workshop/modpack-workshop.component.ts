@@ -1,178 +1,143 @@
 import { Component, OnInit } from '@angular/core';
-import { MarkdownService } from 'ngx-markdown';
-import { PermissionsService } from 'app/Services/permissions.service';
-import { Permissions } from 'app/Services/permissions';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ModpackReleaseService } from '../modpackRelease.service';
-import { ModpackRelease } from '../models/ModpackRelease';
+import { HttpClient } from '@angular/common/http';
+import { UrlService } from '../../Services/url.service';
+import { ConnectionContainer, SignalRService } from '../../Services/signalr.service';
+import { WorkshopMod, WorkshopModUpdatedDate } from '../models/WorkshopMod';
+import { MessageModalComponent } from '../../Modals/message-modal/message-modal.component';
+import { MatDialog } from '@angular/material/dialog';
+import { InstallWorkshopModModalComponent } from '../install-workshop-mod-modal/install-workshop-mod-modal.component';
+import { WorkshopModInterventionModalComponent } from '../workshop-mod-intervention-modal/workshop-mod-intervention-modal.component';
 
 @Component({
-    selector: 'app-modpack-releases',
-    templateUrl: './modpack-releases.component.html',
-    styleUrls: ['../../modpack/modpack-page/modpack-page.component.scss', './modpack-releases.component.scss', './modpack-releases.component.scss-theme.scss']
+    selector: 'app-modpack-workshop',
+    templateUrl: './modpack-workshop.component.html',
+    styleUrls: ['../../modpack/modpack-page/modpack-page.component.scss', './modpack-workshop.component.scss', './modpack-workshop.component.scss-theme.scss']
 })
-export class ModpackReleasesComponent implements OnInit {
-    selectedReleaseVersion: string = '';
-    selectIncomingRelease: boolean = false;
-    editing: boolean = false;
-    preview: boolean = false;
-    releasing: boolean = false;
-    savingChangelog: boolean = false;
-    changelogEditing: string;
-    changelogStaging: string;
-    changelogMarkdown: string;
+export class ModpackWorkshopComponent implements OnInit {
+    private hubConnection: ConnectionContainer;
+    mods: WorkshopMod[] = [];
 
-    constructor(
-        private markdownService: MarkdownService,
-        private permissionsService: PermissionsService,
-        private route: ActivatedRoute,
-        private router: Router,
-        private modpackReleaseService: ModpackReleaseService
-    ) {}
-
-    get releases() {
-        return this.modpackReleaseService.releases;
-    }
-
-    get publicReleases() {
-        return this.releases.filter((x: ModpackRelease) => !x.isDraft || this.permissionsService.hasPermission(Permissions.TESTER));
-    }
-
-    get selectedRelease() {
-        return this.releases.find((x: ModpackRelease) => x.version === this.selectedReleaseVersion);
-    }
-
-    get latestReleaseIsDraft() {
-        return this.releases.length > 0 && this.releases[0].isDraft;
-    }
+    constructor(private httpClient: HttpClient, private urls: UrlService, private signalrService: SignalRService, private dialog: MatDialog) {}
 
     ngOnInit() {
-        const linkRenderer: any = this.markdownService.renderer.link;
-        this.markdownService.renderer.link = (href: any, title: any, text: any) => {
-            const html: any = linkRenderer.call(this.markdownService.renderer, href, title, text);
-            return html.replace(/^<a /, '<a target="_blank" rel="nofollow" ');
-        };
+        this.getData(() => {
+            this.mods.forEach((mod: WorkshopMod) => {
+                this.getModUpdatedDate(mod);
+            });
+        });
+        this.hubConnection = this.signalrService.connect(`modpack`);
+        this.hubConnection.connection.on('ReceiveWorkshopModAdded', () => {
+            this.getData();
+        });
+        this.hubConnection.connection.on('ReceiveWorkshopModUpdate', (id: string) => {
+            this.getDataForMod(id);
+        });
+        this.hubConnection.reconnectEvent.subscribe(() => {
+            this.getData();
+        });
+    }
 
-        this.modpackReleaseService.connect(
-            () => {
-                if (this.releases.length > 0) {
-                    this.checkRoute();
-                } else {
-                    this.selectRelease(undefined);
-                }
-            },
-            (version: string) => {
-                if (this.selectIncomingRelease) {
-                    this.selectIncomingRelease = false;
-                    this.selectRelease(version);
-                }
+    getData(callback: () => void = null) {
+        this.httpClient.get(this.urls.apiUrl + '/workshop').subscribe((mods: WorkshopMod[]) => {
+            this.mods = mods;
+            if (callback) {
+                callback();
             }
-        );
-    }
-
-    checkRoute() {
-        const version: string = this.route.snapshot.queryParams['version'];
-        const index: number = this.publicReleases.findIndex((x: any) => x.version === version);
-        if (version && index !== -1) {
-            this.selectRelease(version);
-        } else {
-            this.selectRelease(this.publicReleases[0].version);
-        }
-    }
-
-    selectRelease(version: string) {
-        this.editing = false;
-        this.selectedReleaseVersion = version;
-        if (!this.selectedRelease) {
-            this.changelogMarkdown = '';
-            this.router.navigate([], {
-                relativeTo: this.route,
-                queryParams: { version: null },
-                queryParamsHandling: 'merge'
-            });
-        } else {
-            this.changelogMarkdown = this.markdownService.compile(this.selectedRelease.changelog);
-            this.router.navigate([], {
-                relativeTo: this.route,
-                queryParams: { version: this.selectedReleaseVersion },
-                queryParamsHandling: 'merge'
-            });
-        }
-    }
-
-    newRelease() {
-        this.modpackReleaseService.newRelease(() => {
-            this.selectIncomingRelease = true;
         });
     }
 
-    release() {
-        this.releasing = true;
-        this.modpackReleaseService.release(this.selectedRelease.version, () => {
-            this.router.navigate(['/modpack/builds-rc'], {
-                queryParams: {
-                    version: this.selectedRelease.version,
-                    log: true
-                }
-            });
-            this.releasing = false;
-        });
-    }
-
-    regenerateChangelog() {
-        this.savingChangelog = true;
-        this.modpackReleaseService.regenerateChangelog(this.selectedReleaseVersion, (changelog: string) => {
-            this.changelogMarkdown = this.markdownService.compile(changelog);
-            this.savingChangelog = false;
-        });
-    }
-
-    edit() {
-        this.editing = true;
-        this.changelogStaging = this.selectedRelease.changelog;
-        this.formatChangelog(this.editing);
-    }
-
-    togglePreview() {
-        this.preview = !this.preview;
-        if (this.preview) {
-            this.formatChangelog(false);
-            this.changelogMarkdown = this.markdownService.compile(this.changelogStaging);
-        }
-    }
-
-    save() {
-        this.editing = false;
-        this.preview = false;
-        this.savingChangelog = true;
-        this.formatChangelog(this.editing);
-        this.selectedRelease.changelog = this.changelogStaging;
-        this.modpackReleaseService.saveReleaseChanges(this.selectedRelease, () => {
-            this.changelogMarkdown = this.markdownService.compile(this.selectedRelease.changelog);
-            this.savingChangelog = false;
-        });
-    }
-
-    discard() {
-        this.editing = false;
-        this.preview = false;
-        this.changelogEditing = '';
-        this.changelogStaging = '';
-        this.changelogMarkdown = this.markdownService.compile(this.selectedRelease.changelog);
-    }
-
-    formatChangelog(editing: boolean) {
-        if (editing) {
-            this.changelogEditing = this.changelogStaging.replace(/<br>/g, '');
-        } else {
-            const lines: string[] = this.changelogEditing.split('\n');
-            for (let index = 0; index < lines.length; index++) {
-                const line: string = lines[index];
-                if (line.startsWith('  ') && !line.match(/( {2,})-/)) {
-                    lines[index] = `<br>${line}`;
-                }
+    getDataForMod(id: string) {
+        this.httpClient.get(this.urls.apiUrl + `/workshop/${id}`).subscribe((mod: WorkshopMod) => {
+            const index: number = this.mods.findIndex((x: WorkshopMod) => x.id === mod.id);
+            if (index === -1) {
+                this.getData();
+            } else {
+                this.mods.splice(index, 1, mod);
             }
-            this.changelogStaging = lines.join('\n');
-        }
+        });
+    }
+
+    getModUpdatedDate(mod: WorkshopMod) {
+        this.httpClient.get(this.urls.apiUrl + `/workshop/${mod.steamId}/updatedDate`).subscribe((updatedDateResponse: WorkshopModUpdatedDate) => {
+            mod.updatedDate = updatedDateResponse.updatedDate;
+        });
+    }
+
+    interventionRequired(mod: WorkshopMod) {
+        return mod.status === 'InterventionRequired';
+    }
+
+    updateAvailable(mod: WorkshopMod) {
+        return mod.updatedDate !== null && this.isValidDate(mod.updatedDate) && this.isValidDate(mod.lastUpdatedLocally) && new Date(mod.updatedDate) > new Date(mod.lastUpdatedLocally);
+    }
+
+    canUninstall(mod: WorkshopMod) {
+        return mod.status === 'InstalledPendingRelease' || mod.status === 'Installed' || mod.status === 'UpdatedPendingRelease' || mod.status === 'InterventionRequired' || mod.status === 'Error';
+    }
+
+    canDelete(mod: WorkshopMod) {
+        return mod.status === 'Uninstalled';
+    }
+
+    hasError(mod: WorkshopMod) {
+        return mod.status === 'Error';
+    }
+
+    install() {
+        this.dialog.open(InstallWorkshopModModalComponent).componentInstance.installEvent.subscribe((steamId: string) => {
+            this.httpClient.post(this.urls.apiUrl + `/workshop`, { steamId: steamId }).subscribe({
+                next: () => {},
+                error: (error: any) => {
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: error.error }
+                    });
+                }
+            });
+        });
+    }
+
+    resolveIntervention(mod: WorkshopMod) {
+        this.dialog
+            .open(WorkshopModInterventionModalComponent, {
+                data: {
+                    availablePbos: mod.pbos
+                }
+            })
+            .componentInstance.submitEvent.subscribe((selectedPbos: string[]) => {
+                this.httpClient.post(this.urls.apiUrl + `/workshop/${mod.steamId}/resolve`, { selectedPbos: selectedPbos }).subscribe({
+                    next: () => {},
+                    error: (error: any) => {
+                        this.dialog.open(MessageModalComponent, {
+                            data: { message: error.error }
+                        });
+                    }
+                });
+            });
+    }
+
+    update(mod: WorkshopMod) {
+        this.httpClient.post(this.urls.apiUrl + `/workshop/${mod.steamId}/update`, {}).subscribe(() => {});
+    }
+
+    uninstall(mod: WorkshopMod) {
+        this.httpClient.post(this.urls.apiUrl + `/workshop/${mod.steamId}/uninstall`, {}).subscribe(() => {});
+    }
+
+    delete(mod: WorkshopMod) {
+        this.httpClient.delete(this.urls.apiUrl + `/workshop/${mod.steamId}`).subscribe(() => {});
+    }
+
+    showError(mod: WorkshopMod) {
+        this.dialog.open(MessageModalComponent, {
+            data: { message: mod.errorMessage }
+        });
+    }
+
+    trackBySteamId(_: any, mod: WorkshopMod) {
+        return mod.steamId;
+    }
+
+    private isValidDate(date: string) {
+        return date !== '0001-01-01T00:00:00.0000000Z';
     }
 }

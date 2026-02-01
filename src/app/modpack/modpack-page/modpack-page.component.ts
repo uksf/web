@@ -16,7 +16,8 @@ export class ModpackPageComponent {
                 { label: 'Guide', link: '../guide' },
                 { label: 'Releases', link: '../releases' },
                 { label: 'Dev Builds', link: '../builds-dev' },
-                { label: 'RC Builds', link: '../builds-rc' }
+                { label: 'RC Builds', link: '../builds-rc' },
+                { label: 'Workshop', link: '../workshop' }
             ];
         }
     }

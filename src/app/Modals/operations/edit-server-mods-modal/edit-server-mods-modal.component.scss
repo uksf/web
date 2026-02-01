@@ -1,6 +1,8 @@
 .mat-dialog-content {
-    padding: 0px;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
+    padding: 0;
 }
 
 h2 {
@@ -13,6 +15,7 @@ h2 {
     width: fit-content;
     min-width: 450px;
     max-height: 600px;
+    padding: 0 12px;
 
     .mods-list-header {
         display: flex;
@@ -58,7 +61,20 @@ h2 {
         display: flex;
         flex-direction: row;
         justify-content: flex-end;
-        min-height: fit-content;
         padding: 0 24px;
+        margin-top: 12px;
     }
+}
+
+::-webkit-scrollbar {
+    width: 7px;
+    padding-left: 2px;
+}
+
+::-webkit-scrollbar-track {
+    border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 2px;
 }

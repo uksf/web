@@ -1,50 +1,33 @@
-import { Component, EventEmitter, Inject, Output } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, EventEmitter, Output } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { InstantErrorStateMatcher } from '../../Services/formhelper.service';
-import { ModpackRelease } from '../models/ModpackRelease';
-import { ModpackReleaseService } from '../modpackRelease.service';
 
 @Component({
-    selector: 'app-new-modpack-release-modal',
-    templateUrl: './new-modpack-release-modal.component.html',
-    styleUrls: ['./new-modpack-release-modal.component.scss']
+    selector: 'app-install-workshop-mod-modal',
+    templateUrl: './install-workshop-mod-modal.component.html',
+    styleUrls: ['./install-workshop-mod-modal.component.scss']
 })
-export class NewModpackReleaseModalComponent {
-    @Output() successEvent: any = new EventEmitter();
+export class InstallWorkshopModModalComponent {
+    @Output() installEvent: EventEmitter<string> = new EventEmitter<string>();
     form: UntypedFormGroup;
     instantErrorStateMatcher: InstantErrorStateMatcher = new InstantErrorStateMatcher();
-    previousVersion: string;
-    major: string;
-    minor: string;
-    patch: string;
+    validationMessages: { steamId: { type: string; message: string }[] } = {
+        steamId: [{ type: 'required', message: 'Steam ID is required' }]
+    };
     submitting: boolean = false;
 
-    constructor(
-        private formBuilder: UntypedFormBuilder,
-        private modpackReleaseService: ModpackReleaseService,
-        @Inject(MAT_DIALOG_DATA)
-        public data: {
-            previousRelease: ModpackRelease;
-        }
-    ) {
-        this.previousVersion = data.previousRelease.version;
-
-        const previousVersionParts: number[] = this.previousVersion.split('.').map((x: string) => parseInt(x, 10));
-        this.major = `${previousVersionParts[0] + 1}.0.0`;
-        this.minor = `${previousVersionParts[0]}.${previousVersionParts[1] + 1}.0`;
-        this.patch = `${previousVersionParts[0]}.${previousVersionParts[1]}.${previousVersionParts[2] + 1}`;
-
+    constructor(private formBuilder: UntypedFormBuilder, public dialogRef: MatDialogRef<InstallWorkshopModModalComponent>) {
         this.form = this.formBuilder.group({
-            version: [this.patch, Validators.required]
+            steamId: ['', Validators.required]
         });
     }
 
-    create() {
-        this.submitting = true;
+    install() {
         const formValue: any = this.form.getRawValue();
-        this.modpackReleaseService.createNewRelease(formValue.version, () => {
-            this.successEvent.emit();
-        });
+        const steamId: string = formValue.steamId.replace('https://steamcommunity.com/sharedfiles/filedetails/?id=', '');
+
+        this.dialogRef.close();
+        this.installEvent.emit(steamId);
     }
 }

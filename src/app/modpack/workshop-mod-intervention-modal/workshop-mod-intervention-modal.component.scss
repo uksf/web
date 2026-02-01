@@ -1,22 +1,79 @@
-.mat-dialog-content {
-    overflow: unset;
-    display: flex;
-    flex-direction: column;
-    min-width: 600px;
+h2 {
+    margin: 0;
+}
 
-    .form-container {
+.mat-dialog-content {
+    overflow: hidden;
+    min-width: 450px;
+
+    .spinner-container {
+        height: 152px;
+        display: flex;
+        align-items: center;
+        text-align: center;
+    }
+
+    .flex-container {
         display: flex;
         flex-direction: column;
-        width: 100%;
+        width: fit-content;
+        min-width: 450px;
+        max-height: 600px;
 
-        .normal {
-            width: 100%;
+        .pbos-list-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow-y: auto;
+            padding-right: 6px;
+
+            .pbos-list-item-container {
+                display: flex;
+                flex-direction: row;
+
+                .pbos-list-item {
+                    display: flex;
+                    flex-direction: row;
+                    width: 100%;
+                    height: 40px;
+                    font-size: 16px;
+                    line-height: 16px;
+
+                    span {
+                        margin: auto 0;
+                    }
+                }
+
+                .mat-checkbox {
+                    padding: 6px;
+                    margin: auto;
+                }
+            }
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            min-height: fit-content;
+            padding: 8px 0;
         }
     }
+}
 
-    .button-container {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
-    }
+::-webkit-scrollbar {
+    width: 7px;
+    padding-left: 2px;
+}
+
+::-webkit-scrollbar-track {
+    border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 2px;
+}
+
+label {
+    margin-bottom: 0;
 }

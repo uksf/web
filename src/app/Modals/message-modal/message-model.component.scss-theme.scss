@@ -1,21 +1,15 @@
 @use '@angular/material' as mat;
-@mixin validation-report-modal-component-theme($theme) {
-    $foreground: map-get($theme, foreground);
+
+@mixin message-modal-component-theme($theme) {
     $background: map-get($theme, background);
-    $primary: map-get($theme, primary);
-    $warn: map-get($theme, warn);
 
-    app-validation-report-modal {
-        h3 {
-            color: mat.get-color-from-palette($primary);
+    app-message-modal {
+        ::-webkit-scrollbar-track {
+            background-color: mat.get-color-from-palette($background, side-bar);
         }
 
-        .error {
-            color: mat.get-color-from-palette($warn);
-        }
-
-        a {
-            color: mat.get-color-from-palette($primary);
+        ::-webkit-scrollbar-thumb {
+            background-color: mat.get-color-from-palette($background, scroll-thumb);
         }
     }
 }

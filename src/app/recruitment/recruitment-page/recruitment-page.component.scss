@@ -231,23 +231,20 @@ app-side-content-area {
                     .activity-row {
                         display: flex;
                         flex-direction: row;
-                        padding: 3px 0;
+                        padding: 6px 0;
 
                         .item {
                             text-align: center;
                             flex-grow: 1;
                             flex-basis: 20%;
+                            margin: auto;
 
                             &.state {
                                 text-align: left;
-                                max-width: 16px;
+                                max-width: 20px;
                                 min-width: 16px;
-                                height: 16px;
+                                height: 24px;
                                 margin: auto 5px auto 0;
-
-                                .mat-checkbox-layout {
-                                    margin: 0;
-                                }
                             }
 
                             &.recruiter {

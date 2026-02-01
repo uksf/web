@@ -203,6 +203,9 @@ import { ModpackReleaseService } from './modpack/modpackRelease.service';
 import { AnsiToHtmlPipe } from './Pipes/AnsiToHtml.pipe';
 import { DisplayName } from './Pipes/displayName.pipe';
 import { OperationsAarComponent } from './Components/operations/operations-aar/operations-aar.component';
+import { ModpackWorkshopComponent } from './modpack/modpack-workshop/modpack-workshop.component';
+import { InstallWorkshopModModalComponent } from './modpack/install-workshop-mod-modal/install-workshop-mod-modal.component';
+import { WorkshopModInterventionModalComponent } from './modpack/workshop-mod-intervention-modal/workshop-mod-intervention-modal.component';
 
 export function initApp(appSettingsService: AppSettingsService, injector: Injector, countryPickerService: CountryPickerService) {
     return () => {
@@ -415,6 +418,9 @@ export function tokenGetter() {
         ModpackBuildsStepsComponent,
         NewModpackBuildModalComponent,
         NewModpackReleaseModalComponent,
+        ModpackWorkshopComponent,
+        InstallWorkshopModModalComponent,
+        WorkshopModInterventionModalComponent,
         TimeAgoPipe,
         CharacterBlockDirective,
         MustMatchDirective,

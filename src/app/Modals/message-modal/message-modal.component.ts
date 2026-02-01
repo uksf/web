@@ -4,12 +4,12 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 @Component({
     selector: 'app-message-modal',
     templateUrl: './message-modal.component.html',
-    styleUrls: ['./message-modal.component.css']
+    styleUrls: ['./message-modal.component.scss']
 })
 export class MessageModalComponent {
-    message = 'There should be a different message shown here. Please report this mistake to an admin';
-    button = 'Close';
-    @Output() buttonEvent = new EventEmitter();
+    message: string = 'There should be a different message shown here. Please report this mistake to an admin';
+    button: string = 'Close';
+    @Output() buttonEvent: EventEmitter<any> = new EventEmitter();
 
     constructor(public dialogRef: MatDialogRef<MessageModalComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
         this.message = data.message;
@@ -23,4 +23,3 @@ export class MessageModalComponent {
         this.buttonEvent.emit();
     }
 }
-

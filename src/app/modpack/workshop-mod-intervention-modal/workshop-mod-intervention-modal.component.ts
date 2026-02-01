@@ -1,33 +1,48 @@
 import { Component, EventEmitter, Inject, Output } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { InstantErrorStateMatcher } from '../../Services/formhelper.service';
 
 @Component({
-    selector: 'app-install-workshop-mod-modal',
-    templateUrl: './install-workshop-mod-modal.component.html',
-    styleUrls: ['./install-workshop-mod-modal.component.scss']
+    selector: 'app-workshop-mod-intervention-modal',
+    templateUrl: './workshop-mod-intervention-modal.component.html',
+    styleUrls: ['./workshop-mod-intervention-modal.component.scss']
 })
-export class InstallWorkshopModModalComponent {
-    @Output() installEvent: EventEmitter<string> = new EventEmitter<string>();
-    form: UntypedFormGroup;
-    instantErrorStateMatcher: InstantErrorStateMatcher = new InstantErrorStateMatcher();
-    validationMessages: { steamId: { type: string; message: string }[] } = {
-        steamId: [{ type: 'required', message: 'Steam ID is required' }]
-    };
+export class WorkshopModInterventionModalComponent {
+    @Output() submitEvent: EventEmitter<string[]> = new EventEmitter<string[]>();
     submitting: boolean = false;
+    availablePbos: string[] = [];
+    pboSelection: WorkshopModPboSelection[] = [];
 
-    constructor(private formBuilder: UntypedFormBuilder, public dialogRef: MatDialogRef<InstallWorkshopModModalComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
-        this.form = this.formBuilder.group({
-            steamId: ['', Validators.required]
+    constructor(public dialogRef: MatDialogRef<WorkshopModInterventionModalComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
+        this.availablePbos = data.availablePbos;
+        this.pboSelection = this.availablePbos.map((x: string) => {
+            return { name: x, selected: false, conflict: false };
         });
     }
 
-    install() {
-        const formValue: any = this.form.getRawValue();
-        const steamId: string = formValue.steamId.replace('https://steamcommunity.com/sharedfiles/filedetails/?id=', '');
+    getTooltip(pbo: WorkshopModPboSelection): string {
+        return pbo.conflict ? 'PBO is already installed by another mod. Select to overwrite' : '';
+    }
+
+    get valid() {
+        return this.pboSelection.some((x: WorkshopModPboSelection) => x.selected);
+    }
+
+    selectAll() {
+        this.pboSelection.forEach((x: WorkshopModPboSelection) => {
+            x.selected = true;
+        });
+    }
+
+    submit() {
+        const selectedPbos: string[] = this.pboSelection.filter((x: WorkshopModPboSelection) => x.selected).map((x: WorkshopModPboSelection) => x.name);
 
         this.dialogRef.close();
-        this.installEvent.emit(steamId);
+        this.submitEvent.emit(selectedPbos);
     }
+}
+
+export interface WorkshopModPboSelection {
+    name: string;
+    selected: boolean;
+    conflict: boolean;
 }

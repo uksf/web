@@ -43,6 +43,7 @@ import { ModpackGuideComponent } from './modpack/modpack-guide/modpack-guide.com
 import { ModpackReleasesComponent } from './modpack/modpack-releases/modpack-releases.component';
 import { ModpackBuildsDevComponent } from './modpack/modpack-builds-dev/modpack-builds-dev.component';
 import { ModpackBuildsRcComponent } from './modpack/modpack-builds-rc/modpack-builds-rc.component';
+import { ModpackWorkshopComponent } from './modpack/modpack-workshop/modpack-workshop.component';
 
 const appRoutes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -439,16 +440,6 @@ const appRoutes: Routes = [
     {
         path: 'operations',
         redirectTo: 'operations/servers'
-        // data: {
-        //     permissions: {
-        //         only: Permissions.SERVERS,
-        //         except: Permissions.UNLOGGED,
-        //         redirectTo: {
-        //             UNLOGGED: loginRedirect,
-        //             default: '/operations/aar'
-        //         }
-        //     }
-        // }
     },
     {
         path: 'operations/servers',
@@ -711,6 +702,21 @@ const appRoutes: Routes = [
     {
         path: 'modpack/builds-rc',
         component: ModpackBuildsRcComponent,
+        data: {
+            permissions: {
+                only: Permissions.MEMBER,
+                except: Permissions.UNLOGGED,
+                redirectTo: {
+                    UNLOGGED: loginRedirect,
+                    default: '/home'
+                }
+            }
+        },
+        canActivate: [NgxPermissionsGuard]
+    },
+    {
+        path: 'modpack/workshop',
+        component: ModpackWorkshopComponent,
         data: {
             permissions: {
                 only: Permissions.MEMBER,

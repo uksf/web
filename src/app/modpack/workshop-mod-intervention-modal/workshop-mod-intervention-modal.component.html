@@ -1,15 +1,24 @@
-<h2 mat-dialog-title>Install Workshop Mod</h2>
+<h2 mat-dialog-title>Select PBOs to install</h2>
 <mat-dialog-content>
-    <form [formGroup]="form" class="form-container">
-        <mat-form-field class="normal">
-            <input matInput formControlName="steamId" placeholder="Steam ID or Workshop Link" [errorStateMatcher]="instantErrorStateMatcher" />
-            <mat-error *ngFor="let validation of validationMessages.steamId">
-                <mat-error class="error-message" *ngIf="form.get('steamId').hasError(validation.type)">{{ validation.message }}</mat-error>
-            </mat-error>
-        </mat-form-field>
+    <div class="spinner-container" *ngIf="!availablePbos">
         <app-flex-filler></app-flex-filler>
-        <div class="button-container">
-            <app-button (click)="install()" [disabled]="!form.valid" [pending]="submitting">Install</app-button>
+        <mat-spinner></mat-spinner>
+        <app-flex-filler></app-flex-filler>
+    </div>
+    <div class="flex-container" *ngIf="availablePbos">
+        <div class="pbos-list-container">
+            <div class="pbos-list-item-container" *ngFor="let pbo of pboSelection">
+                <div class="pbos-list-item">
+                    <span [ngClass]="{ conflict: pbo.conflict }" [matTooltip]="getTooltip(pbo)">{{ pbo.name }}</span>
+                </div>
+                <app-flex-filler></app-flex-filler>
+                <mat-checkbox color="primary" [(ngModel)]="pbo.selected"></mat-checkbox>
+            </div>
         </div>
-    </form>
+        <div class="button-container">
+            <button mat-raised-button color="primary" (click)="selectAll()">Select All</button>
+            <app-flex-filler></app-flex-filler>
+            <button mat-raised-button color="primary" (click)="submit()" [disabled]="!valid">Submit</button>
+        </div>
+    </div>
 </mat-dialog-content>

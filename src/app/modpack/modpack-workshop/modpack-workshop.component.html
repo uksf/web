@@ -1,66 +1,62 @@
 <app-default-content-areas>
     <app-full-content-area>
         <app-modpack-page></app-modpack-page>
-        <div class="flex-container no-padding-left">
-            <div class="release-history-container">
-                <ng-template [ngxPermissionsOnly]="['ADMIN']">
-                    <div class="new-button">
-                        <button (click)="newRelease()" [disabled]="latestReleaseIsDraft" color="primary" mat-raised-button>New</button>
-                        <button (click)="newRelease()" [disabled]="latestReleaseIsDraft" color="primary" mat-icon-button>
-                            <mat-icon>add_circle</mat-icon>
-                        </button>
-                    </div>
-                </ng-template>
-                <div (click)="selectRelease(release.version)" *ngFor="let release of publicReleases" [ngClass]="{ selected: selectedReleaseVersion === release.version }" class="release-history-item">
-                    <i *ngIf="release.isDraft">{{ release.version }}</i>
-                    <span *ngIf="!release.isDraft">{{ release.version }}</span>
-                </div>
+        <div class="flex-container">
+            <div class="mods-header">
+                <h1>Workshop Mods</h1>
+                <button mat-raised-button color="primary" (click)="install()">Install</button>
             </div>
-            <div class="release-container" *ngIf="selectedRelease && !selectedRelease.isDraft">
-                <div class="release-header">
-                    <h1 class="release-title">Release Version {{ selectedRelease.version }}</h1>
-                    <app-flex-filler></app-flex-filler>
-                    <div class="release-date">Released {{ selectedRelease.timestamp | date: 'dd MMM y':'Europe/London' }}</div>
-                </div>
-                <div class="release-content">
-                    <div class="release-date released">Released {{ selectedRelease.timestamp | date: 'dd MMM y':'Europe/London' }}</div>
-                    <h3>Changelog</h3>
-                    <div class="release-changelog">
-                        <markdown ngPreserveWhitespaces [data]="changelogMarkdown"></markdown>
+            <div class="mods-container">
+                <mat-card class="mod-card" *ngFor="let mod of mods; trackBy: trackBySteamId">
+                    <div class="mod-card-section">
+                        <h3>{{ mod.name }}</h3>
+                        <app-flex-filler></app-flex-filler>
+                        <span>{{ mod.statusMessage }}</span>
                     </div>
-                </div>
-            </div>
-            <div class="release-container" *ngIf="selectedRelease && selectedRelease.isDraft">
-                <div class="release-header">
-                    <h1 class="release-title">Release Version {{ selectedRelease.version }} <i>(Draft)</i></h1>
-                    <app-flex-filler></app-flex-filler>
-                    <div class="buttons">
+                    <div class="mod-card-section">
+                        <div class="mod-links">
+                            <span>
+                                Steam ID:
+                                <a target="_blank" rel="nofollow" href="https://steamcommunity.com/sharedfiles/filedetails/?id={{ mod.steamId }}">
+                                    {{ mod.steamId }}
+                                </a>
+                            </span>
+                            <span *ngIf="mod.modpackVersionFirstAdded">
+                                Added with:
+                                <a target="_blank" rel="nofollow" routerLink="/modpack/releases?version={{ mod.modpackVersionFirstAdded }}">
+                                    {{ mod.modpackVersionFirstAdded }}
+                                </a>
+                            </span>
+                            <span *ngIf="mod.modpackVersionLastUpdated">
+                                Last updated with:
+                                <a target="_blank" rel="nofollow" routerLink="/modpack/releases?version={{ mod.modpackVersionLastUpdated }}">
+                                    {{ mod.modpackVersionLastUpdated }}
+                                </a>
+                            </span>
+                        </div>
+                        <app-flex-filler></app-flex-filler>
+                        <span *ngIf="updateAvailable(mod)">Update available</span>
                         <ng-template [ngxPermissionsOnly]="['ADMIN']">
-                            <app-button (click)="regenerateChangelog()" *ngIf="!editing" [pending]="savingChangelog"> Regenerate Changelog </app-button>
-                            <app-button (click)="edit()" *ngIf="!editing" [disabled]="savingChangelog">Edit Draft </app-button>
-                            <app-button (click)="save()" *ngIf="editing" [pending]="savingChangelog">Save Draft </app-button>
-                            <app-button (click)="togglePreview()" *ngIf="editing" [disabled]="savingChangelog">Toggle Preview </app-button>
-                            <app-button (click)="discard()" *ngIf="editing" [disabled]="savingChangelog">Discard Changes </app-button>
-                            <app-button (clicked)="release()" *ngIf="!editing" [disabled]="savingChangelog" [pending]="releasing">Release </app-button>
+                            <div class="mod-card-buttons">
+                                <button mat-button class="icon delete" *ngIf="hasError(mod)" (click)="showError(mod)">
+                                    <mat-icon matTooltip="View error">error_outline</mat-icon>
+                                </button>
+                                <button mat-button class="icon" *ngIf="interventionRequired(mod)" (click)="resolveIntervention(mod)">
+                                    <mat-icon matTooltip="Resolve Intervention">construction</mat-icon>
+                                </button>
+                                <button mat-button class="icon" *ngIf="updateAvailable(mod)" (click)="update(mod)">
+                                    <mat-icon matTooltip="Update">download</mat-icon>
+                                </button>
+                                <button mat-button class="icon" *ngIf="canUninstall(mod)" (click)="uninstall(mod)">
+                                    <mat-icon matTooltip="Uninstall">eject</mat-icon>
+                                </button>
+                                <button mat-button class="icon delete" *ngIf="canDelete(mod)" (click)="delete(mod)">
+                                    <mat-icon matTooltip="Delete">delete</mat-icon>
+                                </button>
+                            </div>
                         </ng-template>
                     </div>
-                </div>
-                <div class="release-content" *ngIf="!editing">
-                    <div class="release-date">Draft created {{ selectedRelease.timestamp | date: 'dd MMM y':'Europe/London' }}</div>
-                    <h3>Changelog</h3>
-                    <div class="release-changelog">
-                        <markdown ngPreserveWhitespaces [data]="changelogMarkdown"></markdown>
-                    </div>
-                </div>
-                <div class="release-content" *ngIf="editing">
-                    <h3>Changelog</h3>
-                    <div class="release-changelog" *ngIf="!preview">
-                        <textarea [(ngModel)]="changelogEditing" type="text" placeholder="Changelog" maxlength="5000" wrap="soft"></textarea>
-                    </div>
-                    <div class="release-changelog" *ngIf="preview">
-                        <markdown ngPreserveWhitespaces [data]="changelogMarkdown"></markdown>
-                    </div>
-                </div>
+                </mat-card>
             </div>
         </div>
     </app-full-content-area>

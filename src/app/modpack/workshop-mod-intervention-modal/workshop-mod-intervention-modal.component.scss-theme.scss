@@ -1,27 +1,28 @@
 @use '@angular/material' as mat;
+@import '@angular/material/theming';
 
-@mixin new-modpack-release-modal-component-theme($theme) {
+@mixin workshop-mod-intervention-modal-component-theme($theme) {
+    $foreground: map-get($theme, foreground);
+    $background: map-get($theme, background);
     $primary: map-get($theme, primary);
 
-    app-new-modpack-release-modal {
-        .mat-dialog-content {
-            .previous-version {
-                color: mat.get-color-from-palette($primary);
-            }
+    app-workshop-mod-intervention-modal {
+        .pbos-list-item {
+            span {
+                color: mat.get-color-from-palette($foreground, base);
 
-            .form-container {
-                .versions-container {
-                    .mat-radio-button {
-                        .version-label {
-                            color: white;
-
-                            &.selected {
-                                color: mat.get-color-from-palette($primary);
-                            }
-                        }
-                    }
+                &.conflict {
+                    color: red;
                 }
             }
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: mat.get-color-from-palette($background, side-bar);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: mat.get-color-from-palette($background, scroll-thumb);
         }
     }
 }

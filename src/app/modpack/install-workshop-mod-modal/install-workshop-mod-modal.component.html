@@ -1,23 +1,15 @@
-<h2 mat-dialog-title>New Release</h2>
+<h2 mat-dialog-title>Install Workshop Mod</h2>
 <mat-dialog-content>
-    <span>Previous version</span>
-    <span class="previous-version">{{ previousVersion }}</span>
-    <span class="select-version">Select new version</span>
     <form [formGroup]="form" class="form-container">
-        <mat-radio-group class="versions-container" formControlName="version">
-            <mat-radio-button #majorSelection color="primary" value="{{ major }}"
-                ><span [ngClass]="{ selected: majorSelection.checked }" class="version-label">{{ major }}</span>
-            </mat-radio-button>
-            <mat-radio-button #minorSelection color="primary" value="{{ minor }}"
-                ><span [ngClass]="{ selected: minorSelection.checked }" class="version-label">{{ minor }}</span>
-            </mat-radio-button>
-            <mat-radio-button #patchSelection color="primary" value="{{ patch }}"
-                ><span [ngClass]="{ selected: patchSelection.checked }" class="version-label">{{ patch }}</span>
-            </mat-radio-button>
-        </mat-radio-group>
+        <mat-form-field class="normal">
+            <input matInput formControlName="steamId" placeholder="Steam ID or Workshop Link" [errorStateMatcher]="instantErrorStateMatcher" />
+            <mat-error *ngFor="let validation of validationMessages.steamId">
+                <mat-error class="error-message" *ngIf="form.get('steamId').hasError(validation.type)">{{ validation.message }}</mat-error>
+            </mat-error>
+        </mat-form-field>
         <app-flex-filler></app-flex-filler>
         <div class="button-container">
-            <app-button (click)="create()" [disabled]="!form.valid" [pending]="submitting">Create</app-button>
+            <app-button (click)="install()" [disabled]="!form.valid" [pending]="submitting">Install</app-button>
         </div>
     </form>
 </mat-dialog-content>

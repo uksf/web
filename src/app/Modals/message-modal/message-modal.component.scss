@@ -1,21 +1,46 @@
+.mat-dialog-content {
+    overflow: hidden;
+}
+
 .flex-container {
     display: flex;
     flex-direction: column;
     width: fit-content;
     min-width: 300px;
     min-height: 100px;
+    max-height: 600px;
     font-size: 18px;
+
+    .message-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow-y: auto;
+        padding: 0 6px;
+
+        p {
+            white-space: pre-wrap;
+        }
+    }
+
+    .button-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        min-height: fit-content;
+        padding: 8px 0;
+    }
 }
 
-.message-container {
-    max-height: 500px; margin: 10px; overflow: auto;
+::-webkit-scrollbar {
+    width: 7px;
+    padding-left: 2px;
 }
 
-p {    
-    white-space: pre-wrap;
+::-webkit-scrollbar-track {
+    border-radius: 2px;
 }
 
-.flex-container-row {
-    display: flex;
-    flex-direction: row;
+::-webkit-scrollbar-thumb {
+    border-radius: 2px;
 }
