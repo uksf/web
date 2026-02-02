@@ -3,6 +3,8 @@ parameters:
     type: string
   - name: deployPath
     type: string
+  - name: apiUrl
+    type: string
   - name: variableGroup
     type: string
   - name: dependsOn
@@ -61,7 +63,7 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
-                $apiUrl = "$(apiUrl)"
+                $apiUrl = "${{ parameters.apiUrl }}"
                 $email = "$(adminEmail)"
                 $password = "$(adminPassword)"
 
@@ -69,8 +71,8 @@ stages:
 
                 try {
                     $loginBody = @{ email = $email; password = $password } | ConvertTo-Json
-                    $loginResponse = Invoke-RestMethod -Uri "$apiUrl/login" -Method Post -Body $loginBody -ContentType "application/json"
-                    $token = $loginResponse.access_token
+                    $loginResponse = Invoke-WebRequest -Uri "$apiUrl/auth/login" -Method Post -Body $loginBody -ContentType "application/json" -TimeoutSec 10
+                    $token = ($loginResponse.Content | ConvertFrom-Json).token
 
                     if (-not $token) {
                         Write-Error "Failed to get access token"
@@ -78,8 +80,8 @@ stages:
                     }
 
                     $headers = @{ Authorization = "Bearer $token" }
-                    $versionResponse = Invoke-RestMethod -Uri "$apiUrl/utility/version" -Method Put -Headers $headers
-                    Write-Host "Version incremented: $versionResponse"
+                    Invoke-WebRequest -Uri "$apiUrl/version/update" -Method Get -Headers $headers -ContentType "application/json" -TimeoutSec 10
+                    Write-Host "Version incremented successfully"
                 }
                 catch {
                     Write-Error "Failed to increment version: $_"

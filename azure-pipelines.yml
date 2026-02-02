@@ -36,6 +36,7 @@ stages:
     parameters:
       environment: Dev
       deployPath: 'C:\Server\Nginx\html-dev'
+      apiUrl: 'https://api-dev.uk-sf.co.uk'
       variableGroup: UKSF Web - Dev
       dependsOn: Build
 
@@ -43,5 +44,6 @@ stages:
     parameters:
       environment: Prod
       deployPath: 'C:\Server\Nginx\html'
+      apiUrl: 'https://api.uk-sf.co.uk'
       variableGroup: UKSF Web - Production
       dependsOn: DeployDev
