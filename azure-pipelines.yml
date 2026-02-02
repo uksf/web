@@ -6,6 +6,9 @@ trigger:
 
 pool: Avengers
 
+variables:
+  buildOutput: '$(Build.SourcesDirectory)\dist'
+
 jobs:
   - job: Build
     displayName: Build
@@ -26,158 +29,16 @@ jobs:
           bun x ng build -c production --aot --build-optimizer --optimization
         displayName: 'ng build'
 
-      - task: PublishPipelineArtifact@1
-        displayName: 'Publish Artifact'
-        inputs:
-          targetPath: 'dist'
-          artifact: 'web'
+  - template: templates/deploy-web.yml
+    parameters:
+      environment: Dev
+      deployPath: 'C:\Server\Nginx\html-dev'
+      variableGroup: UKSF Web - Dev
+      dependsOn: Build
 
-  - job: DeployDev
-    displayName: Deploy to Dev
-    dependsOn: Build
-    variables:
-      - group: UKSF Web - Dev
-    steps:
-      - download: current
-        artifact: web
-
-      - task: PowerShell@2
-        displayName: 'Clean Old Files'
-        inputs:
-          targetType: 'inline'
-          script: |
-            $deployPath = "C:\Server\Nginx\html-dev"
-
-            if (Test-Path $deployPath) {
-                Write-Host "Cleaning old files from: $deployPath"
-
-                $patterns = @("main*.js", "polyfills*.js", "runtime*.js", "scripts*.js", "styles*.css")
-
-                foreach ($pattern in $patterns) {
-                    $files = Get-ChildItem -Path $deployPath -Filter $pattern -ErrorAction SilentlyContinue
-                    foreach ($file in $files) {
-                        Write-Host "Deleting: $($file.FullName)"
-                        Remove-Item $file.FullName -Force
-                    }
-                }
-            }
-
-      - task: CopyFiles@2
-        displayName: 'Copy Files'
-        inputs:
-          SourceFolder: '$(Pipeline.Workspace)/web'
-          Contents: '**'
-          TargetFolder: 'C:\Server\Nginx\html-dev'
-          OverWrite: true
-
-      - task: FileTransform@2
-        displayName: 'Transform appSettings'
-        inputs:
-          folderPath: 'C:\Server\Nginx\html-dev'
-          xmlTransformationRules: ''
-          jsonTargetFiles: 'appSettings.json'
-
-      - task: PowerShell@2
-        displayName: 'Increment Version'
-        inputs:
-          targetType: 'inline'
-          script: |
-            $apiUrl = "$(apiUrl)"
-            $email = "$(adminEmail)"
-            $password = "$(adminPassword)"
-
-            Write-Host "Incrementing version via API..."
-
-            try {
-                $loginBody = @{ email = $email; password = $password } | ConvertTo-Json
-                $loginResponse = Invoke-RestMethod -Uri "$apiUrl/login" -Method Post -Body $loginBody -ContentType "application/json"
-                $token = $loginResponse.access_token
-
-                if (-not $token) {
-                    Write-Error "Failed to get access token"
-                    exit 1
-                }
-
-                $headers = @{ Authorization = "Bearer $token" }
-                $versionResponse = Invoke-RestMethod -Uri "$apiUrl/utility/version" -Method Put -Headers $headers
-                Write-Host "Version incremented: $versionResponse"
-            }
-            catch {
-                Write-Error "Failed to increment version: $_"
-                exit 1
-            }
-
-  - job: DeployProd
-    displayName: Deploy to Production
-    dependsOn: DeployDev
-    variables:
-      - group: UKSF Web - Production
-    steps:
-      - download: current
-        artifact: web
-
-      - task: PowerShell@2
-        displayName: 'Clean Old Files'
-        inputs:
-          targetType: 'inline'
-          script: |
-            $deployPath = "C:\Server\Nginx\html"
-
-            if (Test-Path $deployPath) {
-                Write-Host "Cleaning old files from: $deployPath"
-
-                $patterns = @("main*.js", "polyfills*.js", "runtime*.js", "scripts*.js", "styles*.css")
-
-                foreach ($pattern in $patterns) {
-                    $files = Get-ChildItem -Path $deployPath -Filter $pattern -ErrorAction SilentlyContinue
-                    foreach ($file in $files) {
-                        Write-Host "Deleting: $($file.FullName)"
-                        Remove-Item $file.FullName -Force
-                    }
-                }
-            }
-
-      - task: CopyFiles@2
-        displayName: 'Copy Files'
-        inputs:
-          SourceFolder: '$(Pipeline.Workspace)/web'
-          Contents: '**'
-          TargetFolder: 'C:\Server\Nginx\html'
-          OverWrite: true
-
-      - task: FileTransform@2
-        displayName: 'Transform appSettings'
-        inputs:
-          folderPath: 'C:\Server\Nginx\html'
-          xmlTransformationRules: ''
-          jsonTargetFiles: 'appSettings.json'
-
-      - task: PowerShell@2
-        displayName: 'Increment Version'
-        inputs:
-          targetType: 'inline'
-          script: |
-            $apiUrl = "$(apiUrl)"
-            $email = "$(adminEmail)"
-            $password = "$(adminPassword)"
-
-            Write-Host "Incrementing version via API..."
-
-            try {
-                $loginBody = @{ email = $email; password = $password } | ConvertTo-Json
-                $loginResponse = Invoke-RestMethod -Uri "$apiUrl/login" -Method Post -Body $loginBody -ContentType "application/json"
-                $token = $loginResponse.access_token
-
-                if (-not $token) {
-                    Write-Error "Failed to get access token"
-                    exit 1
-                }
-
-                $headers = @{ Authorization = "Bearer $token" }
-                $versionResponse = Invoke-RestMethod -Uri "$apiUrl/utility/version" -Method Put -Headers $headers
-                Write-Host "Version incremented: $versionResponse"
-            }
-            catch {
-                Write-Error "Failed to increment version: $_"
-                exit 1
-            }
+  - template: templates/deploy-web.yml
+    parameters:
+      environment: Prod
+      deployPath: 'C:\Server\Nginx\html'
+      variableGroup: UKSF Web - Production
+      dependsOn: DeployDev

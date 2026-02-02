@@ -1,0 +1,84 @@
+parameters:
+  - name: environment
+    type: string
+  - name: deployPath
+    type: string
+  - name: variableGroup
+    type: string
+  - name: dependsOn
+    type: string
+
+jobs:
+  - job: Deploy${{ parameters.environment }}
+    displayName: Deploy to ${{ parameters.environment }}
+    dependsOn: ${{ parameters.dependsOn }}
+    variables:
+      - group: ${{ parameters.variableGroup }}
+    steps:
+      - checkout: none
+
+      - task: PowerShell@2
+        displayName: 'Clean Old Files'
+        inputs:
+          targetType: 'inline'
+          script: |
+            $deployPath = "${{ parameters.deployPath }}"
+
+            if (Test-Path $deployPath) {
+                Write-Host "Cleaning old files from: $deployPath"
+
+                $patterns = @("main*.js", "polyfills*.js", "runtime*.js", "scripts*.js", "styles*.css")
+
+                foreach ($pattern in $patterns) {
+                    $files = Get-ChildItem -Path $deployPath -Filter $pattern -ErrorAction SilentlyContinue
+                    foreach ($file in $files) {
+                        Write-Host "Deleting: $($file.FullName)"
+                        Remove-Item $file.FullName -Force
+                    }
+                }
+            }
+
+      - task: CopyFiles@2
+        displayName: 'Copy Files'
+        inputs:
+          SourceFolder: '$(buildOutput)'
+          Contents: '**'
+          TargetFolder: '${{ parameters.deployPath }}'
+          OverWrite: true
+
+      - task: FileTransform@2
+        displayName: 'Transform appSettings'
+        inputs:
+          folderPath: '${{ parameters.deployPath }}'
+          xmlTransformationRules: ''
+          jsonTargetFiles: 'appSettings.json'
+
+      - task: PowerShell@2
+        displayName: 'Increment Version'
+        inputs:
+          targetType: 'inline'
+          script: |
+            $apiUrl = "$(apiUrl)"
+            $email = "$(adminEmail)"
+            $password = "$(adminPassword)"
+
+            Write-Host "Incrementing version via API..."
+
+            try {
+                $loginBody = @{ email = $email; password = $password } | ConvertTo-Json
+                $loginResponse = Invoke-RestMethod -Uri "$apiUrl/login" -Method Post -Body $loginBody -ContentType "application/json"
+                $token = $loginResponse.access_token
+
+                if (-not $token) {
+                    Write-Error "Failed to get access token"
+                    exit 1
+                }
+
+                $headers = @{ Authorization = "Bearer $token" }
+                $versionResponse = Invoke-RestMethod -Uri "$apiUrl/utility/version" -Method Put -Headers $headers
+                Write-Host "Version incremented: $versionResponse"
+            }
+            catch {
+                Write-Error "Failed to increment version: $_"
+                exit 1
+            }
