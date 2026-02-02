@@ -9,25 +9,28 @@ pool: Avengers
 variables:
   buildOutput: '$(Build.SourcesDirectory)\dist'
 
-jobs:
-  - job: Build
+stages:
+  - stage: Build
     displayName: Build
-    steps:
-      - checkout: self
-        clean: false
+    jobs:
+      - job: Build
+        displayName: Build
+        steps:
+          - checkout: self
+            clean: false
 
-      - task: NodeTool@0
-        inputs:
-          versionSpec: '17.x'
-        displayName: 'Install Node.js'
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '17.x'
+            displayName: 'Install Node.js'
 
-      - script: |
-          bun install
-        displayName: 'bun install'
+          - script: |
+              bun install
+            displayName: 'bun install'
 
-      - script: |
-          bun x ng build -c production --aot --build-optimizer --optimization
-        displayName: 'ng build'
+          - script: |
+              bun x ng build -c production --aot --build-optimizer --optimization
+            displayName: 'ng build'
 
   - template: templates/deploy-web.yml
     parameters:
