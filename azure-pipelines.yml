@@ -36,7 +36,7 @@ jobs:
     displayName: Deploy to Dev
     dependsOn: Build
     variables:
-      - group: UKSF Web - Development
+      - group: UKSF Web - Dev
     steps:
       - download: current
         artifact: web
@@ -69,6 +69,13 @@ jobs:
           Contents: '**'
           TargetFolder: 'C:\Server\Nginx\html-dev'
           OverWrite: true
+
+      - task: FileTransform@2
+        displayName: 'Transform appSettings'
+        inputs:
+          folderPath: 'C:\Server\Nginx\html-dev'
+          xmlTransformationRules: ''
+          jsonTargetFiles: 'appSettings.json'
 
       - task: PowerShell@2
         displayName: 'Increment Version'
@@ -137,6 +144,13 @@ jobs:
           Contents: '**'
           TargetFolder: 'C:\Server\Nginx\html'
           OverWrite: true
+
+      - task: FileTransform@2
+        displayName: 'Transform appSettings'
+        inputs:
+          folderPath: 'C:\Server\Nginx\html'
+          xmlTransformationRules: ''
+          jsonTargetFiles: 'appSettings.json'
 
       - task: PowerShell@2
         displayName: 'Increment Version'
