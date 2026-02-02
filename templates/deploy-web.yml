@@ -51,7 +51,7 @@ jobs:
         inputs:
           folderPath: '${{ parameters.deployPath }}'
           xmlTransformationRules: ''
-          jsonTargetFiles: 'appSettings.json'
+          jsonTargetFiles: '**/appSettings.json'
 
       - task: PowerShell@2
         displayName: 'Increment Version'
