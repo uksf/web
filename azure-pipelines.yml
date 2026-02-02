@@ -21,6 +21,14 @@ jobs:
           versionSpec: '17.x'
         displayName: 'Install Node.js'
 
+      - task: Cache@2
+        inputs:
+          key: 'bun | "$(Agent.OS)" | bun.lock'
+          path: 'node_modules'
+          restoreKeys: |
+            bun | "$(Agent.OS)"
+        displayName: 'Cache node_modules'
+
       - script: |
           bun install
         displayName: 'bun install'
