@@ -7,8 +7,8 @@ trigger:
 pool: Avengers
 
 jobs:
-  - job: BuildAndDeploy
-    displayName: Build and Deploy
+  - job: Build
+    displayName: Build
     steps:
       - checkout: self
         clean: false
@@ -26,9 +26,23 @@ jobs:
           bun x ng build -c production --aot --build-optimizer --optimization
         displayName: 'ng build'
 
-      # Deploy to Dev
+      - task: PublishPipelineArtifact@1
+        displayName: 'Publish Artifact'
+        inputs:
+          targetPath: 'dist'
+          artifact: 'web'
+
+  - job: DeployDev
+    displayName: Deploy to Dev
+    dependsOn: Build
+    variables:
+      - group: UKSF Web - Development
+    steps:
+      - download: current
+        artifact: web
+
       - task: PowerShell@2
-        displayName: 'Dev - Clean Old Files'
+        displayName: 'Clean Old Files'
         inputs:
           targetType: 'inline'
           script: |
@@ -49,32 +63,19 @@ jobs:
             }
 
       - task: CopyFiles@2
-        displayName: 'Dev - Copy Files'
+        displayName: 'Copy Files'
         inputs:
-          SourceFolder: 'dist'
+          SourceFolder: '$(Pipeline.Workspace)/web'
           Contents: '**'
           TargetFolder: 'C:\Server\Nginx\html-dev'
           OverWrite: true
 
       - task: PowerShell@2
-        displayName: 'Dev - Transform appSettings'
+        displayName: 'Increment Version'
         inputs:
           targetType: 'inline'
           script: |
-            $settingsPath = "C:\Server\Nginx\html-dev\appSettings.json"
-            $settings = Get-Content $settingsPath | ConvertFrom-Json
-
-            $settings.apiUrl = "$(Dev_apiUrl)"
-
-            $settings | ConvertTo-Json -Depth 10 | Set-Content $settingsPath
-            Write-Host "Dev appSettings.json updated"
-
-      - task: PowerShell@2
-        displayName: 'Dev - Increment Version'
-        inputs:
-          targetType: 'inline'
-          script: |
-            $apiUrl = "$(Dev_apiUrl)"
+            $apiUrl = "$(apiUrl)"
             $email = "$(adminEmail)"
             $password = "$(adminPassword)"
 
@@ -99,9 +100,17 @@ jobs:
                 exit 1
             }
 
-      # Deploy to Production
+  - job: DeployProd
+    displayName: Deploy to Production
+    dependsOn: DeployDev
+    variables:
+      - group: UKSF Web - Production
+    steps:
+      - download: current
+        artifact: web
+
       - task: PowerShell@2
-        displayName: 'Prod - Clean Old Files'
+        displayName: 'Clean Old Files'
         inputs:
           targetType: 'inline'
           script: |
@@ -122,32 +131,19 @@ jobs:
             }
 
       - task: CopyFiles@2
-        displayName: 'Prod - Copy Files'
+        displayName: 'Copy Files'
         inputs:
-          SourceFolder: 'dist'
+          SourceFolder: '$(Pipeline.Workspace)/web'
           Contents: '**'
           TargetFolder: 'C:\Server\Nginx\html'
           OverWrite: true
 
       - task: PowerShell@2
-        displayName: 'Prod - Transform appSettings'
+        displayName: 'Increment Version'
         inputs:
           targetType: 'inline'
           script: |
-            $settingsPath = "C:\Server\Nginx\html\appSettings.json"
-            $settings = Get-Content $settingsPath | ConvertFrom-Json
-
-            $settings.apiUrl = "$(Prod_apiUrl)"
-
-            $settings | ConvertTo-Json -Depth 10 | Set-Content $settingsPath
-            Write-Host "Prod appSettings.json updated"
-
-      - task: PowerShell@2
-        displayName: 'Prod - Increment Version'
-        inputs:
-          targetType: 'inline'
-          script: |
-            $apiUrl = "$(Prod_apiUrl)"
+            $apiUrl = "$(apiUrl)"
             $email = "$(adminEmail)"
             $password = "$(adminPassword)"
 
