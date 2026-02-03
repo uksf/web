@@ -28,8 +28,8 @@
 @import 'app/Pages/profile-page/profile-page.component.scss-theme.scss';
 @import 'app/recruitment/recruitment-application-page/recruitment-application-page.component.scss-theme.scss';
 @import 'app/recruitment/recruitment-page/recruitment-page.component.scss-theme.scss';
-@import 'app/Pages/unit-page/unit-page.component.scss-theme.scss';
-@import 'app/Pages/units-page/units-page.component.scss-theme.scss';
+@import 'app/features/units/components/unit-page/unit-page.component.scss-theme.scss';
+@import 'app/features/units/components/units-page/units-page.component.scss-theme.scss';
 
 // Components
 @import 'app/features/admin/components/admin-servers/admin-servers.component.scss-theme';
@@ -56,9 +56,9 @@
 @import 'app/features/personnel/components/personnel-discharges/personnel-discharges.component.scss-theme.scss';
 @import 'app/features/personnel/components/personnel-loas-list/personnel-loas-list.component.scss-theme.scss';
 @import 'app/features/personnel/components/personnel-roster/personnel-roster.component.scss-theme';
-@import 'app/Components/units/units-orbat/units-orbat.component.scss-theme.scss';
-@import 'app/Components/units/units-orbat-aux/units-orbat-aux.component.scss-theme.scss';
-@import 'app/Components/units/units-orbat-secondary/units-orbat-secondary.component.scss-theme.scss';
+@import 'app/features/units/components/units-orbat/units-orbat.component.scss-theme.scss';
+@import 'app/features/units/components/units-orbat-aux/units-orbat-aux.component.scss-theme.scss';
+@import 'app/features/units/components/units-orbat-secondary/units-orbat-secondary.component.scss-theme.scss';
 
 // Modals
 @import 'app/Modals/command/add-unit-modal/add-unit-modal.component.scss-theme.scss';

@@ -11,10 +11,6 @@ import { DocsPageComponent } from './Pages/docs-page/docs-page.component';
 import { RulesPageComponent } from './Pages/rules-page/rules-page.component';
 import { PolicyPageComponent } from './Pages/policy-page/policy-page.component';
 import { InformationPageComponent } from './Pages/information-page/information-page.component';
-import { UnitPageComponent } from './Pages/unit-page/unit-page.component';
-import { UnitsOrbatComponent } from './Components/units/units-orbat/units-orbat.component';
-import { UnitsOrbatAuxComponent } from './Components/units/units-orbat-aux/units-orbat-aux.component';
-import { UnitsOrbatSecondaryComponent } from './Components/units/units-orbat-secondary/units-orbat-secondary.component';
 import { NgxPermissionsGuard } from 'ngx-permissions';
 import { CommandUnitsComponent } from './Components/command/command-units/command-units.component';
 import { CommandRanksComponent } from './Components/command/command-ranks/command-ranks.component';
@@ -122,57 +118,14 @@ const appRoutes: Routes = [
     { path: 'units/roster', redirectTo: 'personnel/roster' },
     {
         path: 'units',
-        redirectTo: 'units/orbat',
+        loadChildren: () => import('./features/units/units.module').then(m => m.UnitsModule),
+        canActivate: [NgxPermissionsGuard],
         data: {
             permissions: {
                 except: Permissions.UNLOGGED,
                 redirectTo: loginRedirect
             }
         }
-    },
-    {
-        path: 'units/orbat',
-        component: UnitsOrbatComponent,
-        data: {
-            permissions: {
-                except: Permissions.UNLOGGED,
-                redirectTo: loginRedirect
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'units/auxiliary',
-        component: UnitsOrbatAuxComponent,
-        data: {
-            permissions: {
-                except: Permissions.UNLOGGED,
-                redirectTo: loginRedirect
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'units/secondary',
-        component: UnitsOrbatSecondaryComponent,
-        data: {
-            permissions: {
-                except: Permissions.UNLOGGED,
-                redirectTo: loginRedirect
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'units/:id',
-        component: UnitPageComponent,
-        data: {
-            permissions: {
-                except: Permissions.UNLOGGED,
-                redirectTo: loginRedirect
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'live',

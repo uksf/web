@@ -65,7 +65,6 @@ import { FooterBarComponent } from './Components/footer-bar/footer-bar.component
 import { RecruitmentPageComponent } from './recruitment/recruitment-page/recruitment-page.component';
 import { RecruitmentApplicationPageComponent } from './recruitment/recruitment-application-page/recruitment-application-page.component';
 import { LivePageComponent } from './Pages/live-page/live-page.component';
-import { UnitsPageComponent } from './Pages/units-page/units-page.component';
 import { AboutPageComponent } from './Pages/about-page/about-page.component';
 import { DocsPageComponent } from './Pages/docs-page/docs-page.component';
 import { RulesPageComponent } from './Pages/rules-page/rules-page.component';
@@ -76,7 +75,6 @@ import { CommandPageComponent } from './Pages/command-page/command-page.componen
 import { TocList } from './Components/toc-list/toc-list.component';
 import { CommentDisplayComponent } from './Components/comment-display/comment-display.component';
 import { RequestRankModalComponent } from './Modals/command/request-rank-modal/request-rank-modal.component';
-import { UnitPageComponent } from './Pages/unit-page/unit-page.component';
 import { ConnectTeamspeakModalComponent } from './Modals/connect-teamspeak-modal/connect-teamspeak-modal.component';
 import { ChangeFirstLastModalComponent } from './Modals/change-first-last-modal/change-first-last-modal.component';
 import { ChangePasswordModalComponent } from './Modals/change-password-modal/change-password-modal.component';
@@ -85,9 +83,6 @@ import { OprepPageComponent } from './Pages/oprep-page/oprep-page.component';
 import { CreateOperationOrderComponent } from './Modals/create-operation-order/create-operation-order.component';
 import { NotificationsComponent } from './Components/notifications/notifications.component';
 import { OpordPageComponent } from './Pages/opord-page/opord-page.component';
-import { UnitsOrbatComponent } from './Components/units/units-orbat/units-orbat.component';
-import { UnitsOrbatAuxComponent } from './Components/units/units-orbat-aux/units-orbat-aux.component';
-import { UnitsOrbatSecondaryComponent } from './Components/units/units-orbat-secondary/units-orbat-secondary.component';
 import { AccountService } from './Services/account.service';
 import { PermissionsService } from './Services/permissions.service';
 import { SessionService } from './Services/Authentication/session.service';
@@ -287,7 +282,6 @@ export function tokenGetter() {
         RecruitmentPageComponent,
         RecruitmentApplicationPageComponent,
         LivePageComponent,
-        UnitsPageComponent,
         AboutPageComponent,
         DocsPageComponent,
         RulesPageComponent,
@@ -302,10 +296,6 @@ export function tokenGetter() {
         RequestDischargeModalComponent,
         RequestChainOfCommandPositionModalComponent,
         RequestTransferModalComponent,
-        UnitPageComponent,
-        UnitsOrbatComponent,
-        UnitsOrbatAuxComponent,
-        UnitsOrbatSecondaryComponent,
         ConnectTeamspeakModalComponent,
         ChangeFirstLastModalComponent,
         ChangePasswordModalComponent,
