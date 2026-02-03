@@ -89,7 +89,6 @@ import { OpordPageComponent } from './Pages/opord-page/opord-page.component';
 import { UnitsOrbatComponent } from './Components/units/units-orbat/units-orbat.component';
 import { UnitsOrbatAuxComponent } from './Components/units/units-orbat-aux/units-orbat-aux.component';
 import { UnitsOrbatSecondaryComponent } from './Components/units/units-orbat-secondary/units-orbat-secondary.component';
-import { PersonnelRosterComponent } from './Components/personnel/personnel-roster/personnel-roster.component';
 import { AccountService } from './Services/account.service';
 import { PermissionsService } from './Services/permissions.service';
 import { SessionService } from './Services/Authentication/session.service';
@@ -130,11 +129,6 @@ import { ApplicationEditComponent } from './Components/application/application-e
 import { ConnectTeamspeakComponent } from './Components/teamspeak-connect/teamspeak-connect.component';
 import { ValidationReportModalComponent } from './Modals/multiple-message-modal/validation-report-modal.component';
 import { SignalRService } from './Services/signalr.service';
-import { PersonnelPageComponent } from './Pages/personnel-page/personnel-page.component';
-import { PersonnelDischargesComponent } from './Components/personnel/personnel-discharges/personnel-discharges.component';
-import { PersonnelLoasComponent } from './Components/personnel/personnel-loas/personnel-loas.component';
-import { PersonnelActivityComponent } from './Components/personnel/personnel-activity/personnel-activity.component';
-import { PersonnelLoasListComponent } from './Components/personnel/personnel-loas-list/personnel-loas-list.component';
 import { TextInputModalComponent } from './Modals/text-input-modal/text-input-modal.component';
 import { ModpackBuildService } from './modpack/modpackBuild.service';
 import { ModpackRcService } from './modpack/modpackRc.service';
@@ -321,7 +315,6 @@ export function tokenGetter() {
         UnitsOrbatComponent,
         UnitsOrbatAuxComponent,
         UnitsOrbatSecondaryComponent,
-        PersonnelRosterComponent,
         ConnectTeamspeakModalComponent,
         ChangeFirstLastModalComponent,
         ChangePasswordModalComponent,
@@ -365,11 +358,6 @@ export function tokenGetter() {
         ConnectTeamspeakComponent,
         ValidationReportModalComponent,
         ZonedTime,
-        PersonnelPageComponent,
-        PersonnelLoasComponent,
-        PersonnelActivityComponent,
-        PersonnelDischargesComponent,
-        PersonnelLoasListComponent,
         ModpackGuideComponent,
         ModpackReleasesComponent,
         ModpackBuildsDevComponent,

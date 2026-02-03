@@ -1,17 +1,17 @@
 import { Component, ViewChild } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '../../../Services/url.service';
+import { UrlService } from '@app/Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionPanel } from '@angular/material/expansion';
-import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
+import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
 import { ActivatedRoute } from '@angular/router';
-import { TextInputModalComponent } from 'app/Modals/text-input-modal/text-input-modal.component';
-import { nextFrame } from 'app/Services/helper.service';
+import { TextInputModalComponent } from '@app/Modals/text-input-modal/text-input-modal.component';
+import { nextFrame } from '@app/Services/helper.service';
 
 @Component({
     selector: 'app-personnel-discharges',
     templateUrl: './personnel-discharges.component.html',
-    styleUrls: ['../../../Pages/personnel-page/personnel-page.component.scss', './personnel-discharges.component.scss']
+    styleUrls: ['../personnel-page/personnel-page.component.scss', './personnel-discharges.component.scss']
 })
 export class PersonnelDischargesComponent {
     @ViewChild(MatExpansionPanel) panel: MatExpansionPanel;

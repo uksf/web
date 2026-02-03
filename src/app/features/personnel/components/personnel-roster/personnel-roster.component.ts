@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '../../../Services/url.service';
+import { UrlService } from '@app/Services/url.service';
 import { MatTableDataSource } from '@angular/material/table';
-import { CountryPickerService, ICountry } from '../../../Services/CountryPicker/country-picker.service';
-import { RosterAccount } from '../../../Models/Account';
+import { CountryPickerService, ICountry } from '@app/Services/CountryPicker/country-picker.service';
+import { RosterAccount } from '@app/Models/Account';
 
 @Component({
     selector: 'app-personnel-roster',
     templateUrl: './personnel-roster.component.html',
-    styleUrls: ['../../../Pages/units-page/units-page.component.scss', './personnel-roster.component.scss']
+    styleUrls: ['../../../../Pages/units-page/units-page.component.scss', './personnel-roster.component.scss']
 })
 export class PersonnelRosterComponent {
     public countries: ICountry[];

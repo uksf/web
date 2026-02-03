@@ -1,17 +1,17 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { Permissions } from 'app/Services/permissions';
-import { PermissionsService } from 'app/Services/permissions.service';
-import { PagedEvent, PaginatorComponent } from '../../elements/paginator/paginator.component';
-import { buildQuery } from '../../../Services/helper.service';
+import { Permissions } from '@app/Services/permissions';
+import { PermissionsService } from '@app/Services/permissions.service';
+import { PagedEvent, PaginatorComponent } from '@app/Components/elements/paginator/paginator.component';
+import { buildQuery } from '@app/Services/helper.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { PagedResult } from '../../../Models/PagedResult';
-import { UrlService } from '../../../Services/url.service';
-import { Loa, LoaReviewState } from '../../../Models/Loa';
-import { expansionAnimations } from '../../../Services/animations.service';
+import { PagedResult } from '@app/Models/PagedResult';
+import { UrlService } from '@app/Services/url.service';
+import { Loa, LoaReviewState } from '@app/Models/Loa';
+import { expansionAnimations } from '@app/Services/animations.service';
 import { DateMode, DateModeItem, ViewMode, ViewModeItem } from '../personnel-loas/personnel-loas.component';
 import { Moment } from 'moment/moment';
-import { UksfError } from '../../../Models/Response';
-import { MessageModalComponent } from '../../../Modals/message-modal/message-modal.component';
+import { UksfError } from '@app/Models/Response';
+import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 
 export type SelectionMode = 'current' | 'future' | 'past';
@@ -19,7 +19,7 @@ export type SelectionMode = 'current' | 'future' | 'past';
 @Component({
     selector: 'app-personnel-loas-list',
     templateUrl: './personnel-loas-list.component.html',
-    styleUrls: ['../../../Pages/personnel-page/personnel-page.component.scss', '../personnel-loas/personnel-loas.component.scss', './personnel-loas-list.component.scss'],
+    styleUrls: ['../personnel-page/personnel-page.component.scss', '../personnel-loas/personnel-loas.component.scss', './personnel-loas-list.component.scss'],
     animations: [expansionAnimations.indicatorRotate, expansionAnimations.bodyExpansion]
 })
 export class PersonnelLoasListComponent implements OnInit {

@@ -15,7 +15,6 @@ import { UnitPageComponent } from './Pages/unit-page/unit-page.component';
 import { UnitsOrbatComponent } from './Components/units/units-orbat/units-orbat.component';
 import { UnitsOrbatAuxComponent } from './Components/units/units-orbat-aux/units-orbat-aux.component';
 import { UnitsOrbatSecondaryComponent } from './Components/units/units-orbat-secondary/units-orbat-secondary.component';
-import { PersonnelRosterComponent } from './Components/personnel/personnel-roster/personnel-roster.component';
 import { NgxPermissionsGuard } from 'ngx-permissions';
 import { CommandUnitsComponent } from './Components/command/command-units/command-units.component';
 import { CommandRanksComponent } from './Components/command/command-ranks/command-ranks.component';
@@ -26,9 +25,6 @@ import { OperationsAarComponent } from './Components/operations/operations-aar/o
 import { HttpClient } from '@angular/common/http';
 import { Permissions } from './Services/permissions';
 import { ApplicationPageComponent } from './Pages/application-page/application-page.component';
-import { PersonnelLoasComponent } from './Components/personnel/personnel-loas/personnel-loas.component';
-import { PersonnelDischargesComponent } from './Components/personnel/personnel-discharges/personnel-discharges.component';
-import { PersonnelActivityComponent } from './Components/personnel/personnel-activity/personnel-activity.component';
 import { CommandMembersComponent } from './Components/command/command-members/command-members.component';
 import { CommandTrainingComponent } from './Components/command/command-training/command-training.component';
 import { ModpackGuideComponent } from './modpack/modpack-guide/modpack-guide.component';
@@ -417,93 +413,14 @@ const appRoutes: Routes = [
     // },
     {
         path: 'personnel',
-        redirectTo: 'personnel/loas',
-        data: {
-            permissions: {
-                only: Permissions.MEMBER,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    MEMBER: '/home',
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        }
-    },
-    {
-        path: 'personnel/loas',
-        component: PersonnelLoasComponent,
-        data: {
-            permissions: {
-                only: Permissions.MEMBER,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    MEMBER: '/home',
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'personnel/activity',
-        component: PersonnelActivityComponent,
-        data: {
-            permissions: {
-                only: Permissions.MEMBER,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    MEMBER: '/home',
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'personnel/discharges',
-        component: PersonnelDischargesComponent,
-        data: {
-            permissions: {
-                only: Permissions.DISCHARGES,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    DISCHARGES: '/home',
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'personnel/discharges/:filter',
-        component: PersonnelDischargesComponent,
-        data: {
-            permissions: {
-                only: Permissions.DISCHARGES,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    DISCHARGES: '/home',
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'personnel/roster',
-        component: PersonnelRosterComponent,
+        loadChildren: () => import('./features/personnel/personnel.module').then(m => m.PersonnelModule),
+        canActivate: [NgxPermissionsGuard],
         data: {
             permissions: {
                 except: Permissions.UNLOGGED,
                 redirectTo: loginRedirect
             }
-        },
-        canActivate: [NgxPermissionsGuard]
+        }
     },
     {
         path: 'modpack',

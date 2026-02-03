@@ -1,11 +1,11 @@
 import { Component, HostListener, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '../../../Services/url.service';
+import { UrlService } from '@app/Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
-import { RequestLoaModalComponent } from '../../../Modals/command/request-loa-modal/request-loa-modal.component';
-import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
+import { RequestLoaModalComponent } from '@app/Modals/command/request-loa-modal/request-loa-modal.component';
+import { ConfirmationModalComponent } from '@app/Modals/confirmation-modal/confirmation-modal.component';
 import { formatDate } from '@angular/common';
-import { Loa } from '../../../Models/Loa';
+import { Loa } from '@app/Models/Loa';
 import { PersonnelLoasListComponent } from '../personnel-loas-list/personnel-loas-list.component';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -29,7 +29,7 @@ export interface DateModeItem {
 @Component({
     selector: 'app-personnel-loas',
     templateUrl: './personnel-loas.component.html',
-    styleUrls: ['../../../Pages/personnel-page/personnel-page.component.scss', './personnel-loas.component.scss']
+    styleUrls: ['../personnel-page/personnel-page.component.scss', './personnel-loas.component.scss']
 })
 export class PersonnelLoasComponent implements OnInit {
     @ViewChildren(PersonnelLoasListComponent) loaLists: QueryList<PersonnelLoasListComponent>;
