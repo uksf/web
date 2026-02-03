@@ -1,18 +1,18 @@
 import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '../../../Services/url.service';
+import { UrlService } from '@app/Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
-import { SignalRService } from 'app/Services/signalr.service';
-import { AuditLog } from '../../../Models/Logging';
-import { PagedResult } from '../../../Models/PagedResult';
+import { SignalRService } from '@app/Services/signalr.service';
+import { AuditLog } from '@app/Models/Logging';
+import { PagedResult } from '@app/Models/PagedResult';
 import { AdminLogsComponent } from '../admin-logs/admin-logs.component';
 import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
     selector: 'app-admin-audit-logs',
     templateUrl: './admin-audit-logs.component.html',
-    styleUrls: ['../../../Pages/admin-page/admin-page.component.scss', './admin-audit-logs.component.scss'],
+    styleUrls: ['../admin-page/admin-page.component.scss', './admin-audit-logs.component.scss'],
 })
 export class AdminAuditLogsComponent extends AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
     auditLogDisplayedColumns = ['timestamp', 'who', 'message'];

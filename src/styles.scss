@@ -32,8 +32,8 @@
 @import 'app/Pages/units-page/units-page.component.scss-theme.scss';
 
 // Components
-@import 'app/Components/admin/admin-servers/admin-servers.component.scss-theme';
-@import 'app/Components/admin/admin-variables/admin-variables.component.scss-theme';
+@import 'app/features/admin/components/admin-servers/admin-servers.component.scss-theme';
+@import 'app/features/admin/components/admin-variables/admin-variables.component.scss-theme';
 @import 'app/Components/comment-display/comment-display.component.scss-theme.scss';
 @import 'app/Components/docs/docs-content/docs-content.component.scss-theme';
 @import 'app/Components/docs/docs-content/docs-content.quill.scss-theme';

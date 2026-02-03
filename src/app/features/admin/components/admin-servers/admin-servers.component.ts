@@ -1,15 +1,15 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '../../../Services/url.service';
+import { UrlService } from '@app/Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
-import type { ServerInfrastructureCurrent, ServerInfrastructureInstalled, ServerInfrastructureLatest, ServerInfrastructureUpdate } from '../../../Models/ServerInfrastructure';
-import { MessageModalComponent } from '../../../Modals/message-modal/message-modal.component';
-import { UksfError } from '../../../Models/Response';
+import type { ServerInfrastructureCurrent, ServerInfrastructureInstalled, ServerInfrastructureLatest, ServerInfrastructureUpdate } from '@app/Models/ServerInfrastructure';
+import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
+import { UksfError } from '@app/Models/Response';
 
 @Component({
     selector: 'app-admin-servers',
     templateUrl: './admin-servers.component.html',
-    styleUrls: ['../../../Pages/admin-page/admin-page.component.scss', './admin-servers.component.scss']
+    styleUrls: ['../admin-page/admin-page.component.scss', './admin-servers.component.scss']
 })
 export class AdminServersComponent implements OnInit {
     latest: ServerInfrastructureLatest;

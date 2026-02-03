@@ -12,8 +12,6 @@ import { RulesPageComponent } from './Pages/rules-page/rules-page.component';
 import { PolicyPageComponent } from './Pages/policy-page/policy-page.component';
 import { InformationPageComponent } from './Pages/information-page/information-page.component';
 import { UnitPageComponent } from './Pages/unit-page/unit-page.component';
-import { AdminErrorLogsComponent } from './Components/admin/admin-error-logs/admin-error-logs.component';
-import { AdminAuditLogsComponent } from './Components/admin/admin-audit-logs/admin-audit-logs.component';
 import { UnitsOrbatComponent } from './Components/units/units-orbat/units-orbat.component';
 import { UnitsOrbatAuxComponent } from './Components/units/units-orbat-aux/units-orbat-aux.component';
 import { UnitsOrbatSecondaryComponent } from './Components/units/units-orbat-secondary/units-orbat-secondary.component';
@@ -25,19 +23,13 @@ import { CommandRolesComponent } from './Components/command/command-roles/comman
 import { CommandRequestsComponent } from './Components/command/command-requests/command-requests.component';
 import { OperationsServersComponent } from './Components/operations/operations-servers/operations-servers.component';
 import { OperationsAarComponent } from './Components/operations/operations-aar/operations-aar.component';
-import { AdminVariablesComponent } from './Components/admin/admin-variables/admin-variables.component';
-import { AdminLogsComponent } from './Components/admin/admin-logs/admin-logs.component';
 import { HttpClient } from '@angular/common/http';
-import { AdminToolsComponent } from './Components/admin/admin-tools/admin-tools.component';
 import { Permissions } from './Services/permissions';
 import { ApplicationPageComponent } from './Pages/application-page/application-page.component';
-import { AdminLauncherLogsComponent } from './Components/admin/admin-launcher-logs/admin-launcher-logs.component';
 import { PersonnelLoasComponent } from './Components/personnel/personnel-loas/personnel-loas.component';
 import { PersonnelDischargesComponent } from './Components/personnel/personnel-discharges/personnel-discharges.component';
 import { PersonnelActivityComponent } from './Components/personnel/personnel-activity/personnel-activity.component';
-import { AdminDiscordLogsComponent } from './Components/admin/admin-discord-logs/admin-discord-logs.component';
 import { CommandMembersComponent } from './Components/command/command-members/command-members.component';
-import { AdminServersComponent } from './Components/admin/admin-servers/admin-servers.component';
 import { CommandTrainingComponent } from './Components/command/command-training/command-training.component';
 import { ModpackGuideComponent } from './modpack/modpack-guide/modpack-guide.component';
 import { ModpackReleasesComponent } from './modpack/modpack-releases/modpack-releases.component';
@@ -74,7 +66,8 @@ const appRoutes: Routes = [
     },
     {
         path: 'admin',
-        redirectTo: 'admin/audit',
+        loadChildren: () => import('./features/admin/admin.module').then(m => m.AdminModule),
+        canActivate: [NgxPermissionsGuard],
         data: {
             permissions: {
                 only: Permissions.ADMIN,
@@ -86,134 +79,6 @@ const appRoutes: Routes = [
                 }
             }
         }
-    },
-    {
-        path: 'admin/logs',
-        component: AdminLogsComponent,
-        data: {
-            permissions: {
-                only: Permissions.ADMIN,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    ADMIN: '/home',
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'admin/errors',
-        component: AdminErrorLogsComponent,
-        data: {
-            permissions: {
-                only: Permissions.ADMIN,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    ADMIN: '/home',
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'admin/audit',
-        component: AdminAuditLogsComponent,
-        data: {
-            permissions: {
-                only: Permissions.ADMIN,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    ADMIN: '/home',
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'admin/discord',
-        component: AdminDiscordLogsComponent,
-        data: {
-            permissions: {
-                only: Permissions.ADMIN,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    ADMIN: '/home',
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'admin/launcher',
-        component: AdminLauncherLogsComponent,
-        data: {
-            permissions: {
-                only: Permissions.ADMIN,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    ADMIN: '/home',
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'admin/tools',
-        component: AdminToolsComponent,
-        data: {
-            permissions: {
-                only: Permissions.ADMIN,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    ADMIN: '/home',
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'admin/variables',
-        component: AdminVariablesComponent,
-        data: {
-            permissions: {
-                only: Permissions.ADMIN,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    ADMIN: '/home',
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'admin/servers',
-        component: AdminServersComponent,
-        data: {
-            permissions: {
-                only: Permissions.ADMIN,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    ADMIN: '/home',
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'recruitment',

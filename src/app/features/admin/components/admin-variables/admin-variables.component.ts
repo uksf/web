@@ -1,19 +1,19 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '../../../Services/url.service';
+import { UrlService } from '@app/Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatAccordion } from '@angular/material/expansion';
 import { Observable, timer, of } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 import { UntypedFormGroup, UntypedFormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { InstantErrorStateMatcher } from 'app/Services/formhelper.service';
-import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
-import { VariableItem } from 'app/Models/VariableItem';
+import { InstantErrorStateMatcher } from '@app/Services/formhelper.service';
+import { ConfirmationModalComponent } from '@app/Modals/confirmation-modal/confirmation-modal.component';
+import { VariableItem } from '@app/Models/VariableItem';
 
 @Component({
     selector: 'app-admin-variables',
     templateUrl: './admin-variables.component.html',
-    styleUrls: ['../../../Pages/admin-page/admin-page.component.scss', './admin-variables.component.scss']
+    styleUrls: ['../admin-page/admin-page.component.scss', './admin-variables.component.scss']
 })
 export class AdminVariablesComponent implements OnInit {
     @ViewChild(MatAccordion) accordion: MatAccordion;

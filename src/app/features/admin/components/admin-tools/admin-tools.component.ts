@@ -1,22 +1,22 @@
 import { Component, isDevMode, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '../../../Services/url.service';
-import { AccountService } from 'app/Services/account.service';
+import { UrlService } from '@app/Services/url.service';
+import { AccountService } from '@app/Services/account.service';
 import { MatDialog } from '@angular/material/dialog';
-import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
+import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
 import { BehaviorSubject } from 'rxjs';
-import { IDropdownElement, mapFromElement } from '../../elements/dropdown-base/dropdown-base.component';
-import { BasicAccount } from '../../../Models/Account';
-import { PermissionsService } from '../../../Services/permissions.service';
-import { Permissions } from '../../../Services/permissions';
-import { AuthenticationService } from '../../../Services/Authentication/authentication.service';
+import { IDropdownElement, mapFromElement } from '@app/Components/elements/dropdown-base/dropdown-base.component';
+import { BasicAccount } from '@app/Models/Account';
+import { PermissionsService } from '@app/Services/permissions.service';
+import { Permissions } from '@app/Services/permissions';
+import { AuthenticationService } from '@app/Services/Authentication/authentication.service';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-admin-tools',
     templateUrl: './admin-tools.component.html',
-    styleUrls: ['../../../Pages/admin-page/admin-page.component.scss', './admin-tools.component.scss']
+    styleUrls: ['../admin-page/admin-page.component.scss', './admin-tools.component.scss']
 })
 export class AdminToolsComponent {
     @ViewChild(NgForm) form!: NgForm;

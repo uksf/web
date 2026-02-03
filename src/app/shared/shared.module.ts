@@ -3,51 +3,47 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 // Angular Material modules commonly used across features
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatSelectModule } from '@angular/material/select';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
+// CDK modules
+import { ScrollingModule } from '@angular/cdk/scrolling';
+
+// Shared Components
+import { FlexFillerComponent } from '@app/Components/elements/flex-filler/flex-filler.component';
+import { ButtonComponent } from '@app/Components/elements/button-pending/button.component';
+import { LoadingPlaceholderComponent } from '@app/Components/elements/loading-placeholder/loading-placeholder.component';
+import { CentreWrapperComponent } from '@app/Components/elements/centre-wrapper/centre-wrapper.component';
+import { MainContentAreaComponent } from '@app/Components/content-areas/main-content-area/main-content-area.component';
+import { SideContentAreaComponent } from '@app/Components/content-areas/side-content-area/side-content-area.component';
+import { FullContentAreaComponent } from '@app/Components/content-areas/full-content-area/full-content-area.component';
+import { DefaultContentAreasComponent } from '@app/Components/content-areas/default-content-areas/default-content-areas.component';
+import { InlineEditComponent } from '@app/Components/elements/inline-edit/inline-edit.component';
+import { InlineDropdownComponent } from '@app/Components/elements/inline-dropdown/inline-dropdown.component';
+import { PaginatorComponent } from '@app/Components/elements/paginator/paginator.component';
+import { DropdownComponent } from '@app/Components/elements/dropdown/dropdown.component';
+import { DropdownBaseComponent } from '@app/Components/elements/dropdown-base/dropdown-base.component';
+import { SelectionListComponent } from '@app/Components/elements/selection-list/selection-list.component';
+import { MaintenanceComponent } from '@app/Components/elements/maintenance/maintenance.component';
+import { FileDropComponent } from '@app/Components/elements/file-drop/file-drop.component';
+
+// Shared Directives
+import { MustSelectFromDropdownValidatorDirective } from '@app/Directives/dropdown-validator.directive';
 
 /**
  * SharedModule contains reusable components, pipes, and directives
  * used across multiple feature modules.
- *
- * Components to be migrated here:
- * - flex-filler
- * - button-pending
- * - loading-placeholder
- * - centre-wrapper
- * - main-content-area
- * - side-content-area
- * - full-content-area
- * - default-content-areas
- * - file-drop
- * - inline-edit
- * - inline-dropdown
- * - selection-list
- * - paginator
- * - dropdown
- * - dropdown-base
- * - theme-emitter
- * - maintenance
- *
- * Pipes to be migrated here:
- * - displayName
- * - time (ZonedTime, TimeAgoPipe)
- * - country
- * - AnsiToHtml
- *
- * Directives to be migrated here:
- * - character-block
- * - dropdown-validator
- * - must-match
  *
  * Usage in feature modules:
  *   imports: [SharedModule]
@@ -62,39 +58,48 @@ const ANGULAR_MODULES = [
 
 // Material modules to re-export
 const MATERIAL_MODULES = [
+  MatAutocompleteModule,
   MatButtonModule,
+  MatCardModule,
+  MatCheckboxModule,
+  MatChipsModule,
+  MatDialogModule,
+  MatFormFieldModule,
   MatIconModule,
   MatInputModule,
-  MatFormFieldModule,
-  MatCheckboxModule,
-  MatSelectModule,
-  MatDialogModule,
-  MatProgressSpinnerModule,
-  MatTooltipModule,
   MatMenuModule,
-  MatCardModule,
+  MatProgressSpinnerModule,
+  MatSelectModule,
+  MatTooltipModule,
+  ScrollingModule,
 ];
 
-// Shared components (to be populated during migration)
-const SHARED_COMPONENTS: any[] = [
-  // FlexFillerComponent,
-  // LoadingPlaceholderComponent,
-  // etc.
+// Shared components
+const SHARED_COMPONENTS = [
+  FlexFillerComponent,
+  ButtonComponent,
+  LoadingPlaceholderComponent,
+  CentreWrapperComponent,
+  MainContentAreaComponent,
+  SideContentAreaComponent,
+  FullContentAreaComponent,
+  DefaultContentAreasComponent,
+  InlineEditComponent,
+  InlineDropdownComponent,
+  PaginatorComponent,
+  DropdownComponent,
+  DropdownBaseComponent,
+  SelectionListComponent,
+  MaintenanceComponent,
+  FileDropComponent,
 ];
 
 // Shared pipes (to be populated during migration)
-const SHARED_PIPES: any[] = [
-  // DisplayName,
-  // ZonedTime,
-  // TimeAgoPipe,
-  // etc.
-];
+const SHARED_PIPES: any[] = [];
 
-// Shared directives (to be populated during migration)
-const SHARED_DIRECTIVES: any[] = [
-  // CharacterBlockDirective,
-  // DropdownValidatorDirective,
-  // MustMatchDirective,
+// Shared directives
+const SHARED_DIRECTIVES = [
+  MustSelectFromDropdownValidatorDirective,
 ];
 
 @NgModule({

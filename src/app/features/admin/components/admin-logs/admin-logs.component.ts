@@ -3,13 +3,13 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { UrlService } from '../../../Services/url.service';
+import { UrlService } from '@app/Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
-import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
-import { ConnectionContainer, SignalRService } from 'app/Services/signalr.service';
-import { BasicLog, LogLevel } from '../../../Models/Logging';
-import { PagedResult } from '../../../Models/PagedResult';
-import { SortDirection } from '../../../Models/SortDirection';
+import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
+import { ConnectionContainer, SignalRService } from '@app/Services/signalr.service';
+import { BasicLog, LogLevel } from '@app/Models/Logging';
+import { PagedResult } from '@app/Models/PagedResult';
+import { SortDirection } from '@app/Models/SortDirection';
 import { Subject } from 'rxjs';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -17,7 +17,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 @Component({
     selector: 'app-admin-logs',
     templateUrl: './admin-logs.component.html',
-    styleUrls: ['../../../Pages/admin-page/admin-page.component.scss', './admin-logs.component.scss'],
+    styleUrls: ['../admin-page/admin-page.component.scss', './admin-logs.component.scss'],
 })
 export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;

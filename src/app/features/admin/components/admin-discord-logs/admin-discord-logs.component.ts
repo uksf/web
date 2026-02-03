@@ -1,18 +1,18 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '../../../Services/url.service';
+import { UrlService } from '@app/Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
-import { SignalRService } from 'app/Services/signalr.service';
-import { DiscordLog, DiscordUserEventType } from '../../../Models/Logging';
+import { SignalRService } from '@app/Services/signalr.service';
+import { DiscordLog, DiscordUserEventType } from '@app/Models/Logging';
 import { AdminLogsComponent } from '../admin-logs/admin-logs.component';
-import { PagedResult } from '../../../Models/PagedResult';
+import { PagedResult } from '@app/Models/PagedResult';
 import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
     selector: 'app-admin-discord-logs',
     templateUrl: './admin-discord-logs.component.html',
-    styleUrls: ['../../../Pages/admin-page/admin-page.component.scss', './admin-discord-logs.component.scss'],
+    styleUrls: ['../admin-page/admin-page.component.scss', './admin-discord-logs.component.scss'],
 })
 export class AdminDiscordLogsComponent extends AdminLogsComponent implements OnInit, OnDestroy {
     launcherLogDisplayedColumns = ['timestamp', 'discordUserEventType', 'instigatorId', 'instigatorName', 'channelName', 'name', 'message'];
