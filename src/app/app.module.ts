@@ -69,7 +69,6 @@ import { UnitsPageComponent } from './Pages/units-page/units-page.component';
 import { AboutPageComponent } from './Pages/about-page/about-page.component';
 import { DocsPageComponent } from './Pages/docs-page/docs-page.component';
 import { RulesPageComponent } from './Pages/rules-page/rules-page.component';
-import { OperationsPageComponent } from './Pages/operations-page/operations-page.component';
 import { PolicyPageComponent } from './Pages/policy-page/policy-page.component';
 import { InformationPageComponent } from './Pages/information-page/information-page.component';
 import { ModpackPageComponent } from './modpack/modpack-page/modpack-page.component';
@@ -103,13 +102,7 @@ import { RequestTransferModalComponent } from './Modals/command/request-transfer
 import { RequestChainOfCommandPositionModalComponent } from './Modals/command/request-chain-of-command-position-modal/request-chain-of-command-position-modal.component';
 import { CommandRequestsComponent } from './Components/command/command-requests/command-requests.component';
 import { AddUnitModalComponent } from './Modals/command/add-unit-modal/add-unit-modal.component';
-import { OperationsActivityComponent } from './Components/operations/operations-activity/operations-activity.component';
-import { OperationsOrdersComponent } from './Components/operations/operations-orders/operations-orders.component';
-import { OperationsReportsComponent } from './Components/operations/operations-reports/operations-reports.component';
-import { OperationsServersComponent } from './Components/operations/operations-servers/operations-servers.component';
-import { AddServerModalComponent } from './Modals/operations/add-server-modal/add-server-modal.component';
 import { RequestUnitRemovalModalComponent } from './Modals/command/request-unit-removal-modal/request-unit-removal-modal.component';
-import { EditServerModsModalComponent } from './Modals/operations/edit-server-mods-modal/edit-server-mods-modal.component';
 import { ConfirmationModalComponent } from './Modals/confirmation-modal/confirmation-modal.component';
 import { UrlSerializer } from '@angular/router';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -171,7 +164,6 @@ import { NewModpackReleaseModalComponent } from './modpack/new-modpack-release-m
 import { ModpackReleaseService } from './modpack/modpackRelease.service';
 import { AnsiToHtmlPipe } from './Pipes/AnsiToHtml.pipe';
 import { DisplayName } from './Pipes/displayName.pipe';
-import { OperationsAarComponent } from './Components/operations/operations-aar/operations-aar.component';
 import { ModpackWorkshopComponent } from './modpack/modpack-workshop/modpack-workshop.component';
 import { InstallWorkshopModModalComponent } from './modpack/install-workshop-mod-modal/install-workshop-mod-modal.component';
 import { WorkshopModInterventionModalComponent } from './modpack/workshop-mod-intervention-modal/workshop-mod-intervention-modal.component';
@@ -299,7 +291,6 @@ export function tokenGetter() {
         AboutPageComponent,
         DocsPageComponent,
         RulesPageComponent,
-        OperationsPageComponent,
         PolicyPageComponent,
         InformationPageComponent,
         ModpackPageComponent,
@@ -334,14 +325,7 @@ export function tokenGetter() {
         AddUnitModalComponent,
         AddTrainingModalComponent,
         EditMemberTrainingModalComponent,
-        OperationsActivityComponent,
-        OperationsOrdersComponent,
-        OperationsReportsComponent,
-        OperationsServersComponent,
-        OperationsAarComponent,
-        AddServerModalComponent,
         RequestUnitRemovalModalComponent,
-        EditServerModsModalComponent,
         ConfirmationModalComponent,
         TextInputModalComponent,
         ThemeEmitterComponent,

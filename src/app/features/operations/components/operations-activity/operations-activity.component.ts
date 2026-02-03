@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '../../../Services/url.service';
+import { UrlService } from '@app/Services/url.service';
 
 @Component({
     selector: 'app-operations-activity',
     templateUrl: './operations-activity.component.html',
-    styleUrls: ['../../../Pages/operations-page/operations-page.component.scss', './operations-activity.component.css'],
+    styleUrls: ['../operations-page/operations-page.component.scss', './operations-activity.component.css'],
 })
 export class OperationsActivityComponent implements OnInit {
     activityData;

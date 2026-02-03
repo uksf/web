@@ -23,7 +23,7 @@
 @import 'app/Pages/login-page/login-page.component.scss-theme.scss';
 @import 'app/modpack/modpack-page/modpack-page.component.scss-theme.scss';
 @import 'app/Pages/application-page/application-page.component.scss-theme.scss';
-@import 'app/Pages/operations-page/operations-page.component.scss-theme.scss';
+@import 'app/features/operations/components/operations-page/operations-page.component.scss-theme.scss';
 @import 'app/features/personnel/components/personnel-page/personnel-page.component.scss-theme.scss';
 @import 'app/Pages/profile-page/profile-page.component.scss-theme.scss';
 @import 'app/recruitment/recruitment-application-page/recruitment-application-page.component.scss-theme.scss';
@@ -52,7 +52,7 @@
 @import 'app/Components/command/command-ranks/command-ranks.component.scss-theme.scss';
 @import 'app/Components/command/command-roles/command-roles.component.scss-theme.scss';
 @import 'app/Components/command/command-units/command-units.component.scss-theme.scss';
-@import 'app/Components/operations/operations-servers/operations-servers.component.scss-theme.scss';
+@import 'app/features/operations/components/operations-servers/operations-servers.component.scss-theme.scss';
 @import 'app/features/personnel/components/personnel-discharges/personnel-discharges.component.scss-theme.scss';
 @import 'app/features/personnel/components/personnel-loas-list/personnel-loas-list.component.scss-theme.scss';
 @import 'app/features/personnel/components/personnel-roster/personnel-roster.component.scss-theme';
@@ -62,7 +62,7 @@
 
 // Modals
 @import 'app/Modals/command/add-unit-modal/add-unit-modal.component.scss-theme.scss';
-@import 'app/Modals/operations/edit-server-mods-modal/edit-server-mods-modal.component.scss-theme.scss';
+@import 'app/features/operations/modals/edit-server-mods-modal/edit-server-mods-modal.component.scss-theme.scss';
 @import 'app/Modals/command/request-loa-modal/request-loa-modal.component.scss-theme.scss';
 @import 'app/Modals/message-modal/message-model.component.scss-theme';
 @import 'app/Modals/multiple-message-modal/validation-report-modal.scss-theme';

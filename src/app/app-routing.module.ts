@@ -20,8 +20,6 @@ import { CommandUnitsComponent } from './Components/command/command-units/comman
 import { CommandRanksComponent } from './Components/command/command-ranks/command-ranks.component';
 import { CommandRolesComponent } from './Components/command/command-roles/command-roles.component';
 import { CommandRequestsComponent } from './Components/command/command-requests/command-requests.component';
-import { OperationsServersComponent } from './Components/operations/operations-servers/operations-servers.component';
-import { OperationsAarComponent } from './Components/operations/operations-aar/operations-aar.component';
 import { HttpClient } from '@angular/common/http';
 import { Permissions } from './Services/permissions';
 import { ApplicationPageComponent } from './Pages/application-page/application-page.component';
@@ -300,117 +298,15 @@ const appRoutes: Routes = [
     },
     {
         path: 'operations',
-        redirectTo: 'operations/servers'
-    },
-    {
-        path: 'operations/servers',
-        component: OperationsServersComponent,
+        loadChildren: () => import('./features/operations/operations.module').then(m => m.OperationsModule),
+        canActivate: [NgxPermissionsGuard],
         data: {
             permissions: {
-                only: Permissions.SERVERS,
                 except: Permissions.UNLOGGED,
-                redirectTo: {
-                    UNLOGGED: loginRedirect,
-                    default: '/operations/aar'
-                }
+                redirectTo: loginRedirect
             }
-        },
-        canActivate: [NgxPermissionsGuard]
+        }
     },
-    {
-        path: 'operations/aar',
-        component: OperationsAarComponent,
-        data: {
-            permissions: {
-                only: Permissions.MEMBER,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    // {
-    //     path: 'operations/opords',
-    //     component: OperationsOrdersComponent,
-    //     data: {
-    //         permissions: {
-    //             only: Permissions.MEMBER,
-    //             except: Permissions.UNLOGGED,
-    //             redirectTo: {
-    //                 UNLOGGED: loginRedirect,
-    //                 default: '/home'
-    //             }
-    //         }
-    //     },
-    //     canActivate: [NgxPermissionsGuard]
-    // },
-    // {
-    //     path: 'operations/opreps',
-    //     component: OperationsReportsComponent,
-    //     data: {
-    //         permissions: {
-    //             only: Permissions.MEMBER,
-    //             except: Permissions.UNLOGGED,
-    //             redirectTo: {
-    //                 MEMBER: '/home',
-    //                 UNLOGGED: loginRedirect,
-    //                 default: '/home'
-    //             }
-    //         }
-    //     },
-    //     canActivate: [NgxPermissionsGuard]
-    // },
-    // {
-    //     path: 'operations/opreps/:id',
-    //     component: OprepPageComponent,
-    //     data: {
-    //         permissions: {
-    //             only: Permissions.MEMBER,
-    //             except: Permissions.UNLOGGED,
-    //             redirectTo: {
-    //                 MEMBER: '/home',
-    //                 UNLOGGED: loginRedirect,
-    //                 default: '/home'
-    //             }
-    //         }
-    //     },
-    //     canActivate: [NgxPermissionsGuard]
-    // },
-    // {
-    //     path: 'operations/opords/:id',
-    //     component: OpordPageComponent,
-    //     data: {
-    //         permissions: {
-    //             only: Permissions.MEMBER,
-    //             except: Permissions.UNLOGGED,
-    //             redirectTo: {
-    //                 MEMBER: '/home',
-    //                 UNLOGGED: loginRedirect,
-    //                 default: '/home'
-    //             }
-    //         }
-    //     },
-    //     canActivate: [NgxPermissionsGuard]
-    // },
-    // {
-    //     path: 'operations/activity',
-    //     component: OperationsActivityComponent,
-    //     data: {
-    //         permissions: {
-    //             only: Permissions.MEMBER,
-    //             except: Permissions.UNLOGGED,
-    //             redirectTo: {
-    //                 MEMBER: '/home',
-    //                 UNLOGGED: loginRedirect,
-    //                 default: '/home'
-    //             }
-    //         }
-    //     },
-    //     canActivate: [NgxPermissionsGuard]
-    // },
     {
         path: 'personnel',
         loadChildren: () => import('./features/personnel/personnel.module').then(m => m.PersonnelModule),
