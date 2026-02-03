@@ -1,18 +1,18 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { UrlService } from '../../Services/url.service';
+import { UrlService } from '@app/Services/url.service';
 import { Router } from '@angular/router';
-import { AccountService } from '../../Services/account.service';
-import { AccountSettings, MembershipState } from '../../Models/Account';
-import { ActiveApplication, ApplicationState, CompletedApplication, Recruiter } from '../../Models/Application';
+import { AccountService } from '@app/Services/account.service';
+import { AccountSettings, MembershipState } from '@app/Models/Account';
+import { ActiveApplication, ApplicationState, CompletedApplication, Recruiter } from '@app/Models/Application';
 import { AsyncSubject, Subject } from 'rxjs';
-import { OnlineState } from '../../Models/OnlineState';
-import { Dictionary } from '../../Models/Dictionary';
-import { ThemeEmitterComponent } from '../../Components/elements/theme-emitter/theme-emitter.component';
-import { buildQuery } from '../../Services/helper.service';
-import { PagedResult } from '../../Models/PagedResult';
+import { OnlineState } from '@app/Models/OnlineState';
+import { Dictionary } from '@app/Models/Dictionary';
+import { ThemeEmitterComponent } from '@app/Components/elements/theme-emitter/theme-emitter.component';
+import { buildQuery } from '@app/Services/helper.service';
+import { PagedResult } from '@app/Models/PagedResult';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { PagedEvent } from '../../Components/elements/paginator/paginator.component';
+import { PagedEvent } from '@app/Components/elements/paginator/paginator.component';
 
 @Component({
     selector: 'app-recruitment-page',

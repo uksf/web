@@ -1,20 +1,20 @@
 import { Component, HostListener, ViewChild } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { UrlService } from '../../Services/url.service';
+import { UrlService } from '@app/Services/url.service';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommentDisplayComponent } from '../../Components/comment-display/comment-display.component';
-import { AccountService } from '../../Services/account.service';
+import { CommentDisplayComponent } from '@app/Components/comment-display/comment-display.component';
+import { AccountService } from '@app/Services/account.service';
 import { MatDialog } from '@angular/material/dialog';
-import { MembershipState } from '../../Models/Account';
+import { MembershipState } from '@app/Models/Account';
 import { AsyncSubject } from 'rxjs';
-import { ApplicationState, DetailedApplication, Recruiter } from '../../Models/Application';
-import { OnlineState } from '../../Models/OnlineState';
-import { MessageModalComponent } from '../../Modals/message-modal/message-modal.component';
-import { CountryPickerService, ICountry } from '../../Services/CountryPicker/country-picker.service';
-import { PermissionsService } from '../../Services/permissions.service';
-import { ConfirmationModalComponent } from '../../Modals/confirmation-modal/confirmation-modal.component';
-import { Permissions } from '../../Services/permissions';
+import { ApplicationState, DetailedApplication, Recruiter } from '@app/Models/Application';
+import { OnlineState } from '@app/Models/OnlineState';
+import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
+import { CountryPickerService, ICountry } from '@app/Services/CountryPicker/country-picker.service';
+import { PermissionsService } from '@app/Services/permissions.service';
+import { ConfirmationModalComponent } from '@app/Modals/confirmation-modal/confirmation-modal.component';
+import { Permissions } from '@app/Services/permissions';
 
 @Component({
     selector: 'app-recruitment-application-page',

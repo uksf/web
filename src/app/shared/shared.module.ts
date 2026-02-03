@@ -41,9 +41,11 @@ import { AutofocusStopComponent } from '@app/Components/elements/autofocus-stop/
 import { ModelValueDebugComponent, ReactiveFormValueDebugComponent, TemplateFormValueDebugComponent } from '@app/Components/elements/form-value-debug/form-value-debug.component';
 import { CommentDisplayComponent } from '@app/Components/comment-display/comment-display.component';
 import { ConnectTeamspeakComponent } from '@app/Components/teamspeak-connect/teamspeak-connect.component';
+import { ThemeEmitterComponent } from '@app/Components/elements/theme-emitter/theme-emitter.component';
 
 // Shared Pipes
 import { CountryImage, CountryName } from '@app/Pipes/country.pipe';
+import { ZonedTime } from '@app/Pipes/time.pipe';
 
 // Shared Directives
 import { MustSelectFromDropdownValidatorDirective } from '@app/Directives/dropdown-validator.directive';
@@ -105,12 +107,14 @@ const SHARED_COMPONENTS = [
   TemplateFormValueDebugComponent,
   CommentDisplayComponent,
   ConnectTeamspeakComponent,
+  ThemeEmitterComponent,
 ];
 
 // Shared pipes
 const SHARED_PIPES = [
   CountryImage,
   CountryName,
+  ZonedTime,
 ];
 
 // Shared directives

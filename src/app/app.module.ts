@@ -62,8 +62,6 @@ import { SideBarComponent } from './Components/side-bar/side-bar.component';
 import { LoginPageComponent } from './Pages/login-page/login-page.component';
 import { HeaderBarComponent } from './Components/header-bar/header-bar.component';
 import { FooterBarComponent } from './Components/footer-bar/footer-bar.component';
-import { RecruitmentPageComponent } from './recruitment/recruitment-page/recruitment-page.component';
-import { RecruitmentApplicationPageComponent } from './recruitment/recruitment-application-page/recruitment-application-page.component';
 import { LivePageComponent } from './Pages/live-page/live-page.component';
 import { AboutPageComponent } from './Pages/about-page/about-page.component';
 import { RulesPageComponent } from './Pages/rules-page/rules-page.component';
@@ -86,7 +84,6 @@ import { ConfirmationModalComponent } from './Modals/confirmation-modal/confirma
 import { UrlSerializer } from '@angular/router';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MessageModalComponent } from './Modals/message-modal/message-modal.component';
-import { ThemeEmitterComponent } from './Components/elements/theme-emitter/theme-emitter.component';
 import { AuthHttpInterceptor } from './Services/Authentication/auth-http-interceptor';
 import { CountryPickerService } from './Services/CountryPicker/country-picker.service';
 import { ValidationReportModalComponent } from './Modals/multiple-message-modal/validation-report-modal.component';
@@ -99,7 +96,7 @@ import { ModpackBuildProcessService } from './modpack/modpackBuildProcess.servic
 import { NewModpackBuildModalComponent } from './modpack/new-modpack-build-modal/new-modpack-build-modal.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { OrganizationChartModule } from 'primeng/organizationchart';
-import { TimeAgoPipe, ZonedTime } from './Pipes/time.pipe';
+import { TimeAgoPipe } from './Pipes/time.pipe';
 import { CharacterBlockDirective } from './Directives/character-block.directive';
 import { RequestPasswordResetComponent } from './Components/login/request-password-reset/request-password-reset.component';
 import { LoginComponent } from './Components/login/login/login.component';
@@ -238,8 +235,6 @@ export function tokenGetter() {
         HeaderBarComponent,
         FooterBarComponent,
         ProfilePageComponent,
-        RecruitmentPageComponent,
-        RecruitmentApplicationPageComponent,
         LivePageComponent,
         AboutPageComponent,
         RulesPageComponent,
@@ -258,9 +253,7 @@ export function tokenGetter() {
         OpordPageComponent,
         ConfirmationModalComponent,
         TextInputModalComponent,
-        ThemeEmitterComponent,
         ValidationReportModalComponent,
-        ZonedTime,
         ModpackGuideComponent,
         ModpackReleasesComponent,
         ModpackBuildsDevComponent,

@@ -3,8 +3,6 @@ import { ActivatedRouteSnapshot, DefaultUrlSerializer, RouterModule, RouterState
 import { HomePageComponent } from './Pages/home-page/home-page.component';
 import { LoginPageComponent } from './Pages/login-page/login-page.component';
 import { ProfilePageComponent } from './Pages/profile-page/profile-page.component';
-import { RecruitmentPageComponent } from './recruitment/recruitment-page/recruitment-page.component';
-import { RecruitmentApplicationPageComponent } from './recruitment/recruitment-application-page/recruitment-application-page.component';
 import { LivePageComponent } from './Pages/live-page/live-page.component';
 import { AboutPageComponent } from './Pages/about-page/about-page.component';
 import { RulesPageComponent } from './Pages/rules-page/rules-page.component';
@@ -64,19 +62,8 @@ const appRoutes: Routes = [
     },
     {
         path: 'recruitment',
-        component: RecruitmentPageComponent,
-        data: {
-            permissions: {
-                only: Permissions.RECRUITER,
-                except: Permissions.UNLOGGED,
-                redirectTo: '/home'
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'recruitment/:id',
-        component: RecruitmentApplicationPageComponent,
+        loadChildren: () => import('./features/recruitment/recruitment.module').then(m => m.RecruitmentModule),
+        canActivate: [NgxPermissionsGuard],
         data: {
             permissions: {
                 only: Permissions.RECRUITER,
@@ -86,8 +73,7 @@ const appRoutes: Routes = [
                     default: '/home'
                 }
             }
-        },
-        canActivate: [NgxPermissionsGuard]
+        }
     },
     { path: 'information', component: InformationPageComponent },
     { path: 'about', redirectTo: 'information/about' },
