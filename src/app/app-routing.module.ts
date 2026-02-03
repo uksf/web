@@ -13,7 +13,6 @@ import { InformationPageComponent } from './Pages/information-page/information-p
 import { NgxPermissionsGuard } from 'ngx-permissions';
 import { HttpClient } from '@angular/common/http';
 import { Permissions } from './Services/permissions';
-import { ApplicationPageComponent } from './Pages/application-page/application-page.component';
 import { ModpackGuideComponent } from './modpack/modpack-guide/modpack-guide.component';
 import { ModpackReleasesComponent } from './modpack/modpack-releases/modpack-releases.component';
 import { ModpackBuildsDevComponent } from './modpack/modpack-builds-dev/modpack-builds-dev.component';
@@ -24,7 +23,7 @@ const appRoutes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
     { path: 'home', component: HomePageComponent },
     { path: 'login', component: LoginPageComponent },
-    { path: 'application', component: ApplicationPageComponent },
+    { path: 'application', loadChildren: () => import('./features/application/application.module').then(m => m.ApplicationModule) },
     {
         path: 'profile',
         component: ProfilePageComponent,

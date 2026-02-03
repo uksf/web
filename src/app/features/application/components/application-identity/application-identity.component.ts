@@ -1,19 +1,19 @@
 import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '../../../Services/url.service';
+import { UrlService } from '@app/Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject, Observable, of, timer } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
-import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
-import { CountryPickerService, ICountry } from 'app/Services/CountryPicker/country-picker.service';
-import { CountryImage } from 'app/Pipes/country.pipe';
-import { ConfirmValidParentMatcher, InstantErrorStateMatcher } from '../../../Services/formhelper.service';
-import { nameCase, titleCase } from '../../../Services/helper.service';
-import { IDropdownElement } from '../../elements/dropdown-base/dropdown-base.component';
-import { CreateAccount } from '../../../Models/Account';
-import { AuthenticationService } from '../../../Services/Authentication/authentication.service';
-import { PermissionsService } from '../../../Services/permissions.service';
+import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
+import { CountryPickerService, ICountry } from '@app/Services/CountryPicker/country-picker.service';
+import { CountryImage } from '@app/Pipes/country.pipe';
+import { ConfirmValidParentMatcher, InstantErrorStateMatcher } from '@app/Services/formhelper.service';
+import { nameCase, titleCase } from '@app/Services/helper.service';
+import { IDropdownElement } from '@app/Components/elements/dropdown-base/dropdown-base.component';
+import { CreateAccount } from '@app/Models/Account';
+import { AuthenticationService } from '@app/Services/Authentication/authentication.service';
+import { PermissionsService } from '@app/Services/permissions.service';
 
 function matchingPasswords(passwordKey: string, confirmPasswordKey: string) {
     return (group: UntypedFormGroup): { [key: string]: any } => {
@@ -68,7 +68,7 @@ function validDob(dayKey: string, monthKey: string, yearKey: string) {
 @Component({
     selector: 'app-application-identity',
     templateUrl: './application-identity.component.html',
-    styleUrls: ['../../../Pages/application-page/application-page.component.scss', './application-identity.component.scss']
+    styleUrls: ['../application-page/application-page.component.scss', './application-identity.component.scss']
 })
 export class ApplicationIdentityComponent implements OnInit {
     @Output() nextEvent = new EventEmitter();

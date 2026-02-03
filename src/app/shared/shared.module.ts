@@ -39,6 +39,11 @@ import { MaintenanceComponent } from '@app/Components/elements/maintenance/maint
 import { FileDropComponent } from '@app/Components/elements/file-drop/file-drop.component';
 import { AutofocusStopComponent } from '@app/Components/elements/autofocus-stop/autofocus-stop.component';
 import { ModelValueDebugComponent, ReactiveFormValueDebugComponent, TemplateFormValueDebugComponent } from '@app/Components/elements/form-value-debug/form-value-debug.component';
+import { CommentDisplayComponent } from '@app/Components/comment-display/comment-display.component';
+import { ConnectTeamspeakComponent } from '@app/Components/teamspeak-connect/teamspeak-connect.component';
+
+// Shared Pipes
+import { CountryImage, CountryName } from '@app/Pipes/country.pipe';
 
 // Shared Directives
 import { MustSelectFromDropdownValidatorDirective } from '@app/Directives/dropdown-validator.directive';
@@ -98,10 +103,15 @@ const SHARED_COMPONENTS = [
   ModelValueDebugComponent,
   ReactiveFormValueDebugComponent,
   TemplateFormValueDebugComponent,
+  CommentDisplayComponent,
+  ConnectTeamspeakComponent,
 ];
 
-// Shared pipes (to be populated during migration)
-const SHARED_PIPES: any[] = [];
+// Shared pipes
+const SHARED_PIPES = [
+  CountryImage,
+  CountryName,
+];
 
 // Shared directives
 const SHARED_DIRECTIVES = [

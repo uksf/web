@@ -2,14 +2,14 @@ import { Component } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, UntypedFormControl, FormGroupDirective, NgForm, AbstractControl } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
-import { AccountService } from 'app/Services/account.service';
+import { AccountService } from '@app/Services/account.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from 'app/Services/url.service';
+import { UrlService } from '@app/Services/url.service';
 import { Router } from '@angular/router';
-import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
-import { PermissionsService } from 'app/Services/permissions.service';
-import { Permissions } from 'app/Services/permissions';
-import { ApplicationState } from '../../../Models/Application';
+import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
+import { PermissionsService } from '@app/Services/permissions.service';
+import { Permissions } from '@app/Services/permissions';
+import { ApplicationState } from '@app/Models/Application';
 
 export class InstantErrorStateMatcher implements ErrorStateMatcher {
     isErrorState(control: UntypedFormControl | null, form: FormGroupDirective | NgForm | null): boolean {
@@ -20,7 +20,7 @@ export class InstantErrorStateMatcher implements ErrorStateMatcher {
 @Component({
     selector: 'app-application-edit',
     templateUrl: './application-edit.component.html',
-    styleUrls: ['../../../Pages/application-page/application-page.component.scss', './application-edit.component.scss']
+    styleUrls: ['../application-page/application-page.component.scss', './application-edit.component.scss']
 })
 export class ApplicationEditComponent {
     formGroup: UntypedFormGroup;

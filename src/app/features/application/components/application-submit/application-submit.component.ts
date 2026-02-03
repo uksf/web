@@ -12,7 +12,7 @@ export class InstantErrorStateMatcher implements ErrorStateMatcher {
 @Component({
     selector: 'app-application-submit',
     templateUrl: './application-submit.component.html',
-    styleUrls: ['../../../Pages/application-page/application-page.component.scss', './application-submit.component.scss']
+    styleUrls: ['../application-page/application-page.component.scss', './application-submit.component.scss']
 })
 export class ApplicationSubmitComponent {
     @Output() submitEvent = new EventEmitter();

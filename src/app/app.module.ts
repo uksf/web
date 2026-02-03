@@ -71,7 +71,6 @@ import { PolicyPageComponent } from './Pages/policy-page/policy-page.component';
 import { InformationPageComponent } from './Pages/information-page/information-page.component';
 import { ModpackPageComponent } from './modpack/modpack-page/modpack-page.component';
 import { TocList } from './Components/toc-list/toc-list.component';
-import { CommentDisplayComponent } from './Components/comment-display/comment-display.component';
 import { ConnectTeamspeakModalComponent } from './Modals/connect-teamspeak-modal/connect-teamspeak-modal.component';
 import { ChangeFirstLastModalComponent } from './Modals/change-first-last-modal/change-first-last-modal.component';
 import { ChangePasswordModalComponent } from './Modals/change-password-modal/change-password-modal.component';
@@ -90,16 +89,6 @@ import { MessageModalComponent } from './Modals/message-modal/message-modal.comp
 import { ThemeEmitterComponent } from './Components/elements/theme-emitter/theme-emitter.component';
 import { AuthHttpInterceptor } from './Services/Authentication/auth-http-interceptor';
 import { CountryPickerService } from './Services/CountryPicker/country-picker.service';
-import { ApplicationPageComponent } from './Pages/application-page/application-page.component';
-import { ApplicationInfoComponent } from './Components/application/application-info/application-info.component';
-import { ApplicationIdentityComponent } from './Components/application/application-identity/application-identity.component';
-import { ApplicationEmailConfirmationComponent } from './Components/application/application-email-confirmation/application-email-confirmation.component';
-import { ApplicationCommunicationsComponent } from './Components/application/application-communications/application-communications.component';
-import { ApplicationDetailsComponent } from './Components/application/application-details/application-details.component';
-import { ApplicationSubmitComponent } from './Components/application/application-submit/application-submit.component';
-import { CountryImage, CountryName } from './Pipes/country.pipe';
-import { ApplicationEditComponent } from './Components/application/application-edit/application-edit.component';
-import { ConnectTeamspeakComponent } from './Components/teamspeak-connect/teamspeak-connect.component';
 import { ValidationReportModalComponent } from './Modals/multiple-message-modal/validation-report-modal.component';
 import { SignalRService } from './Services/signalr.service';
 import { TextInputModalComponent } from './Modals/text-input-modal/text-input-modal.component';
@@ -261,7 +250,6 @@ export function tokenGetter() {
         ConnectTeamspeakModalComponent,
         ChangeFirstLastModalComponent,
         ChangePasswordModalComponent,
-        CommentDisplayComponent,
         CreateOperationReportModalComponent,
         OprepPageComponent,
         CreateOperationOrderComponent,
@@ -271,17 +259,6 @@ export function tokenGetter() {
         ConfirmationModalComponent,
         TextInputModalComponent,
         ThemeEmitterComponent,
-        ApplicationPageComponent,
-        ApplicationInfoComponent,
-        ApplicationIdentityComponent,
-        ApplicationEmailConfirmationComponent,
-        ApplicationCommunicationsComponent,
-        ApplicationDetailsComponent,
-        ApplicationSubmitComponent,
-        ApplicationEditComponent,
-        CountryName,
-        CountryImage,
-        ConnectTeamspeakComponent,
         ValidationReportModalComponent,
         ZonedTime,
         ModpackGuideComponent,

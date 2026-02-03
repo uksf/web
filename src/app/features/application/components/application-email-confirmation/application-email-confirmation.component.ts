@@ -2,16 +2,16 @@ import { Component, Output, EventEmitter } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { HttpHeaders } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '../../../Services/url.service';
+import { UrlService } from '@app/Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
-import { MessageModalComponent } from 'app/Modals/message-modal/message-modal.component';
-import { PermissionsService } from 'app/Services/permissions.service';
-import { AccountService } from '../../../Services/account.service';
+import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
+import { PermissionsService } from '@app/Services/permissions.service';
+import { AccountService } from '@app/Services/account.service';
 
 @Component({
     selector: 'app-application-email-confirmation',
     templateUrl: './application-email-confirmation.component.html',
-    styleUrls: ['./application-email-confirmation.component.scss', '../../../Pages/application-page/application-page.component.scss']
+    styleUrls: ['./application-email-confirmation.component.scss', '../application-page/application-page.component.scss']
 })
 export class ApplicationEmailConfirmationComponent {
     @Output() confirmedEvent = new EventEmitter();
