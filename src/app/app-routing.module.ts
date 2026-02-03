@@ -7,7 +7,6 @@ import { RecruitmentPageComponent } from './recruitment/recruitment-page/recruit
 import { RecruitmentApplicationPageComponent } from './recruitment/recruitment-application-page/recruitment-application-page.component';
 import { LivePageComponent } from './Pages/live-page/live-page.component';
 import { AboutPageComponent } from './Pages/about-page/about-page.component';
-import { DocsPageComponent } from './Pages/docs-page/docs-page.component';
 import { RulesPageComponent } from './Pages/rules-page/rules-page.component';
 import { PolicyPageComponent } from './Pages/policy-page/policy-page.component';
 import { InformationPageComponent } from './Pages/information-page/information-page.component';
@@ -102,7 +101,8 @@ const appRoutes: Routes = [
     { path: 'information/about', component: AboutPageComponent },
     {
         path: 'information/docs',
-        component: DocsPageComponent,
+        loadChildren: () => import('./features/docs/docs.module').then(m => m.DocsModule),
+        canActivate: [NgxPermissionsGuard],
         data: {
             permissions: {
                 only: Permissions.MEMBER,
@@ -112,8 +112,7 @@ const appRoutes: Routes = [
                     default: '/home'
                 }
             }
-        },
-        canActivate: [NgxPermissionsGuard]
+        }
     },
     { path: 'units/roster', redirectTo: 'personnel/roster' },
     {

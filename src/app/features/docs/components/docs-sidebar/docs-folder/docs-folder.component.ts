@@ -1,14 +1,14 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { DocumentMetadata, FolderMetadata } from '../../../../Models/Documents';
-import { folderAnimations } from '../../../../Services/animations.service';
+import { DocumentMetadata, FolderMetadata } from '@app/Models/Documents';
+import { folderAnimations } from '@app/Services/animations.service';
 import { MatDialog } from '@angular/material/dialog';
-import { CreateDocumentModalComponent, DocumentModalData } from '../../../../Modals/docs/create-document-modal/create-document-modal.component';
-import { ConfirmationModalComponent, ConfirmationModalData } from '../../../../Modals/confirmation-modal/confirmation-modal.component';
+import { CreateDocumentModalComponent, DocumentModalData } from '../../../modals/create-document-modal/create-document-modal.component';
+import { ConfirmationModalComponent, ConfirmationModalData } from '@app/Modals/confirmation-modal/confirmation-modal.component';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '../../../../Services/url.service';
-import { CreateFolderModalComponent, FolderModalData } from '../../../../Modals/docs/create-folder-modal/create-folder-modal.component';
-import { UksfError } from '../../../../Models/Response';
-import { MessageModalComponent } from '../../../../Modals/message-modal/message-modal.component';
+import { UrlService } from '@app/Services/url.service';
+import { CreateFolderModalComponent, FolderModalData } from '../../../modals/create-folder-modal/create-folder-modal.component';
+import { UksfError } from '@app/Models/Response';
+import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
 
 @Component({
     selector: 'app-docs-folder',

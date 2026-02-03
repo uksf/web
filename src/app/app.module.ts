@@ -66,7 +66,6 @@ import { RecruitmentPageComponent } from './recruitment/recruitment-page/recruit
 import { RecruitmentApplicationPageComponent } from './recruitment/recruitment-application-page/recruitment-application-page.component';
 import { LivePageComponent } from './Pages/live-page/live-page.component';
 import { AboutPageComponent } from './Pages/about-page/about-page.component';
-import { DocsPageComponent } from './Pages/docs-page/docs-page.component';
 import { RulesPageComponent } from './Pages/rules-page/rules-page.component';
 import { PolicyPageComponent } from './Pages/policy-page/policy-page.component';
 import { InformationPageComponent } from './Pages/information-page/information-page.component';
@@ -139,13 +138,6 @@ import { CommandMembersComponent } from './Components/command/command-members/co
 import { CommandMemberCardComponent } from './Components/command/command-members/command-member-card/command-member-card.component';
 import { CommandUnitGroupCardComponent } from './Components/command/command-members/command-unit-group-card/command-unit-group-card.component';
 import { SignalRHubsService } from './Services/signalrHubs.service';
-import { DocsSidebarComponent } from './Components/docs/docs-sidebar/docs-sidebar.component';
-import { DocsContentComponent } from './Components/docs/docs-content/docs-content.component';
-import { DocsFolderComponent } from './Components/docs/docs-sidebar/docs-folder/docs-folder.component';
-import { CreateDocumentModalComponent } from './Modals/docs/create-document-modal/create-document-modal.component';
-import { DocsPermissionsComponent } from './Components/docs/docs-permissions/docs-permissions.component';
-import { CreateFolderModalComponent } from './Modals/docs/create-folder-modal/create-folder-modal.component';
-import { DocsDocumentComponent } from './Components/docs/docs-sidebar/docs-document/docs-document.component';
 import { QuillModule } from 'ngx-quill';
 import { CommandTrainingComponent } from './Components/command/command-training/command-training.component';
 import { AddTrainingModalComponent } from './Modals/command/add-training-modal/add-training-modal.component';
@@ -283,7 +275,6 @@ export function tokenGetter() {
         RecruitmentApplicationPageComponent,
         LivePageComponent,
         AboutPageComponent,
-        DocsPageComponent,
         RulesPageComponent,
         PolicyPageComponent,
         InformationPageComponent,
@@ -356,13 +347,6 @@ export function tokenGetter() {
         CommandMembersComponent,
         CommandMemberCardComponent,
         CommandUnitGroupCardComponent,
-        DocsSidebarComponent,
-        DocsContentComponent,
-        DocsFolderComponent,
-        DocsDocumentComponent,
-        CreateDocumentModalComponent,
-        CreateFolderModalComponent,
-        DocsPermissionsComponent,
         AnsiToHtmlPipe
     ],
     bootstrap: [AppComponent]

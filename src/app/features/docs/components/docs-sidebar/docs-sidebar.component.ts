@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FolderMetadata } from '../../../Models/Documents';
+import { FolderMetadata } from '@app/Models/Documents';
 import { MatDialog } from '@angular/material/dialog';
-import { CreateFolderModalComponent } from '../../../Modals/docs/create-folder-modal/create-folder-modal.component';
-import { collapseAnimations } from '../../../Services/animations.service';
+import { CreateFolderModalComponent } from '../../modals/create-folder-modal/create-folder-modal.component';
+import { collapseAnimations } from '@app/Services/animations.service';
 
 @Component({
     selector: 'app-docs-sidebar',

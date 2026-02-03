@@ -1,13 +1,13 @@
 import { Component, forwardRef, Input, OnInit, Type, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '../../../Services/url.service';
+import { UrlService } from '@app/Services/url.service';
 import { BehaviorSubject, forkJoin } from 'rxjs';
-import { IDropdownElement, mapFromElement } from '../../elements/dropdown-base/dropdown-base.component';
-import { Rank } from '../../../Models/Rank';
-import { Unit } from '../../../Models/Units';
-import { BasicAccount } from '../../../Models/Account';
+import { IDropdownElement, mapFromElement } from '@app/Components/elements/dropdown-base/dropdown-base.component';
+import { Rank } from '@app/Models/Rank';
+import { Unit } from '@app/Models/Units';
+import { BasicAccount } from '@app/Models/Account';
 import { ControlContainer, ControlValueAccessor, NG_VALUE_ACCESSOR, NgForm, UntypedFormGroup } from '@angular/forms';
-import { DocumentPermission } from '../../../Models/Documents';
+import { DocumentPermission } from '@app/Models/Documents';
 import { MatExpansionPanel } from '@angular/material/expansion';
 
 export type PermissionsType = 'viewers' | 'collaborators';

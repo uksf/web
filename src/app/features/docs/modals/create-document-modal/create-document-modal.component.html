@@ -31,7 +31,6 @@
                 name="formCollaboratorPermissions"
             ></app-docs-permissions>
         </mat-accordion>
-        <app-model-value-debug [model]="model"></app-model-value-debug>
         <div class="button-container">
             <app-flex-filler></app-flex-filler>
             <app-button (clicked)="submit()" *ngIf="!initialData" [disabled]="!form.valid" [pending]="pending">Create </app-button>

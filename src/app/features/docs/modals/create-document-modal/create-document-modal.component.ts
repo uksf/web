@@ -1,18 +1,18 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
-import { CreateDocumentRequest, DocumentPermissions, FolderMetadata } from '../../../Models/Documents';
+import { CreateDocumentRequest, DocumentPermissions, FolderMetadata } from '@app/Models/Documents';
 import { HttpClient } from '@angular/common/http';
-import { MessageModalComponent } from '../../message-modal/message-modal.component';
+import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
 import { NgForm } from '@angular/forms';
-import { UrlService } from '../../../Services/url.service';
-import { InstantErrorStateMatcher } from '../../../Services/formhelper.service';
-import { IDropdownElement, mapFromElement } from '../../../Components/elements/dropdown-base/dropdown-base.component';
-import { Unit } from '../../../Models/Units';
-import { Rank } from '../../../Models/Rank';
-import { BasicAccount } from '../../../Models/Account';
+import { UrlService } from '@app/Services/url.service';
+import { InstantErrorStateMatcher } from '@app/Services/formhelper.service';
+import { IDropdownElement, mapFromElement } from '@app/Components/elements/dropdown-base/dropdown-base.component';
+import { Unit } from '@app/Models/Units';
+import { Rank } from '@app/Models/Rank';
+import { BasicAccount } from '@app/Models/Account';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { defaultHeaders } from '../../../Services/constants';
-import { AccountService } from '../../../Services/account.service';
+import { defaultHeaders } from '@app/Services/constants';
+import { AccountService } from '@app/Services/account.service';
 
 @Component({
     selector: 'app-create-document-modal',

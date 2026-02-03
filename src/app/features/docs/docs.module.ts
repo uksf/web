@@ -1,0 +1,41 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { SharedModule } from '@shared/shared.module';
+import { DocsRoutingModule } from './docs-routing.module';
+import { DocsPageComponent } from './components/docs-page/docs-page.component';
+import { DocsSidebarComponent } from './components/docs-sidebar/docs-sidebar.component';
+import { DocsFolderComponent } from './components/docs-sidebar/docs-folder/docs-folder.component';
+import { DocsDocumentComponent } from './components/docs-sidebar/docs-document/docs-document.component';
+import { DocsContentComponent } from './components/docs-content/docs-content.component';
+import { DocsPermissionsComponent } from './components/docs-permissions/docs-permissions.component';
+import { CreateDocumentModalComponent } from './modals/create-document-modal/create-document-modal.component';
+import { CreateFolderModalComponent } from './modals/create-folder-modal/create-folder-modal.component';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTableModule } from '@angular/material/table';
+import { MatDividerModule } from '@angular/material/divider';
+import { QuillModule } from 'ngx-quill';
+
+@NgModule({
+    declarations: [
+        DocsPageComponent,
+        DocsSidebarComponent,
+        DocsFolderComponent,
+        DocsDocumentComponent,
+        DocsContentComponent,
+        DocsPermissionsComponent,
+        CreateDocumentModalComponent,
+        CreateFolderModalComponent,
+    ],
+    imports: [
+        CommonModule,
+        SharedModule,
+        DocsRoutingModule,
+        MatExpansionModule,
+        MatTabsModule,
+        MatTableModule,
+        MatDividerModule,
+        QuillModule,
+    ],
+})
+export class DocsModule {}
