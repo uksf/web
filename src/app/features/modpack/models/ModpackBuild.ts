@@ -1,7 +1,7 @@
 import { ModpackBuildStep } from './ModpackBuildStep';
-import { GithubCommit } from '../../Models/GithubCommit';
+import { GithubCommit } from '@app/Models/GithubCommit';
 import { ModpackBuildResult } from './ModpackBuildResult';
-import { GameEnvironment } from '../../Models/GameEnvironment';
+import { GameEnvironment } from '@app/Models/GameEnvironment';
 
 export interface ModpackBuild {
     id: string;

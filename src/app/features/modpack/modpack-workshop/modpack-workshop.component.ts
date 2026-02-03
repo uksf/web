@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '../../Services/url.service';
-import { ConnectionContainer, SignalRService } from '../../Services/signalr.service';
+import { UrlService } from '@app/Services/url.service';
+import { ConnectionContainer, SignalRService } from '@app/Services/signalr.service';
 import { InstallWorkshopModData, WorkshopMod, WorkshopModUpdatedDate } from '../models/WorkshopMod';
-import { MessageModalComponent } from '../../Modals/message-modal/message-modal.component';
+import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { InstallWorkshopModModalComponent } from '../install-workshop-mod-modal/install-workshop-mod-modal.component';
 import { WorkshopModInterventionModalComponent } from '../workshop-mod-intervention-modal/workshop-mod-intervention-modal.component';
@@ -11,7 +11,7 @@ import { WorkshopModInterventionModalComponent } from '../workshop-mod-intervent
 @Component({
     selector: 'app-modpack-workshop',
     templateUrl: './modpack-workshop.component.html',
-    styleUrls: ['../../modpack/modpack-page/modpack-page.component.scss', './modpack-workshop.component.scss', './modpack-workshop.component.scss-theme.scss']
+    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-workshop.component.scss', './modpack-workshop.component.scss-theme.scss']
 })
 export class ModpackWorkshopComponent implements OnInit {
     private hubConnection: ConnectionContainer;

@@ -1,16 +1,16 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Permissions } from '../../Services/permissions';
-import { PermissionsService } from '../../Services/permissions.service';
-import { GameEnvironment } from '../../Models/GameEnvironment';
-import { ThemeEmitterComponent } from '../../Components/elements/theme-emitter/theme-emitter.component';
+import { Permissions } from '@app/Services/permissions';
+import { PermissionsService } from '@app/Services/permissions.service';
+import { GameEnvironment } from '@app/Models/GameEnvironment';
+import { ThemeEmitterComponent } from '@app/Components/elements/theme-emitter/theme-emitter.component';
 import { ModpackBuild } from '../models/ModpackBuild';
 import { ModpackBuildResult } from '../models/ModpackBuildResult';
-import { ConnectionContainer, SignalRService } from '../../Services/signalr.service';
+import { ConnectionContainer, SignalRService } from '@app/Services/signalr.service';
 import { ModpackBuildProcessService } from '../modpackBuildProcess.service';
 import { ModpackBuildStep } from '../models/ModpackBuildStep';
-import { nextFrame } from '../../Services/helper.service';
+import { nextFrame } from '@app/Services/helper.service';
 
 @Component({
     selector: 'app-modpack-builds-steps',

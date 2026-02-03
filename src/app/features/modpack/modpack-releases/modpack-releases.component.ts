@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MarkdownService } from 'ngx-markdown';
-import { PermissionsService } from 'app/Services/permissions.service';
-import { Permissions } from 'app/Services/permissions';
+import { PermissionsService } from '@app/Services/permissions.service';
+import { Permissions } from '@app/Services/permissions';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModpackReleaseService } from '../modpackRelease.service';
 import { ModpackRelease } from '../models/ModpackRelease';
@@ -9,7 +9,7 @@ import { ModpackRelease } from '../models/ModpackRelease';
 @Component({
     selector: 'app-modpack-releases',
     templateUrl: './modpack-releases.component.html',
-    styleUrls: ['../../modpack/modpack-page/modpack-page.component.scss', './modpack-releases.component.scss', './modpack-releases.component.scss-theme.scss']
+    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-releases.component.scss', './modpack-releases.component.scss-theme.scss']
 })
 export class ModpackReleasesComponent implements OnInit {
     selectedReleaseVersion: string = '';

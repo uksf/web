@@ -67,7 +67,6 @@ import { AboutPageComponent } from './Pages/about-page/about-page.component';
 import { RulesPageComponent } from './Pages/rules-page/rules-page.component';
 import { PolicyPageComponent } from './Pages/policy-page/policy-page.component';
 import { InformationPageComponent } from './Pages/information-page/information-page.component';
-import { ModpackPageComponent } from './modpack/modpack-page/modpack-page.component';
 import { TocList } from './Components/toc-list/toc-list.component';
 import { ConnectTeamspeakModalComponent } from './Modals/connect-teamspeak-modal/connect-teamspeak-modal.component';
 import { ChangeFirstLastModalComponent } from './Modals/change-first-last-modal/change-first-last-modal.component';
@@ -89,14 +88,12 @@ import { CountryPickerService } from './Services/CountryPicker/country-picker.se
 import { ValidationReportModalComponent } from './Modals/multiple-message-modal/validation-report-modal.component';
 import { SignalRService } from './Services/signalr.service';
 import { TextInputModalComponent } from './Modals/text-input-modal/text-input-modal.component';
-import { ModpackBuildService } from './modpack/modpackBuild.service';
-import { ModpackRcService } from './modpack/modpackRc.service';
+import { ModpackBuildService } from './features/modpack/modpackBuild.service';
+import { ModpackRcService } from './features/modpack/modpackRc.service';
 import { DisplayNameService } from './Services/displayName.service';
-import { ModpackBuildProcessService } from './modpack/modpackBuildProcess.service';
-import { NewModpackBuildModalComponent } from './modpack/new-modpack-build-modal/new-modpack-build-modal.component';
+import { ModpackBuildProcessService } from './features/modpack/modpackBuildProcess.service';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { OrganizationChartModule } from 'primeng/organizationchart';
-import { TimeAgoPipe } from './Pipes/time.pipe';
 import { CharacterBlockDirective } from './Directives/character-block.directive';
 import { RequestPasswordResetComponent } from './Components/login/request-password-reset/request-password-reset.component';
 import { LoginComponent } from './Components/login/login/login.component';
@@ -106,18 +103,8 @@ import { ButtonHiddenSubmitComponent } from './Components/elements/button-submit
 import { AppSettingsService } from './Services/appSettingsService.service';
 import { SignalRHubsService } from './Services/signalrHubs.service';
 import { QuillModule } from 'ngx-quill';
-import { ModpackGuideComponent } from './modpack/modpack-guide/modpack-guide.component';
-import { ModpackReleasesComponent } from './modpack/modpack-releases/modpack-releases.component';
-import { ModpackBuildsDevComponent } from './modpack/modpack-builds-dev/modpack-builds-dev.component';
-import { ModpackBuildsRcComponent } from './modpack/modpack-builds-rc/modpack-builds-rc.component';
-import { ModpackBuildsStepsComponent } from './modpack/modpack-builds-steps/modpack-builds-steps.component';
-import { NewModpackReleaseModalComponent } from './modpack/new-modpack-release-modal/new-modpack-release-modal.component';
-import { ModpackReleaseService } from './modpack/modpackRelease.service';
-import { AnsiToHtmlPipe } from './Pipes/AnsiToHtml.pipe';
+import { ModpackReleaseService } from './features/modpack/modpackRelease.service';
 import { DisplayName } from './Pipes/displayName.pipe';
-import { ModpackWorkshopComponent } from './modpack/modpack-workshop/modpack-workshop.component';
-import { InstallWorkshopModModalComponent } from './modpack/install-workshop-mod-modal/install-workshop-mod-modal.component';
-import { WorkshopModInterventionModalComponent } from './modpack/workshop-mod-intervention-modal/workshop-mod-intervention-modal.component';
 
 export function initApp(appSettingsService: AppSettingsService, injector: Injector, countryPickerService: CountryPickerService) {
     return () => {
@@ -240,7 +227,6 @@ export function tokenGetter() {
         RulesPageComponent,
         PolicyPageComponent,
         InformationPageComponent,
-        ModpackPageComponent,
         TocList,
         ConnectTeamspeakModalComponent,
         ChangeFirstLastModalComponent,
@@ -254,24 +240,12 @@ export function tokenGetter() {
         ConfirmationModalComponent,
         TextInputModalComponent,
         ValidationReportModalComponent,
-        ModpackGuideComponent,
-        ModpackReleasesComponent,
-        ModpackBuildsDevComponent,
-        ModpackBuildsRcComponent,
-        ModpackBuildsStepsComponent,
-        NewModpackBuildModalComponent,
-        NewModpackReleaseModalComponent,
-        ModpackWorkshopComponent,
-        InstallWorkshopModModalComponent,
-        WorkshopModInterventionModalComponent,
-        TimeAgoPipe,
         CharacterBlockDirective,
         MustMatchDirective,
         LoginComponent,
         RequestPasswordResetComponent,
         PasswordResetComponent,
-        ButtonHiddenSubmitComponent,
-        AnsiToHtmlPipe
+        ButtonHiddenSubmitComponent
     ],
     bootstrap: [AppComponent]
 })

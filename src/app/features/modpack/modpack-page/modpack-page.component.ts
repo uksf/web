@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { PermissionsService } from '../../Services/permissions.service';
-import { Permissions } from '../../Services/permissions';
+import { PermissionsService } from '@app/Services/permissions.service';
+import { Permissions } from '@app/Services/permissions';
 
 @Component({
     selector: 'app-modpack-page',

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Inject, Output } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { InstantErrorStateMatcher } from '../../Services/formhelper.service';
+import { InstantErrorStateMatcher } from '@app/Services/formhelper.service';
 import { ModpackRelease } from '../models/ModpackRelease';
 import { ModpackReleaseService } from '../modpackRelease.service';
 

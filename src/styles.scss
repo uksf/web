@@ -21,7 +21,7 @@
 @import 'app/Pages/home-page/home-page.component.scss-theme.scss';
 @import 'app/Pages/information-page/information-page.component.scss-theme.scss';
 @import 'app/Pages/login-page/login-page.component.scss-theme.scss';
-@import 'app/modpack/modpack-page/modpack-page.component.scss-theme.scss';
+@import 'app/features/modpack/modpack-page/modpack-page.component.scss-theme.scss';
 @import 'app/features/application/components/application-page/application-page.component.scss-theme.scss';
 @import 'app/features/operations/components/operations-page/operations-page.component.scss-theme.scss';
 @import 'app/features/personnel/components/personnel-page/personnel-page.component.scss-theme.scss';
@@ -68,15 +68,15 @@
 @import 'app/Modals/multiple-message-modal/validation-report-modal.scss-theme';
 
 // Modpack
-@import 'app/modpack/modpack-builds-dev/modpack-builds-dev.component.scss-theme.scss';
-@import 'app/modpack/modpack-builds-rc/modpack-builds-rc.component.scss-theme.scss';
-@import 'app/modpack/modpack-builds-steps/modpack-builds-steps.component.scss-theme.scss';
-@import 'app/modpack/modpack-guide/modpack-guide.component.scss-theme.scss';
-@import 'app/modpack/modpack-releases/modpack-releases.component.scss-theme.scss';
-@import 'app/modpack/modpack-workshop/modpack-workshop.component.scss-theme.scss';
-@import 'app/modpack/new-modpack-release-modal/new-modpack-release-modal.component.scss-theme.scss';
-@import 'app/modpack/install-workshop-mod-modal/install-workshop-mod-modal.component.scss-theme';
-@import 'app/modpack/workshop-mod-intervention-modal/workshop-mod-intervention-modal.component.scss-theme';
+@import 'app/features/modpack/modpack-builds-dev/modpack-builds-dev.component.scss-theme.scss';
+@import 'app/features/modpack/modpack-builds-rc/modpack-builds-rc.component.scss-theme.scss';
+@import 'app/features/modpack/modpack-builds-steps/modpack-builds-steps.component.scss-theme.scss';
+@import 'app/features/modpack/modpack-guide/modpack-guide.component.scss-theme.scss';
+@import 'app/features/modpack/modpack-releases/modpack-releases.component.scss-theme.scss';
+@import 'app/features/modpack/modpack-workshop/modpack-workshop.component.scss-theme.scss';
+@import 'app/features/modpack/new-modpack-release-modal/new-modpack-release-modal.component.scss-theme.scss';
+@import 'app/features/modpack/install-workshop-mod-modal/install-workshop-mod-modal.component.scss-theme';
+@import 'app/features/modpack/workshop-mod-intervention-modal/workshop-mod-intervention-modal.component.scss-theme';
 
 // Add components themes
 @mixin custom-components-theme($theme) {

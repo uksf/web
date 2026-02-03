@@ -1,11 +1,11 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { ConnectionContainer, SignalRService } from '../Services/signalr.service';
+import { ConnectionContainer, SignalRService } from '@app/Services/signalr.service';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '../Services/url.service';
+import { UrlService } from '@app/Services/url.service';
 import { ModpackRelease } from './models/ModpackRelease';
-import { MessageModalComponent } from '../Modals/message-modal/message-modal.component';
+import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
 import { NewModpackReleaseModalComponent } from './new-modpack-release-modal/new-modpack-release-modal.component';
-import { UksfError } from '../Models/Response';
+import { UksfError } from '@app/Models/Response';
 import { MatDialog } from '@angular/material/dialog';
 
 @Injectable()

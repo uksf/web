@@ -11,11 +11,6 @@ import { InformationPageComponent } from './Pages/information-page/information-p
 import { NgxPermissionsGuard } from 'ngx-permissions';
 import { HttpClient } from '@angular/common/http';
 import { Permissions } from './Services/permissions';
-import { ModpackGuideComponent } from './modpack/modpack-guide/modpack-guide.component';
-import { ModpackReleasesComponent } from './modpack/modpack-releases/modpack-releases.component';
-import { ModpackBuildsDevComponent } from './modpack/modpack-builds-dev/modpack-builds-dev.component';
-import { ModpackBuildsRcComponent } from './modpack/modpack-builds-rc/modpack-builds-rc.component';
-import { ModpackWorkshopComponent } from './modpack/modpack-workshop/modpack-workshop.component';
 
 const appRoutes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -156,92 +151,7 @@ const appRoutes: Routes = [
     },
     {
         path: 'modpack',
-        redirectTo: 'modpack/guide',
-        data: {
-            permissions: {
-                except: [Permissions.UNLOGGED, Permissions.UNCONFIRMED],
-                redirectTo: {
-                    UNLOGGED: loginRedirect,
-                    UNCONFIRMED: '/home',
-                    default: '/home'
-                }
-            }
-        }
-    },
-    {
-        path: 'modpack/guide',
-        component: ModpackGuideComponent,
-        data: {
-            permissions: {
-                except: [Permissions.UNLOGGED, Permissions.UNCONFIRMED],
-                redirectTo: {
-                    UNLOGGED: loginRedirect,
-                    UNCONFIRMED: '/home',
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'modpack/releases',
-        component: ModpackReleasesComponent,
-        data: {
-            permissions: {
-                only: Permissions.MEMBER,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'modpack/builds-dev',
-        component: ModpackBuildsDevComponent,
-        data: {
-            permissions: {
-                only: Permissions.MEMBER,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'modpack/builds-rc',
-        component: ModpackBuildsRcComponent,
-        data: {
-            permissions: {
-                only: Permissions.MEMBER,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'modpack/workshop',
-        component: ModpackWorkshopComponent,
-        data: {
-            permissions: {
-                only: Permissions.MEMBER,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
+        loadChildren: () => import('./features/modpack/modpack.module').then(m => m.ModpackModule)
     },
     { path: 'policy', component: PolicyPageComponent },
     { path: 'rules', component: RulesPageComponent },

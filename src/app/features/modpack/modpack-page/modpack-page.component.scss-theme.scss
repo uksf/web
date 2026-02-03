@@ -1,5 +1,5 @@
-@use '../../../../node_modules/@angular/material/index' as mat;
-@import '../../../../node_modules/@angular/material/theming';
+@use '../../../../../node_modules/@angular/material/index' as mat;
+@import '../../../../../node_modules/@angular/material/theming';
 
 @mixin modpack-page-component-theme($theme) {
     $primary: map-get($theme, primary);

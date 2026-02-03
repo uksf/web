@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MarkdownService } from 'ngx-markdown';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PermissionsService } from '../../Services/permissions.service';
-import { ThemeEmitterComponent } from '../../Components/elements/theme-emitter/theme-emitter.component';
+import { PermissionsService } from '@app/Services/permissions.service';
+import { ThemeEmitterComponent } from '@app/Components/elements/theme-emitter/theme-emitter.component';
 import { ModpackBuildResult } from '../models/ModpackBuildResult';
 import { ModpackBuildService } from '../modpackBuild.service';
 import { ModpackBuildProcessService } from '../modpackBuildProcess.service';
