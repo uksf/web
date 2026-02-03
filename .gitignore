@@ -39,6 +39,15 @@ testem.log
 /e2e/*.js
 /e2e/*.map
 
+# Playwright
+/playwright-report/
+/playwright/.cache/
+/test-results/
+
+# Test credentials - NEVER commit
+.env.test
+playwright/.auth/
+
 # System Files
 .DS_Store
 Thumbs.db
