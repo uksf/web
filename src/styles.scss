@@ -46,12 +46,12 @@
 @import 'app/Components/elements/loading-placeholder/loading-placeholder.component.scss-theme.scss';
 @import 'app/Components/elements/selection-list/selection-list.component.scss-theme';
 @import 'app/Components/elements/theme-emitter/theme-emitter.component.scss-theme.scss';
-@import 'app/Components/command/command-requests/command-request.component.scss-theme.scss';
-@import 'app/Components/command/command-members/command-members.component.scss-theme.scss';
-@import 'app/Components/command/command-members/command-member-card/command-member-card.component.scss-theme.scss';
-@import 'app/Components/command/command-ranks/command-ranks.component.scss-theme.scss';
-@import 'app/Components/command/command-roles/command-roles.component.scss-theme.scss';
-@import 'app/Components/command/command-units/command-units.component.scss-theme.scss';
+@import 'app/features/command/components/command-requests/command-request.component.scss-theme.scss';
+@import 'app/features/command/components/command-members/command-members.component.scss-theme.scss';
+@import 'app/features/command/components/command-members/command-member-card/command-member-card.component.scss-theme.scss';
+@import 'app/features/command/components/command-ranks/command-ranks.component.scss-theme.scss';
+@import 'app/features/command/components/command-roles/command-roles.component.scss-theme.scss';
+@import 'app/features/command/components/command-units/command-units.component.scss-theme.scss';
 @import 'app/features/operations/components/operations-servers/operations-servers.component.scss-theme.scss';
 @import 'app/features/personnel/components/personnel-discharges/personnel-discharges.component.scss-theme.scss';
 @import 'app/features/personnel/components/personnel-loas-list/personnel-loas-list.component.scss-theme.scss';
@@ -61,9 +61,9 @@
 @import 'app/features/units/components/units-orbat-secondary/units-orbat-secondary.component.scss-theme.scss';
 
 // Modals
-@import 'app/Modals/command/add-unit-modal/add-unit-modal.component.scss-theme.scss';
+@import 'app/features/command/modals/add-unit-modal/add-unit-modal.component.scss-theme.scss';
 @import 'app/features/operations/modals/edit-server-mods-modal/edit-server-mods-modal.component.scss-theme.scss';
-@import 'app/Modals/command/request-loa-modal/request-loa-modal.component.scss-theme.scss';
+@import 'app/features/command/modals/request-loa-modal/request-loa-modal.component.scss-theme.scss';
 @import 'app/Modals/message-modal/message-model.component.scss-theme';
 @import 'app/Modals/multiple-message-modal/validation-report-modal.scss-theme';
 

@@ -11,15 +11,9 @@ import { RulesPageComponent } from './Pages/rules-page/rules-page.component';
 import { PolicyPageComponent } from './Pages/policy-page/policy-page.component';
 import { InformationPageComponent } from './Pages/information-page/information-page.component';
 import { NgxPermissionsGuard } from 'ngx-permissions';
-import { CommandUnitsComponent } from './Components/command/command-units/command-units.component';
-import { CommandRanksComponent } from './Components/command/command-ranks/command-ranks.component';
-import { CommandRolesComponent } from './Components/command/command-roles/command-roles.component';
-import { CommandRequestsComponent } from './Components/command/command-requests/command-requests.component';
 import { HttpClient } from '@angular/common/http';
 import { Permissions } from './Services/permissions';
 import { ApplicationPageComponent } from './Pages/application-page/application-page.component';
-import { CommandMembersComponent } from './Components/command/command-members/command-members.component';
-import { CommandTrainingComponent } from './Components/command/command-training/command-training.component';
 import { ModpackGuideComponent } from './modpack/modpack-guide/modpack-guide.component';
 import { ModpackReleasesComponent } from './modpack/modpack-releases/modpack-releases.component';
 import { ModpackBuildsDevComponent } from './modpack/modpack-builds-dev/modpack-builds-dev.component';
@@ -139,7 +133,8 @@ const appRoutes: Routes = [
     },
     {
         path: 'command',
-        redirectTo: 'command/requests',
+        loadChildren: () => import('./features/command/command.module').then(m => m.CommandModule),
+        canActivate: [NgxPermissionsGuard],
         data: {
             permissions: {
                 only: Permissions.COMMAND,
@@ -151,102 +146,6 @@ const appRoutes: Routes = [
                 }
             }
         }
-    },
-    {
-        path: 'command/requests',
-        component: CommandRequestsComponent,
-        data: {
-            permissions: {
-                only: Permissions.COMMAND,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    COMMAND: '/home',
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'command/members',
-        component: CommandMembersComponent,
-        data: {
-            permissions: {
-                only: Permissions.COMMAND,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    COMMAND: '/home',
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'command/units',
-        component: CommandUnitsComponent,
-        data: {
-            permissions: {
-                only: Permissions.COMMAND,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    COMMAND: '/home',
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'command/ranks',
-        component: CommandRanksComponent,
-        data: {
-            permissions: {
-                only: Permissions.COMMAND,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    COMMAND: '/home',
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'command/roles',
-        component: CommandRolesComponent,
-        data: {
-            permissions: {
-                only: Permissions.COMMAND,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    COMMAND: '/home',
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'command/training',
-        component: CommandTrainingComponent,
-        data: {
-            permissions: {
-                only: Permissions.COMMAND,
-                except: Permissions.UNLOGGED,
-                redirectTo: {
-                    COMMAND: '/home',
-                    UNLOGGED: loginRedirect,
-                    default: '/home'
-                }
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'operations',

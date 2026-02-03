@@ -37,6 +37,8 @@ import { DropdownBaseComponent } from '@app/Components/elements/dropdown-base/dr
 import { SelectionListComponent } from '@app/Components/elements/selection-list/selection-list.component';
 import { MaintenanceComponent } from '@app/Components/elements/maintenance/maintenance.component';
 import { FileDropComponent } from '@app/Components/elements/file-drop/file-drop.component';
+import { AutofocusStopComponent } from '@app/Components/elements/autofocus-stop/autofocus-stop.component';
+import { ModelValueDebugComponent, ReactiveFormValueDebugComponent, TemplateFormValueDebugComponent } from '@app/Components/elements/form-value-debug/form-value-debug.component';
 
 // Shared Directives
 import { MustSelectFromDropdownValidatorDirective } from '@app/Directives/dropdown-validator.directive';
@@ -92,6 +94,10 @@ const SHARED_COMPONENTS = [
   SelectionListComponent,
   MaintenanceComponent,
   FileDropComponent,
+  AutofocusStopComponent,
+  ModelValueDebugComponent,
+  ReactiveFormValueDebugComponent,
+  TemplateFormValueDebugComponent,
 ];
 
 // Shared pipes (to be populated during migration)

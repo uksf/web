@@ -70,10 +70,8 @@ import { RulesPageComponent } from './Pages/rules-page/rules-page.component';
 import { PolicyPageComponent } from './Pages/policy-page/policy-page.component';
 import { InformationPageComponent } from './Pages/information-page/information-page.component';
 import { ModpackPageComponent } from './modpack/modpack-page/modpack-page.component';
-import { CommandPageComponent } from './Pages/command-page/command-page.component';
 import { TocList } from './Components/toc-list/toc-list.component';
 import { CommentDisplayComponent } from './Components/comment-display/comment-display.component';
-import { RequestRankModalComponent } from './Modals/command/request-rank-modal/request-rank-modal.component';
 import { ConnectTeamspeakModalComponent } from './Modals/connect-teamspeak-modal/connect-teamspeak-modal.component';
 import { ChangeFirstLastModalComponent } from './Modals/change-first-last-modal/change-first-last-modal.component';
 import { ChangePasswordModalComponent } from './Modals/change-password-modal/change-password-modal.component';
@@ -85,18 +83,6 @@ import { OpordPageComponent } from './Pages/opord-page/opord-page.component';
 import { AccountService } from './Services/account.service';
 import { PermissionsService } from './Services/permissions.service';
 import { SessionService } from './Services/Authentication/session.service';
-import { CommandUnitsComponent } from './Components/command/command-units/command-units.component';
-import { CommandRolesComponent } from './Components/command/command-roles/command-roles.component';
-import { CommandRanksComponent } from './Components/command/command-ranks/command-ranks.component';
-import { AddRankModalComponent } from './Modals/command/add-rank-modal/add-rank-modal.component';
-import { RequestLoaModalComponent } from './Modals/command/request-loa-modal/request-loa-modal.component';
-import { RequestDischargeModalComponent } from './Modals/command/request-discharge-modal/request-discharge-modal.component';
-import { RequestRoleModalComponent } from './Modals/command/request-role-modal/request-role-modal.component';
-import { RequestTransferModalComponent } from './Modals/command/request-transfer-modal/request-transfer-modal.component';
-import { RequestChainOfCommandPositionModalComponent } from './Modals/command/request-chain-of-command-position-modal/request-chain-of-command-position-modal.component';
-import { CommandRequestsComponent } from './Components/command/command-requests/command-requests.component';
-import { AddUnitModalComponent } from './Modals/command/add-unit-modal/add-unit-modal.component';
-import { RequestUnitRemovalModalComponent } from './Modals/command/request-unit-removal-modal/request-unit-removal-modal.component';
 import { ConfirmationModalComponent } from './Modals/confirmation-modal/confirmation-modal.component';
 import { UrlSerializer } from '@angular/router';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -132,16 +118,8 @@ import { PasswordResetComponent } from './Components/login/reset-password/passwo
 import { MustMatchDirective } from './Directives/must-match.directive';
 import { ButtonHiddenSubmitComponent } from './Components/elements/button-submit/button-hidden-submit.component';
 import { AppSettingsService } from './Services/appSettingsService.service';
-import { AutofocusStopComponent } from './Components/elements/autofocus-stop/autofocus-stop.component';
-import { ModelValueDebugComponent, ReactiveFormValueDebugComponent, TemplateFormValueDebugComponent } from './Components/elements/form-value-debug/form-value-debug.component';
-import { CommandMembersComponent } from './Components/command/command-members/command-members.component';
-import { CommandMemberCardComponent } from './Components/command/command-members/command-member-card/command-member-card.component';
-import { CommandUnitGroupCardComponent } from './Components/command/command-members/command-unit-group-card/command-unit-group-card.component';
 import { SignalRHubsService } from './Services/signalrHubs.service';
 import { QuillModule } from 'ngx-quill';
-import { CommandTrainingComponent } from './Components/command/command-training/command-training.component';
-import { AddTrainingModalComponent } from './Modals/command/add-training-modal/add-training-modal.component';
-import { EditMemberTrainingModalComponent } from './Modals/command/edit-member-training-modal/edit-member-training-modal.component';
 import { ModpackGuideComponent } from './modpack/modpack-guide/modpack-guide.component';
 import { ModpackReleasesComponent } from './modpack/modpack-releases/modpack-releases.component';
 import { ModpackBuildsDevComponent } from './modpack/modpack-builds-dev/modpack-builds-dev.component';
@@ -279,14 +257,7 @@ export function tokenGetter() {
         PolicyPageComponent,
         InformationPageComponent,
         ModpackPageComponent,
-        CommandPageComponent,
         TocList,
-        RequestRankModalComponent,
-        RequestRoleModalComponent,
-        RequestLoaModalComponent,
-        RequestDischargeModalComponent,
-        RequestChainOfCommandPositionModalComponent,
-        RequestTransferModalComponent,
         ConnectTeamspeakModalComponent,
         ChangeFirstLastModalComponent,
         ChangePasswordModalComponent,
@@ -297,16 +268,6 @@ export function tokenGetter() {
         NotificationsComponent,
         MessageModalComponent,
         OpordPageComponent,
-        CommandRequestsComponent,
-        CommandUnitsComponent,
-        CommandRolesComponent,
-        CommandRanksComponent,
-        CommandTrainingComponent,
-        AddRankModalComponent,
-        AddUnitModalComponent,
-        AddTrainingModalComponent,
-        EditMemberTrainingModalComponent,
-        RequestUnitRemovalModalComponent,
         ConfirmationModalComponent,
         TextInputModalComponent,
         ThemeEmitterComponent,
@@ -340,13 +301,6 @@ export function tokenGetter() {
         RequestPasswordResetComponent,
         PasswordResetComponent,
         ButtonHiddenSubmitComponent,
-        AutofocusStopComponent,
-        ReactiveFormValueDebugComponent,
-        TemplateFormValueDebugComponent,
-        ModelValueDebugComponent,
-        CommandMembersComponent,
-        CommandMemberCardComponent,
-        CommandUnitGroupCardComponent,
         AnsiToHtmlPipe
     ],
     bootstrap: [AppComponent]
