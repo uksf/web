@@ -9,9 +9,16 @@ export interface WorkshopMod {
     modpackVersionFirstAdded: string;
     modpackVersionLastUpdated: string;
     rootMod: boolean;
+    folderName: string;
     pbos: string[];
 
     updatedDate?: string;
+}
+
+export interface InstallWorkshopModData {
+    steamId: string;
+    rootMod: boolean;
+    folderName?: string;
 }
 
 export interface WorkshopModUpdatedDate {

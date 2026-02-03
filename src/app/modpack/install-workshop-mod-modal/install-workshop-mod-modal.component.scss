@@ -2,7 +2,7 @@
     overflow: unset;
     display: flex;
     flex-direction: column;
-    min-width: 600px;
+    min-width: 700px;
 
     .form-container {
         display: flex;
@@ -11,6 +11,11 @@
 
         .normal {
             width: 100%;
+        }
+
+        .root-mod {
+            display: flex;
+            margin: 8px 0 0;
         }
     }
 

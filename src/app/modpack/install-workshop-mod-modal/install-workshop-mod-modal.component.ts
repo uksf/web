@@ -2,6 +2,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { InstantErrorStateMatcher } from '../../Services/formhelper.service';
+import { InstallWorkshopModData } from '../models/WorkshopMod';
 
 @Component({
     selector: 'app-install-workshop-mod-modal',
@@ -9,7 +10,7 @@ import { InstantErrorStateMatcher } from '../../Services/formhelper.service';
     styleUrls: ['./install-workshop-mod-modal.component.scss']
 })
 export class InstallWorkshopModModalComponent {
-    @Output() installEvent: EventEmitter<string> = new EventEmitter<string>();
+    @Output() installEvent: EventEmitter<InstallWorkshopModData> = new EventEmitter<InstallWorkshopModData>();
     form: UntypedFormGroup;
     instantErrorStateMatcher: InstantErrorStateMatcher = new InstantErrorStateMatcher();
     validationMessages: { steamId: { type: string; message: string }[] } = {
@@ -19,8 +20,23 @@ export class InstallWorkshopModModalComponent {
 
     constructor(private formBuilder: UntypedFormBuilder, public dialogRef: MatDialogRef<InstallWorkshopModModalComponent>) {
         this.form = this.formBuilder.group({
-            steamId: ['', Validators.required]
+            steamId: ['', Validators.required],
+            rootMod: [false],
+            folderName: [{ value: '', disabled: true }]
         });
+
+        this.form.get('rootMod').valueChanges.subscribe((isRootMod: boolean) => {
+            const folderNameControl = this.form.get('folderName');
+            if (isRootMod) {
+                folderNameControl.enable();
+            } else {
+                folderNameControl.disable();
+            }
+        });
+    }
+
+    get isRootMod(): boolean {
+        return this.form.get('rootMod').value;
     }
 
     install() {
@@ -28,6 +44,10 @@ export class InstallWorkshopModModalComponent {
         const steamId: string = formValue.steamId.replace('https://steamcommunity.com/sharedfiles/filedetails/?id=', '');
 
         this.dialogRef.close();
-        this.installEvent.emit(steamId);
+        this.installEvent.emit({
+            steamId: steamId,
+            rootMod: formValue.rootMod,
+            folderName: formValue.folderName || undefined
+        });
     }
 }

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../Services/url.service';
 import { ConnectionContainer, SignalRService } from '../../Services/signalr.service';
-import { WorkshopMod, WorkshopModUpdatedDate } from '../models/WorkshopMod';
+import { InstallWorkshopModData, WorkshopMod, WorkshopModUpdatedDate } from '../models/WorkshopMod';
 import { MessageModalComponent } from '../../Modals/message-modal/message-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { InstallWorkshopModModalComponent } from '../install-workshop-mod-modal/install-workshop-mod-modal.component';
@@ -84,15 +84,21 @@ export class ModpackWorkshopComponent implements OnInit {
     }
 
     install() {
-        this.dialog.open(InstallWorkshopModModalComponent).componentInstance.installEvent.subscribe((steamId: string) => {
-            this.httpClient.post(this.urls.apiUrl + `/workshop`, { steamId: steamId }).subscribe({
-                next: () => {},
-                error: (error: any) => {
-                    this.dialog.open(MessageModalComponent, {
-                        data: { message: error.error }
-                    });
-                }
-            });
+        this.dialog.open(InstallWorkshopModModalComponent).componentInstance.installEvent.subscribe((data: InstallWorkshopModData) => {
+            this.httpClient
+                .post(this.urls.apiUrl + `/workshop`, {
+                    steamId: data.steamId,
+                    rootMod: data.rootMod,
+                    folderName: data.folderName
+                })
+                .subscribe({
+                    next: () => {},
+                    error: (error: any) => {
+                        this.dialog.open(MessageModalComponent, {
+                            data: { message: error.error }
+                        });
+                    }
+                });
         });
     }
 

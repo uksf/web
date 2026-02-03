@@ -10,6 +10,7 @@
                 <mat-card class="mod-card" *ngFor="let mod of mods; trackBy: trackBySteamId">
                     <div class="mod-card-section">
                         <h3>{{ mod.name }}</h3>
+                        <span *ngIf="mod.rootMod" class="mod-badge root-mod">Root Mod</span>
                         <app-flex-filler></app-flex-filler>
                         <span>{{ mod.statusMessage }}</span>
                     </div>

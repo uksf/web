@@ -47,13 +47,27 @@
                     margin: auto;
                 }
 
+                .mod-badge {
+                    color: white;
+                    padding: 2px 8px;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    font-weight: 500;
+                    margin: auto 8px;
+
+                    &.root-mod {
+                        background-color: #4a148c;
+                    }
+                }
+
                 .mod-links {
                     display: flex;
                     flex-direction: row;
                     justify-content: space-between;
+                    align-self: flex-end;
 
                     span {
-                        margin-right: 16px;
+                        margin: 0 16px 0 0;
                     }
                 }
 
