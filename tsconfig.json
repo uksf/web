@@ -5,6 +5,11 @@
         "module": "es2020",
         "outDir": "./dist/out-tsc",
         "baseUrl": "src",
+        "paths": {
+            "@app/*": ["app/*"],
+            "@shared/*": ["app/shared/*"],
+            "@env/*": ["environments/*"]
+        },
         "sourceMap": true,
         "declaration": false,
         "moduleResolution": "node",
