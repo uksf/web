@@ -24,13 +24,13 @@
                             </span>
                             <span *ngIf="mod.modpackVersionFirstAdded">
                                 Added with:
-                                <a target="_blank" rel="nofollow" routerLink="/modpack/releases?version={{ mod.modpackVersionFirstAdded }}">
+                                <a target="_blank" [href]="'/modpack/releases?version=' + mod.modpackVersionFirstAdded">
                                     {{ mod.modpackVersionFirstAdded }}
                                 </a>
                             </span>
                             <span *ngIf="mod.modpackVersionLastUpdated">
                                 Last updated with:
-                                <a target="_blank" rel="nofollow" routerLink="/modpack/releases?version={{ mod.modpackVersionLastUpdated }}">
+                                <a target="_blank" [href]="'/modpack/releases?version=' + mod.modpackVersionLastUpdated">
                                     {{ mod.modpackVersionLastUpdated }}
                                 </a>
                             </span>
