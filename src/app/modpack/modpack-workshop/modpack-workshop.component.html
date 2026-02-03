@@ -4,7 +4,9 @@
         <div class="flex-container">
             <div class="mods-header">
                 <h1>Workshop Mods</h1>
-                <button mat-raised-button color="primary" (click)="install()">Install</button>
+                <ng-template [ngxPermissionsOnly]="['ADMIN']">
+                    <button mat-raised-button color="primary" (click)="install()">Install</button>
+                </ng-template>
             </div>
             <div class="mods-container">
                 <mat-card class="mod-card" *ngFor="let mod of mods; trackBy: trackBySteamId">
