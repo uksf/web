@@ -20,6 +20,13 @@ test.describe('Visual Baseline - Public Pages', () => {
     await expect(page).toHaveScreenshot('home-page.png', {
       fullPage: true,
       timeout: 30000,
+      // Mask all dynamic content that changes frequently
+      mask: [
+        page.locator('.timezone-container'), // Time displays
+        page.locator('.instagram-feed'), // Instagram images that rotate
+        page.locator('.teamspeak-container'), // TeamSpeak online users
+        page.locator('iframe'), // Discord widget with online members
+      ],
     });
   });
 
