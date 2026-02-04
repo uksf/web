@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { NgxPermissionsModule } from 'ngx-permissions';
 import { SharedModule } from '@shared/shared.module';
 import { OperationsRoutingModule } from './operations-routing.module';
 import { OperationsPageComponent } from './components/operations-page/operations-page.component';
@@ -30,6 +31,7 @@ import { EditServerModsModalComponent } from './modals/edit-server-mods-modal/ed
         FormsModule,
         SharedModule,
         OperationsRoutingModule,
+        NgxPermissionsModule.forChild(),
         DragDropModule,
         MatExpansionModule,
     ],

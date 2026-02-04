@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { NgxPermissionsModule } from 'ngx-permissions';
 
 // Angular Material (admin-specific)
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -38,6 +39,7 @@ import { AdminServersComponent } from './components/admin-servers/admin-servers.
   imports: [
     SharedModule,
     AdminRoutingModule,
+    NgxPermissionsModule.forChild(),
     // Admin-specific modules
     MatExpansionModule,
     MatTableModule,

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NgxPermissionsModule } from 'ngx-permissions';
 import { SharedModule } from '@shared/shared.module';
 import { CommandRoutingModule } from './command-routing.module';
 
@@ -67,6 +68,7 @@ import { TreeModule } from '@circlon/angular-tree-component';
         FormsModule,
         SharedModule,
         CommandRoutingModule,
+        NgxPermissionsModule.forChild(),
         MatExpansionModule,
         MatTabsModule,
         MatTableModule,

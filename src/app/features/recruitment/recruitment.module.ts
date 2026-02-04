@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { NgxPermissionsModule } from 'ngx-permissions';
 import { SharedModule } from '@shared/shared.module';
 import { RecruitmentRoutingModule } from './recruitment-routing.module';
 
@@ -10,6 +11,7 @@ import { RecruitmentApplicationPageComponent } from './components/recruitment-ap
     imports: [
         SharedModule,
         RecruitmentRoutingModule,
+        NgxPermissionsModule.forChild(),
     ],
     declarations: [
         RecruitmentPageComponent,

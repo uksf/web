@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NgxPermissionsModule } from 'ngx-permissions';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -28,6 +29,7 @@ import { PersonnelRosterComponent } from './components/personnel-roster/personne
         FormsModule,
         SharedModule,
         PersonnelRoutingModule,
+        NgxPermissionsModule.forChild(),
         MatButtonToggleModule,
         MatDatepickerModule,
         MatExpansionModule,
