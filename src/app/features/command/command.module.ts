@@ -77,5 +77,9 @@ import { TreeModule } from '@circlon/angular-tree-component';
         DragDropModule,
         TreeModule,
     ],
+    exports: [
+        // Export modals used by other modules
+        RequestLoaModalComponent,
+    ],
 })
 export class CommandModule {}
