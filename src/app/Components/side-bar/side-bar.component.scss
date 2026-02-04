@@ -1,3 +1,5 @@
+@use 'styles/variables' as v;
+
 .sideNav {
     .sideNavItem {
         padding-left: 30px;
@@ -18,7 +20,7 @@
         }
 
         .mat-icon {
-            margin-right: 20px;
+            margin-right: v.$spacing-20px;
             transform: rotate(0.03deg);
         }
 
@@ -28,14 +30,14 @@
     }
 }
 
-@media screen and (max-width: 1024px) {
+@include v.below(v.$layout-standard) {
     .sideNav {
         display: flex;
         overflow-x: auto;
         justify-content: center;
 
         .sideNavItem {
-            padding: 5px 8px;
+            padding: 5px v.$spacing-8px;
             font-size: small;
             flex-direction: column;
             line-height: unset;
@@ -59,7 +61,7 @@
     }
 }
 
-@media screen and (max-width: 768px) {
+@include v.below(v.$layout-medium) {
     .sideNav {
         .sideNavItem {
             .mat-icon {
@@ -82,16 +84,16 @@
     }
 }
 
-@media screen and (max-width: 600px) {
+@include v.below(v.$layout-narrow) {
     .sideNav {
         justify-content: flex-start;
     }
 }
 
-@media screen and (max-width: 375px) {
+@include v.below(v.$layout-compact) {
     .sideNav {
         .sideNavItem {
-            padding: 8px;
+            padding: v.$spacing-8px;
             span {
                 display: none;
             }

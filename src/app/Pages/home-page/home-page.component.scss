@@ -1,3 +1,5 @@
+@use 'styles/variables' as v;
+
 app-side-content-area {
     margin-top: 10px;
 
@@ -36,11 +38,11 @@ app-side-content-area {
     display: flex;
     flex-direction: column;
     margin-left: 0;
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-left: v.$spacing-16px;
+    padding-right: v.$spacing-16px;
 
     & > * {
-        margin-bottom: 16px;
+        margin-bottom: v.$spacing-16px;
     }
 
     &.no-padding-left {
@@ -48,7 +50,7 @@ app-side-content-area {
     }
 
     &.instagram-feed {
-        padding: 16px;
+        padding: v.$spacing-16px;
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
@@ -100,7 +102,7 @@ app-side-content-area {
         font-size: 22px;
         height: 64px;
         align-items: center;
-        padding: 0 16px;
+        padding: 0 v.$spacing-16px;
 
         .teamspeak-text {
             flex: 1;
@@ -112,9 +114,9 @@ app-side-content-area {
     }
 
     .teamspeak-content-container {
-        border-bottom-left-radius: 4px;
-        border-bottom-right-radius: 4px;
-        padding: 16px;
+        border-bottom-left-radius: v.$spacing-4px;
+        border-bottom-right-radius: v.$spacing-4px;
+        padding: v.$spacing-16px;
         .spinner-container {
             height: 152px;
             display: flex;
@@ -124,6 +126,7 @@ app-side-content-area {
     }
 }
 
+// Custom breakpoint: timezone text switches to short format
 @media only screen and (max-width: 1275px) {
     .timezone-container {
         .timezone {
@@ -148,7 +151,7 @@ app-side-content-area {
     }
 }
 
-@media screen and (max-width: 1024px) {
+@include v.below(v.$layout-standard) {
     .teamspeak-container {
         .teamspeak-header {
             height: 56px;
@@ -166,23 +169,23 @@ app-side-content-area {
     }
 }
 
-@media screen and (max-width: 768px) {
+@include v.below(v.$layout-medium) {
     app-side-content-area {
         margin-left: 0;
 
         .flex-container {
-            padding-left: 16px;
+            padding-left: v.$spacing-16px;
         }
     }
 
     .flex-container {
         &.instagram-feed {
-            padding: 8px;
+            padding: v.$spacing-8px;
         }
     }
 }
 
-@media screen and (max-width: 600px) {
+@include v.below(v.$layout-narrow) {
     .flex-container {
         &.instagram-feed {
             flex-direction: column;
@@ -198,6 +201,7 @@ app-side-content-area {
     }
 }
 
+// Custom breakpoint: issues stack vertically on very small screens
 @media screen and (max-width: 400px) {
     .issues-container {
         flex-direction: column;
@@ -217,6 +221,7 @@ app-side-content-area {
     }
 }
 
+// Custom breakpoint: time format switches to short on tiny screens
 @media screen and (max-width: 330px) {
     .timezone-container {
         .timezone {

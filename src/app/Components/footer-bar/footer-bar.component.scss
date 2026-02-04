@@ -1,3 +1,5 @@
+@use 'styles/variables' as v;
+
 .flex-container {
     display: flex;
     flex-direction: column;
@@ -30,7 +32,7 @@
     }
 }
 
-@media screen and (max-width: 1024px) {
+@include v.below(v.$layout-standard) {
     .flex-container {
         justify-content: center;
         .buttons-container {
@@ -63,7 +65,7 @@
     }
 }
 
-@media screen and (max-width: 375px) {
+@include v.below(v.$layout-compact) {
     .flex-container {
         .buttons-container {
             justify-content: left;

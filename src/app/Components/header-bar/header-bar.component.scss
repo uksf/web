@@ -1,3 +1,5 @@
+@use 'styles/variables' as v;
+
 .header-wrapper {
     display: flex;
     flex-direction: row;
@@ -6,8 +8,8 @@
 }
 
 .name-wrapper {
-    height: 75px;
-    line-height: 75px;
+    height: v.$header-height;
+    line-height: v.$header-height;
     text-align: center;
     cursor: pointer;
 
@@ -15,7 +17,7 @@
         display: inline-block;
         vertical-align: middle;
         line-height: normal;
-        margin-right: 20px;
+        margin-right: v.$spacing-20px;
     }
 }
 
@@ -33,10 +35,10 @@
     width: 65px;
     margin-left: 10px;
     margin-top: 6px;
-    margin-bottom: 4px;
+    margin-bottom: v.$spacing-4px;
 
     span {
-        line-height: 75px;
+        line-height: v.$header-height;
     }
 }
 
@@ -72,7 +74,7 @@
     &.profile {
         padding: 5px;
         min-width: 25px;
-        border-radius: 20px;
+        border-radius: v.$spacing-20px;
         height: 40px;
 
         .mat-icon {
@@ -92,14 +94,14 @@
     align-items: center;
     display: flex;
     height: 40px;
-    margin: 0 15px 0 8px;
+    margin: 0 15px 0 v.$spacing-8px;
 }
 
 a {
     text-decoration: none;
 }
 
-@media only screen and (max-width: 768px) {
+@include v.below(v.$layout-medium) {
     .header-wrapper {
         flex-direction: column;
     }
@@ -157,7 +159,7 @@ a {
     }
 }
 
-@media only screen and (max-width: 375px) {
+@include v.below(v.$layout-compact) {
     .logo-wrapper {
         .logo {
             height: 36px;
@@ -178,7 +180,7 @@ a {
         align-items: center;
         display: flex;
         height: 40px;
-        margin: 0 8px;
+        margin: 0 v.$spacing-8px;
     }
 
     app-notifications {
