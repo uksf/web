@@ -1,4 +1,4 @@
-import { Component, EventEmitter } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
@@ -7,12 +7,10 @@ import { MatDialogRef } from '@angular/material/dialog';
     styleUrls: ['./connect-teamspeak-modal.component.scss'],
 })
 export class ConnectTeamspeakModalComponent {
-    connectedEvent = new EventEmitter();
-
     constructor(public dialogRef: MatDialogRef<ConnectTeamspeakModalComponent>) {}
 
     connected() {
-        this.connectedEvent.emit();
+        // Called when TeamSpeak connection succeeds - no action needed
     }
 
     confirmed() {

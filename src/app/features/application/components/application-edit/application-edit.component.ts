@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, UntypedFormControl, FormGroupDirective, NgForm, AbstractControl } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AccountService } from '@app/Services/account.service';
@@ -22,7 +24,8 @@ export class InstantErrorStateMatcher implements ErrorStateMatcher {
     templateUrl: './application-edit.component.html',
     styleUrls: ['../application-page/application-page.component.scss', './application-edit.component.scss']
 })
-export class ApplicationEditComponent {
+export class ApplicationEditComponent implements OnDestroy {
+    private destroy$ = new Subject<void>();
     formGroup: UntypedFormGroup;
     pending: boolean = false;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
@@ -76,11 +79,16 @@ export class ApplicationEditComponent {
         this.formGroup.addControl('rolePreferences', new UntypedFormGroup(rolePreferenceControls));
 
         this.updateOriginal();
-        this.permissions.accountUpdateEvent.subscribe({
+        this.permissions.accountUpdateEvent.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.updateOriginal();
             }
         });
+    }
+
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     get accepted() {

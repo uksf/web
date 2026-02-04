@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../Services/url.service';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -21,7 +21,7 @@ import { MembershipState } from '../../Models/Account';
     templateUrl: './profile-page.component.html',
     styleUrls: ['./profile-page.component.scss']
 })
-export class ProfilePageComponent implements OnInit {
+export class ProfilePageComponent implements OnInit, OnDestroy {
     countries: ICountry[];
     membershipState = MembershipState;
     account;
@@ -319,5 +319,11 @@ export class ProfilePageComponent implements OnInit {
                 this.settingsFormGroup.enable();
             }
         });
+    }
+
+    ngOnDestroy() {
+        if (this.accountSubscription) {
+            this.accountSubscription.unsubscribe();
+        }
     }
 }

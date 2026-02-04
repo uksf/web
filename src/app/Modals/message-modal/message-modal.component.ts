@@ -1,4 +1,4 @@
-import { Component, Inject, Output, EventEmitter } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
@@ -9,7 +9,6 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 export class MessageModalComponent {
     message: string = 'There should be a different message shown here. Please report this mistake to an admin';
     button: string = 'Close';
-    @Output() buttonEvent: EventEmitter<any> = new EventEmitter();
 
     constructor(public dialogRef: MatDialogRef<MessageModalComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
         this.message = data.message;
@@ -20,6 +19,5 @@ export class MessageModalComponent {
 
     buttonClick() {
         this.dialogRef.close();
-        this.buttonEvent.emit();
     }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, Inject } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 
@@ -7,11 +7,9 @@ import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms
     templateUrl: './text-input-modal.component.html',
     styleUrls: ['./text-input-modal.component.scss']
 })
-export class TextInputModalComponent implements OnInit {
-    @Output() confirmEvent = new EventEmitter<string>();
-    @Output() cancelEvent = new EventEmitter();
-    message;
-    input;
+export class TextInputModalComponent {
+    message: string;
+    input: string;
     form: UntypedFormGroup;
 
     constructor(formbuilder: UntypedFormBuilder, public dialogRef: MatDialogRef<TextInputModalComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
@@ -21,15 +19,11 @@ export class TextInputModalComponent implements OnInit {
         });
     }
 
-    ngOnInit() {}
-
     confirm() {
-        this.confirmEvent.emit(this.input);
-        this.dialogRef.close();
+        this.dialogRef.close(this.input);
     }
 
     cancel() {
-        this.cancelEvent.emit();
         this.dialogRef.close();
     }
 }
