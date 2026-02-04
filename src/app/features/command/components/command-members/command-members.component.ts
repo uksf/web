@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { UrlService } from '@app/Services/url.service';
 import { PagedResult } from '@app/Models/PagedResult';
@@ -9,14 +9,14 @@ import { buildQuery } from '@app/Services/helper.service';
 import { CommandUnitGroupCardComponent } from './command-unit-group-card/command-unit-group-card.component';
 import { SignalRHubsService } from '@app/Services/signalrHubs.service';
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-command-members',
     templateUrl: './command-members.component.html',
     styleUrls: ['./command-members.component.scss']
 })
-export class CommandMembersComponent implements OnInit {
+export class CommandMembersComponent implements OnInit, OnDestroy {
     @ViewChild(PaginatorComponent) paginator: PaginatorComponent;
     @ViewChild(CommandUnitGroupCardComponent) unitGroupsRoot: CommandUnitGroupCardComponent;
     loaded: boolean = false;
@@ -46,6 +46,7 @@ export class CommandMembersComponent implements OnInit {
     ];
     viewMode: string = 'all';
     private filterSubject = new Subject<string>();
+    private destroy$ = new Subject<void>();
 
     constructor(private httpClient: HttpClient, private urls: UrlService, private signalrHubsService: SignalRHubsService) {}
 
@@ -54,7 +55,7 @@ export class CommandMembersComponent implements OnInit {
             allHub.connection.on('ReceiveAccountUpdate', () => {
                 this.getMembers();
             });
-            allHub.reconnectEvent.subscribe({
+            allHub.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
                 next: () => {
                     this.getMembers();
                 }
@@ -69,7 +70,7 @@ export class CommandMembersComponent implements OnInit {
             }
         });
 
-        this.filterSubject.pipe(debounceTime(150), distinctUntilChanged()).subscribe({
+        this.filterSubject.pipe(debounceTime(150), distinctUntilChanged(), takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.getMembers();
             }
@@ -149,6 +150,11 @@ export class CommandMembersComponent implements OnInit {
 
     trackByMemberId(_: any, member: Account) {
         return member.id;
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     private setUnitMembers(unit: Unit) {

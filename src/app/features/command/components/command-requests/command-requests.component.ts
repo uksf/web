@@ -13,6 +13,8 @@ import { AccountService } from '@app/Services/account.service';
 import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
 import { RequestModalData } from '@app/Models/Shared';
 import { UnitBranch } from '@app/Models/Units';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-command-requests',
@@ -25,6 +27,7 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
     otherRequests = [];
     updating;
     private hubConnection: ConnectionContainer;
+    private destroy$ = new Subject<void>();
 
     constructor(private httpClient: HttpClient, private urls: UrlService, public dialog: MatDialog, private signalrService: SignalRService, private accountService: AccountService) {
         this.getRequests();
@@ -35,14 +38,16 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
         this.hubConnection.connection.on('ReceiveRequestUpdate', (_) => {
             this.getRequests();
         });
-        this.hubConnection.reconnectEvent.subscribe({
+        this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.getRequests();
             }
         });
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
         this.hubConnection.connection.stop();
     }
 

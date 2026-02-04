@@ -1,4 +1,6 @@
 import { Component, OnInit, ElementRef, HostListener, ViewChild, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Router, NavigationEnd } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../Services/url.service';
@@ -16,6 +18,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     unreadNotifications = new Array<any>();
     private unreadTimeout;
     private hubConnection: ConnectionContainer;
+    private destroy$ = new Subject<void>();
 
     constructor(
         private router: Router,
@@ -25,7 +28,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         private signalrService: SignalRService,
         private accountService: AccountService
     ) {
-        router.events.subscribe({
+        router.events.pipe(takeUntil(this.destroy$)).subscribe({
             next: (event) => {
                 this.onClose();
                 this.panel = false;
@@ -63,7 +66,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
                 });
                 this.updateNotifications();
             });
-            this.hubConnection.reconnectEvent.subscribe({
+            this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
                 next: () => {
                     this.getNotifications();
                 }
@@ -72,6 +75,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
         this.hubConnection.connection.stop();
         clearTimeout(this.unreadTimeout);
     }

@@ -1,4 +1,6 @@
-import { Component, Output, EventEmitter, Input } from '@angular/core';
+import { Component, Output, EventEmitter, Input, OnInit, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { HttpHeaders } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
@@ -15,7 +17,7 @@ import { TeamspeakConnectClient } from '../../Models/TeamspeakConnectClient';
     templateUrl: './teamspeak-connect.component.html',
     styleUrls: ['./teamspeak-connect.component.scss']
 })
-export class ConnectTeamspeakComponent {
+export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
     @Input() showCancel = false;
     @Output() connectedEvent = new EventEmitter();
     @Output() confirmedEvent = new EventEmitter();
@@ -28,6 +30,7 @@ export class ConnectTeamspeakComponent {
     errorMessage: string = 'Unknown error. Please try again';
     private previousResponse = '-1';
     private hubConnection: ConnectionContainer;
+    private destroy$ = new Subject<void>();
     private updateTimeout: number;
     private changedTimeout: number;
 
@@ -58,7 +61,7 @@ export class ConnectTeamspeakComponent {
                 this.updateClients(clients);
             });
         });
-        this.hubConnection.reconnectEvent.subscribe({
+        this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.mergeUpdates(() => {
                     this.findTeamspeakClients();
@@ -68,6 +71,8 @@ export class ConnectTeamspeakComponent {
     }
 
     ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
         this.hubConnection.connection.stop();
     }
 

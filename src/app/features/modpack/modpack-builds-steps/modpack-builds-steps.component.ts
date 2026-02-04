@@ -11,6 +11,8 @@ import { ConnectionContainer, SignalRService } from '@app/Services/signalr.servi
 import { ModpackBuildProcessService } from '../modpackBuildProcess.service';
 import { ModpackBuildStep } from '../models/ModpackBuildStep';
 import { nextFrame } from '@app/Services/helper.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-modpack-builds-steps',
@@ -34,6 +36,7 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
     cancelling = false;
     autoScroll = true;
     private hubConnection: ConnectionContainer;
+    private destroy$ = new Subject<void>();
 
     constructor(
         private signalrService: SignalRService,
@@ -63,6 +66,8 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
     }
 
     ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
         this.disconnect();
     }
 
@@ -86,7 +91,7 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
                         this.chooseStep();
                     }
                 });
-                this.hubConnection.reconnectEvent.subscribe({
+                this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
                     next: () => {
                         this.modpackBuildProcessService.getBuildData(this.build.id, (reconnectBuild: ModpackBuild) => {
                             this.build = reconnectBuild;

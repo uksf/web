@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { Permissions } from 'app/Services/permissions';
 import { AccountService } from 'app/Services/account.service';
@@ -13,9 +15,10 @@ import { ApplicationState } from '../../Models/Application';
     templateUrl: './side-bar.component.html',
     styleUrls: ['./side-bar.component.scss']
 })
-export class SideBarComponent {
+export class SideBarComponent implements OnInit, OnDestroy {
     newVersion = false;
     version = 0;
+    private destroy$ = new Subject<void>();
     private guestMenu = [
         { text: 'Home', link: 'home', icon: 'home' },
         // { text: 'Docs', link: 'admin', icon: 'book' },
@@ -56,11 +59,16 @@ export class SideBarComponent {
                 this.newVersion = true;
             }
         });
-        AppComponent.utilityHubConnection.reconnectEvent.subscribe({
+        AppComponent.utilityHubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.checkVersion();
             }
         });
+    }
+
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     get currentRouterItem() {

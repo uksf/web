@@ -1,4 +1,6 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AccountService } from '../../Services/account.service';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '../../Services/url.service';
@@ -19,6 +21,7 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
     private canPostComment;
     private previousResponse;
     private hubConnection: ConnectionContainer;
+    private destroy$ = new Subject<void>();
     comments = [];
     commentForm;
 
@@ -44,7 +47,7 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
                 1
             );
         });
-        this.hubConnection.reconnectEvent.subscribe({
+        this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.getComments();
                 this.getCanPostComment();
@@ -53,6 +56,8 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
         this.hubConnection.connection.stop();
     }
 

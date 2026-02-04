@@ -8,7 +8,8 @@ import { ConfirmationModalComponent } from '@app/Modals/confirmation-modal/confi
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
 import { ValidationReportModalComponent } from '@app/Modals/multiple-message-modal/validation-report-modal.component';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { ConnectionContainer, SignalRService } from '@app/Services/signalr.service';
 import { Permissions } from '@app/Services/permissions';
 import { PermissionsService } from '@app/Services/permissions.service';
@@ -39,6 +40,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     dropZoneHeight = 0;
     dropZoneWidth = 0;
     private hubConnection: ConnectionContainer;
+    private destroy$ = new Subject<void>();
 
     constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private signalrService: SignalRService, private permissions: PermissionsService) {}
 
@@ -72,7 +74,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                 this.missions.next(missions.map(this.mapMissionElement));
             }
         });
-        this.hubConnection.reconnectEvent.subscribe({
+        this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.getServers();
                 this.getDisabledState();
@@ -88,6 +90,8 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
         this.hubConnection.connection.stop().then();
     }
 
