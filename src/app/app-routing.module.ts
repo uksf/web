@@ -151,7 +151,18 @@ const appRoutes: Routes = [
     },
     {
         path: 'modpack',
-        loadChildren: () => import('./features/modpack/modpack.module').then(m => m.ModpackModule)
+        loadChildren: () => import('./features/modpack/modpack.module').then(m => m.ModpackModule),
+        canActivate: [NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: Permissions.MEMBER,
+                except: Permissions.UNLOGGED,
+                redirectTo: {
+                    UNLOGGED: loginRedirect,
+                    default: '/home'
+                }
+            }
+        }
     },
     { path: 'policy', component: PolicyPageComponent },
     { path: 'rules', component: RulesPageComponent },

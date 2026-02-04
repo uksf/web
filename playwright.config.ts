@@ -24,6 +24,7 @@ export default defineConfig({
         storageState: 'playwright/.auth/user.json',
       },
       dependencies: ['setup'],
+      testIgnore: /.*\.unauth\.spec\.ts/,
     },
 
     // Tests for unauthenticated flows
