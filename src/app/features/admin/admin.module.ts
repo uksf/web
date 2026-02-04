@@ -6,6 +6,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
+import { MatTabsModule } from '@angular/material/tabs';
 
 // Routing
 import { AdminRoutingModule } from './admin-routing.module';
@@ -45,6 +46,7 @@ import { AdminServersComponent } from './components/admin-servers/admin-servers.
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
+    MatTabsModule,
   ],
 })
 export class AdminModule {}

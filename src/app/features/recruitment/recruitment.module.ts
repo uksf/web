@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
+import { MatTabsModule } from '@angular/material/tabs';
 import { SharedModule } from '@shared/shared.module';
 import { RecruitmentRoutingModule } from './recruitment-routing.module';
 
@@ -12,6 +13,7 @@ import { RecruitmentApplicationPageComponent } from './components/recruitment-ap
         SharedModule,
         RecruitmentRoutingModule,
         NgxPermissionsModule.forChild(),
+        MatTabsModule,
     ],
     declarations: [
         RecruitmentPageComponent,

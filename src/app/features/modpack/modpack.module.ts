@@ -4,6 +4,7 @@ import { ModpackRoutingModule } from './modpack-routing.module';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { MarkdownModule } from 'ngx-markdown';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatTabsModule } from '@angular/material/tabs';
 
 // Components
 import { ModpackPageComponent } from './modpack-page/modpack-page.component';
@@ -31,6 +32,7 @@ import { TimeAgoPipe } from '@app/Pipes/time.pipe';
         NgxPermissionsModule.forChild(),
         MarkdownModule.forChild(),
         MatRadioModule,
+        MatTabsModule,
     ],
     declarations: [
         ModpackPageComponent,

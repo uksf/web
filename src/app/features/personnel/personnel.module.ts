@@ -6,6 +6,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
 import { SharedModule } from '@shared/shared.module';
 import { PersonnelRoutingModule } from './personnel-routing.module';
 import { PersonnelPageComponent } from './components/personnel-page/personnel-page.component';
@@ -34,6 +35,7 @@ import { PersonnelRosterComponent } from './components/personnel-roster/personne
         MatDatepickerModule,
         MatExpansionModule,
         MatTableModule,
+        MatTabsModule,
     ],
 })
 export class PersonnelModule {}
