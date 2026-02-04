@@ -7,7 +7,7 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
     selector: 'app-opord-page',
     templateUrl: './opord-page.component.html',
-    styleUrls: ['./opord-page.component.css'],
+    styleUrls: ['./opord-page.component.scss'],
 })
 export class OpordPageComponent implements OnInit {
     opordData;

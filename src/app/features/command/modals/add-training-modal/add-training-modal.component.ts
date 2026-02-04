@@ -10,7 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 @Component({
     selector: 'app-add-training-modal',
     templateUrl: './add-training-modal.component.html',
-    styleUrls: ['./add-training-modal.component.css']
+    styleUrls: ['./add-training-modal.component.scss']
 })
 export class AddTrainingModalComponent {
     form: UntypedFormGroup;

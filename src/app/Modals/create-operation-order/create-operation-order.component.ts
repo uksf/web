@@ -6,7 +6,7 @@ import { UrlService } from '../../Services/url.service';
 @Component({
     selector: 'app-create-operation-order',
     templateUrl: './create-operation-order.component.html',
-    styleUrls: ['./create-operation-order.component.css']
+    styleUrls: ['./create-operation-order.component.scss']
 })
 export class CreateOperationOrderComponent implements OnInit {
     opordform;

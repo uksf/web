@@ -8,7 +8,7 @@ import { UntypedFormBuilder, Validators } from '@angular/forms';
 @Component({
     selector: 'app-live-page',
     templateUrl: './live-page.component.html',
-    styleUrls: ['./live-page.component.css']
+    styleUrls: ['./live-page.component.scss']
 })
 export class LivePageComponent implements OnInit, OnDestroy {
     terminalForm: any;

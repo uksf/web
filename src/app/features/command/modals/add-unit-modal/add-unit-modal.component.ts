@@ -12,7 +12,7 @@ import { ConfirmationModalComponent } from '@app/Modals/confirmation-modal/confi
 @Component({
     selector: 'app-add-unit-modal',
     templateUrl: './add-unit-modal.component.html',
-    styleUrls: ['./add-unit-modal.component.css']
+    styleUrls: ['./add-unit-modal.component.scss']
 })
 export class AddUnitModalComponent implements OnInit {
     form: UntypedFormGroup;

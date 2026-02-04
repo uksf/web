@@ -6,7 +6,7 @@ import { UrlService } from '../../Services/url.service';
 @Component({
     selector: 'app-create-operation-report-modal',
     templateUrl: './create-operation-report-modal.component.html',
-    styleUrls: ['./create-operation-report-modal.component.css']
+    styleUrls: ['./create-operation-report-modal.component.scss']
 })
 export class CreateOperationReportModalComponent implements OnInit {
     oprepform;

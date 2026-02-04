@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 @Component({
     selector: 'app-operations-orders',
     templateUrl: './operations-orders.component.html',
-    styleUrls: ['../operations-page/operations-page.component.scss', './operations-orders.component.css']
+    styleUrls: ['../operations-page/operations-page.component.scss', './operations-orders.component.scss']
 })
 export class OperationsOrdersComponent implements OnInit {
     opordData;

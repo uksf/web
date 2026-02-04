@@ -5,7 +5,7 @@ import { ValidationReport } from '../../Models/Response';
 @Component({
     selector: 'app-validation-report-modal',
     templateUrl: './validation-report-modal.component.html',
-    styleUrls: ['./validation-report-modal.component.css'],
+    styleUrls: ['./validation-report-modal.component.scss'],
 })
 export class ValidationReportModalComponent {
     @ViewChild('messageBox') messageBox: ElementRef;

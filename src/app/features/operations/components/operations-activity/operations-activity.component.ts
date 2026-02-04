@@ -5,7 +5,7 @@ import { UrlService } from '@app/Services/url.service';
 @Component({
     selector: 'app-operations-activity',
     templateUrl: './operations-activity.component.html',
-    styleUrls: ['../operations-page/operations-page.component.scss', './operations-activity.component.css'],
+    styleUrls: ['../operations-page/operations-page.component.scss', './operations-activity.component.scss'],
 })
 export class OperationsActivityComponent implements OnInit {
     activityData;

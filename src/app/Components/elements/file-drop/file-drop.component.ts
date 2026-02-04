@@ -15,7 +15,7 @@ import {UploadEvent, UploadFile} from '../../../Services/fileUploadTypes.service
 @Component({
     selector: 'app-file-drop',
     templateUrl: './file-drop.component.html',
-    styleUrls: ['./file-drop.component.css']
+    styleUrls: ['./file-drop.component.scss']
 })
 export class FileDropComponent implements OnDestroy {
     @ViewChild('dropZone') dropZone: ElementRef;

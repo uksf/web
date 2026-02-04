@@ -4,7 +4,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 @Component({
     selector: 'app-connect-teamspeak-modal',
     templateUrl: './connect-teamspeak-modal.component.html',
-    styleUrls: ['./connect-teamspeak-modal.component.css'],
+    styleUrls: ['./connect-teamspeak-modal.component.scss'],
 })
 export class ConnectTeamspeakModalComponent {
     connectedEvent = new EventEmitter();

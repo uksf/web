@@ -10,7 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 @Component({
     selector: 'app-add-rank-modal',
     templateUrl: './add-rank-modal.component.html',
-    styleUrls: ['./add-rank-modal.component.css']
+    styleUrls: ['./add-rank-modal.component.scss']
 })
 export class AddRankModalComponent implements OnInit {
     form: UntypedFormGroup;

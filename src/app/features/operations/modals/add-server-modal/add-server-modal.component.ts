@@ -10,7 +10,7 @@ import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog
 @Component({
     selector: 'app-add-server-modal',
     templateUrl: './add-server-modal.component.html',
-    styleUrls: ['./add-server-modal.component.css']
+    styleUrls: ['./add-server-modal.component.scss']
 })
 export class AddServerModalComponent {
     form: UntypedFormGroup;

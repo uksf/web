@@ -12,7 +12,7 @@ const INLINE_EDIT_CONTROL_VALUE_ACCESSOR = {
     selector: 'app-inline-edit',
     templateUrl: './inline-edit.component.html',
     providers: [INLINE_EDIT_CONTROL_VALUE_ACCESSOR],
-    styleUrls: ['./inline-edit.component.css']
+    styleUrls: ['./inline-edit.component.scss']
 })
 export class InlineEditComponent implements ControlValueAccessor, OnInit {
     @ViewChild('inlineEditControl') inlineEditControl;

@@ -7,7 +7,7 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
     selector: 'app-oprep-page',
     templateUrl: './oprep-page.component.html',
-    styleUrls: ['./oprep-page.component.css'],
+    styleUrls: ['./oprep-page.component.scss'],
 })
 export class OprepPageComponent implements OnInit {
     oprepEntity;
