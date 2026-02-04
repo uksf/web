@@ -12,7 +12,7 @@ import { PagedResult } from '@app/Models/PagedResult';
 import { SortDirection } from '@app/Models/SortDirection';
 import { Subject } from 'rxjs';
 import { Clipboard } from '@angular/cdk/clipboard';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-admin-logs',
@@ -28,6 +28,7 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
     protected signalrService: SignalRService;
     protected hubConnection: ConnectionContainer;
     protected filterSubject = new Subject<string>();
+    protected destroy$ = new Subject<void>();
     filter = '';
     dataLoaded = false;
     logDisplayedColumns = ['timestamp', 'level', 'message'];
@@ -48,17 +49,17 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
-        this.paginator.page.subscribe({
+        this.paginator.page.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.refreshData();
             }
         });
-        this.sort.sortChange.subscribe({
+        this.sort.sortChange.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.refreshData();
             }
         });
-        this.filterSubject.pipe(debounceTime(150), distinctUntilChanged()).subscribe({
+        this.filterSubject.pipe(debounceTime(150), distinctUntilChanged(), takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.refreshData();
             }
@@ -67,6 +68,8 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
         this.hubConnection.connection.stop();
     }
 

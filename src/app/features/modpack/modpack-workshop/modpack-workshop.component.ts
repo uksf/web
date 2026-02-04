@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { UrlService } from '@app/Services/url.service';
 import { ConnectionContainer, SignalRService } from '@app/Services/signalr.service';
 import { InstallWorkshopModData, WorkshopMod, WorkshopModUpdatedDate } from '../models/WorkshopMod';
@@ -13,8 +15,9 @@ import { WorkshopModInterventionModalComponent } from '../workshop-mod-intervent
     templateUrl: './modpack-workshop.component.html',
     styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-workshop.component.scss', './modpack-workshop.component.scss-theme.scss']
 })
-export class ModpackWorkshopComponent implements OnInit {
+export class ModpackWorkshopComponent implements OnInit, OnDestroy {
     private hubConnection: ConnectionContainer;
+    private destroy$ = new Subject<void>();
     mods: WorkshopMod[] = [];
 
     constructor(private httpClient: HttpClient, private urls: UrlService, private signalrService: SignalRService, private dialog: MatDialog) {}
@@ -32,11 +35,17 @@ export class ModpackWorkshopComponent implements OnInit {
         this.hubConnection.connection.on('ReceiveWorkshopModUpdate', (id: string) => {
             this.getDataForMod(id);
         });
-        this.hubConnection.reconnectEvent.subscribe({
+        this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.getData();
             }
         });
+    }
+
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
+        this.hubConnection.connection.stop();
     }
 
     getData(callback: () => void = null) {

@@ -23,7 +23,6 @@ import { AddUnitModalComponent } from './modals/add-unit-modal/add-unit-modal.co
 import { EditMemberTrainingModalComponent } from './modals/edit-member-training-modal/edit-member-training-modal.component';
 import { RequestChainOfCommandPositionModalComponent } from './modals/request-chain-of-command-position-modal/request-chain-of-command-position-modal.component';
 import { RequestDischargeModalComponent } from './modals/request-discharge-modal/request-discharge-modal.component';
-import { RequestLoaModalComponent } from './modals/request-loa-modal/request-loa-modal.component';
 import { RequestRankModalComponent } from './modals/request-rank-modal/request-rank-modal.component';
 import { RequestRoleModalComponent } from './modals/request-role-modal/request-role-modal.component';
 import { RequestTransferModalComponent } from './modals/request-transfer-modal/request-transfer-modal.component';
@@ -57,7 +56,6 @@ import { TreeModule } from '@circlon/angular-tree-component';
         EditMemberTrainingModalComponent,
         RequestChainOfCommandPositionModalComponent,
         RequestDischargeModalComponent,
-        RequestLoaModalComponent,
         RequestRankModalComponent,
         RequestRoleModalComponent,
         RequestTransferModalComponent,
@@ -76,10 +74,6 @@ import { TreeModule } from '@circlon/angular-tree-component';
         MatSlideToggleModule,
         DragDropModule,
         TreeModule,
-    ],
-    exports: [
-        // Export modals used by other modules
-        RequestLoaModalComponent,
     ],
 })
 export class CommandModule {}

@@ -88,6 +88,7 @@ import { CountryPickerService } from './Services/CountryPicker/country-picker.se
 import { ValidationReportModalComponent } from './Modals/multiple-message-modal/validation-report-modal.component';
 import { SignalRService } from './Services/signalr.service';
 import { TextInputModalComponent } from './Modals/text-input-modal/text-input-modal.component';
+import { RequestLoaModalComponent } from './Modals/request-loa-modal/request-loa-modal.component';
 import { ModpackBuildService } from './features/modpack/modpackBuild.service';
 import { ModpackRcService } from './features/modpack/modpackRc.service';
 import { DisplayNameService } from './Services/displayName.service';
@@ -240,6 +241,7 @@ export function tokenGetter() {
         ConfirmationModalComponent,
         TextInputModalComponent,
         ValidationReportModalComponent,
+        RequestLoaModalComponent,
         CharacterBlockDirective,
         MustMatchDirective,
         LoginComponent,

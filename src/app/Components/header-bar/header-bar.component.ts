@@ -1,7 +1,7 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { AccountService } from '../../Services/account.service';
 import { MatDialog } from '@angular/material/dialog';
-import { RequestLoaModalComponent } from '@app/features/command/modals/request-loa-modal/request-loa-modal.component';
+import { RequestLoaModalComponent } from '@app/Modals/request-loa-modal/request-loa-modal.component';
 import { PermissionsService } from '../../Services/permissions.service';
 import { AppSettingsService, Environments } from '../../Services/appSettingsService.service';
 import { AuthenticationService } from '../../Services/Authentication/authentication.service';
