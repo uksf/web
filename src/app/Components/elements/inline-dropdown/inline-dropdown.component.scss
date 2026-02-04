@@ -1,3 +1,5 @@
+@use 'styles/variables' as v;
+
 .block {
     display: inline-block;
 }
@@ -16,8 +18,7 @@
 
 input {
     width: 100%;
-    border: 1px solid #ccc;
-    color: black;
+    border: 1px solid;
     border-radius: 2px;
     margin: 0;
     margin-left: -6px;
@@ -25,5 +26,5 @@ input {
 }
 
 .invalid {
-    border: 1px solid red;
+    border: 1px solid;
 }

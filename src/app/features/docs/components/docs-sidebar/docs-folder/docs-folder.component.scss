@@ -1,3 +1,5 @@
+@use 'styles/variables' as v;
+
 :host {
     display: flex;
     flex-direction: column;
@@ -12,17 +14,15 @@
         width: 6px;
         margin-top: 14px;
         padding-top: 13px;
-        border-top-color: #363636;
         border-top-style: solid;
         border-top-width: 1px;
     }
 
     .folder-toggle-line {
         width: 11px;
-        margin-right: 4px;
+        margin-right: v.$spacing-4px;
         margin-top: 14px;
         padding-top: 13px;
-        border-top-color: #363636;
         border-top-style: solid;
         border-top-width: 1px;
     }
@@ -30,14 +30,14 @@
     .folder-header {
         flex: 1;
         display: flex;
-        border-radius: 4px;
+        border-radius: v.$spacing-4px;
         padding-right: 1px;
         min-width: 0;
         align-items: center;
 
         .mat-icon {
-            font-size: 24px;
-            height: 24px;
+            font-size: v.$spacing-24px;
+            height: v.$spacing-24px;
             width: 26px;
 
             &.folder-icon {
@@ -50,7 +50,7 @@
             padding-right: 2px;
             align-items: center;
             cursor: pointer;
-            border-radius: 4px;
+            border-radius: v.$spacing-4px;
             height: 28px;
 
             &.blank {
@@ -59,21 +59,15 @@
 
             .indicator-container {
                 display: flex;
-                width: 16px;
+                width: v.$spacing-16px;
                 margin-left: 1px;
 
                 .mat-icon {
-                    font-size: 16px;
-                    height: 16px;
-                    width: 16px;
+                    font-size: v.$spacing-16px;
+                    height: v.$spacing-16px;
+                    width: v.$spacing-16px;
                 }
             }
-
-            //.mat-icon {
-            //    font-size: 24px;
-            //    height: 24px;
-            //    width: 26px;
-            //}
         }
 
         .folder-title {
@@ -87,8 +81,8 @@
 
         .folder-name {
             flex: 1;
-            padding: 0 0 0 4px;
-            line-height: 24px;
+            padding: 0 0 0 v.$spacing-4px;
+            line-height: v.$spacing-24px;
             align-self: flex-end;
             overflow: hidden;
             white-space: nowrap;
@@ -148,7 +142,6 @@
         .folder-panel-line {
             flex: 1;
             height: calc(100% - 13px);
-            border-left-color: #383838;
             border-left-style: solid;
             border-left-width: 1px;
         }
@@ -168,10 +161,9 @@
 
             .documents-container-line {
                 width: 17px;
-                margin-right: 4px;
+                margin-right: v.$spacing-4px;
                 margin-top: 14px;
                 padding-top: 13px;
-                border-top-color: #363636;
                 border-top-style: solid;
                 border-top-width: 1px;
             }
@@ -181,12 +173,12 @@
                 display: flex;
                 flex-direction: row;
                 align-items: center;
-                border-radius: 4px;
+                border-radius: v.$spacing-4px;
                 padding: 2px 0 2px 2px;
 
                 .document-name {
                     flex: 1;
-                    padding: 0 0 0 4px;
+                    padding: 0 0 0 v.$spacing-4px;
                     line-height: 22px;
                     align-self: flex-end;
                 }

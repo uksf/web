@@ -43,6 +43,7 @@
 @import 'app/features/docs/components/docs-sidebar/docs-document/docs-document.component.scss-theme';
 @import 'app/Components/elements/file-drop/file-drop.component.scss-theme.scss';
 @import 'app/Components/elements/inline-edit/inline-edit.component.scss-theme.scss';
+@import 'app/Components/elements/inline-dropdown/inline-dropdown.component.scss-theme.scss';
 @import 'app/Components/elements/loading-placeholder/loading-placeholder.component.scss-theme.scss';
 @import 'app/Components/elements/selection-list/selection-list.component.scss-theme';
 @import 'app/Components/elements/theme-emitter/theme-emitter.component.scss-theme.scss';
@@ -115,6 +116,7 @@
     @include docs-permissions-component-theme($theme);
     @include file-drop-component-theme($theme);
     @include inline-edit-component-theme($theme);
+    @include inline-dropdown-component-theme($theme);
     @include loading-placeholder-component-theme($theme);
     @include selection-list-component-theme($theme);
     @include theme-emitter-component-theme($theme);

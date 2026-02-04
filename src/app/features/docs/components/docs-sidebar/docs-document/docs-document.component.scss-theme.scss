@@ -6,6 +6,10 @@
     $primary: map-get($theme, primary);
 
     app-docs-document {
+        .document-container-line {
+            border-top-color: mat.get-color-from-palette($background, 200);
+        }
+
         .document-title {
             &.hover {
                 background-color: mat.get-color-from-palette($background, app-bar-hover);
