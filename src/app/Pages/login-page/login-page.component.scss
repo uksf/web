@@ -1,5 +1,7 @@
+@use 'styles/variables' as v;
+
 h2 {
-    margin: auto 0 8px;
+    margin: auto 0 v.$spacing-8px;
 }
 
 .container {
@@ -16,7 +18,7 @@ h2 {
     .option-link {
         display: block;
         margin: auto;
-        line-height: 24px;
+        line-height: v.$spacing-24px;
         cursor: pointer;
     }
 }
