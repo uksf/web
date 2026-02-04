@@ -26,10 +26,12 @@ export class AdminLauncherLogsComponent extends AdminLogsComponent implements On
         const params = this.buildParams();
         this.httpClient
             .get<PagedResult<LauncherLog>>(`${this.urls.apiUrl}/logging/launcher`, { params })
-            .subscribe((pagedResult: PagedResult<LauncherLog>) => {
-                this.dataLoaded = true;
-                this.paginator.length = pagedResult.totalCount;
-                this.datasource.data = pagedResult.data;
+            .subscribe({
+                next: (pagedResult: PagedResult<LauncherLog>) => {
+                    this.dataLoaded = true;
+                    this.paginator.length = pagedResult.totalCount;
+                    this.datasource.data = pagedResult.data;
+                }
             });
     }
 }

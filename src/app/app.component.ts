@@ -46,8 +46,13 @@ export class AppComponent implements OnInit {
                         button: 'Dismiss'
                     }
                 })
-                .componentInstance.confirmEvent.subscribe(() => {
-                    localStorage.setItem('chromeWarning', 'dismissed');
+                .afterClosed()
+                .subscribe({
+                    next: (result) => {
+                        if (result) {
+                            localStorage.setItem('chromeWarning', 'dismissed');
+                        }
+                    }
                 });
         } else {
             localStorage.setItem('chromeWarning', 'dismissed');

@@ -66,47 +66,55 @@ export class RecruitmentApplicationPageComponent {
     }
 
     getApplication() {
-        this.httpClient.get(this.urls.apiUrl + '/recruitment/applications/' + this.accountId).subscribe((response: DetailedApplication) => {
-            const application = response;
-            if (application.account.id === this.accountService.account.id && application.account.application.state === ApplicationState.WAITING) {
-                this.router.navigate(['/application']).then();
-                return;
-            }
-
-            if (
-                application.account.id === this.accountService.account.id ||
-                this.permissions.hasAnyPermissionOf([Permissions.RECRUITER, Permissions.RECRUITER_LEAD, Permissions.COMMAND, Permissions.ADMIN])
-            ) {
-                this.application = application;
-                this.otherRolePreferenceOptions = this.rolePreferenceOptions.filter((x: string) => !application.account.rolePreferences.includes(x));
-
-                this.getTeamspeakState();
-                this.getDiscordState();
-
-                if (this.permissions.hasPermission(Permissions.RECRUITER_LEAD)) {
-                    this.httpClient.get(this.urls.apiUrl + '/recruitment/recruiters').subscribe((recruiters: Recruiter[]) => {
-                        this.recruiters = recruiters.filter((x: Recruiter) => x.active);
-                        this.selected = this.application.recruiterId;
-                    });
+        this.httpClient.get(this.urls.apiUrl + '/recruitment/applications/' + this.accountId).subscribe({
+            next: (response: DetailedApplication) => {
+                const application = response;
+                if (application.account.id === this.accountService.account.id && application.account.application.state === ApplicationState.WAITING) {
+                    this.router.navigate(['/application']).then();
+                    return;
                 }
-                this.updating = false;
-            } else {
-                this.router.navigate(['/home']).then();
+
+                if (
+                    application.account.id === this.accountService.account.id ||
+                    this.permissions.hasAnyPermissionOf([Permissions.RECRUITER, Permissions.RECRUITER_LEAD, Permissions.COMMAND, Permissions.ADMIN])
+                ) {
+                    this.application = application;
+                    this.otherRolePreferenceOptions = this.rolePreferenceOptions.filter((x: string) => !application.account.rolePreferences.includes(x));
+
+                    this.getTeamspeakState();
+                    this.getDiscordState();
+
+                    if (this.permissions.hasPermission(Permissions.RECRUITER_LEAD)) {
+                        this.httpClient.get(this.urls.apiUrl + '/recruitment/recruiters').subscribe({
+                            next: (recruiters: Recruiter[]) => {
+                                this.recruiters = recruiters.filter((x: Recruiter) => x.active);
+                                this.selected = this.application.recruiterId;
+                            }
+                        });
+                    }
+                    this.updating = false;
+                } else {
+                    this.router.navigate(['/home']).then();
+                }
             }
         });
     }
 
     getTeamspeakState() {
-        this.httpClient.get(`${this.urls.apiUrl}/teamspeak/${this.accountId}/onlineUserDetails`).subscribe((state: OnlineState) => {
-            this.teamspeakState.next(state);
-            this.teamspeakState.complete();
+        this.httpClient.get(`${this.urls.apiUrl}/teamspeak/${this.accountId}/onlineUserDetails`).subscribe({
+            next: (state: OnlineState) => {
+                this.teamspeakState.next(state);
+                this.teamspeakState.complete();
+            }
         });
     }
 
     getDiscordState() {
-        this.httpClient.get(`${this.urls.apiUrl}/discord/${this.accountId}/onlineUserDetails`).subscribe((state: OnlineState) => {
-            this.discordState.next(state);
-            this.discordState.complete();
+        this.httpClient.get(`${this.urls.apiUrl}/discord/${this.accountId}/onlineUserDetails`).subscribe({
+            next: (state: OnlineState) => {
+                this.discordState.next(state);
+                this.discordState.complete();
+            }
         });
     }
 
@@ -147,8 +155,13 @@ export class RecruitmentApplicationPageComponent {
             .open(ConfirmationModalComponent, {
                 data: { message: `Are you sure you want to reset ${this.application.displayName} to a Candidate?\nThis will remove any rank, unit, and role assignments.` }
             })
-            .componentInstance.confirmEvent.subscribe(() => {
-                this.updateApplicationState(ApplicationState.WAITING);
+            .afterClosed()
+            .subscribe({
+                next: (result) => {
+                    if (result) {
+                        this.updateApplicationState(ApplicationState.WAITING);
+                    }
+                }
             });
     }
 

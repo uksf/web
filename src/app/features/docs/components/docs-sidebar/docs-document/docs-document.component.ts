@@ -30,15 +30,17 @@ export class DocsDocumentComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.folderMetadata.isFirstChange() && changes.documentMetadata.isFirstChange()) {
-            this.route.queryParams.subscribe((params) => {
-                const folder = params.folder;
-                const document = params.document;
+            this.route.queryParams.subscribe({
+                next: (params) => {
+                    const folder = params.folder;
+                    const document = params.document;
 
-                if (folder && document) {
-                    this.selected = folder === this.folderMetadata?.id && document === this.documentMetadata?.id;
-                    this.showSelfInFolderTree();
-                } else {
-                    this.selected = false;
+                    if (folder && document) {
+                        this.selected = folder === this.folderMetadata?.id && document === this.documentMetadata?.id;
+                        this.showSelfInFolderTree();
+                    } else {
+                        this.selected = false;
+                    }
                 }
             });
         }
@@ -109,8 +111,10 @@ export class DocsDocumentComponent implements OnChanges {
                 }
             })
             .afterClosed()
-            .subscribe((_) => {
-                this.refresh.emit();
+            .subscribe({
+                next: (_) => {
+                    this.refresh.emit();
+                }
             });
     }
 
@@ -119,19 +123,24 @@ export class DocsDocumentComponent implements OnChanges {
             .open<ConfirmationModalComponent, ConfirmationModalData>(ConfirmationModalComponent, {
                 data: { message: `Are you sure you want to delete '${this.documentMetadata.name}'` }
             })
-            .componentInstance.confirmEvent.subscribe(() => {
-                this.httpClient.delete(`${this.urlService.apiUrl}/docs/folders/${this.folderMetadata.id}/documents/${this.documentMetadata.id}`).subscribe({
-                    next: () => {
-                        this.refresh.emit();
-                    },
-                    error: (error: UksfError) => {
-                        this.dialog.open(MessageModalComponent, {
-                            data: { message: error.error }
-                        });
+            .afterClosed()
+            .subscribe({
+                next: (result) => {
+                    if (result) {
+                        this.httpClient.delete(`${this.urlService.apiUrl}/docs/folders/${this.folderMetadata.id}/documents/${this.documentMetadata.id}`).subscribe({
+                            next: () => {
+                                this.refresh.emit();
+                            },
+                            error: (error: UksfError) => {
+                                this.dialog.open(MessageModalComponent, {
+                                    data: { message: error.error }
+                                });
 
-                        this.refresh.emit();
+                                this.refresh.emit();
+                            }
+                        });
                     }
-                });
+                }
             });
     }
 }

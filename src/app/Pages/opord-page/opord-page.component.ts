@@ -20,14 +20,16 @@ export class OpordPageComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.httpClient.get(this.urls.apiUrl + '/OperationOrder/' + this.opordId).subscribe((result) => {
-            this.opordData = result;
-            this.description = this.opordData.description;
+        this.httpClient.get(this.urls.apiUrl + '/OperationOrder/' + this.opordId).subscribe({
+            next: (result) => {
+                this.opordData = result;
+                this.description = this.opordData.description;
+            }
         });
     }
 
     saveDescription() {
         this.opordData.description = this.description;
-        this.httpClient.put(this.urls.apiUrl + '/OperationOrder', this.opordData).subscribe();
+        this.httpClient.put(this.urls.apiUrl + '/OperationOrder', this.opordData).subscribe({});
     }
 }

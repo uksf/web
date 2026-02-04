@@ -57,8 +57,10 @@ export class PersonnelLoasComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.filterSubject.pipe(debounceTime(150), distinctUntilChanged()).subscribe(() => {
-            this.update();
+        this.filterSubject.pipe(debounceTime(150), distinctUntilChanged()).subscribe({
+            next: () => {
+                this.update();
+            }
         });
 
         this.mobile = window.screen.width < 400 || window.screen.height < 500;
@@ -97,22 +99,33 @@ export class PersonnelLoasComponent implements OnInit {
         this.dialog
             .open(RequestLoaModalComponent, {})
             .afterClosed()
-            .subscribe((_) => {
-                this.update();
+            .subscribe({
+                next: (_) => {
+                    this.update();
+                }
             });
     }
 
     delete(loa: Loa) {
-        const dialog = this.dialog.open(ConfirmationModalComponent, {
-            data: {
-                message: `Are you sure you want to delete LOA for '${loa.name}' from '${formatDate(loa.start, 'd MMM y', 'en-GB', 'UTC')}' to '${formatDate(loa.end, 'd MMM y', 'en-GB', 'UTC')}'?`
-            }
-        });
-        dialog.componentInstance.confirmEvent.subscribe(() => {
-            this.httpClient.delete(`${this.urls.apiUrl}/loa/${loa.id}`).subscribe((_) => {
-                this.update();
+        this.dialog
+            .open(ConfirmationModalComponent, {
+                data: {
+                    message: `Are you sure you want to delete LOA for '${loa.name}' from '${formatDate(loa.start, 'd MMM y', 'en-GB', 'UTC')}' to '${formatDate(loa.end, 'd MMM y', 'en-GB', 'UTC')}'?`
+                }
+            })
+            .afterClosed()
+            .subscribe({
+                next: (result) => {
+                    if (!result) {
+                        return;
+                    }
+                    this.httpClient.delete(`${this.urls.apiUrl}/loa/${loa.id}`).subscribe({
+                        next: (_) => {
+                            this.update();
+                        }
+                    });
+                }
             });
-        });
     }
 
     getDisplayForDateMode(dateMode: string): string {

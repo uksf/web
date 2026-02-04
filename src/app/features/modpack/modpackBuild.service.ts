@@ -23,8 +23,10 @@ export class ModpackBuildService implements OnDestroy {
             this.patchBuild(build);
             newBuildCallback(build.id);
         });
-        this.hubConnection.reconnectEvent.subscribe(() => {
-            this.getData(callback);
+        this.hubConnection.reconnectEvent.subscribe({
+            next: () => {
+                this.getData(callback);
+            }
         });
     }
 
@@ -51,9 +53,11 @@ export class ModpackBuildService implements OnDestroy {
 
     getData(callback: () => void) {
         // get request for all builds
-        this.httpClient.get(this.urls.apiUrl + '/modpack/builds').subscribe((builds: ModpackBuild[]) => {
-            this.builds = builds;
-            callback();
+        this.httpClient.get(this.urls.apiUrl + '/modpack/builds').subscribe({
+            next: (builds: ModpackBuild[]) => {
+                this.builds = builds;
+                callback();
+            }
         });
     }
 }

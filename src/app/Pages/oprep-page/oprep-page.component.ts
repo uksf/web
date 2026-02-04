@@ -21,10 +21,12 @@ export class OprepPageComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.httpClient.get(this.urls.apiUrl + '/OperationReport/' + this.opordId).subscribe((result: any) => {
-            this.groupedAttendance = result.groupedAttendance;
-            this.oprepEntity = result.operationEntity;
-            this.description = this.oprepEntity.description;
+        this.httpClient.get(this.urls.apiUrl + '/OperationReport/' + this.opordId).subscribe({
+            next: (result: any) => {
+                this.groupedAttendance = result.groupedAttendance;
+                this.oprepEntity = result.operationEntity;
+                this.description = this.oprepEntity.description;
+            }
         });
     }
 
@@ -50,6 +52,6 @@ export class OprepPageComponent implements OnInit {
 
     saveDescription() {
         this.oprepEntity.description = this.description;
-        this.httpClient.put(this.urls.apiUrl + '/OperationReport', this.oprepEntity).subscribe();
+        this.httpClient.put(this.urls.apiUrl + '/OperationReport', this.oprepEntity).subscribe({});
     }
 }

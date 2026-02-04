@@ -24,8 +24,10 @@ export class ModpackRcService implements OnDestroy {
             this.patchBuild(build);
             newBuildCallback(build.version);
         });
-        this.hubConnection.reconnectEvent.subscribe(() => {
-            this.getData(callback);
+        this.hubConnection.reconnectEvent.subscribe({
+            next: () => {
+                this.getData(callback);
+            }
         });
     }
 
@@ -64,16 +66,18 @@ export class ModpackRcService implements OnDestroy {
 
     getData(callback: () => void) {
         // get request for all builds (groups by version)
-        this.httpClient.get(this.urls.apiUrl + '/modpack/rcs').subscribe((builds: ModpackBuild[]) => {
-            // this.rcs = builds;
-            if (builds.length === 0) {
-                this.rcs = [];
-            }
+        this.httpClient.get(this.urls.apiUrl + '/modpack/rcs').subscribe({
+            next: (builds: ModpackBuild[]) => {
+                // this.rcs = builds;
+                if (builds.length === 0) {
+                    this.rcs = [];
+                }
 
-            builds.forEach((build: ModpackBuild) => {
-                this.patchBuild(build);
-            });
-            callback();
+                builds.forEach((build: ModpackBuild) => {
+                    this.patchBuild(build);
+                });
+                callback();
+            }
         });
     }
 }

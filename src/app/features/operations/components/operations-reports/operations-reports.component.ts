@@ -20,14 +20,18 @@ export class OperationsReportsComponent implements OnInit {
     }
 
     getReports() {
-        this.httpClient.get(this.urls.apiUrl + '/OperationReport').subscribe(response => {
-            this.oprepData = response;
+        this.httpClient.get(this.urls.apiUrl + '/OperationReport').subscribe({
+            next: (response) => {
+                this.oprepData = response;
+            }
         });
     }
 
     createOprep() {
-        this.dialog.open(CreateOperationReportModalComponent, {}).afterClosed().subscribe(_ => {
-            this.getReports();
+        this.dialog.open(CreateOperationReportModalComponent, {}).afterClosed().subscribe({
+            next: () => {
+                this.getReports();
+            }
         });
     }
 

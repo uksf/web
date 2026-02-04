@@ -35,8 +35,10 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
         this.hubConnection.connection.on('ReceiveRequestUpdate', (_) => {
             this.getRequests();
         });
-        this.hubConnection.reconnectEvent.subscribe(() => {
-            this.getRequests();
+        this.hubConnection.reconnectEvent.subscribe({
+            next: () => {
+                this.getRequests();
+            }
         });
     }
 
@@ -46,16 +48,16 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
 
     getRequests() {
         this.updating = true;
-        this.httpClient.get(`${this.urls.apiUrl}/commandrequests`).subscribe(
-            (response) => {
+        this.httpClient.get(`${this.urls.apiUrl}/commandrequests`).subscribe({
+            next: (response) => {
                 this.myRequests = response['myRequests'];
                 this.otherRequests = response['otherRequests'];
                 this.updating = false;
             },
-            (_) => {
+            error: (_) => {
                 this.updating = false;
             }
-        );
+        });
     }
 
     isLoa(request) {
@@ -80,15 +82,15 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
                     })
                 }
             )
-            .subscribe(
-                (_) => this.getRequests(),
-                (error) => {
+            .subscribe({
+                next: (_) => this.getRequests(),
+                error: (error) => {
                     this.getRequests();
                     this.dialog.open(MessageModalComponent, {
                         data: { message: error.error }
                     });
                 }
-            );
+            });
     }
 
     transferRequest(): void {
@@ -99,43 +101,55 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
         const dialog = this.dialog.open(RequestTransferModalComponent, {
             data: data
         });
-        dialog.afterClosed().subscribe((_) => {
-            this.getRequests();
+        dialog.afterClosed().subscribe({
+            next: (_) => {
+                this.getRequests();
+            }
         });
     }
 
     rankRequest(): void {
         const dialog = this.dialog.open(RequestRankModalComponent, {});
-        dialog.afterClosed().subscribe((_) => {
-            this.getRequests();
+        dialog.afterClosed().subscribe({
+            next: (_) => {
+                this.getRequests();
+            }
         });
     }
 
     roleRequest(): void {
         const dialog = this.dialog.open(RequestRoleModalComponent, {});
-        dialog.afterClosed().subscribe((_) => {
-            this.getRequests();
+        dialog.afterClosed().subscribe({
+            next: (_) => {
+                this.getRequests();
+            }
         });
     }
 
     chainOfCommandPositionRequest() {
         const dialog = this.dialog.open(RequestChainOfCommandPositionModalComponent, {});
-        dialog.afterClosed().subscribe((_) => {
-            this.getRequests();
+        dialog.afterClosed().subscribe({
+            next: (_) => {
+                this.getRequests();
+            }
         });
     }
 
     unitRemovalRequest() {
         const dialog = this.dialog.open(RequestUnitRemovalModalComponent, {});
-        dialog.afterClosed().subscribe((_) => {
-            this.getRequests();
+        dialog.afterClosed().subscribe({
+            next: (_) => {
+                this.getRequests();
+            }
         });
     }
 
     dischargeRequest() {
         const dialog = this.dialog.open(RequestDischargeModalComponent, {});
-        dialog.afterClosed().subscribe((_) => {
-            this.getRequests();
+        dialog.afterClosed().subscribe({
+            next: (_) => {
+                this.getRequests();
+            }
         });
     }
 }

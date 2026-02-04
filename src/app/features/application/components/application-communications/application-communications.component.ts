@@ -31,8 +31,8 @@ export class ApplicationCommunicationsComponent {
                 });
             } else {
                 const code = this.route.snapshot.queryParams['validation'];
-                this.httpClient.post(this.urls.apiUrl + '/steamcode/' + id, { code: code }).subscribe(
-                    () => {
+                this.httpClient.post(this.urls.apiUrl + '/steamcode/' + id, { code: code }).subscribe({
+                    next: () => {
                         this.router.navigate(['/application']).then(() => {
                             this.pendingValidation = false;
                             this.checkModes();
@@ -41,7 +41,7 @@ export class ApplicationCommunicationsComponent {
                             });
                         });
                     },
-                    (error) => {
+                    error: (error) => {
                         this.router.navigate(['/application']).then(() => {
                             this.pendingValidation = false;
                             this.dialog.open(MessageModalComponent, {
@@ -49,7 +49,7 @@ export class ApplicationCommunicationsComponent {
                             });
                         });
                     }
-                );
+                });
             }
         } else if (window.location.href.indexOf('discordid=') !== -1) {
             this.pendingValidation = true;
@@ -65,8 +65,8 @@ export class ApplicationCommunicationsComponent {
             } else {
                 const code = this.route.snapshot.queryParams['validation'];
                 const added = this.route.snapshot.queryParams['added'];
-                this.httpClient.post(this.urls.apiUrl + '/discordcode/' + id, { code: code }).subscribe(
-                    () => {
+                this.httpClient.post(this.urls.apiUrl + '/discordcode/' + id, { code: code }).subscribe({
+                    next: () => {
                         this.router.navigate(['/application']).then(() => {
                             this.pendingValidation = false;
                             this.checkModes();
@@ -82,13 +82,18 @@ export class ApplicationCommunicationsComponent {
                                             button: 'Join Discord',
                                         },
                                     })
-                                    .componentInstance.confirmEvent.subscribe(() => {
-                                        window.open('https://discord.uk-sf.co.uk', '_blank');
+                                    .afterClosed()
+                                    .subscribe({
+                                        next: (result) => {
+                                            if (result) {
+                                                window.open('https://discord.uk-sf.co.uk', '_blank');
+                                            }
+                                        }
                                     });
                             }
                         });
                     },
-                    (error) => {
+                    error: (error) => {
                         this.router.navigate(['/application']).then(() => {
                             this.pendingValidation = false;
                             this.dialog.open(MessageModalComponent, {
@@ -96,7 +101,7 @@ export class ApplicationCommunicationsComponent {
                             });
                         });
                     }
-                );
+                });
             }
         }
     }
@@ -144,8 +149,13 @@ export class ApplicationCommunicationsComponent {
                     button: 'Continue',
                 },
             })
-            .componentInstance.confirmEvent.subscribe(() => {
-                window.location.href = this.urls.apiUrl + '/steamconnection/application';
+            .afterClosed()
+            .subscribe({
+                next: (result) => {
+                    if (result) {
+                        window.location.href = this.urls.apiUrl + '/steamconnection/application';
+                    }
+                }
             });
     }
 
@@ -163,8 +173,13 @@ export class ApplicationCommunicationsComponent {
                     button: 'Continue',
                 },
             })
-            .componentInstance.confirmEvent.subscribe(() => {
-                window.location.href = this.urls.apiUrl + '/discordconnection/application';
+            .afterClosed()
+            .subscribe({
+                next: (result) => {
+                    if (result) {
+                        window.location.href = this.urls.apiUrl + '/discordconnection/application';
+                    }
+                }
             });
     }
 

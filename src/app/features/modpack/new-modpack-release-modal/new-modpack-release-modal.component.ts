@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Inject, Output } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { InstantErrorStateMatcher } from '@app/Services/formhelper.service';
 import { ModpackRelease } from '../models/ModpackRelease';
@@ -11,7 +11,6 @@ import { ModpackReleaseService } from '../modpackRelease.service';
     styleUrls: ['./new-modpack-release-modal.component.scss']
 })
 export class NewModpackReleaseModalComponent {
-    @Output() successEvent: any = new EventEmitter();
     form: UntypedFormGroup;
     instantErrorStateMatcher: InstantErrorStateMatcher = new InstantErrorStateMatcher();
     previousVersion: string;
@@ -23,6 +22,7 @@ export class NewModpackReleaseModalComponent {
     constructor(
         private formBuilder: UntypedFormBuilder,
         private modpackReleaseService: ModpackReleaseService,
+        public dialogRef: MatDialogRef<NewModpackReleaseModalComponent>,
         @Inject(MAT_DIALOG_DATA)
         public data: {
             previousRelease: ModpackRelease;
@@ -44,7 +44,7 @@ export class NewModpackReleaseModalComponent {
         this.submitting = true;
         const formValue: any = this.form.getRawValue();
         this.modpackReleaseService.createNewRelease(formValue.version, () => {
-            this.successEvent.emit();
+            this.dialogRef.close(true);
         });
     }
 }

@@ -35,25 +35,27 @@ export class DocsPageComponent implements OnInit {
     }
 
     setSelectedDocument() {
-        this.route.queryParams.subscribe((params) => {
-            const folder = params.folder;
-            const document = params.document;
+        this.route.queryParams.subscribe({
+            next: (params) => {
+                const folder = params.folder;
+                const document = params.document;
 
-            if (folder && document) {
-                this.httpClient.get(`${this.urls.apiUrl}/docs/folders/${folder}/documents/${document}`).subscribe({
-                    next: (documentMetadata: DocumentMetadata) => {
-                        this.selectedDocumentMetadata = documentMetadata;
-                    },
-                    error: (error: UksfError) => {
-                        this.dialog.open(MessageModalComponent, {
-                            data: { message: error.error }
-                        });
+                if (folder && document) {
+                    this.httpClient.get(`${this.urls.apiUrl}/docs/folders/${folder}/documents/${document}`).subscribe({
+                        next: (documentMetadata: DocumentMetadata) => {
+                            this.selectedDocumentMetadata = documentMetadata;
+                        },
+                        error: (error: UksfError) => {
+                            this.dialog.open(MessageModalComponent, {
+                                data: { message: error.error }
+                            });
 
-                        this.resetSelectedDocument();
-                    }
-                });
-            } else {
-                this.resetSelectedDocument();
+                            this.resetSelectedDocument();
+                        }
+                    });
+                } else {
+                    this.resetSelectedDocument();
+                }
             }
         });
     }

@@ -32,34 +32,42 @@ export class ModpackWorkshopComponent implements OnInit {
         this.hubConnection.connection.on('ReceiveWorkshopModUpdate', (id: string) => {
             this.getDataForMod(id);
         });
-        this.hubConnection.reconnectEvent.subscribe(() => {
-            this.getData();
+        this.hubConnection.reconnectEvent.subscribe({
+            next: () => {
+                this.getData();
+            }
         });
     }
 
     getData(callback: () => void = null) {
-        this.httpClient.get(this.urls.apiUrl + '/workshop').subscribe((mods: WorkshopMod[]) => {
-            this.mods = mods;
-            if (callback) {
-                callback();
+        this.httpClient.get(this.urls.apiUrl + '/workshop').subscribe({
+            next: (mods: WorkshopMod[]) => {
+                this.mods = mods;
+                if (callback) {
+                    callback();
+                }
             }
         });
     }
 
     getDataForMod(id: string) {
-        this.httpClient.get(this.urls.apiUrl + `/workshop/${id}`).subscribe((mod: WorkshopMod) => {
-            const index: number = this.mods.findIndex((x: WorkshopMod) => x.id === mod.id);
-            if (index === -1) {
-                this.getData();
-            } else {
-                this.mods.splice(index, 1, mod);
+        this.httpClient.get(this.urls.apiUrl + `/workshop/${id}`).subscribe({
+            next: (mod: WorkshopMod) => {
+                const index: number = this.mods.findIndex((x: WorkshopMod) => x.id === mod.id);
+                if (index === -1) {
+                    this.getData();
+                } else {
+                    this.mods.splice(index, 1, mod);
+                }
             }
         });
     }
 
     getModUpdatedDate(mod: WorkshopMod) {
-        this.httpClient.get(this.urls.apiUrl + `/workshop/${mod.steamId}/updatedDate`).subscribe((updatedDateResponse: WorkshopModUpdatedDate) => {
-            mod.updatedDate = updatedDateResponse.updatedDate;
+        this.httpClient.get(this.urls.apiUrl + `/workshop/${mod.steamId}/updatedDate`).subscribe({
+            next: (updatedDateResponse: WorkshopModUpdatedDate) => {
+                mod.updatedDate = updatedDateResponse.updatedDate;
+            }
         });
     }
 
@@ -84,21 +92,25 @@ export class ModpackWorkshopComponent implements OnInit {
     }
 
     install() {
-        this.dialog.open(InstallWorkshopModModalComponent).componentInstance.installEvent.subscribe((data: InstallWorkshopModData) => {
-            this.httpClient
-                .post(this.urls.apiUrl + `/workshop`, {
-                    steamId: data.steamId,
-                    rootMod: data.rootMod,
-                    folderName: data.folderName
-                })
-                .subscribe({
-                    next: () => {},
-                    error: (error: any) => {
-                        this.dialog.open(MessageModalComponent, {
-                            data: { message: error.error }
+        this.dialog.open(InstallWorkshopModModalComponent).afterClosed().subscribe({
+            next: (data: InstallWorkshopModData) => {
+                if (data) {
+                    this.httpClient
+                        .post(this.urls.apiUrl + `/workshop`, {
+                            steamId: data.steamId,
+                            rootMod: data.rootMod,
+                            folderName: data.folderName
+                        })
+                        .subscribe({
+                            next: () => {},
+                            error: (error: any) => {
+                                this.dialog.open(MessageModalComponent, {
+                                    data: { message: error.error }
+                                });
+                            }
                         });
-                    }
-                });
+                }
+            }
         });
     }
 
@@ -109,28 +121,39 @@ export class ModpackWorkshopComponent implements OnInit {
                     availablePbos: mod.pbos
                 }
             })
-            .componentInstance.submitEvent.subscribe((selectedPbos: string[]) => {
-                this.httpClient.post(this.urls.apiUrl + `/workshop/${mod.steamId}/resolve`, { selectedPbos: selectedPbos }).subscribe({
-                    next: () => {},
-                    error: (error: any) => {
-                        this.dialog.open(MessageModalComponent, {
-                            data: { message: error.error }
+            .afterClosed()
+            .subscribe({
+                next: (selectedPbos: string[]) => {
+                    if (selectedPbos) {
+                        this.httpClient.post(this.urls.apiUrl + `/workshop/${mod.steamId}/resolve`, { selectedPbos: selectedPbos }).subscribe({
+                            next: () => {},
+                            error: (error: any) => {
+                                this.dialog.open(MessageModalComponent, {
+                                    data: { message: error.error }
+                                });
+                            }
                         });
                     }
-                });
+                }
             });
     }
 
     update(mod: WorkshopMod) {
-        this.httpClient.post(this.urls.apiUrl + `/workshop/${mod.steamId}/update`, {}).subscribe(() => {});
+        this.httpClient.post(this.urls.apiUrl + `/workshop/${mod.steamId}/update`, {}).subscribe({
+            next: () => {}
+        });
     }
 
     uninstall(mod: WorkshopMod) {
-        this.httpClient.post(this.urls.apiUrl + `/workshop/${mod.steamId}/uninstall`, {}).subscribe(() => {});
+        this.httpClient.post(this.urls.apiUrl + `/workshop/${mod.steamId}/uninstall`, {}).subscribe({
+            next: () => {}
+        });
     }
 
     delete(mod: WorkshopMod) {
-        this.httpClient.delete(this.urls.apiUrl + `/workshop/${mod.steamId}`).subscribe(() => {});
+        this.httpClient.delete(this.urls.apiUrl + `/workshop/${mod.steamId}`).subscribe({
+            next: () => {}
+        });
     }
 
     showError(mod: WorkshopMod) {

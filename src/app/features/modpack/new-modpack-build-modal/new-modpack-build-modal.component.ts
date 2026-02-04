@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Output } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { NewBuild } from '../models/NewBuild';
@@ -18,7 +18,6 @@ function onlyOne(form: UntypedFormGroup): ValidationErrors | null {
     styleUrls: ['./new-modpack-build-modal.component.scss']
 })
 export class NewModpackBuildModalComponent {
-    @Output() runEvent = new EventEmitter<NewBuild>();
     form: UntypedFormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     validationMessages = {
@@ -48,7 +47,6 @@ export class NewModpackBuildModalComponent {
     run() {
         const formValue = this.form.getRawValue();
         const reference = formValue.referenceGroup.branch !== 'No branch' ? formValue.referenceGroup.branch : formValue.referenceGroup.commitId;
-        this.dialogRef.close();
-        this.runEvent.emit({ reference: reference, ace: formValue.ace, acre: formValue.acre, air: formValue.air, configuration: formValue.configuration.toLowerCase() });
+        this.dialogRef.close({ reference: reference, ace: formValue.ace, acre: formValue.acre, air: formValue.air, configuration: formValue.configuration.toLowerCase() });
     }
 }

@@ -46,9 +46,11 @@ export class AddTrainingModalComponent {
                     'Content-Type': 'application/json'
                 })
             })
-            .subscribe((_): void => {
-                this.dialog.closeAll();
-                this.pending = false;
+            .subscribe({
+                next: (_): void => {
+                    this.dialog.closeAll();
+                    this.pending = false;
+                }
             });
     }
 

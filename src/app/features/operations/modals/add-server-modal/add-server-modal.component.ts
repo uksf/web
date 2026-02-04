@@ -75,11 +75,13 @@ export class AddServerModalComponent {
             this.connectionId = data.connectionId;
             this.form.patchValue(this.server);
             Object.keys(this.form.controls).forEach((key) => {
-                this.form.get(key).valueChanges.subscribe((change) => {
-                    if (change !== this.server[key]) {
-                        this.changes.add(key);
-                    } else {
-                        this.changes.delete(key);
+                this.form.get(key).valueChanges.subscribe({
+                    next: (change) => {
+                        if (change !== this.server[key]) {
+                            this.changes.add(key);
+                        } else {
+                            this.changes.delete(key);
+                        }
                     }
                 });
             });

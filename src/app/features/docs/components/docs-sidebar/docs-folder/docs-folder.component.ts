@@ -78,9 +78,11 @@ export class DocsFolderComponent {
                 }
             })
             .afterClosed()
-            .subscribe((_) => {
-                this.expandSelf();
-                this.refresh.emit();
+            .subscribe({
+                next: (_) => {
+                    this.expandSelf();
+                    this.refresh.emit();
+                }
             });
     }
 
@@ -99,8 +101,10 @@ export class DocsFolderComponent {
                 }
             })
             .afterClosed()
-            .subscribe((_) => {
-                this.refresh.emit();
+            .subscribe({
+                next: (_) => {
+                    this.refresh.emit();
+                }
             });
     }
 
@@ -109,19 +113,24 @@ export class DocsFolderComponent {
             .open<ConfirmationModalComponent, ConfirmationModalData>(ConfirmationModalComponent, {
                 data: { message: `Are you sure you want to delete '${this.folderMetadata.name}' and all its folders and documents?` }
             })
-            .componentInstance.confirmEvent.subscribe(() => {
-                this.httpClient.delete(`${this.urlService.apiUrl}/docs/folders/${this.folderMetadata.id}`).subscribe({
-                    next: () => {
-                        this.refresh.emit();
-                    },
-                    error: (error: UksfError) => {
-                        this.dialog.open(MessageModalComponent, {
-                            data: { message: error.error }
-                        });
+            .afterClosed()
+            .subscribe({
+                next: (result) => {
+                    if (result) {
+                        this.httpClient.delete(`${this.urlService.apiUrl}/docs/folders/${this.folderMetadata.id}`).subscribe({
+                            next: () => {
+                                this.refresh.emit();
+                            },
+                            error: (error: UksfError) => {
+                                this.dialog.open(MessageModalComponent, {
+                                    data: { message: error.error }
+                                });
 
-                        this.refresh.emit();
+                                this.refresh.emit();
+                            }
+                        });
                     }
-                });
+                }
             });
     }
 
@@ -134,9 +143,11 @@ export class DocsFolderComponent {
                 }
             })
             .afterClosed()
-            .subscribe((_) => {
-                this.expandSelf();
-                this.refresh.emit();
+            .subscribe({
+                next: (_) => {
+                    this.expandSelf();
+                    this.refresh.emit();
+                }
             });
     }
 

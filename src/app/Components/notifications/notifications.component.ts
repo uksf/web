@@ -25,12 +25,14 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         private signalrService: SignalRService,
         private accountService: AccountService
     ) {
-        router.events.subscribe((event) => {
-            this.onClose();
-            this.panel = false;
+        router.events.subscribe({
+            next: (event) => {
+                this.onClose();
+                this.panel = false;
 
-            if (event instanceof NavigationEnd) {
-                this.updateNotifications();
+                if (event instanceof NavigationEnd) {
+                    this.updateNotifications();
+                }
             }
         });
     }
@@ -61,8 +63,10 @@ export class NotificationsComponent implements OnInit, OnDestroy {
                 });
                 this.updateNotifications();
             });
-            this.hubConnection.reconnectEvent.subscribe(() => {
-                this.getNotifications();
+            this.hubConnection.reconnectEvent.subscribe({
+                next: () => {
+                    this.getNotifications();
+                }
             });
         });
     }
@@ -73,9 +77,11 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     }
 
     getNotifications() {
-        this.httpClient.get(this.urlService.apiUrl + '/notifications').subscribe((response) => {
-            this.notifications = response as any[];
-            this.updateNotifications();
+        this.httpClient.get(this.urlService.apiUrl + '/notifications').subscribe({
+            next: (response) => {
+                this.notifications = response as any[];
+                this.updateNotifications();
+            }
         });
     }
 
@@ -105,8 +111,10 @@ export class NotificationsComponent implements OnInit, OnDestroy {
                         .post(this.urlService.apiUrl + '/notifications/read', {
                             notifications: this.unreadNotifications
                         })
-                        .subscribe((_) => {
-                            this.unreadTimeout = null;
+                        .subscribe({
+                            next: (_) => {
+                                this.unreadTimeout = null;
+                            }
                         });
                 }, 2000);
             }

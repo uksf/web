@@ -49,9 +49,11 @@ export class AddRankModalComponent implements OnInit {
                     'Content-Type': 'application/json'
                 })
             })
-            .subscribe((_) => {
-                this.dialog.closeAll();
-                this.pending = false;
+            .subscribe({
+                next: (_) => {
+                    this.dialog.closeAll();
+                    this.pending = false;
+                }
             });
     }
 

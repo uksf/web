@@ -28,8 +28,10 @@ export class DocsSidebarComponent implements OnInit {
                 }
             })
             .afterClosed()
-            .subscribe((_) => {
-                this.refresh.emit();
+            .subscribe({
+                next: (_) => {
+                    this.refresh.emit();
+                }
             });
     }
 

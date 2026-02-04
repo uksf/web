@@ -66,14 +66,16 @@ export class ProfilePageComponent implements OnInit {
                             data: { message: 'Steam failed to connect' }
                         })
                         .afterClosed()
-                        .subscribe(() => {
-                            this.accountService.checkConnections();
+                        .subscribe({
+                            next: () => {
+                                this.accountService.checkConnections();
+                            }
                         });
                 });
             } else {
                 const code = this.route.snapshot.queryParams['validation'];
-                this.httpClient.post(this.urls.apiUrl + '/steamcode/' + id, { code: code }).subscribe(
-                    () => {
+                this.httpClient.post(this.urls.apiUrl + '/steamcode/' + id, { code: code }).subscribe({
+                    next: () => {
                         this.router.navigate(['/profile']).then(() => {
                             this.getAccount();
                             this.dialog
@@ -81,12 +83,14 @@ export class ProfilePageComponent implements OnInit {
                                     data: { message: 'Steam successfully connected' }
                                 })
                                 .afterClosed()
-                                .subscribe(() => {
-                                    this.accountService.checkConnections();
+                                .subscribe({
+                                    next: () => {
+                                        this.accountService.checkConnections();
+                                    }
                                 });
                         });
                     },
-                    (error) => {
+                    error: (error) => {
                         this.router.navigate(['/profile']).then(() => {
                             this.getAccount();
                             this.dialog
@@ -94,12 +98,14 @@ export class ProfilePageComponent implements OnInit {
                                     data: { message: error.error }
                                 })
                                 .afterClosed()
-                                .subscribe(() => {
-                                    this.accountService.checkConnections();
+                                .subscribe({
+                                    next: () => {
+                                        this.accountService.checkConnections();
+                                    }
                                 });
                         });
                     }
-                );
+                });
             }
         } else if (this.route.snapshot.queryParams['discordid']) {
             const id = this.route.snapshot.queryParams['discordid'];
@@ -111,15 +117,17 @@ export class ProfilePageComponent implements OnInit {
                             data: { message: 'Discord failed to connect' }
                         })
                         .afterClosed()
-                        .subscribe(() => {
-                            this.accountService.checkConnections();
+                        .subscribe({
+                            next: () => {
+                                this.accountService.checkConnections();
+                            }
                         });
                 });
             } else {
                 const code = this.route.snapshot.queryParams['validation'];
                 const added = this.route.snapshot.queryParams['added'];
-                this.httpClient.post(this.urls.apiUrl + '/discordcode/' + id, { code: code }).subscribe(
-                    () => {
+                this.httpClient.post(this.urls.apiUrl + '/discordcode/' + id, { code: code }).subscribe({
+                    next: () => {
                         this.router.navigate(['/profile']).then(() => {
                             this.getAccount();
                             if (added === 'true') {
@@ -128,26 +136,32 @@ export class ProfilePageComponent implements OnInit {
                                         data: { message: 'Discord successfully connected' }
                                     })
                                     .afterClosed()
-                                    .subscribe(() => {
-                                        this.accountService.checkConnections();
+                                    .subscribe({
+                                        next: () => {
+                                            this.accountService.checkConnections();
+                                        }
                                     });
                             } else {
-                                const modal = this.dialog.open(ConfirmationModalComponent, {
-                                    data: {
-                                        message: "Discord successfully connected\n\nWe were unable to add you to our Discord server.\nPlease join by pressing 'Join Discord'",
-                                        button: 'Join Discord'
-                                    }
-                                });
-                                modal.afterClosed().subscribe(() => {
-                                    this.accountService.checkConnections();
-                                });
-                                modal.componentInstance.confirmEvent.subscribe(() => {
-                                    window.open('https://discord.uk-sf.co.uk', '_blank');
-                                });
+                                this.dialog
+                                    .open(ConfirmationModalComponent, {
+                                        data: {
+                                            message: "Discord successfully connected\n\nWe were unable to add you to our Discord server.\nPlease join by pressing 'Join Discord'",
+                                            button: 'Join Discord'
+                                        }
+                                    })
+                                    .afterClosed()
+                                    .subscribe({
+                                        next: (result) => {
+                                            this.accountService.checkConnections();
+                                            if (result) {
+                                                window.open('https://discord.uk-sf.co.uk', '_blank');
+                                            }
+                                        }
+                                    });
                             }
                         });
                     },
-                    (error) => {
+                    error: (error) => {
                         this.router.navigate(['/profile']).then(() => {
                             this.getAccount();
                             this.dialog
@@ -155,12 +169,14 @@ export class ProfilePageComponent implements OnInit {
                                     data: { message: error.error }
                                 })
                                 .afterClosed()
-                                .subscribe(() => {
-                                    this.accountService.checkConnections();
+                                .subscribe({
+                                    next: () => {
+                                        this.accountService.checkConnections();
+                                    }
                                 });
                         });
                     }
-                );
+                });
             }
         } else {
             this.getAccount();
@@ -170,9 +186,11 @@ export class ProfilePageComponent implements OnInit {
     getAccount(forceRefresh: boolean = false) {
         if (this.route.snapshot.params.id) {
             this.accountId = this.route.snapshot.params.id;
-            this.httpClient.get(this.urls.apiUrl + '/accounts/' + this.accountId).subscribe((response) => {
-                this.account = response;
-                this.populateSettings();
+            this.httpClient.get(this.urls.apiUrl + '/accounts/' + this.accountId).subscribe({
+                next: (response) => {
+                    this.account = response;
+                    this.populateSettings();
+                }
             });
         } else {
             if (forceRefresh) {
@@ -193,9 +211,11 @@ export class ProfilePageComponent implements OnInit {
             this.accountSubscription.unsubscribe();
         }
 
-        this.accountSubscription = this.accountService.accountChange.subscribe((newAccount: any) => {
-            this.account = newAccount;
-            this.populateSettings();
+        this.accountSubscription = this.accountService.accountChange.subscribe({
+            next: (newAccount: any) => {
+                this.account = newAccount;
+                this.populateSettings();
+            }
         });
     }
 
@@ -211,8 +231,10 @@ export class ProfilePageComponent implements OnInit {
         this.dialog
             .open(ChangeFirstLastModalComponent, {})
             .afterClosed()
-            .subscribe(() => {
-                this.getAccount(true);
+            .subscribe({
+                next: () => {
+                    this.getAccount(true);
+                }
             });
     }
 
@@ -224,8 +246,10 @@ export class ProfilePageComponent implements OnInit {
         this.dialog
             .open(ConnectTeamspeakModalComponent, { disableClose: true })
             .afterClosed()
-            .subscribe(() => {
-                this.getAccount(true);
+            .subscribe({
+                next: () => {
+                    this.getAccount(true);
+                }
             });
     }
 
@@ -242,8 +266,13 @@ export class ProfilePageComponent implements OnInit {
                     button: 'Continue'
                 }
             })
-            .componentInstance.confirmEvent.subscribe(() => {
-                window.location.href = this.urls.apiUrl + '/steamconnection';
+            .afterClosed()
+            .subscribe({
+                next: (result) => {
+                    if (result) {
+                        window.location.href = this.urls.apiUrl + '/steamconnection';
+                    }
+                }
             });
     }
 
@@ -260,8 +289,13 @@ export class ProfilePageComponent implements OnInit {
                     button: 'Continue'
                 }
             })
-            .componentInstance.confirmEvent.subscribe(() => {
-                window.location.href = this.urls.apiUrl + '/discordconnection';
+            .afterClosed()
+            .subscribe({
+                next: (result) => {
+                    if (result) {
+                        window.location.href = this.urls.apiUrl + '/discordconnection';
+                    }
+                }
             });
     }
 
@@ -279,9 +313,11 @@ export class ProfilePageComponent implements OnInit {
 
     changeSetting() {
         this.settingsFormGroup.disable();
-        this.httpClient.put(`${this.urls.apiUrl}/accounts/${this.account.id}/updatesetting`, this.settingsFormGroup.value).subscribe(() => {
-            this.getAccount(true);
-            this.settingsFormGroup.enable();
+        this.httpClient.put(`${this.urls.apiUrl}/accounts/${this.account.id}/updatesetting`, this.settingsFormGroup.value).subscribe({
+            next: () => {
+                this.getAccount(true);
+                this.settingsFormGroup.enable();
+            }
         });
     }
 }

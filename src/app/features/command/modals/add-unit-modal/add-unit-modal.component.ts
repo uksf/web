@@ -64,9 +64,11 @@ export class AddUnitModalComponent implements OnInit {
 
     ngOnInit() {
         this.original = JSON.stringify(this.form.getRawValue());
-        this.httpClient.get(`${this.urls.apiUrl}/units`).subscribe((units: ResponseUnit[]) => {
-            this.units = units;
-            this.resolveAvailableParentUnits();
+        this.httpClient.get(`${this.urls.apiUrl}/units`).subscribe({
+            next: (units: ResponseUnit[]) => {
+                this.units = units;
+                this.resolveAvailableParentUnits();
+            }
         });
     }
 
@@ -127,9 +129,11 @@ export class AddUnitModalComponent implements OnInit {
                         'Content-Type': 'application/json'
                     })
                 })
-                .subscribe(() => {
-                    this.dialog.closeAll();
-                    this.pending = false;
+                .subscribe({
+                    next: () => {
+                        this.dialog.closeAll();
+                        this.pending = false;
+                    }
                 });
         } else {
             const formString = JSON.stringify(this.form.getRawValue()).replace(/[\n\r]/g, '');
@@ -139,9 +143,11 @@ export class AddUnitModalComponent implements OnInit {
                         'Content-Type': 'application/json'
                     })
                 })
-                .subscribe(() => {
-                    this.dialog.closeAll();
-                    this.pending = false;
+                .subscribe({
+                    next: () => {
+                        this.dialog.closeAll();
+                        this.pending = false;
+                    }
                 });
         }
     }
@@ -154,10 +160,16 @@ export class AddUnitModalComponent implements OnInit {
         const dialog = this.dialog.open(ConfirmationModalComponent, {
             data: { message: `Are you sure you want to delete '${this.unit.name}'?` }
         });
-        dialog.componentInstance.confirmEvent.subscribe(() => {
-            this.httpClient.delete(`${this.urls.apiUrl}/units/${this.unit.id}`).subscribe((_) => {
-                this.dialog.closeAll();
-            });
+        dialog.afterClosed().subscribe({
+            next: (result) => {
+                if (result) {
+                    this.httpClient.delete(`${this.urls.apiUrl}/units/${this.unit.id}`).subscribe({
+                        next: (_) => {
+                            this.dialog.closeAll();
+                        }
+                    });
+                }
+            }
         });
     }
 }

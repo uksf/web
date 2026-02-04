@@ -29,11 +29,13 @@ export class EditMemberTrainingModalComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.httpClient.get(this.urls.apiUrl + `/trainings`).subscribe((response: Training[]): void => {
-            this.availableTrainings = response.map((training: Training): EditTrainingItem => {
-                return { ...training, selected: !!this.trainings.find((x: Training): boolean => x.id === training.id) };
-            });
-            this.before = JSON.stringify(this.availableTrainings);
+        this.httpClient.get(this.urls.apiUrl + `/trainings`).subscribe({
+            next: (response: Training[]): void => {
+                this.availableTrainings = response.map((training: Training): EditTrainingItem => {
+                    return { ...training, selected: !!this.trainings.find((x: Training): boolean => x.id === training.id) };
+                });
+                this.before = JSON.stringify(this.availableTrainings);
+            }
         });
     }
 
@@ -46,8 +48,10 @@ export class EditMemberTrainingModalComponent implements OnInit {
                     'Content-Type': 'application/json'
                 })
             })
-            .subscribe((_) => {
-                this.dialog.closeAll();
+            .subscribe({
+                next: (_) => {
+                    this.dialog.closeAll();
+                }
             });
     }
 }

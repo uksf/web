@@ -34,15 +34,15 @@ export class LivePageComponent implements OnInit, OnDestroy {
     }
 
     sendTerminal() {
-        this.httpClient.post(this.urls.apiUrl + '/terminaljobs', this.terminalForm.controls.terminalInput.value.split(' ')).subscribe(
-            (response) => {
+        this.httpClient.post(this.urls.apiUrl + '/terminaljobs', this.terminalForm.controls.terminalInput.value.split(' ')).subscribe({
+            next: (response) => {
                 this.messages.push('Command complete, response was : \n' + response['result']);
             },
-            () => {
+            error: () => {
                 const commandResponse = 'server did not accept command';
                 this.messages.push('Command complete, response was : \n' + commandResponse);
             }
-        );
+        });
         this.terminalForm.controls.terminalInput.setValue('');
     }
 }

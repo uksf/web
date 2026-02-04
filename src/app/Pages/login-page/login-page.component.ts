@@ -24,8 +24,10 @@ export class LoginPageComponent implements OnInit, OnDestroy {
                 filter((event: RouterEvent) => event instanceof NavigationEnd),
                 takeUntil(this.destroyed)
             )
-            .subscribe(() => {
-                this.checkReset();
+            .subscribe({
+                next: () => {
+                    this.checkReset();
+                }
             });
     }
 

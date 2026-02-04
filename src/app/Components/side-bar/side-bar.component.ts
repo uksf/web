@@ -56,8 +56,10 @@ export class SideBarComponent {
                 this.newVersion = true;
             }
         });
-        AppComponent.utilityHubConnection.reconnectEvent.subscribe(() => {
-            this.checkVersion();
+        AppComponent.utilityHubConnection.reconnectEvent.subscribe({
+            next: () => {
+                this.checkVersion();
+            }
         });
     }
 
@@ -105,12 +107,14 @@ export class SideBarComponent {
     }
 
     checkVersion() {
-        this.httpClient.get(this.urls.apiUrl + '/version').subscribe((response) => {
-            const version = response as number;
-            if (this.version !== 0 && version > this.version) {
-                this.newVersion = true;
+        this.httpClient.get(this.urls.apiUrl + '/version').subscribe({
+            next: (response) => {
+                const version = response as number;
+                if (this.version !== 0 && version > this.version) {
+                    this.newVersion = true;
+                }
+                this.version = version;
             }
-            this.version = version;
         });
     }
 

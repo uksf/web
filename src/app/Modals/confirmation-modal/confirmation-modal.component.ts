@@ -22,13 +22,13 @@ export class ConfirmationModalComponent implements OnInit {
     ngOnInit() {}
 
     confirm() {
-        this.dialogRef.close();
-        this.confirmEvent.emit();
+        this.dialogRef.close(true);
+        this.confirmEvent.emit(); // Keep for backward compatibility during migration
     }
 
     cancel() {
-        this.dialogRef.close();
-        this.cancelEvent.emit();
+        this.dialogRef.close(false);
+        this.cancelEvent.emit(); // Keep for backward compatibility during migration
     }
 }
 

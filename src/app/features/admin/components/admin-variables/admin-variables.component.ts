@@ -67,16 +67,16 @@ export class AdminVariablesComponent implements OnInit {
 
     getVariables() {
         this.updating = true;
-        this.httpClient.get(`${this.urls.apiUrl}/variables`).subscribe(
-            (response: VariableItem[]) => {
+        this.httpClient.get(`${this.urls.apiUrl}/variables`).subscribe({
+            next: (response: VariableItem[]) => {
                 this.variables = response;
                 this.formatVariables();
                 this.updating = false;
             },
-            (_) => {
+            error: () => {
                 this.updating = false;
             }
-        );
+        });
     }
 
     addVariable() {
@@ -88,16 +88,16 @@ export class AdminVariablesComponent implements OnInit {
                     'Content-Type': 'application/json'
                 })
             })
-            .subscribe(
-                (_) => {
+            .subscribe({
+                next: () => {
                     this.form.controls.key.reset();
                     this.form.controls.item.reset();
                     this.getVariables();
                 },
-                (_) => {
+                error: () => {
                     this.updating = false;
                 }
-            );
+            });
     }
 
     validateVariable(control: AbstractControl): Observable<ValidationErrors> {
@@ -119,14 +119,14 @@ export class AdminVariablesComponent implements OnInit {
                     'Content-Type': 'application/json'
                 })
             })
-            .subscribe(
-                () => {
+            .subscribe({
+                next: () => {
                     this.getVariables();
                 },
-                (_) => {
+                error: () => {
                     this.updating = false;
                 }
-            );
+            });
     }
 
     deleteVariable(event, variable: VariableItem) {
@@ -134,16 +134,20 @@ export class AdminVariablesComponent implements OnInit {
         const dialog = this.dialog.open(ConfirmationModalComponent, {
             data: { message: `Are you sure you want to delete '${variable.key}'? This action could break functionality` }
         });
-        dialog.componentInstance.confirmEvent.subscribe(() => {
-            this.updating = true;
-            this.httpClient.delete(`${this.urls.apiUrl}/variables/${variable.key}`).subscribe(
-                () => {
-                    this.getVariables();
-                },
-                (_) => {
-                    this.updating = false;
+        dialog.afterClosed().subscribe({
+            next: (result) => {
+                if (result) {
+                    this.updating = true;
+                    this.httpClient.delete(`${this.urls.apiUrl}/variables/${variable.key}`).subscribe({
+                        next: () => {
+                            this.getVariables();
+                        },
+                        error: () => {
+                            this.updating = false;
+                        }
+                    });
                 }
-            );
+            }
         });
     }
 }

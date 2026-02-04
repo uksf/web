@@ -72,9 +72,11 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                 this.missions.next(missions.map(this.mapMissionElement));
             }
         });
-        this.hubConnection.reconnectEvent.subscribe(() => {
-            this.getServers();
-            this.getDisabledState();
+        this.hubConnection.reconnectEvent.subscribe({
+            next: () => {
+                this.getServers();
+                this.getDisabledState();
+            }
         });
 
         this.getServers();
@@ -151,8 +153,10 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     }
 
     getDisabledState() {
-        this.httpClient.get(this.urls.apiUrl + '/gameservers/disabled').subscribe((state: boolean) => {
-            this.disabled = state;
+        this.httpClient.get(this.urls.apiUrl + '/gameservers/disabled').subscribe({
+            next: (state: boolean) => {
+                this.disabled = state;
+            }
         });
     }
 
@@ -184,8 +188,10 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         this.dialog
             .open(AddServerModalComponent, {})
             .afterClosed()
-            .subscribe((_) => {
-                this.getServers(true);
+            .subscribe({
+                next: () => {
+                    this.getServers(true);
+                }
             });
     }
 
@@ -203,25 +209,35 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                 }
             })
             .afterClosed()
-            .subscribe((environmentChanged: boolean) => {
-                if (environmentChanged) {
-                    this.dialog.open(MessageModalComponent, { data: { message: 'Server environment was changed. Selected mods for the server have been reset' } });
-                }
+            .subscribe({
+                next: (environmentChanged: boolean) => {
+                    if (environmentChanged) {
+                        this.dialog.open(MessageModalComponent, { data: { message: 'Server environment was changed. Selected mods for the server have been reset' } });
+                    }
 
-                this.getServers(true);
+                    this.getServers(true);
+                }
             });
     }
 
     deleteServer(event, server) {
         event.stopPropagation();
-        const dialog = this.dialog.open(ConfirmationModalComponent, {
-            data: { message: `Are you sure you want to delete '${server.name}'?` }
-        });
-        dialog.componentInstance.confirmEvent.subscribe(() => {
-            this.httpClient.delete(`${this.urls.apiUrl}/gameservers/${server.id}`, { headers: this.headers }).subscribe((response) => {
-                this.servers = response;
+        this.dialog
+            .open(ConfirmationModalComponent, {
+                data: { message: `Are you sure you want to delete '${server.name}'?` }
+            })
+            .afterClosed()
+            .subscribe({
+                next: (result) => {
+                    if (result) {
+                        this.httpClient.delete(`${this.urls.apiUrl}/gameservers/${server.id}`, { headers: this.headers }).subscribe({
+                            next: (response) => {
+                                this.servers = response;
+                            }
+                        });
+                    }
+                }
             });
-        });
     }
 
     onMove(event: CdkDragDrop<string[]>) {
@@ -233,9 +249,11 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         moveItemInArray(this.servers, event.previousIndex, event.currentIndex);
 
         const body: OrderUpdateRequest = { previousIndex: event.previousIndex, newIndex: event.currentIndex };
-        this.httpClient.patch(`${this.urls.apiUrl}/gameservers/order`, body, { headers: this.headers }).subscribe((response) => {
-            this.servers = response;
-            this.updatingOrder = false;
+        this.httpClient.patch(`${this.urls.apiUrl}/gameservers/order`, body, { headers: this.headers }).subscribe({
+            next: (response) => {
+                this.servers = response;
+                this.updatingOrder = false;
+            }
         });
     }
 
@@ -255,9 +273,11 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                 })
                 .afterClosed();
         }
-        reportDialogClose.subscribe((_) => {
-            if (missionReports.length > 0) {
-                this.showMissionReport(missionReports);
+        reportDialogClose.subscribe({
+            next: () => {
+                if (missionReports.length > 0) {
+                    this.showMissionReport(missionReports);
+                }
             }
         });
     }
@@ -310,12 +330,18 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
 
     stop(server) {
         if (server.status.players > 0) {
-            const dialog = this.dialog.open(ConfirmationModalComponent, {
-                data: { message: `There are still ${server.status.players} players on '${server.name}'. Are you sure you want to stop the server?` }
-            });
-            dialog.componentInstance.confirmEvent.subscribe(() => {
-                this.runStop(server);
-            });
+            this.dialog
+                .open(ConfirmationModalComponent, {
+                    data: { message: `There are still ${server.status.players} players on '${server.name}'. Are you sure you want to stop the server?` }
+                })
+                .afterClosed()
+                .subscribe({
+                    next: (result) => {
+                        if (result) {
+                            this.runStop(server);
+                        }
+                    }
+                });
         } else {
             this.runStop(server);
         }
@@ -349,12 +375,18 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
             this.runKill(server);
             return;
         }
-        const dialog = this.dialog.open(ConfirmationModalComponent, {
-            data: { message: `Are you sure you want to kill '${server.name}'? This could have unexpected effects on the server` }
-        });
-        dialog.componentInstance.confirmEvent.subscribe(() => {
-            this.runKill(server);
-        });
+        this.dialog
+            .open(ConfirmationModalComponent, {
+                data: { message: `Are you sure you want to kill '${server.name}'? This could have unexpected effects on the server` }
+            })
+            .afterClosed()
+            .subscribe({
+                next: (result) => {
+                    if (result) {
+                        this.runKill(server);
+                    }
+                }
+            });
     }
 
     runStop(server) {
@@ -399,8 +431,10 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                 }
             })
             .afterClosed()
-            .subscribe((_) => {
-                this.getServers(true);
+            .subscribe({
+                next: () => {
+                    this.getServers(true);
+                }
             });
     }
 
@@ -456,12 +490,18 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                 pboFiles.forEach((file) => {
                     message += `\n${file.name}`;
                 });
-                const dialog = this.dialog.open(ConfirmationModalComponent, {
-                    data: { message: message }
-                });
-                dialog.componentInstance.confirmEvent.subscribe(() => {
-                    this.uploadFromDrop(pboFiles);
-                });
+                this.dialog
+                    .open(ConfirmationModalComponent, {
+                        data: { message: message }
+                    })
+                    .afterClosed()
+                    .subscribe({
+                        next: (result) => {
+                            if (result) {
+                                this.uploadFromDrop(pboFiles);
+                            }
+                        }
+                    });
             } else {
                 this.uploadFromDrop(pboFiles);
             }
@@ -479,20 +519,26 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     }
 
     killAll() {
-        const dialog = this.dialog.open(ConfirmationModalComponent, {
-            data: { message: `Are you sure you want to kill ${this.instanceCount} servers?\nThere could be players still on and this could have unexpected effects on the server` }
-        });
-        dialog.componentInstance.confirmEvent.subscribe(() => {
-            this.httpClient.get(`${this.urls.apiUrl}/gameservers/killall`, { headers: this.headers }).subscribe({
-                next: () => {
-                    this.getServers();
-                },
-                error: (error) => {
-                    this.showError(error);
-                    this.getServers();
+        this.dialog
+            .open(ConfirmationModalComponent, {
+                data: { message: `Are you sure you want to kill ${this.instanceCount} servers?\nThere could be players still on and this could have unexpected effects on the server` }
+            })
+            .afterClosed()
+            .subscribe({
+                next: (result) => {
+                    if (result) {
+                        this.httpClient.get(`${this.urls.apiUrl}/gameservers/killall`, { headers: this.headers }).subscribe({
+                            next: () => {
+                                this.getServers();
+                            },
+                            error: (error) => {
+                                this.showError(error);
+                                this.getServers();
+                            }
+                        });
+                    }
                 }
             });
-        });
     }
 
     onDragStarted(event) {

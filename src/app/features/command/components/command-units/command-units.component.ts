@@ -72,13 +72,15 @@ export class CommandUnitsComponent implements OnInit {
     }
 
     getUnits() {
-        this.httpClient.get(`${this.urls.apiUrl}/units/tree`).subscribe((response: UnitTreeDataSet) => {
-            this.combat = response.combatNodes;
-            this.auxiliary = response.auxiliaryNodes;
-            this.secondary = response.secondaryNodes;
-            setTimeout(() => {
-                this.resetTree();
-            }, 100);
+        this.httpClient.get(`${this.urls.apiUrl}/units/tree`).subscribe({
+            next: (response: UnitTreeDataSet) => {
+                this.combat = response.combatNodes;
+                this.auxiliary = response.auxiliaryNodes;
+                this.secondary = response.secondaryNodes;
+                setTimeout(() => {
+                    this.resetTree();
+                }, 100);
+            }
         });
     }
 
@@ -86,23 +88,29 @@ export class CommandUnitsComponent implements OnInit {
         this.dialog
             .open(AddUnitModalComponent, {})
             .afterClosed()
-            .subscribe((_) => {
-                this.getUnits();
+            .subscribe({
+                next: (_) => {
+                    this.getUnits();
+                }
             });
     }
 
     editUnit(event) {
-        this.httpClient.get(`${this.urls.apiUrl}/units/${event.node.id}`).subscribe((unit: ResponseUnit) => {
-            this.dialog
-                .open(AddUnitModalComponent, {
-                    data: {
-                        unit: unit
-                    }
-                })
-                .afterClosed()
-                .subscribe((_) => {
-                    this.getUnits();
-                });
+        this.httpClient.get(`${this.urls.apiUrl}/units/${event.node.id}`).subscribe({
+            next: (unit: ResponseUnit) => {
+                this.dialog
+                    .open(AddUnitModalComponent, {
+                        data: {
+                            unit: unit
+                        }
+                    })
+                    .afterClosed()
+                    .subscribe({
+                        next: (_) => {
+                            this.getUnits();
+                        }
+                    });
+            }
         });
     }
 
@@ -113,15 +121,19 @@ export class CommandUnitsComponent implements OnInit {
                 index: event.to.index,
                 parentId: event.to.parent.id
             };
-            this.httpClient.patch(`${this.urls.apiUrl}/units/${event.node.id}/parent`, body).subscribe((_) => {
-                this.getUnits();
+            this.httpClient.patch(`${this.urls.apiUrl}/units/${event.node.id}/parent`, body).subscribe({
+                next: (_) => {
+                    this.getUnits();
+                }
             });
         } else {
             const body: RequestUnitUpdateOrder = {
                 index: event.to.index
             };
-            this.httpClient.patch(`${this.urls.apiUrl}/units/${event.node.id}/order`, body).subscribe((_) => {
-                this.getUnits();
+            this.httpClient.patch(`${this.urls.apiUrl}/units/${event.node.id}/order`, body).subscribe({
+                next: (_) => {
+                    this.getUnits();
+                }
             });
         }
     }

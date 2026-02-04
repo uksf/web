@@ -17,8 +17,10 @@ export class PersonnelRosterComponent {
 
     constructor(private httpClient: HttpClient, private urls: UrlService) {
         this.countries = CountryPickerService.countries;
-        this.httpClient.get(this.urls.apiUrl + '/accounts/roster').subscribe((response: RosterAccount[]) => {
-            this.rosterData = new MatTableDataSource(response);
+        this.httpClient.get(this.urls.apiUrl + '/accounts/roster').subscribe({
+            next: (response: RosterAccount[]) => {
+                this.rosterData = new MatTableDataSource(response);
+            }
         });
     }
 }

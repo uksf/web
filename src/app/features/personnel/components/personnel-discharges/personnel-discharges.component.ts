@@ -43,8 +43,8 @@ export class PersonnelDischargesComponent {
     refresh(initialFilter = '') {
         this.completeDischargeCollections = undefined;
         this.updating = true;
-        this.httpClient.get<any[]>(this.urls.apiUrl + '/discharges').subscribe(
-            (response: DischargeCollection[]) => {
+        this.httpClient.get<any[]>(this.urls.apiUrl + '/discharges').subscribe({
+            next: (response: DischargeCollection[]) => {
                 this.completeDischargeCollections = response;
                 if (initialFilter) {
                     this.filterString = initialFilter;
@@ -55,10 +55,10 @@ export class PersonnelDischargesComponent {
                 }
                 this.updating = false;
             },
-            (_) => {
+            error: (_) => {
                 this.updating = false;
             }
-        );
+        });
     }
 
     navigate(mode: number) {
@@ -104,16 +104,16 @@ export class PersonnelDischargesComponent {
 
     reinstate(event: Event, dischargeCollection: DischargeCollection) {
         event.stopPropagation();
-        this.httpClient.get<any[]>(this.urls.apiUrl + `/discharges/reinstate/${dischargeCollection.id}`).subscribe(
-            (response) => {
+        this.httpClient.get<any[]>(this.urls.apiUrl + `/discharges/reinstate/${dischargeCollection.id}`).subscribe({
+            next: (response) => {
                 this.dischargeCollections = response;
             },
-            (_) => {
+            error: (_) => {
                 this.dialog.open(MessageModalComponent, {
                     data: { message: `Failed to reinstate ${dischargeCollection.name} as a member` }
                 });
             }
-        );
+        });
     }
 
     requestReinstate(event: Event, dischargeCollection: DischargeCollection) {
@@ -122,35 +122,43 @@ export class PersonnelDischargesComponent {
             .open(TextInputModalComponent, {
                 data: { message: 'Please provide a reason for the reinstate request' }
             })
-            .componentInstance.confirmEvent.subscribe((reason: string) => {
-                this.httpClient
-                    .post(this.urls.apiUrl + '/commandrequests/create/reinstate', JSON.stringify({ recipient: dischargeCollection.accountId, reason: reason }), {
-                        headers: new HttpHeaders({
-                            'Content-Type': 'application/json'
+            .afterClosed()
+            .subscribe({
+                next: (reason: string) => {
+                    if (!reason) {
+                        return;
+                    }
+                    this.httpClient
+                        .post(this.urls.apiUrl + '/commandrequests/create/reinstate', JSON.stringify({ recipient: dischargeCollection.accountId, reason: reason }), {
+                            headers: new HttpHeaders({
+                                'Content-Type': 'application/json'
+                            })
                         })
-                    })
-                    .subscribe(
-                        (_) => {
-                            this.httpClient
-                                .post(
-                                    this.urls.apiUrl + '/commandrequests/exists',
-                                    JSON.stringify({ recipient: dischargeCollection.accountId, type: 'Reinstate Member', displayValue: 'Member', displayFrom: 'Discharged' }),
-                                    {
-                                        headers: new HttpHeaders({
-                                            'Content-Type': 'application/json'
-                                        })
-                                    }
-                                )
-                                .subscribe((response: boolean) => {
-                                    dischargeCollection.requestExists = response;
+                        .subscribe({
+                            next: (_) => {
+                                this.httpClient
+                                    .post(
+                                        this.urls.apiUrl + '/commandrequests/exists',
+                                        JSON.stringify({ recipient: dischargeCollection.accountId, type: 'Reinstate Member', displayValue: 'Member', displayFrom: 'Discharged' }),
+                                        {
+                                            headers: new HttpHeaders({
+                                                'Content-Type': 'application/json'
+                                            })
+                                        }
+                                    )
+                                    .subscribe({
+                                        next: (response: boolean) => {
+                                            dischargeCollection.requestExists = response;
+                                        }
+                                    });
+                            },
+                            error: (_) => {
+                                this.dialog.open(MessageModalComponent, {
+                                    data: { message: `Failed to create request to reinstate ${dischargeCollection.name} as a member` }
                                 });
-                        },
-                        (_) => {
-                            this.dialog.open(MessageModalComponent, {
-                                data: { message: `Failed to create request to reinstate ${dischargeCollection.name} as a member` }
-                            });
-                        }
-                    );
+                            }
+                        });
+                }
             });
     }
 

@@ -86,11 +86,13 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
                         this.chooseStep();
                     }
                 });
-                this.hubConnection.reconnectEvent.subscribe(() => {
-                    this.modpackBuildProcessService.getBuildData(this.build.id, (reconnectBuild: ModpackBuild) => {
-                        this.build = reconnectBuild;
-                        this.chooseStep();
-                    });
+                this.hubConnection.reconnectEvent.subscribe({
+                    next: () => {
+                        this.modpackBuildProcessService.getBuildData(this.build.id, (reconnectBuild: ModpackBuild) => {
+                            this.build = reconnectBuild;
+                            this.chooseStep();
+                        });
+                    }
                 });
             }
         });

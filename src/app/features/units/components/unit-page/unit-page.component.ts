@@ -17,11 +17,15 @@ export class UnitPageComponent {
     private id: string;
 
     constructor(private route: ActivatedRoute, private httpClient: HttpClient, private urls: UrlService, public dialog: MatDialog, private location: Location) {
-        this.route.params.subscribe((params) => {
-            this.id = params.id;
-            this.httpClient.get(`${this.urls.apiUrl}/units/${this.id}`).subscribe((unit: ResponseUnit) => {
-                this.unit = unit;
-            });
+        this.route.params.subscribe({
+            next: (params) => {
+                this.id = params.id;
+                this.httpClient.get(`${this.urls.apiUrl}/units/${this.id}`).subscribe({
+                    next: (unit: ResponseUnit) => {
+                        this.unit = unit;
+                    }
+                });
+            }
         });
     }
 

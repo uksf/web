@@ -44,9 +44,11 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
                 1
             );
         });
-        this.hubConnection.reconnectEvent.subscribe(() => {
-            this.getComments();
-            this.getCanPostComment();
+        this.hubConnection.reconnectEvent.subscribe({
+            next: () => {
+                this.getComments();
+                this.getCanPostComment();
+            }
         });
     }
 
@@ -55,17 +57,21 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
     }
 
     private getComments() {
-        this.httpClient.get(this.urls.apiUrl + '/commentthread/' + this.threadId).subscribe((response) => {
-            if (this.previousResponse !== JSON.stringify(response)) {
-                this.comments = response['comments'];
-                this.previousResponse = JSON.stringify(response);
+        this.httpClient.get(this.urls.apiUrl + '/commentthread/' + this.threadId).subscribe({
+            next: (response) => {
+                if (this.previousResponse !== JSON.stringify(response)) {
+                    this.comments = response['comments'];
+                    this.previousResponse = JSON.stringify(response);
+                }
             }
         });
     }
 
     getCanPostComment() {
-        this.httpClient.get(this.urls.apiUrl + '/commentthread/canpost/' + this.threadId).subscribe((canPost: boolean) => {
-            this.canPostComment = canPost;
+        this.httpClient.get(this.urls.apiUrl + '/commentthread/canpost/' + this.threadId).subscribe({
+            next: (canPost: boolean) => {
+                this.canPostComment = canPost;
+            }
         });
     }
 
@@ -82,8 +88,10 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.httpClient.put(this.urls.apiUrl + '/commentthread/' + this.threadId, { content: this.commentForm.controls.commentContent.value }).subscribe((_) => {
-            this.commentForm.controls.commentContent.setValue('');
+        this.httpClient.put(this.urls.apiUrl + '/commentthread/' + this.threadId, { content: this.commentForm.controls.commentContent.value }).subscribe({
+            next: (_) => {
+                this.commentForm.controls.commentContent.setValue('');
+            }
         });
     }
 
@@ -92,8 +100,10 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
     }
 
     deleteComment(comment) {
-        this.httpClient.post(this.urls.apiUrl + '/commentthread/' + this.threadId + '/' + comment.id, { content: this.commentForm.controls.commentContent.value }).subscribe(() => {
-            this.commentForm.controls.commentContent.setValue('');
+        this.httpClient.post(this.urls.apiUrl + '/commentthread/' + this.threadId + '/' + comment.id, { content: this.commentForm.controls.commentContent.value }).subscribe({
+            next: () => {
+                this.commentForm.controls.commentContent.setValue('');
+            }
         });
     }
 

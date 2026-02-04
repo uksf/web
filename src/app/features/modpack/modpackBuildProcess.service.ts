@@ -16,9 +16,11 @@ export class ModpackBuildProcessService {
     constructor(private displayNameService: DisplayNameService, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {}
 
     getBranches() {
-        this.httpClient.get(this.urls.apiUrl + '/github/branches').subscribe((branches: string[]) => {
-            this.branches = branches;
-            this.branches.unshift('No branch');
+        this.httpClient.get(this.urls.apiUrl + '/github/branches').subscribe({
+            next: (branches: string[]) => {
+                this.branches = branches;
+                this.branches.unshift('No branch');
+            }
         });
     }
 
@@ -44,8 +46,10 @@ export class ModpackBuildProcessService {
 
     getBuildData(id: string, callback: (arg0: ModpackBuild) => void) {
         // get request for build
-        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${id}`).subscribe((build: ModpackBuild) => {
-            callback(build);
+        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${id}`).subscribe({
+            next: (build: ModpackBuild) => {
+                callback(build);
+            }
         });
     }
 
@@ -54,35 +58,42 @@ export class ModpackBuildProcessService {
             .open(NewModpackBuildModalComponent, {
                 data: { branches: this.branches }
             })
-            .componentInstance.runEvent.subscribe((newBuild: NewBuild) => {
-                // get request for new build
-                this.httpClient.post(this.urls.apiUrl + `/modpack/newbuild`, newBuild).subscribe(
-                    () => {
-                        callback();
-                    },
-                    (error) => {
-                        this.dialog.open(MessageModalComponent, {
-                            data: { message: error.error }
+            .afterClosed()
+            .subscribe({
+                next: (newBuild: NewBuild) => {
+                    if (newBuild) {
+                        // get request for new build
+                        this.httpClient.post(this.urls.apiUrl + `/modpack/newbuild`, newBuild).subscribe({
+                            next: () => {
+                                callback();
+                            },
+                            error: (error) => {
+                                this.dialog.open(MessageModalComponent, {
+                                    data: { message: error.error }
+                                });
+                            }
                         });
                     }
-                );
+                }
             });
     }
 
     rebuild(build: ModpackBuild, callback: () => void) {
         // get request for rebuild
-        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${build.id}/rebuild`).subscribe(() => {
-            callback();
+        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${build.id}/rebuild`).subscribe({
+            next: () => {
+                callback();
+            }
         });
     }
 
     cancel(build: ModpackBuild, errorCallback: () => void) {
         // get request for build cancel
-        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${build.id}/cancel`).subscribe(
-            () => {},
-            () => {
+        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${build.id}/cancel`).subscribe({
+            next: () => {},
+            error: () => {
                 errorCallback();
             }
-        );
+        });
     }
 }

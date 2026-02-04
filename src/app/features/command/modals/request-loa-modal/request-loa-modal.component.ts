@@ -37,11 +37,15 @@ export class RequestLoaModalComponent implements OnInit {
             emergency: [false],
             late: [false]
         });
-        this.form.controls['start'].valueChanges.subscribe((_) => {
-            this.datesValid = this.validateDates();
+        this.form.controls['start'].valueChanges.subscribe({
+            next: (_) => {
+                this.datesValid = this.validateDates();
+            }
         });
-        this.form.controls['end'].valueChanges.subscribe((_) => {
-            this.datesValid = this.validateDates();
+        this.form.controls['end'].valueChanges.subscribe({
+            next: (_) => {
+                this.datesValid = this.validateDates();
+            }
         });
     }
 
@@ -140,8 +144,10 @@ export class RequestLoaModalComponent implements OnInit {
                             data: { message: error.error }
                         })
                         .afterClosed()
-                        .subscribe(() => {
-                            this.submitting = false;
+                        .subscribe({
+                            next: () => {
+                                this.submitting = false;
+                            }
                         });
                 }
             });

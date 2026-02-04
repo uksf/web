@@ -43,9 +43,11 @@ export class ChangePasswordModalComponent implements OnInit {
                     'Content-Type': 'application/json'
                 })
             })
-            .subscribe((_) => {
-                this.dialog.closeAll();
-                this.permissionsService.revoke();
+            .subscribe({
+                next: () => {
+                    this.dialog.closeAll();
+                    this.permissionsService.revoke();
+                }
             });
     }
 

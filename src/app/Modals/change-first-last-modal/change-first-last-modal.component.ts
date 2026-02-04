@@ -23,9 +23,11 @@ export class ChangeFirstLastModalComponent implements OnInit {
         });
         this.form.controls['firstName'].setValue(this.accountService.account.firstname);
         this.form.controls['lastName'].setValue(this.accountService.account.lastname);
-        this.httpClient.get(this.urls.apiUrl + '/ranks').subscribe((ranks: any[]) => {
-            const rank = ranks.find((x) => x.name === this.accountService.account.rank);
-            this.rank = rank ? rank.abbreviation : null;
+        this.httpClient.get(this.urls.apiUrl + '/ranks').subscribe({
+            next: (ranks: any[]) => {
+                const rank = ranks.find((x) => x.name === this.accountService.account.rank);
+                this.rank = rank ? rank.abbreviation : null;
+            }
         });
     }
 
@@ -41,10 +43,12 @@ export class ChangeFirstLastModalComponent implements OnInit {
                     'Content-Type': 'application/json'
                 })
             })
-            .subscribe((_) => {
-                this.accountService.getAccount(() => {
-                    this.changed = true;
-                });
+            .subscribe({
+                next: () => {
+                    this.accountService.getAccount(() => {
+                        this.changed = true;
+                    });
+                }
             });
     }
 

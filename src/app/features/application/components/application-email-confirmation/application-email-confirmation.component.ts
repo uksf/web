@@ -71,10 +71,12 @@ export class ApplicationEmailConfirmationComponent {
                             data: { message: error.message }
                         })
                         .afterClosed()
-                        .subscribe(() => {
-                            this.formGroup.controls['code'].enable();
-                            this.formGroup.controls['code'].setValue('');
-                            this.pending = false;
+                        .subscribe({
+                            next: () => {
+                                this.formGroup.controls['code'].enable();
+                                this.formGroup.controls['code'].setValue('');
+                                this.pending = false;
+                            }
                         });
                 }
             });

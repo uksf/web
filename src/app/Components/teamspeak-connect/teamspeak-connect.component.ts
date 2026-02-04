@@ -58,10 +58,12 @@ export class ConnectTeamspeakComponent {
                 this.updateClients(clients);
             });
         });
-        this.hubConnection.reconnectEvent.subscribe(() => {
-            this.mergeUpdates(() => {
-                this.findTeamspeakClients();
-            });
+        this.hubConnection.reconnectEvent.subscribe({
+            next: () => {
+                this.mergeUpdates(() => {
+                    this.findTeamspeakClients();
+                });
+            }
         });
     }
 
@@ -79,8 +81,10 @@ export class ConnectTeamspeakComponent {
     }
 
     findTeamspeakClients() {
-        this.httpClient.get(this.urls.apiUrl + '/teamspeak/online').subscribe((clients: TeamspeakConnectClient[]) => {
-            this.updateClients(clients);
+        this.httpClient.get(this.urls.apiUrl + '/teamspeak/online').subscribe({
+            next: (clients: TeamspeakConnectClient[]) => {
+                this.updateClients(clients);
+            }
         });
     }
 
@@ -110,8 +114,10 @@ export class ConnectTeamspeakComponent {
 
     requestCode() {
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-        this.httpClient.get(this.urls.apiUrl + `/teamspeak/${this.teamspeakForm.value.teamspeakId}`, { headers: headers }).subscribe(() => {
-            this.state = 1;
+        this.httpClient.get(this.urls.apiUrl + `/teamspeak/${this.teamspeakForm.value.teamspeakId}`, { headers: headers }).subscribe({
+            next: () => {
+                this.state = 1;
+            }
         });
     }
 

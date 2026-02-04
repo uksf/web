@@ -108,8 +108,10 @@ export class AdminServersComponent implements OnInit {
                         }
                     })
                     .afterClosed()
-                    .subscribe(() => {
-                        this.getInfrastructureInfo();
+                    .subscribe({
+                        next: () => {
+                            this.getInfrastructureInfo();
+                        }
                     });
             },
             error: (error: UksfError) => {

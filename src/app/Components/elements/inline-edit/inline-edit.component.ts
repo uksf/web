@@ -37,8 +37,10 @@ export class InlineEditComponent implements ControlValueAccessor, OnInit {
         if (v !== this._value) {
             this._value = v;
             this.onChange(v);
-            this.validator.subscribe((invalid) => {
-                this.invalid = invalid;
+            this.validator.subscribe({
+                next: (invalid) => {
+                    this.invalid = invalid;
+                }
             });
         } else {
             this.invalid = false;

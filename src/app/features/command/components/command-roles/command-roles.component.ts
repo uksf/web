@@ -30,8 +30,10 @@ export class CommandRolesComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.httpClient.get(`${this.urls.apiUrl}/roles`).subscribe((response) => {
-            this.roles = response['roles'];
+        this.httpClient.get(`${this.urls.apiUrl}/roles`).subscribe({
+            next: (response) => {
+                this.roles = response['roles'];
+            }
         });
     }
 
@@ -54,9 +56,11 @@ export class CommandRolesComponent implements OnInit {
                     'Content-Type': 'application/json'
                 })
             })
-            .subscribe((response) => {
-                this.roles = response['roles'];
-                this.roleForm.reset();
+            .subscribe({
+                next: (response) => {
+                    this.roles = response['roles'];
+                    this.roleForm.reset();
+                }
             });
     }
 
@@ -69,8 +73,10 @@ export class CommandRolesComponent implements OnInit {
                         'Content-Type': 'application/json'
                     })
                 })
-                .subscribe((response) => {
-                    this.roles = response['roles'];
+                .subscribe({
+                    next: (response) => {
+                        this.roles = response['roles'];
+                    }
                 });
         }
     }
@@ -80,10 +86,16 @@ export class CommandRolesComponent implements OnInit {
         const dialog = this.dialog.open(ConfirmationModalComponent, {
             data: { message: `Are you sure you want to delete '${role.name}'?` }
         });
-        dialog.componentInstance.confirmEvent.subscribe(() => {
-            this.httpClient.delete(`${this.urls.apiUrl}/roles/${role.id}`).subscribe((response) => {
-                this.roles = response['roles'];
-            });
+        dialog.afterClosed().subscribe({
+            next: (result) => {
+                if (result) {
+                    this.httpClient.delete(`${this.urls.apiUrl}/roles/${role.id}`).subscribe({
+                        next: (response) => {
+                            this.roles = response['roles'];
+                        }
+                    });
+                }
+            }
         });
     }
 

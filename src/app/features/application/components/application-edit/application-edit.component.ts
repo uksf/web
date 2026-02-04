@@ -76,8 +76,10 @@ export class ApplicationEditComponent {
         this.formGroup.addControl('rolePreferences', new UntypedFormGroup(rolePreferenceControls));
 
         this.updateOriginal();
-        this.permissions.accountUpdateEvent.subscribe(() => {
-            this.updateOriginal();
+        this.permissions.accountUpdateEvent.subscribe({
+            next: () => {
+                this.updateOriginal();
+            }
         });
     }
 

@@ -26,10 +26,12 @@ export class AdminErrorLogsComponent extends AdminLogsComponent implements OnIni
         const params = this.buildParams();
         this.httpClient
             .get<PagedResult<ErrorLog>>(`${this.urls.apiUrl}/logging/error`, { params })
-            .subscribe((pagedResult: PagedResult<ErrorLog>) => {
-                this.dataLoaded = true;
-                this.paginator.length = pagedResult.totalCount;
-                this.datasource.data = pagedResult.data;
+            .subscribe({
+                next: (pagedResult: PagedResult<ErrorLog>) => {
+                    this.dataLoaded = true;
+                    this.paginator.length = pagedResult.totalCount;
+                    this.datasource.data = pagedResult.data;
+                }
             });
     }
 }

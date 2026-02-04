@@ -16,9 +16,11 @@ export class UnitsOrbatAuxComponent {
     selectedNode;
 
     constructor(private httpClient: HttpClient, private urls: UrlService, private auth: AuthenticationService, private router: Router) {
-        this.httpClient.get(`${this.urls.apiUrl}/units/chart/auxiliary`).subscribe((rootNodeData: ResponseUnitChartNode) => {
-            const rootNode: TreeNode = this.mapToTreeNode(rootNodeData);
-            this.rootNodes = [rootNode];
+        this.httpClient.get(`${this.urls.apiUrl}/units/chart/auxiliary`).subscribe({
+            next: (rootNodeData: ResponseUnitChartNode) => {
+                const rootNode: TreeNode = this.mapToTreeNode(rootNodeData);
+                this.rootNodes = [rootNode];
+            }
         });
     }
 

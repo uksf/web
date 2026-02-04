@@ -48,14 +48,20 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
-        this.paginator.page.subscribe(() => {
-            this.refreshData();
+        this.paginator.page.subscribe({
+            next: () => {
+                this.refreshData();
+            }
         });
-        this.sort.sortChange.subscribe(() => {
-            this.refreshData();
+        this.sort.sortChange.subscribe({
+            next: () => {
+                this.refreshData();
+            }
         });
-        this.filterSubject.pipe(debounceTime(150), distinctUntilChanged()).subscribe(() => {
-            this.refreshData();
+        this.filterSubject.pipe(debounceTime(150), distinctUntilChanged()).subscribe({
+            next: () => {
+                this.refreshData();
+            }
         });
         this.refreshData();
     }
@@ -68,10 +74,12 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
         const params = this.buildParams();
         this.httpClient
             .get<PagedResult<BasicLog>>(`${this.urls.apiUrl}/logging/basic`, { params })
-            .subscribe((pagedResult: PagedResult<BasicLog>) => {
-                this.dataLoaded = true;
-                this.paginator.length = pagedResult.totalCount;
-                this.datasource.data = pagedResult.data;
+            .subscribe({
+                next: (pagedResult: PagedResult<BasicLog>) => {
+                    this.dataLoaded = true;
+                    this.paginator.length = pagedResult.totalCount;
+                    this.datasource.data = pagedResult.data;
+                }
             });
     }
 

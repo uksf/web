@@ -27,8 +27,10 @@ export class ModpackReleaseService implements OnDestroy {
             this.patchRelease(release);
             newReleaseCallback(release.version);
         });
-        this.hubConnection.reconnectEvent.subscribe(() => {
-            this.getData(callback);
+        this.hubConnection.reconnectEvent.subscribe({
+            next: () => {
+                this.getData(callback);
+            }
         });
     }
 
@@ -39,9 +41,11 @@ export class ModpackReleaseService implements OnDestroy {
     }
 
     getData(callback: () => void) {
-        this.httpClient.get(this.urls.apiUrl + '/modpack/releases').subscribe((releases: ModpackRelease[]) => {
-            this.releases = releases;
-            callback();
+        this.httpClient.get(this.urls.apiUrl + '/modpack/releases').subscribe({
+            next: (releases: ModpackRelease[]) => {
+                this.releases = releases;
+                callback();
+            }
         });
     }
 
@@ -64,7 +68,14 @@ export class ModpackReleaseService implements OnDestroy {
             .open(NewModpackReleaseModalComponent, {
                 data: { previousRelease: this.releases[0] }
             })
-            .componentInstance.successEvent.subscribe(callback);
+            .afterClosed()
+            .subscribe({
+                next: (result) => {
+                    if (result) {
+                        callback();
+                    }
+                }
+            });
     }
 
     createNewRelease(version: string, callback: () => void) {
@@ -86,22 +97,28 @@ export class ModpackReleaseService implements OnDestroy {
     }
 
     release(version: string, callback: () => void) {
-        this.httpClient.put(this.urls.apiUrl + `/modpack/releases/${version}`, {}).subscribe(() => {
-            callback();
+        this.httpClient.put(this.urls.apiUrl + `/modpack/releases/${version}`, {}).subscribe({
+            next: () => {
+                callback();
+            }
         });
     }
 
     saveReleaseChanges(release: ModpackRelease, callback: () => void) {
-        this.httpClient.patch(this.urls.apiUrl + `/modpack/releases/${release.version}`, release).subscribe((release: ModpackRelease) => {
-            this.patchRelease(release);
-            callback();
+        this.httpClient.patch(this.urls.apiUrl + `/modpack/releases/${release.version}`, release).subscribe({
+            next: (release: ModpackRelease) => {
+                this.patchRelease(release);
+                callback();
+            }
         });
     }
 
     regenerateChangelog(version: string, callback: (string) => void) {
-        this.httpClient.put(this.urls.apiUrl + `/modpack/releases/${version}/changelog`, {}).subscribe((release: ModpackRelease) => {
-            this.patchRelease(release);
-            callback(release.changelog);
+        this.httpClient.put(this.urls.apiUrl + `/modpack/releases/${version}/changelog`, {}).subscribe({
+            next: (release: ModpackRelease) => {
+                this.patchRelease(release);
+                callback(release.changelog);
+            }
         });
     }
 }

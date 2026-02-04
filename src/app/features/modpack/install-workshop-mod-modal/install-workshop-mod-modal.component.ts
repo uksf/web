@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { InstantErrorStateMatcher } from '@app/Services/formhelper.service';
@@ -10,7 +10,6 @@ import { InstallWorkshopModData } from '../models/WorkshopMod';
     styleUrls: ['./install-workshop-mod-modal.component.scss']
 })
 export class InstallWorkshopModModalComponent {
-    @Output() installEvent: EventEmitter<InstallWorkshopModData> = new EventEmitter<InstallWorkshopModData>();
     form: UntypedFormGroup;
     instantErrorStateMatcher: InstantErrorStateMatcher = new InstantErrorStateMatcher();
     validationMessages: { steamId: { type: string; message: string }[] } = {
@@ -25,12 +24,14 @@ export class InstallWorkshopModModalComponent {
             folderName: [{ value: '', disabled: true }]
         });
 
-        this.form.get('rootMod').valueChanges.subscribe((isRootMod: boolean) => {
-            const folderNameControl = this.form.get('folderName');
-            if (isRootMod) {
-                folderNameControl.enable();
-            } else {
-                folderNameControl.disable();
+        this.form.get('rootMod').valueChanges.subscribe({
+            next: (isRootMod: boolean) => {
+                const folderNameControl = this.form.get('folderName');
+                if (isRootMod) {
+                    folderNameControl.enable();
+                } else {
+                    folderNameControl.disable();
+                }
             }
         });
     }
@@ -43,8 +44,7 @@ export class InstallWorkshopModModalComponent {
         const formValue: any = this.form.getRawValue();
         const steamId: string = formValue.steamId.replace('https://steamcommunity.com/sharedfiles/filedetails/?id=', '');
 
-        this.dialogRef.close();
-        this.installEvent.emit({
+        this.dialogRef.close({
             steamId: steamId,
             rootMod: formValue.rootMod,
             folderName: formValue.folderName || undefined

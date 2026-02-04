@@ -38,8 +38,10 @@ export class CommandRanksComponent implements OnInit {
     }
 
     getRanks() {
-        this.httpClient.get(`${this.urls.apiUrl}/ranks`).subscribe((response) => {
-            this.ranks = response;
+        this.httpClient.get(`${this.urls.apiUrl}/ranks`).subscribe({
+            next: (response) => {
+                this.ranks = response;
+            }
         });
     }
 
@@ -47,8 +49,10 @@ export class CommandRanksComponent implements OnInit {
         this.dialog
             .open(AddRankModalComponent, {})
             .afterClosed()
-            .subscribe((_) => {
-                this.getRanks();
+            .subscribe({
+                next: (_) => {
+                    this.getRanks();
+                }
             });
     }
 
@@ -61,8 +65,10 @@ export class CommandRanksComponent implements OnInit {
                         'Content-Type': 'application/json'
                     })
                 })
-                .subscribe((response) => {
-                    this.ranks = response;
+                .subscribe({
+                    next: (response) => {
+                        this.ranks = response;
+                    }
                 });
         }
     }
@@ -72,10 +78,16 @@ export class CommandRanksComponent implements OnInit {
         const dialog = this.dialog.open(ConfirmationModalComponent, {
             data: { message: `Are you sure you want to delete '${rank.name}'?` }
         });
-        dialog.componentInstance.confirmEvent.subscribe(() => {
-            this.httpClient.delete(`${this.urls.apiUrl}/ranks/${rank.id}`).subscribe((response) => {
-                this.ranks = response;
-            });
+        dialog.afterClosed().subscribe({
+            next: (result) => {
+                if (result) {
+                    this.httpClient.delete(`${this.urls.apiUrl}/ranks/${rank.id}`).subscribe({
+                        next: (response) => {
+                            this.ranks = response;
+                        }
+                    });
+                }
+            }
         });
     }
 
@@ -86,9 +98,11 @@ export class CommandRanksComponent implements OnInit {
             return;
         }
         this.updatingOrder = true;
-        this.httpClient.post(`${this.urls.apiUrl}/ranks/order`, this.ranks).subscribe((response) => {
-            this.ranks = response;
-            this.updatingOrder = false;
+        this.httpClient.post(`${this.urls.apiUrl}/ranks/order`, this.ranks).subscribe({
+            next: (response) => {
+                this.ranks = response;
+                this.updatingOrder = false;
+            }
         });
     }
 

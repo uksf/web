@@ -34,10 +34,12 @@ export class HomePageComponent implements OnInit {
                 this.getClients();
             });
         });
-        this.hubConnection.reconnectEvent.subscribe(() => {
-            this.mergeUpdates(() => {
-                this.getClients();
-            });
+        this.hubConnection.reconnectEvent.subscribe({
+            next: () => {
+                this.mergeUpdates(() => {
+                    this.getClients();
+                });
+            }
         });
 
         this.getInstagramImages();
@@ -58,28 +60,32 @@ export class HomePageComponent implements OnInit {
 
     private getClients() {
         // this.httpClient.get('https://api.uk-sf.co.uk/teamspeak/onlineAccounts').subscribe(
-        this.httpClient.get(this.urls.apiUrl + '/teamspeak/onlineAccounts').subscribe((response) => {
-            if (response) {
-                if (response['commanders']) {
-                    this.commanders = response['commanders'];
-                }
-                if (response['recruiters']) {
-                    this.recruiters = response['recruiters'];
-                }
-                if (response['members']) {
-                    this.members = response['members'];
-                }
-                if (response['guests']) {
-                    this.guests = response['guests'];
+        this.httpClient.get(this.urls.apiUrl + '/teamspeak/onlineAccounts').subscribe({
+            next: (response) => {
+                if (response) {
+                    if (response['commanders']) {
+                        this.commanders = response['commanders'];
+                    }
+                    if (response['recruiters']) {
+                        this.recruiters = response['recruiters'];
+                    }
+                    if (response['members']) {
+                        this.members = response['members'];
+                    }
+                    if (response['guests']) {
+                        this.guests = response['guests'];
+                    }
                 }
             }
         });
     }
 
     private getInstagramImages() {
-        this.httpClient.get(this.urls.apiUrl + '/instagram').subscribe((response: InstagramImage[]) => {
-            if (response.length > 0) {
-                this.instagramImages = response;
+        this.httpClient.get(this.urls.apiUrl + '/instagram').subscribe({
+            next: (response: InstagramImage[]) => {
+                if (response.length > 0) {
+                    this.instagramImages = response;
+                }
             }
         });
     }

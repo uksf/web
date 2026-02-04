@@ -20,14 +20,18 @@ export class OperationsOrdersComponent implements OnInit {
     }
 
     getOrders() {
-        this.httpClient.get(this.urls.apiUrl + '/OperationOrder').subscribe(response => {
-            this.opordData = response;
+        this.httpClient.get(this.urls.apiUrl + '/OperationOrder').subscribe({
+            next: (response) => {
+                this.opordData = response;
+            }
         });
     }
 
     createOpord() {
-        this.dialog.open(CreateOperationOrderComponent, {}).afterClosed().subscribe(_ => {
-            this.getOrders();
+        this.dialog.open(CreateOperationOrderComponent, {}).afterClosed().subscribe({
+            next: () => {
+                this.getOrders();
+            }
         });
     }
 

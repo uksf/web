@@ -37,8 +37,10 @@ export class CommandTrainingComponent implements OnInit {
     }
 
     getTrainings() {
-        this.httpClient.get(`${this.urls.apiUrl}/trainings`).subscribe((response: Training[]) => {
-            this.trainings = response;
+        this.httpClient.get(`${this.urls.apiUrl}/trainings`).subscribe({
+            next: (response: Training[]) => {
+                this.trainings = response;
+            }
         });
     }
 
@@ -46,8 +48,10 @@ export class CommandTrainingComponent implements OnInit {
         this.dialog
             .open(AddTrainingModalComponent, {})
             .afterClosed()
-            .subscribe((_) => {
-                this.getTrainings();
+            .subscribe({
+                next: (_) => {
+                    this.getTrainings();
+                }
             });
     }
 
@@ -60,8 +64,10 @@ export class CommandTrainingComponent implements OnInit {
                         'Content-Type': 'application/json'
                     })
                 })
-                .subscribe((response: Training[]): void => {
-                    this.trainings = response;
+                .subscribe({
+                    next: (response: Training[]): void => {
+                        this.trainings = response;
+                    }
                 });
         }
     }
@@ -71,10 +77,16 @@ export class CommandTrainingComponent implements OnInit {
         const dialog: MatDialogRef<ConfirmationModalComponent> = this.dialog.open(ConfirmationModalComponent, {
             data: { message: `Are you sure you want to delete '${training.name}'?` }
         });
-        dialog.componentInstance.confirmEvent.subscribe((): void => {
-            this.httpClient.delete(`${this.urls.apiUrl}/trainings/${training.id}`).subscribe((response: Training[]): void => {
-                this.trainings = response;
-            });
+        dialog.afterClosed().subscribe({
+            next: (result): void => {
+                if (result) {
+                    this.httpClient.delete(`${this.urls.apiUrl}/trainings/${training.id}`).subscribe({
+                        next: (response: Training[]): void => {
+                            this.trainings = response;
+                        }
+                    });
+                }
+            }
         });
     }
 }

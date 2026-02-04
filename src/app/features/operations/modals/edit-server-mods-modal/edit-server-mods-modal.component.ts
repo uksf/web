@@ -26,9 +26,11 @@ export class EditServerModsModalComponent implements OnInit {
     }
 
     getAvailableMods() {
-        this.httpClient.get(this.urls.apiUrl + `/gameservers/${this.server.id}/mods`).subscribe((response) => {
-            this.populateServerMods(response);
-            this.before = JSON.stringify(this.availableMods);
+        this.httpClient.get(this.urls.apiUrl + `/gameservers/${this.server.id}/mods`).subscribe({
+            next: (response) => {
+                this.populateServerMods(response);
+                this.before = JSON.stringify(this.availableMods);
+            }
         });
     }
 
@@ -67,8 +69,10 @@ export class EditServerModsModalComponent implements OnInit {
                     }),
                 }
             )
-            .subscribe((_) => {
-                this.dialog.closeAll();
+            .subscribe({
+                next: () => {
+                    this.dialog.closeAll();
+                }
             });
     }
 
@@ -79,10 +83,12 @@ export class EditServerModsModalComponent implements OnInit {
                     'Content-Type': 'application/json',
                 }),
             })
-            .subscribe(({ availableMods, mods, serverMods }: any) => {
-                this.server.mods = mods;
-                this.server.serverMods = serverMods;
-                this.populateServerMods(availableMods);
+            .subscribe({
+                next: ({ availableMods, mods, serverMods }: any) => {
+                    this.server.mods = mods;
+                    this.server.serverMods = serverMods;
+                    this.populateServerMods(availableMods);
+                }
             });
     }
 }

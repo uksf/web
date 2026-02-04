@@ -26,10 +26,12 @@ export class AdminDiscordLogsComponent extends AdminLogsComponent implements OnI
         const params = this.buildParams();
         this.httpClient
             .get<PagedResult<DiscordLog>>(`${this.urls.apiUrl}/logging/discord`, { params })
-            .subscribe((pagedResult: PagedResult<DiscordLog>) => {
-                this.dataLoaded = true;
-                this.paginator.length = pagedResult.totalCount;
-                this.datasource.data = pagedResult.data;
+            .subscribe({
+                next: (pagedResult: PagedResult<DiscordLog>) => {
+                    this.dataLoaded = true;
+                    this.paginator.length = pagedResult.totalCount;
+                    this.datasource.data = pagedResult.data;
+                }
             });
     }
 

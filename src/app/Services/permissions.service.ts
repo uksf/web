@@ -43,10 +43,12 @@ export class PermissionsService {
                     this.refresh().then();
                 });
             });
-            this.accountHubConnection.reconnectEvent.subscribe(() => {
-                this.mergeUpdates(() => {
-                    this.refresh().then();
-                });
+            this.accountHubConnection.reconnectEvent.subscribe({
+                next: () => {
+                    this.mergeUpdates(() => {
+                        this.refresh().then();
+                    });
+                }
             });
         });
     }

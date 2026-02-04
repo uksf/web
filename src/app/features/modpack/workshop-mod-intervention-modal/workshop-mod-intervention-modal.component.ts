@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Output } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
@@ -7,7 +7,6 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
     styleUrls: ['./workshop-mod-intervention-modal.component.scss']
 })
 export class WorkshopModInterventionModalComponent {
-    @Output() submitEvent: EventEmitter<string[]> = new EventEmitter<string[]>();
     submitting: boolean = false;
     availablePbos: string[] = [];
     pboSelection: WorkshopModPboSelection[] = [];
@@ -36,8 +35,7 @@ export class WorkshopModInterventionModalComponent {
     submit() {
         const selectedPbos: string[] = this.pboSelection.filter((x: WorkshopModPboSelection) => x.selected).map((x: WorkshopModPboSelection) => x.name);
 
-        this.dialogRef.close();
-        this.submitEvent.emit(selectedPbos);
+        this.dialogRef.close(selectedPbos);
     }
 }
 

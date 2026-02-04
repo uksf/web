@@ -54,8 +54,10 @@ export class CommandMembersComponent implements OnInit {
             allHub.connection.on('ReceiveAccountUpdate', () => {
                 this.getMembers();
             });
-            allHub.reconnectEvent.subscribe(() => {
-                this.getMembers();
+            allHub.reconnectEvent.subscribe({
+                next: () => {
+                    this.getMembers();
+                }
             });
         });
 
@@ -67,8 +69,10 @@ export class CommandMembersComponent implements OnInit {
             }
         });
 
-        this.filterSubject.pipe(debounceTime(150), distinctUntilChanged()).subscribe(() => {
-            this.getMembers();
+        this.filterSubject.pipe(debounceTime(150), distinctUntilChanged()).subscribe({
+            next: () => {
+                this.getMembers();
+            }
         });
     }
 

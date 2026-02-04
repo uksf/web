@@ -13,8 +13,10 @@ export class OperationsActivityComponent implements OnInit {
     constructor(private httpClient: HttpClient, private urls: UrlService) {}
 
     ngOnInit() {
-        this.httpClient.get(this.urls.apiUrl + '/operations').subscribe((response) => {
-            this.activityData = response;
+        this.httpClient.get(this.urls.apiUrl + '/operations').subscribe({
+            next: (response) => {
+                this.activityData = response;
+            }
         });
     }
 }

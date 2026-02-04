@@ -60,31 +60,37 @@ export class AccountService {
                 this.openDialog = this.dialog.open(ConfirmationModalComponent, {
                     data: { message: 'Your account does not have TeamSpeak connected. Press the button below to connect TeamSpeak', button: 'Connect TeamSpeak' }
                 });
-                this.openDialog.componentInstance.confirmEvent.subscribe(() => {
-                    this.openTeamspeakModal();
-                });
-                this.openDialog.afterClosed().subscribe(() => {
-                    this.openDialog = undefined;
+                this.openDialog.afterClosed().subscribe({
+                    next: (result) => {
+                        this.openDialog = undefined;
+                        if (result) {
+                            this.openTeamspeakModal();
+                        }
+                    }
                 });
             } else if (!this.account.steamname) {
                 this.openDialog = this.dialog.open(ConfirmationModalComponent, {
                     data: { message: 'Your account does not have Steam connected. Press the button below to connect Steam', button: 'Connect Steam' }
                 });
-                this.openDialog.componentInstance.confirmEvent.subscribe(() => {
-                    this.connectSteam();
-                });
-                this.openDialog.afterClosed().subscribe(() => {
-                    this.openDialog = undefined;
+                this.openDialog.afterClosed().subscribe({
+                    next: (result) => {
+                        this.openDialog = undefined;
+                        if (result) {
+                            this.connectSteam();
+                        }
+                    }
                 });
             } else if (!this.account.discordId) {
                 this.openDialog = this.dialog.open(ConfirmationModalComponent, {
                     data: { message: 'Your account does not have Discord connected. Press the button below to connect Discord', button: 'Connect Discord' }
                 });
-                this.openDialog.componentInstance.confirmEvent.subscribe(() => {
-                    this.connectDiscord();
-                });
-                this.openDialog.afterClosed().subscribe(() => {
-                    this.openDialog = undefined;
+                this.openDialog.afterClosed().subscribe({
+                    next: (result) => {
+                        this.openDialog = undefined;
+                        if (result) {
+                            this.connectDiscord();
+                        }
+                    }
                 });
             }
         }
@@ -94,8 +100,10 @@ export class AccountService {
         this.dialog
             .open(ConnectTeamspeakModalComponent, { disableClose: true })
             .afterClosed()
-            .subscribe(() => {
-                this.getAccount();
+            .subscribe({
+                next: () => {
+                    this.getAccount();
+                }
             });
     }
 

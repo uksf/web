@@ -52,20 +52,26 @@ export class RecruitmentPageComponent implements OnInit {
     constructor(private accountService: AccountService, private httpClient: HttpClient, private urls: UrlService, private router: Router) {}
 
     ngOnInit() {
-        this.httpClient.get(this.urls.apiUrl + '/recruitment/applications/active').subscribe((applications: ActiveApplication[]) => {
-            this.userActiveApplications = applications.filter((x: ActiveApplication) => x.account.application.recruiter === this.accountService.account.id);
-            this.allOtherActiveApplications = applications.filter((x: ActiveApplication) => !this.userActiveApplications.includes(x));
-            this.getTeamspeakOnlineStates();
+        this.httpClient.get(this.urls.apiUrl + '/recruitment/applications/active').subscribe({
+            next: (applications: ActiveApplication[]) => {
+                this.userActiveApplications = applications.filter((x: ActiveApplication) => x.account.application.recruiter === this.accountService.account.id);
+                this.allOtherActiveApplications = applications.filter((x: ActiveApplication) => !this.userActiveApplications.includes(x));
+                this.getTeamspeakOnlineStates();
+            }
         });
-        this.httpClient.get(this.urls.apiUrl + '/recruitment/recruiters').subscribe((recruiters: Recruiter[]) => {
-            this.recruiters = recruiters;
+        this.httpClient.get(this.urls.apiUrl + '/recruitment/recruiters').subscribe({
+            next: (recruiters: Recruiter[]) => {
+                this.recruiters = recruiters;
+            }
         });
 
         this.getCompletedApplications();
         this.getStats();
 
-        this.filterSubject.pipe(debounceTime(150), distinctUntilChanged()).subscribe(() => {
-            this.getCompletedApplications();
+        this.filterSubject.pipe(debounceTime(150), distinctUntilChanged()).subscribe({
+            next: () => {
+                this.getCompletedApplications();
+            }
         });
     }
 
@@ -86,18 +92,22 @@ export class RecruitmentPageComponent implements OnInit {
     }
 
     setSr1Enabled(recruiter) {
-        this.httpClient.put(`${this.urls.apiUrl}/accounts/${recruiter.account.id}/updatesetting`, recruiter.account.settings).subscribe((settings: AccountSettings) => {
-            recruiter.account.settings = settings;
+        this.httpClient.put(`${this.urls.apiUrl}/accounts/${recruiter.account.id}/updatesetting`, recruiter.account.settings).subscribe({
+            next: (settings: AccountSettings) => {
+                recruiter.account.settings = settings;
+            }
         });
     }
 
     setAccountSr1Enabled() {
         this.accountService.account.settings.sr1Enabled = !this.accountService.account.settings.sr1Enabled;
 
-        this.httpClient.put(`${this.urls.apiUrl}/accounts/${this.accountService.account.id}/updatesetting`, this.accountService.account.settings).subscribe((settings: AccountSettings) => {
-            const recruiter: any = this.activity.find((x: any) => x.account.id === this.accountService.account.id);
-            if (recruiter !== undefined) {
-                recruiter.account.settings = settings;
+        this.httpClient.put(`${this.urls.apiUrl}/accounts/${this.accountService.account.id}/updatesetting`, this.accountService.account.settings).subscribe({
+            next: (settings: AccountSettings) => {
+                const recruiter: any = this.activity.find((x: any) => x.account.id === this.accountService.account.id);
+                if (recruiter !== undefined) {
+                    recruiter.account.settings = settings;
+                }
             }
         });
     }
@@ -175,18 +185,22 @@ export class RecruitmentPageComponent implements OnInit {
             let teamspeakState: AsyncSubject<OnlineState> = new AsyncSubject<OnlineState>();
             this.teamspeakStates.Add(application.account.id, teamspeakState);
 
-            this.httpClient.get(`${this.urls.apiUrl}/teamspeak/${application.account.id}/onlineUserDetails`).subscribe((state: OnlineState) => {
-                teamspeakState.next(state);
-                teamspeakState.complete();
+            this.httpClient.get(`${this.urls.apiUrl}/teamspeak/${application.account.id}/onlineUserDetails`).subscribe({
+                next: (state: OnlineState) => {
+                    teamspeakState.next(state);
+                    teamspeakState.complete();
+                }
             });
         }
     }
 
     private getStats() {
-        this.httpClient.get(this.urls.apiUrl + '/recruitment/stats').subscribe((response: Object) => {
-            this.activity = response['activity'];
-            this.yourStats = response['yourStats'];
-            this.sr1Stats = response['sr1Stats'];
+        this.httpClient.get(this.urls.apiUrl + '/recruitment/stats').subscribe({
+            next: (response: Object) => {
+                this.activity = response['activity'];
+                this.yourStats = response['yourStats'];
+                this.sr1Stats = response['sr1Stats'];
+            }
         });
     }
 }
