@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { UrlService } from '../../Services/url.service';
 import { HttpClient } from '@angular/common/http';
 import { ConnectionContainer, SignalRService } from 'app/Services/signalr.service';
@@ -8,7 +10,7 @@ import { ConnectionContainer, SignalRService } from 'app/Services/signalr.servic
     templateUrl: './home-page.component.html',
     styleUrls: ['./home-page.component.scss']
 })
-export class HomePageComponent implements OnInit {
+export class HomePageComponent implements OnInit, OnDestroy {
     commanders;
     recruiters;
     members;
@@ -18,10 +20,12 @@ export class HomePageComponent implements OnInit {
     _time: Date;
     private hubConnection: ConnectionContainer;
     private updateTimeout;
+    private timeInterval;
+    private destroy$ = new Subject<void>();
 
     constructor(private httpClient: HttpClient, private urls: UrlService, private signalrService: SignalRService) {
         this._time = new Date();
-        setInterval(() => {
+        this.timeInterval = setInterval(() => {
             this._time = new Date();
         }, 250);
     }
@@ -34,7 +38,7 @@ export class HomePageComponent implements OnInit {
                 this.getClients();
             });
         });
-        this.hubConnection.reconnectEvent.subscribe({
+        this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.mergeUpdates(() => {
                     this.getClients();
@@ -43,6 +47,20 @@ export class HomePageComponent implements OnInit {
         });
 
         this.getInstagramImages();
+    }
+
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
+        if (this.timeInterval) {
+            clearInterval(this.timeInterval);
+        }
+        if (this.updateTimeout) {
+            clearTimeout(this.updateTimeout);
+        }
+        if (this.hubConnection) {
+            this.hubConnection.connection.stop();
+        }
     }
 
     get time() {
