@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -33,6 +34,7 @@ import { PersonnelRosterComponent } from './components/personnel-roster/personne
         NgxPermissionsModule.forChild(),
         MatButtonToggleModule,
         MatDatepickerModule,
+        MatDividerModule,
         MatExpansionModule,
         MatTableModule,
         MatTabsModule,
