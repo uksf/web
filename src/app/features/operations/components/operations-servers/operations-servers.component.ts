@@ -41,6 +41,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     dropZoneWidth = 0;
     private hubConnection: ConnectionContainer;
     private destroy$ = new Subject<void>();
+    private uptimeInterval: number;
 
     constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private signalrService: SignalRService, private permissions: PermissionsService) {}
 
@@ -84,7 +85,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         this.getServers();
         this.getDisabledState();
 
-        window.setInterval(() => {
+        this.uptimeInterval = window.setInterval(() => {
             this.refreshUptimes();
         }, 1000);
     }
@@ -92,6 +93,9 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.destroy$.next();
         this.destroy$.complete();
+        if (this.uptimeInterval) {
+            clearInterval(this.uptimeInterval);
+        }
         this.hubConnection.connection.stop().then();
     }
 

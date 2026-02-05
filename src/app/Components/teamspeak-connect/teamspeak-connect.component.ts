@@ -73,6 +73,12 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
+        if (this.updateTimeout) {
+            clearTimeout(this.updateTimeout);
+        }
+        if (this.changedTimeout) {
+            clearTimeout(this.changedTimeout);
+        }
         this.hubConnection.connection.stop();
     }
 

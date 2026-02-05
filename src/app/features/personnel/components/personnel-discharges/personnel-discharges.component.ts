@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -13,7 +13,7 @@ import { nextFrame } from '@app/Services/helper.service';
     templateUrl: './personnel-discharges.component.html',
     styleUrls: ['../personnel-page/personnel-page.component.scss', './personnel-discharges.component.scss']
 })
-export class PersonnelDischargesComponent {
+export class PersonnelDischargesComponent implements OnInit, OnDestroy {
     @ViewChild(MatExpansionPanel) panel: MatExpansionPanel;
     displayedColumns = ['timestamp', 'rank', 'unit', 'role', 'dischargedBy', 'reason'];
     updating: boolean;
@@ -37,6 +37,12 @@ export class PersonnelDischargesComponent {
             this.refresh(this.route.snapshot.queryParams['filter']);
         } else {
             this.refresh();
+        }
+    }
+
+    ngOnDestroy(): void {
+        if (this.timeout) {
+            clearTimeout(this.timeout);
         }
     }
 
