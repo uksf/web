@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { SharedModule } from '@shared/shared.module';
@@ -25,6 +27,8 @@ import { OrganizationChartModule } from 'primeng/organizationchart';
         UnitsRoutingModule,
         NgxPermissionsModule.forChild(),
         OrganizationChartModule,
+        MatGridListModule,
+        MatTableModule,
         MatTabsModule,
     ],
 })
