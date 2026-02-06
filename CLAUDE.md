@@ -21,23 +21,7 @@ bun test:e2e          # Run E2E tests (Playwright)
 
 ## File Organization
 
-### Current Structure (Being Migrated)
-
-```
-src/app/
-  Components/       # Centralized components (legacy)
-  Modals/           # Centralized modals (legacy)
-  Pages/            # Route-level page components
-  Services/         # Global services
-  Pipes/            # Transform pipes
-  Directives/       # Custom directives
-  Models/           # TypeScript interfaces
-  modpack/          # Feature module (reference pattern)
-  shared/           # Shared module (new)
-  recruitment/      # Partial feature module
-```
-
-### Target Structure (Feature-Based)
+### Structure (Feature-Based)
 
 ```
 src/app/

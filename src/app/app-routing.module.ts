@@ -140,7 +140,7 @@ const appRoutes: Routes = [
     },
     { path: 'policy', redirectTo: 'information/policy' },
     { path: 'rules', redirectTo: 'information/rules' },
-    { path: '**', redirectTo: 'Login' }
+    { path: '**', redirectTo: 'login' }
 ];
 
 @NgModule({

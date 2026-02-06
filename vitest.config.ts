@@ -6,10 +6,11 @@ export default defineConfig({
     environment: 'node',
     include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
     exclude: ['node_modules', 'dist', 'e2e'],
+    setupFiles: ['./vitest.setup.ts'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
-      include: ['src/app/Services/**/*.ts', 'src/app/Pipes/**/*.ts'],
+      include: ['src/app/shared/**/*.ts', 'src/app/core/**/*.ts'],
     },
   },
 });

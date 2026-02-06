@@ -82,7 +82,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     }
 
     getNotifications() {
-        this.httpClient.get(this.urlService.apiUrl + '/notifications').subscribe({
+        this.httpClient.get(this.urlService.apiUrl + '/notifications').pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
                 this.notifications = response as any[];
                 this.updateNotifications();
@@ -116,6 +116,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
                         .post(this.urlService.apiUrl + '/notifications/read', {
                             notifications: this.unreadNotifications
                         })
+                        .pipe(takeUntil(this.destroy$))
                         .subscribe({
                             next: (_) => {
                                 this.unreadTimeout = null;
@@ -147,6 +148,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
             .post(this.urlService.apiUrl + '/notifications/clear', {
                 notifications: clear
             })
+            .pipe(takeUntil(this.destroy$))
             .subscribe();
     }
 
@@ -169,6 +171,10 @@ export class NotificationsComponent implements OnInit, OnDestroy {
             }
             resolve(this.accountService.account.id);
         });
+    }
+
+    trackById(index: number, item: any): string {
+        return item.id;
     }
 
     async delay(delay: number) {

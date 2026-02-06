@@ -2,7 +2,7 @@
 <mat-dialog-content>
     <div *ngIf="availableTrainings" class="flex-container">
         <div class="trainings-list-container">
-            <div *ngFor="let training of availableTrainings" class="trainings-list-item-container">
+            <div *ngFor="let training of availableTrainings; trackBy: trackByTrainingId" class="trainings-list-item-container">
                 <div class="trainings-list-item">
                     <span>{{ training.name }}</span>
                 </div>

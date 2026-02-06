@@ -149,6 +149,14 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
         });
     }
 
+    trackByRequestId(index: number, request: any): string {
+        return request.data.id;
+    }
+
+    trackByReviewId(index: number, review: any): string {
+        return review.id;
+    }
+
     dischargeRequest() {
         const dialog = this.dialog.open(RequestDischargeModalComponent, {});
         dialog.afterClosed().subscribe({

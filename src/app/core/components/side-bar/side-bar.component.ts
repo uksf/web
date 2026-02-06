@@ -19,6 +19,11 @@ export class SideBarComponent implements OnInit, OnDestroy {
     newVersion = false;
     version = 0;
     private destroy$ = new Subject<void>();
+    private onReceiveFrontendUpdate = (version) => {
+        if (parseInt(version, 10) > this.version) {
+            this.newVersion = true;
+        }
+    };
     private guestMenu = [
         { text: 'Home', link: 'home', icon: 'home' },
         // { text: 'Docs', link: 'admin', icon: 'book' },
@@ -53,11 +58,7 @@ export class SideBarComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.checkVersion();
-        AppComponent.utilityHubConnection.connection.on('ReceiveFrontendUpdate', (version) => {
-            if (parseInt(version, 10) > this.version) {
-                this.newVersion = true;
-            }
-        });
+        AppComponent.utilityHubConnection.connection.on('ReceiveFrontendUpdate', this.onReceiveFrontendUpdate);
         AppComponent.utilityHubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.checkVersion();
@@ -68,6 +69,7 @@ export class SideBarComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.destroy$.next();
         this.destroy$.complete();
+        AppComponent.utilityHubConnection.connection.off('ReceiveFrontendUpdate', this.onReceiveFrontendUpdate);
     }
 
     get currentRouterItem() {
@@ -114,7 +116,7 @@ export class SideBarComponent implements OnInit, OnDestroy {
     }
 
     checkVersion() {
-        this.httpClient.get(this.urls.apiUrl + '/version').subscribe({
+        this.httpClient.get(this.urls.apiUrl + '/version').pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
                 const version = response as number;
                 if (this.version !== 0 && version > this.version) {
@@ -123,6 +125,10 @@ export class SideBarComponent implements OnInit, OnDestroy {
                 this.version = version;
             }
         });
+    }
+
+    trackByLink(index: number, item: any): string {
+        return item.link;
     }
 
     updateVersion() {

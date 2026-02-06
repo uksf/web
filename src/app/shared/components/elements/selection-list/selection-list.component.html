@@ -1,6 +1,6 @@
 <form [formGroup]="form" class="selection-list-form">
     <div *ngIf="listPosition === 'top'" class="selection-list-container" [ngClass]="{ empty: listModel.length === 0, disabled: disabled }">
-        <div class="selection-element" *ngFor="let element of listModel">
+        <div class="selection-element" *ngFor="let element of listModel; trackBy: trackByDefault">
             <span [matTooltipDisabled]="!element.disabled" [matTooltip]="listDisabledTooltip(element)" [ngClass]="{ disabled: element.disabled }">{{ element.displayValue }}</span>
             <app-flex-filler></app-flex-filler>
             <mat-icon *ngIf="!disabled" class="remove" (click)="remove(element)" matTooltip="Remove from selection">
@@ -21,12 +21,12 @@
                 </mat-option>
             </cdk-virtual-scroll-viewport>
         </mat-autocomplete>
-        <mat-error *ngFor="let validation of validationMessages">
+        <mat-error *ngFor="let validation of validationMessages; trackBy: trackByIndex">
             <mat-error *ngIf="showErrors && form.get('list').hasError(validation.type)" class="error-message">{{ validation.message() }}</mat-error>
         </mat-error>
     </mat-form-field>
     <div *ngIf="listPosition === 'bottom'" class="selection-list-container" [ngClass]="{ empty: listModel.length === 0, disabled: disabled }">
-        <div class="selection-element" *ngFor="let element of listModel">
+        <div class="selection-element" *ngFor="let element of listModel; trackBy: trackByDefault">
             <span [matTooltipDisabled]="!element.disabled" [matTooltip]="listDisabledTooltip(element)" [ngClass]="{ disabled: element.disabled }">{{ element.displayValue }}</span>
             <app-flex-filler></app-flex-filler>
             <mat-icon *ngIf="!disabled" class="remove" (click)="remove(element)" matTooltip="Remove from selection">

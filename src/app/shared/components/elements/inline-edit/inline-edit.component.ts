@@ -1,6 +1,6 @@
-import { Component, EventEmitter, forwardRef, HostListener, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, forwardRef, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 const INLINE_EDIT_CONTROL_VALUE_ACCESSOR = {
     provide: NG_VALUE_ACCESSOR,
@@ -14,7 +14,7 @@ const INLINE_EDIT_CONTROL_VALUE_ACCESSOR = {
     providers: [INLINE_EDIT_CONTROL_VALUE_ACCESSOR],
     styleUrls: ['./inline-edit.component.scss']
 })
-export class InlineEditComponent implements ControlValueAccessor, OnInit {
+export class InlineEditComponent implements ControlValueAccessor, OnInit, OnDestroy {
     @ViewChild('inlineEditControl') inlineEditControl;
     @Input() label = '';
     @Input() type = 'text';
@@ -24,6 +24,7 @@ export class InlineEditComponent implements ControlValueAccessor, OnInit {
     @Output() finishedEvent = new EventEmitter();
     private _value = '';
     private preValue = '';
+    private validatorSubscription: Subscription | null = null;
     editing = false;
     invalid = false;
     public onChange: any = Function.prototype;
@@ -37,7 +38,8 @@ export class InlineEditComponent implements ControlValueAccessor, OnInit {
         if (v !== this._value) {
             this._value = v;
             this.onChange(v);
-            this.validator.subscribe({
+            this.validatorSubscription?.unsubscribe();
+            this.validatorSubscription = this.validator.subscribe({
                 next: (invalid) => {
                     this.invalid = invalid;
                 }
@@ -50,6 +52,10 @@ export class InlineEditComponent implements ControlValueAccessor, OnInit {
     constructor() {}
 
     ngOnInit() {}
+
+    ngOnDestroy() {
+        this.validatorSubscription?.unsubscribe();
+    }
 
     writeValue(value: any) {
         this._value = value;

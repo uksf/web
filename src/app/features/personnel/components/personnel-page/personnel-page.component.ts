@@ -13,6 +13,10 @@ export class PersonnelPageComponent {
         // { label: 'Activity', link: './activity' }
     ];
 
+    trackByLink(index: number, item: any): string {
+        return item.link;
+    }
+
     constructor(private permissions: PermissionsService) {
         if (this.permissions.hasPermission(Permissions.DISCHARGES)) {
             this.tabLinks = [

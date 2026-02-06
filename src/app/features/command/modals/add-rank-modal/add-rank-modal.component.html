@@ -3,19 +3,19 @@
     <form [formGroup]="form" class="container">
         <mat-form-field class="normal">
             <input #input [errorStateMatcher]="instantErrorStateMatcher" formControlName="name" matInput placeholder="Rank Name" required />
-            <mat-error *ngFor="let validation of validationMessages.name">
+            <mat-error *ngFor="let validation of validationMessages.name; trackBy: trackByIndex">
                 <mat-error *ngIf="form.get('name').hasError(validation.type)" class="error-message">{{ validation.message }}</mat-error>
             </mat-error>
         </mat-form-field>
         <mat-form-field class="normal">
             <input #input [errorStateMatcher]="instantErrorStateMatcher" formControlName="abbreviation" matInput placeholder="Abbreviation" required />
-            <mat-error *ngFor="let validation of validationMessages.abbreviation">
+            <mat-error *ngFor="let validation of validationMessages.abbreviation; trackBy: trackByIndex">
                 <mat-error *ngIf="form.get('abbreviation').hasError(validation.type)" class="error-message">{{ validation.message }}</mat-error>
             </mat-error>
         </mat-form-field>
         <mat-form-field class="normal">
             <input #input [errorStateMatcher]="instantErrorStateMatcher" formControlName="teamspeakGroup" matInput placeholder="TeamSpeak Group ID" />
-            <mat-error *ngFor="let validation of validationMessages.teamspeakGroup">
+            <mat-error *ngFor="let validation of validationMessages.teamspeakGroup; trackBy: trackByIndex">
                 <mat-error *ngIf="form.get('teamspeakGroup').hasError(validation.type)" class="error-message">{{ validation.message }}</mat-error>
             </mat-error>
         </mat-form-field>

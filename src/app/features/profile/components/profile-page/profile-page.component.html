@@ -9,7 +9,7 @@
                 <h2 *ngIf="account.membershipState == membershipState.CONFIRMED">{{ account.firstname }} {{ account.lastname }}</h2>
                 <h2 *ngIf="account.membershipState == membershipState.DISCHARGED"><b>Discharged</b> {{ account.firstname }} {{ account.lastname }}</h2>
                 <app-flex-filler></app-flex-filler>
-                <img src="{{ account.nation | countryImage }}" />
+                <img src="{{ account.nation | countryImage }}" alt="{{ account.nation }} flag" />
             </div>
         </div>
         <div class="flex-container padding-bottom">
@@ -69,7 +69,7 @@
                 </div>
                 <br />
                 <h3 class="service-record-title">Service History</h3>
-                <mat-card *ngFor="let serviceItem of account.serviceRecord" class="service-record">
+                <mat-card *ngFor="let serviceItem of account.serviceRecord; trackBy: trackByIndex" class="service-record">
                     <span>{{ serviceItem.occurence }}</span>
                     <app-flex-filler></app-flex-filler>
                     <span class="date">{{ serviceItem.timestamp | date: 'mediumDate':'Europe/London' }}</span>

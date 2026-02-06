@@ -165,6 +165,10 @@ export class DropdownBaseComponent implements OnInit {
         return element.value;
     }
 
+    trackByIndex(index: number): number {
+        return index;
+    }
+
     public isTouched(): boolean {
         if (!this.textInput) {
             return false;

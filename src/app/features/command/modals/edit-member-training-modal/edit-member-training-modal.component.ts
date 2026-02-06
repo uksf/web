@@ -39,6 +39,10 @@ export class EditMemberTrainingModalComponent implements OnInit {
         });
     }
 
+    trackByTrainingId(index: number, training: EditTrainingItem): string {
+        return training.id;
+    }
+
     save() {
         const trainingIds: string[] = this.availableTrainings.filter((training: EditTrainingItem): boolean => training.selected).map((training: EditTrainingItem): string => training.id);
 

@@ -153,6 +153,10 @@ export class RequestLoaModalComponent implements OnInit {
             });
     }
 
+    trackByIndex(index: number): number {
+        return index;
+    }
+
     private getUkNow() {
         return moment().tz('Europe/London');
     }

@@ -22,6 +22,15 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
     private previousResponse;
     private hubConnection: ConnectionContainer;
     private destroy$ = new Subject<void>();
+    private onReceiveComment = (comment) => {
+        this.comments.unshift(comment);
+    };
+    private onDeleteComment = (id) => {
+        this.comments.splice(
+            this.comments.findIndex((x) => x.id === id),
+            1
+        );
+    };
     comments = [];
     commentForm;
 
@@ -38,15 +47,8 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
         this.getComments();
         this.getCanPostComment();
         this.hubConnection = this.signalrService.connect(`commentThread?threadId=${this.threadId}`);
-        this.hubConnection.connection.on('ReceiveComment', (comment) => {
-            this.comments.unshift(comment);
-        });
-        this.hubConnection.connection.on('DeleteComment', (id) => {
-            this.comments.splice(
-                this.comments.findIndex((x) => x.id === id),
-                1
-            );
-        });
+        this.hubConnection.connection.on('ReceiveComment', this.onReceiveComment);
+        this.hubConnection.connection.on('DeleteComment', this.onDeleteComment);
         this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.getComments();
@@ -58,11 +60,13 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.destroy$.next();
         this.destroy$.complete();
+        this.hubConnection.connection.off('ReceiveComment', this.onReceiveComment);
+        this.hubConnection.connection.off('DeleteComment', this.onDeleteComment);
         this.hubConnection.connection.stop();
     }
 
     private getComments() {
-        this.httpClient.get(this.urls.apiUrl + '/commentthread/' + this.threadId).subscribe({
+        this.httpClient.get(this.urls.apiUrl + '/commentthread/' + this.threadId).pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
                 if (this.previousResponse !== JSON.stringify(response)) {
                     this.comments = response['comments'];
@@ -73,7 +77,7 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
     }
 
     getCanPostComment() {
-        this.httpClient.get(this.urls.apiUrl + '/commentthread/canpost/' + this.threadId).subscribe({
+        this.httpClient.get(this.urls.apiUrl + '/commentthread/canpost/' + this.threadId).pipe(takeUntil(this.destroy$)).subscribe({
             next: (canPost: boolean) => {
                 this.canPostComment = canPost;
             }
@@ -93,7 +97,7 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.httpClient.put(this.urls.apiUrl + '/commentthread/' + this.threadId, { content: this.commentForm.controls.commentContent.value }).subscribe({
+        this.httpClient.put(this.urls.apiUrl + '/commentthread/' + this.threadId, { content: this.commentForm.controls.commentContent.value }).pipe(takeUntil(this.destroy$)).subscribe({
             next: (_) => {
                 this.commentForm.controls.commentContent.setValue('');
             }
@@ -105,11 +109,15 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
     }
 
     deleteComment(comment) {
-        this.httpClient.post(this.urls.apiUrl + '/commentthread/' + this.threadId + '/' + comment.id, { content: this.commentForm.controls.commentContent.value }).subscribe({
+        this.httpClient.post(this.urls.apiUrl + '/commentthread/' + this.threadId + '/' + comment.id, { content: this.commentForm.controls.commentContent.value }).pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.commentForm.controls.commentContent.setValue('');
             }
         });
+    }
+
+    trackById(index: number, item: any): string {
+        return item.id;
     }
 
     getAuthorDisplayName(displayName: string) {

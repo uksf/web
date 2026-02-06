@@ -161,7 +161,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     }
 
     getDisabledState() {
-        this.httpClient.get(this.urls.apiUrl + '/gameservers/disabled').subscribe({
+        this.httpClient.get(this.urls.apiUrl + '/gameservers/disabled').pipe(takeUntil(this.destroy$)).subscribe({
             next: (state: boolean) => {
                 this.disabled = state;
             }
@@ -196,6 +196,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         this.dialog
             .open(AddServerModalComponent, {})
             .afterClosed()
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: () => {
                     this.getServers(true);
@@ -204,7 +205,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     }
 
     toggleDisabledState() {
-        this.httpClient.post(this.urls.apiUrl + '/gameservers/disabled', { state: !this.disabled }, { headers: this.headers }).subscribe();
+        this.httpClient.post(this.urls.apiUrl + '/gameservers/disabled', { state: !this.disabled }, { headers: this.headers }).pipe(takeUntil(this.destroy$)).subscribe();
     }
 
     editServer(event, server) {
@@ -217,6 +218,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                 }
             })
             .afterClosed()
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (environmentChanged: boolean) => {
                     if (environmentChanged) {
@@ -235,10 +237,11 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                 data: { message: `Are you sure you want to delete '${server.name}'?` }
             })
             .afterClosed()
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (result) => {
                     if (result) {
-                        this.httpClient.delete(`${this.urls.apiUrl}/gameservers/${server.id}`, { headers: this.headers }).subscribe({
+                        this.httpClient.delete(`${this.urls.apiUrl}/gameservers/${server.id}`, { headers: this.headers }).pipe(takeUntil(this.destroy$)).subscribe({
                             next: (response) => {
                                 this.servers = response;
                             }
@@ -257,7 +260,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         moveItemInArray(this.servers, event.previousIndex, event.currentIndex);
 
         const body: OrderUpdateRequest = { previousIndex: event.previousIndex, newIndex: event.currentIndex };
-        this.httpClient.patch(`${this.urls.apiUrl}/gameservers/order`, body, { headers: this.headers }).subscribe({
+        this.httpClient.patch(`${this.urls.apiUrl}/gameservers/order`, body, { headers: this.headers }).pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
                 this.servers = response;
                 this.updatingOrder = false;
@@ -281,7 +284,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                 })
                 .afterClosed();
         }
-        reportDialogClose.subscribe({
+        reportDialogClose.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 if (missionReports.length > 0) {
                     this.showMissionReport(missionReports);
@@ -306,6 +309,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                 reportProgress: true,
                 headers: this.headers
             })
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (response) => {
                     this.missions.next(response['missions'].map(this.mapMissionElement));
@@ -343,6 +347,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                     data: { message: `There are still ${server.status.players} players on '${server.name}'. Are you sure you want to stop the server?` }
                 })
                 .afterClosed()
+                .pipe(takeUntil(this.destroy$))
                 .subscribe({
                     next: (result) => {
                         if (result) {
@@ -357,7 +362,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
 
     launch(server) {
         server.updating = true;
-        this.httpClient.post(`${this.urls.apiUrl}/gameservers/launch/${server.id}`, { missionName: server.missionSelection.value }, { headers: this.headers }).subscribe({
+        this.httpClient.post(`${this.urls.apiUrl}/gameservers/launch/${server.id}`, { missionName: server.missionSelection.value }, { headers: this.headers }).pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 server.updating = false;
                 this.refreshServerStatus(server);
@@ -388,6 +393,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                 data: { message: `Are you sure you want to kill '${server.name}'? This could have unexpected effects on the server` }
             })
             .afterClosed()
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (result) => {
                     if (result) {
@@ -399,7 +405,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
 
     runStop(server) {
         server.updating = true;
-        this.httpClient.get(`${this.urls.apiUrl}/gameservers/stop/${server.id}`, { headers: this.headers }).subscribe({
+        this.httpClient.get(`${this.urls.apiUrl}/gameservers/stop/${server.id}`, { headers: this.headers }).pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
                 const serverIndex = this.servers.findIndex((x) => x.id === response['gameServer'].id);
                 this.servers[serverIndex] = response['gameServer'];
@@ -416,7 +422,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
 
     runKill(server) {
         server.updating = true;
-        this.httpClient.get(`${this.urls.apiUrl}/gameservers/kill/${server.id}`, { headers: this.headers }).subscribe({
+        this.httpClient.get(`${this.urls.apiUrl}/gameservers/kill/${server.id}`, { headers: this.headers }).pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
                 const serverIndex = this.servers.findIndex((x) => x.id === response['gameServer'].id);
                 this.servers[serverIndex] = response['gameServer'];
@@ -439,6 +445,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                 }
             })
             .afterClosed()
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: () => {
                     this.getServers(true);
@@ -503,6 +510,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                         data: { message: message }
                     })
                     .afterClosed()
+                    .pipe(takeUntil(this.destroy$))
                     .subscribe({
                         next: (result) => {
                             if (result) {
@@ -532,10 +540,11 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                 data: { message: `Are you sure you want to kill ${this.instanceCount} servers?\nThere could be players still on and this could have unexpected effects on the server` }
             })
             .afterClosed()
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (result) => {
                     if (result) {
-                        this.httpClient.get(`${this.urls.apiUrl}/gameservers/killall`, { headers: this.headers }).subscribe({
+                        this.httpClient.get(`${this.urls.apiUrl}/gameservers/killall`, { headers: this.headers }).pipe(takeUntil(this.destroy$)).subscribe({
                             next: () => {
                                 this.getServers();
                             },

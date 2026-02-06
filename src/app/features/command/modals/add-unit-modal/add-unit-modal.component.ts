@@ -152,6 +152,14 @@ export class AddUnitModalComponent implements OnInit {
         }
     }
 
+    trackByIndex(index: number): number {
+        return index;
+    }
+
+    trackByUnitId(index: number, unit: ResponseUnit): string {
+        return unit.id;
+    }
+
     delete() {
         if (this.pending) {
             return;

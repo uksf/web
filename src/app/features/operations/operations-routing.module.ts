@@ -2,11 +2,10 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { NgxPermissionsGuard } from 'ngx-permissions';
 import { Permissions } from '@app/core/services/permissions';
+import { loginRedirect } from '@app/app-routing.module';
 import { OperationsPageComponent } from './components/operations-page/operations-page.component';
 import { OperationsServersComponent } from './components/operations-servers/operations-servers.component';
 import { OperationsAarComponent } from './components/operations-aar/operations-aar.component';
-
-const loginRedirect = '/login';
 
 const routes: Routes = [
     {

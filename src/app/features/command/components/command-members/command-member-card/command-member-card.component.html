@@ -29,7 +29,7 @@
         <div class="member-panel-content">
             <div class="member-panel-content-item left">
                 <h4>Units</h4>
-                <div *ngFor="let unit of member.unitObjects" class="member-panel-content-element">
+                <div *ngFor="let unit of member.unitObjects; trackBy: trackByUnitId" class="member-panel-content-element">
                     <div>{{ unit.name }}</div>
                     <div>{{ unit.memberRole }}</div>
                 </div>
@@ -37,7 +37,7 @@
             <div class="member-panel-content-item right">
                 <h4>Training</h4>
                 <div class="member-panel-content-elements-container">
-                    <div *ngFor="let training of member.trainings" class="member-panel-content-element training">
+                    <div *ngFor="let training of member.trainings; trackBy: trackByName" class="member-panel-content-element training">
                         <div>{{ training.name }}</div>
                     </div>
                 </div>

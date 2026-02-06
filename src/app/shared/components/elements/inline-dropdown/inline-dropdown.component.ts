@@ -1,5 +1,5 @@
-import { Component, EventEmitter, forwardRef, HostListener, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, EventEmitter, forwardRef, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Observable, Subscription } from 'rxjs';
 import { IDropdownElement } from '../dropdown-base/dropdown-base.component';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 
@@ -15,7 +15,7 @@ import { NG_VALUE_ACCESSOR } from '@angular/forms';
         }
     ]
 })
-export class InlineDropdownComponent implements OnInit {
+export class InlineDropdownComponent implements OnInit, OnDestroy {
     @Input('placeholder') placeholder: string;
     @Input('isRequired') required: boolean = false;
     @Input('isDisabled') disabled: boolean = false;
@@ -39,6 +39,7 @@ export class InlineDropdownComponent implements OnInit {
     @Output() finishedEvent = new EventEmitter();
     private _value = '';
     private preValue = '';
+    private validatorSubscription: Subscription | null = null;
     editing = false;
     invalid = false;
     public onChange: any = Function.prototype;
@@ -52,7 +53,8 @@ export class InlineDropdownComponent implements OnInit {
         if (v !== this._value) {
             this._value = v;
             this.onChange(v);
-            this.validator.subscribe({
+            this.validatorSubscription?.unsubscribe();
+            this.validatorSubscription = this.validator.subscribe({
                 next: (invalid) => {
                     this.invalid = invalid;
                 }
@@ -65,6 +67,10 @@ export class InlineDropdownComponent implements OnInit {
     constructor() {}
 
     ngOnInit(): void {}
+
+    ngOnDestroy(): void {
+        this.validatorSubscription?.unsubscribe();
+    }
 
     writeValue(value: any) {
         this._value = value;

@@ -2,13 +2,12 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { NgxPermissionsGuard } from 'ngx-permissions';
 import { Permissions } from '@app/core/services/permissions';
+import { loginRedirect } from '@app/app-routing.module';
 import { PersonnelPageComponent } from './components/personnel-page/personnel-page.component';
 import { PersonnelLoasComponent } from './components/personnel-loas/personnel-loas.component';
 import { PersonnelActivityComponent } from './components/personnel-activity/personnel-activity.component';
 import { PersonnelDischargesComponent } from './components/personnel-discharges/personnel-discharges.component';
 import { PersonnelRosterComponent } from './components/personnel-roster/personnel-roster.component';
-
-const loginRedirect = '/login';
 
 const memberPermissions = {
     only: Permissions.MEMBER,

@@ -27,7 +27,7 @@
             </div>
         </div>
         <div class="flex-container instagram-feed" *ngIf="instagramImages.length > 0">
-            <div class="instagram-image" *ngFor="let instagramImage of instagramImages">
+            <div class="instagram-image" *ngFor="let instagramImage of instagramImages; trackBy: trackByInstagramId">
                 <img [src]="instagramImage.base64" alt="UKSF Image" />
             </div>
         </div>
@@ -51,7 +51,7 @@
                         <div *ngIf="commanders && commanders.length > 0">
                             <h4>Command Staff</h4>
                             <ul>
-                                <div *ngFor="let user of commanders">
+                                <div *ngFor="let user of commanders; trackBy: trackByDisplayName">
                                     <li>{{ user.displayName }}</li>
                                 </div>
                             </ul>
@@ -59,7 +59,7 @@
                         <div *ngIf="recruiters && recruiters.length > 0">
                             <h4>Recruitment Staff</h4>
                             <ul>
-                                <div *ngFor="let user of recruiters">
+                                <div *ngFor="let user of recruiters; trackBy: trackByDisplayName">
                                     <li>{{ user.displayName }}</li>
                                 </div>
                             </ul>
@@ -68,7 +68,7 @@
                         <div *ngIf="members && members.length > 0">
                             <h4>Members</h4>
                             <ul>
-                                <div *ngFor="let user of members">
+                                <div *ngFor="let user of members; trackBy: trackByDisplayName">
                                     <li>{{ user.displayName }}</li>
                                 </div>
                             </ul>
@@ -76,7 +76,7 @@
                         <div *ngIf="guests && guests.length > 0">
                             <h4>Guests</h4>
                             <ul>
-                                <div *ngFor="let user of guests">
+                                <div *ngFor="let user of guests; trackBy: trackByDisplayName">
                                     <li>{{ user.displayName }}</li>
                                 </div>
                             </ul>

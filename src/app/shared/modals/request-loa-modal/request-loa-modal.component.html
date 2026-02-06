@@ -5,7 +5,7 @@
         <div class="container-body">
             <mat-form-field>
                 <input matInput placeholder="Reason" formControlName="reason" />
-                <mat-error *ngFor="let validation of validationMessages.reason">
+                <mat-error *ngFor="let validation of validationMessages.reason; trackBy: trackByIndex">
                     <mat-error class="error-message" *ngIf="form.get('reason').hasError(validation.type)">{{ validation.message }}</mat-error>
                 </mat-error>
             </mat-form-field>

@@ -28,6 +28,10 @@ export class PaginatorComponent implements OnChanges {
         this.page.emit({ pageIndex: this.pageIndex, pageSize: this.pageSize });
     }
 
+    trackByIndex(index: number): number {
+        return index;
+    }
+
     min(a: number, b: number): number {
         return Math.min(a, b);
     }

@@ -97,6 +97,14 @@ export class CommandMemberCardComponent implements OnInit {
         return this.expanded ? 'expanded' : 'collapsed';
     }
 
+    trackByUnitId(index: number, unit: any): string {
+        return unit.id;
+    }
+
+    trackByName(index: number, item: any): string {
+        return item.name;
+    }
+
     get displayName(): string {
         return `${this.member.lastname}.${this.member.firstname[0]}`;
     }

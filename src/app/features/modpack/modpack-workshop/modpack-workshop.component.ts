@@ -18,6 +18,8 @@ import { WorkshopModInterventionModalComponent } from '../workshop-mod-intervent
 export class ModpackWorkshopComponent implements OnInit, OnDestroy {
     private hubConnection: ConnectionContainer;
     private destroy$ = new Subject<void>();
+    private onReceiveWorkshopModAdded = () => this.getData();
+    private onReceiveWorkshopModUpdate = (id: string) => this.getDataForMod(id);
     mods: WorkshopMod[] = [];
 
     constructor(private httpClient: HttpClient, private urls: UrlService, private signalrService: SignalRService, private dialog: MatDialog) {}
@@ -29,12 +31,8 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
             });
         });
         this.hubConnection = this.signalrService.connect(`modpack`);
-        this.hubConnection.connection.on('ReceiveWorkshopModAdded', () => {
-            this.getData();
-        });
-        this.hubConnection.connection.on('ReceiveWorkshopModUpdate', (id: string) => {
-            this.getDataForMod(id);
-        });
+        this.hubConnection.connection.on('ReceiveWorkshopModAdded', this.onReceiveWorkshopModAdded);
+        this.hubConnection.connection.on('ReceiveWorkshopModUpdate', this.onReceiveWorkshopModUpdate);
         this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.getData();
@@ -45,11 +43,13 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.destroy$.next();
         this.destroy$.complete();
+        this.hubConnection.connection.off('ReceiveWorkshopModAdded', this.onReceiveWorkshopModAdded);
+        this.hubConnection.connection.off('ReceiveWorkshopModUpdate', this.onReceiveWorkshopModUpdate);
         this.hubConnection.connection.stop();
     }
 
     getData(callback: () => void = null) {
-        this.httpClient.get(this.urls.apiUrl + '/workshop').subscribe({
+        this.httpClient.get(this.urls.apiUrl + '/workshop').pipe(takeUntil(this.destroy$)).subscribe({
             next: (mods: WorkshopMod[]) => {
                 this.mods = mods;
                 if (callback) {
@@ -60,7 +60,7 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
     }
 
     getDataForMod(id: string) {
-        this.httpClient.get(this.urls.apiUrl + `/workshop/${id}`).subscribe({
+        this.httpClient.get(this.urls.apiUrl + `/workshop/${id}`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (mod: WorkshopMod) => {
                 const index: number = this.mods.findIndex((x: WorkshopMod) => x.id === mod.id);
                 if (index === -1) {
@@ -73,7 +73,7 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
     }
 
     getModUpdatedDate(mod: WorkshopMod) {
-        this.httpClient.get(this.urls.apiUrl + `/workshop/${mod.steamId}/updatedDate`).subscribe({
+        this.httpClient.get(this.urls.apiUrl + `/workshop/${mod.steamId}/updatedDate`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (updatedDateResponse: WorkshopModUpdatedDate) => {
                 mod.updatedDate = updatedDateResponse.updatedDate;
             }
@@ -101,7 +101,7 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
     }
 
     install() {
-        this.dialog.open(InstallWorkshopModModalComponent).afterClosed().subscribe({
+        this.dialog.open(InstallWorkshopModModalComponent).afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
             next: (data: InstallWorkshopModData) => {
                 if (data) {
                     this.httpClient
@@ -110,6 +110,7 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
                             rootMod: data.rootMod,
                             folderName: data.folderName
                         })
+                        .pipe(takeUntil(this.destroy$))
                         .subscribe({
                             next: () => {},
                             error: (error: any) => {
@@ -131,10 +132,11 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
                 }
             })
             .afterClosed()
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (selectedPbos: string[]) => {
                     if (selectedPbos) {
-                        this.httpClient.post(this.urls.apiUrl + `/workshop/${mod.steamId}/resolve`, { selectedPbos: selectedPbos }).subscribe({
+                        this.httpClient.post(this.urls.apiUrl + `/workshop/${mod.steamId}/resolve`, { selectedPbos: selectedPbos }).pipe(takeUntil(this.destroy$)).subscribe({
                             next: () => {},
                             error: (error: any) => {
                                 this.dialog.open(MessageModalComponent, {
@@ -148,19 +150,19 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
     }
 
     update(mod: WorkshopMod) {
-        this.httpClient.post(this.urls.apiUrl + `/workshop/${mod.steamId}/update`, {}).subscribe({
+        this.httpClient.post(this.urls.apiUrl + `/workshop/${mod.steamId}/update`, {}).pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {}
         });
     }
 
     uninstall(mod: WorkshopMod) {
-        this.httpClient.post(this.urls.apiUrl + `/workshop/${mod.steamId}/uninstall`, {}).subscribe({
+        this.httpClient.post(this.urls.apiUrl + `/workshop/${mod.steamId}/uninstall`, {}).pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {}
         });
     }
 
     delete(mod: WorkshopMod) {
-        this.httpClient.delete(this.urls.apiUrl + `/workshop/${mod.steamId}`).subscribe({
+        this.httpClient.delete(this.urls.apiUrl + `/workshop/${mod.steamId}`).pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {}
         });
     }

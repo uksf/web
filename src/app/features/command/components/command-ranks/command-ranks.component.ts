@@ -106,6 +106,10 @@ export class CommandRanksComponent implements OnInit {
         });
     }
 
+    trackByRankId(index: number, rank: any): string {
+        return rank.id;
+    }
+
     onDragStarted(event) {
         event.source._dragRef._preview.classList.add('dark-theme');
         event.source.element.nativeElement.classList.add('dark-theme');

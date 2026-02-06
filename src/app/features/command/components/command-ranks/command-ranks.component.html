@@ -18,7 +18,7 @@
                             <span class="teamspeakGroup" style="flex-basis: 14%">TS Group ID</span>
                             <span class="discordRoleId" style="flex-basis: 27%">Discord Role ID</span>
                         </mat-card>
-                        <div (cdkDragStarted)="onDragStarted($event)" *ngFor="let rank of ranks" cdkDrag>
+                        <div (cdkDragStarted)="onDragStarted($event)" *ngFor="let rank of ranks; trackBy: trackByRankId" cdkDrag>
                             <mat-card class="ranks-list-item">
                                 <span class="handle" cdkDragHandle>=</span>
                                 <app-inline-edit
@@ -48,7 +48,7 @@
                 <ng-template [ngxPermissionsExcept]="['ADMIN']">
                     <br />
                     <div class="ranks-list">
-                        <div *ngFor="let rank of ranks">
+                        <div *ngFor="let rank of ranks; trackBy: trackByRankId">
                             <mat-card class="ranks-list-item">
                                 <span class="name">{{ rank.name }}</span>
                                 <span class="abbreviation">{{ rank.abbreviation }}</span>

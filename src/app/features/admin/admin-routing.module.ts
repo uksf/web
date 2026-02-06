@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { NgxPermissionsGuard } from 'ngx-permissions';
 import { Permissions } from '@app/core/services/permissions';
+import { loginRedirect } from '@app/app-routing.module';
 
 // Components
 import { AdminLogsComponent } from './components/admin-logs/admin-logs.component';
@@ -12,8 +13,6 @@ import { AdminLauncherLogsComponent } from './components/admin-launcher-logs/adm
 import { AdminToolsComponent } from './components/admin-tools/admin-tools.component';
 import { AdminVariablesComponent } from './components/admin-variables/admin-variables.component';
 import { AdminServersComponent } from './components/admin-servers/admin-servers.component';
-
-const loginRedirect = '/login';
 
 const adminPermissions = {
   only: Permissions.ADMIN,

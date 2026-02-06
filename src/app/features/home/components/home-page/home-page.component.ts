@@ -78,7 +78,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
 
     private getClients() {
         // this.httpClient.get('https://api.uk-sf.co.uk/teamspeak/onlineAccounts').subscribe(
-        this.httpClient.get(this.urls.apiUrl + '/teamspeak/onlineAccounts').subscribe({
+        this.httpClient.get(this.urls.apiUrl + '/teamspeak/onlineAccounts').pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
                 if (response) {
                     if (response['commanders']) {
@@ -98,8 +98,16 @@ export class HomePageComponent implements OnInit, OnDestroy {
         });
     }
 
+    trackByInstagramId(index: number, item: InstagramImage): string {
+        return item.id;
+    }
+
+    trackByDisplayName(index: number, item: any): string {
+        return item.displayName;
+    }
+
     private getInstagramImages() {
-        this.httpClient.get(this.urls.apiUrl + '/instagram').subscribe({
+        this.httpClient.get(this.urls.apiUrl + '/instagram').pipe(takeUntil(this.destroy$)).subscribe({
             next: (response: InstagramImage[]) => {
                 if (response.length > 0) {
                     this.instagramImages = response;

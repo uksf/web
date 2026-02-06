@@ -14,7 +14,7 @@
         <div class="notification-card-nohover" *ngIf="notifications.length == 0">
             <h4 class="notification-none">You have no notifications</h4>
         </div>
-        <div *ngFor="let notification of notifications">
+        <div *ngFor="let notification of notifications; trackBy: trackById">
             <div class="notification-card" [class.clickable]="notification.link" (click)="openNotification(notification)">
                 <div class="notification-read" [class.read]="!notification.read"></div>
                 <div class="notification-icon-container">

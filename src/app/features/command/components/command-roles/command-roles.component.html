@@ -12,7 +12,7 @@
                             <form [formGroup]="roleForm" class="flex-container-input">
                                 <mat-form-field class="normal">
                                     <input #input (blur)="unfocus()" [errorStateMatcher]="instantErrorStateMatcher" formControlName="name" matInput placeholder="Role" required />
-                                    <mat-error *ngFor="let validation of validationMessages">
+                                    <mat-error *ngFor="let validation of validationMessages; trackBy: trackByIndex">
                                         <mat-error *ngIf="roleForm.get('name').hasError(validation.type)" class="error-message">{{ validation.message }}</mat-error>
                                     </mat-error>
                                 </mat-form-field>
@@ -21,7 +21,7 @@
                         </div>
                         <br />
                         <div class="roles-list">
-                            <div *ngFor="let role of roles">
+                            <div *ngFor="let role of roles; trackBy: trackByRoleName">
                                 <mat-card class="roles-list-item">
                                     <app-inline-edit
                                         (finishedEvent)="editRole($event)"
@@ -40,7 +40,7 @@
                     <ng-template [ngxPermissionsExcept]="['ADMIN']">
                         <br />
                         <div class="roles-list">
-                            <div *ngFor="let role of roles">
+                            <div *ngFor="let role of roles; trackBy: trackByRoleName">
                                 <mat-card class="roles-list-item">
                                     <span>{{ role.name }}</span>
                                 </mat-card>

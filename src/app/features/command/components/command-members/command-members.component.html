@@ -17,7 +17,7 @@
                     View Mode
                 </button>
                 <mat-menu #modeMenu="matMenu">
-                    <button mat-menu-item *ngFor="let mode of viewModes" [disabled]="viewMode === mode.mode" (click)="changeViewMode(mode.mode)">
+                    <button mat-menu-item *ngFor="let mode of viewModes; trackBy: trackByMode" [disabled]="viewMode === mode.mode" (click)="changeViewMode(mode.mode)">
                         <mat-icon class="icon-right">{{ mode.icon }}</mat-icon>
                         <span class="item-text">{{ mode.name }}</span>
                     </button>
@@ -30,7 +30,7 @@
                 <mat-menu #sortMenu="matMenu">
                     <button
                         mat-menu-item
-                        *ngFor="let sortDefinition of sortDefinitions"
+                        *ngFor="let sortDefinition of sortDefinitions; trackBy: trackBySortName"
                         [disabled]="sortMode === sortDefinition.mode && sortDirection === sortDefinition.direction"
                         (click)="sort(sortDefinition.mode, sortDefinition.direction)"
                     >

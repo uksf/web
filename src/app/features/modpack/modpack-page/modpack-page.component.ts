@@ -10,6 +10,10 @@ import { Permissions } from '@app/core/services/permissions';
 export class ModpackPageComponent {
     tabLinks = [{ label: 'Guide', link: '../guide' }];
 
+    trackByLink(index: number, item: any): string {
+        return item.link;
+    }
+
     constructor(private permissions: PermissionsService) {
         if (this.permissions.hasPermission(Permissions.MEMBER)) {
             this.tabLinks = [

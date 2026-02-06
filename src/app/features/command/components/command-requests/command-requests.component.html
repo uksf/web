@@ -19,7 +19,7 @@
             <div class="requests-container" *ngIf="otherRequests.length == 0"></div>
             <div class="requests-container" *ngIf="myRequests.length > 0">
                 <h3>Requests needing your review</h3>
-                <mat-card *ngFor="let request of myRequests">
+                <mat-card *ngFor="let request of myRequests; trackBy: trackByRequestId">
                     <div class="request-wrapper">
                         <div class="request-type">
                             <span class="request-type-text">{{ request.data.type }}</span>
@@ -53,7 +53,7 @@
                                 <div class="request-reviewers">
                                     <b>Reviewers:</b>
                                     <div>
-                                        <p class="review-container" *ngFor="let review of request.reviews">
+                                        <p class="review-container" *ngFor="let review of request.reviews; trackBy: trackByReviewId">
                                             <mat-icon class="review-state-icon">{{
                                                 review.state == reviewState.APPROVED ? 'done' : review.state == reviewState.REJECTED ? 'clear' : 'hourglass_empty'
                                             }}</mat-icon>
@@ -122,7 +122,7 @@
             </div>
             <div class="requests-container" *ngIf="otherRequests.length > 0">
                 <h3>Other requests</h3>
-                <mat-card *ngFor="let request of otherRequests">
+                <mat-card *ngFor="let request of otherRequests; trackBy: trackByRequestId">
                     <div class="request-wrapper">
                         <div class="request-type">
                             <span class="request-type-text">{{ request.data.type }}</span>
@@ -156,7 +156,7 @@
                                 <div class="request-reviewers">
                                     <b>Reviewers:</b>
                                     <div>
-                                        <p class="review-container" *ngFor="let review of request.reviews">
+                                        <p class="review-container" *ngFor="let review of request.reviews; trackBy: trackByReviewId">
                                             <mat-icon class="review-state-icon">{{
                                                 review.state == reviewState.APPROVED ? 'done' : review.state == reviewState.REJECTED ? 'clear' : 'hourglass_empty'
                                             }}</mat-icon>

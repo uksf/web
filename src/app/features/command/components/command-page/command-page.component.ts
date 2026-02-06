@@ -16,4 +16,8 @@ export class CommandPageComponent {
     ];
 
     constructor() {}
+
+    trackByLink(index: number, item: any): string {
+        return item.link;
+    }
 }

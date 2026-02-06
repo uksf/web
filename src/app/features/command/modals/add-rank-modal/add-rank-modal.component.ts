@@ -35,6 +35,10 @@ export class AddRankModalComponent implements OnInit {
         });
     }
 
+    trackByIndex(index: number): number {
+        return index;
+    }
+
     ngOnInit() {}
 
     submit() {

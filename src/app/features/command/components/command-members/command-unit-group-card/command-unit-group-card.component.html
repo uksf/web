@@ -12,7 +12,7 @@
                 </mat-accordion>
             </div>
             <div *ngIf="unit.children.length > 0">
-                <app-command-unit-group-card *ngFor="let child of unit.children" [unit]="child" [hideEmpty]="hideEmpty"></app-command-unit-group-card>
+                <app-command-unit-group-card *ngFor="let child of unit.children; trackBy: trackByUnitId" [unit]="child" [hideEmpty]="hideEmpty"></app-command-unit-group-card>
             </div>
         </div>
     </mat-expansion-panel>

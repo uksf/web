@@ -148,6 +148,14 @@ export class CommandMembersComponent implements OnInit, OnDestroy {
         this.setUnitMembers(this.unitRoot);
     }
 
+    trackByMode(index: number, item: any): string {
+        return item.mode;
+    }
+
+    trackBySortName(index: number, item: any): string {
+        return item.name;
+    }
+
     trackByMemberId(_: any, member: Account) {
         return member.id;
     }

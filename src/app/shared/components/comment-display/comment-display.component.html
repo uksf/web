@@ -19,7 +19,7 @@
 </div>
 <br />
 <div class="comments-container">
-    <div class="comment-wrapper" *ngFor="let comment of comments">
+    <div class="comment-wrapper" *ngFor="let comment of comments; trackBy: trackById">
         <div class="author">
             <span class="author-string">{{ getAuthorDisplayName(comment.displayName) }}</span>
             <span class="date-string">{{ comment.timestamp | timeAgo }}</span>

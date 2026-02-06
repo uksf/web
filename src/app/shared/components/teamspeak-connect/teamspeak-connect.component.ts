@@ -183,6 +183,10 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
         return client.connected && !this.isConnectedToAccount(client);
     }
 
+    trackByClientDbId(index: number, client: TeamspeakConnectClient): number {
+        return client.clientDbId;
+    }
+
     getTooltip(client: TeamspeakConnectClient): string {
         if (this.isConnectedToAccount(client)) {
             return 'This user is already connected to your account';

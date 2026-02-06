@@ -24,6 +24,10 @@ export class UnitsOrbatAuxComponent {
         });
     }
 
+    trackByName(index: number, item: any): string {
+        return item.name;
+    }
+
     onNodeSelect(event) {
         this.router.navigate(['/units', event.node.data.id]);
     }

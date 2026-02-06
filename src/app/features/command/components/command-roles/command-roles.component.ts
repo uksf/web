@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { AbstractControl, AsyncValidatorFn, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { Observable, of, timer } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { Observable, of, Subject, timer } from 'rxjs';
+import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -13,7 +13,8 @@ import { MatDialog } from '@angular/material/dialog';
     templateUrl: './command-roles.component.html',
     styleUrls: ['../command-page/command-page.component.scss', './command-roles.component.scss']
 })
-export class CommandRolesComponent implements OnInit {
+export class CommandRolesComponent implements OnInit, OnDestroy {
+    private destroy$ = new Subject<void>();
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     roleForm: UntypedFormGroup;
     roles: any;
@@ -30,11 +31,16 @@ export class CommandRolesComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.httpClient.get(`${this.urls.apiUrl}/roles`).subscribe({
+        this.httpClient.get(`${this.urls.apiUrl}/roles`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
                 this.roles = response['roles'];
             }
         });
+    }
+
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     validateInlineRole(role): Observable<boolean> {
@@ -56,6 +62,7 @@ export class CommandRolesComponent implements OnInit {
                     'Content-Type': 'application/json'
                 })
             })
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (response) => {
                     this.roles = response['roles'];
@@ -73,6 +80,7 @@ export class CommandRolesComponent implements OnInit {
                         'Content-Type': 'application/json'
                     })
                 })
+                .pipe(takeUntil(this.destroy$))
                 .subscribe({
                     next: (response) => {
                         this.roles = response['roles'];
@@ -86,10 +94,10 @@ export class CommandRolesComponent implements OnInit {
         const dialog = this.dialog.open(ConfirmationModalComponent, {
             data: { message: `Are you sure you want to delete '${role.name}'?` }
         });
-        dialog.afterClosed().subscribe({
+        dialog.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
             next: (result) => {
                 if (result) {
-                    this.httpClient.delete(`${this.urls.apiUrl}/roles/${role.id}`).subscribe({
+                    this.httpClient.delete(`${this.urls.apiUrl}/roles/${role.id}`).pipe(takeUntil(this.destroy$)).subscribe({
                         next: (response) => {
                             this.roles = response['roles'];
                         }
@@ -110,6 +118,14 @@ export class CommandRolesComponent implements OnInit {
                 })
             );
         };
+    }
+
+    trackByIndex(index: number): number {
+        return index;
+    }
+
+    trackByRoleName(index: number, role: any): string {
+        return role.name;
     }
 
     unfocus() {

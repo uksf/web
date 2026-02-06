@@ -72,6 +72,10 @@ export class CommandTrainingComponent implements OnInit {
         }
     }
 
+    trackByTrainingId(index: number, training: Training): string {
+        return training.id;
+    }
+
     deleteTraining(event, training) {
         event.stopPropagation();
         const dialog: MatDialogRef<ConfirmationModalComponent> = this.dialog.open(ConfirmationModalComponent, {

@@ -13,7 +13,7 @@
                         </div>
                         <div class="node-content" *ngIf="node.data.members.length > 0">
                             <table class="inner-table">
-                                <tr *ngFor="let unitMember of node.data.members">
+                                <tr *ngFor="let unitMember of node.data.members; trackBy: trackByName">
                                     <div class="row-container">
                                         <td style="padding-right: 3px">
                                             <b class="unit-role">{{ unitMember.chainOfCommandPosition?.charAt(0) }}</b>

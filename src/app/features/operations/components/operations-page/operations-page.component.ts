@@ -10,6 +10,10 @@ import { PermissionsService } from '@app/core/services/permissions.service';
 export class OperationsPageComponent {
     tabLinks: { label: string; link: string }[] = [{ label: 'AAR', link: './aar' }];
 
+    trackByLink(index: number, item: any): string {
+        return item.link;
+    }
+
     constructor(private permissions: PermissionsService) {
         if (this.permissions.hasPermission(Permissions.SERVERS)) {
             this.tabLinks.unshift({ label: 'Servers', link: './servers' });

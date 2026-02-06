@@ -36,4 +36,8 @@ export class CommandUnitGroupCardComponent implements OnInit {
     trackByMemberId(_: any, member: Account) {
         return member.id;
     }
+
+    trackByUnitId(_: any, unit: Unit) {
+        return unit.id;
+    }
 }
