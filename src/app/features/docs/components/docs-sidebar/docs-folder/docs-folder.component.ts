@@ -3,12 +3,12 @@ import { DocumentMetadata, FolderMetadata } from '@app/Models/Documents';
 import { folderAnimations } from '@app/Services/animations.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateDocumentModalComponent, DocumentModalData } from '../../../modals/create-document-modal/create-document-modal.component';
-import { ConfirmationModalComponent, ConfirmationModalData } from '@app/Modals/confirmation-modal/confirmation-modal.component';
+import { ConfirmationModalComponent, ConfirmationModalData } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/Services/url.service';
 import { CreateFolderModalComponent, FolderModalData } from '../../../modals/create-folder-modal/create-folder-modal.component';
 import { UksfError } from '@app/Models/Response';
-import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
+import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 
 @Component({
     selector: 'app-docs-folder',

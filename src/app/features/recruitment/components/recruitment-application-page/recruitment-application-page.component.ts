@@ -3,17 +3,17 @@ import { DatePipe } from '@angular/common';
 import { UrlService } from '@app/Services/url.service';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommentDisplayComponent } from '@app/Components/comment-display/comment-display.component';
+import { CommentDisplayComponent } from '@app/shared/components/comment-display/comment-display.component';
 import { AccountService } from '@app/Services/account.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MembershipState } from '@app/Models/Account';
 import { AsyncSubject } from 'rxjs';
 import { ApplicationState, DetailedApplication, Recruiter } from '@app/Models/Application';
 import { OnlineState } from '@app/Models/OnlineState';
-import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
+import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { CountryPickerService, ICountry } from '@app/Services/CountryPicker/country-picker.service';
 import { PermissionsService } from '@app/Services/permissions.service';
-import { ConfirmationModalComponent } from '@app/Modals/confirmation-modal/confirmation-modal.component';
+import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { Permissions } from '@app/Services/permissions';
 
 @Component({

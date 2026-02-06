@@ -5,7 +5,7 @@ import { AbstractControl, AsyncValidatorFn, UntypedFormBuilder, UntypedFormGroup
 import { Observable, of, timer } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { InstantErrorStateMatcher } from '@app/Services/formhelper.service';
-import { ConfirmationModalComponent } from '@app/Modals/confirmation-modal/confirmation-modal.component';
+import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({

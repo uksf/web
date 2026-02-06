@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Permissions } from '@app/Services/permissions';
 import { PermissionsService } from '@app/Services/permissions.service';
 import { GameEnvironment } from '@app/Models/GameEnvironment';
-import { ThemeEmitterComponent } from '@app/Components/elements/theme-emitter/theme-emitter.component';
+import { ThemeEmitterComponent } from '@app/shared/components/elements/theme-emitter/theme-emitter.component';
 import { ModpackBuild } from '../models/ModpackBuild';
 import { ModpackBuildResult } from '../models/ModpackBuildResult';
 import { ConnectionContainer, SignalRService } from '@app/Services/signalr.service';

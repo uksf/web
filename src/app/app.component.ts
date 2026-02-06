@@ -2,7 +2,7 @@ import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { isPlatformBrowser } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmationModalComponent } from './Modals/confirmation-modal/confirmation-modal.component';
+import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { ConnectionContainer, SignalRService } from './Services/signalr.service';
 
 @Component({

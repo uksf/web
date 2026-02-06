@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { UrlService } from '@app/Services/url.service';
 import { PagedResult } from '@app/Models/PagedResult';
-import { PagedEvent, PaginatorComponent } from '@app/Components/elements/paginator/paginator.component';
+import { PagedEvent, PaginatorComponent } from '@app/shared/components/elements/paginator/paginator.component';
 import { Unit, UnitTreeDataSet } from '@app/Models/Units';
 import { Account } from '@app/Models/Account';
 import { buildQuery } from '@app/Services/helper.service';

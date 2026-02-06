@@ -4,13 +4,13 @@ import { NgForm } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/Services/url.service';
 import { BehaviorSubject } from 'rxjs';
-import { IDropdownElement, mapFromElement } from '@app/Components/elements/dropdown-base/dropdown-base.component';
+import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { BasicAccount } from '@app/Models/Account';
 import { Rank } from '@app/Models/Rank';
-import { SelectionListComponent } from '@app/Components/elements/selection-list/selection-list.component';
+import { SelectionListComponent } from '@app/shared/components/elements/selection-list/selection-list.component';
 import { RequestModalData } from '@app/Models/Shared';
 import { CommandRequest } from '@app/Models/CommandRequest';
-import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
+import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 
 @Component({
     selector: 'app-request-rank-modal',

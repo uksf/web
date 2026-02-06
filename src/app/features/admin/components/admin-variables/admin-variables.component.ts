@@ -7,7 +7,7 @@ import { Observable, timer, of } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 import { UntypedFormGroup, UntypedFormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { InstantErrorStateMatcher } from '@app/Services/formhelper.service';
-import { ConfirmationModalComponent } from '@app/Modals/confirmation-modal/confirmation-modal.component';
+import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { VariableItem } from '@app/Models/VariableItem';
 
 @Component({

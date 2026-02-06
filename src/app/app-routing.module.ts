@@ -1,13 +1,7 @@
 import { Injectable, NgModule } from '@angular/core';
 import { ActivatedRouteSnapshot, DefaultUrlSerializer, RouterModule, RouterStateSnapshot, Routes, UrlTree } from '@angular/router';
-import { HomePageComponent } from './Pages/home-page/home-page.component';
-import { LoginPageComponent } from './Pages/login-page/login-page.component';
-import { ProfilePageComponent } from './Pages/profile-page/profile-page.component';
-import { LivePageComponent } from './Pages/live-page/live-page.component';
-import { AboutPageComponent } from './Pages/about-page/about-page.component';
-import { RulesPageComponent } from './Pages/rules-page/rules-page.component';
-import { PolicyPageComponent } from './Pages/policy-page/policy-page.component';
-import { InformationPageComponent } from './Pages/information-page/information-page.component';
+import { HomePageComponent } from './features/home/components/home-page/home-page.component';
+import { LoginPageComponent } from './features/auth/components/login-page/login-page.component';
 import { NgxPermissionsGuard } from 'ngx-permissions';
 import { HttpClient } from '@angular/common/http';
 import { Permissions } from './Services/permissions';
@@ -19,18 +13,7 @@ const appRoutes: Routes = [
     { path: 'application', loadChildren: () => import('./features/application/application.module').then(m => m.ApplicationModule) },
     {
         path: 'profile',
-        component: ProfilePageComponent,
-        data: {
-            permissions: {
-                except: Permissions.UNLOGGED,
-                redirectTo: loginRedirect
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
-    },
-    {
-        path: 'profile/:id',
-        component: ProfilePageComponent,
+        loadChildren: () => import('./features/profile/profile.module').then(m => m.ProfileModule),
         data: {
             permissions: {
                 except: Permissions.UNLOGGED,
@@ -70,9 +53,11 @@ const appRoutes: Routes = [
             }
         }
     },
-    { path: 'information', component: InformationPageComponent },
+    {
+        path: 'information',
+        loadChildren: () => import('./features/information/information.module').then(m => m.InformationModule)
+    },
     { path: 'about', redirectTo: 'information/about' },
-    { path: 'information/about', component: AboutPageComponent },
     {
         path: 'information/docs',
         loadChildren: () => import('./features/docs/docs.module').then(m => m.DocsModule),
@@ -102,7 +87,7 @@ const appRoutes: Routes = [
     },
     {
         path: 'live',
-        component: LivePageComponent,
+        loadChildren: () => import('./features/live/live.module').then(m => m.LiveModule),
         data: {
             permissions: {
                 except: Permissions.UNLOGGED,
@@ -164,8 +149,8 @@ const appRoutes: Routes = [
             }
         }
     },
-    { path: 'policy', component: PolicyPageComponent },
-    { path: 'rules', component: RulesPageComponent },
+    { path: 'policy', redirectTo: 'information/policy' },
+    { path: 'rules', redirectTo: 'information/rules' },
     { path: '**', redirectTo: 'Login' }
 ];
 

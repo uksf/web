@@ -7,7 +7,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/Services/url.service';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { ResponseUnit, UnitBranch } from '@app/Models/Units';
-import { ConfirmationModalComponent } from '@app/Modals/confirmation-modal/confirmation-modal.component';
+import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 
 @Component({
     selector: 'app-add-unit-modal',

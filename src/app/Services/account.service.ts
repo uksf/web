@@ -1,9 +1,9 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from './url.service';
-import { ConnectTeamspeakModalComponent } from 'app/Modals/connect-teamspeak-modal/connect-teamspeak-modal.component';
+import { ConnectTeamspeakModalComponent } from '@app/features/profile/modals/connect-teamspeak-modal/connect-teamspeak-modal.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { ConfirmationModalComponent } from 'app/Modals/confirmation-modal/confirmation-modal.component';
+import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { SessionService } from './Authentication/session.service';
 import { Account, MembershipState } from '../Models/Account';
 

@@ -4,7 +4,7 @@ import { HttpHeaders } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
-import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
+import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { PermissionsService } from '@app/Services/permissions.service';
 import { AccountService } from '@app/Services/account.service';
 

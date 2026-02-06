@@ -7,7 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PermissionsService } from '../permissions.service';
 import { ErrorResponse } from '../../Models/Response';
 import { MatDialog } from '@angular/material/dialog';
-import { MessageModalComponent } from '../../Modals/message-modal/message-modal.component';
+import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 
 @Injectable()
 export class AuthHttpInterceptor implements HttpInterceptor {

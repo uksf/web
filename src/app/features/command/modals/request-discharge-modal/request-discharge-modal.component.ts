@@ -3,11 +3,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { NgForm } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/Services/url.service';
-import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
+import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { InstantErrorStateMatcher } from '@app/Services/formhelper.service';
 import { BasicAccount } from '@app/Models/Account';
 import { CommandRequest } from '@app/Models/CommandRequest';
-import { IDropdownElement, mapFromElement } from '@app/Components/elements/dropdown-base/dropdown-base.component';
+import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({

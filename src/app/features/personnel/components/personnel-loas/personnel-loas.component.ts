@@ -2,8 +2,8 @@ import { Component, HostListener, OnInit, QueryList, ViewChildren } from '@angul
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
-import { RequestLoaModalComponent } from '@app/Modals/request-loa-modal/request-loa-modal.component';
-import { ConfirmationModalComponent } from '@app/Modals/confirmation-modal/confirmation-modal.component';
+import { RequestLoaModalComponent } from '@app/shared/modals/request-loa-modal/request-loa-modal.component';
+import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { formatDate } from '@angular/common';
 import { Loa } from '@app/Models/Loa';
 import { PersonnelLoasListComponent } from '../personnel-loas-list/personnel-loas-list.component';

@@ -7,7 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { NewBuild } from './models/NewBuild';
 import { ModpackBuild } from './models/ModpackBuild';
 import { NewModpackBuildModalComponent } from './new-modpack-build-modal/new-modpack-build-modal.component';
-import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
+import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 
 @Injectable()
 export class ModpackBuildProcessService {

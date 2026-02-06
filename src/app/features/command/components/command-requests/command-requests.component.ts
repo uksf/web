@@ -10,7 +10,7 @@ import { RequestDischargeModalComponent } from '@app/features/command/modals/req
 import { RequestUnitRemovalModalComponent } from '@app/features/command/modals/request-unit-removal-modal/request-unit-removal-modal.component';
 import { ConnectionContainer, SignalRService } from '@app/Services/signalr.service';
 import { AccountService } from '@app/Services/account.service';
-import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
+import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { RequestModalData } from '@app/Models/Shared';
 import { UnitBranch } from '@app/Models/Units';
 import { Subject } from 'rxjs';

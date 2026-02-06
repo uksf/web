@@ -4,7 +4,7 @@ import { UrlService } from '@app/Services/url.service';
 import { DocumentMetadata, FolderMetadata } from '@app/Models/Documents';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UksfError } from '@app/Models/Response';
-import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
+import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({

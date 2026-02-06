@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { DocumentContent, DocumentMetadata, UpdateDocumentContentRequest } from '@app/Models/Documents';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/Services/url.service';
-import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
+import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { UksfError } from '@app/Models/Response';
 

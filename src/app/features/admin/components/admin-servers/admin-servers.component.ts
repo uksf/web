@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import type { ServerInfrastructureCurrent, ServerInfrastructureInstalled, ServerInfrastructureLatest, ServerInfrastructureUpdate } from '@app/Models/ServerInfrastructure';
-import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
+import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { UksfError } from '@app/Models/Response';
 
 @Component({

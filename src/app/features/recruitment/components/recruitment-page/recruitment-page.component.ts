@@ -8,11 +8,11 @@ import { ActiveApplication, ApplicationState, CompletedApplication, Recruiter } 
 import { AsyncSubject, Subject } from 'rxjs';
 import { OnlineState } from '@app/Models/OnlineState';
 import { Dictionary } from '@app/Models/Dictionary';
-import { ThemeEmitterComponent } from '@app/Components/elements/theme-emitter/theme-emitter.component';
+import { ThemeEmitterComponent } from '@app/shared/components/elements/theme-emitter/theme-emitter.component';
 import { buildQuery } from '@app/Services/helper.service';
 import { PagedResult } from '@app/Models/PagedResult';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { PagedEvent } from '@app/Components/elements/paginator/paginator.component';
+import { PagedEvent } from '@app/shared/components/elements/paginator/paginator.component';
 
 @Component({
     selector: 'app-recruitment-page',

@@ -4,17 +4,17 @@ import { UrlService } from '@app/Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AddServerModalComponent } from '../../modals/add-server-modal/add-server-modal.component';
 import { EditServerModsModalComponent } from '../../modals/edit-server-mods-modal/edit-server-mods-modal.component';
-import { ConfirmationModalComponent } from '@app/Modals/confirmation-modal/confirmation-modal.component';
+import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
-import { ValidationReportModalComponent } from '@app/Modals/multiple-message-modal/validation-report-modal.component';
+import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
+import { ValidationReportModalComponent } from '@app/shared/modals/validation-report-modal/validation-report-modal.component';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ConnectionContainer, SignalRService } from '@app/Services/signalr.service';
 import { Permissions } from '@app/Services/permissions';
 import { PermissionsService } from '@app/Services/permissions.service';
 import { UksfError } from '@app/Models/Response';
-import { IDropdownElement } from '@app/Components/elements/dropdown-base/dropdown-base.component';
+import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { OrderUpdateRequest } from '@app/Models/OrderUpdateRequest';
 
 @Component({

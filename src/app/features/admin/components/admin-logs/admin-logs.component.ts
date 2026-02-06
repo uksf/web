@@ -5,7 +5,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { UrlService } from '@app/Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
-import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
+import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { ConnectionContainer, SignalRService } from '@app/Services/signalr.service';
 import { BasicLog, LogLevel } from '@app/Models/Logging';
 import { PagedResult } from '@app/Models/PagedResult';

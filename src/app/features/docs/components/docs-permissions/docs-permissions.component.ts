@@ -2,7 +2,7 @@ import { Component, forwardRef, Input, OnInit, Type, ViewChild } from '@angular/
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/Services/url.service';
 import { BehaviorSubject, forkJoin } from 'rxjs';
-import { IDropdownElement, mapFromElement } from '@app/Components/elements/dropdown-base/dropdown-base.component';
+import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { Rank } from '@app/Models/Rank';
 import { Unit } from '@app/Models/Units';
 import { BasicAccount } from '@app/Models/Account';

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Permissions } from '@app/Services/permissions';
 import { PermissionsService } from '@app/Services/permissions.service';
-import { PagedEvent, PaginatorComponent } from '@app/Components/elements/paginator/paginator.component';
+import { PagedEvent, PaginatorComponent } from '@app/shared/components/elements/paginator/paginator.component';
 import { buildQuery } from '@app/Services/helper.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { PagedResult } from '@app/Models/PagedResult';
@@ -11,7 +11,7 @@ import { expansionAnimations } from '@app/Services/animations.service';
 import { DateMode, DateModeItem, ViewMode, ViewModeItem } from '../personnel-loas/personnel-loas.component';
 import { Moment } from 'moment/moment';
 import { UksfError } from '@app/Models/Response';
-import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
+import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 
 export type SelectionMode = 'current' | 'future' | 'past';

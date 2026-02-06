@@ -5,7 +5,7 @@ import { AddRankModalComponent } from '@app/features/command/modals/add-rank-mod
 import { MatDialog } from '@angular/material/dialog';
 import { Observable, timer } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
-import { ConfirmationModalComponent } from '@app/Modals/confirmation-modal/confirmation-modal.component';
+import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({

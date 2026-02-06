@@ -8,7 +8,7 @@ import { AccountService } from '@app/Services/account.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/Services/url.service';
 import { Router } from '@angular/router';
-import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
+import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { PermissionsService } from '@app/Services/permissions.service';
 import { Permissions } from '@app/Services/permissions';
 import { ApplicationState } from '@app/Models/Application';

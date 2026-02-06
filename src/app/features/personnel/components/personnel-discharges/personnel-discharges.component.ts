@@ -3,9 +3,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/Services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionPanel } from '@angular/material/expansion';
-import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
+import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { ActivatedRoute } from '@angular/router';
-import { TextInputModalComponent } from '@app/Modals/text-input-modal/text-input-modal.component';
+import { TextInputModalComponent } from '@app/shared/modals/text-input-modal/text-input-modal.component';
 import { nextFrame } from '@app/Services/helper.service';
 
 @Component({

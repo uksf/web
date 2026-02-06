@@ -1,4 +1,4 @@
-import { IDropdownElement } from '../Components/elements/dropdown-base/dropdown-base.component';
+import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 
 export class Rank {
     id: string;

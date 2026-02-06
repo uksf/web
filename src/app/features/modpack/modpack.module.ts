@@ -21,10 +21,6 @@ import { NewModpackReleaseModalComponent } from './new-modpack-release-modal/new
 import { InstallWorkshopModModalComponent } from './install-workshop-mod-modal/install-workshop-mod-modal.component';
 import { WorkshopModInterventionModalComponent } from './workshop-mod-intervention-modal/workshop-mod-intervention-modal.component';
 
-// Pipes
-import { AnsiToHtmlPipe } from '@app/Pipes/AnsiToHtml.pipe';
-import { TimeAgoPipe } from '@app/Pipes/time.pipe';
-
 @NgModule({
     imports: [
         SharedModule,
@@ -46,8 +42,6 @@ import { TimeAgoPipe } from '@app/Pipes/time.pipe';
         NewModpackReleaseModalComponent,
         InstallWorkshopModModalComponent,
         WorkshopModInterventionModalComponent,
-        AnsiToHtmlPipe,
-        TimeAgoPipe,
     ],
 })
 export class ModpackModule {}

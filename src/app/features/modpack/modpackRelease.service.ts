@@ -3,7 +3,7 @@ import { ConnectionContainer, SignalRService } from '@app/Services/signalr.servi
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/Services/url.service';
 import { ModpackRelease } from './models/ModpackRelease';
-import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
+import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { NewModpackReleaseModalComponent } from './new-modpack-release-modal/new-modpack-release-modal.component';
 import { UksfError } from '@app/Models/Response';
 import { MatDialog } from '@angular/material/dialog';

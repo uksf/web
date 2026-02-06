@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/Services/url.service';
 import { AccountService } from '@app/Services/account.service';
-import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
+import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { MembershipState } from '@app/Models/Account';
 import { ApplicationState } from '@app/Models/Application';
 

@@ -5,7 +5,7 @@ import { takeUntil } from 'rxjs/operators';
 import { UrlService } from '@app/Services/url.service';
 import { ConnectionContainer, SignalRService } from '@app/Services/signalr.service';
 import { InstallWorkshopModData, WorkshopMod, WorkshopModUpdatedDate } from '../models/WorkshopMod';
-import { MessageModalComponent } from '@app/Modals/message-modal/message-modal.component';
+import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { InstallWorkshopModModalComponent } from '../install-workshop-mod-modal/install-workshop-mod-modal.component';
 import { WorkshopModInterventionModalComponent } from '../workshop-mod-intervention-modal/workshop-mod-intervention-modal.component';
