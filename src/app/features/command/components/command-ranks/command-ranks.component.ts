@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { AddRankModalComponent } from '@app/features/command/modals/add-rank-modal/add-rank-modal.component';
 import { MatDialog } from '@angular/material/dialog';
-import { Observable, timer } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { Observable, Subject, timer } from 'rxjs';
+import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
@@ -13,7 +13,8 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
     templateUrl: './command-ranks.component.html',
     styleUrls: ['../command-page/command-page.component.scss', './command-ranks.component.scss']
 })
-export class CommandRanksComponent implements OnInit {
+export class CommandRanksComponent implements OnInit, OnDestroy {
+    private destroy$ = new Subject<void>();
     ranks;
     updatingOrder = false;
 
@@ -21,6 +22,11 @@ export class CommandRanksComponent implements OnInit {
 
     ngOnInit() {
         this.getRanks();
+    }
+
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     validateInlineRank(rank): Observable<boolean> {
@@ -38,7 +44,7 @@ export class CommandRanksComponent implements OnInit {
     }
 
     getRanks() {
-        this.httpClient.get(`${this.urls.apiUrl}/ranks`).subscribe({
+        this.httpClient.get(`${this.urls.apiUrl}/ranks`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
                 this.ranks = response;
             }
@@ -49,6 +55,7 @@ export class CommandRanksComponent implements OnInit {
         this.dialog
             .open(AddRankModalComponent, {})
             .afterClosed()
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (_) => {
                     this.getRanks();
@@ -65,6 +72,7 @@ export class CommandRanksComponent implements OnInit {
                         'Content-Type': 'application/json'
                     })
                 })
+                .pipe(takeUntil(this.destroy$))
                 .subscribe({
                     next: (response) => {
                         this.ranks = response;
@@ -78,10 +86,10 @@ export class CommandRanksComponent implements OnInit {
         const dialog = this.dialog.open(ConfirmationModalComponent, {
             data: { message: `Are you sure you want to delete '${rank.name}'?` }
         });
-        dialog.afterClosed().subscribe({
+        dialog.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
             next: (result) => {
                 if (result) {
-                    this.httpClient.delete(`${this.urls.apiUrl}/ranks/${rank.id}`).subscribe({
+                    this.httpClient.delete(`${this.urls.apiUrl}/ranks/${rank.id}`).pipe(takeUntil(this.destroy$)).subscribe({
                         next: (response) => {
                             this.ranks = response;
                         }
@@ -98,7 +106,7 @@ export class CommandRanksComponent implements OnInit {
             return;
         }
         this.updatingOrder = true;
-        this.httpClient.post(`${this.urls.apiUrl}/ranks/order`, this.ranks).subscribe({
+        this.httpClient.post(`${this.urls.apiUrl}/ranks/order`, this.ranks).pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
                 this.ranks = response;
                 this.updatingOrder = false;

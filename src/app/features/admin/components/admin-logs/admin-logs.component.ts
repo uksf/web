@@ -29,6 +29,10 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
     protected hubConnection: ConnectionContainer;
     protected filterSubject = new Subject<string>();
     protected destroy$ = new Subject<void>();
+
+    private onReceiveLog = () => {
+        this.refreshData();
+    };
     filter = '';
     dataLoaded = false;
     logDisplayedColumns = ['timestamp', 'level', 'message'];
@@ -43,8 +47,11 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngOnInit(): void {
         this.hubConnection = this.signalrService.connect(`admin`);
-        this.hubConnection.connection.on('ReceiveLog', () => {
-            this.refreshData();
+        this.hubConnection.connection.on('ReceiveLog', this.onReceiveLog);
+        this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
+            next: () => {
+                this.refreshData();
+            }
         });
     }
 
@@ -70,6 +77,7 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
+        this.hubConnection.connection.off('ReceiveLog', this.onReceiveLog);
         this.hubConnection.connection.stop();
     }
 

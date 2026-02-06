@@ -8,6 +8,7 @@ import { Account } from '@app/shared/models/account';
 import { buildQuery } from '@app/shared/services/helper.service';
 import { CommandUnitGroupCardComponent } from './command-unit-group-card/command-unit-group-card.component';
 import { SignalRHubsService } from '@app/core/services/signalr-hubs.service';
+import { ConnectionContainer } from '@app/core/services/signalr.service';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
@@ -47,14 +48,18 @@ export class CommandMembersComponent implements OnInit, OnDestroy {
     viewMode: string = 'all';
     private filterSubject = new Subject<string>();
     private destroy$ = new Subject<void>();
+    private allHubConnection: ConnectionContainer;
+
+    private onReceiveAccountUpdate = () => {
+        this.getMembers();
+    };
 
     constructor(private httpClient: HttpClient, private urls: UrlService, private signalrHubsService: SignalRHubsService) {}
 
     ngOnInit(): void {
         this.signalrHubsService.getAllHub().then((allHub) => {
-            allHub.connection.on('ReceiveAccountUpdate', () => {
-                this.getMembers();
-            });
+            this.allHubConnection = allHub;
+            allHub.connection.on('ReceiveAccountUpdate', this.onReceiveAccountUpdate);
             allHub.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
                 next: () => {
                     this.getMembers();
@@ -64,7 +69,7 @@ export class CommandMembersComponent implements OnInit, OnDestroy {
 
         this.getMembers();
 
-        this.httpClient.get(`${this.urls.apiUrl}/units/tree`).subscribe({
+        this.httpClient.get(`${this.urls.apiUrl}/units/tree`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (unitTreeDataset: UnitTreeDataSet) => {
                 this.unitRoot = unitTreeDataset.combatNodes[0];
             }
@@ -96,6 +101,7 @@ export class CommandMembersComponent implements OnInit, OnDestroy {
                     .set('sortDirection', this.sortDirection)
                     .set('viewMode', this.viewMode)
             })
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (pagedMembers: PagedResult<Account>) => {
                     this.loaded = true;
@@ -163,6 +169,9 @@ export class CommandMembersComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
+        if (this.allHubConnection) {
+            this.allHubConnection.connection.off('ReceiveAccountUpdate', this.onReceiveAccountUpdate);
+        }
     }
 
     private setUnitMembers(unit: Unit) {

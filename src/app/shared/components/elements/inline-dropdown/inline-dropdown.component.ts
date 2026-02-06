@@ -1,7 +1,7 @@
 import { Component, EventEmitter, forwardRef, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { IDropdownElement } from '../dropdown-base/dropdown-base.component';
-import { NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
     selector: 'app-inline-dropdown',
@@ -15,7 +15,7 @@ import { NG_VALUE_ACCESSOR } from '@angular/forms';
         }
     ]
 })
-export class InlineDropdownComponent implements OnInit, OnDestroy {
+export class InlineDropdownComponent implements ControlValueAccessor, OnInit, OnDestroy {
     @Input('placeholder') placeholder: string;
     @Input('isRequired') required: boolean = false;
     @Input('isDisabled') disabled: boolean = false;

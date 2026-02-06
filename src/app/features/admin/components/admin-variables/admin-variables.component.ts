@@ -1,10 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatAccordion } from '@angular/material/expansion';
-import { Observable, timer, of } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
+import { Observable, Subject, timer, of } from 'rxjs';
+import { switchMap, map, takeUntil } from 'rxjs/operators';
 import { UntypedFormGroup, UntypedFormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
@@ -15,7 +15,8 @@ import { VariableItem } from '@app/features/admin/models/variable-item';
     templateUrl: './admin-variables.component.html',
     styleUrls: ['../admin-page/admin-page.component.scss', './admin-variables.component.scss']
 })
-export class AdminVariablesComponent implements OnInit {
+export class AdminVariablesComponent implements OnInit, OnDestroy {
+    private destroy$ = new Subject<void>();
     @ViewChild(MatAccordion) accordion: MatAccordion;
     expanded = false;
     form: UntypedFormGroup;
@@ -43,6 +44,11 @@ export class AdminVariablesComponent implements OnInit {
         this.getVariables();
     }
 
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
     trackByVariableList(_: number, variableList: VariableItemList) {
         return variableList.name;
     }
@@ -67,7 +73,7 @@ export class AdminVariablesComponent implements OnInit {
 
     getVariables() {
         this.updating = true;
-        this.httpClient.get(`${this.urls.apiUrl}/variables`).subscribe({
+        this.httpClient.get(`${this.urls.apiUrl}/variables`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (response: VariableItem[]) => {
                 this.variables = response;
                 this.formatVariables();
@@ -88,6 +94,7 @@ export class AdminVariablesComponent implements OnInit {
                     'Content-Type': 'application/json'
                 })
             })
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: () => {
                     this.form.controls.key.reset();
@@ -119,6 +126,7 @@ export class AdminVariablesComponent implements OnInit {
                     'Content-Type': 'application/json'
                 })
             })
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: () => {
                     this.getVariables();
@@ -134,11 +142,11 @@ export class AdminVariablesComponent implements OnInit {
         const dialog = this.dialog.open(ConfirmationModalComponent, {
             data: { message: `Are you sure you want to delete '${variable.key}'? This action could break functionality` }
         });
-        dialog.afterClosed().subscribe({
+        dialog.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
             next: (result) => {
                 if (result) {
                     this.updating = true;
-                    this.httpClient.delete(`${this.urls.apiUrl}/variables/${variable.key}`).subscribe({
+                    this.httpClient.delete(`${this.urls.apiUrl}/variables/${variable.key}`).pipe(takeUntil(this.destroy$)).subscribe({
                         next: () => {
                             this.getVariables();
                         },

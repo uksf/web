@@ -1,4 +1,4 @@
-import { Component, HostListener, ViewChild } from '@angular/core';
+import { Component, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { UrlService } from '@app/core/services/url.service';
 import { HttpClient } from '@angular/common/http';
@@ -7,7 +7,8 @@ import { CommentDisplayComponent } from '@app/shared/components/comment-display/
 import { AccountService } from '@app/core/services/account.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MembershipState } from '@app/shared/models/account';
-import { AsyncSubject } from 'rxjs';
+import { AsyncSubject, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { ApplicationState, DetailedApplication, Recruiter } from '@app/features/application/models/application';
 import { OnlineState } from '@app/shared/models/online-state';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
@@ -22,7 +23,8 @@ import { Permissions } from '@app/core/services/permissions';
     styleUrls: ['./recruitment-application-page.component.scss'],
     providers: [DatePipe]
 })
-export class RecruitmentApplicationPageComponent {
+export class RecruitmentApplicationPageComponent implements OnDestroy {
+    private destroy$ = new Subject<void>();
     @ViewChild('recruiterCommentsDisplay') recruiterCommentDisplay: CommentDisplayComponent;
     @ViewChild('applicationCommentsDisplay') applicationCommentDisplay: CommentDisplayComponent;
     membershipState = MembershipState;
@@ -59,6 +61,11 @@ export class RecruitmentApplicationPageComponent {
         this.getApplication();
     }
 
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
     @HostListener('window:keydown', ['$event'])
     @HostListener('window:keyup', ['$event'])
     onKey(event: KeyboardEvent) {
@@ -66,7 +73,7 @@ export class RecruitmentApplicationPageComponent {
     }
 
     getApplication() {
-        this.httpClient.get(this.urls.apiUrl + '/recruitment/applications/' + this.accountId).subscribe({
+        this.httpClient.get(this.urls.apiUrl + '/recruitment/applications/' + this.accountId).pipe(takeUntil(this.destroy$)).subscribe({
             next: (response: DetailedApplication) => {
                 const application = response;
                 if (application.account.id === this.accountService.account.id && application.account.application.state === ApplicationState.WAITING) {
@@ -85,7 +92,7 @@ export class RecruitmentApplicationPageComponent {
                     this.getDiscordState();
 
                     if (this.permissions.hasPermission(Permissions.RECRUITER_LEAD)) {
-                        this.httpClient.get(this.urls.apiUrl + '/recruitment/recruiters').subscribe({
+                        this.httpClient.get(this.urls.apiUrl + '/recruitment/recruiters').pipe(takeUntil(this.destroy$)).subscribe({
                             next: (recruiters: Recruiter[]) => {
                                 this.recruiters = recruiters.filter((x: Recruiter) => x.active);
                                 this.selected = this.application.recruiterId;
@@ -101,7 +108,7 @@ export class RecruitmentApplicationPageComponent {
     }
 
     getTeamspeakState() {
-        this.httpClient.get(`${this.urls.apiUrl}/teamspeak/${this.accountId}/onlineUserDetails`).subscribe({
+        this.httpClient.get(`${this.urls.apiUrl}/teamspeak/${this.accountId}/onlineUserDetails`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (state: OnlineState) => {
                 this.teamspeakState.next(state);
                 this.teamspeakState.complete();
@@ -110,7 +117,7 @@ export class RecruitmentApplicationPageComponent {
     }
 
     getDiscordState() {
-        this.httpClient.get(`${this.urls.apiUrl}/discord/${this.accountId}/onlineUserDetails`).subscribe({
+        this.httpClient.get(`${this.urls.apiUrl}/discord/${this.accountId}/onlineUserDetails`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (state: OnlineState) => {
                 this.discordState.next(state);
                 this.discordState.complete();
@@ -120,7 +127,7 @@ export class RecruitmentApplicationPageComponent {
 
     setNewRecruiter(newRecruiter: any) {
         this.updating = true;
-        this.httpClient.post(`${this.urls.apiUrl}/recruitment/applications/${this.accountId}/recruiter`, { newRecruiter: newRecruiter }).subscribe({
+        this.httpClient.post(`${this.urls.apiUrl}/recruitment/applications/${this.accountId}/recruiter`, { newRecruiter: newRecruiter }).pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.getApplication();
                 this.recruiterCommentDisplay.getCanPostComment();
@@ -137,7 +144,7 @@ export class RecruitmentApplicationPageComponent {
 
     updateApplicationState(updatedState: ApplicationState) {
         this.updating = true;
-        this.httpClient.post(`${this.urls.apiUrl}/recruitment/applications/${this.accountId}`, { updatedState: updatedState }).subscribe({
+        this.httpClient.post(`${this.urls.apiUrl}/recruitment/applications/${this.accountId}`, { updatedState: updatedState }).pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.getApplication();
             },
@@ -156,6 +163,7 @@ export class RecruitmentApplicationPageComponent {
                 data: { message: `Are you sure you want to reset ${this.application.displayName} to a Candidate?\nThis will remove any rank, unit, and role assignments.` }
             })
             .afterClosed()
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (result) => {
                     if (result) {

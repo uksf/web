@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { AccountService } from '@app/core/services/account.service';
@@ -12,7 +14,8 @@ import { ApplicationState } from '@app/features/application/models/application';
     templateUrl: './application-page.component.html',
     styleUrls: ['./application-page.component.scss']
 })
-export class ApplicationPageComponent implements OnInit {
+export class ApplicationPageComponent implements OnInit, OnDestroy {
+    private destroy$ = new Subject<void>();
     step = 1;
     details: any;
 
@@ -20,6 +23,11 @@ export class ApplicationPageComponent implements OnInit {
 
     ngOnInit() {
         this.checkStep();
+    }
+
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     checkStep() {
@@ -91,6 +99,7 @@ export class ApplicationPageComponent implements OnInit {
             .post(`${this.urls.apiUrl}/accounts/${this.accountService.account.id}/application`, this.details, {
                 headers: new HttpHeaders({ 'Content-Type': 'application/json' })
             })
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: () => {
                     this.accountService.getAccount(() => {

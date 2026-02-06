@@ -1,7 +1,9 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import type { ServerInfrastructureCurrent, ServerInfrastructureInstalled, ServerInfrastructureLatest, ServerInfrastructureUpdate } from '@app/shared/models/server-infrastructure';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { UksfError } from '@app/shared/models/response';
@@ -11,7 +13,8 @@ import { UksfError } from '@app/shared/models/response';
     templateUrl: './admin-servers.component.html',
     styleUrls: ['../admin-page/admin-page.component.scss', './admin-servers.component.scss']
 })
-export class AdminServersComponent implements OnInit {
+export class AdminServersComponent implements OnInit, OnDestroy {
+    private destroy$ = new Subject<void>();
     latest: ServerInfrastructureLatest;
     current: ServerInfrastructureCurrent;
     installed: ServerInfrastructureInstalled;
@@ -30,23 +33,28 @@ export class AdminServersComponent implements OnInit {
         this.getInfrastructureInfo();
     }
 
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
     getInfrastructureInfo() {
-        this.httpClient.get(`${this.urls.apiUrl}/servers/infrastructure/isUpdating`).subscribe({
+        this.httpClient.get(`${this.urls.apiUrl}/servers/infrastructure/isUpdating`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (updating: boolean) => {
                 this.updating = updating;
             }
         });
-        this.httpClient.get(`${this.urls.apiUrl}/servers/infrastructure/latest`).subscribe({
+        this.httpClient.get(`${this.urls.apiUrl}/servers/infrastructure/latest`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (info: ServerInfrastructureLatest) => {
                 this.latest = info;
             }
         });
-        this.httpClient.get(`${this.urls.apiUrl}/servers/infrastructure/current`).subscribe({
+        this.httpClient.get(`${this.urls.apiUrl}/servers/infrastructure/current`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (info: ServerInfrastructureCurrent) => {
                 this.current = info;
             }
         });
-        this.httpClient.get(`${this.urls.apiUrl}/servers/infrastructure/installed`).subscribe({
+        this.httpClient.get(`${this.urls.apiUrl}/servers/infrastructure/installed`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (info: ServerInfrastructureInstalled) => {
                 this.installed = info;
             }
@@ -99,7 +107,7 @@ export class AdminServersComponent implements OnInit {
         }
 
         this.updating = true;
-        this.httpClient.get(`${this.urls.apiUrl}/servers/infrastructure/update`).subscribe({
+        this.httpClient.get(`${this.urls.apiUrl}/servers/infrastructure/update`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (updateResult: ServerInfrastructureUpdate) => {
                 this.dialog
                     .open(MessageModalComponent, {
@@ -108,6 +116,7 @@ export class AdminServersComponent implements OnInit {
                         }
                     })
                     .afterClosed()
+                    .pipe(takeUntil(this.destroy$))
                     .subscribe({
                         next: () => {
                             this.getInfrastructureInfo();

@@ -1,4 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { FolderMetadata } from '@app/features/docs/models/documents';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateFolderModalComponent } from '../../modals/create-folder-modal/create-folder-modal.component';
@@ -10,7 +12,8 @@ import { collapseAnimations } from '@app/shared/services/animations.service';
     styleUrls: ['./docs-sidebar.component.scss'],
     animations: [collapseAnimations.buttonExpansion, collapseAnimations.indicatorRotate, collapseAnimations.collapsed]
 })
-export class DocsSidebarComponent implements OnInit {
+export class DocsSidebarComponent implements OnInit, OnDestroy {
+    private destroy$ = new Subject<void>();
     @Input('allDocumentMetadata') allFolderMetadata: FolderMetadata[];
     @Output('refresh') refresh = new EventEmitter();
     collapseHoverState: string = 'collapsed';
@@ -20,6 +23,11 @@ export class DocsSidebarComponent implements OnInit {
 
     ngOnInit(): void {}
 
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
     addFolder() {
         this.dialog
             .open(CreateFolderModalComponent, {
@@ -28,6 +36,7 @@ export class DocsSidebarComponent implements OnInit {
                 }
             })
             .afterClosed()
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (_) => {
                     this.refresh.emit();

@@ -1,4 +1,6 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { DocumentContent, DocumentMetadata, UpdateDocumentContentRequest } from '@app/features/docs/models/documents';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
@@ -11,7 +13,8 @@ import { UksfError } from '@app/shared/models/response';
     templateUrl: './docs-content.component.html',
     styleUrls: ['./docs-content.component.scss', './docs-content.quill.scss']
 })
-export class DocsContentComponent implements OnChanges {
+export class DocsContentComponent implements OnChanges, OnDestroy {
+    private destroy$ = new Subject<void>();
     @Input('documentMetadata') documentMetadata: DocumentMetadata;
     documentContent: DocumentContent;
     editing: boolean = false;
@@ -19,13 +22,18 @@ export class DocsContentComponent implements OnChanges {
 
     constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {}
 
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
     ngOnChanges(changes: SimpleChanges): void {
         if (!this.documentMetadata) {
             this.documentContent = null;
             return;
         }
 
-        this.httpClient.get(`${this.urls.apiUrl}/docs/folders/${this.documentMetadata.folder}/documents/${this.documentMetadata.id}/content`).subscribe({
+        this.httpClient.get(`${this.urls.apiUrl}/docs/folders/${this.documentMetadata.folder}/documents/${this.documentMetadata.id}/content`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (content: DocumentContent) => {
                 this.editing = false;
                 this.documentContent = content;
@@ -61,6 +69,7 @@ export class DocsContentComponent implements OnChanges {
                     'Content-Type': 'application/json'
                 })
             })
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (content: DocumentContent) => {
                     this.pending = false;

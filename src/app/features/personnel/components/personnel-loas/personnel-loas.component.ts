@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -8,7 +8,7 @@ import { formatDate } from '@angular/common';
 import { Loa } from '@app/features/command/models/loa';
 import { PersonnelLoasListComponent } from '../personnel-loas-list/personnel-loas-list.component';
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import moment, { Moment } from 'moment';
 
 export type ViewMode = 'all' | 'coc' | 'mine';
@@ -31,7 +31,8 @@ export interface DateModeItem {
     templateUrl: './personnel-loas.component.html',
     styleUrls: ['../personnel-page/personnel-page.component.scss', './personnel-loas.component.scss']
 })
-export class PersonnelLoasComponent implements OnInit {
+export class PersonnelLoasComponent implements OnInit, OnDestroy {
+    private destroy$ = new Subject<void>();
     @ViewChildren(PersonnelLoasListComponent) loaLists: QueryList<PersonnelLoasListComponent>;
     mobile = false;
     viewModes: ViewModeItem[] = [
@@ -57,13 +58,18 @@ export class PersonnelLoasComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.filterSubject.pipe(debounceTime(150), distinctUntilChanged()).subscribe({
+        this.filterSubject.pipe(debounceTime(150), distinctUntilChanged(), takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.update();
             }
         });
 
         this.mobile = window.screen.width < 400 || window.screen.height < 500;
+    }
+
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     @HostListener('window:resize')
@@ -99,6 +105,7 @@ export class PersonnelLoasComponent implements OnInit {
         this.dialog
             .open(RequestLoaModalComponent, {})
             .afterClosed()
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (_) => {
                     this.update();
@@ -114,12 +121,13 @@ export class PersonnelLoasComponent implements OnInit {
                 }
             })
             .afterClosed()
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (result) => {
                     if (!result) {
                         return;
                     }
-                    this.httpClient.delete(`${this.urls.apiUrl}/loa/${loa.id}`).subscribe({
+                    this.httpClient.delete(`${this.urls.apiUrl}/loa/${loa.id}`).pipe(takeUntil(this.destroy$)).subscribe({
                         next: (_) => {
                             this.update();
                         }

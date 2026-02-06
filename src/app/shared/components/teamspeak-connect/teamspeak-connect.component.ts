@@ -34,6 +34,12 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
     private updateTimeout: number;
     private changedTimeout: number;
 
+    private onReceiveClients = (clients) => {
+        this.mergeUpdates(() => {
+            this.updateClients(clients);
+        });
+    };
+
     constructor(
         private httpClient: HttpClient,
         public formBuilder: UntypedFormBuilder,
@@ -56,11 +62,7 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.findTeamspeakClients();
         this.hubConnection = this.signalrService.connect('teamspeakClients');
-        this.hubConnection.connection.on('ReceiveClients', (clients) => {
-            this.mergeUpdates(() => {
-                this.updateClients(clients);
-            });
-        });
+        this.hubConnection.connection.on('ReceiveClients', this.onReceiveClients);
         this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.mergeUpdates(() => {
@@ -79,6 +81,7 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
         if (this.changedTimeout) {
             clearTimeout(this.changedTimeout);
         }
+        this.hubConnection.connection.off('ReceiveClients', this.onReceiveClients);
         this.hubConnection.connection.stop();
     }
 

@@ -12,10 +12,8 @@ test.describe('Profile Page - Display', () => {
   });
 
   test('displays user name', async ({ page }) => {
-    // Profile should show the user's name in the title area
     const titleContainer = page.locator('.title-container');
     await expect(titleContainer).toBeVisible();
-    // Should contain at least the first and last name in h2 elements
     const nameElements = page.locator('.title-container h2');
     await expect(nameElements.first()).toBeVisible();
   });
@@ -31,11 +29,8 @@ test.describe('Profile Page - Display', () => {
     await expect(settingsCard.locator('h3', { hasText: 'Settings' })).toBeVisible();
   });
 
-  test('displays email notifications checkbox', async ({ page }) => {
+  test('displays notification checkboxes', async ({ page }) => {
     await expect(page.locator('mat-checkbox', { hasText: 'Email notifications' })).toBeVisible();
-  });
-
-  test('displays teamspeak notifications checkbox', async ({ page }) => {
     await expect(page.locator('mat-checkbox', { hasText: 'TeamSpeak notifications' })).toBeVisible();
   });
 });
@@ -47,54 +42,32 @@ test.describe('Profile Page - Actions', () => {
   });
 
   test('action buttons are visible for own profile', async ({ page }) => {
-    const actionContainer = page.locator('.action-container');
-    // Actions are only visible for own profile (isMyProfile)
-    if (await actionContainer.isVisible()) {
-      await expect(page.locator('button', { hasText: 'Change name' })).toBeVisible();
-      await expect(page.locator('button', { hasText: 'Change password' })).toBeVisible();
-    }
+    await expect(page.locator('button', { hasText: 'Change name' })).toBeVisible();
+    await expect(page.locator('button', { hasText: 'Change password' })).toBeVisible();
   });
 
   test('change name button opens modal', async ({ page }) => {
-    const changeNameButton = page.locator('button', { hasText: 'Change name' });
-    if (await changeNameButton.isVisible()) {
-      await changeNameButton.click();
-      // Modal dialog should appear
-      await expect(page.locator('mat-dialog-container')).toBeVisible();
-      // Close the modal by pressing Escape
-      await page.keyboard.press('Escape');
-    }
+    await page.locator('button', { hasText: 'Change name' }).click();
+    await expect(page.locator('mat-dialog-container')).toBeVisible();
+    await page.keyboard.press('Escape');
   });
 
   test('change password button opens modal', async ({ page }) => {
-    const changePasswordButton = page.locator('button', { hasText: 'Change password' });
-    if (await changePasswordButton.isVisible()) {
-      await changePasswordButton.click();
-      await expect(page.locator('mat-dialog-container')).toBeVisible();
-      await page.keyboard.press('Escape');
-    }
+    await page.locator('button', { hasText: 'Change password' }).click();
+    await expect(page.locator('mat-dialog-container')).toBeVisible();
+    await page.keyboard.press('Escape');
   });
 
   test('steam connection button is present', async ({ page }) => {
-    const steamButton = page.locator('button', { hasText: /Connect Steam|Steam connected/ });
-    if (await steamButton.isVisible()) {
-      // Just verify the button exists with either state
-      await expect(steamButton).toBeVisible();
-    }
+    await expect(page.locator('button', { hasText: /Connect Steam|Steam connected/ })).toBeVisible();
   });
 
   test('discord connection button is present', async ({ page }) => {
-    const discordButton = page.locator('button', { hasText: /Connect Discord|Discord connected/ });
-    if (await discordButton.isVisible()) {
-      await expect(discordButton).toBeVisible();
-    }
+    await expect(page.locator('button', { hasText: /Connect Discord|Discord connected/ })).toBeVisible();
   });
 
   test('teamspeak connection button is present', async ({ page }) => {
-    const teamspeakButton = page.locator('button', { hasText: /Connect TeamSpeak|TeamSpeak connected/ });
-    if (await teamspeakButton.isVisible()) {
-      await expect(teamspeakButton).toBeVisible();
-    }
+    await expect(page.locator('button', { hasText: /Connect TeamSpeak|TeamSpeak connected/ })).toBeVisible();
   });
 });
 
@@ -106,21 +79,17 @@ test.describe('Profile Page - Member Details', () => {
 
   test('displays member details card with unit and role', async ({ page }) => {
     const detailsContainer = page.locator('.details-container');
-    if (await detailsContainer.isVisible()) {
-      await expect(detailsContainer.locator('h3', { hasText: 'Details' })).toBeVisible();
-      await expect(detailsContainer.locator('.detail', { hasText: 'Unit:' })).toBeVisible();
-      await expect(detailsContainer.locator('.detail', { hasText: 'Role:' })).toBeVisible();
-    }
+    await expect(detailsContainer).toBeVisible();
+    await expect(detailsContainer.locator('h3', { hasText: 'Details' })).toBeVisible();
+    await expect(detailsContainer.locator('.detail', { hasText: 'Unit:' })).toBeVisible();
+    await expect(detailsContainer.locator('.detail', { hasText: 'Role:' })).toBeVisible();
   });
 
   test('displays service history section', async ({ page }) => {
     const serviceHistoryTitle = page.locator('.service-record-title', { hasText: 'Service History' });
-    if (await serviceHistoryTitle.isVisible()) {
-      await expect(serviceHistoryTitle).toBeVisible();
-      // Should have at least one service record card
-      const serviceRecords = page.locator('.service-record');
-      const count = await serviceRecords.count();
-      expect(count).toBeGreaterThan(0);
-    }
+    await expect(serviceHistoryTitle).toBeVisible();
+    const serviceRecords = page.locator('.service-record');
+    const count = await serviceRecords.count();
+    expect(count).toBeGreaterThan(0);
   });
 });

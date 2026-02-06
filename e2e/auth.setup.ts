@@ -6,6 +6,10 @@ import * as fs from 'fs';
 // Load test credentials from .env.test
 dotenv.config({ path: path.resolve(__dirname, '../.env.test') });
 
+if (!process.env.TEST_EMAIL || !process.env.TEST_PASSWORD) {
+  throw new Error('TEST_EMAIL and TEST_PASSWORD must be set in .env.test');
+}
+
 const authFile = path.resolve(__dirname, '../playwright/.auth/user.json');
 
 setup('authenticate', async ({ page }) => {

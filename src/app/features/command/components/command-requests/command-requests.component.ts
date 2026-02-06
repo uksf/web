@@ -29,15 +29,17 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
     private hubConnection: ConnectionContainer;
     private destroy$ = new Subject<void>();
 
+    private onReceiveRequestUpdate = () => {
+        this.getRequests();
+    };
+
     constructor(private httpClient: HttpClient, private urls: UrlService, public dialog: MatDialog, private signalrService: SignalRService, private accountService: AccountService) {
         this.getRequests();
     }
 
     ngOnInit() {
         this.hubConnection = this.signalrService.connect(`commandRequests`);
-        this.hubConnection.connection.on('ReceiveRequestUpdate', (_) => {
-            this.getRequests();
-        });
+        this.hubConnection.connection.on('ReceiveRequestUpdate', this.onReceiveRequestUpdate);
         this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.getRequests();
@@ -48,12 +50,13 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
+        this.hubConnection.connection.off('ReceiveRequestUpdate', this.onReceiveRequestUpdate);
         this.hubConnection.connection.stop();
     }
 
     getRequests() {
         this.updating = true;
-        this.httpClient.get(`${this.urls.apiUrl}/commandrequests`).subscribe({
+        this.httpClient.get(`${this.urls.apiUrl}/commandrequests`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
                 this.myRequests = response['myRequests'];
                 this.otherRequests = response['otherRequests'];

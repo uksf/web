@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { DocumentMetadata, FolderMetadata } from '@app/features/docs/models/documents';
@@ -12,7 +14,8 @@ import { MatDialog } from '@angular/material/dialog';
     templateUrl: './docs-page.component.html',
     styleUrls: ['./docs-page.component.scss']
 })
-export class DocsPageComponent implements OnInit {
+export class DocsPageComponent implements OnInit, OnDestroy {
+    private destroy$ = new Subject<void>();
     allFolderMetadata: FolderMetadata[] = [];
     selectedDocumentMetadata: DocumentMetadata;
 
@@ -22,8 +25,13 @@ export class DocsPageComponent implements OnInit {
         this.getAllFoldersMetadata();
     }
 
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
     getAllFoldersMetadata() {
-        this.httpClient.get(`${this.urls.apiUrl}/docs/folders`).subscribe({
+        this.httpClient.get(`${this.urls.apiUrl}/docs/folders`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (allFolderMetadata: FolderMetadata[]) => {
                 this.allFolderMetadata = allFolderMetadata;
                 this.setSelectedDocument();
@@ -35,13 +43,13 @@ export class DocsPageComponent implements OnInit {
     }
 
     setSelectedDocument() {
-        this.route.queryParams.subscribe({
+        this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe({
             next: (params) => {
                 const folder = params.folder;
                 const document = params.document;
 
                 if (folder && document) {
-                    this.httpClient.get(`${this.urls.apiUrl}/docs/folders/${folder}/documents/${document}`).subscribe({
+                    this.httpClient.get(`${this.urls.apiUrl}/docs/folders/${folder}/documents/${document}`).pipe(takeUntil(this.destroy$)).subscribe({
                         next: (documentMetadata: DocumentMetadata) => {
                             this.selectedDocumentMetadata = documentMetadata;
                         },

@@ -51,34 +51,26 @@
                         <div *ngIf="commanders && commanders.length > 0">
                             <h4>Command Staff</h4>
                             <ul>
-                                <div *ngFor="let user of commanders; trackBy: trackByDisplayName">
-                                    <li>{{ user.displayName }}</li>
-                                </div>
+                                <li *ngFor="let user of commanders; trackBy: trackByDisplayName">{{ user.displayName }}</li>
                             </ul>
                         </div>
                         <div *ngIf="recruiters && recruiters.length > 0">
                             <h4>Recruitment Staff</h4>
                             <ul>
-                                <div *ngFor="let user of recruiters; trackBy: trackByDisplayName">
-                                    <li>{{ user.displayName }}</li>
-                                </div>
+                                <li *ngFor="let user of recruiters; trackBy: trackByDisplayName">{{ user.displayName }}</li>
                             </ul>
                         </div>
                         <hr *ngIf="((recruiters && recruiters.length > 0) || (commanders && commanders.length > 0)) && ((members && members.length > 0) || (guests && guests.length > 0))" />
                         <div *ngIf="members && members.length > 0">
                             <h4>Members</h4>
                             <ul>
-                                <div *ngFor="let user of members; trackBy: trackByDisplayName">
-                                    <li>{{ user.displayName }}</li>
-                                </div>
+                                <li *ngFor="let user of members; trackBy: trackByDisplayName">{{ user.displayName }}</li>
                             </ul>
                         </div>
                         <div *ngIf="guests && guests.length > 0">
                             <h4>Guests</h4>
                             <ul>
-                                <div *ngFor="let user of guests; trackBy: trackByDisplayName">
-                                    <li>{{ user.displayName }}</li>
-                                </div>
+                                <li *ngFor="let user of guests; trackBy: trackByDisplayName">{{ user.displayName }}</li>
                             </ul>
                         </div>
                     </div>

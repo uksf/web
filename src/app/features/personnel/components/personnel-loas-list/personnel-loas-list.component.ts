@@ -1,8 +1,10 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { Permissions } from '@app/core/services/permissions';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { PagedEvent, PaginatorComponent } from '@app/shared/components/elements/paginator/paginator.component';
 import { buildQuery } from '@app/shared/services/helper.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { PagedResult } from '@app/shared/models/paged-result';
 import { UrlService } from '@app/core/services/url.service';
@@ -22,7 +24,8 @@ export type SelectionMode = 'current' | 'future' | 'past';
     styleUrls: ['../personnel-page/personnel-page.component.scss', '../personnel-loas/personnel-loas.component.scss', './personnel-loas-list.component.scss'],
     animations: [expansionAnimations.indicatorRotate, expansionAnimations.bodyExpansion]
 })
-export class PersonnelLoasListComponent implements OnInit {
+export class PersonnelLoasListComponent implements OnInit, OnDestroy {
+    private destroy$ = new Subject<void>();
     @ViewChild(PaginatorComponent) paginator: PaginatorComponent;
     @Input() selectionMode: SelectionMode = 'current';
     @Input() viewMode: ViewMode = 'all';
@@ -44,6 +47,11 @@ export class PersonnelLoasListComponent implements OnInit {
 
     ngOnInit(): void {
         this.getLoas();
+    }
+
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     update(newDateMode: DateModeItem, newViewMode: ViewModeItem, filter: string, newSelectedDate?: Moment) {
@@ -73,6 +81,7 @@ export class PersonnelLoasListComponent implements OnInit {
             .get(`${this.urls.apiUrl}/loa`, {
                 params: httpParams
             })
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (pagedLoas: PagedResult<Loa>) => {
                     this.loaded = true;

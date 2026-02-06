@@ -4,11 +4,11 @@
         <div class="flex-container">
             <mat-card>
                 <h1>Modpack Setup Guide</h1>
-                <p>
+                <ul>
                     <li>Welcome to the UKSF Modpack Setup Guide</li>
                     <li>Please follow the steps carefully</li>
                     <li>If you need help, please contact an SR1</li>
-                </p>
+                </ul>
             </mat-card>
 
             <!--A3S Install-->
@@ -16,23 +16,23 @@
                 <h1>Arma3Sync</h1>
                 <p>
                     <a target="_blank" href="https://uk-sf.co.uk/arma3sync-1-7-102.zip">Download Arma3Sync</a>
-                    <br>
-                    <br>
+                </p>
+                <ul>
                     <li>Install wherever you prefer</li>
                     <li>Right click Arma3Sync.exe or the shortcut</li>
                     <li>Select 'Properties'</li>
                     <li>Check 'Run this program as an administrator'</li>
-                </p>
+                </ul>
                 <img src="assets/dist/images/modpack/a3sadmin.png" alt="Arma3Sync run as administrator properties dialog">
             </mat-card>
 
             <!--A3S Setup-->
             <mat-card>
                 <h1>Arma3Sync Setup</h1>
-                <p>
+                <ul>
                     <li>Set executable location to arma3_x64.exe</li>
                     <li>Set addon search directory to arma 3 location</li>
-                </p>
+                </ul>
                 <img src="assets/dist/images/modpack/a3sexe.png" alt="Arma3Sync executable location setting">
                 <img src="assets/dist/images/modpack/a3sloc.png" alt="Arma3Sync addon search directory setting">
             </mat-card>
@@ -40,34 +40,34 @@
             <!--Repo Add-->
             <mat-card>
                 <h1>Adding Repository</h1>
-                <p>
+                <ul>
                     <li>Click 'Repositories'</li>
                     <li>Click blue plus</li>
-                    <li>Paste <font color="red">https://modpack.uk-sf.co.uk/.a3s/autoconfig</font> into 'Public auto-config url'</li>
+                    <li>Paste <span class="highlight">https://modpack.uk-sf.co.uk/.a3s/autoconfig</span> into 'Public auto-config url'</li>
                     <li>Set name as 'UKSF'</li>
                     <li>Press 'Import' and 'OK'</li>
-                </p>
+                </ul>
                 <img src="assets/dist/images/modpack/a3srepoadd.png" alt="Arma3Sync add repository dialog">
             </mat-card>
 
             <!--Repo Connect-->
             <mat-card>
                 <h1>Connect To Repository</h1>
-                <p>
+                <ul>
                     <li>Select 'UKSF' in the list</li>
                     <li>Press 'Connect' (Page with blue arrow)</li>
-                </p>
+                </ul>
                 <img src="assets/dist/images/modpack/a3srepoconnect.png" alt="Arma3Sync connect to repository button">
             </mat-card>
 
             <!--Repo Check-->
             <mat-card>
                 <h1>Check Repository</h1>
-                <p>
+                <ul>
                     <li>Press 'Check for Addons' (Green Tick)</li>
                     <li>Press 'Settings'</li>
                     <li>Set 'Maximum number of connections' to 10</li>
-                </p>
+                </ul>
                 <img src="assets/dist/images/modpack/a3srepocheck.png" alt="Arma3Sync check for addons button">
                 <img src="assets/dist/images/modpack/a3sreposettings.png" alt="Arma3Sync connection settings with max connections">
             </mat-card>
@@ -75,20 +75,20 @@
             <!--Repo Download-->
             <mat-card>
                 <h1>Download Repository</h1>
-                <p>
+                <ul>
                     <li>Look in the 'Repository content' panel</li>
                     <li>Any entry in red or with a yellow triangle indicates a missing or incomplete mod</li>
                     <li>Press 'Select All'</li>
                     <li>Press 'Start'</li>
                     <li>Allow time for the mods to download</li>
-                </p>
+                </ul>
                 <img src="assets/dist/images/modpack/a3sdownload.png" alt="Arma3Sync download repository content">
             </mat-card>
 
             <!--Modset-->
             <mat-card>
                 <h1>Create Modset</h1>
-                <p>
+                <ul>
                     <li>Make sure mods are fully downloaded</li>
                     <li>Select 'Addons' tab</li>
                     <li>Press 'Modsets'</li>
@@ -96,7 +96,7 @@
                     <li>Press 'OK'</li>
                     <li>Check 'Addons Groups' panel contains a folder named 'UKSF'</li>
                     <li>Ensure the folder is checked</li>
-                </p>
+                </ul>
                 <img src="assets/dist/images/modpack/a3smodset.png" alt="Arma3Sync modsets button in addons tab">
                 <img src="assets/dist/images/modpack/a3smodsetselect.png" alt="Arma3Sync select UKSF modset">
                 <img src="assets/dist/images/modpack/a3smodsetcheck.png" alt="Arma3Sync verify UKSF modset is checked">
@@ -105,18 +105,18 @@
             <!--Acre Plugins-->
             <mat-card>
                 <h1>ACRE Setup</h1>
-                <p>
+                <ul>
                     <li>Run Arma 3 with TeamSpeak closed. ACRE will be installed automatically.</li>
-                </p>
+                </ul>
             </mat-card>
 
             <!--TS Admin-->
             <mat-card>
-                <h1>Run TeamsSpeak As Admin</h1>
-                <p>
+                <h1>Run TeamSpeak As Admin</h1>
+                <ul>
                     <li>TeamSpeak must always be run as administrator</li>
                     <li>As with Arma3Sync, set your 'ts3client_win64.exe' or your shortcut to run as administrator</li>
-                </p>
+                </ul>
                 <img src="assets/dist/images/modpack/tsadmin.png" alt="TeamSpeak run as administrator properties dialog">
             </mat-card>
 
@@ -127,19 +127,19 @@
                     If you can't fix your issue, ask an SR1 for help
                 </p>
                 <h3>Can't join server</h3>
-                <p>
+                <ul>
                     <li>Check for addons by connecting to the repository in Arma3Sync</li>
                     <li>Ensure there are no mods with a yellow triangle or in red text</li>
-                    <li>Ensure you are not subscribed to anymods on the Steam Workshop that we also use</li>
+                    <li>Ensure you are not subscribed to any mods on the Steam Workshop that we also use</li>
                     <li>This is most commonly CBA_A3, ACE3, CUP_Terrains</li>
-                </p>
+                </ul>
 
                 <h3>Can't hear anyone/No-one can hear me</h3>
-                <p>
+                <ul>
                     <li>You need to be in the 'ACRE' channel in TeamSpeak</li>
                     <li>TeamSpeak MUST be run as administrator</li>
                     <li>Make sure the ACRE2 plugin is enabled</li>
-                </p>
+                </ul>
             </mat-card>
         </div>
     </app-full-content-area>

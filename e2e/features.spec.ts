@@ -6,25 +6,12 @@ import { test, expect } from '@playwright/test';
  */
 
 test.describe('Modpack Feature', () => {
-  test('modpack page has tab navigation', async ({ page }) => {
+  test('modpack guide page displays content with images', async ({ page }) => {
     await page.goto('/modpack/guide');
     await page.waitForSelector('app-modpack-guide');
 
-    // Verify tab navigation exists
-    const tabNav = page.locator('nav[mat-tab-nav-bar], [mat-tab-nav-bar]');
-    if (await tabNav.isVisible()) {
-      await expect(tabNav).toBeVisible();
-    }
-  });
-
-  test('modpack guide page displays content', async ({ page }) => {
-    await page.goto('/modpack/guide');
-    await page.waitForSelector('app-modpack-guide');
-
-    // Guide should have instructional content
     const guideContent = page.locator('app-modpack-guide');
     await expect(guideContent).toBeVisible();
-    // Should contain images for the guide
     const images = guideContent.locator('img');
     const count = await images.count();
     expect(count).toBeGreaterThan(0);
@@ -32,18 +19,21 @@ test.describe('Modpack Feature', () => {
 
   test('navigating to modpack releases page', async ({ page }) => {
     await page.goto('/modpack/releases');
+    await page.waitForLoadState('networkidle');
+
+    // Should either show releases page or redirect if no permission
     const url = page.url();
     if (url.includes('modpack/releases')) {
-      await page.waitForSelector('app-modpack-releases');
       await expect(page.locator('app-modpack-releases')).toBeVisible();
     }
   });
 
   test('navigating to modpack workshop page', async ({ page }) => {
     await page.goto('/modpack/workshop');
+    await page.waitForLoadState('networkidle');
+
     const url = page.url();
     if (url.includes('modpack/workshop')) {
-      await page.waitForSelector('app-modpack-workshop');
       await expect(page.locator('app-modpack-workshop')).toBeVisible();
     }
   });
@@ -54,25 +44,22 @@ test.describe('Units Feature', () => {
     await page.goto('/units/orbat');
     await page.waitForSelector('app-units-orbat');
 
-    const orbat = page.locator('app-units-orbat');
-    await expect(orbat).toBeVisible();
+    await expect(page.locator('app-units-orbat')).toBeVisible();
   });
 
-  test('units page has expandable tree nodes', async ({ page }) => {
+  test('units page has tree component', async ({ page }) => {
     await page.goto('/units/orbat');
     await page.waitForSelector('app-units-orbat');
     await page.waitForLoadState('networkidle');
 
     // Tree component should be present
     const treeNodes = page.locator('tree-root, .tree-node, [class*="tree"]');
-    if (await treeNodes.first().isVisible()) {
-      await expect(treeNodes.first()).toBeVisible();
-    }
+    await expect(treeNodes.first()).toBeVisible({ timeout: 10000 });
   });
 });
 
 test.describe('Personnel Feature', () => {
-  test('personnel roster page loads with member list', async ({ page }) => {
+  test('personnel roster page loads', async ({ page }) => {
     await page.goto('/personnel/roster');
     await page.waitForSelector('app-personnel-roster');
     await page.waitForLoadState('networkidle');
@@ -82,110 +69,80 @@ test.describe('Personnel Feature', () => {
 
   test('personnel page has tab navigation', async ({ page }) => {
     await page.goto('/personnel/loas');
-    // Wait for the personnel page wrapper
-    const personnelPage = page.locator('app-personnel-page');
-    if (await personnelPage.isVisible()) {
-      // Tab navigation should exist
-      const tabNav = page.locator('nav[mat-tab-nav-bar], [mat-tab-nav-bar]');
-      if (await tabNav.isVisible()) {
-        await expect(tabNav).toBeVisible();
-      }
-    }
+    await page.waitForLoadState('networkidle');
+
+    await expect(page.locator('app-personnel-page')).toBeVisible();
   });
 
   test('personnel tabs navigate between sub-pages', async ({ page }) => {
     await page.goto('/personnel/roster');
     await page.waitForSelector('app-personnel-roster');
 
-    // Navigate to LOAs tab if visible
+    // Navigate to LOAs tab
     const loasTab = page.locator('a[mat-tab-link], [mat-tab-link]', { hasText: /LOA/i });
-    if (await loasTab.isVisible()) {
-      await loasTab.click();
-      await expect(page).toHaveURL(/.*personnel\/loa/);
-    }
+    await expect(loasTab).toBeVisible();
+    await loasTab.click();
+    await expect(page).toHaveURL(/.*personnel\/loa/);
   });
 });
 
 test.describe('Command Feature', () => {
-  test('command page loads for authorized users', async ({ page }) => {
+  test('command page loads or redirects', async ({ page }) => {
     await page.goto('/command/requests');
+    await page.waitForLoadState('networkidle');
+
     const url = page.url();
     // Only test if we have command permission (not redirected)
     if (url.includes('command')) {
-      await page.waitForLoadState('networkidle');
-      // Should see some command page content
-      const content = page.locator('[class*="command"], app-command-requests');
-      if (await content.first().isVisible()) {
-        await expect(content.first()).toBeVisible();
-      }
+      await expect(page.locator('app-command-requests')).toBeVisible();
     }
   });
 
-  test('command members page loads member list', async ({ page }) => {
+  test('command members page loads or redirects', async ({ page }) => {
     await page.goto('/command/members');
+    await page.waitForLoadState('networkidle');
+
     const url = page.url();
     if (url.includes('command/members')) {
-      await page.waitForSelector('app-command-members', { timeout: 10000 }).catch(() => {});
-      const membersComponent = page.locator('app-command-members');
-      if (await membersComponent.isVisible()) {
-        await expect(membersComponent).toBeVisible();
-      }
+      await expect(page.locator('app-command-members')).toBeVisible({ timeout: 10000 });
     }
   });
 });
 
 test.describe('Operations Feature', () => {
-  test('operations page loads for authorized users', async ({ page }) => {
+  test('operations page loads or redirects', async ({ page }) => {
     await page.goto('/operations');
+    await page.waitForLoadState('networkidle');
+
     const url = page.url();
     if (url.includes('operations')) {
-      await page.waitForLoadState('networkidle');
-      const opsPage = page.locator('app-operations-page');
-      if (await opsPage.isVisible()) {
-        await expect(opsPage).toBeVisible();
-      }
+      await expect(page.locator('app-operations-page')).toBeVisible();
     }
   });
 
   test('operations AAR page loads', async ({ page }) => {
     await page.goto('/operations/aar');
+    await page.waitForLoadState('networkidle');
+
     const url = page.url();
     if (url.includes('operations/aar')) {
-      await page.waitForSelector('app-operations-aar', { timeout: 10000 }).catch(() => {});
-      const aarComponent = page.locator('app-operations-aar');
-      if (await aarComponent.isVisible()) {
-        await expect(aarComponent).toBeVisible();
-      }
+      await expect(page.locator('app-operations-aar')).toBeVisible({ timeout: 10000 });
     }
   });
 });
 
 test.describe('Home Page - Interactive Elements', () => {
-  test('home page displays time zones', async ({ page }) => {
+  test('home page displays content', async ({ page }) => {
     await page.goto('/home');
     await page.waitForSelector('app-home-page');
     await page.waitForLoadState('networkidle');
 
-    // Should display timezone information
-    const homePage = page.locator('app-home-page');
-    await expect(homePage).toBeVisible();
-  });
-
-  test('home page loads teamspeak panel', async ({ page }) => {
-    await page.goto('/home');
-    await page.waitForSelector('app-home-page');
-    await page.waitForLoadState('networkidle');
-
-    // TeamSpeak connect component should be present
-    const teamspeakComponent = page.locator('app-teamspeak-connect');
-    if (await teamspeakComponent.isVisible()) {
-      await expect(teamspeakComponent).toBeVisible();
-    }
+    await expect(page.locator('app-home-page')).toBeVisible();
   });
 });
 
 test.describe('Information Feature', () => {
-  test('information page loads with sub-routes', async ({ page }) => {
+  test('information page loads', async ({ page }) => {
     await page.goto('/information');
     await page.waitForLoadState('networkidle');
     await expect(page).toHaveURL(/.*information/);
@@ -197,25 +154,21 @@ test.describe('Information Feature', () => {
 
     const aboutPage = page.locator('app-about-page');
     await expect(aboutPage).toBeVisible();
-    // Should have meaningful text content
     const text = await aboutPage.textContent();
     expect(text.length).toBeGreaterThan(10);
   });
 
-  test('policy page has content', async ({ page }) => {
+  test('policy page loads', async ({ page }) => {
     await page.goto('/information/policy');
-    // May redirect to information/policy or policy
-    const policyPage = page.locator('app-policy-page');
-    if (await policyPage.isVisible()) {
-      await expect(policyPage).toBeVisible();
-    }
+    await page.waitForLoadState('networkidle');
+
+    await expect(page.locator('app-policy-page')).toBeVisible();
   });
 
-  test('rules page has content', async ({ page }) => {
+  test('rules page loads', async ({ page }) => {
     await page.goto('/information/rules');
-    const rulesPage = page.locator('app-rules-page');
-    if (await rulesPage.isVisible()) {
-      await expect(rulesPage).toBeVisible();
-    }
+    await page.waitForLoadState('networkidle');
+
+    await expect(page.locator('app-rules-page')).toBeVisible();
   });
 });

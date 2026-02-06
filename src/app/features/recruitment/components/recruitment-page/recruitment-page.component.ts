@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { Router } from '@angular/router';
@@ -11,7 +11,7 @@ import { Dictionary } from '@app/shared/models/dictionary';
 import { ThemeEmitterComponent } from '@app/shared/components/elements/theme-emitter/theme-emitter.component';
 import { buildQuery } from '@app/shared/services/helper.service';
 import { PagedResult } from '@app/shared/models/paged-result';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { PagedEvent } from '@app/shared/components/elements/paginator/paginator.component';
 
 @Component({
@@ -19,7 +19,8 @@ import { PagedEvent } from '@app/shared/components/elements/paginator/paginator.
     templateUrl: './recruitment-page.component.html',
     styleUrls: ['./recruitment-page.component.scss']
 })
-export class RecruitmentPageComponent implements OnInit {
+export class RecruitmentPageComponent implements OnInit, OnDestroy {
+    private destroy$ = new Subject<void>();
     @ViewChild(ThemeEmitterComponent) theme: ThemeEmitterComponent;
     membershipState = MembershipState;
     applicationState = ApplicationState;
@@ -52,14 +53,14 @@ export class RecruitmentPageComponent implements OnInit {
     constructor(private accountService: AccountService, private httpClient: HttpClient, private urls: UrlService, private router: Router) {}
 
     ngOnInit() {
-        this.httpClient.get(this.urls.apiUrl + '/recruitment/applications/active').subscribe({
+        this.httpClient.get(this.urls.apiUrl + '/recruitment/applications/active').pipe(takeUntil(this.destroy$)).subscribe({
             next: (applications: ActiveApplication[]) => {
                 this.userActiveApplications = applications.filter((x: ActiveApplication) => x.account.application.recruiter === this.accountService.account.id);
                 this.allOtherActiveApplications = applications.filter((x: ActiveApplication) => !this.userActiveApplications.includes(x));
                 this.getTeamspeakOnlineStates();
             }
         });
-        this.httpClient.get(this.urls.apiUrl + '/recruitment/recruiters').subscribe({
+        this.httpClient.get(this.urls.apiUrl + '/recruitment/recruiters').pipe(takeUntil(this.destroy$)).subscribe({
             next: (recruiters: Recruiter[]) => {
                 this.recruiters = recruiters;
             }
@@ -68,11 +69,16 @@ export class RecruitmentPageComponent implements OnInit {
         this.getCompletedApplications();
         this.getStats();
 
-        this.filterSubject.pipe(debounceTime(150), distinctUntilChanged()).subscribe({
+        this.filterSubject.pipe(debounceTime(150), distinctUntilChanged(), takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.getCompletedApplications();
             }
         });
+    }
+
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     getUserAccount() {
@@ -92,7 +98,7 @@ export class RecruitmentPageComponent implements OnInit {
     }
 
     setSr1Enabled(recruiter) {
-        this.httpClient.put(`${this.urls.apiUrl}/accounts/${recruiter.account.id}/updatesetting`, recruiter.account.settings).subscribe({
+        this.httpClient.put(`${this.urls.apiUrl}/accounts/${recruiter.account.id}/updatesetting`, recruiter.account.settings).pipe(takeUntil(this.destroy$)).subscribe({
             next: (settings: AccountSettings) => {
                 recruiter.account.settings = settings;
             }
@@ -102,7 +108,7 @@ export class RecruitmentPageComponent implements OnInit {
     setAccountSr1Enabled() {
         this.accountService.account.settings.sr1Enabled = !this.accountService.account.settings.sr1Enabled;
 
-        this.httpClient.put(`${this.urls.apiUrl}/accounts/${this.accountService.account.id}/updatesetting`, this.accountService.account.settings).subscribe({
+        this.httpClient.put(`${this.urls.apiUrl}/accounts/${this.accountService.account.id}/updatesetting`, this.accountService.account.settings).pipe(takeUntil(this.destroy$)).subscribe({
             next: (settings: AccountSettings) => {
                 const recruiter: any = this.activity.find((x: any) => x.account.id === this.accountService.account.id);
                 if (recruiter !== undefined) {
@@ -167,6 +173,7 @@ export class RecruitmentPageComponent implements OnInit {
                     .set('sortDirection', this.sortDirection)
                     .set('recruiterId', this.recruiterIdFilter)
             })
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (pagedMembers: PagedResult<CompletedApplication>) => {
                     this.loaded = true;
@@ -185,7 +192,7 @@ export class RecruitmentPageComponent implements OnInit {
             let teamspeakState: AsyncSubject<OnlineState> = new AsyncSubject<OnlineState>();
             this.teamspeakStates.Add(application.account.id, teamspeakState);
 
-            this.httpClient.get(`${this.urls.apiUrl}/teamspeak/${application.account.id}/onlineUserDetails`).subscribe({
+            this.httpClient.get(`${this.urls.apiUrl}/teamspeak/${application.account.id}/onlineUserDetails`).pipe(takeUntil(this.destroy$)).subscribe({
                 next: (state: OnlineState) => {
                     teamspeakState.next(state);
                     teamspeakState.complete();
@@ -195,7 +202,7 @@ export class RecruitmentPageComponent implements OnInit {
     }
 
     private getStats() {
-        this.httpClient.get(this.urls.apiUrl + '/recruitment/stats').subscribe({
+        this.httpClient.get(this.urls.apiUrl + '/recruitment/stats').pipe(takeUntil(this.destroy$)).subscribe({
             next: (response: Object) => {
                 this.activity = response['activity'];
                 this.yourStats = response['yourStats'];

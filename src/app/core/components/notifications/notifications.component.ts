@@ -20,6 +20,31 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     private hubConnection: ConnectionContainer;
     private destroy$ = new Subject<void>();
 
+    private onReceiveNotification = (notification) => {
+        this.notifications.unshift(notification);
+        this.updateNotifications();
+    };
+
+    private onReceiveRead = (ids: any[]) => {
+        ids.forEach((readId) => {
+            const notification = this.notifications.find((x) => x.id === readId);
+            if (notification) {
+                notification.read = true;
+            }
+        });
+        this.updateNotifications();
+    };
+
+    private onReceiveClear = (ids: any[]) => {
+        ids.forEach((clearId) => {
+            const index = this.notifications.findIndex((x) => x.id === clearId);
+            if (index > -1) {
+                this.notifications.splice(index, 1);
+            }
+        });
+        this.updateNotifications();
+    };
+
     constructor(
         private router: Router,
         private elementRef: ElementRef,
@@ -44,28 +69,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         this.getNotifications();
         this.waitForId().then((id) => {
             this.hubConnection = this.signalrService.connect(`notifications?userId=${id}`);
-            this.hubConnection.connection.on('ReceiveNotification', (notification) => {
-                this.notifications.unshift(notification);
-                this.updateNotifications();
-            });
-            this.hubConnection.connection.on('ReceiveRead', (ids: any[]) => {
-                ids.forEach((readId) => {
-                    const notification = this.notifications.find((x) => x.id === readId);
-                    if (notification) {
-                        notification.read = true;
-                    }
-                });
-                this.updateNotifications();
-            });
-            this.hubConnection.connection.on('ReceiveClear', (ids: any[]) => {
-                ids.forEach((clearId) => {
-                    const index = this.notifications.findIndex((x) => x.id === clearId);
-                    if (index > -1) {
-                        this.notifications.splice(index, 1);
-                    }
-                });
-                this.updateNotifications();
-            });
+            this.hubConnection.connection.on('ReceiveNotification', this.onReceiveNotification);
+            this.hubConnection.connection.on('ReceiveRead', this.onReceiveRead);
+            this.hubConnection.connection.on('ReceiveClear', this.onReceiveClear);
             this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
                 next: () => {
                     this.getNotifications();
@@ -77,7 +83,12 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.destroy$.next();
         this.destroy$.complete();
-        this.hubConnection.connection.stop();
+        if (this.hubConnection) {
+            this.hubConnection.connection.off('ReceiveNotification', this.onReceiveNotification);
+            this.hubConnection.connection.off('ReceiveRead', this.onReceiveRead);
+            this.hubConnection.connection.off('ReceiveClear', this.onReceiveClear);
+            this.hubConnection.connection.stop();
+        }
         clearTimeout(this.unreadTimeout);
     }
 

@@ -38,6 +38,13 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
     private hubConnection: ConnectionContainer;
     private destroy$ = new Subject<void>();
 
+    private onReceiveBuildStep = (step: ModpackBuildStep) => {
+        if (JSON.stringify(step) !== JSON.stringify(this.build.steps[step.index])) {
+            this.build.steps.splice(step.index, 1, step);
+            this.chooseStep();
+        }
+    };
+
     constructor(
         private signalrService: SignalRService,
         private modpackBuildProcessService: ModpackBuildProcessService,
@@ -85,12 +92,7 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
 
             if (!this.build.finished) {
                 this.hubConnection = this.signalrService.connect(`modpack?buildId=${this.build.id}`);
-                this.hubConnection.connection.on('ReceiveBuildStep', (step: ModpackBuildStep) => {
-                    if (JSON.stringify(step) !== JSON.stringify(this.build.steps[step.index])) {
-                        this.build.steps.splice(step.index, 1, step);
-                        this.chooseStep();
-                    }
-                });
+                this.hubConnection.connection.on('ReceiveBuildStep', this.onReceiveBuildStep);
                 this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
                     next: () => {
                         this.modpackBuildProcessService.getBuildData(this.build.id, (reconnectBuild: ModpackBuild) => {
@@ -105,6 +107,7 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
 
     disconnect() {
         if (this.hubConnection !== undefined) {
+            this.hubConnection.connection.off('ReceiveBuildStep', this.onReceiveBuildStep);
             this.hubConnection.connection.stop();
         }
     }

@@ -5,6 +5,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionPanel } from '@angular/material/expansion';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { ActivatedRoute } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { TextInputModalComponent } from '@app/shared/modals/text-input-modal/text-input-modal.component';
 import { nextFrame } from '@app/shared/services/helper.service';
 
@@ -28,6 +30,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
         { value: 30, name: '30' }
     ];
     filterString = '';
+    private destroy$ = new Subject<void>();
     private timeout: number;
 
     constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private route: ActivatedRoute) {}
@@ -41,6 +44,8 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
         if (this.timeout) {
             clearTimeout(this.timeout);
         }
@@ -49,7 +54,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
     refresh(initialFilter = '') {
         this.completeDischargeCollections = undefined;
         this.updating = true;
-        this.httpClient.get<any[]>(this.urls.apiUrl + '/discharges').subscribe({
+        this.httpClient.get<any[]>(this.urls.apiUrl + '/discharges').pipe(takeUntil(this.destroy$)).subscribe({
             next: (response: DischargeCollection[]) => {
                 this.completeDischargeCollections = response;
                 if (initialFilter) {
@@ -110,7 +115,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
 
     reinstate(event: Event, dischargeCollection: DischargeCollection) {
         event.stopPropagation();
-        this.httpClient.get<any[]>(this.urls.apiUrl + `/discharges/reinstate/${dischargeCollection.id}`).subscribe({
+        this.httpClient.get<any[]>(this.urls.apiUrl + `/discharges/reinstate/${dischargeCollection.id}`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
                 this.dischargeCollections = response;
             },
@@ -129,6 +134,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
                 data: { message: 'Please provide a reason for the reinstate request' }
             })
             .afterClosed()
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (reason: string) => {
                     if (!reason) {
@@ -140,6 +146,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
                                 'Content-Type': 'application/json'
                             })
                         })
+                        .pipe(takeUntil(this.destroy$))
                         .subscribe({
                             next: (_) => {
                                 this.httpClient
@@ -152,6 +159,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
                                             })
                                         }
                                     )
+                                    .pipe(takeUntil(this.destroy$))
                                     .subscribe({
                                         next: (response: boolean) => {
                                             dischargeCollection.requestExists = response;

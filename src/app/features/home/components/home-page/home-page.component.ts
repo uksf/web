@@ -23,6 +23,12 @@ export class HomePageComponent implements OnInit, OnDestroy {
     private timeInterval;
     private destroy$ = new Subject<void>();
 
+    private onReceiveClients = () => {
+        this.mergeUpdates(() => {
+            this.getClients();
+        });
+    };
+
     constructor(private httpClient: HttpClient, private urls: UrlService, private signalrService: SignalRService) {
         this._time = new Date();
         this.timeInterval = setInterval(() => {
@@ -33,11 +39,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.getClients();
         this.hubConnection = this.signalrService.connect('teamspeakClients');
-        this.hubConnection.connection.on('ReceiveClients', () => {
-            this.mergeUpdates(() => {
-                this.getClients();
-            });
-        });
+        this.hubConnection.connection.on('ReceiveClients', this.onReceiveClients);
         this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.mergeUpdates(() => {
@@ -59,6 +61,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
             clearTimeout(this.updateTimeout);
         }
         if (this.hubConnection) {
+            this.hubConnection.connection.off('ReceiveClients', this.onReceiveClients);
             this.hubConnection.connection.stop();
         }
     }

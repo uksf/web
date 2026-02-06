@@ -1,4 +1,6 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, OnDestroy, OnInit, Output, EventEmitter } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -12,7 +14,8 @@ import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-moda
     templateUrl: './application-communications.component.html',
     styleUrls: ['./application-communications.component.scss', '../application-page/application-page.component.scss'],
 })
-export class ApplicationCommunicationsComponent {
+export class ApplicationCommunicationsComponent implements OnInit, OnDestroy {
+    private destroy$ = new Subject<void>();
     @Output() nextEvent = new EventEmitter();
     mode = 'pending';
     private pendingValidation = false;
@@ -31,7 +34,7 @@ export class ApplicationCommunicationsComponent {
                 });
             } else {
                 const code = this.route.snapshot.queryParams['validation'];
-                this.httpClient.post(this.urls.apiUrl + '/steamcode/' + id, { code: code }).subscribe({
+                this.httpClient.post(this.urls.apiUrl + '/steamcode/' + id, { code: code }).pipe(takeUntil(this.destroy$)).subscribe({
                     next: () => {
                         this.router.navigate(['/application']).then(() => {
                             this.pendingValidation = false;
@@ -65,7 +68,7 @@ export class ApplicationCommunicationsComponent {
             } else {
                 const code = this.route.snapshot.queryParams['validation'];
                 const added = this.route.snapshot.queryParams['added'];
-                this.httpClient.post(this.urls.apiUrl + '/discordcode/' + id, { code: code }).subscribe({
+                this.httpClient.post(this.urls.apiUrl + '/discordcode/' + id, { code: code }).pipe(takeUntil(this.destroy$)).subscribe({
                     next: () => {
                         this.router.navigate(['/application']).then(() => {
                             this.pendingValidation = false;
@@ -83,6 +86,7 @@ export class ApplicationCommunicationsComponent {
                                         },
                                     })
                                     .afterClosed()
+                                    .pipe(takeUntil(this.destroy$))
                                     .subscribe({
                                         next: (result) => {
                                             if (result) {
@@ -108,6 +112,11 @@ export class ApplicationCommunicationsComponent {
 
     ngOnInit(): void {
         this.checkModes();
+    }
+
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     connected() {
@@ -150,6 +159,7 @@ export class ApplicationCommunicationsComponent {
                 },
             })
             .afterClosed()
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (result) => {
                     if (result) {
@@ -174,6 +184,7 @@ export class ApplicationCommunicationsComponent {
                 },
             })
             .afterClosed()
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (result) => {
                     if (result) {

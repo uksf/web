@@ -62,7 +62,6 @@ test.describe('Header Bar', () => {
 
     const nameWrapper = page.locator('app-header-bar .name-wrapper');
     await expect(nameWrapper).toBeVisible();
-    // Should contain some text (the user's name)
     await expect(nameWrapper).not.toBeEmpty();
   });
 
@@ -78,38 +77,29 @@ test.describe('Header Bar', () => {
     await page.goto('/home');
     await page.waitForSelector('app-header-bar');
 
-    const nameWrapper = page.locator('app-header-bar .name-wrapper');
-    if (await nameWrapper.isVisible()) {
-      await nameWrapper.click();
-      await expect(page).toHaveURL(/.*profile/);
-    }
+    await page.locator('app-header-bar .name-wrapper').click();
+    await expect(page).toHaveURL(/.*profile/);
   });
 
   test('profile dropdown menu appears on click', async ({ page }) => {
     await page.goto('/home');
     await page.waitForSelector('app-header-bar');
 
-    // Click the profile button to open dropdown
     const profileButton = page.locator('app-header-bar button.profile');
-    if (await profileButton.isVisible()) {
-      await profileButton.click();
+    await expect(profileButton).toBeVisible();
+    await profileButton.click();
 
-      // Menu should appear with Profile and Logout options
-      await expect(page.locator('button[mat-menu-item]', { hasText: 'Profile' })).toBeVisible();
-      await expect(page.locator('button[mat-menu-item]', { hasText: 'Logout' })).toBeVisible();
-    }
+    await expect(page.locator('button[mat-menu-item]', { hasText: 'Profile' })).toBeVisible();
+    await expect(page.locator('button[mat-menu-item]', { hasText: 'Logout' })).toBeVisible();
   });
 
   test('profile dropdown Profile link navigates to profile page', async ({ page }) => {
     await page.goto('/home');
     await page.waitForSelector('app-header-bar');
 
-    const profileButton = page.locator('app-header-bar button.profile');
-    if (await profileButton.isVisible()) {
-      await profileButton.click();
-      await page.locator('button[mat-menu-item]', { hasText: 'Profile' }).click();
-      await expect(page).toHaveURL(/.*profile/);
-    }
+    await page.locator('app-header-bar button.profile').click();
+    await page.locator('button[mat-menu-item]', { hasText: 'Profile' }).click();
+    await expect(page).toHaveURL(/.*profile/);
   });
 
   test('notifications component is visible for authenticated user', async ({ page }) => {

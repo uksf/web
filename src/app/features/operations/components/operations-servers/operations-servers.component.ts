@@ -43,6 +43,29 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     private destroy$ = new Subject<void>();
     private uptimeInterval: number;
 
+    private onReceiveDisabledState = (state) => {
+        this.disabled = state as boolean;
+    };
+
+    private onReceiveAnyUpdate = (connectionId: string, skipRefresh: boolean) => {
+        if (connectionId !== this.hubConnection.connection.connectionId) {
+            this.getServers(skipRefresh);
+        }
+    };
+
+    private onReceiveServerUpdate = (connectionId: string, serverId: string) => {
+        if (connectionId !== this.hubConnection.connection.connectionId) {
+            const server = this.servers.find((server) => server.id === serverId);
+            this.refreshServerStatus(server);
+        }
+    };
+
+    private onReceiveMissionsUpdate = (connectionId: string, missions: IMission[]) => {
+        if (connectionId !== this.hubConnection.connection.connectionId) {
+            this.missions.next(missions.map(this.mapMissionElement));
+        }
+    };
+
     constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private signalrService: SignalRService, private permissions: PermissionsService) {}
 
     private get headers(): HttpHeaders {
@@ -56,25 +79,10 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
 
         this.hubConnection = this.signalrService.connect(`servers`);
 
-        this.hubConnection.connection.on('ReceiveDisabledState', (state) => {
-            this.disabled = state as boolean;
-        });
-        this.hubConnection.connection.on('ReceiveAnyUpdateIfNotCaller', (connectionId: string, skipRefresh: boolean) => {
-            if (connectionId !== this.hubConnection.connection.connectionId) {
-                this.getServers(skipRefresh);
-            }
-        });
-        this.hubConnection.connection.on('ReceiveServerUpdateIfNotCaller', (connectionId: string, serverId: string) => {
-            if (connectionId !== this.hubConnection.connection.connectionId) {
-                const server = this.servers.find((server) => server.id === serverId);
-                this.refreshServerStatus(server);
-            }
-        });
-        this.hubConnection.connection.on('ReceiveMissionsUpdateIfNotCaller', (connectionId: string, missions: IMission[]) => {
-            if (connectionId !== this.hubConnection.connection.connectionId) {
-                this.missions.next(missions.map(this.mapMissionElement));
-            }
-        });
+        this.hubConnection.connection.on('ReceiveDisabledState', this.onReceiveDisabledState);
+        this.hubConnection.connection.on('ReceiveAnyUpdateIfNotCaller', this.onReceiveAnyUpdate);
+        this.hubConnection.connection.on('ReceiveServerUpdateIfNotCaller', this.onReceiveServerUpdate);
+        this.hubConnection.connection.on('ReceiveMissionsUpdateIfNotCaller', this.onReceiveMissionsUpdate);
         this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.getServers();
@@ -96,6 +104,10 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         if (this.uptimeInterval) {
             clearInterval(this.uptimeInterval);
         }
+        this.hubConnection.connection.off('ReceiveDisabledState', this.onReceiveDisabledState);
+        this.hubConnection.connection.off('ReceiveAnyUpdateIfNotCaller', this.onReceiveAnyUpdate);
+        this.hubConnection.connection.off('ReceiveServerUpdateIfNotCaller', this.onReceiveServerUpdate);
+        this.hubConnection.connection.off('ReceiveMissionsUpdateIfNotCaller', this.onReceiveMissionsUpdate);
         this.hubConnection.connection.stop().then();
     }
 
