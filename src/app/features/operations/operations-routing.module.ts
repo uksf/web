@@ -17,6 +17,11 @@ const routes: Routes = [
                 redirectTo: 'servers',
                 pathMatch: 'full'
             },
+            { path: 'activity', redirectTo: 'aar' },
+            { path: 'orders', redirectTo: 'aar' },
+            { path: 'reports', redirectTo: 'aar' },
+            { path: 'opords', redirectTo: 'aar' },
+            { path: 'opreps', redirectTo: 'aar' },
             {
                 path: 'servers',
                 component: OperationsServersComponent,

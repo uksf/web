@@ -77,8 +77,10 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
-        this.hubConnection.connection.off('ReceiveLog', this.onReceiveLog);
-        this.hubConnection.connection.stop();
+        if (this.hubConnection) {
+            this.hubConnection.connection.off('ReceiveLog', this.onReceiveLog);
+            this.hubConnection.connection.stop();
+        }
     }
 
     refreshData() {

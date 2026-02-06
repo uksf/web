@@ -1,4 +1,4 @@
-import { Pipe, PipeTransform, SecurityContext } from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import Convert from 'ansi-to-html';
 
@@ -22,6 +22,6 @@ export class AnsiToHtmlPipe implements PipeTransform {
 
     transform(value: string) {
         const converted = this.convert.toHtml(value);
-        return this.sanitizer.sanitize(SecurityContext.HTML, converted);
+        return this.sanitizer.bypassSecurityTrustHtml(converted);
     }
 }

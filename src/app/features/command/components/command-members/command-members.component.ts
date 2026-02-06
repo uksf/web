@@ -9,7 +9,7 @@ import { buildQuery } from '@app/shared/services/helper.service';
 import { CommandUnitGroupCardComponent } from './command-unit-group-card/command-unit-group-card.component';
 import { SignalRHubsService } from '@app/core/services/signalr-hubs.service';
 import { ConnectionContainer } from '@app/core/services/signalr.service';
-import { Subject } from 'rxjs';
+import { from, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 @Component({
@@ -57,14 +57,16 @@ export class CommandMembersComponent implements OnInit, OnDestroy {
     constructor(private httpClient: HttpClient, private urls: UrlService, private signalrHubsService: SignalRHubsService) {}
 
     ngOnInit(): void {
-        this.signalrHubsService.getAllHub().then((allHub) => {
-            this.allHubConnection = allHub;
-            allHub.connection.on('ReceiveAccountUpdate', this.onReceiveAccountUpdate);
-            allHub.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
-                next: () => {
-                    this.getMembers();
-                }
-            });
+        from(this.signalrHubsService.getAllHub()).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (allHub) => {
+                this.allHubConnection = allHub;
+                allHub.connection.on('ReceiveAccountUpdate', this.onReceiveAccountUpdate);
+                allHub.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
+                    next: () => {
+                        this.getMembers();
+                    }
+                });
+            }
         });
 
         this.getMembers();

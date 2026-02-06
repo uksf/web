@@ -90,6 +90,7 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
                     })
                 }
             )
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (_) => this.getRequests(),
                 error: (error) => {
@@ -109,7 +110,7 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
         const dialog = this.dialog.open(RequestTransferModalComponent, {
             data: data
         });
-        dialog.afterClosed().subscribe({
+        dialog.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
             next: (_) => {
                 this.getRequests();
             }
@@ -118,7 +119,7 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
 
     rankRequest(): void {
         const dialog = this.dialog.open(RequestRankModalComponent, {});
-        dialog.afterClosed().subscribe({
+        dialog.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
             next: (_) => {
                 this.getRequests();
             }
@@ -127,7 +128,7 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
 
     roleRequest(): void {
         const dialog = this.dialog.open(RequestRoleModalComponent, {});
-        dialog.afterClosed().subscribe({
+        dialog.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
             next: (_) => {
                 this.getRequests();
             }
@@ -136,7 +137,7 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
 
     chainOfCommandPositionRequest() {
         const dialog = this.dialog.open(RequestChainOfCommandPositionModalComponent, {});
-        dialog.afterClosed().subscribe({
+        dialog.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
             next: (_) => {
                 this.getRequests();
             }
@@ -145,7 +146,7 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
 
     unitRemovalRequest() {
         const dialog = this.dialog.open(RequestUnitRemovalModalComponent, {});
-        dialog.afterClosed().subscribe({
+        dialog.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
             next: (_) => {
                 this.getRequests();
             }
@@ -162,7 +163,7 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
 
     dischargeRequest() {
         const dialog = this.dialog.open(RequestDischargeModalComponent, {});
-        dialog.afterClosed().subscribe({
+        dialog.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
             next: (_) => {
                 this.getRequests();
             }

@@ -7,8 +7,8 @@ bun install           # Install dependencies
 bun start             # Development server (localhost:4200)
 npx ng build          # Production build
 npx ng lint           # Lint check
-bun test              # Run unit tests (Vitest)
-bun test:e2e          # Run E2E tests (Playwright)
+bun run test          # Run unit tests (Vitest)
+bun run test:e2e      # Run E2E tests (Playwright)
 ```
 
 ## Architecture
@@ -206,8 +206,8 @@ Defined in `Services/permissions.ts`:
 Location: `*.spec.ts` files alongside source files
 
 ```bash
-bun test              # Run once
-bun test:watch        # Watch mode
+bun run test          # Run once
+bun run test:watch    # Watch mode
 ```
 
 Test pure functions in Services and Pipes.
@@ -217,9 +217,9 @@ Test pure functions in Services and Pipes.
 Location: `e2e/` directory
 
 ```bash
-bun test:e2e                      # Run all E2E tests
-bun test:e2e:ui                   # Playwright UI mode
-bun test:e2e:update-snapshots     # Update visual baselines
+bun run test:e2e                  # Run all E2E tests
+bun run test:e2e:ui               # Playwright UI mode
+bun run test:e2e:update-snapshots # Update visual baselines
 ```
 
 **Test credentials:** Stored in `.env.test` (gitignored). Create manually:

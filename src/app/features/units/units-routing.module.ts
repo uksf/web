@@ -65,7 +65,10 @@ const routes: Routes = [
         data: {
             permissions: {
                 except: Permissions.UNLOGGED,
-                redirectTo: loginRedirect
+                redirectTo: {
+                    UNLOGGED: loginRedirect,
+                    default: '/home'
+                }
             }
         },
         canActivate: [NgxPermissionsGuard]
