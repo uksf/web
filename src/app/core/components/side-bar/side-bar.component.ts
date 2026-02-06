@@ -2,13 +2,13 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { Permissions } from '@app/Services/permissions';
-import { AccountService } from '@app/Services/account.service';
+import { Permissions } from '@app/core/services/permissions';
+import { AccountService } from '@app/core/services/account.service';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { AppComponent } from '@app/app.component';
-import { PermissionsService } from '@app/Services/permissions.service';
-import { ApplicationState } from '@app/Models/Application';
+import { PermissionsService } from '@app/core/services/permissions.service';
+import { ApplicationState } from '@app/features/application/models/Application';
 
 @Component({
     selector: 'app-side-bar',
@@ -28,7 +28,6 @@ export class SideBarComponent implements OnInit, OnDestroy {
     ];
     private memberMenuStart = [
         { text: 'Home', link: 'home', icon: 'home' },
-        // { text: 'Live', icon: 'satellite' }, // cast image also very good
         { text: 'Units', link: 'units', icon: 'memory' },
         { text: 'Operations', link: 'operations', icon: 'public' },
         { text: 'Personnel', link: 'personnel', icon: 'group' }

@@ -1,20 +1,20 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { AccountService } from '@app/Services/account.service';
+import { AccountService } from '@app/core/services/account.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConnectTeamspeakModalComponent } from '../../modals/connect-teamspeak-modal/connect-teamspeak-modal.component';
 import { ChangePasswordModalComponent } from '../../modals/change-password-modal/change-password-modal.component';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ChangeFirstLastModalComponent } from '../../modals/change-first-last-modal/change-first-last-modal.component';
-import { Permissions } from '@app/Services/permissions';
-import { CountryPickerService, ICountry } from '@app/Services/CountryPicker/country-picker.service';
+import { Permissions } from '@app/core/services/permissions';
+import { CountryPickerService, ICountry } from '@app/shared/services/country-picker/country-picker.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { Subscription } from 'rxjs';
-import { PermissionsService } from '@app/Services/permissions.service';
-import { MembershipState } from '@app/Models/Account';
+import { PermissionsService } from '@app/core/services/permissions.service';
+import { MembershipState } from '@app/shared/models/Account';
 
 @Component({
     selector: 'app-profile-page',

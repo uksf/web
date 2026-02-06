@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { MatTableDataSource } from '@angular/material/table';
-import { CountryPickerService, ICountry } from '@app/Services/CountryPicker/country-picker.service';
-import { RosterAccount } from '@app/Models/Account';
+import { CountryPickerService, ICountry } from '@app/shared/services/country-picker/country-picker.service';
+import { RosterAccount } from '@app/shared/models/Account';
 
 @Component({
     selector: 'app-personnel-roster',

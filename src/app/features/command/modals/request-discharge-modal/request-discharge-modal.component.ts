@@ -2,11 +2,11 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NgForm } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { InstantErrorStateMatcher } from '@app/Services/formhelper.service';
-import { BasicAccount } from '@app/Models/Account';
-import { CommandRequest } from '@app/Models/CommandRequest';
+import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
+import { BasicAccount } from '@app/shared/models/Account';
+import { CommandRequest } from '@app/features/command/models/CommandRequest';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { BehaviorSubject } from 'rxjs';
 

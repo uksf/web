@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { DisplayNameService } from '@app/Services/displayName.service';
+import { DisplayNameService } from '@app/shared/services/display-name.service';
 
 @Pipe({ standalone: true, name: 'displayName' })
 export class DisplayName implements PipeTransform {

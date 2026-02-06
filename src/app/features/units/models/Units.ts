@@ -1,4 +1,4 @@
-import { Account } from './Account';
+import { Account } from '@app/shared/models/Account';
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 
 export interface ChainOfCommand {

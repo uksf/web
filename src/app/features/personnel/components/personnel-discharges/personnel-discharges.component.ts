@@ -1,12 +1,12 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionPanel } from '@angular/material/expansion';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { ActivatedRoute } from '@angular/router';
 import { TextInputModalComponent } from '@app/shared/modals/text-input-modal/text-input-modal.component';
-import { nextFrame } from '@app/Services/helper.service';
+import { nextFrame } from '@app/shared/services/helper.service';
 
 @Component({
     selector: 'app-personnel-discharges',

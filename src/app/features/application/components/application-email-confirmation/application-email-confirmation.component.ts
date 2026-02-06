@@ -2,11 +2,11 @@ import { Component, Output, EventEmitter } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { HttpHeaders } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { PermissionsService } from '@app/Services/permissions.service';
-import { AccountService } from '@app/Services/account.service';
+import { PermissionsService } from '@app/core/services/permissions.service';
+import { AccountService } from '@app/core/services/account.service';
 
 @Component({
     selector: 'app-application-email-confirmation',

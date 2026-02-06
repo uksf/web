@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AddServerModalComponent } from '../../modals/add-server-modal/add-server-modal.component';
 import { EditServerModsModalComponent } from '../../modals/edit-server-mods-modal/edit-server-mods-modal.component';
@@ -10,12 +10,12 @@ import { MessageModalComponent } from '@app/shared/modals/message-modal/message-
 import { ValidationReportModalComponent } from '@app/shared/modals/validation-report-modal/validation-report-modal.component';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { ConnectionContainer, SignalRService } from '@app/Services/signalr.service';
-import { Permissions } from '@app/Services/permissions';
-import { PermissionsService } from '@app/Services/permissions.service';
-import { UksfError } from '@app/Models/Response';
+import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
+import { Permissions } from '@app/core/services/permissions';
+import { PermissionsService } from '@app/core/services/permissions.service';
+import { UksfError } from '@app/shared/models/Response';
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
-import { OrderUpdateRequest } from '@app/Models/OrderUpdateRequest';
+import { OrderUpdateRequest } from '@app/shared/models/OrderUpdateRequest';
 
 @Component({
     selector: 'app-operations-servers',

@@ -1,7 +1,7 @@
 import { Component, Output, ViewChild, EventEmitter } from '@angular/core';
 import { UntypedFormBuilder, NgForm } from '@angular/forms';
-import { InstantErrorStateMatcher } from '@app/Services/formhelper.service';
-import { AuthenticationService } from '@app/Services/Authentication/authentication.service';
+import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
+import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
 
 @Component({
     selector: 'app-request-password-reset',

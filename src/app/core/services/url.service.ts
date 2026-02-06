@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AppSettingsService } from './appSettingsService.service';
+import { AppSettingsService } from './app-settings.service';
 
 @Injectable()
 export class UrlService {

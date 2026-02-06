@@ -10,7 +10,7 @@ import {
     ViewChild
 } from '@angular/core';
 import {Subscription, timer} from 'rxjs';
-import {UploadEvent, UploadFile} from '@app/Services/fileUploadTypes.service';
+import {UploadEvent, UploadFile} from '@app/shared/services/file-upload-types.service';
 
 @Component({
     selector: 'app-file-drop',

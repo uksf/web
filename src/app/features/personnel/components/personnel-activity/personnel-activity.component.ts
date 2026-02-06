@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
-import { PermissionsService } from '@app/Services/permissions.service';
+import { PermissionsService } from '@app/core/services/permissions.service';
 
 @Component({
     selector: 'app-personnel-activity',

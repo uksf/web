@@ -4,14 +4,14 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
-import { AccountService } from '@app/Services/account.service';
+import { AccountService } from '@app/core/services/account.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { Router } from '@angular/router';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { PermissionsService } from '@app/Services/permissions.service';
-import { Permissions } from '@app/Services/permissions';
-import { ApplicationState } from '@app/Models/Application';
+import { PermissionsService } from '@app/core/services/permissions.service';
+import { Permissions } from '@app/core/services/permissions';
+import { ApplicationState } from '@app/features/application/models/Application';
 
 export class InstantErrorStateMatcher implements ErrorStateMatcher {
     isErrorState(control: UntypedFormControl | null, form: FormGroupDirective | NgForm | null): boolean {

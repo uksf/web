@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { DisplayNameService } from '@app/Services/displayName.service';
+import { DisplayNameService } from '@app/shared/services/display-name.service';
 import moment from 'moment';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { NewBuild } from './models/NewBuild';
 import { ModpackBuild } from './models/ModpackBuild';

@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AuthenticationService } from '@app/Services/Authentication/authentication.service';
-import { UrlService } from '@app/Services/url.service';
+import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
+import { UrlService } from '@app/core/services/url.service';
 import { Router } from '@angular/router';
-import { ResponseUnitChartNode } from '@app/Models/Units';
+import { ResponseUnitChartNode } from '@app/features/units/models/Units';
 import { TreeNode } from 'primeng/api';
 
 @Component({

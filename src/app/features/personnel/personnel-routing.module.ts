@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { NgxPermissionsGuard } from 'ngx-permissions';
-import { Permissions } from '@app/Services/permissions';
+import { Permissions } from '@app/core/services/permissions';
 import { PersonnelPageComponent } from './components/personnel-page/personnel-page.component';
 import { PersonnelLoasComponent } from './components/personnel-loas/personnel-loas.component';
 import { PersonnelActivityComponent } from './components/personnel-activity/personnel-activity.component';

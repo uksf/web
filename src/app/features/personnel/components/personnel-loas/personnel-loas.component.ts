@@ -1,11 +1,11 @@
 import { Component, HostListener, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { RequestLoaModalComponent } from '@app/shared/modals/request-loa-modal/request-loa-modal.component';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { formatDate } from '@angular/common';
-import { Loa } from '@app/Models/Loa';
+import { Loa } from '@app/features/command/models/Loa';
 import { PersonnelLoasListComponent } from '../personnel-loas-list/personnel-loas-list.component';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';

@@ -1,8 +1,8 @@
 import { Component, Input, OnInit, ViewChild, ViewChildren } from '@angular/core';
-import { Unit } from '@app/Models/Units';
+import { Unit } from '@app/features/units/models/Units';
 import { MatAccordion } from '@angular/material/expansion';
-import { all, any } from '@app/Services/helper.service';
-import { Account } from '@app/Models/Account';
+import { all, any } from '@app/shared/services/helper.service';
+import { Account } from '@app/shared/models/Account';
 
 @Component({
     selector: 'app-command-unit-group-card',

@@ -1,16 +1,16 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { Permissions } from '@app/Services/permissions';
-import { PermissionsService } from '@app/Services/permissions.service';
+import { Permissions } from '@app/core/services/permissions';
+import { PermissionsService } from '@app/core/services/permissions.service';
 import { PagedEvent, PaginatorComponent } from '@app/shared/components/elements/paginator/paginator.component';
-import { buildQuery } from '@app/Services/helper.service';
+import { buildQuery } from '@app/shared/services/helper.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { PagedResult } from '@app/Models/PagedResult';
-import { UrlService } from '@app/Services/url.service';
-import { Loa, LoaReviewState } from '@app/Models/Loa';
-import { expansionAnimations } from '@app/Services/animations.service';
+import { PagedResult } from '@app/shared/models/PagedResult';
+import { UrlService } from '@app/core/services/url.service';
+import { Loa, LoaReviewState } from '@app/features/command/models/Loa';
+import { expansionAnimations } from '@app/shared/services/animations.service';
 import { DateMode, DateModeItem, ViewMode, ViewModeItem } from '../personnel-loas/personnel-loas.component';
 import { Moment } from 'moment/moment';
-import { UksfError } from '@app/Models/Response';
+import { UksfError } from '@app/shared/models/Response';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 

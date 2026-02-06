@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { AppSettingsService } from '@app/Services/appSettingsService.service';
+import { AppSettingsService } from '@app/core/services/app-settings.service';
 import { NgForm } from '@angular/forms';
 
 @Component({

@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { Location } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { ResponseUnit } from '@app/Models/Units';
+import { ResponseUnit } from '@app/features/units/models/Units';
 
 @Component({
     selector: 'app-unit-page',

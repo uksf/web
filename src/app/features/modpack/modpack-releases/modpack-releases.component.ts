@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MarkdownService } from 'ngx-markdown';
-import { PermissionsService } from '@app/Services/permissions.service';
-import { Permissions } from '@app/Services/permissions';
+import { PermissionsService } from '@app/core/services/permissions.service';
+import { Permissions } from '@app/core/services/permissions';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModpackReleaseService } from '../modpackRelease.service';
 import { ModpackRelease } from '../models/ModpackRelease';

@@ -2,8 +2,8 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
-import { InstantErrorStateMatcher } from '@app/Services/formhelper.service';
+import { UrlService } from '@app/core/services/url.service';
+import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import moment, { Moment } from 'moment';
 

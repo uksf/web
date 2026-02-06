@@ -3,7 +3,7 @@ import { OverlayContainer } from '@angular/cdk/overlay';
 import { isPlatformBrowser } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
-import { ConnectionContainer, SignalRService } from './Services/signalr.service';
+import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
 
 @Component({
     selector: 'app',

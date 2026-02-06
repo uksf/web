@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({

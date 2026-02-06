@@ -1,13 +1,13 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
-import { PagedResult } from '@app/Models/PagedResult';
+import { UrlService } from '@app/core/services/url.service';
+import { PagedResult } from '@app/shared/models/PagedResult';
 import { PagedEvent, PaginatorComponent } from '@app/shared/components/elements/paginator/paginator.component';
-import { Unit, UnitTreeDataSet } from '@app/Models/Units';
-import { Account } from '@app/Models/Account';
-import { buildQuery } from '@app/Services/helper.service';
+import { Unit, UnitTreeDataSet } from '@app/features/units/models/Units';
+import { Account } from '@app/shared/models/Account';
+import { buildQuery } from '@app/shared/services/helper.service';
 import { CommandUnitGroupCardComponent } from './command-unit-group-card/command-unit-group-card.component';
-import { SignalRHubsService } from '@app/Services/signalrHubs.service';
+import { SignalRHubsService } from '@app/core/services/signalr-hubs.service';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 

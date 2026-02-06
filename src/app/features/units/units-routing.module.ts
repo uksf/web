@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { NgxPermissionsGuard } from 'ngx-permissions';
-import { Permissions } from '@app/Services/permissions';
+import { Permissions } from '@app/core/services/permissions';
 import { loginRedirect } from '@app/app-routing.module';
 import { UnitsPageComponent } from './components/units-page/units-page.component';
 import { UnitsOrbatComponent } from './components/units-orbat/units-orbat.component';

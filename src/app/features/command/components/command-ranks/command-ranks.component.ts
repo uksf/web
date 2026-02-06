@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { AddRankModalComponent } from '@app/features/command/modals/add-rank-modal/add-rank-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable, timer } from 'rxjs';

@@ -1,7 +1,7 @@
 import { Component, ContentChild, ElementRef, HostListener, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgModel } from '@angular/forms';
 import { Observable, of } from 'rxjs';
-import { nextFrame } from '@app/Services/helper.service';
+import { nextFrame } from '@app/shared/services/helper.service';
 import { map, startWith } from 'rxjs/operators';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 

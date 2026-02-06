@@ -1,14 +1,14 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { AccountService } from '@app/Services/account.service';
+import { AccountService } from '@app/core/services/account.service';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { SignalRService, ConnectionContainer } from '@app/Services/signalr.service';
+import { SignalRService, ConnectionContainer } from '@app/core/services/signalr.service';
 import { TimeAgoPipe } from '@app/shared/pipes/time.pipe';
-import { ObjectId } from '@app/Models/ObjectId';
-import { UksfError } from '@app/Models/Response';
+import { ObjectId } from '@app/shared/models/ObjectId';
+import { UksfError } from '@app/shared/models/Response';
 
 @Component({
     selector: 'app-comment-display',

@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
-import { PermissionsService } from '@app/Services/permissions.service';
+import { PermissionsService } from '@app/core/services/permissions.service';
 
 export function passwordMatcher(form: AbstractControl) {
     if (!form.get('password').value || !form.get('confirmPass').value) {

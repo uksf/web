@@ -2,15 +2,15 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NgForm } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { InstantErrorStateMatcher } from '@app/Services/formhelper.service';
+import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { BehaviorSubject } from 'rxjs';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
-import { BasicAccount } from '@app/Models/Account';
-import { CommandRequest } from '@app/Models/CommandRequest';
-import { Role } from '@app/Models/Role';
-import { Unit } from '@app/Models/Units';
+import { BasicAccount } from '@app/shared/models/Account';
+import { CommandRequest } from '@app/features/command/models/CommandRequest';
+import { Role } from '@app/shared/models/Role';
+import { Unit } from '@app/features/units/models/Units';
 
 @Component({
     selector: 'app-request-chain-of-command-position-modal',

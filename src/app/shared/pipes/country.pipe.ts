@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { CountryPickerService } from '@app/Services/CountryPicker/country-picker.service';
+import { CountryPickerService } from '@app/shared/services/country-picker/country-picker.service';
 
 @Pipe({ name: 'countryName' })
 export class CountryName implements PipeTransform {

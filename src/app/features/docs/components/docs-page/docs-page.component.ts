@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
-import { DocumentMetadata, FolderMetadata } from '@app/Models/Documents';
+import { UrlService } from '@app/core/services/url.service';
+import { DocumentMetadata, FolderMetadata } from '@app/features/docs/models/Documents';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UksfError } from '@app/Models/Response';
+import { UksfError } from '@app/shared/models/Response';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 

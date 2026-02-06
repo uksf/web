@@ -4,9 +4,9 @@ import { Router } from '@angular/router';
 import { UrlService } from '../url.service';
 import { SessionService } from './session.service';
 import { AccountService } from '../account.service';
-import { UksfError } from '../../Models/Response';
+import { UksfError } from '@app/shared/models/Response';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { CreateAccount } from '../../Models/Account';
+import { CreateAccount } from '@app/shared/models/Account';
 
 export interface TokenResponse {
     token: string;

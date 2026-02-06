@@ -4,7 +4,7 @@ import { HomePageComponent } from './features/home/components/home-page/home-pag
 import { LoginPageComponent } from './features/auth/components/login-page/login-page.component';
 import { NgxPermissionsGuard } from 'ngx-permissions';
 import { HttpClient } from '@angular/common/http';
-import { Permissions } from './Services/permissions';
+import { Permissions } from '@app/core/services/permissions';
 
 const appRoutes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -84,17 +84,6 @@ const appRoutes: Routes = [
                 redirectTo: loginRedirect
             }
         }
-    },
-    {
-        path: 'live',
-        loadChildren: () => import('./features/live/live.module').then(m => m.LiveModule),
-        data: {
-            permissions: {
-                except: Permissions.UNLOGGED,
-                redirectTo: loginRedirect
-            }
-        },
-        canActivate: [NgxPermissionsGuard]
     },
     {
         path: 'command',

@@ -1,15 +1,15 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { AccountService } from './account.service';
-import { SessionService } from './Authentication/session.service';
+import { SessionService } from './authentication/session.service';
 import { Permissions } from './permissions';
 import { ConnectionContainer, SignalRService } from './signalr.service';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from './url.service';
-import { AuthenticationService } from './Authentication/authentication.service';
-import { Account, MembershipState } from '../Models/Account';
+import { AuthenticationService } from './authentication/authentication.service';
+import { Account, MembershipState } from '@app/shared/models/Account';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { AppSettingsService, Environments } from './appSettingsService.service';
+import { AppSettingsService, Environments } from './app-settings.service';
 
 @Injectable()
 export class PermissionsService {

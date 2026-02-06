@@ -1,15 +1,15 @@
 import { Component, isDevMode, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
-import { AccountService } from '@app/Services/account.service';
+import { UrlService } from '@app/core/services/url.service';
+import { AccountService } from '@app/core/services/account.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { BehaviorSubject } from 'rxjs';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
-import { BasicAccount } from '@app/Models/Account';
-import { PermissionsService } from '@app/Services/permissions.service';
-import { Permissions } from '@app/Services/permissions';
-import { AuthenticationService } from '@app/Services/Authentication/authentication.service';
+import { BasicAccount } from '@app/shared/models/Account';
+import { PermissionsService } from '@app/core/services/permissions.service';
+import { Permissions } from '@app/core/services/permissions';
+import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 

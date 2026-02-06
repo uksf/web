@@ -1,19 +1,19 @@
 import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject, Observable, of, timer } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { CountryPickerService, ICountry } from '@app/Services/CountryPicker/country-picker.service';
+import { CountryPickerService, ICountry } from '@app/shared/services/country-picker/country-picker.service';
 import { CountryImage } from '@app/shared/pipes/country.pipe';
-import { ConfirmValidParentMatcher, InstantErrorStateMatcher } from '@app/Services/formhelper.service';
-import { nameCase, titleCase } from '@app/Services/helper.service';
+import { ConfirmValidParentMatcher, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
+import { nameCase, titleCase } from '@app/shared/services/helper.service';
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
-import { CreateAccount } from '@app/Models/Account';
-import { AuthenticationService } from '@app/Services/Authentication/authentication.service';
-import { PermissionsService } from '@app/Services/permissions.service';
+import { CreateAccount } from '@app/shared/models/Account';
+import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
+import { PermissionsService } from '@app/core/services/permissions.service';
 
 function matchingPasswords(passwordKey: string, confirmPasswordKey: string) {
     return (group: UntypedFormGroup): { [key: string]: any } => {

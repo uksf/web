@@ -15,7 +15,7 @@ import {
 } from '@angular/forms';
 import { MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { DropdownBaseComponent, IDropdownElement } from '../dropdown-base/dropdown-base.component';
-import { any, nextFrame } from '@app/Services/helper.service';
+import { any, nextFrame } from '@app/shared/services/helper.service';
 import { ErrorStateMatcher } from '@angular/material/core';
 
 export class SelectionListErrorStateMatcher implements ErrorStateMatcher {

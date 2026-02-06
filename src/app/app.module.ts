@@ -18,8 +18,20 @@ import { CoreModule } from './core/core.module';
 import { HomeModule } from './features/home/home.module';
 import { AuthModule } from './features/auth/auth.module';
 
-// Services
-import { AuthenticationService } from './Services/Authentication/authentication.service';
+// Core Services
+import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
+import { UrlService } from '@app/core/services/url.service';
+import { AccountService } from '@app/core/services/account.service';
+import { PermissionsService } from '@app/core/services/permissions.service';
+import { SessionService } from '@app/core/services/authentication/session.service';
+import { AuthHttpInterceptor } from '@app/core/services/authentication/auth-http-interceptor';
+import { SignalRService } from '@app/core/services/signalr.service';
+import { SignalRHubsService } from '@app/core/services/signalr-hubs.service';
+import { AppSettingsService } from '@app/core/services/app-settings.service';
+
+// Shared Services
+import { CountryPickerService } from '@app/shared/services/country-picker/country-picker.service';
+import { DisplayNameService } from '@app/shared/services/display-name.service';
 
 // Components
 import { AppComponent } from './app.component';
@@ -58,23 +70,13 @@ import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MatMomentDateModule } from '@angular/material-moment-adapter';
 
-import { UrlService } from './Services/url.service';
-import { AccountService } from './Services/account.service';
-import { PermissionsService } from './Services/permissions.service';
-import { SessionService } from './Services/Authentication/session.service';
 import { UrlSerializer } from '@angular/router';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { AuthHttpInterceptor } from './Services/Authentication/auth-http-interceptor';
-import { CountryPickerService } from './Services/CountryPicker/country-picker.service';
-import { SignalRService } from './Services/signalr.service';
 import { ModpackBuildService } from './features/modpack/modpackBuild.service';
 import { ModpackRcService } from './features/modpack/modpackRc.service';
-import { DisplayNameService } from './Services/displayName.service';
 import { ModpackBuildProcessService } from './features/modpack/modpackBuildProcess.service';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { OrganizationChartModule } from 'primeng/organizationchart';
-import { AppSettingsService } from './Services/appSettingsService.service';
-import { SignalRHubsService } from './Services/signalrHubs.service';
 import { QuillModule } from 'ngx-quill';
 import { ModpackReleaseService } from './features/modpack/modpackRelease.service';
 import { DisplayName } from '@app/shared/pipes/displayName.pipe';

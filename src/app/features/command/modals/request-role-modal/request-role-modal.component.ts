@@ -2,14 +2,14 @@ import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { NgForm } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { BehaviorSubject } from 'rxjs';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
-import { Account, BasicAccount } from '@app/Models/Account';
-import { Role, RolesDataset } from '@app/Models/Role';
+import { Account, BasicAccount } from '@app/shared/models/Account';
+import { Role, RolesDataset } from '@app/shared/models/Role';
 import { SelectionListComponent } from '@app/shared/components/elements/selection-list/selection-list.component';
-import { RequestModalData } from '@app/Models/Shared';
-import { CommandRequest } from '@app/Models/CommandRequest';
+import { RequestModalData } from '@app/shared/models/Shared';
+import { CommandRequest } from '@app/features/command/models/CommandRequest';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 
 @Component({

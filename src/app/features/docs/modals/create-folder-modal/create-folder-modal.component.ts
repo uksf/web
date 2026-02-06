@@ -1,18 +1,18 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
-import { CreateFolderRequest, DocumentPermissions } from '@app/Models/Documents';
+import { CreateFolderRequest, DocumentPermissions } from '@app/features/docs/models/Documents';
 import { HttpClient } from '@angular/common/http';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { NgForm } from '@angular/forms';
-import { UrlService } from '@app/Services/url.service';
-import { InstantErrorStateMatcher } from '@app/Services/formhelper.service';
+import { UrlService } from '@app/core/services/url.service';
+import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
-import { Unit } from '@app/Models/Units';
-import { Rank } from '@app/Models/Rank';
-import { BasicAccount } from '@app/Models/Account';
+import { Unit } from '@app/features/units/models/Units';
+import { Rank } from '@app/shared/models/Rank';
+import { BasicAccount } from '@app/shared/models/Account';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { defaultHeaders } from '@app/Services/constants';
-import { AccountService } from '@app/Services/account.service';
+import { defaultHeaders } from '@app/shared/services/constants';
+import { AccountService } from '@app/core/services/account.service';
 
 @Component({
     selector: 'app-create-folder-modal',

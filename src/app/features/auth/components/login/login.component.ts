@@ -1,11 +1,11 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { AuthenticationService } from '@app/Services/Authentication/authentication.service';
+import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PermissionsService } from '@app/Services/permissions.service';
+import { PermissionsService } from '@app/core/services/permissions.service';
 import { LoginPageComponent } from '../login-page/login-page.component';
-import { InstantErrorStateMatcher } from '@app/Services/formhelper.service';
-import { UksfError } from '@app/Models/Response';
+import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
+import { UksfError } from '@app/shared/models/Response';
 
 @Component({
     selector: 'app-login',

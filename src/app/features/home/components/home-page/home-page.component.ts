@@ -1,9 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { HttpClient } from '@angular/common/http';
-import { ConnectionContainer, SignalRService } from '@app/Services/signalr.service';
+import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
 
 @Component({
     selector: 'app-home-page',

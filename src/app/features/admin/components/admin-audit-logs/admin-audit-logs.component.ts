@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
-import { SignalRService } from '@app/Services/signalr.service';
-import { AuditLog } from '@app/Models/Logging';
-import { PagedResult } from '@app/Models/PagedResult';
+import { SignalRService } from '@app/core/services/signalr.service';
+import { AuditLog } from '@app/features/admin/models/Logging';
+import { PagedResult } from '@app/shared/models/PagedResult';
 import { AdminLogsComponent } from '../admin-logs/admin-logs.component';
 import { Clipboard } from '@angular/cdk/clipboard';
 

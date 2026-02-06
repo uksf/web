@@ -1,20 +1,20 @@
 import { Component, HostListener, ViewChild } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommentDisplayComponent } from '@app/shared/components/comment-display/comment-display.component';
-import { AccountService } from '@app/Services/account.service';
+import { AccountService } from '@app/core/services/account.service';
 import { MatDialog } from '@angular/material/dialog';
-import { MembershipState } from '@app/Models/Account';
+import { MembershipState } from '@app/shared/models/Account';
 import { AsyncSubject } from 'rxjs';
-import { ApplicationState, DetailedApplication, Recruiter } from '@app/Models/Application';
-import { OnlineState } from '@app/Models/OnlineState';
+import { ApplicationState, DetailedApplication, Recruiter } from '@app/features/application/models/Application';
+import { OnlineState } from '@app/shared/models/OnlineState';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { CountryPickerService, ICountry } from '@app/Services/CountryPicker/country-picker.service';
-import { PermissionsService } from '@app/Services/permissions.service';
+import { CountryPickerService, ICountry } from '@app/shared/services/country-picker/country-picker.service';
+import { PermissionsService } from '@app/core/services/permissions.service';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
-import { Permissions } from '@app/Services/permissions';
+import { Permissions } from '@app/core/services/permissions';
 
 @Component({
     selector: 'app-recruitment-application-page',

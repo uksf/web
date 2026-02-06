@@ -1,9 +1,9 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PermissionsService } from '@app/Services/permissions.service';
-import { AuthenticationService } from '@app/Services/Authentication/authentication.service';
-import { InstantErrorStateMatcher } from '@app/Services/formhelper.service';
+import { PermissionsService } from '@app/core/services/permissions.service';
+import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
+import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 
 @Component({
     selector: 'app-password-reset',

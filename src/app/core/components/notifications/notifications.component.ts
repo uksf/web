@@ -3,9 +3,9 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Router, NavigationEnd } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
-import { SignalRService, ConnectionContainer } from '@app/Services/signalr.service';
-import { AccountService } from '@app/Services/account.service';
+import { UrlService } from '@app/core/services/url.service';
+import { SignalRService, ConnectionContainer } from '@app/core/services/signalr.service';
+import { AccountService } from '@app/core/services/account.service';
 
 @Component({
     selector: 'app-notifications',

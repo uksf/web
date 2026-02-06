@@ -1,12 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AddUnitModalComponent } from '@app/features/command/modals/add-unit-modal/add-unit-modal.component';
 import { ITreeOptions, KEYS, TREE_ACTIONS, TreeNode } from '@circlon/angular-tree-component';
-import { Permissions } from '@app/Services/permissions';
-import { PermissionsService } from '@app/Services/permissions.service';
-import { RequestUnitUpdateOrder, RequestUnitUpdateParent, ResponseUnit, UnitTreeDataSet } from '@app/Models/Units';
+import { Permissions } from '@app/core/services/permissions';
+import { PermissionsService } from '@app/core/services/permissions.service';
+import { RequestUnitUpdateOrder, RequestUnitUpdateParent, ResponseUnit, UnitTreeDataSet } from '@app/features/units/models/Units';
 
 @Component({
     selector: 'app-command-units',

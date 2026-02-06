@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { Observable, timer } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { Training } from '@app/Models/Training';
+import { Training } from '@app/features/command/models/Training';
 import { AddTrainingModalComponent } from '@app/features/command/modals/add-training-modal/add-training-modal.component';
 
 @Component({

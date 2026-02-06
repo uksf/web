@@ -1,9 +1,9 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { AccountService } from '@app/Services/account.service';
+import { AccountService } from '@app/core/services/account.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 

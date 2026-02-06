@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { InstantErrorStateMatcher } from '@app/Services/formhelper.service';
+import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { InstallWorkshopModData } from '../models/WorkshopMod';
 
 @Component({

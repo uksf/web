@@ -4,13 +4,13 @@ import { takeUntil } from 'rxjs/operators';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { HttpHeaders } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
-import { AccountService } from '@app/Services/account.service';
-import { SignalRService, ConnectionContainer } from '@app/Services/signalr.service';
-import { nextFrame } from '@app/Services/helper.service';
-import { UksfError } from '@app/Models/Response';
-import { TeamspeakConnectClient } from '@app/Models/TeamspeakConnectClient';
+import { AccountService } from '@app/core/services/account.service';
+import { SignalRService, ConnectionContainer } from '@app/core/services/signalr.service';
+import { nextFrame } from '@app/shared/services/helper.service';
+import { UksfError } from '@app/shared/models/Response';
+import { TeamspeakConnectClient } from '@app/shared/models/TeamspeakConnectClient';
 
 @Component({
     selector: 'app-teamspeak-connect',

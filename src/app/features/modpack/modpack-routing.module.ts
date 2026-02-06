@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { NgxPermissionsGuard } from 'ngx-permissions';
-import { Permissions } from '@app/Services/permissions';
+import { Permissions } from '@app/core/services/permissions';
 import { loginRedirect } from '@app/app-routing.module';
 
 import { ModpackGuideComponent } from './modpack-guide/modpack-guide.component';

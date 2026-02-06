@@ -1,4 +1,4 @@
-import { UnitBranch } from './Units';
+import { UnitBranch } from '@app/features/units/models/Units';
 
 export interface RequestModalData {
     ids: string[];

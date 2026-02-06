@@ -4,8 +4,8 @@ import { UrlService } from './url.service';
 import { ConnectTeamspeakModalComponent } from '@app/features/profile/modals/connect-teamspeak-modal/connect-teamspeak-modal.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
-import { SessionService } from './Authentication/session.service';
-import { Account, MembershipState } from '../Models/Account';
+import { SessionService } from './authentication/session.service';
+import { Account, MembershipState } from '@app/shared/models/Account';
 
 @Injectable()
 export class AccountService {

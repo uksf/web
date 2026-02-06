@@ -1,16 +1,16 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { Router } from '@angular/router';
-import { AccountService } from '@app/Services/account.service';
-import { AccountSettings, MembershipState } from '@app/Models/Account';
-import { ActiveApplication, ApplicationState, CompletedApplication, Recruiter } from '@app/Models/Application';
+import { AccountService } from '@app/core/services/account.service';
+import { AccountSettings, MembershipState } from '@app/shared/models/Account';
+import { ActiveApplication, ApplicationState, CompletedApplication, Recruiter } from '@app/features/application/models/Application';
 import { AsyncSubject, Subject } from 'rxjs';
-import { OnlineState } from '@app/Models/OnlineState';
-import { Dictionary } from '@app/Models/Dictionary';
+import { OnlineState } from '@app/shared/models/OnlineState';
+import { Dictionary } from '@app/shared/models/Dictionary';
 import { ThemeEmitterComponent } from '@app/shared/components/elements/theme-emitter/theme-emitter.component';
-import { buildQuery } from '@app/Services/helper.service';
-import { PagedResult } from '@app/Models/PagedResult';
+import { buildQuery } from '@app/shared/services/helper.service';
+import { PagedResult } from '@app/shared/models/PagedResult';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { PagedEvent } from '@app/shared/components/elements/paginator/paginator.component';
 

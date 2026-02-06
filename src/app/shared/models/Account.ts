@@ -1,9 +1,9 @@
-import { Application } from './Application';
+import { Application } from '@app/features/application/models/Application';
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { Rank } from './Rank';
 import { Role } from './Role';
-import { Unit } from './Units';
-import { Training } from './Training';
+import { Unit } from '@app/features/units/models/Units';
+import { Training } from '@app/features/command/models/Training';
 
 export enum MembershipState {
     UNCONFIRMED,

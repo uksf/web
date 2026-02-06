@@ -1,7 +1,7 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { UrlService } from './url.service';
 import { HubConnectionBuilder, HubConnectionState, HttpTransportType, LogLevel, HubConnection } from '@microsoft/signalr';
-import { SessionService } from './Authentication/session.service';
+import { SessionService } from './authentication/session.service';
 
 @Injectable()
 export class SignalRService {

@@ -1,14 +1,14 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatAccordion } from '@angular/material/expansion';
 import { Observable, timer, of } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 import { UntypedFormGroup, UntypedFormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { InstantErrorStateMatcher } from '@app/Services/formhelper.service';
+import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
-import { VariableItem } from '@app/Models/VariableItem';
+import { VariableItem } from '@app/features/admin/models/VariableItem';
 
 @Component({
     selector: 'app-admin-variables',

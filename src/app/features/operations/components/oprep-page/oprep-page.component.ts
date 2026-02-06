@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AuthenticationService } from '@app/Services/Authentication/authentication.service';
-import { UrlService } from '@app/Services/url.service';
+import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
+import { UrlService } from '@app/core/services/url.service';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({

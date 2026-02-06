@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
-import { AccountService } from '@app/Services/account.service';
-import { nameCase, titleCase } from '@app/Services/helper.service';
+import { UrlService } from '@app/core/services/url.service';
+import { AccountService } from '@app/core/services/account.service';
+import { nameCase, titleCase } from '@app/shared/services/helper.service';
 
 @Component({
     selector: 'app-change-first-last-modal',

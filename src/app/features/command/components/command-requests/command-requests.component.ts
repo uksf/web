@@ -1,18 +1,18 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { RequestRankModalComponent } from '@app/features/command/modals/request-rank-modal/request-rank-modal.component';
 import { RequestTransferModalComponent } from '@app/features/command/modals/request-transfer-modal/request-transfer-modal.component';
 import { RequestRoleModalComponent } from '@app/features/command/modals/request-role-modal/request-role-modal.component';
 import { RequestChainOfCommandPositionModalComponent } from '@app/features/command/modals/request-chain-of-command-position-modal/request-chain-of-command-position-modal.component';
 import { RequestDischargeModalComponent } from '@app/features/command/modals/request-discharge-modal/request-discharge-modal.component';
 import { RequestUnitRemovalModalComponent } from '@app/features/command/modals/request-unit-removal-modal/request-unit-removal-modal.component';
-import { ConnectionContainer, SignalRService } from '@app/Services/signalr.service';
-import { AccountService } from '@app/Services/account.service';
+import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
+import { AccountService } from '@app/core/services/account.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { RequestModalData } from '@app/Models/Shared';
-import { UnitBranch } from '@app/Models/Units';
+import { RequestModalData } from '@app/shared/models/Shared';
+import { UnitBranch } from '@app/features/units/models/Units';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 

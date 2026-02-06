@@ -1,13 +1,13 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { DocumentMetadata, FolderMetadata } from '@app/Models/Documents';
-import { folderAnimations } from '@app/Services/animations.service';
+import { DocumentMetadata, FolderMetadata } from '@app/features/docs/models/Documents';
+import { folderAnimations } from '@app/shared/services/animations.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateDocumentModalComponent, DocumentModalData } from '../../../modals/create-document-modal/create-document-modal.component';
 import { ConfirmationModalComponent, ConfirmationModalData } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { CreateFolderModalComponent, FolderModalData } from '../../../modals/create-folder-modal/create-folder-modal.component';
-import { UksfError } from '@app/Models/Response';
+import { UksfError } from '@app/shared/models/Response';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 
 @Component({

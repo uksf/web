@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/Services/url.service';
+import { UrlService } from '@app/core/services/url.service';
 import { AbstractControl, AsyncValidatorFn, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Observable, of, timer } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
-import { InstantErrorStateMatcher } from '@app/Services/formhelper.service';
+import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 
