@@ -7,10 +7,10 @@ import { MessageModalComponent } from '@app/shared/modals/message-modal/message-
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { BehaviorSubject } from 'rxjs';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
-import { BasicAccount } from '@app/shared/models/Account';
-import { CommandRequest } from '@app/features/command/models/CommandRequest';
-import { Role } from '@app/shared/models/Role';
-import { Unit } from '@app/features/units/models/Units';
+import { BasicAccount } from '@app/shared/models/account';
+import { CommandRequest } from '@app/features/command/models/command-request';
+import { Role } from '@app/shared/models/role';
+import { Unit } from '@app/features/units/models/units';
 
 @Component({
     selector: 'app-request-chain-of-command-position-modal',

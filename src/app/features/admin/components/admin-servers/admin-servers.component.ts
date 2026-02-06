@@ -2,9 +2,9 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
-import type { ServerInfrastructureCurrent, ServerInfrastructureInstalled, ServerInfrastructureLatest, ServerInfrastructureUpdate } from '@app/shared/models/ServerInfrastructure';
+import type { ServerInfrastructureCurrent, ServerInfrastructureInstalled, ServerInfrastructureLatest, ServerInfrastructureUpdate } from '@app/shared/models/server-infrastructure';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { UksfError } from '@app/shared/models/Response';
+import { UksfError } from '@app/shared/models/response';
 
 @Component({
     selector: 'app-admin-servers',

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
 import { UrlService } from '@app/core/services/url.service';
 import { Router } from '@angular/router';
-import { ResponseUnitChartNode } from '@app/features/units/models/Units';
+import { ResponseUnitChartNode } from '@app/features/units/models/units';
 import { TreeNode } from 'primeng/api';
 
 @Component({

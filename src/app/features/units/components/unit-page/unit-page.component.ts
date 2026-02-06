@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { ResponseUnit } from '@app/features/units/models/Units';
+import { ResponseUnit } from '@app/features/units/models/units';
 
 @Component({
     selector: 'app-unit-page',

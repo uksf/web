@@ -5,4 +5,4 @@
 // export * from './displayName.pipe';
 // export * from './time.pipe';
 // export * from './country.pipe';
-// export * from './AnsiToHtml.pipe';
+// export * from './ansi-to-html.pipe';

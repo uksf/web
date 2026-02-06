@@ -5,11 +5,11 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { BehaviorSubject } from 'rxjs';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
-import { BasicAccount } from '@app/shared/models/Account';
-import { Rank } from '@app/shared/models/Rank';
+import { BasicAccount } from '@app/shared/models/account';
+import { Rank } from '@app/shared/models/rank';
 import { SelectionListComponent } from '@app/shared/components/elements/selection-list/selection-list.component';
-import { RequestModalData } from '@app/shared/models/Shared';
-import { CommandRequest } from '@app/features/command/models/CommandRequest';
+import { RequestModalData } from '@app/shared/models/shared';
+import { CommandRequest } from '@app/features/command/models/command-request';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 
 @Component({

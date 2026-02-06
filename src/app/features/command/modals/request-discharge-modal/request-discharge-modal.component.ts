@@ -5,8 +5,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
-import { BasicAccount } from '@app/shared/models/Account';
-import { CommandRequest } from '@app/features/command/models/CommandRequest';
+import { BasicAccount } from '@app/shared/models/account';
+import { CommandRequest } from '@app/features/command/models/command-request';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { BehaviorSubject } from 'rxjs';
 

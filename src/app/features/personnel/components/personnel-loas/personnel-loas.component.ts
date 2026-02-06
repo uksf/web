@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { RequestLoaModalComponent } from '@app/shared/modals/request-loa-modal/request-loa-modal.component';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { formatDate } from '@angular/common';
-import { Loa } from '@app/features/command/models/Loa';
+import { Loa } from '@app/features/command/models/loa';
 import { PersonnelLoasListComponent } from '../personnel-loas-list/personnel-loas-list.component';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';

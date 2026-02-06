@@ -1,3 +1,3 @@
-export * from './CommandRequest';
-export * from './Loa';
-export * from './Training';
+export * from './command-request';
+export * from './loa';
+export * from './training';

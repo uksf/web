@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { NewBuild } from '../models/NewBuild';
+import { NewBuild } from '../models/new-build';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 
 function onlyOne(form: UntypedFormGroup): ValidationErrors | null {

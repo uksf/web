@@ -5,7 +5,7 @@ import { ConnectTeamspeakModalComponent } from '@app/features/profile/modals/con
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { SessionService } from './authentication/session.service';
-import { Account, MembershipState } from '@app/shared/models/Account';
+import { Account, MembershipState } from '@app/shared/models/account';
 
 @Injectable()
 export class AccountService {

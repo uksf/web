@@ -8,7 +8,7 @@ import { switchMap, map } from 'rxjs/operators';
 import { UntypedFormGroup, UntypedFormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
-import { VariableItem } from '@app/features/admin/models/VariableItem';
+import { VariableItem } from '@app/features/admin/models/variable-item';
 
 @Component({
     selector: 'app-admin-variables',

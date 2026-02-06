@@ -1,5 +1,5 @@
-import { ModpackBuildResult } from './ModpackBuildResult';
-import { ModpackBuildStepLogItem } from './ModpackBuildStepLogItem';
+import { ModpackBuildResult } from './modpack-build-result';
+import { ModpackBuildStepLogItem } from './modpack-build-step-log-item';
 
 export interface ModpackBuildStep {
     index: number;

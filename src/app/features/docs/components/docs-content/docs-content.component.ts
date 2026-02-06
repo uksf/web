@@ -1,10 +1,10 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { DocumentContent, DocumentMetadata, UpdateDocumentContentRequest } from '@app/features/docs/models/Documents';
+import { DocumentContent, DocumentMetadata, UpdateDocumentContentRequest } from '@app/features/docs/models/documents';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { MatDialog } from '@angular/material/dialog';
-import { UksfError } from '@app/shared/models/Response';
+import { UksfError } from '@app/shared/models/response';
 
 @Component({
     selector: 'app-docs-content',

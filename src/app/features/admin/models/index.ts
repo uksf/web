@@ -1,2 +1,2 @@
-export * from './Logging';
-export * from './VariableItem';
+export * from './logging';
+export * from './variable-item';

@@ -2,12 +2,12 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MarkdownService } from 'ngx-markdown';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ThemeEmitterComponent } from '@app/shared/components/elements/theme-emitter/theme-emitter.component';
-import { ModpackBuildResult } from '../models/ModpackBuildResult';
-import { GameEnvironment } from '@app/shared/models/GameEnvironment';
+import { ModpackBuildResult } from '../models/modpack-build-result';
+import { GameEnvironment } from '@app/shared/models/game-environment';
 import { ModpackBuildProcessService } from '../modpackBuildProcess.service';
 import { ModpackRcService } from '../modpackRc.service';
-import { ModpackRc } from '../models/ModpackRc';
-import { ModpackBuild } from '../models/ModpackBuild';
+import { ModpackRc } from '../models/modpack-rc';
+import { ModpackBuild } from '../models/modpack-build';
 
 @Component({
     selector: 'app-modpack-builds-rc',

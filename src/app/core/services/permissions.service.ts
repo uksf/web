@@ -7,7 +7,7 @@ import { ConnectionContainer, SignalRService } from './signalr.service';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from './url.service';
 import { AuthenticationService } from './authentication/authentication.service';
-import { Account, MembershipState } from '@app/shared/models/Account';
+import { Account, MembershipState } from '@app/shared/models/account';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { AppSettingsService, Environments } from './app-settings.service';
 

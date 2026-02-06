@@ -7,9 +7,9 @@ import { MessageModalComponent } from '@app/shared/modals/message-modal/message-
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { BehaviorSubject, forkJoin } from 'rxjs';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
-import { BasicAccount } from '@app/shared/models/Account';
-import { Unit } from '@app/features/units/models/Units';
-import { CommandRequest } from '@app/features/command/models/CommandRequest';
+import { BasicAccount } from '@app/shared/models/account';
+import { Unit } from '@app/features/units/models/units';
+import { CommandRequest } from '@app/features/command/models/command-request';
 
 @Component({
     selector: 'app-request-unit-removal-modal',

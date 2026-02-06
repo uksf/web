@@ -7,8 +7,8 @@ import { UrlService } from '@app/core/services/url.service';
 import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { SignalRService, ConnectionContainer } from '@app/core/services/signalr.service';
 import { TimeAgoPipe } from '@app/shared/pipes/time.pipe';
-import { ObjectId } from '@app/shared/models/ObjectId';
-import { UksfError } from '@app/shared/models/Response';
+import { ObjectId } from '@app/shared/models/object-id';
+import { UksfError } from '@app/shared/models/response';
 
 @Component({
     selector: 'app-comment-display',

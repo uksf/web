@@ -6,7 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { BehaviorSubject } from 'rxjs';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
-import { BasicAccount } from '@app/shared/models/Account';
+import { BasicAccount } from '@app/shared/models/account';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { Permissions } from '@app/core/services/permissions';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';

@@ -11,7 +11,7 @@ import { CountryImage } from '@app/shared/pipes/country.pipe';
 import { ConfirmValidParentMatcher, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { nameCase, titleCase } from '@app/shared/services/helper.service';
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
-import { CreateAccount } from '@app/shared/models/Account';
+import { CreateAccount } from '@app/shared/models/account';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
 import { PermissionsService } from '@app/core/services/permissions.service';
 

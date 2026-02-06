@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
-import { EditMemberTrainingModalData, EditTrainingItem, Training } from '@app/features/command/models/Training';
+import { EditMemberTrainingModalData, EditTrainingItem, Training } from '@app/features/command/models/training';
 
 @Component({
     selector: 'app-edit-member-training-modal',

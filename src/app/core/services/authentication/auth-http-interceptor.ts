@@ -5,7 +5,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PermissionsService } from '../permissions.service';
-import { ErrorResponse } from '@app/shared/models/Response';
+import { ErrorResponse } from '@app/shared/models/response';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 

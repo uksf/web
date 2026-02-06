@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { Permissions } from '@app/core/services/permissions';
-import { ApplicationState } from '@app/features/application/models/Application';
+import { ApplicationState } from '@app/features/application/models/application';
 
 export class InstantErrorStateMatcher implements ErrorStateMatcher {
     isErrorState(control: UntypedFormControl | null, form: FormGroupDirective | NgForm | null): boolean {

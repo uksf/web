@@ -3,11 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { BehaviorSubject, forkJoin } from 'rxjs';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
-import { Rank } from '@app/shared/models/Rank';
-import { Unit } from '@app/features/units/models/Units';
-import { BasicAccount } from '@app/shared/models/Account';
+import { Rank } from '@app/shared/models/rank';
+import { Unit } from '@app/features/units/models/units';
+import { BasicAccount } from '@app/shared/models/account';
 import { ControlContainer, ControlValueAccessor, NG_VALUE_ACCESSOR, NgForm, UntypedFormGroup } from '@angular/forms';
-import { DocumentPermission } from '@app/features/docs/models/Documents';
+import { DocumentPermission } from '@app/features/docs/models/documents';
 import { MatExpansionPanel } from '@angular/material/expansion';
 
 export type PermissionsType = 'viewers' | 'collaborators';

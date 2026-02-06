@@ -1,4 +1,4 @@
-import { Account } from '@app/shared/models/Account';
+import { Account } from '@app/shared/models/account';
 
 export enum ApplicationState {
     ACCEPTED,

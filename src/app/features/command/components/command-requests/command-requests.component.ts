@@ -11,8 +11,8 @@ import { RequestUnitRemovalModalComponent } from '@app/features/command/modals/r
 import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
 import { AccountService } from '@app/core/services/account.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { RequestModalData } from '@app/shared/models/Shared';
-import { UnitBranch } from '@app/features/units/models/Units';
+import { RequestModalData } from '@app/shared/models/shared';
+import { UnitBranch } from '@app/features/units/models/units';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 

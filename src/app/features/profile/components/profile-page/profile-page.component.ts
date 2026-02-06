@@ -14,7 +14,7 @@ import { MessageModalComponent } from '@app/shared/modals/message-modal/message-
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { Subscription } from 'rxjs';
 import { PermissionsService } from '@app/core/services/permissions.service';
-import { MembershipState } from '@app/shared/models/Account';
+import { MembershipState } from '@app/shared/models/account';
 
 @Component({
     selector: 'app-profile-page',

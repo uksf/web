@@ -9,8 +9,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { AccountService } from '@app/core/services/account.service';
 import { SignalRService, ConnectionContainer } from '@app/core/services/signalr.service';
 import { nextFrame } from '@app/shared/services/helper.service';
-import { UksfError } from '@app/shared/models/Response';
-import { TeamspeakConnectClient } from '@app/shared/models/TeamspeakConnectClient';
+import { UksfError } from '@app/shared/models/response';
+import { TeamspeakConnectClient } from '@app/shared/models/teamspeak-connect-client';
 
 @Component({
     selector: 'app-teamspeak-connect',

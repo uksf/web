@@ -4,7 +4,7 @@ import { PermissionsService } from '@app/core/services/permissions.service';
 import { Permissions } from '@app/core/services/permissions';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModpackReleaseService } from '../modpackRelease.service';
-import { ModpackRelease } from '../models/ModpackRelease';
+import { ModpackRelease } from '../models/modpack-release';
 
 @Component({
     selector: 'app-modpack-releases',

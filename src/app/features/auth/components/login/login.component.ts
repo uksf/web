@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { LoginPageComponent } from '../login-page/login-page.component';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
-import { UksfError } from '@app/shared/models/Response';
+import { UksfError } from '@app/shared/models/response';
 
 @Component({
     selector: 'app-login',

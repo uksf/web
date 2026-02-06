@@ -13,9 +13,9 @@ import { takeUntil } from 'rxjs/operators';
 import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
 import { Permissions } from '@app/core/services/permissions';
 import { PermissionsService } from '@app/core/services/permissions.service';
-import { UksfError } from '@app/shared/models/Response';
+import { UksfError } from '@app/shared/models/response';
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
-import { OrderUpdateRequest } from '@app/shared/models/OrderUpdateRequest';
+import { OrderUpdateRequest } from '@app/shared/models/order-update-request';
 
 @Component({
     selector: 'app-operations-servers',

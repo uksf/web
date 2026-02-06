@@ -6,7 +6,7 @@ import { AddUnitModalComponent } from '@app/features/command/modals/add-unit-mod
 import { ITreeOptions, KEYS, TREE_ACTIONS, TreeNode } from '@circlon/angular-tree-component';
 import { Permissions } from '@app/core/services/permissions';
 import { PermissionsService } from '@app/core/services/permissions.service';
-import { RequestUnitUpdateOrder, RequestUnitUpdateParent, ResponseUnit, UnitTreeDataSet } from '@app/features/units/models/Units';
+import { RequestUnitUpdateOrder, RequestUnitUpdateParent, ResponseUnit, UnitTreeDataSet } from '@app/features/units/models/units';
 
 @Component({
     selector: 'app-command-units',

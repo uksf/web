@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { DocumentMetadata, FolderMetadata } from '@app/features/docs/models/Documents';
+import { DocumentMetadata, FolderMetadata } from '@app/features/docs/models/documents';
 import { folderAnimations } from '@app/shared/services/animations.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateDocumentModalComponent, DocumentModalData } from '../../../modals/create-document-modal/create-document-modal.component';
@@ -7,7 +7,7 @@ import { ConfirmationModalComponent, ConfirmationModalData } from '@app/shared/m
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UksfError } from '@app/shared/models/Response';
+import { UksfError } from '@app/shared/models/response';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 
 @Component({

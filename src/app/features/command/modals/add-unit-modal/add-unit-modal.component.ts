@@ -6,7 +6,7 @@ import { map, switchMap } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
-import { ResponseUnit, UnitBranch } from '@app/features/units/models/Units';
+import { ResponseUnit, UnitBranch } from '@app/features/units/models/units';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 
 @Component({

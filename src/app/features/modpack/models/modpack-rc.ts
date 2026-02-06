@@ -1,4 +1,4 @@
-import { ModpackBuild } from './ModpackBuild';
+import { ModpackBuild } from './modpack-build';
 
 export interface ModpackRc {
     version: string;

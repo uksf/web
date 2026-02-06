@@ -3,10 +3,10 @@ import { MarkdownService } from 'ngx-markdown';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { ThemeEmitterComponent } from '@app/shared/components/elements/theme-emitter/theme-emitter.component';
-import { ModpackBuildResult } from '../models/ModpackBuildResult';
+import { ModpackBuildResult } from '../models/modpack-build-result';
 import { ModpackBuildService } from '../modpackBuild.service';
 import { ModpackBuildProcessService } from '../modpackBuildProcess.service';
-import { ModpackBuild } from '../models/ModpackBuild';
+import { ModpackBuild } from '../models/modpack-build';
 
 @Component({
     selector: 'app-modpack-builds-dev',

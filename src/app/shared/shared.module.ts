@@ -61,7 +61,7 @@ import { RequestLoaModalComponent } from './modals/request-loa-modal/request-loa
 // Shared Pipes
 import { CountryImage, CountryName } from './pipes/country.pipe';
 import { ZonedTime, TimeAgoPipe } from './pipes/time.pipe';
-import { AnsiToHtmlPipe } from './pipes/AnsiToHtml.pipe';
+import { AnsiToHtmlPipe } from './pipes/ansi-to-html.pipe';
 
 // Shared Directives
 import { MustSelectFromDropdownValidatorDirective } from './directives/dropdown-validator.directive';

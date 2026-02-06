@@ -4,13 +4,13 @@ import { PermissionsService } from '@app/core/services/permissions.service';
 import { PagedEvent, PaginatorComponent } from '@app/shared/components/elements/paginator/paginator.component';
 import { buildQuery } from '@app/shared/services/helper.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { PagedResult } from '@app/shared/models/PagedResult';
+import { PagedResult } from '@app/shared/models/paged-result';
 import { UrlService } from '@app/core/services/url.service';
-import { Loa, LoaReviewState } from '@app/features/command/models/Loa';
+import { Loa, LoaReviewState } from '@app/features/command/models/loa';
 import { expansionAnimations } from '@app/shared/services/animations.service';
 import { DateMode, DateModeItem, ViewMode, ViewModeItem } from '../personnel-loas/personnel-loas.component';
 import { Moment } from 'moment/moment';
-import { UksfError } from '@app/shared/models/Response';
+import { UksfError } from '@app/shared/models/response';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 

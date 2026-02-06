@@ -1,6 +1,6 @@
 import { Component, Inject, Renderer2, ViewChild, ElementRef } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { ValidationReport } from '@app/shared/models/Response';
+import { ValidationReport } from '@app/shared/models/response';
 
 @Component({
     selector: 'app-validation-report-modal',

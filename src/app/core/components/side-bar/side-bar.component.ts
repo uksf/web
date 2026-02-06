@@ -8,7 +8,7 @@ import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { AppComponent } from '@app/app.component';
 import { PermissionsService } from '@app/core/services/permissions.service';
-import { ApplicationState } from '@app/features/application/models/Application';
+import { ApplicationState } from '@app/features/application/models/application';
 
 @Component({
     selector: 'app-side-bar',
