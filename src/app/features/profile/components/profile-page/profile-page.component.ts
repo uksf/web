@@ -205,8 +205,10 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
             });
         } else {
             if (forceRefresh) {
-                this.accountService.getAccount((account) => {
-                    this.setAccount(account);
+                this.accountService.getAccount()?.pipe(takeUntil(this.destroy$)).subscribe({
+                    next: (account) => {
+                        this.setAccount(account);
+                    }
                 });
             } else {
                 this.setAccount(this.accountService.account);
@@ -222,8 +224,8 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
             this.accountSubscription.unsubscribe();
         }
 
-        this.accountSubscription = this.accountService.accountChange.subscribe({
-            next: (newAccount: any) => {
+        this.accountSubscription = this.accountService.accountChange$.subscribe({
+            next: (newAccount) => {
                 this.account = newAccount;
                 this.populateSettings();
             }

@@ -1,13 +1,14 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { HttpBackend, HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { LoggingService } from './logging.service';
 
 @Injectable()
 export class AppSettingsService {
     private httpClient: HttpClient;
     private appSettings: any;
 
-    constructor(handler: HttpBackend) {
+    constructor(handler: HttpBackend, private injector: Injector) {
         this.httpClient = new HttpClient(handler);
     }
 
@@ -21,7 +22,7 @@ export class AppSettingsService {
             this.appSettings = settings;
 
             if (this.appSetting('environment') === Environments.Development) {
-                console.log(this.appSettings);
+                this.injector.get(LoggingService).debug('AppSettings', this.appSettings);
             }
         });
     }

@@ -221,21 +221,20 @@ export class ApplicationIdentityComponent implements OnInit {
             nation: formObj.nation.value
         };
 
-        this.authenticationService.createAccount(
-            body,
-            () => {
+        this.authenticationService.createAccount(body).subscribe({
+            next: () => {
                 this.permissionsService.refresh().then(() => {
                     this.pending = false;
                     this.nextEvent.emit();
                 });
             },
-            (error) => {
+            error: (error: any) => {
                 this.dialog.open(MessageModalComponent, {
-                    data: { message: error }
+                    data: { message: error?.error || 'Account creation failed' }
                 });
                 this.pending = false;
             }
-        );
+        });
     }
 
     previous() {

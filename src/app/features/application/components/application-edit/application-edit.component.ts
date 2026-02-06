@@ -131,8 +131,10 @@ export class ApplicationEditComponent implements OnDestroy {
             .subscribe({
                 next: () => {
                     this.pending = false;
-                    this.accountService.getAccount(() => {
-                        this.updateOriginal();
+                    this.accountService.getAccount()?.pipe(takeUntil(this.destroy$)).subscribe({
+                        next: () => {
+                            this.updateOriginal();
+                        }
                     });
                     this.dialog.open(MessageModalComponent, {
                         data: { message: 'Your application was successfully updated' }

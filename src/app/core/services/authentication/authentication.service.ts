@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { Observable, tap } from 'rxjs';
 import { UrlService } from '../url.service';
 import { SessionService } from './session.service';
 import { AccountService } from '../account.service';
-import { UksfError } from '@app/shared/models/response';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { CreateAccount } from '@app/shared/models/account';
 
@@ -25,24 +25,16 @@ export class AuthenticationService {
         private jwtHelperService: JwtHelperService
     ) {}
 
-    public login(email: string, password: string, stayLogged: boolean, callback: (error?: UksfError) => void = null) {
-        let body = { email: email, password: password };
-
-        this.httpClient.post(`${this.urls.apiUrl}/auth/login`, body).subscribe({
-            next: (response: TokenResponse) => {
+    public login(email: string, password: string, stayLogged: boolean): Observable<TokenResponse> {
+        const body = { email, password };
+        return this.httpClient.post<TokenResponse>(`${this.urls.apiUrl}/auth/login`, body).pipe(
+            tap((response) => {
                 this.sessionService.setSessionToken(response.token);
                 if (stayLogged) {
                     this.sessionService.setStorageToken();
                 }
-                callback();
-            },
-            error: (error: UksfError) => {
-                console.log(error.error);
-                if (callback) {
-                    callback(error);
-                }
-            }
-        });
+            })
+        );
     }
 
     public logout(redirectUrl?: string) {
@@ -59,85 +51,55 @@ export class AuthenticationService {
         }
     }
 
-    public requestPasswordReset(email: string, callback: (error?: UksfError) => void = null) {
-        let body = { email: email };
-
-        this.httpClient.post(`${this.urls.apiUrl}/auth/passwordReset`, body).subscribe({
-            next: () => {
-                callback();
-            },
-            error: (error: UksfError) => {
-                console.log(error.error);
-                if (callback) {
-                    callback(error);
-                }
-            }
-        });
+    public requestPasswordReset(email: string): Observable<void> {
+        const body = { email };
+        return this.httpClient.post<void>(`${this.urls.apiUrl}/auth/passwordReset`, body);
     }
 
-    public passwordReset(email: string, password: string, resetPasswordCode: string, stayLogged: boolean, callback: (error?: UksfError) => void = null) {
-        let body = { email: email, password: password };
-
-        this.httpClient.post(`${this.urls.apiUrl}/auth/passwordReset/${resetPasswordCode}`, body).subscribe({
-            next: (response: TokenResponse) => {
+    public passwordReset(email: string, password: string, resetPasswordCode: string, stayLogged: boolean): Observable<TokenResponse> {
+        const body = { email, password };
+        return this.httpClient.post<TokenResponse>(`${this.urls.apiUrl}/auth/passwordReset/${resetPasswordCode}`, body).pipe(
+            tap((response) => {
                 this.sessionService.setSessionToken(response.token);
                 if (stayLogged) {
                     this.sessionService.setStorageToken();
                 }
-                callback();
-            },
-            error: (error: UksfError) => {
-                console.log(error.error);
-                if (callback) {
-                    callback(error);
-                }
-            }
-        });
+            })
+        );
     }
 
-    public refresh(callback: () => void, errorCallback: (error: string) => void) {
-        this.httpClient.get(`${this.urls.apiUrl}/auth/refresh`).subscribe({
-            next: (response: TokenResponse) => {
+    public refresh(): Observable<TokenResponse> {
+        return this.httpClient.get<TokenResponse>(`${this.urls.apiUrl}/auth/refresh`).pipe(
+            tap((response) => {
                 this.sessionService.setSessionToken(response.token);
                 this.sessionService.setStorageToken();
-                callback();
-            },
-            error: (error: UksfError) => {
-                errorCallback(error.error);
-            }
-        });
+            })
+        );
     }
 
-    public createAccount(createAccountBody: CreateAccount, success: () => void, error: (errorMessage: string) => void) {
-        this.httpClient.post(this.urls.apiUrl + '/accounts/create', createAccountBody, { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }).subscribe({
-            next: (response: TokenResponse) => {
+    public createAccount(createAccountBody: CreateAccount): Observable<TokenResponse> {
+        return this.httpClient.post<TokenResponse>(this.urls.apiUrl + '/accounts/create', createAccountBody, {
+            headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+            tap((response) => {
                 this.sessionService.setSessionToken(response.token);
                 this.sessionService.setStorageToken();
-                success();
-            },
-            error: (errorValue: UksfError) => {
-                error(errorValue.error);
-            }
-        });
+            })
+        );
     }
 
-    public impersonate(accountId: string, callback: () => void, errorCallback: (error: string) => void) {
-        this.httpClient.get(`${this.urls.apiUrl}/auth/impersonate?accountId=${accountId}`).subscribe({
-            next: (impersonatedToken: TokenResponse) => {
-                this.sessionService.setSessionToken(impersonatedToken.token);
+    public impersonate(accountId: string): Observable<TokenResponse> {
+        return this.httpClient.get<TokenResponse>(`${this.urls.apiUrl}/auth/impersonate?accountId=${accountId}`).pipe(
+            tap((response) => {
+                this.sessionService.setSessionToken(response.token);
                 this.sessionService.setStorageToken();
-                callback();
-            },
-            error: (error: UksfError) => {
-                errorCallback(error.error);
-            }
-        });
+            })
+        );
     }
 
     public isImpersonated() {
-        let jwtData = this.jwtHelperService.decodeToken(this.sessionService.getSessionToken());
-        let impersonatingUserId: string = jwtData[this.impersonatingUserIdClaimKey];
-
+        const jwtData = this.jwtHelperService.decodeToken(this.sessionService.getSessionToken());
+        const impersonatingUserId: string = jwtData[this.impersonatingUserIdClaimKey];
         return !!impersonatingUserId;
     }
 

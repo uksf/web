@@ -54,17 +54,15 @@ export class LoginComponent implements OnInit {
 
         this.pending = true;
         this.loginError = '';
-        this.auth.login(this.model.email, this.model.password, this.stayLogged, (error?: UksfError) => {
-            if (!error) {
+        this.auth.login(this.model.email, this.model.password, this.stayLogged).subscribe({
+            next: () => {
                 this.permissionsService.refresh().then(() => {
                     this.router.navigate([this.redirect]).then();
                 });
-            } else if (error.error) {
+            },
+            error: (error: UksfError) => {
                 this.pending = false;
-                this.loginError = error.error;
-            } else {
-                this.pending = false;
-                this.loginError = 'Login failed';
+                this.loginError = error?.error || 'Login failed';
             }
         });
     }

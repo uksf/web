@@ -50,17 +50,15 @@ export class PasswordResetComponent implements OnInit {
         }
 
         this.pending = true;
-        this.auth.passwordReset(this.model.email, this.model.password, this.resetPasswordCode, this.stayLogged, (error?: any) => {
-            if (!error) {
+        this.auth.passwordReset(this.model.email, this.model.password, this.resetPasswordCode, this.stayLogged).subscribe({
+            next: () => {
                 this.permissionsService.refresh().then(() => {
                     this.router.navigate(['/home']).then();
                 });
-            } else if (error.message) {
+            },
+            error: (error: any) => {
                 this.pending = false;
-                this.loginError = error.message;
-            } else {
-                this.pending = false;
-                this.loginError = 'Login failed';
+                this.loginError = error?.message || 'Login failed';
             }
         });
     }

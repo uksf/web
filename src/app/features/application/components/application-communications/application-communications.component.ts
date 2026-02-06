@@ -129,15 +129,17 @@ export class ApplicationCommunicationsComponent implements OnInit, OnDestroy {
         }
 
         if (this.accountService.account) {
-            this.accountService.getAccount(() => {
-                if (!this.accountService.account.teamspeakIdentities || this.accountService.account.teamspeakIdentities.length === 0) {
-                    this.mode = 'teamspeak';
-                } else if (!this.accountService.account.steamname) {
-                    this.mode = 'steam';
-                } else if (!this.accountService.account.discordId) {
-                    this.mode = 'discord';
-                } else {
-                    this.next();
+            this.accountService.getAccount()?.pipe(takeUntil(this.destroy$)).subscribe({
+                next: () => {
+                    if (!this.accountService.account.teamspeakIdentities || this.accountService.account.teamspeakIdentities.length === 0) {
+                        this.mode = 'teamspeak';
+                    } else if (!this.accountService.account.steamname) {
+                        this.mode = 'steam';
+                    } else if (!this.accountService.account.discordId) {
+                        this.mode = 'discord';
+                    } else {
+                        this.next();
+                    }
                 }
             });
         } else {

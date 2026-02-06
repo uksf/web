@@ -102,8 +102,10 @@ export class ApplicationPageComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: () => {
-                    this.accountService.getAccount(() => {
-                        this.next(null);
+                    this.accountService.getAccount()?.pipe(takeUntil(this.destroy$)).subscribe({
+                        next: () => {
+                            this.next(null);
+                        }
                     });
                 },
                 error: (error) => {

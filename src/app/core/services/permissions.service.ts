@@ -10,6 +10,7 @@ import { AuthenticationService } from './authentication/authentication.service';
 import { Account, MembershipState } from '@app/shared/models/account';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { AppSettingsService, Environments } from './app-settings.service';
+import { LoggingService } from './logging.service';
 
 @Injectable()
 export class PermissionsService {
@@ -28,11 +29,13 @@ export class PermissionsService {
         private urls: UrlService,
         private authenticationService: AuthenticationService,
         private jwtHelperService: JwtHelperService,
-        private appSettings: AppSettingsService
+        private appSettings: AppSettingsService,
+        private logger: LoggingService
     ) {}
 
     connect() {
         if (this.accountHubConnection !== undefined) {
+            this.accountHubConnection.dispose();
             this.accountHubConnection.connection.stop().then();
         }
 
@@ -85,24 +88,24 @@ export class PermissionsService {
             const promise = new Promise((resolve, reject) => {
                 if (this.sessionService.hasStorageToken()) {
                     this.sessionService.setSessionToken();
-                    this.authenticationService.refresh(
-                        () => {
+                    this.authenticationService.refresh().subscribe({
+                        next: () => {
                             // logged in
-                            this.accountService.getAccount(
-                                (account) => {
+                            this.accountService.getAccount()?.subscribe({
+                                next: (account) => {
                                     this.setPermissions(account);
                                     this.connect();
                                     resolve(null);
                                 },
-                                () => {
+                                error: () => {
                                     reject('Token invalid, resetting');
                                 }
-                            );
+                            });
                         },
-                        (error: string) => {
-                            reject(error);
+                        error: (error) => {
+                            reject(error?.error || error);
                         }
-                    );
+                    });
                 } else {
                     // not logged in
                     this.setUnlogged();
@@ -116,7 +119,7 @@ export class PermissionsService {
                 })
                 .catch((reason) => {
                     this.refreshing = false;
-                    console.log(reason);
+                    this.logger.error('PermissionsService', 'Refresh failed', reason);
                     localStorage.clear();
                     sessionStorage.clear();
                     this.setUnlogged();
@@ -124,7 +127,7 @@ export class PermissionsService {
                 });
             return promise;
         } catch (error) {
-            console.log(error);
+            this.logger.error('PermissionsService', 'Unexpected error during refresh', error);
         }
     }
 
@@ -161,7 +164,7 @@ export class PermissionsService {
         }
 
         if (this.appSettings.appSetting('environment') === Environments.Development) {
-            console.log(this.getPermissions());
+            this.logger.debug('PermissionsService', 'Permissions:', this.getPermissions());
         }
     }
 
@@ -171,11 +174,19 @@ export class PermissionsService {
     }
 
     private waitForId(): Promise<string> {
-        return new Promise<string>(async (resolve) => {
-            while (!this.accountService.account || !this.accountService.account.id) {
-                await this.delay(100);
-            }
-            resolve(this.accountService.account.id);
+        if (this.accountService.account?.id) {
+            return Promise.resolve(this.accountService.account.id);
+        }
+
+        return new Promise<string>((resolve) => {
+            const subscription = this.accountService.accountChange$.subscribe({
+                next: (account: Account) => {
+                    if (account?.id) {
+                        subscription.unsubscribe();
+                        resolve(account.id);
+                    }
+                }
+            });
         });
     }
 
@@ -186,9 +197,5 @@ export class PermissionsService {
         this.updateTimeout = setTimeout(() => {
             callback();
         }, 500);
-    }
-
-    private async delay(delay: number) {
-        return new Promise((resolve) => setTimeout(resolve, delay));
     }
 }

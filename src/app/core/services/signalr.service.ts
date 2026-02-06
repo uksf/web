@@ -19,45 +19,47 @@ export class SignalRService {
             })
             .withAutomaticReconnect()
             .build();
-        this.waitForConnection(connection).then(() => {
+        const container = new ConnectionContainer(connection, reconnectEvent);
+        this.waitForConnection(container).then(() => {
             connection.onclose((error) => {
                 if (error) {
-                    const reconnect = setInterval(() => {
+                    container.reconnectIntervalId = setInterval(() => {
                         if (connection.state === HubConnectionState.Connected) {
-                            clearInterval(reconnect);
+                            clearInterval(container.reconnectIntervalId);
+                            container.reconnectIntervalId = undefined;
                             reconnectEvent.emit();
                             return;
                         }
                         connection
                             .start()
                             .then(() => {
-                                clearInterval(reconnect);
+                                clearInterval(container.reconnectIntervalId);
+                                container.reconnectIntervalId = undefined;
                                 reconnectEvent.emit();
                             })
-                            .catch(() => {
-                                // console.log(`Failed to re-connect to SignalR hub: ${endpoint}`);
-                            });
+                            .catch(() => {});
                     }, 5000);
                 }
             });
         });
-        return new ConnectionContainer(connection, reconnectEvent);
+        return container;
     }
 
-    private waitForConnection(connection: HubConnection): Promise<void> {
+    private waitForConnection(container: ConnectionContainer): Promise<void> {
         return new Promise<void>((resolve) => {
-            const connectFunction = function () {
-                connection
+            const connectFunction = () => {
+                container.connection
                     .start()
                     .then(() => {
-                        clearTimeout(connectTimeout);
+                        clearTimeout(container.connectTimeoutId as ReturnType<typeof setTimeout>);
+                        container.connectTimeoutId = undefined;
                         resolve();
                     })
                     .catch(() => {
-                        connectTimeout = setTimeout(connectFunction, 5000);
+                        container.connectTimeoutId = setTimeout(connectFunction, 5000);
                     });
             };
-            let connectTimeout = setTimeout(connectFunction, 0);
+            container.connectTimeoutId = setTimeout(connectFunction, 0);
         });
     }
 }
@@ -65,9 +67,22 @@ export class SignalRService {
 export class ConnectionContainer {
     connection: HubConnection;
     reconnectEvent: EventEmitter<any>;
+    reconnectIntervalId: ReturnType<typeof setInterval> | undefined;
+    connectTimeoutId: ReturnType<typeof setTimeout> | undefined;
 
     constructor(connection: HubConnection, reconnectEvent: EventEmitter<any>) {
         this.connection = connection;
         this.reconnectEvent = reconnectEvent;
+    }
+
+    dispose() {
+        if (this.reconnectIntervalId !== undefined) {
+            clearInterval(this.reconnectIntervalId);
+            this.reconnectIntervalId = undefined;
+        }
+        if (this.connectTimeoutId !== undefined) {
+            clearTimeout(this.connectTimeoutId);
+            this.connectTimeoutId = undefined;
+        }
     }
 }

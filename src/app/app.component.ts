@@ -1,25 +1,34 @@
-import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { isPlatformBrowser } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
+import { SignalRHubsService } from '@app/core/services/signalr-hubs.service';
 
 @Component({
     selector: 'app',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
     static utilityHubConnection: ConnectionContainer;
 
-    constructor(private overlayContainer: OverlayContainer, @Inject(PLATFORM_ID) private platformId, private dialog: MatDialog, private signalrService: SignalRService) {}
+    constructor(private overlayContainer: OverlayContainer, @Inject(PLATFORM_ID) private platformId, private dialog: MatDialog, private signalrService: SignalRService, private signalRHubsService: SignalRHubsService) {}
 
     ngOnInit() {
         this.overlayContainer.getContainerElement().classList.add('dark-theme');
 
         this.checkBrowser();
         AppComponent.utilityHubConnection = this.signalrService.connect('utility');
+    }
+
+    ngOnDestroy() {
+        this.signalRHubsService.disconnect();
+        if (AppComponent.utilityHubConnection) {
+            AppComponent.utilityHubConnection.dispose();
+            AppComponent.utilityHubConnection.connection.stop();
+        }
     }
 
     checkBrowser() {

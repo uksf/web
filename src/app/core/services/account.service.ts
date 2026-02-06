@@ -1,5 +1,6 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable, Subject, tap } from 'rxjs';
 import { UrlService } from './url.service';
 import { ConnectTeamspeakModalComponent } from '@app/features/profile/modals/connect-teamspeak-modal/connect-teamspeak-modal.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -9,34 +10,28 @@ import { Account, MembershipState } from '@app/shared/models/account';
 
 @Injectable()
 export class AccountService {
-    public accountChange: EventEmitter<any> = new EventEmitter();
+    public accountChange$ = new Subject<Account>();
     public account: Account;
     private openDialog: MatDialogRef<ConfirmationModalComponent, any> = undefined;
 
     constructor(private httpClient: HttpClient, private urls: UrlService, private sessionService: SessionService, public dialog: MatDialog) {}
 
-    public getAccount(callback: (account: Account) => void = null, callbackError: () => void = null) {
+    public getAccount(): Observable<Account> | undefined {
         if (this.sessionService.hasStorageToken()) {
-            const subscribable = this.httpClient.get(this.urls.apiUrl + '/accounts');
-            subscribable.subscribe({
-                next: (response: any) => {
-                    const account = response;
-                    this.account = account;
-                    this.checkConnections();
-                    if (callback) {
-                        callback(account);
+            return this.httpClient.get<Account>(this.urls.apiUrl + '/accounts').pipe(
+                tap({
+                    next: (account) => {
+                        this.account = account;
+                        this.checkConnections();
+                        this.accountChange$.next(account);
+                    },
+                    error: () => {
+                        this.clear();
                     }
-                    this.accountChange.emit(account);
-                },
-                error: () => {
-                    this.clear();
-                    if (callbackError) {
-                        callbackError();
-                    }
-                }
-            });
-            return subscribable;
+                })
+            );
         }
+        return undefined;
     }
 
     public checkConnections() {
@@ -102,7 +97,7 @@ export class AccountService {
             .afterClosed()
             .subscribe({
                 next: () => {
-                    this.getAccount();
+                    this.getAccount()?.subscribe();
                 }
             });
     }

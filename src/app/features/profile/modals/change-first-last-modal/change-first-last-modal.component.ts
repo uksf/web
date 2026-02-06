@@ -45,8 +45,10 @@ export class ChangeFirstLastModalComponent implements OnInit {
             })
             .subscribe({
                 next: () => {
-                    this.accountService.getAccount(() => {
-                        this.changed = true;
+                    this.accountService.getAccount()?.subscribe({
+                        next: () => {
+                            this.changed = true;
+                        }
                     });
                 }
             });

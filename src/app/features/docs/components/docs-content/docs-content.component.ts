@@ -84,7 +84,5 @@ export class DocsContentComponent implements OnChanges, OnDestroy {
             });
     }
 
-    onContentChanged(event) {
-        // console.log(event);
-    }
+    onContentChanged(_event: any) {}
 }

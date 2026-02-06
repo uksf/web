@@ -1,27 +1,25 @@
-import { Injectable, OnDestroy, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { ConnectionContainer, SignalRService } from './signalr.service';
 import { AccountService } from './account.service';
 
 @Injectable()
-export class SignalRHubsService implements OnInit, OnDestroy {
+export class SignalRHubsService {
     public allHubConnection: ConnectionContainer;
     public accountGroupedHubConnection: ConnectionContainer;
 
     constructor(private signalrService: SignalRService, private accountService: AccountService) {}
 
-    ngOnInit(): void {}
-
-    ngOnDestroy(): void {
+    public async disconnect(): Promise<void> {
         if (this.allHubConnection) {
-            this.allHubConnection.connection.stop().then(() => {
-                this.allHubConnection = undefined;
-            });
+            this.allHubConnection.dispose();
+            await this.allHubConnection.connection.stop();
+            this.allHubConnection = undefined;
         }
 
         if (this.accountGroupedHubConnection) {
-            this.accountGroupedHubConnection.connection.stop().then(() => {
-                this.accountGroupedHubConnection = undefined;
-            });
+            this.accountGroupedHubConnection.dispose();
+            await this.accountGroupedHubConnection.connection.stop();
+            this.accountGroupedHubConnection = undefined;
         }
     }
 
@@ -44,15 +42,15 @@ export class SignalRHubsService implements OnInit, OnDestroy {
                 return;
             }
 
-            this.accountService.getAccount(
-                (account) => {
+            this.accountService.getAccount()?.subscribe({
+                next: (account) => {
                     this.accountGroupedHubConnection = this.signalrService.connect(`accountGrouped?userId=${account.id}`);
                     resolve(this.accountGroupedHubConnection);
                 },
-                () => {
+                error: () => {
                     reject();
                 }
-            );
+            });
         });
     }
 }

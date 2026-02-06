@@ -34,9 +34,11 @@ export class RequestPasswordResetComponent {
         }
 
         this.pending = true;
-        this.auth.requestPasswordReset(this.model.email, () => {
-            this.sent = true;
-            this.pending = false;
+        this.auth.requestPasswordReset(this.model.email).subscribe({
+            next: () => {
+                this.sent = true;
+                this.pending = false;
+            }
         });
     }
 

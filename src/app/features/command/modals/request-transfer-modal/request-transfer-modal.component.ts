@@ -11,6 +11,7 @@ import { CommandRequest } from '@app/features/command/models/command-request';
 import { Unit, UnitBranch } from '@app/features/units/models/units';
 import { SelectionListComponent } from '@app/shared/components/elements/selection-list/selection-list.component';
 import { RequestModalData } from '@app/shared/models/shared';
+import { LoggingService } from '@app/core/services/logging.service';
 
 @Component({
     selector: 'app-request-transfer-modal',
@@ -34,7 +35,7 @@ export class RequestTransferModalComponent implements OnInit {
         reason: [{ type: 'required', message: () => 'A reason for the unit transfer is required' }]
     };
 
-    constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService, @Inject(MAT_DIALOG_DATA) public data: RequestModalData) {
+    constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService, @Inject(MAT_DIALOG_DATA) public data: RequestModalData, private logger: LoggingService) {
         if (data) {
             this.preSelection = data.ids;
             
@@ -80,7 +81,7 @@ export class RequestTransferModalComponent implements OnInit {
                     this.units.next(allUnits.map(Unit.mapToElement));
                 },
                 error: (error) => {
-                    console.error('Error fetching units:', error);
+                    this.logger.error('RequestTransferModal', 'Error fetching units', error);
                     this.units.next([]);
                 }
             });

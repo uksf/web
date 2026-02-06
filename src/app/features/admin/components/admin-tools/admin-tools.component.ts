@@ -158,22 +158,20 @@ export class AdminToolsComponent implements OnInit, OnDestroy {
 
     impersonate(): void {
         this.impersonationPending = true;
-        this.auth.impersonate(
-            mapFromElement(BasicAccount, this.model.accountId).id,
-            (): void => {
+        this.auth.impersonate(mapFromElement(BasicAccount, this.model.accountId).id).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (): void => {
                 this.impersonationPending = false;
-
                 this.permissions.refresh().then((): void => {
                     this.router.navigate(['/home']).then();
                 });
             },
-            (error: string): void => {
+            error: (error: any): void => {
                 this.impersonationPending = false;
                 this.dialog.open(MessageModalComponent, {
-                    data: { message: error }
+                    data: { message: error?.error || 'Impersonation failed' }
                 });
             }
-        );
+        });
     }
 
     private setPending(tool: Tool): { next: (_) => void; error: (_) => void } {

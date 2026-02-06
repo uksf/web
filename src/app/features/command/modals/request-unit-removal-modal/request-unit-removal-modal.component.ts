@@ -8,6 +8,7 @@ import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.servi
 import { BehaviorSubject, forkJoin } from 'rxjs';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { BasicAccount } from '@app/shared/models/account';
+import { LoggingService } from '@app/core/services/logging.service';
 import { Unit } from '@app/features/units/models/units';
 import { CommandRequest } from '@app/features/command/models/command-request';
 
@@ -31,7 +32,7 @@ export class RequestUnitRemovalModalComponent implements OnInit {
         reason: [{ type: 'required', message: () => 'A reason for the unit removal is required' }]
     };
 
-    constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService) {}
+    constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService, private logger: LoggingService) {}
 
     ngOnInit() {
         this.httpClient.get(`${this.urlService.apiUrl}/accounts/members`).subscribe({
@@ -63,7 +64,7 @@ export class RequestUnitRemovalModalComponent implements OnInit {
                 this.units.next(allUnits.map(Unit.mapToElement));
             },
             error: (error) => {
-                console.error('Error fetching units:', error);
+                this.logger.error('RequestUnitRemovalModal', 'Error fetching units', error);
                 this.units.next([]);
             }
         });
