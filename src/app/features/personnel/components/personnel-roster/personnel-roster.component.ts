@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { CountryPickerService, ICountry } from '@app/shared/services/country-picker/country-picker.service';
 import { RosterAccount } from '@app/shared/models/account';
 import { first } from 'rxjs/operators';
+import { MembersService } from '@app/shared/services/members.service';
 
 @Component({
     selector: 'app-personnel-roster',
@@ -16,9 +15,9 @@ export class PersonnelRosterComponent {
     displayedColumns = ['nation', 'name', 'rank', 'roleAssignment', 'unitAssignment'];
     rosterData: MatTableDataSource<RosterAccount>;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService) {
+    constructor(private membersService: MembersService) {
         this.countries = CountryPickerService.countries;
-        this.httpClient.get(this.urls.apiUrl + '/accounts/roster').pipe(first()).subscribe({
+        this.membersService.getRoster().pipe(first()).subscribe({
             next: (response: RosterAccount[]) => {
                 this.rosterData = new MatTableDataSource(response);
             }

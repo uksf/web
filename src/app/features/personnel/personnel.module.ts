@@ -16,6 +16,7 @@ import { PersonnelLoasListComponent } from './components/personnel-loas-list/per
 import { PersonnelActivityComponent } from './components/personnel-activity/personnel-activity.component';
 import { PersonnelDischargesComponent } from './components/personnel-discharges/personnel-discharges.component';
 import { PersonnelRosterComponent } from './components/personnel-roster/personnel-roster.component';
+import { DischargesService } from './services/discharges.service';
 
 @NgModule({
     declarations: [
@@ -39,5 +40,6 @@ import { PersonnelRosterComponent } from './components/personnel-roster/personne
         MatTableModule,
         MatTabsModule,
     ],
+    providers: [DischargesService],
 })
 export class PersonnelModule {}

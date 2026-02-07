@@ -89,4 +89,45 @@ describe('CommandRequestsService', () => {
 
         expect(httpClient.post).toHaveBeenCalledWith('http://localhost:5500/commandrequests/create/chainofcommandposition', request);
     });
+
+    it('should create reinstate request', () => {
+        httpClient.post.mockReturnValue(of(null));
+        const request = { recipient: 'r1', reason: 'test' };
+
+        service.createReinstate(request).subscribe();
+
+        expect(httpClient.post).toHaveBeenCalledWith(
+            'http://localhost:5500/commandrequests/create/reinstate',
+            JSON.stringify(request),
+            { headers: expect.objectContaining({ lazyInit: expect.anything() }) }
+        );
+    });
+
+    it('should create loa request', () => {
+        httpClient.post.mockReturnValue(of(null));
+        const body = { reason: 'test', start: '2024-01-01', end: '2024-01-07', emergency: false, late: false };
+
+        service.createLoa(body).subscribe();
+
+        expect(httpClient.post).toHaveBeenCalledWith(
+            'http://localhost:5500/commandrequests/create/loa',
+            body,
+            { headers: expect.objectContaining({ lazyInit: expect.anything() }) }
+        );
+    });
+
+    it('should check if request exists', () => {
+        httpClient.post.mockReturnValue(of(true));
+        const body = { recipient: 'r1', type: 'Reinstate Member', displayValue: 'Member', displayFrom: 'Discharged' };
+
+        service.checkExists(body).subscribe((result) => {
+            expect(result).toBe(true);
+        });
+
+        expect(httpClient.post).toHaveBeenCalledWith(
+            'http://localhost:5500/commandrequests/exists',
+            JSON.stringify(body),
+            { headers: expect.objectContaining({ lazyInit: expect.anything() }) }
+        );
+    });
 });

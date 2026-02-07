@@ -14,6 +14,7 @@ import { AdminRoutingModule } from './admin-routing.module';
 // Services
 import { AdminToolsService } from './services/admin-tools.service';
 import { InfrastructureService } from './services/infrastructure.service';
+import { LogsService } from './services/logs.service';
 import { VariablesService } from './services/variables.service';
 
 // Shared Module
@@ -53,6 +54,6 @@ import { AdminServersComponent } from './components/admin-servers/admin-servers.
     MatSortModule,
     MatTabsModule,
   ],
-  providers: [AdminToolsService, InfrastructureService, VariablesService],
+  providers: [AdminToolsService, InfrastructureService, LogsService, VariablesService],
 })
 export class AdminModule {}

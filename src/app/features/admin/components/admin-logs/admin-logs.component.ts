@@ -2,8 +2,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
+import { HttpParams } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
@@ -13,6 +12,7 @@ import { SortDirection } from '@app/shared/models/sort-direction';
 import { Subject } from 'rxjs';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { debounceTime, distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
+import { LogsService } from '../../services/logs.service';
 
 @Component({
     selector: 'app-admin-logs',
@@ -22,8 +22,7 @@ import { debounceTime, distinctUntilChanged, first, takeUntil } from 'rxjs/opera
 export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
-    protected httpClient: HttpClient;
-    protected urls: UrlService;
+    protected logsService: LogsService;
     protected dialog: MatDialog;
     protected signalrService: SignalRService;
     protected hubConnection: ConnectionContainer;
@@ -38,9 +37,8 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
     logDisplayedColumns = ['timestamp', 'level', 'message'];
     datasource: MatTableDataSource<BasicLog> = new MatTableDataSource<BasicLog>();
 
-    constructor(httpClient: HttpClient, urls: UrlService, dialog: MatDialog, signalrService: SignalRService, private clipboard: Clipboard) {
-        this.httpClient = httpClient;
-        this.urls = urls;
+    constructor(logsService: LogsService, dialog: MatDialog, signalrService: SignalRService, private clipboard: Clipboard) {
+        this.logsService = logsService;
         this.dialog = dialog;
         this.signalrService = signalrService;
     }
@@ -86,16 +84,13 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     refreshData() {
         const params = this.buildParams();
-        this.httpClient
-            .get<PagedResult<BasicLog>>(`${this.urls.apiUrl}/logging/basic`, { params })
-            .pipe(first())
-            .subscribe({
-                next: (pagedResult: PagedResult<BasicLog>) => {
-                    this.dataLoaded = true;
-                    this.paginator.length = pagedResult.totalCount;
-                    this.datasource.data = pagedResult.data;
-                }
-            });
+        this.logsService.getBasicLogs(params).pipe(first()).subscribe({
+            next: (pagedResult: PagedResult<BasicLog>) => {
+                this.dataLoaded = true;
+                this.paginator.length = pagedResult.totalCount;
+                this.datasource.data = pagedResult.data;
+            }
+        });
     }
 
     applyFilter(filterValue: string) {

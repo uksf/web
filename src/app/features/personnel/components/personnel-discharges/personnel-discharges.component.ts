@@ -1,6 +1,4 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionPanel } from '@angular/material/expansion';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
@@ -9,6 +7,8 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TextInputModalComponent } from '@app/shared/modals/text-input-modal/text-input-modal.component';
 import { nextFrame } from '@app/shared/services/helper.service';
+import { DischargesService } from '../../services/discharges.service';
+import { CommandRequestsService, CommandRequestExistsBody } from '@app/features/command/services/command-requests.service';
 
 @Component({
     selector: 'app-personnel-discharges',
@@ -33,7 +33,12 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
     private destroy$ = new Subject<void>();
     private timeout: number;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private route: ActivatedRoute) {}
+    constructor(
+        private dischargesService: DischargesService,
+        private commandRequestsService: CommandRequestsService,
+        private dialog: MatDialog,
+        private route: ActivatedRoute
+    ) {}
 
     ngOnInit(): void {
         if (this.route.snapshot.queryParams['filter']) {
@@ -54,7 +59,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
     refresh(initialFilter = '') {
         this.completeDischargeCollections = undefined;
         this.updating = true;
-        this.httpClient.get<DischargeCollection[]>(this.urls.apiUrl + '/discharges').pipe(takeUntil(this.destroy$)).subscribe({
+        this.dischargesService.getDischarges().pipe(takeUntil(this.destroy$)).subscribe({
             next: (response: DischargeCollection[]) => {
                 this.completeDischargeCollections = response;
                 if (initialFilter) {
@@ -115,7 +120,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
 
     reinstate(event: Event, dischargeCollection: DischargeCollection) {
         event.stopPropagation();
-        this.httpClient.get<DischargeCollection[]>(this.urls.apiUrl + `/discharges/reinstate/${dischargeCollection.id}`).pipe(takeUntil(this.destroy$)).subscribe({
+        this.dischargesService.reinstateDischarge(dischargeCollection.id).pipe(takeUntil(this.destroy$)).subscribe({
             next: (response: DischargeCollection[]) => {
                 this.dischargeCollections = response;
             },
@@ -140,25 +145,19 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
                     if (!reason) {
                         return;
                     }
-                    this.httpClient
-                        .post(this.urls.apiUrl + '/commandrequests/create/reinstate', JSON.stringify({ recipient: dischargeCollection.accountId, reason: reason }), {
-                            headers: new HttpHeaders({
-                                'Content-Type': 'application/json'
-                            })
-                        })
+                    this.commandRequestsService
+                        .createReinstate({ recipient: dischargeCollection.accountId, reason: reason })
                         .pipe(takeUntil(this.destroy$))
                         .subscribe({
                             next: (_) => {
-                                this.httpClient
-                                    .post(
-                                        this.urls.apiUrl + '/commandrequests/exists',
-                                        JSON.stringify({ recipient: dischargeCollection.accountId, type: 'Reinstate Member', displayValue: 'Member', displayFrom: 'Discharged' }),
-                                        {
-                                            headers: new HttpHeaders({
-                                                'Content-Type': 'application/json'
-                                            })
-                                        }
-                                    )
+                                const body: CommandRequestExistsBody = {
+                                    recipient: dischargeCollection.accountId,
+                                    type: 'Reinstate Member',
+                                    displayValue: 'Member',
+                                    displayFrom: 'Discharged'
+                                };
+                                this.commandRequestsService
+                                    .checkExists(body)
                                     .pipe(takeUntil(this.destroy$))
                                     .subscribe({
                                         next: (response: boolean) => {

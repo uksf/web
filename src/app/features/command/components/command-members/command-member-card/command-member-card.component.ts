@@ -6,9 +6,8 @@ import { RequestRankModalComponent } from '@app/features/command/modals/request-
 import { RequestRoleModalComponent } from '@app/features/command/modals/request-role-modal/request-role-modal.component';
 import { RequestTransferModalComponent } from '@app/features/command/modals/request-transfer-modal/request-transfer-modal.component';
 import { RequestModalData } from '@app/shared/models/shared';
-import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { EditMemberTrainingModalData } from '@app/features/command/models/training';
+import { MembersService } from '@app/shared/services/members.service';
 import { EditMemberTrainingModalComponent } from '@app/features/command/modals/edit-member-training-modal/edit-member-training-modal.component';
 import { UnitBranch } from '@app/features/units/models/units';
 import { first } from 'rxjs/operators';
@@ -25,7 +24,7 @@ export class CommandMemberCardComponent implements OnInit {
     hover: boolean = false;
     qualificationsPending: boolean = false;
 
-    constructor(private dialog: MatDialog, private httpClient: HttpClient, private urls: UrlService) {}
+    constructor(private dialog: MatDialog, private membersService: MembersService) {}
 
     ngOnInit(): void {}
 
@@ -59,7 +58,7 @@ export class CommandMemberCardComponent implements OnInit {
 
     updateQualifications() {
         this.qualificationsPending = true;
-        this.httpClient.put(`${this.urls.apiUrl}/accounts/${this.member.id}/qualifications`, this.member.qualifications).pipe(first()).subscribe({
+        this.membersService.updateQualifications(this.member.id, this.member.qualifications).pipe(first()).subscribe({
             next: () => {
                 this.qualificationsPending = false;
             },

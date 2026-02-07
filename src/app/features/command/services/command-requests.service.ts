@@ -6,7 +6,14 @@ import { CommandRequest, CommandRequestsResponse } from '@app/features/command/m
 
 const jsonHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-@Injectable()
+export interface CommandRequestExistsBody {
+    recipient: string;
+    type: string;
+    displayValue: string;
+    displayFrom: string;
+}
+
+@Injectable({ providedIn: 'root' })
 export class CommandRequestsService {
     constructor(private httpClient: HttpClient, private urls: UrlService) {}
 
@@ -40,5 +47,17 @@ export class CommandRequestsService {
 
     createChainOfCommandPosition(request: CommandRequest): Observable<unknown> {
         return this.httpClient.post(`${this.urls.apiUrl}/commandrequests/create/chainofcommandposition`, request);
+    }
+
+    createReinstate(request: CommandRequest): Observable<unknown> {
+        return this.httpClient.post(`${this.urls.apiUrl}/commandrequests/create/reinstate`, JSON.stringify(request), { headers: jsonHeaders });
+    }
+
+    createLoa(body: { reason: string; start: unknown; end: unknown; emergency: boolean; late: boolean }): Observable<unknown> {
+        return this.httpClient.post(`${this.urls.apiUrl}/commandrequests/create/loa`, body, { headers: jsonHeaders });
+    }
+
+    checkExists(body: CommandRequestExistsBody): Observable<boolean> {
+        return this.httpClient.post<boolean>(`${this.urls.apiUrl}/commandrequests/exists`, JSON.stringify(body), { headers: jsonHeaders });
     }
 }

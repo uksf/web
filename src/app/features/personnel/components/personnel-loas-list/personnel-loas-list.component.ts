@@ -5,10 +5,10 @@ import { PagedEvent, PaginatorComponent } from '@app/shared/components/elements/
 import { buildQuery } from '@app/shared/services/helper.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { PagedResult } from '@app/shared/models/paged-result';
-import { UrlService } from '@app/core/services/url.service';
 import { Loa, LoaReviewState } from '@app/features/command/models/loa';
+import { LoaService } from '@app/shared/services/loa.service';
 import { expansionAnimations } from '@app/shared/services/animations.service';
 import { DateMode, DateModeItem, ViewMode, ViewModeItem } from '../personnel-loas/personnel-loas.component';
 import { Moment } from 'moment/moment';
@@ -43,7 +43,7 @@ export class PersonnelLoasListComponent implements OnInit, OnDestroy {
 
     selectedIndex: number = -1;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private permissions: PermissionsService, private dialog: MatDialog) {}
+    constructor(private loaService: LoaService, private permissions: PermissionsService, private dialog: MatDialog) {}
 
     ngOnInit(): void {
         this.getLoas();
@@ -77,10 +77,8 @@ export class PersonnelLoasListComponent implements OnInit, OnDestroy {
             httpParams = httpParams.set('selectedDate', this.selectedDate.toISOString());
         }
 
-        this.httpClient
-            .get(`${this.urls.apiUrl}/loa`, {
-                params: httpParams
-            })
+        this.loaService
+            .getLoas(httpParams)
             .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (pagedLoas: PagedResult<Loa>) => {

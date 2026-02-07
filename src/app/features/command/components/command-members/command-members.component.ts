@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
+import { HttpParams } from '@angular/common/http';
 import { PagedResult } from '@app/shared/models/paged-result';
 import { PagedEvent, PaginatorComponent } from '@app/shared/components/elements/paginator/paginator.component';
 import { Unit, UnitTreeDataSet } from '@app/features/units/models/units';
@@ -11,6 +10,8 @@ import { SignalRHubsService } from '@app/core/services/signalr-hubs.service';
 import { ConnectionContainer } from '@app/core/services/signalr.service';
 import { from, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { MembersService } from '@app/shared/services/members.service';
+import { UnitsService } from '../../services/units.service';
 
 @Component({
     selector: 'app-command-members',
@@ -54,7 +55,7 @@ export class CommandMembersComponent implements OnInit, OnDestroy {
         this.getMembers();
     };
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private signalrHubsService: SignalRHubsService) {}
+    constructor(private membersService: MembersService, private unitsService: UnitsService, private signalrHubsService: SignalRHubsService) {}
 
     ngOnInit(): void {
         from(this.signalrHubsService.getAllHub()).pipe(takeUntil(this.destroy$)).subscribe({
@@ -71,7 +72,7 @@ export class CommandMembersComponent implements OnInit, OnDestroy {
 
         this.getMembers();
 
-        this.httpClient.get(`${this.urls.apiUrl}/units/tree`).pipe(takeUntil(this.destroy$)).subscribe({
+        this.unitsService.getUnitTree().pipe(takeUntil(this.destroy$)).subscribe({
             next: (unitTreeDataset: UnitTreeDataSet) => {
                 this.unitRoot = unitTreeDataset.combatNodes[0];
             }
@@ -93,16 +94,16 @@ export class CommandMembersComponent implements OnInit, OnDestroy {
             pageSize = 500;
         }
 
-        this.httpClient
-            .get(`${this.urls.apiUrl}/command/members`, {
-                params: new HttpParams()
-                    .set('page', pageIndex + 1)
-                    .set('pageSize', pageSize)
-                    .set('query', query)
-                    .set('sortMode', this.sortMode)
-                    .set('sortDirection', this.sortDirection)
-                    .set('viewMode', this.viewMode)
-            })
+        const params = new HttpParams()
+            .set('page', pageIndex + 1)
+            .set('pageSize', pageSize)
+            .set('query', query)
+            .set('sortMode', this.sortMode)
+            .set('sortDirection', this.sortDirection)
+            .set('viewMode', this.viewMode);
+
+        this.membersService
+            .getCommandMembers(params)
             .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (pagedMembers: PagedResult<Account>) => {

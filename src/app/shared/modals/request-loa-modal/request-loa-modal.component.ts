@@ -1,9 +1,8 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FormBuilder, Validators } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
+import { CommandRequestsService } from '@app/features/command/services/command-requests.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import moment, { Moment } from 'moment';
 import { Subject } from 'rxjs';
@@ -38,7 +37,7 @@ export class RequestLoaModalComponent implements OnInit, OnDestroy {
     submitting = false;
     mobile = false;
 
-    constructor(private dialog: MatDialog, private formBuilder: FormBuilder, private httpClient: HttpClient, private urlService: UrlService) {
+    constructor(private dialog: MatDialog, private formBuilder: FormBuilder, private commandRequestsService: CommandRequestsService) {
         this.form.controls.start.valueChanges.pipe(takeUntil(this.destroy$)).subscribe({
             next: (_) => {
                 this.datesValid = this.validateDates();
@@ -133,12 +132,8 @@ export class RequestLoaModalComponent implements OnInit, OnDestroy {
             emergency: this.form.controls.emergency.value,
             late: this.late
         };
-        this.httpClient
-            .post(this.urlService.apiUrl + '/commandrequests/create/loa', body, {
-                headers: new HttpHeaders({
-                    'Content-Type': 'application/json'
-                })
-            })
+        this.commandRequestsService
+            .createLoa(body)
             .pipe(first())
             .subscribe({
                 next: (_) => {

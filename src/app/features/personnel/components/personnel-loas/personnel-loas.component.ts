@@ -1,7 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
+import { LoaService } from '@app/shared/services/loa.service';
 import { RequestLoaModalComponent } from '@app/shared/modals/request-loa-modal/request-loa-modal.component';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { formatDate } from '@angular/common';
@@ -52,7 +51,7 @@ export class PersonnelLoasComponent implements OnInit, OnDestroy {
     selectedDate?: Moment = this.getUkNow();
     private filterSubject = new Subject<string>();
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {
+    constructor(private loaService: LoaService, private dialog: MatDialog) {
         this.dateMode = this.dateModes[0];
         this.viewMode = this.viewModes[0];
     }
@@ -127,7 +126,7 @@ export class PersonnelLoasComponent implements OnInit, OnDestroy {
                     if (!result) {
                         return;
                     }
-                    this.httpClient.delete(`${this.urls.apiUrl}/loa/${loa.id}`).pipe(takeUntil(this.destroy$)).subscribe({
+                    this.loaService.deleteLoa(loa.id).pipe(takeUntil(this.destroy$)).subscribe({
                         next: (_) => {
                             this.update();
                         }
