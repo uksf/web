@@ -1,17 +1,18 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { NgForm } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
-import { Account, BasicAccount } from '@app/shared/models/account';
+import { BasicAccount } from '@app/shared/models/account';
 import { Role, RolesDataset } from '@app/shared/models/role';
 import { SelectionListComponent } from '@app/shared/components/elements/selection-list/selection-list.component';
 import { RequestModalData } from '@app/shared/models/shared';
 import { CommandRequest } from '@app/features/command/models/command-request';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
+import { MembersService } from '@app/shared/services/members.service';
+import { RolesService } from '../../services/roles.service';
+import { CommandRequestsService } from '../../services/command-requests.service';
 
 @Component({
     selector: 'app-request-role-modal',
@@ -34,14 +35,20 @@ export class RequestRoleModalComponent implements OnInit {
         reason: [{ type: 'required', message: () => 'A reason for the role assignment is required' }]
     };
 
-    constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService, @Inject(MAT_DIALOG_DATA) public data: RequestModalData) {
+    constructor(
+        private dialog: MatDialog,
+        private membersService: MembersService,
+        private rolesService: RolesService,
+        private commandRequestsService: CommandRequestsService,
+        @Inject(MAT_DIALOG_DATA) public data: RequestModalData
+    ) {
         if (data) {
             this.preSelection = data.ids;
         }
     }
 
     ngOnInit() {
-        this.httpClient.get(`${this.urlService.apiUrl}/accounts/members`).pipe(first()).subscribe({
+        this.membersService.getMembers().pipe(first()).subscribe({
             next: (accounts: BasicAccount[]) => {
                 const elements = accounts.map(BasicAccount.mapToElement);
                 this.accounts.next(elements);
@@ -53,7 +60,7 @@ export class RequestRoleModalComponent implements OnInit {
             }
         });
 
-        this.httpClient.get(`${this.urlService.apiUrl}/roles`).pipe(first()).subscribe({
+        this.rolesService.getRoles().pipe(first()).subscribe({
             next: (rolesDataset: RolesDataset) => {
                 const elements = rolesDataset.roles.map(Role.mapToElement);
                 elements.unshift({ value: 'None', displayValue: 'None' });
@@ -77,8 +84,8 @@ export class RequestRoleModalComponent implements OnInit {
                 return;
             }
 
-            this.httpClient.get(`${this.urlService.apiUrl}/accounts/${element.value}`).pipe(first()).subscribe({
-                next: (account: Account) => {
+            this.membersService.getAccount(element.value).pipe(first()).subscribe({
+                next: (account) => {
                     element.disabled = account.roleAssignment === this.model.role.value;
                     this.revalidate();
                 }
@@ -104,7 +111,7 @@ export class RequestRoleModalComponent implements OnInit {
             };
 
             this.pending = true;
-            this.httpClient.post(this.urlService.apiUrl + '/commandrequests/create/role', commandRequest).pipe(first()).subscribe({
+            this.commandRequestsService.createRole(commandRequest).pipe(first()).subscribe({
                 next: () => {
                     this.dialog.closeAll();
                     this.pending = false;

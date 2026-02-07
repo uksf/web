@@ -1,8 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NgForm } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { BehaviorSubject } from 'rxjs';
@@ -12,6 +10,9 @@ import { BasicAccount } from '@app/shared/models/account';
 import { CommandRequest } from '@app/features/command/models/command-request';
 import { Role } from '@app/shared/models/role';
 import { Unit } from '@app/features/units/models/units';
+import { MembersService } from '@app/shared/services/members.service';
+import { UnitsService } from '../../services/units.service';
+import { CommandRequestsService } from '../../services/command-requests.service';
 
 @Component({
     selector: 'app-request-chain-of-command-position-modal',
@@ -38,10 +39,15 @@ export class RequestChainOfCommandPositionModalComponent implements OnInit {
     // Store the actual Unit objects to access chainOfCommand data
     private unitObjects: Unit[] = [];
 
-    constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService) {}
+    constructor(
+        private dialog: MatDialog,
+        private membersService: MembersService,
+        private unitsService: UnitsService,
+        private commandRequestsService: CommandRequestsService
+    ) {}
 
     ngOnInit() {
-        this.httpClient.get(`${this.urlService.apiUrl}/accounts/members`).pipe(first()).subscribe({
+        this.membersService.getMembers().pipe(first()).subscribe({
             next: (accounts: BasicAccount[]) => {
                 this.accounts.next(accounts.map(BasicAccount.mapToElement));
                 this.accounts.complete();
@@ -60,7 +66,7 @@ export class RequestChainOfCommandPositionModalComponent implements OnInit {
             return;
         }
 
-        this.httpClient.get(`${this.urlService.apiUrl}/units?accountId=${mapFromElement(BasicAccount, element).id}`).pipe(first()).subscribe({
+        this.unitsService.getUnits(undefined, mapFromElement(BasicAccount, element).id).pipe(first()).subscribe({
             next: (units: Unit[]) => {
                 this.unitObjects = units;
                 this.units.next(units.map(Unit.mapToElement));
@@ -76,7 +82,7 @@ export class RequestChainOfCommandPositionModalComponent implements OnInit {
 
         const selectedAccountId = mapFromElement(BasicAccount, this.model.account).id;
         const selectedUnit = this.unitObjects.find(unit => unit.id === element.value);
-        
+
         if (!selectedUnit) {
             this.positions.next([]);
             return;
@@ -84,26 +90,26 @@ export class RequestChainOfCommandPositionModalComponent implements OnInit {
 
         // Build available positions from chain of command
         const availablePositions: IDropdownElement[] = [];
-        
+
         // Add "None" option to unset position
         availablePositions.push({ value: 'None', displayValue: 'None' });
 
         // Check which positions are available based on chainOfCommand
         const chainOfCommand = selectedUnit.chainOfCommand;
-        
+
         // Only show positions that are either empty or not occupied by the selected member
         if (!chainOfCommand.first || chainOfCommand.first !== selectedAccountId) {
             availablePositions.push({ value: '1iC', displayValue: '1iC' });
         }
-        
+
         if (!chainOfCommand.second || chainOfCommand.second !== selectedAccountId) {
             availablePositions.push({ value: '2iC', displayValue: '2iC' });
         }
-        
+
         if (!chainOfCommand.third || chainOfCommand.third !== selectedAccountId) {
             availablePositions.push({ value: '3iC', displayValue: '3iC' });
         }
-        
+
         if (!chainOfCommand.nco || chainOfCommand.nco !== selectedAccountId) {
             availablePositions.push({ value: 'NCOiC', displayValue: 'NCOiC' });
         }
@@ -124,7 +130,7 @@ export class RequestChainOfCommandPositionModalComponent implements OnInit {
         };
 
         this.pending = true;
-        this.httpClient.post(this.urlService.apiUrl + '/commandrequests/create/chainofcommandposition', commandRequest).pipe(first()).subscribe({
+        this.commandRequestsService.createChainOfCommandPosition(commandRequest).pipe(first()).subscribe({
             next: () => {
                 this.dialog.closeAll();
                 this.pending = false;
@@ -157,4 +163,4 @@ interface FormModel {
     unit: IDropdownElement;
     position: IDropdownElement;
     reason: string;
-} 
+}

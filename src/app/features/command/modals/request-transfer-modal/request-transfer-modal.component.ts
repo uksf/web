@@ -1,18 +1,19 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { NgForm } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { BehaviorSubject, forkJoin, of } from 'rxjs';
+import { BehaviorSubject, forkJoin } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
-import { Account, BasicAccount } from '@app/shared/models/account';
+import { BasicAccount } from '@app/shared/models/account';
 import { CommandRequest } from '@app/features/command/models/command-request';
 import { Unit, UnitBranch } from '@app/features/units/models/units';
 import { SelectionListComponent } from '@app/shared/components/elements/selection-list/selection-list.component';
 import { RequestModalData } from '@app/shared/models/shared';
 import { LoggingService } from '@app/core/services/logging.service';
+import { MembersService } from '@app/shared/services/members.service';
+import { UnitsService } from '../../services/units.service';
+import { CommandRequestsService } from '../../services/command-requests.service';
 
 @Component({
     selector: 'app-request-transfer-modal',
@@ -36,10 +37,17 @@ export class RequestTransferModalComponent implements OnInit {
         reason: [{ type: 'required', message: () => 'A reason for the unit transfer is required' }]
     };
 
-    constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService, @Inject(MAT_DIALOG_DATA) public data: RequestModalData, private logger: LoggingService) {
+    constructor(
+        private dialog: MatDialog,
+        private membersService: MembersService,
+        private unitsService: UnitsService,
+        private commandRequestsService: CommandRequestsService,
+        @Inject(MAT_DIALOG_DATA) public data: RequestModalData,
+        private logger: LoggingService
+    ) {
         if (data) {
             this.preSelection = data.ids;
-            
+
             // Use allowedBranches if provided, otherwise default to combat only
             if (data.allowedBranches) {
                 this.allowedBranches = data.allowedBranches;
@@ -48,7 +56,7 @@ export class RequestTransferModalComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.httpClient.get(`${this.urlService.apiUrl}/accounts/members`).pipe(first()).subscribe({
+        this.membersService.getMembers().pipe(first()).subscribe({
             next: (accounts: BasicAccount[]) => {
                 const elements = accounts.map(BasicAccount.mapToElement);
                 this.accounts.next(elements);
@@ -63,7 +71,7 @@ export class RequestTransferModalComponent implements OnInit {
         // Fetch units based on allowed branches
         if (this.allowedBranches.length === 3) {
             // If all branches are allowed, fetch without filter
-            this.httpClient.get<Unit[]>(`${this.urlService.apiUrl}/units`).pipe(first()).subscribe({
+            this.unitsService.getUnits().pipe(first()).subscribe({
                 next: (units: Unit[]) => {
                     this.units.next(units.map(Unit.mapToElement));
                 }
@@ -72,7 +80,7 @@ export class RequestTransferModalComponent implements OnInit {
             // Make separate API calls for each branch since the API only supports one filter at a time
             const requests = this.allowedBranches.map(branch => {
                 const branchName = this.getBranchName(branch);
-                return this.httpClient.get<Unit[]>(`${this.urlService.apiUrl}/units?filter=${branchName}`);
+                return this.unitsService.getUnits(branchName);
             });
 
             forkJoin(requests).pipe(first()).subscribe({
@@ -113,8 +121,8 @@ export class RequestTransferModalComponent implements OnInit {
                 return;
             }
 
-            this.httpClient.get(`${this.urlService.apiUrl}/accounts/${element.value}`).pipe(first()).subscribe({
-                next: (account: Account) => {
+            this.membersService.getAccount(element.value).pipe(first()).subscribe({
+                next: (account) => {
                     element.disabled = account.unitAssignment === this.model.unit.displayValue;
                     this.revalidate();
                 }
@@ -140,7 +148,7 @@ export class RequestTransferModalComponent implements OnInit {
             };
 
             this.pending = true;
-            this.httpClient.post(`${this.urlService.apiUrl}/commandrequests/create/transfer`, commandRequest).pipe(first()).subscribe({
+            this.commandRequestsService.createTransfer(commandRequest).pipe(first()).subscribe({
                 next: () => {
                     this.dialog.closeAll();
                     this.pending = false;

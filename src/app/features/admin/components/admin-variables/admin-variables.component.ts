@@ -1,6 +1,4 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatAccordion } from '@angular/material/expansion';
 import { Observable, Subject, timer, of } from 'rxjs';
@@ -9,6 +7,7 @@ import { FormBuilder, Validators, AbstractControl, ValidationErrors } from '@ang
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { VariableItem } from '@app/features/admin/models/variable-item';
+import { VariablesService } from '../../services/variables.service';
 
 @Component({
     selector: 'app-admin-variables',
@@ -36,7 +35,7 @@ export class AdminVariablesComponent implements OnInit, OnDestroy {
         item: [{ type: 'required', message: 'Item is required' }]
     };
 
-    constructor(private formBuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {}
+    constructor(private formBuilder: FormBuilder, private variablesService: VariablesService, private dialog: MatDialog) {}
 
     ngOnInit(): void {
         this.getVariables();
@@ -71,7 +70,7 @@ export class AdminVariablesComponent implements OnInit, OnDestroy {
 
     getVariables() {
         this.updating = true;
-        this.httpClient.get(`${this.urls.apiUrl}/variables`).pipe(takeUntil(this.destroy$)).subscribe({
+        this.variablesService.getVariables().pipe(takeUntil(this.destroy$)).subscribe({
             next: (response: VariableItem[]) => {
                 this.variables = response;
                 this.formatVariables();
@@ -86,23 +85,16 @@ export class AdminVariablesComponent implements OnInit, OnDestroy {
     addVariable() {
         this.updating = true;
         const formString = JSON.stringify(this.form.getRawValue()).replace(/[\n\r]/g, '');
-        this.httpClient
-            .put(`${this.urls.apiUrl}/variables`, formString, {
-                headers: new HttpHeaders({
-                    'Content-Type': 'application/json'
-                })
-            })
-            .pipe(takeUntil(this.destroy$))
-            .subscribe({
-                next: () => {
-                    this.form.controls.key.reset();
-                    this.form.controls.item.reset();
-                    this.getVariables();
-                },
-                error: () => {
-                    this.updating = false;
-                }
-            });
+        this.variablesService.addVariable(formString).pipe(takeUntil(this.destroy$)).subscribe({
+            next: () => {
+                this.form.controls.key.reset();
+                this.form.controls.item.reset();
+                this.getVariables();
+            },
+            error: () => {
+                this.updating = false;
+            }
+        });
     }
 
     validateVariable(control: AbstractControl): Observable<ValidationErrors> {
@@ -111,28 +103,21 @@ export class AdminVariablesComponent implements OnInit, OnDestroy {
                 if (control.pristine || !control.value) {
                     return of(null);
                 }
-                return this.httpClient.post(`${this.urls.apiUrl}/variables/${control.value}`, {}).pipe(map((response) => (response ? { keyTaken: true } : null)));
+                return this.variablesService.checkVariableKey(control.value).pipe(map((response) => (response ? { keyTaken: true } : null)));
             })
         );
     }
 
     editVariable(variable: VariableItem) {
         this.updating = true;
-        this.httpClient
-            .patch(`${this.urls.apiUrl}/variables`, variable, {
-                headers: new HttpHeaders({
-                    'Content-Type': 'application/json'
-                })
-            })
-            .pipe(takeUntil(this.destroy$))
-            .subscribe({
-                next: () => {
-                    this.getVariables();
-                },
-                error: () => {
-                    this.updating = false;
-                }
-            });
+        this.variablesService.editVariable(variable).pipe(takeUntil(this.destroy$)).subscribe({
+            next: () => {
+                this.getVariables();
+            },
+            error: () => {
+                this.updating = false;
+            }
+        });
     }
 
     deleteVariable(event, variable: VariableItem) {
@@ -144,7 +129,7 @@ export class AdminVariablesComponent implements OnInit, OnDestroy {
             next: (result) => {
                 if (result) {
                     this.updating = true;
-                    this.httpClient.delete(`${this.urls.apiUrl}/variables/${variable.key}`).pipe(takeUntil(this.destroy$)).subscribe({
+                    this.variablesService.deleteVariable(variable.key).pipe(takeUntil(this.destroy$)).subscribe({
                         next: () => {
                             this.getVariables();
                         },

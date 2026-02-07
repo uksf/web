@@ -1,8 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NgForm } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { BehaviorSubject, forkJoin } from 'rxjs';
@@ -12,6 +10,9 @@ import { BasicAccount } from '@app/shared/models/account';
 import { LoggingService } from '@app/core/services/logging.service';
 import { Unit } from '@app/features/units/models/units';
 import { CommandRequest } from '@app/features/command/models/command-request';
+import { MembersService } from '@app/shared/services/members.service';
+import { UnitsService } from '../../services/units.service';
+import { CommandRequestsService } from '../../services/command-requests.service';
 
 @Component({
     selector: 'app-request-unit-removal-modal',
@@ -33,10 +34,16 @@ export class RequestUnitRemovalModalComponent implements OnInit {
         reason: [{ type: 'required', message: () => 'A reason for the unit removal is required' }]
     };
 
-    constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService, private logger: LoggingService) {}
+    constructor(
+        private dialog: MatDialog,
+        private membersService: MembersService,
+        private unitsService: UnitsService,
+        private commandRequestsService: CommandRequestsService,
+        private logger: LoggingService
+    ) {}
 
     ngOnInit() {
-        this.httpClient.get(`${this.urlService.apiUrl}/accounts/members`).pipe(first()).subscribe({
+        this.membersService.getMembers().pipe(first()).subscribe({
             next: (accounts: BasicAccount[]) => {
                 this.accounts.next(accounts.map(BasicAccount.mapToElement));
                 this.accounts.complete();
@@ -53,10 +60,10 @@ export class RequestUnitRemovalModalComponent implements OnInit {
         }
 
         const accountId = mapFromElement(BasicAccount, element).id;
-        
+
         // Make separate API calls for auxiliary and secondary units since the API only supports one filter at a time
-        const auxiliaryRequest = this.httpClient.get<Unit[]>(`${this.urlService.apiUrl}/units?filter=auxiliary&accountId=${accountId}`);
-        const secondaryRequest = this.httpClient.get<Unit[]>(`${this.urlService.apiUrl}/units?filter=secondary&accountId=${accountId}`);
+        const auxiliaryRequest = this.unitsService.getUnits('auxiliary', accountId);
+        const secondaryRequest = this.unitsService.getUnits('secondary', accountId);
 
         forkJoin([auxiliaryRequest, secondaryRequest]).pipe(first()).subscribe({
             next: ([auxiliaryUnits, secondaryUnits]) => {
@@ -83,7 +90,7 @@ export class RequestUnitRemovalModalComponent implements OnInit {
         };
 
         this.pending = true;
-        this.httpClient.post(this.urlService.apiUrl + '/commandrequests/create/unitremoval', commandRequest).pipe(first()).subscribe({
+        this.commandRequestsService.createUnitRemoval(commandRequest).pipe(first()).subscribe({
             next: () => {
                 this.dialog.closeAll();
                 this.pending = false;

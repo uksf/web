@@ -11,6 +11,11 @@ import { MatTabsModule } from '@angular/material/tabs';
 // Routing
 import { AdminRoutingModule } from './admin-routing.module';
 
+// Services
+import { AdminToolsService } from './services/admin-tools.service';
+import { InfrastructureService } from './services/infrastructure.service';
+import { VariablesService } from './services/variables.service';
+
 // Shared Module
 import { SharedModule } from '@shared/shared.module';
 
@@ -48,5 +53,6 @@ import { AdminServersComponent } from './components/admin-servers/admin-servers.
     MatSortModule,
     MatTabsModule,
   ],
+  providers: [AdminToolsService, InfrastructureService, VariablesService],
 })
 export class AdminModule {}

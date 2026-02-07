@@ -1,14 +1,13 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AddUnitModalComponent } from '@app/features/command/modals/add-unit-modal/add-unit-modal.component';
 import { ITreeOptions, KEYS, TREE_ACTIONS, TreeNode } from '@circlon/angular-tree-component';
 import { Permissions } from '@app/core/services/permissions';
 import { PermissionsService } from '@app/core/services/permissions.service';
-import { RequestUnitUpdateOrder, RequestUnitUpdateParent, ResponseUnit, Unit, UnitTreeDataSet } from '@app/features/units/models/units';
+import { RequestUnitUpdateOrder, RequestUnitUpdateParent, Unit, UnitTreeDataSet } from '@app/features/units/models/units';
+import { UnitsService } from '../../services/units.service';
 
 @Component({
     selector: 'app-command-units',
@@ -37,7 +36,7 @@ export class CommandUnitsComponent implements OnInit, OnDestroy {
     auxiliary: Unit[];
     secondary: Unit[];
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private permissions: PermissionsService) {
+    constructor(private unitsService: UnitsService, private dialog: MatDialog, private permissions: PermissionsService) {
         if (permissions.hasPermission(Permissions.ADMIN)) {
             this.options = {
                 allowDrag: (node: TreeNode) => !this.updatingOrder && node.parent && !node.parent.data.virtual,
@@ -80,7 +79,7 @@ export class CommandUnitsComponent implements OnInit, OnDestroy {
     }
 
     getUnits() {
-        this.httpClient.get(`${this.urls.apiUrl}/units/tree`).pipe(takeUntil(this.destroy$)).subscribe({
+        this.unitsService.getUnitTree().pipe(takeUntil(this.destroy$)).subscribe({
             next: (response: UnitTreeDataSet) => {
                 this.combat = response.combatNodes;
                 this.auxiliary = response.auxiliaryNodes;
@@ -105,8 +104,8 @@ export class CommandUnitsComponent implements OnInit, OnDestroy {
     }
 
     editUnit(event) {
-        this.httpClient.get(`${this.urls.apiUrl}/units/${event.node.id}`).pipe(takeUntil(this.destroy$)).subscribe({
-            next: (unit: ResponseUnit) => {
+        this.unitsService.getUnit(event.node.id).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (unit) => {
                 this.dialog
                     .open(AddUnitModalComponent, {
                         data: {
@@ -131,7 +130,7 @@ export class CommandUnitsComponent implements OnInit, OnDestroy {
                 index: event.to.index,
                 parentId: event.to.parent.id
             };
-            this.httpClient.patch(`${this.urls.apiUrl}/units/${event.node.id}/parent`, body).pipe(takeUntil(this.destroy$)).subscribe({
+            this.unitsService.updateParent(event.node.id, body).pipe(takeUntil(this.destroy$)).subscribe({
                 next: (_) => {
                     this.getUnits();
                 }
@@ -140,7 +139,7 @@ export class CommandUnitsComponent implements OnInit, OnDestroy {
             const body: RequestUnitUpdateOrder = {
                 index: event.to.index
             };
-            this.httpClient.patch(`${this.urls.apiUrl}/units/${event.node.id}/order`, body).pipe(takeUntil(this.destroy$)).subscribe({
+            this.unitsService.updateOrder(event.node.id, body).pipe(takeUntil(this.destroy$)).subscribe({
                 next: (_) => {
                     this.getUnits();
                 }

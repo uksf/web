@@ -36,8 +36,10 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { TreeModule } from '@circlon/angular-tree-component';
+import { CommandRequestsService } from './services/command-requests.service';
 import { RanksService } from './services/ranks.service';
 import { RolesService } from './services/roles.service';
+import { UnitsService } from './services/units.service';
 
 @NgModule({
     declarations: [
@@ -77,6 +79,6 @@ import { RolesService } from './services/roles.service';
         DragDropModule,
         TreeModule,
     ],
-    providers: [RanksService, RolesService],
+    providers: [CommandRequestsService, RanksService, RolesService, UnitsService],
 })
 export class CommandModule {}

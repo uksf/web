@@ -3,11 +3,10 @@ import { AbstractControl, FormBuilder, ValidationErrors, Validators } from '@ang
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { Observable, of, timer } from 'rxjs';
 import { first, map, switchMap } from 'rxjs/operators';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { ResponseUnit, UnitBranch } from '@app/features/units/models/units';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
+import { UnitsService } from '../../services/units.service';
 
 @Component({
     selector: 'app-add-unit-modal',
@@ -53,7 +52,7 @@ export class AddUnitModalComponent implements OnInit {
     edit = false;
     original: string;
 
-    constructor(private formBuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: { unit?: ResponseUnit }) {
+    constructor(private formBuilder: FormBuilder, private unitsService: UnitsService, private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: { unit?: ResponseUnit }) {
         if (data) {
             this.edit = true;
             this.unit = data.unit;
@@ -63,7 +62,7 @@ export class AddUnitModalComponent implements OnInit {
 
     ngOnInit() {
         this.original = JSON.stringify(this.form.getRawValue());
-        this.httpClient.get(`${this.urls.apiUrl}/units`).pipe(first()).subscribe({
+        this.unitsService.getAllUnits().pipe(first()).subscribe({
             next: (units: ResponseUnit[]) => {
                 this.units = units;
                 this.resolveAvailableParentUnits();
@@ -99,8 +98,8 @@ export class AddUnitModalComponent implements OnInit {
                 if (control.pristine || !control.value) {
                     return of(null);
                 }
-                return this.httpClient
-                    .get(`${this.urls.apiUrl}/units/exists/${control.value}${this.edit ? `?id=${this.unit.id}` : ''}`)
+                return this.unitsService
+                    .checkUnitExists(control.value, this.edit ? this.unit.id : undefined)
                     .pipe(map((exists: boolean) => (exists ? { unitTaken: true } : null)));
             })
         );
@@ -122,34 +121,20 @@ export class AddUnitModalComponent implements OnInit {
             this.unit.callsign = this.form.controls.callsign.value;
             this.unit.icon = this.form.controls.icon.value;
             this.unit.preferShortname = this.form.controls.preferShortname.value;
-            this.httpClient
-                .put(`${this.urls.apiUrl}/units/${this.unit.id}`, this.unit, {
-                    headers: new HttpHeaders({
-                        'Content-Type': 'application/json'
-                    })
-                })
-                .pipe(first())
-                .subscribe({
-                    next: () => {
-                        this.dialog.closeAll();
-                        this.pending = false;
-                    }
-                });
+            this.unitsService.updateUnit(this.unit.id, this.unit).pipe(first()).subscribe({
+                next: () => {
+                    this.dialog.closeAll();
+                    this.pending = false;
+                }
+            });
         } else {
             const formString = JSON.stringify(this.form.getRawValue()).replace(/[\n\r]/g, '');
-            this.httpClient
-                .post(`${this.urls.apiUrl}/units`, formString, {
-                    headers: new HttpHeaders({
-                        'Content-Type': 'application/json'
-                    })
-                })
-                .pipe(first())
-                .subscribe({
-                    next: () => {
-                        this.dialog.closeAll();
-                        this.pending = false;
-                    }
-                });
+            this.unitsService.createUnit(formString).pipe(first()).subscribe({
+                next: () => {
+                    this.dialog.closeAll();
+                    this.pending = false;
+                }
+            });
         }
     }
 
@@ -172,7 +157,7 @@ export class AddUnitModalComponent implements OnInit {
         dialog.afterClosed().pipe(first()).subscribe({
             next: (result) => {
                 if (result) {
-                    this.httpClient.delete(`${this.urls.apiUrl}/units/${this.unit.id}`).pipe(first()).subscribe({
+                    this.unitsService.deleteUnit(this.unit.id).pipe(first()).subscribe({
                         next: (_) => {
                             this.dialog.closeAll();
                         }

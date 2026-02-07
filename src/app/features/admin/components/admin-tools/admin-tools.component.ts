@@ -1,6 +1,4 @@
 import { Component, isDevMode, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { AccountService } from '@app/core/services/account.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
@@ -14,6 +12,7 @@ import { AuthenticationService } from '@app/core/services/authentication/authent
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UksfError } from '@app/shared/models/response';
+import { AdminToolsService } from '../../services/admin-tools.service';
 
 @Component({
     selector: 'app-admin-tools',
@@ -34,8 +33,7 @@ export class AdminToolsComponent implements OnInit, OnDestroy {
     accounts: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
 
     constructor(
-        private httpClient: HttpClient,
-        private urlService: UrlService,
+        private adminToolsService: AdminToolsService,
         private accountService: AccountService,
         private dialog: MatDialog,
         private permissions: PermissionsService,
@@ -74,7 +72,7 @@ export class AdminToolsComponent implements OnInit, OnDestroy {
     }
 
     getAccounts(): void {
-        this.httpClient.get(`${this.urlService.apiUrl}/accounts/active`).pipe(takeUntil(this.destroy$)).subscribe({
+        this.adminToolsService.getActiveAccounts().pipe(takeUntil(this.destroy$)).subscribe({
             next: (accounts: BasicAccount[]): void => {
                 const elements: IDropdownElement[] = accounts.map(BasicAccount.mapToElement);
                 this.accounts.next(elements);
@@ -98,12 +96,12 @@ export class AdminToolsComponent implements OnInit, OnDestroy {
 
     invalidateCaches(): void {
         let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'invalidate');
-        this.httpClient.get(`${this.urlService.apiUrl}/data/invalidate`).pipe(takeUntil(this.destroy$)).subscribe(this.setPending(tool));
+        this.adminToolsService.invalidateCaches().pipe(takeUntil(this.destroy$)).subscribe(this.setPending(tool));
     }
 
     getDiscordRoles(): void {
         let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'getDiscord');
-        this.httpClient.get(`${this.urlService.apiUrl}/discord/roles`, { responseType: 'text' }).pipe(takeUntil(this.destroy$)).subscribe({
+        this.adminToolsService.getDiscordRoles().pipe(takeUntil(this.destroy$)).subscribe({
             next: (response: string): void => {
                 this.dialog.open(MessageModalComponent, {
                     data: { message: response }
@@ -121,27 +119,27 @@ export class AdminToolsComponent implements OnInit, OnDestroy {
 
     updateDiscordRoles(): void {
         let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'updateDiscord');
-        this.httpClient.get(`${this.urlService.apiUrl}/discord/updateuserroles`).pipe(takeUntil(this.destroy$)).subscribe(this.setPending(tool));
+        this.adminToolsService.updateDiscordRoles().pipe(takeUntil(this.destroy$)).subscribe(this.setPending(tool));
     }
 
     deleteGithubIssueCommand(): void {
         let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'deleteGithubIssueCommand');
-        this.httpClient.delete(`${this.urlService.apiUrl}/discord/commands/newGithubIssue`).pipe(takeUntil(this.destroy$)).subscribe(this.setPending(tool));
+        this.adminToolsService.deleteGithubIssueCommand().pipe(takeUntil(this.destroy$)).subscribe(this.setPending(tool));
     }
 
     reloadTeamspeak(): void {
         let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'reloadTeamspeak');
-        this.httpClient.get(`${this.urlService.apiUrl}/teamspeak/reload`).pipe(takeUntil(this.destroy$)).subscribe(this.setPending(tool));
+        this.adminToolsService.reloadTeamspeak().pipe(takeUntil(this.destroy$)).subscribe(this.setPending(tool));
     }
 
     testNotification(): void {
         let tool: Tool = this.debugTools.find((x: Tool): boolean => x.key === 'notification');
-        this.httpClient.get(`${this.urlService.apiUrl}/debug/notifications-test`).pipe(takeUntil(this.destroy$)).subscribe(this.setPending(tool));
+        this.adminToolsService.testNotification().pipe(takeUntil(this.destroy$)).subscribe(this.setPending(tool));
     }
 
     emergencyCleanupStuckBuilds(): void {
         let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'emergencyCleanup');
-        this.httpClient.post(`${this.urlService.apiUrl}/modpack/builds/emergency-cleanup`, {}).pipe(takeUntil(this.destroy$)).subscribe({
+        this.adminToolsService.emergencyCleanupStuckBuilds().pipe(takeUntil(this.destroy$)).subscribe({
             next: (response: { message: string }): void => {
                 this.dialog.open(MessageModalComponent, {
                     data: { message: response.message }
