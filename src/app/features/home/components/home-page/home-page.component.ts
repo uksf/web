@@ -4,6 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { UrlService } from '@app/core/services/url.service';
 import { HttpClient } from '@angular/common/http';
 import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
+import { DebouncedCallback } from '@app/shared/utils/debounce-callback';
 
 @Component({
     selector: 'app-home-page',
@@ -19,12 +20,12 @@ export class HomePageComponent implements OnInit, OnDestroy {
     instagramImages: InstagramImage[] = [];
     _time: Date;
     private hubConnection: ConnectionContainer;
-    private updateTimeout;
-    private timeInterval;
+    private debouncedUpdate = new DebouncedCallback();
+    private timeInterval: ReturnType<typeof setInterval>;
     private destroy$ = new Subject<void>();
 
     private onReceiveClients = () => {
-        this.mergeUpdates(() => {
+        this.debouncedUpdate.schedule(() => {
             this.getClients();
         });
     };
@@ -42,7 +43,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
         this.hubConnection.connection.on('ReceiveClients', this.onReceiveClients);
         this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
-                this.mergeUpdates(() => {
+                this.debouncedUpdate.schedule(() => {
                     this.getClients();
                 });
             }
@@ -57,9 +58,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
         if (this.timeInterval) {
             clearInterval(this.timeInterval);
         }
-        if (this.updateTimeout) {
-            clearTimeout(this.updateTimeout);
-        }
+        this.debouncedUpdate.cancel();
         if (this.hubConnection) {
             this.hubConnection.connection.off('ReceiveClients', this.onReceiveClients);
             this.hubConnection.connection.stop();
@@ -68,15 +67,6 @@ export class HomePageComponent implements OnInit, OnDestroy {
 
     get time() {
         return this._time;
-    }
-
-    private mergeUpdates(callback: () => void) {
-        if (this.updateTimeout) {
-            clearTimeout(this.updateTimeout);
-        }
-        this.updateTimeout = setTimeout(() => {
-            callback();
-        }, 500);
     }
 
     private getClients() {

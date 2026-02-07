@@ -11,6 +11,7 @@ import { SignalRService, ConnectionContainer } from '@app/core/services/signalr.
 import { nextFrame } from '@app/shared/services/helper.service';
 import { UksfError } from '@app/shared/models/response';
 import { TeamspeakConnectClient } from '@app/shared/models/teamspeak-connect-client';
+import { DebouncedCallback } from '@app/shared/utils/debounce-callback';
 
 @Component({
     selector: 'app-teamspeak-connect',
@@ -31,11 +32,11 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
     private previousResponse = '-1';
     private hubConnection: ConnectionContainer;
     private destroy$ = new Subject<void>();
-    private updateTimeout: number;
-    private changedTimeout: number;
+    private debouncedUpdate = new DebouncedCallback();
+    private debouncedChanged = new DebouncedCallback(100);
 
-    private onReceiveClients = (clients) => {
-        this.mergeUpdates(() => {
+    private onReceiveClients = (clients: TeamspeakConnectClient[]) => {
+        this.debouncedUpdate.schedule(() => {
             this.updateClients(clients);
         });
     };
@@ -65,7 +66,7 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
         this.hubConnection.connection.on('ReceiveClients', this.onReceiveClients);
         this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
-                this.mergeUpdates(() => {
+                this.debouncedUpdate.schedule(() => {
                     this.findTeamspeakClients();
                 });
             }
@@ -75,23 +76,10 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
-        if (this.updateTimeout) {
-            clearTimeout(this.updateTimeout);
-        }
-        if (this.changedTimeout) {
-            clearTimeout(this.changedTimeout);
-        }
+        this.debouncedUpdate.cancel();
+        this.debouncedChanged.cancel();
         this.hubConnection.connection.off('ReceiveClients', this.onReceiveClients);
         this.hubConnection.connection.stop();
-    }
-
-    private mergeUpdates(callback: () => void) {
-        if (this.updateTimeout) {
-            clearTimeout(this.updateTimeout);
-        }
-        this.updateTimeout = setTimeout(() => {
-            callback();
-        }, 500);
     }
 
     findTeamspeakClients() {
@@ -141,7 +129,7 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
         }
 
         nextFrame(() => {
-            this.mergeChanged(() => {
+            this.debouncedChanged.schedule(() => {
                 this.validateCode(code);
             });
         });
@@ -202,12 +190,4 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
         return 'This user is not connected to any account';
     }
 
-    private mergeChanged(callback: () => void) {
-        if (this.changedTimeout) {
-            clearTimeout(this.changedTimeout);
-        }
-        this.changedTimeout = setTimeout(() => {
-            callback();
-        }, 100);
-    }
 }

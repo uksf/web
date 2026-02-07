@@ -12,13 +12,14 @@ import { Account, MembershipState } from '@app/shared/models/account';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { AppSettingsService, Environments } from './app-settings.service';
 import { LoggingService } from './logging.service';
+import { DebouncedCallback } from '@app/shared/utils/debounce-callback';
 
 @Injectable()
 export class PermissionsService {
     private jwtRolesKey = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
     private accountHubConnection: ConnectionContainer;
     private refreshing = false;
-    private updateTimeout: number;
+    private debouncedUpdate = new DebouncedCallback();
     public accountUpdateEvent = new Subject<void>();
 
     constructor(
@@ -43,13 +44,13 @@ export class PermissionsService {
         this.waitForId().then((id) => {
             this.accountHubConnection = this.signalrService.connect(`account?userId=${id}`);
             this.accountHubConnection.connection.on('ReceiveAccountUpdate', () => {
-                this.mergeUpdates(() => {
+                this.debouncedUpdate.schedule(() => {
                     this.refresh().then();
                 });
             });
             this.accountHubConnection.reconnectEvent.subscribe({
                 next: () => {
-                    this.mergeUpdates(() => {
+                    this.debouncedUpdate.schedule(() => {
                         this.refresh().then();
                     });
                 }
@@ -191,12 +192,4 @@ export class PermissionsService {
         });
     }
 
-    private mergeUpdates(callback: () => void) {
-        if (this.updateTimeout) {
-            clearTimeout(this.updateTimeout);
-        }
-        this.updateTimeout = setTimeout(() => {
-            callback();
-        }, 500);
-    }
 }
