@@ -4,7 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { AccountService } from '@app/core/services/account.service';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { SignalRService, ConnectionContainer } from '@app/core/services/signalr.service';
 import { TimeAgoPipe } from '@app/shared/pipes/time.pipe';
 import { ObjectId } from '@app/shared/models/object-id';
@@ -32,16 +32,11 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
         );
     };
     comments = [];
-    commentForm;
+    commentForm = this.formBuilder.group({
+        commentContent: ['', Validators.maxLength(1000)]
+    });
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private formbuilder: UntypedFormBuilder, private accountService: AccountService, private signalrService: SignalRService) {
-        this.commentForm = this.formbuilder.group(
-            {
-                commentContent: ['', Validators.maxLength(1000)]
-            },
-            {}
-        );
-    }
+    constructor(private httpClient: HttpClient, private urls: UrlService, private formBuilder: FormBuilder, private accountService: AccountService, private signalrService: SignalRService) {}
 
     ngOnInit() {
         this.getComments();

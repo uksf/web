@@ -1,7 +1,7 @@
 import { Component, Output, EventEmitter, Input, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { HttpHeaders } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
@@ -23,8 +23,12 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
     @Output() connectedEvent = new EventEmitter();
     @Output() confirmedEvent = new EventEmitter();
     @Output() cancelEvent = new EventEmitter();
-    formGroup: UntypedFormGroup;
-    teamspeakForm: UntypedFormGroup;
+    formGroup = this.formBuilder.group({
+        code: ['', Validators.required]
+    });
+    teamspeakForm = this.formBuilder.group({
+        teamspeakId: ['', Validators.required]
+    });
     pending = false;
     state = 0;
     clients: TeamspeakConnectClient[] = [];
@@ -43,22 +47,12 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
 
     constructor(
         private httpClient: HttpClient,
-        public formBuilder: UntypedFormBuilder,
+        private formBuilder: FormBuilder,
         private urls: UrlService,
         public dialog: MatDialog,
         private accountService: AccountService,
         private signalrService: SignalRService
-    ) {
-        this.formGroup = formBuilder.group({
-            code: ['', Validators.required]
-        });
-        this.teamspeakForm = formBuilder.group(
-            {
-                teamspeakId: ['', Validators.required]
-            },
-            {}
-        );
-    }
+    ) {}
 
     ngOnInit(): void {
         this.findTeamspeakClients();
@@ -160,7 +154,7 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
                 error: (error: UksfError) => {
                     this.errorMessage = error.error;
                     this.state = 3;
-                    this.formGroup.controls['code'].setValue('');
+                    this.formGroup.controls.code.setValue('');
                     this.pending = false;
                 }
             });

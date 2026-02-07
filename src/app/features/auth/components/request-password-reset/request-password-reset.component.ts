@@ -1,5 +1,5 @@
 import { Component, Output, ViewChild, EventEmitter } from '@angular/core';
-import { UntypedFormBuilder, NgForm } from '@angular/forms';
+import { NgForm } from '@angular/forms';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
 import { first } from 'rxjs/operators';
@@ -26,7 +26,7 @@ export class RequestPasswordResetComponent {
         ]
     };
 
-    constructor(public formbuilder: UntypedFormBuilder, private auth: AuthenticationService) {}
+    constructor(private auth: AuthenticationService) {}
 
     submit() {
         // Honeypot field must be empty

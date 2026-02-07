@@ -6,7 +6,7 @@ import { AccountService } from '@app/core/services/account.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConnectTeamspeakModalComponent } from '../../modals/connect-teamspeak-modal/connect-teamspeak-modal.component';
 import { ChangePasswordModalComponent } from '../../modals/change-password-modal/change-password-modal.component';
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { ChangeFirstLastModalComponent } from '../../modals/change-first-last-modal/change-first-last-modal.component';
 import { Permissions } from '@app/core/services/permissions';
 import { CountryPickerService, ICountry } from '@app/shared/services/country-picker/country-picker.service';
@@ -27,7 +27,11 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     membershipState = MembershipState;
     account;
     accountId: string;
-    settingsFormGroup: UntypedFormGroup;
+    settingsFormGroup = this.formBuilder.group({
+        notificationsEmail: [''],
+        notificationsTeamspeak: [''],
+        sr1Enabled: ['']
+    });
     accountSubscription: Subscription;
     isNco: boolean;
     isAdmin: boolean;
@@ -43,15 +47,9 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
         private httpClient: HttpClient,
         private urls: UrlService,
         private router: Router,
-        private formbuilder: UntypedFormBuilder,
+        private formBuilder: FormBuilder,
         private permissions: PermissionsService
     ) {
-        this.settingsFormGroup = this.formbuilder.group({
-            notificationsEmail: [''],
-            notificationsTeamspeak: [''],
-            sr1Enabled: ['']
-        });
-
         this.countries = CountryPickerService.countries;
 
         this.isNco = this.permissions.hasPermission(Permissions.NCO);
@@ -323,9 +321,9 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
             }, 100);
             return;
         }
-        this.settingsFormGroup.controls['notificationsEmail'].setValue(this.account.settings['notificationsEmail']);
-        this.settingsFormGroup.controls['notificationsTeamspeak'].setValue(this.account.settings['notificationsTeamspeak']);
-        this.settingsFormGroup.controls['sr1Enabled'].setValue(this.account.settings['sr1Enabled']);
+        this.settingsFormGroup.controls.notificationsEmail.setValue(this.account.settings.notificationsEmail);
+        this.settingsFormGroup.controls.notificationsTeamspeak.setValue(this.account.settings.notificationsTeamspeak);
+        this.settingsFormGroup.controls.sr1Enabled.setValue(this.account.settings.sr1Enabled);
     }
 
     changeSetting() {
