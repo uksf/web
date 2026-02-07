@@ -1,6 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { InstallWorkshopModData } from '../models/workshop-mod';
 import { Subject } from 'rxjs';
@@ -13,23 +13,21 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class InstallWorkshopModModalComponent implements OnDestroy {
     private destroy$ = new Subject<void>();
-    form: UntypedFormGroup;
+    form = this.formBuilder.group({
+        steamId: ['', Validators.required],
+        rootMod: [false],
+        folderName: [{ value: '', disabled: true }]
+    });
     instantErrorStateMatcher: InstantErrorStateMatcher = new InstantErrorStateMatcher();
     validationMessages: { steamId: { type: string; message: string }[] } = {
         steamId: [{ type: 'required', message: 'Steam ID is required' }]
     };
     submitting: boolean = false;
 
-    constructor(private formBuilder: UntypedFormBuilder, public dialogRef: MatDialogRef<InstallWorkshopModModalComponent>) {
-        this.form = this.formBuilder.group({
-            steamId: ['', Validators.required],
-            rootMod: [false],
-            folderName: [{ value: '', disabled: true }]
-        });
-
-        this.form.get('rootMod').valueChanges.pipe(takeUntil(this.destroy$)).subscribe({
+    constructor(private formBuilder: FormBuilder, public dialogRef: MatDialogRef<InstallWorkshopModModalComponent>) {
+        this.form.controls.rootMod.valueChanges.pipe(takeUntil(this.destroy$)).subscribe({
             next: (isRootMod: boolean) => {
-                const folderNameControl = this.form.get('folderName');
+                const folderNameControl = this.form.controls.folderName;
                 if (isRootMod) {
                     folderNameControl.enable();
                 } else {
@@ -45,7 +43,7 @@ export class InstallWorkshopModModalComponent implements OnDestroy {
     }
 
     get isRootMod(): boolean {
-        return this.form.get('rootMod').value;
+        return this.form.controls.rootMod.value;
     }
 
     install() {

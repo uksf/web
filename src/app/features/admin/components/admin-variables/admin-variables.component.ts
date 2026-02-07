@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatAccordion } from '@angular/material/expansion';
 import { Observable, Subject, timer, of } from 'rxjs';
 import { switchMap, map, takeUntil } from 'rxjs/operators';
-import { UntypedFormGroup, UntypedFormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { VariableItem } from '@app/features/admin/models/variable-item';
@@ -19,9 +19,12 @@ export class AdminVariablesComponent implements OnInit, OnDestroy {
     private destroy$ = new Subject<void>();
     @ViewChild(MatAccordion) accordion: MatAccordion;
     expanded = false;
-    form: UntypedFormGroup;
+    form = this.formBuilder.group({
+        key: ['', Validators.required, this.validateVariable.bind(this)],
+        item: ['', Validators.required]
+    });
     instantErrorStateMatcher = new InstantErrorStateMatcher();
-    updating;
+    updating: boolean;
     variables: VariableItem[];
     variableLists: VariableItemList[];
 
@@ -33,12 +36,7 @@ export class AdminVariablesComponent implements OnInit, OnDestroy {
         item: [{ type: 'required', message: 'Item is required' }]
     };
 
-    constructor(formbuilder: UntypedFormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {
-        this.form = formbuilder.group({
-            key: ['', Validators.required, this.validateVariable.bind(this)],
-            item: ['', Validators.required]
-        });
-    }
+    constructor(private formBuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {}
 
     ngOnInit(): void {
         this.getVariables();

@@ -1,6 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
@@ -16,7 +16,13 @@ import { first, takeUntil } from 'rxjs/operators';
 })
 export class RequestLoaModalComponent implements OnInit, OnDestroy {
     private destroy$ = new Subject<void>();
-    form: UntypedFormGroup;
+    form = this.formBuilder.group({
+        reason: ['', Validators.required],
+        start: [null as Moment, Validators.required],
+        end: [null as Moment, Validators.required],
+        emergency: [false],
+        late: [false]
+    });
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     validationMessages = {
         reason: [{ type: 'required', message: 'Reason is required' }]
@@ -32,20 +38,13 @@ export class RequestLoaModalComponent implements OnInit, OnDestroy {
     submitting = false;
     mobile = false;
 
-    constructor(private dialog: MatDialog, private formbuilder: UntypedFormBuilder, private httpClient: HttpClient, private urlService: UrlService) {
-        this.form = this.formbuilder.group({
-            reason: ['', Validators.required],
-            start: ['', Validators.required],
-            end: ['', Validators.required],
-            emergency: [false],
-            late: [false]
-        });
-        this.form.controls['start'].valueChanges.pipe(takeUntil(this.destroy$)).subscribe({
+    constructor(private dialog: MatDialog, private formBuilder: FormBuilder, private httpClient: HttpClient, private urlService: UrlService) {
+        this.form.controls.start.valueChanges.pipe(takeUntil(this.destroy$)).subscribe({
             next: (_) => {
                 this.datesValid = this.validateDates();
             }
         });
-        this.form.controls['end'].valueChanges.pipe(takeUntil(this.destroy$)).subscribe({
+        this.form.controls.end.valueChanges.pipe(takeUntil(this.destroy$)).subscribe({
             next: (_) => {
                 this.datesValid = this.validateDates();
             }
@@ -81,7 +80,7 @@ export class RequestLoaModalComponent implements OnInit, OnDestroy {
                 this.late = true;
             } else {
                 this.late = false;
-                this.form.controls['emergency'].setValue(false);
+                this.form.controls.emergency.setValue(false);
             }
         } else {
             return false;
@@ -110,8 +109,8 @@ export class RequestLoaModalComponent implements OnInit, OnDestroy {
     }
 
     private setTimeValues() {
-        this.start = this.form.controls['start'].value;
-        this.end = this.form.controls['end'].value;
+        this.start = this.form.controls.start.value;
+        this.end = this.form.controls.end.value;
         if (this.start) {
             this.start.hours(0).minutes(0).seconds(0).milliseconds(0);
         }
@@ -126,14 +125,12 @@ export class RequestLoaModalComponent implements OnInit, OnDestroy {
         }
         this.submitting = true;
         this.setTimeValues();
-        this.form.value['start'] = this.start;
-        this.form.value['end'] = this.end;
-        this.form.controls['late'].setValue(this.late);
+        this.form.controls.late.setValue(this.late);
         const body = {
-            reason: this.form.value['reason'],
+            reason: this.form.controls.reason.value,
             start: this.start,
             end: this.end,
-            emergency: this.form.value['emergency'],
+            emergency: this.form.controls.emergency.value,
             late: this.late
         };
         this.httpClient

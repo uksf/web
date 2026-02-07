@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, ValidationErrors, Validators } from '@angular/forms';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { Observable, of, timer } from 'rxjs';
 import { first, map, switchMap } from 'rxjs/operators';
@@ -15,7 +15,17 @@ import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-moda
     styleUrls: ['./add-unit-modal.component.scss']
 })
 export class AddUnitModalComponent implements OnInit {
-    form: UntypedFormGroup;
+    form = this.formBuilder.group({
+        name: ['', Validators.required, this.validateUnit.bind(this)],
+        shortname: ['', Validators.required, this.validateUnit.bind(this)],
+        parent: ['', Validators.required],
+        branch: [UnitBranch.COMBAT, Validators.required],
+        teamspeakGroup: ['', null, this.validateUnit.bind(this)],
+        discordRoleId: ['', null, this.validateUnit.bind(this)],
+        callsign: ['', null, this.validateUnit.bind(this)],
+        icon: [''],
+        preferShortname: [false]
+    });
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     pending = false;
     branchTypes = [
@@ -43,18 +53,7 @@ export class AddUnitModalComponent implements OnInit {
     edit = false;
     original: string;
 
-    constructor(formbuilder: UntypedFormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: { unit?: ResponseUnit }) {
-        this.form = formbuilder.group({
-            name: ['', Validators.required, this.validateUnit.bind(this)],
-            shortname: ['', Validators.required, this.validateUnit.bind(this)],
-            parent: ['', Validators.required],
-            branch: [UnitBranch.COMBAT, Validators.required],
-            teamspeakGroup: ['', null, this.validateUnit.bind(this)],
-            discordRoleId: ['', null, this.validateUnit.bind(this)],
-            callsign: ['', null, this.validateUnit.bind(this)],
-            icon: [''],
-            preferShortname: [false]
-        });
+    constructor(private formBuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: { unit?: ResponseUnit }) {
         if (data) {
             this.edit = true;
             this.unit = data.unit;
@@ -77,9 +76,9 @@ export class AddUnitModalComponent implements OnInit {
     }
 
     resolveAvailableParentUnits() {
-        this.availableParentUnits = this.units.filter((x) => x.branch === this.form.controls['branch'].value);
+        this.availableParentUnits = this.units.filter((x) => x.branch === this.form.controls.branch.value);
         if (!this.edit) {
-            this.form.controls['parent'].setValue(this.availableParentUnits[0].id);
+            this.form.controls.parent.setValue(this.availableParentUnits[0].id);
         } else {
             if (this.unit.parent === '000000000000000000000000') {
                 return;
@@ -87,9 +86,9 @@ export class AddUnitModalComponent implements OnInit {
 
             this.availableParentUnits = this.availableParentUnits.filter((x) => x.id !== this.unit.id);
             if (this.availableParentUnits.find((x) => x.id === this.unit.parent)) {
-                this.form.controls['parent'].setValue(this.unit.parent);
+                this.form.controls.parent.setValue(this.unit.parent);
             } else {
-                this.form.controls['parent'].setValue(this.availableParentUnits[0].id);
+                this.form.controls.parent.setValue(this.availableParentUnits[0].id);
             }
         }
     }
@@ -114,15 +113,15 @@ export class AddUnitModalComponent implements OnInit {
 
         this.pending = true;
         if (this.edit) {
-            this.unit.name = this.form.controls['name'].value;
-            this.unit.shortname = this.form.controls['shortname'].value;
-            this.unit.parent = this.form.controls['parent'].value;
-            this.unit.branch = this.form.controls['branch'].value;
-            this.unit.teamspeakGroup = this.form.controls['teamspeakGroup'].value;
-            this.unit.discordRoleId = this.form.controls['discordRoleId'].value;
-            this.unit.callsign = this.form.controls['callsign'].value;
-            this.unit.icon = this.form.controls['icon'].value;
-            this.unit.preferShortname = this.form.controls['preferShortname'].value;
+            this.unit.name = this.form.controls.name.value;
+            this.unit.shortname = this.form.controls.shortname.value;
+            this.unit.parent = this.form.controls.parent.value;
+            this.unit.branch = this.form.controls.branch.value;
+            this.unit.teamspeakGroup = this.form.controls.teamspeakGroup.value;
+            this.unit.discordRoleId = this.form.controls.discordRoleId.value;
+            this.unit.callsign = this.form.controls.callsign.value;
+            this.unit.icon = this.form.controls.icon.value;
+            this.unit.preferShortname = this.form.controls.preferShortname.value;
             this.httpClient
                 .put(`${this.urls.apiUrl}/units/${this.unit.id}`, this.unit, {
                     headers: new HttpHeaders({

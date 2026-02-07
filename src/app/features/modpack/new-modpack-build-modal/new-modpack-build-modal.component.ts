@@ -1,11 +1,11 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, ValidationErrors, Validators } from '@angular/forms';
 import { NewBuild } from '../models/new-build';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 
-function onlyOne(form: UntypedFormGroup): ValidationErrors | null {
-    if (form && form.controls['branch'].value !== '' && form.controls['branch'].value !== 'No branch' && form.controls['commitId'].value !== '') {
+function onlyOne(group: AbstractControl): ValidationErrors | null {
+    if (group && group.get('branch').value !== '' && group.get('branch').value !== 'No branch' && group.get('commitId').value !== '') {
         return { both: true };
     }
 
@@ -18,7 +18,19 @@ function onlyOne(form: UntypedFormGroup): ValidationErrors | null {
     styleUrls: ['./new-modpack-build-modal.component.scss']
 })
 export class NewModpackBuildModalComponent {
-    form: UntypedFormGroup;
+    form = this.formBuilder.group({
+        configuration: ['Development', Validators.required],
+        referenceGroup: this.formBuilder.group(
+            {
+                branch: ['No branch'],
+                commitId: ['', Validators.pattern('^[a-fA-F0-9]{40}$')]
+            },
+            { validators: onlyOne }
+        ),
+        ace: [false],
+        acre: [false],
+        air: [false]
+    });
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     validationMessages = {
         commitId: [{ type: 'pattern', message: 'Commit ID format is invalid' }]
@@ -27,21 +39,8 @@ export class NewModpackBuildModalComponent {
     branches: string[] = [];
     submitting = false;
 
-    constructor(private formBuilder: UntypedFormBuilder, public dialogRef: MatDialogRef<NewModpackBuildModalComponent>, @Inject(MAT_DIALOG_DATA) public data: { branches: string[] }) {
+    constructor(private formBuilder: FormBuilder, public dialogRef: MatDialogRef<NewModpackBuildModalComponent>, @Inject(MAT_DIALOG_DATA) public data: { branches: string[] }) {
         this.branches = data.branches;
-        this.form = this.formBuilder.group({
-            configuration: ['Development', Validators.required],
-            referenceGroup: this.formBuilder.group(
-                {
-                    branch: ['No branch'],
-                    commitId: ['', Validators.pattern('^[a-fA-F0-9]{40}$')]
-                },
-                { validator: onlyOne }
-            ),
-            ace: [false],
-            acre: [false],
-            air: [false]
-        });
     }
 
     run() {

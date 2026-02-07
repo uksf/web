@@ -1,11 +1,11 @@
-import {Component, Inject, OnDestroy} from '@angular/core';
-import {AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators} from '@angular/forms';
-import {InstantErrorStateMatcher} from '@app/shared/services/form-helper.service';
-import {Observable, of, Subject, timer} from 'rxjs';
-import {first, map, switchMap, takeUntil} from 'rxjs/operators';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {UrlService} from '@app/core/services/url.service';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
+import { Component, Inject, OnDestroy } from '@angular/core';
+import { AbstractControl, FormBuilder, ValidationErrors, Validators } from '@angular/forms';
+import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
+import { Observable, of, Subject, timer } from 'rxjs';
+import { first, map, switchMap, takeUntil } from 'rxjs/operators';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { UrlService } from '@app/core/services/url.service';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-add-server-modal',
@@ -14,7 +14,18 @@ import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog
 })
 export class AddServerModalComponent implements OnDestroy {
     private destroy$ = new Subject<void>();
-    form: UntypedFormGroup;
+    form = this.formBuilder.group({
+        name: ['', Validators.required, this.validateServer.bind(this)],
+        port: ['', Validators.required],
+        apiPort: ['', Validators.required, this.validateServer.bind(this)],
+        numberHeadlessClients: [0, Validators.required],
+        profileName: ['', Validators.required],
+        hostName: ['', Validators.required],
+        password: ['', Validators.required],
+        adminPassword: ['', Validators.required],
+        environment: [0, Validators.required],
+        serverOption: [0, Validators.required],
+    });
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     environments = [
         { value: 0, viewValue: 'Release' },
@@ -51,25 +62,13 @@ export class AddServerModalComponent implements OnDestroy {
     private connectionId: string = '';
 
     constructor(
-        formbuilder: UntypedFormBuilder,
+        private formBuilder: FormBuilder,
         private dialog: MatDialog,
         private dialogRef: MatDialogRef<AddServerModalComponent>,
         private httpClient: HttpClient,
         private urls: UrlService,
         @Inject(MAT_DIALOG_DATA) public data: AddServerModalData
     ) {
-        this.form = formbuilder.group({
-            name: ['', Validators.required, this.validateServer.bind(this)],
-            port: ['', Validators.required],
-            apiPort: ['', Validators.required, this.validateServer.bind(this)],
-            numberHeadlessClients: [0, Validators.required],
-            profileName: ['', Validators.required],
-            hostName: ['', Validators.required],
-            password: ['', Validators.required],
-            adminPassword: ['', Validators.required],
-            environment: [0, Validators.required],
-            serverOption: [0, Validators.required],
-        });
         if (data) {
             this.edit = true;
             this.server = data.server;
@@ -99,16 +98,16 @@ export class AddServerModalComponent implements OnDestroy {
     submit() {
         this.submitting = true;
         if (this.edit) {
-            this.server.name = this.form.controls['name'].value;
-            this.server.port = this.form.controls['port'].value;
-            this.server.apiPort = this.form.controls['apiPort'].value;
-            this.server.numberHeadlessClients = this.form.controls['numberHeadlessClients'].value;
-            this.server.profileName = this.form.controls['profileName'].value;
-            this.server.hostName = this.form.controls['hostName'].value;
-            this.server.password = this.form.controls['password'].value;
-            this.server.adminPassword = this.form.controls['adminPassword'].value;
-            this.server.environment = this.form.controls['environment'].value;
-            this.server.serverOption = this.form.controls['serverOption'].value;
+            this.server.name = this.form.controls.name.value;
+            this.server.port = this.form.controls.port.value;
+            this.server.apiPort = this.form.controls.apiPort.value;
+            this.server.numberHeadlessClients = this.form.controls.numberHeadlessClients.value;
+            this.server.profileName = this.form.controls.profileName.value;
+            this.server.hostName = this.form.controls.hostName.value;
+            this.server.password = this.form.controls.password.value;
+            this.server.adminPassword = this.form.controls.adminPassword.value;
+            this.server.environment = this.form.controls.environment.value;
+            this.server.serverOption = this.form.controls.serverOption.value;
             this.httpClient
                 .patch(`${this.urls.apiUrl}/gameservers`, this.server, {
                     headers: new HttpHeaders({

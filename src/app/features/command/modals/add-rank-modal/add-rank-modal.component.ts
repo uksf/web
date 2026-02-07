@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, ValidationErrors, Validators } from '@angular/forms';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { Observable, of, timer } from 'rxjs';
 import { first, map, switchMap } from 'rxjs/operators';
@@ -13,7 +13,12 @@ import { MatDialog } from '@angular/material/dialog';
     styleUrls: ['./add-rank-modal.component.scss']
 })
 export class AddRankModalComponent implements OnInit {
-    form: UntypedFormGroup;
+    form = this.formBuilder.group({
+        name: ['', Validators.required, this.validateRank.bind(this)],
+        abbreviation: ['', Validators.required],
+        teamspeakGroup: ['', null, this.validateRank.bind(this)],
+        discordRoleId: ['']
+    });
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     pending = false;
 
@@ -26,14 +31,7 @@ export class AddRankModalComponent implements OnInit {
         teamspeakGroup: [{ type: 'rankTaken', message: 'That ID is already in use' }]
     };
 
-    constructor(formbuilder: UntypedFormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {
-        this.form = formbuilder.group({
-            name: ['', Validators.required, this.validateRank.bind(this)],
-            abbreviation: ['', Validators.required],
-            teamspeakGroup: ['', null, this.validateRank.bind(this)],
-            discordRoleId: ['']
-        });
-    }
+    constructor(private formBuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {}
 
     trackByIndex(index: number): number {
         return index;
