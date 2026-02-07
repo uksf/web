@@ -49,14 +49,14 @@ export class GameServersService {
     }
 
     stopServer(serverId: string, connectionId: string): Observable<ServerStatusResponse> {
-        return this.httpClient.get<ServerStatusResponse>(`${this.urls.apiUrl}/gameservers/stop/${serverId}`, { headers: this.buildHeaders(connectionId) });
+        return this.httpClient.post<ServerStatusResponse>(`${this.urls.apiUrl}/gameservers/stop/${serverId}`, null, { headers: this.buildHeaders(connectionId) });
     }
 
     killServer(serverId: string, connectionId: string): Observable<ServerStatusResponse> {
-        return this.httpClient.get<ServerStatusResponse>(`${this.urls.apiUrl}/gameservers/kill/${serverId}`, { headers: this.buildHeaders(connectionId) });
+        return this.httpClient.post<ServerStatusResponse>(`${this.urls.apiUrl}/gameservers/kill/${serverId}`, null, { headers: this.buildHeaders(connectionId) });
     }
 
     killAllServers(connectionId: string): Observable<void> {
-        return this.httpClient.get<void>(`${this.urls.apiUrl}/gameservers/killall`, { headers: this.buildHeaders(connectionId) });
+        return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/killall`, null, { headers: this.buildHeaders(connectionId) });
     }
 }

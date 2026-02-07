@@ -79,8 +79,7 @@ export class ModpackBuildProcessService {
     }
 
     rebuild(build: ModpackBuild, callback: () => void) {
-        // get request for rebuild
-        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${build.id}/rebuild`).subscribe({
+        this.httpClient.post(this.urls.apiUrl + `/modpack/builds/${build.id}/rebuild`, null).subscribe({
             next: () => {
                 callback();
             }
@@ -88,8 +87,7 @@ export class ModpackBuildProcessService {
     }
 
     cancel(build: ModpackBuild, errorCallback: () => void) {
-        // get request for build cancel
-        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${build.id}/cancel`).subscribe({
+        this.httpClient.post(this.urls.apiUrl + `/modpack/builds/${build.id}/cancel`, null).subscribe({
             next: () => {},
             error: () => {
                 errorCallback();

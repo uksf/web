@@ -130,29 +130,32 @@ describe('GameServersService', () => {
         );
     });
 
-    it('stopServer calls GET /gameservers/stop/:id', () => {
+    it('stopServer calls POST /gameservers/stop/:id', () => {
         service.stopServer('server1', 'conn-123').subscribe();
 
-        expect(mockHttpClient.get).toHaveBeenCalledWith(
+        expect(mockHttpClient.post).toHaveBeenCalledWith(
             'http://localhost:5500/gameservers/stop/server1',
+            null,
             expect.objectContaining({ headers: expect.any(Object) })
         );
     });
 
-    it('killServer calls GET /gameservers/kill/:id', () => {
+    it('killServer calls POST /gameservers/kill/:id', () => {
         service.killServer('server1', 'conn-123').subscribe();
 
-        expect(mockHttpClient.get).toHaveBeenCalledWith(
+        expect(mockHttpClient.post).toHaveBeenCalledWith(
             'http://localhost:5500/gameservers/kill/server1',
+            null,
             expect.objectContaining({ headers: expect.any(Object) })
         );
     });
 
-    it('killAllServers calls GET /gameservers/killall', () => {
+    it('killAllServers calls POST /gameservers/killall', () => {
         service.killAllServers('conn-123').subscribe();
 
-        expect(mockHttpClient.get).toHaveBeenCalledWith(
+        expect(mockHttpClient.post).toHaveBeenCalledWith(
             'http://localhost:5500/gameservers/killall',
+            null,
             expect.objectContaining({ headers: expect.any(Object) })
         );
     });
