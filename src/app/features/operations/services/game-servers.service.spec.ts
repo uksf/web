@@ -159,4 +159,68 @@ describe('GameServersService', () => {
             expect.objectContaining({ headers: expect.any(Object) })
         );
     });
+
+    it('addServer calls PUT /gameservers with JSON and Hub-Connection-Id headers', () => {
+        const body = JSON.stringify({ name: 'Test' });
+        service.addServer(body, 'conn-123').subscribe();
+
+        expect(mockHttpClient.put).toHaveBeenCalledWith(
+            'http://localhost:5500/gameservers',
+            body,
+            expect.objectContaining({ headers: expect.any(Object) })
+        );
+        const headers = mockHttpClient.put.mock.calls[0][2].headers;
+        expect(headers.get('Hub-Connection-Id')).toBe('conn-123');
+        expect(headers.get('Content-Type')).toBe('application/json');
+    });
+
+    it('editServer calls PATCH /gameservers with JSON and Hub-Connection-Id headers', () => {
+        const server = { id: 'server1', name: 'Test' };
+        service.editServer(server, 'conn-123').subscribe();
+
+        expect(mockHttpClient.patch).toHaveBeenCalledWith(
+            'http://localhost:5500/gameservers',
+            server,
+            expect.objectContaining({ headers: expect.any(Object) })
+        );
+        const headers = mockHttpClient.patch.mock.calls[0][2].headers;
+        expect(headers.get('Hub-Connection-Id')).toBe('conn-123');
+    });
+
+    it('checkServerExists calls POST /gameservers/:value with Hub-Connection-Id header', () => {
+        const server = { id: 'server1' };
+        service.checkServerExists('testName', server, 'conn-123').subscribe();
+
+        expect(mockHttpClient.post).toHaveBeenCalledWith(
+            'http://localhost:5500/gameservers/testName',
+            server,
+            expect.objectContaining({ headers: expect.any(Object) })
+        );
+    });
+
+    it('getServerMods calls GET /gameservers/:id/mods', () => {
+        service.getServerMods('server1').subscribe();
+
+        expect(mockHttpClient.get).toHaveBeenCalledWith('http://localhost:5500/gameservers/server1/mods');
+    });
+
+    it('updateServerMods calls POST /gameservers/:id/mods with JSON header', () => {
+        const server = { id: 'server1', mods: [] };
+        service.updateServerMods('server1', server).subscribe();
+
+        expect(mockHttpClient.post).toHaveBeenCalledWith(
+            'http://localhost:5500/gameservers/server1/mods',
+            server,
+            expect.objectContaining({ headers: expect.any(Object) })
+        );
+    });
+
+    it('resetServerMods calls GET /gameservers/:id/mods/reset', () => {
+        service.resetServerMods('server1').subscribe();
+
+        expect(mockHttpClient.get).toHaveBeenCalledWith(
+            'http://localhost:5500/gameservers/server1/mods/reset',
+            expect.objectContaining({ headers: expect.any(Object) })
+        );
+    });
 });

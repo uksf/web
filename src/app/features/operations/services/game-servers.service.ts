@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UrlService } from '@app/core/services/url.service';
 import { OrderUpdateRequest } from '@app/shared/models/order-update-request';
-import { GameServer, GameServersResponse, MissionUploadResponse, ServerStatusResponse } from '../models/game-server';
+import { GameServer, GameServersResponse, MissionUploadResponse, ServerMod, ServerModsResetResponse, ServerStatusResponse } from '../models/game-server';
 
 @Injectable()
 export class GameServersService {
@@ -58,5 +58,39 @@ export class GameServersService {
 
     killAllServers(connectionId: string): Observable<void> {
         return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/killall`, null, { headers: this.buildHeaders(connectionId) });
+    }
+
+    addServer(body: string, connectionId: string): Observable<unknown> {
+        return this.httpClient.put(`${this.urls.apiUrl}/gameservers`, body, {
+            headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Hub-Connection-Id': connectionId })
+        });
+    }
+
+    editServer(server: unknown, connectionId: string): Observable<boolean> {
+        return this.httpClient.patch<boolean>(`${this.urls.apiUrl}/gameservers`, server, {
+            headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Hub-Connection-Id': connectionId })
+        });
+    }
+
+    checkServerExists(value: unknown, server: unknown, connectionId: string): Observable<boolean> {
+        return this.httpClient.post<boolean>(`${this.urls.apiUrl}/gameservers/${value}`, server, {
+            headers: this.buildHeaders(connectionId)
+        });
+    }
+
+    getServerMods(serverId: string): Observable<ServerMod[]> {
+        return this.httpClient.get<ServerMod[]>(`${this.urls.apiUrl}/gameservers/${serverId}/mods`);
+    }
+
+    updateServerMods(serverId: string, server: unknown): Observable<unknown> {
+        return this.httpClient.post(`${this.urls.apiUrl}/gameservers/${serverId}/mods`, server, {
+            headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        });
+    }
+
+    resetServerMods(serverId: string): Observable<ServerModsResetResponse> {
+        return this.httpClient.get<ServerModsResetResponse>(`${this.urls.apiUrl}/gameservers/${serverId}/mods/reset`, {
+            headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        });
     }
 }

@@ -45,3 +45,16 @@ export interface MissionReport {
     mission: string;
     reports: string[];
 }
+
+export interface ServerMod {
+    name: string;
+    path: string;
+    selected?: boolean;
+    serverMod?: boolean;
+}
+
+export interface ServerModsResetResponse {
+    availableMods: ServerMod[];
+    mods: ServerMod[];
+    serverMods: ServerMod[];
+}

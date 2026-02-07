@@ -1,8 +1,8 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { first } from 'rxjs/operators';
+import { GameServersService } from '../../services/game-servers.service';
+import { ServerMod } from '../../models/game-server';
 
 @Component({
     selector: 'app-edit-server-mods-modal',
@@ -14,7 +14,7 @@ export class EditServerModsModalComponent implements OnInit {
     before: string;
     availableMods;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: EditServerModsData) {
+    constructor(private gameServersService: GameServersService, private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: EditServerModsData) {
         this.server = data.server;
     }
 
@@ -27,7 +27,7 @@ export class EditServerModsModalComponent implements OnInit {
     }
 
     getAvailableMods() {
-        this.httpClient.get(this.urls.apiUrl + `/gameservers/${this.server.id}/mods`).pipe(first()).subscribe({
+        this.gameServersService.getServerMods(this.server.id).pipe(first()).subscribe({
             next: (response) => {
                 this.populateServerMods(response);
                 this.before = JSON.stringify(this.availableMods);
@@ -60,16 +60,7 @@ export class EditServerModsModalComponent implements OnInit {
         this.server.mods = mods;
         this.server.serverMods = serverMods;
 
-        this.httpClient
-            .post(
-                `${this.urls.apiUrl}/gameservers/${this.server.id}/mods`,
-                this.server,
-                {
-                    headers: new HttpHeaders({
-                        'Content-Type': 'application/json',
-                    }),
-                }
-            )
+        this.gameServersService.updateServerMods(this.server.id, this.server)
             .pipe(first())
             .subscribe({
                 next: () => {
@@ -79,15 +70,10 @@ export class EditServerModsModalComponent implements OnInit {
     }
 
     reset() {
-        this.httpClient
-            .get(`${this.urls.apiUrl}/gameservers/${this.server.id}/mods/reset`, {
-                headers: new HttpHeaders({
-                    'Content-Type': 'application/json',
-                }),
-            })
+        this.gameServersService.resetServerMods(this.server.id)
             .pipe(first())
             .subscribe({
-                next: ({ availableMods, mods, serverMods }: { availableMods: ServerMod[]; mods: ServerMod[]; serverMods: ServerMod[] }) => {
+                next: ({ availableMods, mods, serverMods }) => {
                     this.server.mods = mods;
                     this.server.serverMods = serverMods;
                     this.populateServerMods(availableMods);
@@ -98,11 +84,4 @@ export class EditServerModsModalComponent implements OnInit {
 
 interface EditServerModsData {
     server: { id: string; mods: ServerMod[]; serverMods: ServerMod[] };
-}
-
-interface ServerMod {
-    name: string;
-    path: string;
-    selected?: boolean;
-    serverMod?: boolean;
 }

@@ -2,19 +2,9 @@ import { Component, OnInit, ElementRef, HostListener, ViewChild, OnDestroy } fro
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Router, NavigationEnd } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { SignalRService, ConnectionContainer } from '@app/core/services/signalr.service';
 import { AccountService } from '@app/core/services/account.service';
-
-export interface Notification {
-    id: string;
-    icon: string;
-    message: string;
-    link: string;
-    read: boolean;
-    timestamp: Date;
-}
+import { Notification, NotificationsService } from '@app/core/services/notifications.service';
 
 @Component({
     selector: 'app-notifications',
@@ -57,8 +47,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     constructor(
         private router: Router,
         private elementRef: ElementRef,
-        private httpClient: HttpClient,
-        private urlService: UrlService,
+        private notificationsService: NotificationsService,
         private signalrService: SignalRService,
         private accountService: AccountService
     ) {
@@ -102,9 +91,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     }
 
     getNotifications() {
-        this.httpClient.get(this.urlService.apiUrl + '/notifications').pipe(takeUntil(this.destroy$)).subscribe({
-            next: (response) => {
-                this.notifications = response as Notification[];
+        this.notificationsService.getNotifications().pipe(takeUntil(this.destroy$)).subscribe({
+            next: (notifications) => {
+                this.notifications = notifications;
                 this.updateNotifications();
             }
         });
@@ -132,13 +121,10 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         if (this.panel) {
             if (this.unreadNotifications.length > 0) {
                 this.unreadTimeout = setTimeout(() => {
-                    this.httpClient
-                        .post(this.urlService.apiUrl + '/notifications/read', {
-                            notifications: this.unreadNotifications
-                        })
+                    this.notificationsService.markRead(this.unreadNotifications)
                         .pipe(takeUntil(this.destroy$))
                         .subscribe({
-                            next: (_) => {
+                            next: () => {
                                 this.unreadTimeout = null;
                             }
                         });
@@ -164,10 +150,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
     clear(notification: Notification = null) {
         const clear = notification ? [notification] : this.notifications;
-        this.httpClient
-            .post(this.urlService.apiUrl + '/notifications/clear', {
-                notifications: clear
-            })
+        this.notificationsService.clear(clear)
             .pipe(takeUntil(this.destroy$))
             .subscribe();
     }

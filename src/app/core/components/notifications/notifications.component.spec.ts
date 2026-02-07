@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { NotificationsComponent, Notification } from './notifications.component';
+import { NotificationsComponent } from './notifications.component';
+import { Notification } from '@app/core/services/notifications.service';
 import { of, Subject, BehaviorSubject } from 'rxjs';
 import { NavigationEnd } from '@angular/router';
 
@@ -7,8 +8,7 @@ describe('NotificationsComponent', () => {
     let component: NotificationsComponent;
     let mockRouter: any;
     let mockElementRef: any;
-    let mockHttpClient: any;
-    let mockUrlService: any;
+    let mockNotificationsService: any;
     let mockSignalrService: any;
     let mockAccountService: any;
     let routerEvents$: Subject<any>;
@@ -35,11 +35,11 @@ describe('NotificationsComponent', () => {
                 contains: vi.fn().mockReturnValue(false)
             }
         };
-        mockHttpClient = {
-            get: vi.fn().mockReturnValue(of([])),
-            post: vi.fn().mockReturnValue(of({}))
+        mockNotificationsService = {
+            getNotifications: vi.fn().mockReturnValue(of([])),
+            markRead: vi.fn().mockReturnValue(of({})),
+            clear: vi.fn().mockReturnValue(of({}))
         };
-        mockUrlService = { apiUrl: 'http://localhost:5500' };
         mockSignalrService = {
             connect: vi.fn().mockReturnValue({
                 connection: {
@@ -58,8 +58,7 @@ describe('NotificationsComponent', () => {
         component = new NotificationsComponent(
             mockRouter,
             mockElementRef,
-            mockHttpClient,
-            mockUrlService,
+            mockNotificationsService,
             mockSignalrService,
             mockAccountService
         );
@@ -88,9 +87,8 @@ describe('NotificationsComponent', () => {
 
             component.updateNotifications();
 
-            expect(mockHttpClient.post).toHaveBeenCalledWith(
-                'http://localhost:5500/notifications/clear',
-                { notifications: [expect.objectContaining({ id: '1' })] }
+            expect(mockNotificationsService.clear).toHaveBeenCalledWith(
+                [expect.objectContaining({ id: '1' })]
             );
         });
 
@@ -185,10 +183,7 @@ describe('NotificationsComponent', () => {
             component.openNotification(notification);
 
             expect(mockRouter.navigate).toHaveBeenCalledWith(['/some-page']);
-            expect(mockHttpClient.post).toHaveBeenCalledWith(
-                'http://localhost:5500/notifications/clear',
-                { notifications: [notification] }
-            );
+            expect(mockNotificationsService.clear).toHaveBeenCalledWith([notification]);
         });
 
         it('does nothing when notification has no link', () => {
@@ -226,10 +221,7 @@ describe('NotificationsComponent', () => {
 
             component.clear(notification);
 
-            expect(mockHttpClient.post).toHaveBeenCalledWith(
-                'http://localhost:5500/notifications/clear',
-                { notifications: [notification] }
-            );
+            expect(mockNotificationsService.clear).toHaveBeenCalledWith([notification]);
         });
 
         it('sends all notifications when none provided', () => {
@@ -240,10 +232,7 @@ describe('NotificationsComponent', () => {
 
             component.clear();
 
-            expect(mockHttpClient.post).toHaveBeenCalledWith(
-                'http://localhost:5500/notifications/clear',
-                { notifications: component.notifications }
-            );
+            expect(mockNotificationsService.clear).toHaveBeenCalledWith(component.notifications);
         });
     });
 
