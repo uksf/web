@@ -1,12 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { Observable, Subject, timer } from 'rxjs';
-import { map, switchMap, takeUntil } from 'rxjs/operators';
+import { switchMap, takeUntil } from 'rxjs/operators';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Training } from '@app/features/command/models/training';
 import { AddTrainingModalComponent } from '@app/features/command/modals/add-training-modal/add-training-modal.component';
+import { TrainingsService } from '../../services/trainings.service';
 
 @Component({
     selector: 'app-command-training',
@@ -17,7 +16,7 @@ export class CommandTrainingComponent implements OnInit, OnDestroy {
     private destroy$ = new Subject<void>();
     trainings: Training[];
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {}
+    constructor(private trainingsService: TrainingsService, private dialog: MatDialog) {}
 
     ngOnInit() {
         this.getTrainings();
@@ -31,19 +30,13 @@ export class CommandTrainingComponent implements OnInit, OnDestroy {
     validateInlineTraining(value): Observable<boolean> {
         return timer(200).pipe(
             switchMap((): Observable<boolean> => {
-                return this.httpClient
-                    .get(`${this.urls.apiUrl}/trainings/check-unique?check=${value}`, {
-                        headers: new HttpHeaders({
-                            'Content-Type': 'application/json'
-                        })
-                    })
-                    .pipe(map((response: boolean): boolean => response));
+                return this.trainingsService.checkUnique(value);
             })
         );
     }
 
     getTrainings() {
-        this.httpClient.get(`${this.urls.apiUrl}/trainings`).pipe(takeUntil(this.destroy$)).subscribe({
+        this.trainingsService.getTrainings().pipe(takeUntil(this.destroy$)).subscribe({
             next: (response: Training[]) => {
                 this.trainings = response;
             }
@@ -65,18 +58,11 @@ export class CommandTrainingComponent implements OnInit, OnDestroy {
     editTraining(check: string) {
         const training: Training = this.trainings.find((x: Training): boolean => x.name === check || x.shortName === check || x.teamspeakGroup === check);
         if (training) {
-            this.httpClient
-                .patch(`${this.urls.apiUrl}/ranks`, training, {
-                    headers: new HttpHeaders({
-                        'Content-Type': 'application/json'
-                    })
-                })
-                .pipe(takeUntil(this.destroy$))
-                .subscribe({
-                    next: (response: Training[]): void => {
-                        this.trainings = response;
-                    }
-                });
+            this.trainingsService.editTraining(training).pipe(takeUntil(this.destroy$)).subscribe({
+                next: (response: Training[]): void => {
+                    this.trainings = response;
+                }
+            });
         }
     }
 
@@ -92,7 +78,7 @@ export class CommandTrainingComponent implements OnInit, OnDestroy {
         dialog.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
             next: (result): void => {
                 if (result) {
-                    this.httpClient.delete(`${this.urls.apiUrl}/trainings/${training.id}`).pipe(takeUntil(this.destroy$)).subscribe({
+                    this.trainingsService.deleteTraining(training.id).pipe(takeUntil(this.destroy$)).subscribe({
                         next: (response: Training[]): void => {
                             this.trainings = response;
                         }

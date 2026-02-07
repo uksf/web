@@ -4,13 +4,36 @@ import { CommandRequestsService } from './command-requests.service';
 
 describe('CommandRequestsService', () => {
     let service: CommandRequestsService;
-    let httpClient: { post: ReturnType<typeof vi.fn> };
+    let httpClient: { get: ReturnType<typeof vi.fn>; post: ReturnType<typeof vi.fn>; patch: ReturnType<typeof vi.fn> };
     let urls: { apiUrl: string };
 
     beforeEach(() => {
-        httpClient = { post: vi.fn() };
+        httpClient = { get: vi.fn(), post: vi.fn(), patch: vi.fn() };
         urls = { apiUrl: 'http://localhost:5500' };
         service = new CommandRequestsService(httpClient as any, urls as any);
+    });
+
+    it('should get requests', () => {
+        const response = { myRequests: [], otherRequests: [] };
+        httpClient.get.mockReturnValue(of(response));
+
+        service.getRequests().subscribe((result) => {
+            expect(result).toBe(response);
+        });
+
+        expect(httpClient.get).toHaveBeenCalledWith('http://localhost:5500/commandrequests');
+    });
+
+    it('should set review', () => {
+        httpClient.patch.mockReturnValue(of(null));
+
+        service.setReview('req1', 0, false).subscribe();
+
+        expect(httpClient.patch).toHaveBeenCalledWith(
+            'http://localhost:5500/commandrequests/req1',
+            { reviewState: 0, overriden: false },
+            { headers: expect.objectContaining({ lazyInit: expect.anything() }) }
+        );
     });
 
     it('should create transfer request', () => {
@@ -38,6 +61,24 @@ describe('CommandRequestsService', () => {
         service.createRole(request).subscribe();
 
         expect(httpClient.post).toHaveBeenCalledWith('http://localhost:5500/commandrequests/create/role', request);
+    });
+
+    it('should create rank request', () => {
+        httpClient.post.mockReturnValue(of(null));
+        const request = { recipient: 'r1', value: 'v1', reason: 'test' };
+
+        service.createRank(request).subscribe();
+
+        expect(httpClient.post).toHaveBeenCalledWith('http://localhost:5500/commandrequests/create/rank', request);
+    });
+
+    it('should create discharge request', () => {
+        httpClient.post.mockReturnValue(of(null));
+        const request = { recipient: 'r1', reason: 'test' };
+
+        service.createDischarge(request).subscribe();
+
+        expect(httpClient.post).toHaveBeenCalledWith('http://localhost:5500/commandrequests/create/discharge', request);
     });
 
     it('should create chain of command position request', () => {

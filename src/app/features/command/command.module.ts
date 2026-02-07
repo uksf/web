@@ -40,6 +40,7 @@ import { CommandRequestsService } from './services/command-requests.service';
 import { RanksService } from './services/ranks.service';
 import { RolesService } from './services/roles.service';
 import { UnitsService } from './services/units.service';
+import { TrainingsService } from './services/trainings.service';
 
 @NgModule({
     declarations: [
@@ -79,6 +80,6 @@ import { UnitsService } from './services/units.service';
         DragDropModule,
         TreeModule,
     ],
-    providers: [CommandRequestsService, RanksService, RolesService, UnitsService],
+    providers: [CommandRequestsService, RanksService, RolesService, TrainingsService, UnitsService],
 })
 export class CommandModule {}

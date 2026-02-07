@@ -3,9 +3,8 @@ import { AbstractControl, FormBuilder, ValidationErrors, Validators } from '@ang
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { Observable, of, timer } from 'rxjs';
 import { first, map, switchMap } from 'rxjs/operators';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
+import { TrainingsService } from '../../services/trainings.service';
 
 @Component({
     selector: 'app-add-training-modal',
@@ -30,7 +29,7 @@ export class AddTrainingModalComponent {
         teamspeakGroup: [{ type: 'trainingTaken', message: 'That ID is already in use' }]
     };
 
-    constructor(private formBuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {}
+    constructor(private formBuilder: FormBuilder, private trainingsService: TrainingsService, private dialog: MatDialog) {}
 
     submit(): void {
         if (!this.form.valid || this.pending) {
@@ -38,19 +37,12 @@ export class AddTrainingModalComponent {
         }
 
         this.pending = true;
-        this.httpClient
-            .post(`${this.urls.apiUrl}/trainings`, JSON.stringify(this.form.getRawValue()), {
-                headers: new HttpHeaders({
-                    'Content-Type': 'application/json'
-                })
-            })
-            .pipe(first())
-            .subscribe({
-                next: (_): void => {
-                    this.dialog.closeAll();
-                    this.pending = false;
-                }
-            });
+        this.trainingsService.addTraining(JSON.stringify(this.form.getRawValue())).pipe(first()).subscribe({
+            next: (_): void => {
+                this.dialog.closeAll();
+                this.pending = false;
+            }
+        });
     }
 
     private validateTraining(control: AbstractControl): Observable<ValidationErrors> {
@@ -60,7 +52,7 @@ export class AddTrainingModalComponent {
                     return of(null);
                 }
 
-                return this.httpClient.get(`${this.urls.apiUrl}/trainings/check-unique?check=${control.value}`, {}).pipe(
+                return this.trainingsService.checkUnique(control.value).pipe(
                     map(
                         (
                             response: boolean

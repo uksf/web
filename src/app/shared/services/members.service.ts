@@ -8,8 +8,10 @@ import { Account, BasicAccount } from '@app/shared/models/account';
 export class MembersService {
     constructor(private httpClient: HttpClient, private urls: UrlService) {}
 
-    getMembers(): Observable<BasicAccount[]> {
-        return this.httpClient.get<BasicAccount[]>(`${this.urls.apiUrl}/accounts/members`);
+    getMembers(reverse?: boolean): Observable<BasicAccount[]> {
+        let url = `${this.urls.apiUrl}/accounts/members`;
+        if (reverse) { url += '?reverse=true'; }
+        return this.httpClient.get<BasicAccount[]>(url);
     }
 
     getAccount(id: string): Observable<Account> {

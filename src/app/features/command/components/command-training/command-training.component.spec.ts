@@ -5,8 +5,7 @@ import { Training } from '@app/features/command/models/training';
 
 describe('CommandTrainingComponent', () => {
     let component: CommandTrainingComponent;
-    let mockHttpClient: any;
-    let mockUrls: any;
+    let mockTrainingsService: any;
     let mockDialog: any;
 
     const makeTraining = (overrides: Partial<Training> = {}): Training => ({
@@ -18,25 +17,25 @@ describe('CommandTrainingComponent', () => {
     });
 
     beforeEach(() => {
-        mockHttpClient = {
-            get: vi.fn().mockReturnValue(of([])),
-            patch: vi.fn().mockReturnValue(of([])),
-            delete: vi.fn().mockReturnValue(of([]))
+        mockTrainingsService = {
+            getTrainings: vi.fn().mockReturnValue(of([])),
+            checkUnique: vi.fn().mockReturnValue(of(true)),
+            editTraining: vi.fn().mockReturnValue(of([])),
+            deleteTraining: vi.fn().mockReturnValue(of([]))
         };
-        mockUrls = { apiUrl: 'http://localhost:5500' };
         mockDialog = { open: vi.fn() };
 
-        component = new CommandTrainingComponent(mockHttpClient, mockUrls, mockDialog);
+        component = new CommandTrainingComponent(mockTrainingsService, mockDialog);
     });
 
     describe('ngOnInit', () => {
         it('fetches trainings', () => {
             const trainings = [makeTraining()];
-            mockHttpClient.get.mockReturnValue(of(trainings));
+            mockTrainingsService.getTrainings.mockReturnValue(of(trainings));
 
             component.ngOnInit();
 
-            expect(mockHttpClient.get).toHaveBeenCalledWith('http://localhost:5500/trainings');
+            expect(mockTrainingsService.getTrainings).toHaveBeenCalled();
             expect(component.trainings).toEqual(trainings);
         });
     });
@@ -44,7 +43,7 @@ describe('CommandTrainingComponent', () => {
     describe('getTrainings', () => {
         it('assigns trainings from response', () => {
             const trainings = [makeTraining({ id: '1' }), makeTraining({ id: '2' })];
-            mockHttpClient.get.mockReturnValue(of(trainings));
+            mockTrainingsService.getTrainings.mockReturnValue(of(trainings));
 
             component.getTrainings();
 
@@ -53,40 +52,36 @@ describe('CommandTrainingComponent', () => {
     });
 
     describe('editTraining', () => {
-        it('finds training by name and sends patch', () => {
+        it('finds training by name and sends edit', () => {
             const training = makeTraining({ name: 'Advanced' });
             component.trainings = [training];
             const updatedList = [makeTraining({ name: 'Advanced Updated' })];
-            mockHttpClient.patch.mockReturnValue(of(updatedList));
+            mockTrainingsService.editTraining.mockReturnValue(of(updatedList));
 
             component.editTraining('Advanced');
 
-            expect(mockHttpClient.patch).toHaveBeenCalledWith(
-                'http://localhost:5500/ranks',
-                training,
-                expect.objectContaining({ headers: expect.any(Object) })
-            );
+            expect(mockTrainingsService.editTraining).toHaveBeenCalledWith(training);
             expect(component.trainings).toEqual(updatedList);
         });
 
         it('finds training by shortName', () => {
             const training = makeTraining({ shortName: 'AT' });
             component.trainings = [training];
-            mockHttpClient.patch.mockReturnValue(of([]));
+            mockTrainingsService.editTraining.mockReturnValue(of([]));
 
             component.editTraining('AT');
 
-            expect(mockHttpClient.patch).toHaveBeenCalled();
+            expect(mockTrainingsService.editTraining).toHaveBeenCalledWith(training);
         });
 
         it('finds training by teamspeakGroup', () => {
             const training = makeTraining({ teamspeakGroup: 'ts-group' });
             component.trainings = [training];
-            mockHttpClient.patch.mockReturnValue(of([]));
+            mockTrainingsService.editTraining.mockReturnValue(of([]));
 
             component.editTraining('ts-group');
 
-            expect(mockHttpClient.patch).toHaveBeenCalled();
+            expect(mockTrainingsService.editTraining).toHaveBeenCalledWith(training);
         });
 
         it('does nothing when training not found', () => {
@@ -94,7 +89,7 @@ describe('CommandTrainingComponent', () => {
 
             component.editTraining('nonexistent');
 
-            expect(mockHttpClient.patch).not.toHaveBeenCalled();
+            expect(mockTrainingsService.editTraining).not.toHaveBeenCalled();
         });
     });
 
@@ -106,7 +101,7 @@ describe('CommandTrainingComponent', () => {
             const dialogClose$ = new Subject<boolean>();
             mockDialog.open.mockReturnValue({ afterClosed: () => dialogClose$.asObservable() });
             const updatedList: Training[] = [];
-            mockHttpClient.delete.mockReturnValue(of(updatedList));
+            mockTrainingsService.deleteTraining.mockReturnValue(of(updatedList));
 
             component.deleteTraining(event, training);
 
@@ -115,7 +110,7 @@ describe('CommandTrainingComponent', () => {
 
             dialogClose$.next(true);
 
-            expect(mockHttpClient.delete).toHaveBeenCalledWith('http://localhost:5500/trainings/del1');
+            expect(mockTrainingsService.deleteTraining).toHaveBeenCalledWith('del1');
             expect(component.trainings).toEqual([]);
         });
 
@@ -128,7 +123,7 @@ describe('CommandTrainingComponent', () => {
             component.deleteTraining(event, training);
             dialogClose$.next(false);
 
-            expect(mockHttpClient.delete).not.toHaveBeenCalled();
+            expect(mockTrainingsService.deleteTraining).not.toHaveBeenCalled();
         });
     });
 
@@ -137,13 +132,13 @@ describe('CommandTrainingComponent', () => {
             const dialogClose$ = new Subject<void>();
             mockDialog.open.mockReturnValue({ afterClosed: () => dialogClose$.asObservable() });
             const trainings = [makeTraining()];
-            mockHttpClient.get.mockReturnValue(of(trainings));
+            mockTrainingsService.getTrainings.mockReturnValue(of(trainings));
 
             component.addTraining();
             dialogClose$.next(undefined);
 
             expect(mockDialog.open).toHaveBeenCalled();
-            expect(mockHttpClient.get).toHaveBeenCalledWith('http://localhost:5500/trainings');
+            expect(mockTrainingsService.getTrainings).toHaveBeenCalled();
         });
     });
 

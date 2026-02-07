@@ -24,6 +24,17 @@ describe('MembersService', () => {
         expect(httpClient.get).toHaveBeenCalledWith('http://localhost:5500/accounts/members');
     });
 
+    it('should get members reversed', () => {
+        const members = [{ id: '1', displayName: 'Test' }];
+        httpClient.get.mockReturnValue(of(members));
+
+        service.getMembers(true).subscribe((result) => {
+            expect(result).toBe(members);
+        });
+
+        expect(httpClient.get).toHaveBeenCalledWith('http://localhost:5500/accounts/members?reverse=true');
+    });
+
     it('should get account by id', () => {
         const account = { id: '1', displayName: 'Test', unitAssignment: 'Unit1' };
         httpClient.get.mockReturnValue(of(account));

@@ -1,8 +1,6 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { NgForm } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
@@ -12,6 +10,9 @@ import { SelectionListComponent } from '@app/shared/components/elements/selectio
 import { RequestModalData } from '@app/shared/models/shared';
 import { CommandRequest } from '@app/features/command/models/command-request';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
+import { MembersService } from '@app/shared/services/members.service';
+import { RanksService } from '../../services/ranks.service';
+import { CommandRequestsService } from '../../services/command-requests.service';
 
 @Component({
     selector: 'app-request-rank-modal',
@@ -34,14 +35,20 @@ export class RequestRankModalComponent implements OnInit {
         reason: [{ type: 'required', message: () => 'A reason for the promotion/demotion is required' }]
     };
 
-    constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService, @Inject(MAT_DIALOG_DATA) public data: RequestModalData) {
+    constructor(
+        private dialog: MatDialog,
+        private membersService: MembersService,
+        private ranksService: RanksService,
+        private commandRequestsService: CommandRequestsService,
+        @Inject(MAT_DIALOG_DATA) public data: RequestModalData
+    ) {
         if (data) {
             this.preSelection = data.ids;
         }
     }
 
     ngOnInit() {
-        this.httpClient.get(`${this.urlService.apiUrl}/accounts/members`).pipe(first()).subscribe({
+        this.membersService.getMembers().pipe(first()).subscribe({
             next: (accounts: BasicAccount[]) => {
                 const elements = accounts.map(BasicAccount.mapToElement);
                 this.accounts.next(elements);
@@ -53,7 +60,7 @@ export class RequestRankModalComponent implements OnInit {
             }
         });
 
-        this.httpClient.get(`${this.urlService.apiUrl}/ranks`).pipe(first()).subscribe({
+        this.ranksService.getRanks().pipe(first()).subscribe({
             next: (ranks: Rank[]) => {
                 let elements = ranks.map(Rank.mapToElement).reverse();
                 this.ranks.next(elements);
@@ -100,26 +107,19 @@ export class RequestRankModalComponent implements OnInit {
             };
 
             this.pending = true;
-            this.httpClient
-                .post(`${this.urlService.apiUrl}/commandrequests/create/rank`, commandRequest, {
-                    headers: new HttpHeaders({
-                        'Content-Type': 'application/json'
-                    })
-                })
-                .pipe(first())
-                .subscribe({
-                    next: () => {
-                        this.dialog.closeAll();
-                        this.pending = false;
-                    },
-                    error: (error) => {
-                        this.dialog.closeAll();
-                        this.pending = false;
-                        this.dialog.open(MessageModalComponent, {
-                            data: { message: error.error }
-                        });
-                    }
-                });
+            this.commandRequestsService.createRank(commandRequest).pipe(first()).subscribe({
+                next: () => {
+                    this.dialog.closeAll();
+                    this.pending = false;
+                },
+                error: (error) => {
+                    this.dialog.closeAll();
+                    this.pending = false;
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: error.error }
+                    });
+                }
+            });
         });
     }
 

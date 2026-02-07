@@ -1,8 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NgForm } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { BasicAccount } from '@app/shared/models/account';
@@ -10,6 +8,8 @@ import { CommandRequest } from '@app/features/command/models/command-request';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
+import { MembersService } from '@app/shared/services/members.service';
+import { CommandRequestsService } from '../../services/command-requests.service';
 
 @Component({
     selector: 'app-request-discharge-modal',
@@ -29,10 +29,10 @@ export class RequestDischargeModalComponent implements OnInit {
         reason: [{ type: 'required', message: () => 'A discharge reason is required' }]
     };
 
-    constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService) {}
+    constructor(private dialog: MatDialog, private membersService: MembersService, private commandRequestsService: CommandRequestsService) {}
 
     ngOnInit(): void {
-        this.httpClient.get(`${this.urlService.apiUrl}/accounts/members?reverse=true`).pipe(first()).subscribe({
+        this.membersService.getMembers(true).pipe(first()).subscribe({
             next: (accounts: BasicAccount[]) => {
                 this.accounts.next(accounts.map(BasicAccount.mapToElement));
                 this.accounts.complete();
@@ -51,26 +51,19 @@ export class RequestDischargeModalComponent implements OnInit {
         };
 
         this.pending = true;
-        this.httpClient
-            .post(`${this.urlService.apiUrl}/commandrequests/create/discharge`, commandRequest, {
-                headers: new HttpHeaders({
-                    'Content-Type': 'application/json'
-                })
-            })
-            .pipe(first())
-            .subscribe({
-                next: () => {
-                    this.dialog.closeAll();
-                    this.pending = false;
-                },
-                error: (error) => {
-                    this.dialog.closeAll();
-                    this.pending = false;
-                    this.dialog.open(MessageModalComponent, {
-                        data: { message: error.error }
-                    });
-                }
-            });
+        this.commandRequestsService.createDischarge(commandRequest).pipe(first()).subscribe({
+            next: () => {
+                this.dialog.closeAll();
+                this.pending = false;
+            },
+            error: (error) => {
+                this.dialog.closeAll();
+                this.pending = false;
+                this.dialog.open(MessageModalComponent, {
+                    data: { message: error.error }
+                });
+            }
+        });
     }
 
     getAccountName(element: IDropdownElement): string {

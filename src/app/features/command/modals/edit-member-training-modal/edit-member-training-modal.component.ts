@@ -1,9 +1,8 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { EditMemberTrainingModalData, EditTrainingItem, Training } from '@app/features/command/models/training';
 import { first } from 'rxjs/operators';
+import { TrainingsService } from '../../services/trainings.service';
 
 @Component({
     selector: 'app-edit-member-training-modal',
@@ -17,7 +16,7 @@ export class EditMemberTrainingModalComponent implements OnInit {
     availableTrainings: EditTrainingItem[];
     before: string;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: EditMemberTrainingModalData) {
+    constructor(private trainingsService: TrainingsService, private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: EditMemberTrainingModalData) {
         if (data) {
             this.accountId = data.accountId;
             this.name = data.name;
@@ -30,7 +29,7 @@ export class EditMemberTrainingModalComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.httpClient.get(this.urls.apiUrl + `/trainings`).pipe(first()).subscribe({
+        this.trainingsService.getTrainings().pipe(first()).subscribe({
             next: (response: Training[]): void => {
                 this.availableTrainings = response.map((training: Training): EditTrainingItem => {
                     return { ...training, selected: !!this.trainings.find((x: Training): boolean => x.id === training.id) };
@@ -47,17 +46,10 @@ export class EditMemberTrainingModalComponent implements OnInit {
     save() {
         const trainingIds: string[] = this.availableTrainings.filter((training: EditTrainingItem): boolean => training.selected).map((training: EditTrainingItem): string => training.id);
 
-        this.httpClient
-            .put(`${this.urls.apiUrl}/accounts/${this.accountId}/training`, trainingIds, {
-                headers: new HttpHeaders({
-                    'Content-Type': 'application/json'
-                })
-            })
-            .pipe(first())
-            .subscribe({
-                next: (_) => {
-                    this.dialog.closeAll();
-                }
-            });
+        this.trainingsService.updateAccountTrainings(this.accountId, trainingIds).pipe(first()).subscribe({
+            next: (_) => {
+                this.dialog.closeAll();
+            }
+        });
     }
 }

@@ -1,7 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
-import { UrlService } from '@app/core/services/url.service';
 import { RequestRankModalComponent } from '@app/features/command/modals/request-rank-modal/request-rank-modal.component';
 import { RequestTransferModalComponent } from '@app/features/command/modals/request-transfer-modal/request-transfer-modal.component';
 import { RequestRoleModalComponent } from '@app/features/command/modals/request-role-modal/request-role-modal.component';
@@ -13,9 +11,10 @@ import { AccountService } from '@app/core/services/account.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { RequestModalData } from '@app/shared/models/shared';
 import { UnitBranch } from '@app/features/units/models/units';
-import { CommandRequestItem, CommandRequestReview, CommandRequestsResponse } from '@app/features/command/models/command-request';
+import { CommandRequestItem, CommandRequestReview } from '@app/features/command/models/command-request';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { CommandRequestsService } from '../../services/command-requests.service';
 
 @Component({
     selector: 'app-command-requests',
@@ -34,7 +33,7 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
         this.getRequests();
     };
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, public dialog: MatDialog, private signalrService: SignalRService, private accountService: AccountService) {
+    constructor(private commandRequestsService: CommandRequestsService, public dialog: MatDialog, private signalrService: SignalRService, private accountService: AccountService) {
         this.getRequests();
     }
 
@@ -57,7 +56,7 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
 
     getRequests() {
         this.updating = true;
-        this.httpClient.get<CommandRequestsResponse>(`${this.urls.apiUrl}/commandrequests`).pipe(takeUntil(this.destroy$)).subscribe({
+        this.commandRequestsService.getRequests().pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
                 this.myRequests = response.myRequests;
                 this.otherRequests = response.otherRequests;
@@ -81,26 +80,15 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
         request.updating = true;
         request.reviewState = reviewState;
         request.reviewOverriden = overriden;
-        this.httpClient
-            .patch(
-                this.urls.apiUrl + '/commandrequests/' + request.data.id,
-                { reviewState: reviewState, overriden: overriden },
-                {
-                    headers: new HttpHeaders({
-                        'Content-Type': 'application/json'
-                    })
-                }
-            )
-            .pipe(takeUntil(this.destroy$))
-            .subscribe({
-                next: (_) => this.getRequests(),
-                error: (error) => {
-                    this.getRequests();
-                    this.dialog.open(MessageModalComponent, {
-                        data: { message: error.error }
-                    });
-                }
-            });
+        this.commandRequestsService.setReview(request.data.id, reviewState, overriden).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (_) => this.getRequests(),
+            error: (error) => {
+                this.getRequests();
+                this.dialog.open(MessageModalComponent, {
+                    data: { message: error.error }
+                });
+            }
+        });
     }
 
     transferRequest(): void {
