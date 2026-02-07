@@ -10,7 +10,7 @@ import { filter, takeUntil } from 'rxjs/operators';
 })
 export class LoginPageComponent implements OnInit, OnDestroy {
     public static staticRedirect;
-    private destroyed = new Subject<any>();
+    private destroyed = new Subject<void>();
     resetPasswordCode: string;
     mode = 0;
 

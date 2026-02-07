@@ -106,7 +106,7 @@ export class CreateDocumentModalComponent implements OnInit {
             }
         };
 
-        let request$: Observable<any>;
+        let request$: Observable<unknown>;
 
         if (this.initialData) {
             request$ = this.httpClient.put(`${this.urlService.apiUrl}/docs/folders/${this.folderMetadata.id}/documents/${this.initialData.id}`, request, {

@@ -31,7 +31,7 @@ export class PersonnelLoasListComponent implements OnInit, OnDestroy {
     @Input() viewMode: ViewMode = 'all';
     @Input() dateMode: DateMode = 'all';
     @Input() deletable: boolean = true;
-    @Output() deleteEvent: EventEmitter<any> = new EventEmitter();
+    @Output() deleteEvent: EventEmitter<Loa> = new EventEmitter();
     loaded: boolean = false;
     loaReviewState = LoaReviewState;
     loas: Loa[] = [];
