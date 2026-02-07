@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { ModpackRelease } from '../models/modpack-release';
 import { ModpackReleaseService } from '../modpackRelease.service';
@@ -11,16 +11,18 @@ import { ModpackReleaseService } from '../modpackRelease.service';
     styleUrls: ['./new-modpack-release-modal.component.scss']
 })
 export class NewModpackReleaseModalComponent {
-    form: UntypedFormGroup;
     instantErrorStateMatcher: InstantErrorStateMatcher = new InstantErrorStateMatcher();
     previousVersion: string;
     major: string;
     minor: string;
     patch: string;
     submitting: boolean = false;
+    form = this.formBuilder.group({
+        version: ['', Validators.required]
+    });
 
     constructor(
-        private formBuilder: UntypedFormBuilder,
+        private formBuilder: FormBuilder,
         private modpackReleaseService: ModpackReleaseService,
         public dialogRef: MatDialogRef<NewModpackReleaseModalComponent>,
         @Inject(MAT_DIALOG_DATA)
@@ -35,9 +37,7 @@ export class NewModpackReleaseModalComponent {
         this.minor = `${previousVersionParts[0]}.${previousVersionParts[1] + 1}.0`;
         this.patch = `${previousVersionParts[0]}.${previousVersionParts[1]}.${previousVersionParts[2] + 1}`;
 
-        this.form = this.formBuilder.group({
-            version: [this.patch, Validators.required]
-        });
+        this.form.controls.version.setValue(this.patch);
     }
 
     create() {

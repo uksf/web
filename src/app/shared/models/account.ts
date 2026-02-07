@@ -23,7 +23,7 @@ export interface CreateAccount {
     password: string;
 }
 
-export class Account {
+export interface Account {
     id: string;
     application: Application;
     armaExperience: string;

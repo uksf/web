@@ -1,9 +1,9 @@
-import { UntypedFormGroup } from '@angular/forms';
+import { AbstractControl } from '@angular/forms';
 
 export function MustMatch(controlName: string, matchingControlName: string) {
-    return (formGroup: UntypedFormGroup) => {
-        const control = formGroup.controls[controlName];
-        const matchingControl = formGroup.controls[matchingControlName];
+    return (formGroup: AbstractControl) => {
+        const control = formGroup.get(controlName);
+        const matchingControl = formGroup.get(matchingControlName);
 
         if (!control || !matchingControl) {
             return null;

@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
-import { AbstractControl, AsyncValidatorFn, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, AsyncValidatorFn, FormBuilder, ValidationErrors, Validators } from '@angular/forms';
 import { Observable, of, Subject, timer } from 'rxjs';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
@@ -17,7 +17,9 @@ import { Role } from '@app/shared/models/role';
 export class CommandRolesComponent implements OnInit, OnDestroy {
     private destroy$ = new Subject<void>();
     instantErrorStateMatcher = new InstantErrorStateMatcher();
-    roleForm: UntypedFormGroup;
+    roleForm = this.formBuilder.group({
+        name: ['', Validators.required, this.validateRole()]
+    });
     roles: Role[];
 
     validationMessages = [
@@ -25,11 +27,7 @@ export class CommandRolesComponent implements OnInit, OnDestroy {
         { type: 'roleTaken', message: 'That role is already in use' }
     ];
 
-    constructor(formbuilder: UntypedFormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {
-        this.roleForm = formbuilder.group({
-            name: ['', Validators.required, this.validateRole()]
-        });
-    }
+    constructor(private formBuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {}
 
     ngOnInit() {
         this.httpClient.get(`${this.urls.apiUrl}/roles`).pipe(takeUntil(this.destroy$)).subscribe({
@@ -130,7 +128,7 @@ export class CommandRolesComponent implements OnInit, OnDestroy {
     }
 
     unfocus() {
-        if (!this.roleForm.controls['name'].value) {
+        if (!this.roleForm.controls.name.value) {
             this.roleForm.reset();
         }
     }

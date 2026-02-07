@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { HttpHeaders } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
@@ -16,22 +16,20 @@ import { first } from 'rxjs/operators';
 })
 export class ApplicationEmailConfirmationComponent {
     @Output() confirmedEvent = new EventEmitter();
-    formGroup: UntypedFormGroup;
+    formGroup = this.formBuilder.group({
+        code: ['', Validators.required]
+    });
     pending = false;
     resent = false;
 
     constructor(
         private httpClient: HttpClient,
-        public formBuilder: UntypedFormBuilder,
+        private formBuilder: FormBuilder,
         private urls: UrlService,
         public dialog: MatDialog,
         public accountService: AccountService,
         private permissionsService: PermissionsService
-    ) {
-        this.formGroup = formBuilder.group({
-            code: ['', Validators.required]
-        });
-    }
+    ) {}
 
     changed(code: string) {
         if (this.pending) {
@@ -48,7 +46,7 @@ export class ApplicationEmailConfirmationComponent {
         }
 
         this.pending = true;
-        this.formGroup.controls['code'].disable();
+        this.formGroup.controls.code.disable();
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
         this.httpClient
             .post(
@@ -76,8 +74,8 @@ export class ApplicationEmailConfirmationComponent {
                         .pipe(first())
                         .subscribe({
                             next: () => {
-                                this.formGroup.controls['code'].enable();
-                                this.formGroup.controls['code'].setValue('');
+                                this.formGroup.controls.code.enable();
+                                this.formGroup.controls.code.setValue('');
                                 this.pending = false;
                             }
                         });

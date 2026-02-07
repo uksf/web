@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl } from '@angular/forms';
+import { Component } from '@angular/core';
+import { AbstractControl, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -18,20 +18,16 @@ export function passwordMatcher(form: AbstractControl) {
     templateUrl: './change-password-modal.component.html',
     styleUrls: ['./change-password-modal.component.scss']
 })
-export class ChangePasswordModalComponent implements OnInit {
-    public form: UntypedFormGroup;
+export class ChangePasswordModalComponent {
+    form = this.formBuilder.group(
+        {
+            password: ['', Validators.required],
+            confirmPass: ['', Validators.required]
+        },
+        { validators: passwordMatcher }
+    );
 
-    constructor(public formbuilder: UntypedFormBuilder, private httpClient: HttpClient, private permissionsService: PermissionsService, private urls: UrlService, public dialog: MatDialog) {
-        this.form = formbuilder.group(
-            {
-                password: ['', Validators.required],
-                confirmPass: ['', Validators.required]
-            },
-            { validator: passwordMatcher }
-        );
-    }
-
-    ngOnInit() {}
+    constructor(private formBuilder: FormBuilder, private httpClient: HttpClient, private permissionsService: PermissionsService, private urls: UrlService, public dialog: MatDialog) {}
 
     changePassword() {
         const formObj = this.form.getRawValue();
