@@ -1,15 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { UrlService } from '@app/core/services/url.service';
 import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
-import { InstallWorkshopModData, WorkshopMod, WorkshopModUpdatedDate } from '../models/workshop-mod';
+import { InstallWorkshopModData, WorkshopMod } from '../models/workshop-mod';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { UksfError } from '@app/shared/models/response';
 import { MatDialog } from '@angular/material/dialog';
 import { InstallWorkshopModModalComponent } from '../install-workshop-mod-modal/install-workshop-mod-modal.component';
 import { WorkshopModInterventionModalComponent } from '../workshop-mod-intervention-modal/workshop-mod-intervention-modal.component';
+import { WorkshopService } from '../services/workshop.service';
 
 @Component({
     selector: 'app-modpack-workshop',
@@ -23,7 +22,7 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
     private onReceiveWorkshopModUpdate = (id: string) => this.getDataForMod(id);
     mods: WorkshopMod[] = [];
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private signalrService: SignalRService, private dialog: MatDialog) {}
+    constructor(private workshopService: WorkshopService, private signalrService: SignalRService, private dialog: MatDialog) {}
 
     ngOnInit() {
         this.getData(() => {
@@ -50,7 +49,7 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
     }
 
     getData(callback: () => void = null) {
-        this.httpClient.get(this.urls.apiUrl + '/workshop').pipe(takeUntil(this.destroy$)).subscribe({
+        this.workshopService.getMods().pipe(takeUntil(this.destroy$)).subscribe({
             next: (mods: WorkshopMod[]) => {
                 this.mods = mods;
                 if (callback) {
@@ -61,7 +60,7 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
     }
 
     getDataForMod(id: string) {
-        this.httpClient.get(this.urls.apiUrl + `/workshop/${id}`).pipe(takeUntil(this.destroy$)).subscribe({
+        this.workshopService.getMod(id).pipe(takeUntil(this.destroy$)).subscribe({
             next: (mod: WorkshopMod) => {
                 const index: number = this.mods.findIndex((x: WorkshopMod) => x.id === mod.id);
                 if (index === -1) {
@@ -74,8 +73,8 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
     }
 
     getModUpdatedDate(mod: WorkshopMod) {
-        this.httpClient.get(this.urls.apiUrl + `/workshop/${mod.steamId}/updatedDate`).pipe(takeUntil(this.destroy$)).subscribe({
-            next: (updatedDateResponse: WorkshopModUpdatedDate) => {
+        this.workshopService.getModUpdatedDate(mod.steamId).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (updatedDateResponse) => {
                 mod.updatedDate = updatedDateResponse.updatedDate;
             }
         });
@@ -105,21 +104,14 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
         this.dialog.open(InstallWorkshopModModalComponent).afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
             next: (data: InstallWorkshopModData) => {
                 if (data) {
-                    this.httpClient
-                        .post(this.urls.apiUrl + `/workshop`, {
-                            steamId: data.steamId,
-                            rootMod: data.rootMod,
-                            folderName: data.folderName
-                        })
-                        .pipe(takeUntil(this.destroy$))
-                        .subscribe({
-                            next: () => {},
-                            error: (error: UksfError) => {
-                                this.dialog.open(MessageModalComponent, {
-                                    data: { message: error.error }
-                                });
-                            }
-                        });
+                    this.workshopService.installMod(data).pipe(takeUntil(this.destroy$)).subscribe({
+                        next: () => {},
+                        error: (error: UksfError) => {
+                            this.dialog.open(MessageModalComponent, {
+                                data: { message: error.error }
+                            });
+                        }
+                    });
                 }
             }
         });
@@ -137,7 +129,7 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
             .subscribe({
                 next: (selectedPbos: string[]) => {
                     if (selectedPbos) {
-                        this.httpClient.post(this.urls.apiUrl + `/workshop/${mod.steamId}/resolve`, { selectedPbos: selectedPbos }).pipe(takeUntil(this.destroy$)).subscribe({
+                        this.workshopService.resolveIntervention(mod.steamId, selectedPbos).pipe(takeUntil(this.destroy$)).subscribe({
                             next: () => {},
                             error: (error: UksfError) => {
                                 this.dialog.open(MessageModalComponent, {
@@ -151,19 +143,19 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
     }
 
     update(mod: WorkshopMod) {
-        this.httpClient.post(this.urls.apiUrl + `/workshop/${mod.steamId}/update`, {}).pipe(takeUntil(this.destroy$)).subscribe({
+        this.workshopService.updateMod(mod.steamId).pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {}
         });
     }
 
     uninstall(mod: WorkshopMod) {
-        this.httpClient.post(this.urls.apiUrl + `/workshop/${mod.steamId}/uninstall`, {}).pipe(takeUntil(this.destroy$)).subscribe({
+        this.workshopService.uninstallMod(mod.steamId).pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {}
         });
     }
 
     delete(mod: WorkshopMod) {
-        this.httpClient.delete(this.urls.apiUrl + `/workshop/${mod.steamId}`).pipe(takeUntil(this.destroy$)).subscribe({
+        this.workshopService.deleteMod(mod.steamId).pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {}
         });
     }

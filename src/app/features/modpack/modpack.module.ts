@@ -20,6 +20,7 @@ import { NewModpackBuildModalComponent } from './new-modpack-build-modal/new-mod
 import { NewModpackReleaseModalComponent } from './new-modpack-release-modal/new-modpack-release-modal.component';
 import { InstallWorkshopModModalComponent } from './install-workshop-mod-modal/install-workshop-mod-modal.component';
 import { WorkshopModInterventionModalComponent } from './workshop-mod-intervention-modal/workshop-mod-intervention-modal.component';
+import { WorkshopService } from './services/workshop.service';
 
 @NgModule({
     imports: [
@@ -43,5 +44,6 @@ import { WorkshopModInterventionModalComponent } from './workshop-mod-interventi
         InstallWorkshopModModalComponent,
         WorkshopModInterventionModalComponent,
     ],
+    providers: [WorkshopService],
 })
 export class ModpackModule {}
