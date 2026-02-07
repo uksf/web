@@ -2,11 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UrlService } from '@app/core/services/url.service';
-import { RequestUnitUpdateOrder, RequestUnitUpdateParent, ResponseUnit, Unit, UnitTreeDataSet } from '@app/features/units/models/units';
+import { RequestUnitUpdateOrder, RequestUnitUpdateParent, ResponseUnit, ResponseUnitChartNode, Unit, UnitTreeDataSet } from '@app/features/units/models/units';
 
 const jsonHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class UnitsService {
     constructor(private httpClient: HttpClient, private urls: UrlService) {}
 
@@ -55,5 +55,9 @@ export class UnitsService {
 
     updateOrder(unitId: string, body: RequestUnitUpdateOrder): Observable<unknown> {
         return this.httpClient.patch(`${this.urls.apiUrl}/units/${unitId}/order`, body);
+    }
+
+    getChart(type: string): Observable<ResponseUnitChartNode> {
+        return this.httpClient.get<ResponseUnitChartNode>(`${this.urls.apiUrl}/units/chart/${type}`);
     }
 }

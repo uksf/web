@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, Validators } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { PermissionsService } from '@app/core/services/permissions.service';
+import { ProfileService } from '../../services/profile.service';
 import { first } from 'rxjs/operators';
 
 export function passwordMatcher(form: AbstractControl) {
@@ -27,18 +26,13 @@ export class ChangePasswordModalComponent {
         { validators: passwordMatcher }
     );
 
-    constructor(private formBuilder: FormBuilder, private httpClient: HttpClient, private permissionsService: PermissionsService, private urls: UrlService, public dialog: MatDialog) {}
+    constructor(private formBuilder: FormBuilder, private profileService: ProfileService, private permissionsService: PermissionsService, public dialog: MatDialog) {}
 
     changePassword() {
         const formObj = this.form.getRawValue();
         delete formObj.confirmPass;
         const formString = JSON.stringify(formObj).replace(/[\n\r]/g, '');
-        this.httpClient
-            .put(this.urls.apiUrl + '/accounts/password', formString, {
-                headers: new HttpHeaders({
-                    'Content-Type': 'application/json'
-                })
-            })
+        this.profileService.changePassword(formString)
             .pipe(first())
             .subscribe({
                 next: () => {

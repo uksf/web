@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AccountService } from '@app/core/services/account.service';
+import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
+import { ProfileService } from '../../services/profile.service';
+import { MembersService } from '@app/shared/services/members.service';
 import { ConnectTeamspeakModalComponent } from '../../modals/connect-teamspeak-modal/connect-teamspeak-modal.component';
 import { ChangePasswordModalComponent } from '../../modals/change-password-modal/change-password-modal.component';
 import { FormBuilder } from '@angular/forms';
@@ -43,7 +44,8 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
         public dialog: MatDialog,
         private accountService: AccountService,
         private route: ActivatedRoute,
-        private httpClient: HttpClient,
+        private profileService: ProfileService,
+        private membersService: MembersService,
         private urls: UrlService,
         private router: Router,
         private formBuilder: FormBuilder,
@@ -76,7 +78,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
                 });
             } else {
                 const code = this.route.snapshot.queryParams['validation'];
-                this.httpClient.post(this.urls.apiUrl + '/steamcode/' + id, { code: code }).pipe(takeUntil(this.destroy$)).subscribe({
+                this.profileService.connectSteam(id, { code: code }).pipe(takeUntil(this.destroy$)).subscribe({
                     next: () => {
                         this.router.navigate(['/profile']).then(() => {
                             this.getAccount();
@@ -131,7 +133,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
             } else {
                 const code = this.route.snapshot.queryParams['validation'];
                 const added = this.route.snapshot.queryParams['added'];
-                this.httpClient.post(this.urls.apiUrl + '/discordcode/' + id, { code: code }).pipe(takeUntil(this.destroy$)).subscribe({
+                this.profileService.connectDiscord(id, { code: code }).pipe(takeUntil(this.destroy$)).subscribe({
                     next: () => {
                         this.router.navigate(['/profile']).then(() => {
                             this.getAccount();
@@ -194,7 +196,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     getAccount(forceRefresh: boolean = false) {
         if (this.route.snapshot.params.id) {
             this.accountId = this.route.snapshot.params.id;
-            this.httpClient.get(this.urls.apiUrl + '/accounts/' + this.accountId).pipe(takeUntil(this.destroy$)).subscribe({
+            this.membersService.getAccount(this.accountId).pipe(takeUntil(this.destroy$)).subscribe({
                 next: (response) => {
                     this.account = response;
                     this.populateSettings();
@@ -323,7 +325,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
 
     changeSetting() {
         this.settingsFormGroup.disable();
-        this.httpClient.put(`${this.urls.apiUrl}/accounts/${this.account.id}/updatesetting`, this.settingsFormGroup.value).pipe(takeUntil(this.destroy$)).subscribe({
+        this.profileService.updateSetting(this.account.id, this.settingsFormGroup.value).pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.getAccount(true);
                 this.settingsFormGroup.enable();

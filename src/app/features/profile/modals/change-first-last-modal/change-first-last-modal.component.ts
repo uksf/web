@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { AccountService } from '@app/core/services/account.service';
 import { nameCase, titleCase } from '@app/shared/services/helper.service';
 import { Rank } from '@app/shared/models/rank';
+import { ProfileService } from '../../services/profile.service';
+import { RanksService } from '@app/features/command/services/ranks.service';
 import { first } from 'rxjs/operators';
 
 @Component({
@@ -21,10 +21,10 @@ export class ChangeFirstLastModalComponent implements OnInit {
     original: string;
     rank: string;
 
-    constructor(private formBuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private accountService: AccountService) {
+    constructor(private formBuilder: FormBuilder, private profileService: ProfileService, private ranksService: RanksService, private accountService: AccountService) {
         this.form.controls.firstName.setValue(this.accountService.account.firstname);
         this.form.controls.lastName.setValue(this.accountService.account.lastname);
-        this.httpClient.get(this.urls.apiUrl + '/ranks').pipe(first()).subscribe({
+        this.ranksService.getRanks().pipe(first()).subscribe({
             next: (ranks: Rank[]) => {
                 const rank = ranks.find((x) => x.name === this.accountService.account.rank);
                 this.rank = rank ? rank.abbreviation : null;
@@ -38,12 +38,7 @@ export class ChangeFirstLastModalComponent implements OnInit {
 
     changeName() {
         const formString = JSON.stringify(this.form.getRawValue()).replace(/[\n\r]/g, '');
-        this.httpClient
-            .put(this.urls.apiUrl + '/accounts/name', formString, {
-                headers: new HttpHeaders({
-                    'Content-Type': 'application/json'
-                })
-            })
+        this.profileService.changeName(formString)
             .pipe(first())
             .subscribe({
                 next: () => {

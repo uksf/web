@@ -2,11 +2,10 @@ import { Component, OnDestroy } from '@angular/core';
 import { Location } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ResponseUnit } from '@app/features/units/models/units';
+import { UnitsService } from '@app/features/command/services/units.service';
 
 @Component({
     selector: 'app-unit-page',
@@ -19,11 +18,11 @@ export class UnitPageComponent implements OnDestroy {
     displayedColumns = ['chainOfCommandPosition', 'name', 'role'];
     private id: string;
 
-    constructor(private route: ActivatedRoute, private httpClient: HttpClient, private urls: UrlService, public dialog: MatDialog, private location: Location) {
+    constructor(private route: ActivatedRoute, private unitsService: UnitsService, public dialog: MatDialog, private location: Location) {
         this.route.params.pipe(takeUntil(this.destroy$)).subscribe({
             next: (params) => {
                 this.id = params.id;
-                this.httpClient.get(`${this.urls.apiUrl}/units/${this.id}`).pipe(takeUntil(this.destroy$)).subscribe({
+                this.unitsService.getUnit(this.id).pipe(takeUntil(this.destroy$)).subscribe({
                     next: (unit: ResponseUnit) => {
                         this.unit = unit;
                     }

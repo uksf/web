@@ -134,4 +134,15 @@ describe('UnitsService', () => {
 
         expect(httpClient.patch).toHaveBeenCalledWith('http://localhost:5500/units/unit1/order', body);
     });
+
+    it('should get chart by type', () => {
+        const chartNode = { id: '1', name: 'Root', children: [], members: [] };
+        httpClient.get.mockReturnValue(of(chartNode));
+
+        service.getChart('combat').subscribe((result) => {
+            expect(result).toBe(chartNode);
+        });
+
+        expect(httpClient.get).toHaveBeenCalledWith('http://localhost:5500/units/chart/combat');
+    });
 });

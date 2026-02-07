@@ -6,7 +6,7 @@ import { Rank } from '@app/shared/models/rank';
 
 const jsonHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class RanksService {
     constructor(private httpClient: HttpClient, private urls: UrlService) {}
 
