@@ -28,7 +28,7 @@ interface FormModel {
     providers: [
         {
             provide: NG_VALUE_ACCESSOR,
-            useExisting: forwardRef((): Type<any> => DocsPermissionsComponent),
+            useExisting: forwardRef((): Type<DocsPermissionsComponent> => DocsPermissionsComponent),
             multi: true
         }
     ],
@@ -47,7 +47,7 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
 
     private _value: FormModel = this.createEmptyFormModel();
     private _customValues: FormModel | null = null; // Store custom values before inheriting
-    private onChange: any = (): void => {};
+    private onChange: (value: FormModel) => void = (): void => {};
 
     constructor(private httpClient: HttpClient, private urlService: UrlService) {}
 
@@ -221,7 +221,7 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
         this.onChange(value);
     }
 
-    writeValue(value: any): void {
+    writeValue(value: FormModel): void {
         if (value !== undefined) {
             this._value = value;
         }

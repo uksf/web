@@ -25,7 +25,7 @@ export class UnitsOrbatSecondaryComponent {
         });
     }
 
-    trackByName(index: number, item: any): string {
+    trackByName(index: number, item: { name: string }): string {
         return item.name;
     }
 

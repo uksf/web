@@ -7,6 +7,15 @@ import { UrlService } from '@app/core/services/url.service';
 import { SignalRService, ConnectionContainer } from '@app/core/services/signalr.service';
 import { AccountService } from '@app/core/services/account.service';
 
+export interface Notification {
+    id: string;
+    icon: string;
+    message: string;
+    link: string;
+    read: boolean;
+    timestamp: Date;
+}
+
 @Component({
     selector: 'app-notifications',
     templateUrl: './notifications.component.html',
@@ -14,18 +23,18 @@ import { AccountService } from '@app/core/services/account.service';
 })
 export class NotificationsComponent implements OnInit, OnDestroy {
     panel = false;
-    notifications = new Array<any>();
-    unreadNotifications = new Array<any>();
-    private unreadTimeout;
+    notifications: Notification[] = [];
+    unreadNotifications: Notification[] = [];
+    private unreadTimeout: ReturnType<typeof setTimeout>;
     private hubConnection: ConnectionContainer;
     private destroy$ = new Subject<void>();
 
-    private onReceiveNotification = (notification) => {
+    private onReceiveNotification = (notification: Notification) => {
         this.notifications.unshift(notification);
         this.updateNotifications();
     };
 
-    private onReceiveRead = (ids: any[]) => {
+    private onReceiveRead = (ids: string[]) => {
         ids.forEach((readId) => {
             const notification = this.notifications.find((x) => x.id === readId);
             if (notification) {
@@ -35,7 +44,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         this.updateNotifications();
     };
 
-    private onReceiveClear = (ids: any[]) => {
+    private onReceiveClear = (ids: string[]) => {
         ids.forEach((clearId) => {
             const index = this.notifications.findIndex((x) => x.id === clearId);
             if (index > -1) {
@@ -95,7 +104,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     getNotifications() {
         this.httpClient.get(this.urlService.apiUrl + '/notifications').pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
-                this.notifications = response as any[];
+                this.notifications = response as Notification[];
                 this.updateNotifications();
             }
         });
@@ -145,7 +154,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         this.unblockScrolling();
     }
 
-    openNotification(notification) {
+    openNotification(notification: Notification) {
         if (notification.link) {
             this.clear(notification);
             this.router.navigate([notification.link]);
@@ -153,7 +162,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         }
     }
 
-    clear(notification = null) {
+    clear(notification: Notification = null) {
         const clear = notification ? [notification] : this.notifications;
         this.httpClient
             .post(this.urlService.apiUrl + '/notifications/clear', {
@@ -184,7 +193,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         });
     }
 
-    trackById(index: number, item: any): string {
+    trackById(index: number, item: Notification): string {
         return item.id;
     }
 

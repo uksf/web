@@ -105,7 +105,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
         return item.id;
     }
 
-    trackByDisplayName(index: number, item: any): string {
+    trackByDisplayName(index: number, item: { displayName: string }): string {
         return item.displayName;
     }
 

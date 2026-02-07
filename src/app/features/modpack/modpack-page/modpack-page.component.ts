@@ -10,7 +10,7 @@ import { Permissions } from '@app/core/services/permissions';
 export class ModpackPageComponent {
     tabLinks = [{ label: 'Guide', link: '../guide' }];
 
-    trackByLink(index: number, item: any): string {
+    trackByLink(index: number, item: { link: string }): string {
         return item.link;
     }
 

@@ -50,7 +50,7 @@ export class ModpackReleaseService implements OnDestroy {
     }
 
     patchRelease(release: ModpackRelease) {
-        const index: any = this.releases.findIndex((x: any) => x.version === release.version);
+        const index = this.releases.findIndex((x) => x.version === release.version);
         if (index === -1) {
             this.releases.unshift(release);
         } else {

@@ -147,7 +147,7 @@ export class SelectionListComponent extends DropdownBaseComponent implements OnI
         return this.listModel.includes(element);
     };
 
-    writeValue(value: any) {
+    writeValue(value: IDropdownElement[] | null) {
         if (value === null) {
             return;
         }
@@ -161,7 +161,7 @@ export class SelectionListComponent extends DropdownBaseComponent implements OnI
         this.onListChange = func;
     }
 
-    onListChange = (_: any) => {};
+    onListChange = (_: IDropdownElement[]) => {};
 
     revalidate() {
         this.form.get('textInput').updateValueAndValidity();

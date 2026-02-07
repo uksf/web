@@ -5,7 +5,7 @@ export function nextFrame(callback: () => void) {
 }
 
 export function debounce<T extends unknown[], U>(callback: (...args: T) => PromiseLike<U> | U, wait: number) {
-    let timer: any;
+    let timer: ReturnType<typeof setTimeout>;
 
     return (...args: T): Promise<U> => {
         clearTimeout(timer);

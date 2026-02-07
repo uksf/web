@@ -34,7 +34,7 @@ export class DropdownComponent extends DropdownBaseComponent implements ControlV
         this.onChange(this._model);
     }
 
-    writeValue(value: any) {
+    writeValue(value: IDropdownElement | null) {
         this.model = value;
         if (value) {
             this.textInput.control.setValue(value);
@@ -61,7 +61,7 @@ export class DropdownComponent extends DropdownBaseComponent implements ControlV
         this.onChange = func;
     }
 
-    onChange = (_: any) => {};
+    onChange = (_: IDropdownElement | null) => {};
 
     validate(control: AbstractControl) {
         return this.isTouched() ? this.textInput.errors : { untouched: true };

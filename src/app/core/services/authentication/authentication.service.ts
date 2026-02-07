@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { UrlService } from '../url.service';
 import { SessionService } from './session.service';
@@ -103,7 +103,7 @@ export class AuthenticationService {
         return !!impersonatingUserId;
     }
 
-    private finish(redirect: string, queryParams: any = {}) {
+    private finish(redirect: string, queryParams: NavigationExtras = {}) {
         this.router.navigate([redirect], queryParams).then();
     }
 }

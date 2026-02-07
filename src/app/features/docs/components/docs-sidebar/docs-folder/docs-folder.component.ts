@@ -28,11 +28,11 @@ export class DocsFolderComponent {
 
     constructor(private httpClient: HttpClient, private urlService: UrlService, private dialog: MatDialog) {}
 
-    trackByFolderId(_: any, folderMetadata: FolderMetadata) {
+    trackByFolderId(_: number, folderMetadata: FolderMetadata) {
         return folderMetadata.id;
     }
 
-    trackByDocumentId(_: any, documentMetadata: DocumentMetadata) {
+    trackByDocumentId(_: number, documentMetadata: DocumentMetadata) {
         return documentMetadata.id;
     }
 

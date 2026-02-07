@@ -9,6 +9,7 @@ import { MessageModalComponent } from '@app/shared/modals/message-modal/message-
 import { CountryPickerService, ICountry } from '@app/shared/services/country-picker/country-picker.service';
 import { CountryImage } from '@app/shared/pipes/country.pipe';
 import { ConfirmValidParentMatcher, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
+import { UksfError } from '@app/shared/models/response';
 import { nameCase, titleCase } from '@app/shared/services/helper.service';
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { CreateAccount } from '@app/shared/models/account';
@@ -16,7 +17,7 @@ import { AuthenticationService } from '@app/core/services/authentication/authent
 import { PermissionsService } from '@app/core/services/permissions.service';
 
 function matchingPasswords(passwordKey: string, confirmPasswordKey: string) {
-    return (group: UntypedFormGroup): { [key: string]: any } => {
+    return (group: UntypedFormGroup): ValidationErrors | null => {
         const password = group.controls[passwordKey];
         const confirmPassword = group.controls[confirmPasswordKey];
         if (password.value !== confirmPassword.value) {
@@ -26,7 +27,7 @@ function matchingPasswords(passwordKey: string, confirmPasswordKey: string) {
 }
 
 function validDob(dayKey: string, monthKey: string, yearKey: string) {
-    return (group: UntypedFormGroup): { [key: string]: any } => {
+    return (group: UntypedFormGroup): ValidationErrors | null => {
         if (group.controls[dayKey].value === '' || group.controls[monthKey].value === '' || group.controls[yearKey].value === '') {
             return;
         }
@@ -228,7 +229,7 @@ export class ApplicationIdentityComponent implements OnInit {
                     this.nextEvent.emit();
                 });
             },
-            error: (error: any) => {
+            error: (error: UksfError) => {
                 this.dialog.open(MessageModalComponent, {
                     data: { message: error?.error || 'Account creation failed' }
                 });
@@ -251,7 +252,7 @@ export class ApplicationIdentityComponent implements OnInit {
         return {
             value: dropdownElement.value,
             name: dropdownElement.displayValue,
-            image: dropdownElement.data
+            image: dropdownElement.data as string
         };
     }
 

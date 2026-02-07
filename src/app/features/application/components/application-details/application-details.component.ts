@@ -64,7 +64,7 @@ export class ApplicationDetailsComponent {
         this.nextEvent.emit(formString);
     }
 
-    convertRolePreferencesGroup(): any {
+    convertRolePreferencesGroup(): Record<string, unknown> {
         const formObj = this.formGroup.getRawValue();
         const rolePreferences = [];
         const rolePreferencesGroup: UntypedFormGroup = this.formGroup.controls['rolePreferences'] as UntypedFormGroup;

@@ -15,7 +15,7 @@ import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-moda
 import { Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PermissionsService } from '@app/core/services/permissions.service';
-import { MembershipState } from '@app/shared/models/account';
+import { Account, MembershipState } from '@app/shared/models/account';
 
 @Component({
     selector: 'app-profile-page',
@@ -216,7 +216,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
         }
     }
 
-    private setAccount(account: any) {
+    private setAccount(account: Account) {
         this.account = account;
         this.populateSettings();
 

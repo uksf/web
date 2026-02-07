@@ -13,6 +13,7 @@ import { Permissions } from '@app/core/services/permissions';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
+import { UksfError } from '@app/shared/models/response';
 
 @Component({
     selector: 'app-admin-tools',
@@ -86,7 +87,7 @@ export class AdminToolsComponent implements OnInit, OnDestroy {
         return mapFromElement(BasicAccount, element).displayName;
     }
 
-    runFunction(tool): void {
+    runFunction(tool: Tool): void {
         if (tool.pending) {
             return;
         }
@@ -141,7 +142,7 @@ export class AdminToolsComponent implements OnInit, OnDestroy {
     emergencyCleanupStuckBuilds(): void {
         let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'emergencyCleanup');
         this.httpClient.post(`${this.urlService.apiUrl}/modpack/builds/emergency-cleanup`, {}).pipe(takeUntil(this.destroy$)).subscribe({
-            next: (response: any): void => {
+            next: (response: { message: string }): void => {
                 this.dialog.open(MessageModalComponent, {
                     data: { message: response.message }
                 });
@@ -165,7 +166,7 @@ export class AdminToolsComponent implements OnInit, OnDestroy {
                     this.router.navigate(['/home']).then();
                 });
             },
-            error: (error: any): void => {
+            error: (error: UksfError): void => {
                 this.impersonationPending = false;
                 this.dialog.open(MessageModalComponent, {
                     data: { message: error?.error || 'Impersonation failed' }
@@ -174,12 +175,12 @@ export class AdminToolsComponent implements OnInit, OnDestroy {
         });
     }
 
-    private setPending(tool: Tool): { next: (_) => void; error: (_) => void } {
+    private setPending(tool: Tool): { next: (_: unknown) => void; error: (_: unknown) => void } {
         return {
-            next: (_): void => {
+            next: (_: unknown): void => {
                 tool.pending = false;
             },
-            error: (_): void => {
+            error: (_: unknown): void => {
                 tool.pending = false;
             }
         };

@@ -47,9 +47,9 @@ export class ModpackReleasesComponent implements OnInit {
     }
 
     ngOnInit() {
-        const linkRenderer: any = this.markdownService.renderer.link;
-        this.markdownService.renderer.link = (href: any, title: any, text: any) => {
-            const html: any = linkRenderer.call(this.markdownService.renderer, href, title, text);
+        const linkRenderer = this.markdownService.renderer.link;
+        this.markdownService.renderer.link = (href: string, title: string, text: string) => {
+            const html: string = linkRenderer.call(this.markdownService.renderer, href, title, text);
             return html.replace(/^<a /, '<a target="_blank" rel="nofollow" ');
         };
 
@@ -72,7 +72,7 @@ export class ModpackReleasesComponent implements OnInit {
 
     checkRoute() {
         const version: string = this.route.snapshot.queryParams['version'];
-        const index: number = this.publicReleases.findIndex((x: any) => x.version === version);
+        const index: number = this.publicReleases.findIndex((x: ModpackRelease) => x.version === version);
         if (version && index !== -1) {
             this.selectRelease(version);
         } else {

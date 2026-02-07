@@ -6,6 +6,7 @@ import { UrlService } from '@app/core/services/url.service';
 import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
 import { InstallWorkshopModData, WorkshopMod, WorkshopModUpdatedDate } from '../models/workshop-mod';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
+import { UksfError } from '@app/shared/models/response';
 import { MatDialog } from '@angular/material/dialog';
 import { InstallWorkshopModModalComponent } from '../install-workshop-mod-modal/install-workshop-mod-modal.component';
 import { WorkshopModInterventionModalComponent } from '../workshop-mod-intervention-modal/workshop-mod-intervention-modal.component';
@@ -113,7 +114,7 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
                         .pipe(takeUntil(this.destroy$))
                         .subscribe({
                             next: () => {},
-                            error: (error: any) => {
+                            error: (error: UksfError) => {
                                 this.dialog.open(MessageModalComponent, {
                                     data: { message: error.error }
                                 });
@@ -138,7 +139,7 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
                     if (selectedPbos) {
                         this.httpClient.post(this.urls.apiUrl + `/workshop/${mod.steamId}/resolve`, { selectedPbos: selectedPbos }).pipe(takeUntil(this.destroy$)).subscribe({
                             next: () => {},
-                            error: (error: any) => {
+                            error: (error: UksfError) => {
                                 this.dialog.open(MessageModalComponent, {
                                     data: { message: error.error }
                                 });
@@ -173,7 +174,7 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
         });
     }
 
-    trackBySteamId(_: any, mod: WorkshopMod) {
+    trackBySteamId(_: number, mod: WorkshopMod) {
         return mod.steamId;
     }
 

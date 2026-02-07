@@ -27,7 +27,7 @@ export class NewModpackBuildModalComponent {
     branches: string[] = [];
     submitting = false;
 
-    constructor(private formBuilder: UntypedFormBuilder, public dialogRef: MatDialogRef<NewModpackBuildModalComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
+    constructor(private formBuilder: UntypedFormBuilder, public dialogRef: MatDialogRef<NewModpackBuildModalComponent>, @Inject(MAT_DIALOG_DATA) public data: { branches: string[] }) {
         this.branches = data.branches;
         this.form = this.formBuilder.group({
             configuration: ['Development', Validators.required],

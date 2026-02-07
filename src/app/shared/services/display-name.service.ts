@@ -7,7 +7,7 @@ export class DisplayNameService {
     constructor(private httpClient: HttpClient, private urls: UrlService) {}
 
     getName(id: string) {
-        return new Promise<string>((resolve: (value: PromiseLike<string> | string) => void, reject: (reason?: any) => void) => {
+        return new Promise<string>((resolve, reject) => {
             if (!id) {
                 reject();
                 return;

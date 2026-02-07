@@ -54,7 +54,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
     refresh(initialFilter = '') {
         this.completeDischargeCollections = undefined;
         this.updating = true;
-        this.httpClient.get<any[]>(this.urls.apiUrl + '/discharges').pipe(takeUntil(this.destroy$)).subscribe({
+        this.httpClient.get<DischargeCollection[]>(this.urls.apiUrl + '/discharges').pipe(takeUntil(this.destroy$)).subscribe({
             next: (response: DischargeCollection[]) => {
                 this.completeDischargeCollections = response;
                 if (initialFilter) {
@@ -107,7 +107,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
         }, 150);
     }
 
-    openMessageDialog(message: any) {
+    openMessageDialog(message: string) {
         this.dialog.open(MessageModalComponent, {
             data: { message: message }
         });
@@ -115,8 +115,8 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
 
     reinstate(event: Event, dischargeCollection: DischargeCollection) {
         event.stopPropagation();
-        this.httpClient.get<any[]>(this.urls.apiUrl + `/discharges/reinstate/${dischargeCollection.id}`).pipe(takeUntil(this.destroy$)).subscribe({
-            next: (response) => {
+        this.httpClient.get<DischargeCollection[]>(this.urls.apiUrl + `/discharges/reinstate/${dischargeCollection.id}`).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (response: DischargeCollection[]) => {
                 this.dischargeCollections = response;
             },
             error: (_) => {
@@ -176,7 +176,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
             });
     }
 
-    trackByDischargeCollection(_: any, dischargeCollection: DischargeCollection) {
+    trackByDischargeCollection(_: number, dischargeCollection: DischargeCollection) {
         return dischargeCollection.accountId;
     }
 

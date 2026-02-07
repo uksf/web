@@ -19,7 +19,7 @@ export class AdminPageComponent {
 
     constructor() {}
 
-    trackByLink(index: number, item: any): string {
+    trackByLink(index: number, item: { link: string }): string {
         return item.link;
     }
 }

@@ -17,7 +17,7 @@ import { ApplicationState } from '@app/features/application/models/application';
 export class ApplicationPageComponent implements OnInit, OnDestroy {
     private destroy$ = new Subject<void>();
     step = 1;
-    details: any;
+    details: string;
 
     constructor(private httpClient: HttpClient, private urls: UrlService, public dialog: MatDialog, private accountService: AccountService) {}
 

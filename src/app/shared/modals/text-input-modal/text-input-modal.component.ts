@@ -2,6 +2,10 @@ import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 
+export interface TextInputModalData {
+    message: string;
+}
+
 @Component({
     selector: 'app-text-input-modal',
     templateUrl: './text-input-modal.component.html',
@@ -12,7 +16,7 @@ export class TextInputModalComponent {
     input: string;
     form: UntypedFormGroup;
 
-    constructor(formbuilder: UntypedFormBuilder, public dialogRef: MatDialogRef<TextInputModalComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
+    constructor(formbuilder: UntypedFormBuilder, public dialogRef: MatDialogRef<TextInputModalComponent>, @Inject(MAT_DIALOG_DATA) public data: TextInputModalData) {
         this.message = data.message;
         this.form = formbuilder.group({
             input: ['', Validators.required]

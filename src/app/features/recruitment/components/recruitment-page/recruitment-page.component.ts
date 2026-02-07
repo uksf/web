@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { AccountService } from '@app/core/services/account.service';
 import { AccountSettings, MembershipState } from '@app/shared/models/account';
 import { ActiveApplication, ApplicationState, CompletedApplication, Recruiter } from '@app/features/application/models/application';
+import { Account } from '@app/shared/models/account';
 import { AsyncSubject, Subject } from 'rxjs';
 import { OnlineState } from '@app/shared/models/online-state';
 import { Dictionary } from '@app/shared/models/dictionary';
@@ -28,9 +29,9 @@ export class RecruitmentPageComponent implements OnInit, OnDestroy {
     allOtherActiveApplications: ActiveApplication[] = [];
     completedApplications: CompletedApplication[] = [];
     recruiters: Recruiter[];
-    activity: any[] = [];
-    yourStats;
-    sr1Stats;
+    activity: RecruiterActivity[] = [];
+    yourStats: RecruitmentStats;
+    sr1Stats: RecruitmentStats;
     teamspeakStates: Dictionary<AsyncSubject<OnlineState>> = new Dictionary<AsyncSubject<OnlineState>>();
     loaded: boolean = false;
     totalCompletedApplications: number = 0;
@@ -110,7 +111,7 @@ export class RecruitmentPageComponent implements OnInit, OnDestroy {
 
         this.httpClient.put(`${this.urls.apiUrl}/accounts/${this.accountService.account.id}/updatesetting`, this.accountService.account.settings).pipe(takeUntil(this.destroy$)).subscribe({
             next: (settings: AccountSettings) => {
-                const recruiter: any = this.activity.find((x: any) => x.account.id === this.accountService.account.id);
+                const recruiter = this.activity.find((x) => x.account.id === this.accountService.account.id);
                 if (recruiter !== undefined) {
                     recruiter.account.settings = settings;
                 }
@@ -154,7 +155,7 @@ export class RecruitmentPageComponent implements OnInit, OnDestroy {
             : 'red';
     }
 
-    trackByApplication(_: any, application: CompletedApplication) {
+    trackByApplication(_: number, application: CompletedApplication) {
         return application.account.id;
     }
 
@@ -204,10 +205,28 @@ export class RecruitmentPageComponent implements OnInit, OnDestroy {
     private getStats() {
         this.httpClient.get(this.urls.apiUrl + '/recruitment/stats').pipe(takeUntil(this.destroy$)).subscribe({
             next: (response: Object) => {
-                this.activity = response['activity'];
-                this.yourStats = response['yourStats'];
-                this.sr1Stats = response['sr1Stats'];
+                this.activity = response['activity'] as RecruiterActivity[];
+                this.yourStats = response['yourStats'] as RecruitmentStats;
+                this.sr1Stats = response['sr1Stats'] as RecruitmentStats;
             }
         });
     }
+}
+
+interface RecruiterActivity {
+    account: Account;
+    name: string;
+    active: number;
+    accepted: number;
+    rejected: number;
+}
+
+interface RecruitmentStatField {
+    fieldName: string;
+    fieldValue: string;
+}
+
+interface RecruitmentStats {
+    lastMonth: RecruitmentStatField[];
+    overall: RecruitmentStatField[];
 }

@@ -14,7 +14,7 @@ export class EditServerModsModalComponent implements OnInit {
     before: string;
     availableMods;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: any) {
+    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: EditServerModsData) {
         this.server = data.server;
     }
 
@@ -87,11 +87,22 @@ export class EditServerModsModalComponent implements OnInit {
             })
             .pipe(first())
             .subscribe({
-                next: ({ availableMods, mods, serverMods }: any) => {
+                next: ({ availableMods, mods, serverMods }: { availableMods: ServerMod[]; mods: ServerMod[]; serverMods: ServerMod[] }) => {
                     this.server.mods = mods;
                     this.server.serverMods = serverMods;
                     this.populateServerMods(availableMods);
                 }
             });
     }
+}
+
+interface EditServerModsData {
+    server: { id: string; mods: ServerMod[]; serverMods: ServerMod[] };
+}
+
+interface ServerMod {
+    name: string;
+    path: string;
+    selected?: boolean;
+    serverMod?: boolean;
 }

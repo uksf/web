@@ -7,6 +7,7 @@ import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { MatDialog } from '@angular/material/dialog';
+import { Role } from '@app/shared/models/role';
 
 @Component({
     selector: 'app-command-roles',
@@ -17,7 +18,7 @@ export class CommandRolesComponent implements OnInit, OnDestroy {
     private destroy$ = new Subject<void>();
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     roleForm: UntypedFormGroup;
-    roles: any;
+    roles: Role[];
 
     validationMessages = [
         { type: 'required', message: 'Role is required' },
@@ -124,7 +125,7 @@ export class CommandRolesComponent implements OnInit, OnDestroy {
         return index;
     }
 
-    trackByRoleName(index: number, role: any): string {
+    trackByRoleName(index: number, role: Role): string {
         return role.name;
     }
 

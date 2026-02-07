@@ -75,7 +75,7 @@ export class DocsContentComponent implements OnChanges, OnDestroy {
                     this.pending = false;
                     this.documentContent = content;
                 },
-                error: (error) => {
+                error: (error: UksfError) => {
                     this.pending = false;
                     this.dialog.open(MessageModalComponent, {
                         data: { message: error.error }
@@ -84,5 +84,5 @@ export class DocsContentComponent implements OnChanges, OnDestroy {
             });
     }
 
-    onContentChanged(_event: any) {}
+    onContentChanged(_event: { html: string; text: string }) {}
 }

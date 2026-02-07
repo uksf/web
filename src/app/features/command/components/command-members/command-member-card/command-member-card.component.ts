@@ -98,11 +98,11 @@ export class CommandMemberCardComponent implements OnInit {
         return this.expanded ? 'expanded' : 'collapsed';
     }
 
-    trackByUnitId(index: number, unit: any): string {
+    trackByUnitId(index: number, unit: { id: string }): string {
         return unit.id;
     }
 
-    trackByName(index: number, item: any): string {
+    trackByName(index: number, item: { name: string }): string {
         return item.name;
     }
 

@@ -49,7 +49,7 @@ export class InstallWorkshopModModalComponent implements OnDestroy {
     }
 
     install() {
-        const formValue: any = this.form.getRawValue();
+        const formValue = this.form.getRawValue();
         const steamId: string = formValue.steamId.replace('https://steamcommunity.com/sharedfiles/filedetails/?id=', '');
 
         this.dialogRef.close({

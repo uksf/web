@@ -187,10 +187,10 @@ export class DropdownBaseComponent implements OnInit, OnDestroy {
 export interface IDropdownElement {
     value: string;
     displayValue: string;
-    data?: any;
+    data?: unknown;
     disabled?: boolean;
 }
 
-export function mapFromElement<T>(type: { new (...args: any[]): T }, element: IDropdownElement): T {
+export function mapFromElement<T>(type: { new (...args: unknown[]): T }, element: IDropdownElement): T {
     return element === null ? null : new type(element);
 }

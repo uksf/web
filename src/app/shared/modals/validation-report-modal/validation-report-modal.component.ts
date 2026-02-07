@@ -2,6 +2,11 @@ import { Component, Inject, Renderer2, ViewChild, ElementRef } from '@angular/co
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ValidationReport } from '@app/shared/models/response';
 
+export interface ValidationReportModalData {
+    title: string;
+    messages: ValidationReport[];
+}
+
 @Component({
     selector: 'app-validation-report-modal',
     templateUrl: './validation-report-modal.component.html',
@@ -10,13 +15,13 @@ import { ValidationReport } from '@app/shared/models/response';
 export class ValidationReportModalComponent {
     @ViewChild('messageBox') messageBox: ElementRef;
     messages: ValidationReport[];
-    title;
-    message;
+    title: string;
+    message: ValidationReport;
     index = 0;
     private minWidth = 0;
     private minHeight = 0;
 
-    constructor(public dialog: MatDialogRef<ValidationReportModalComponent>, public renderer: Renderer2, @Inject(MAT_DIALOG_DATA) public data: any) {
+    constructor(public dialog: MatDialogRef<ValidationReportModalComponent>, public renderer: Renderer2, @Inject(MAT_DIALOG_DATA) public data: ValidationReportModalData) {
         this.title = data.title;
         this.messages = data.messages;
         this.message = this.messages[0];

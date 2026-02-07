@@ -1,3 +1,9 @@
+export interface CommandRequestReview {
+    id: string;
+    name: string;
+    state: number;
+}
+
 export interface CommandRequest {
     value?: string;
     displayValue?: string;
@@ -8,7 +14,7 @@ export interface CommandRequest {
     reason?: string;
     recipient?: string;
     requester?: string;
-    reviews?: any;
+    reviews?: CommandRequestReview[];
     secondaryValue?: string;
     type?: string;
 }

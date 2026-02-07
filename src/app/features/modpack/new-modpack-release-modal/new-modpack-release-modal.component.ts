@@ -42,7 +42,7 @@ export class NewModpackReleaseModalComponent {
 
     create() {
         this.submitting = true;
-        const formValue: any = this.form.getRawValue();
+        const formValue = this.form.getRawValue();
         this.modpackReleaseService.createNewRelease(formValue.version, () => {
             this.dialogRef.close(true);
         });

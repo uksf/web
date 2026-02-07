@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
     selector: 'app-password-reset',
@@ -56,7 +57,7 @@ export class PasswordResetComponent implements OnInit {
                     this.router.navigate(['/home']).then();
                 });
             },
-            error: (error: any) => {
+            error: (error: HttpErrorResponse) => {
                 this.pending = false;
                 this.loginError = error?.message || 'Login failed';
             }

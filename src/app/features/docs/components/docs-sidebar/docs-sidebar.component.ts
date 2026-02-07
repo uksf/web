@@ -64,7 +64,7 @@ export class DocsSidebarComponent implements OnInit, OnDestroy {
         this.collapsedState = this.collapsedState === 'collapsed' ? 'expanded' : 'collapsed';
     }
 
-    trackById(_: any, folderMetadata: FolderMetadata) {
+    trackById(_: number, folderMetadata: FolderMetadata) {
         return folderMetadata.id;
     }
 

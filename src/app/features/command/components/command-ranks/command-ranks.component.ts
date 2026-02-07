@@ -114,7 +114,7 @@ export class CommandRanksComponent implements OnInit, OnDestroy {
         });
     }
 
-    trackByRankId(index: number, rank: any): string {
+    trackByRankId(index: number, rank: { id: string }): string {
         return rank.id;
     }
 

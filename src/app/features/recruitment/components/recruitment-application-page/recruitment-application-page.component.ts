@@ -34,7 +34,7 @@ export class RecruitmentApplicationPageComponent implements OnDestroy {
     application: DetailedApplication;
     otherRolePreferenceOptions: string[];
     recruiters: Recruiter[];
-    selected: any;
+    selected: string;
     updating: boolean;
     teamspeakState: AsyncSubject<OnlineState> = new AsyncSubject<OnlineState>();
     discordState: AsyncSubject<OnlineState> = new AsyncSubject<OnlineState>();
@@ -125,7 +125,7 @@ export class RecruitmentApplicationPageComponent implements OnDestroy {
         });
     }
 
-    setNewRecruiter(newRecruiter: any) {
+    setNewRecruiter(newRecruiter: string) {
         this.updating = true;
         this.httpClient.post(`${this.urls.apiUrl}/recruitment/applications/${this.accountId}/recruiter`, { newRecruiter: newRecruiter }).pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {

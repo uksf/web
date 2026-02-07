@@ -116,7 +116,7 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
         });
     }
 
-    trackById(index: number, item: any): string {
+    trackById(index: number, item: { id: string }): string {
         return item.id;
     }
 

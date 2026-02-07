@@ -8,7 +8,7 @@ import { AddUnitModalComponent } from '@app/features/command/modals/add-unit-mod
 import { ITreeOptions, KEYS, TREE_ACTIONS, TreeNode } from '@circlon/angular-tree-component';
 import { Permissions } from '@app/core/services/permissions';
 import { PermissionsService } from '@app/core/services/permissions.service';
-import { RequestUnitUpdateOrder, RequestUnitUpdateParent, ResponseUnit, UnitTreeDataSet } from '@app/features/units/models/units';
+import { RequestUnitUpdateOrder, RequestUnitUpdateParent, ResponseUnit, Unit, UnitTreeDataSet } from '@app/features/units/models/units';
 
 @Component({
     selector: 'app-command-units',
@@ -33,9 +33,9 @@ export class CommandUnitsComponent implements OnInit, OnDestroy {
         }
     };
     updatingOrder = false;
-    combat: any[];
-    auxiliary: any[];
-    secondary: any[];
+    combat: Unit[];
+    auxiliary: Unit[];
+    secondary: Unit[];
 
     constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private permissions: PermissionsService) {
         if (permissions.hasPermission(Permissions.ADMIN)) {

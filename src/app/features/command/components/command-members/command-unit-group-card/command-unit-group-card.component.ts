@@ -33,11 +33,11 @@ export class CommandUnitGroupCardComponent implements OnInit {
         return !any(this.unit.memberObjects) && all(this.children.toArray(), (x) => x.isEmpty);
     }
 
-    trackByMemberId(_: any, member: Account) {
+    trackByMemberId(_: number, member: Account) {
         return member.id;
     }
 
-    trackByUnitId(_: any, unit: Unit) {
+    trackByUnitId(_: number, unit: Unit) {
         return unit.id;
     }
 }

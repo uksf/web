@@ -56,7 +56,7 @@ export class AddServerModalComponent implements OnDestroy {
         private dialogRef: MatDialogRef<AddServerModalComponent>,
         private httpClient: HttpClient,
         private urls: UrlService,
-        @Inject(MAT_DIALOG_DATA) public data: any
+        @Inject(MAT_DIALOG_DATA) public data: AddServerModalData
     ) {
         this.form = formbuilder.group({
             name: ['', Validators.required, this.validateServer.bind(this)],
@@ -182,4 +182,9 @@ export class AddServerModalComponent implements OnDestroy {
             );
         }
     }
+}
+
+interface AddServerModalData {
+    server?: Record<string, unknown>;
+    connectionId?: string;
 }

@@ -13,6 +13,7 @@ import { AccountService } from '@app/core/services/account.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { RequestModalData } from '@app/shared/models/shared';
 import { UnitBranch } from '@app/features/units/models/units';
+import { CommandRequestReview } from '@app/features/command/models/command-request';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -153,11 +154,11 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
         });
     }
 
-    trackByRequestId(index: number, request: any): string {
+    trackByRequestId(index: number, request: { data: { id: string } }): string {
         return request.data.id;
     }
 
-    trackByReviewId(index: number, review: any): string {
+    trackByReviewId(index: number, review: CommandRequestReview): string {
         return review.id;
     }
 

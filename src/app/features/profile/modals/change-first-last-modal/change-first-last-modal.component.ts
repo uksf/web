@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { AccountService } from '@app/core/services/account.service';
 import { nameCase, titleCase } from '@app/shared/services/helper.service';
+import { Rank } from '@app/shared/models/rank';
 import { first } from 'rxjs/operators';
 
 @Component({
@@ -14,8 +15,8 @@ import { first } from 'rxjs/operators';
 export class ChangeFirstLastModalComponent implements OnInit {
     form: UntypedFormGroup;
     changed = false;
-    original;
-    rank;
+    original: string;
+    rank: string;
 
     constructor(formbuilder: UntypedFormBuilder, private httpClient: HttpClient, private urls: UrlService, private accountService: AccountService) {
         this.form = formbuilder.group({
@@ -25,7 +26,7 @@ export class ChangeFirstLastModalComponent implements OnInit {
         this.form.controls['firstName'].setValue(this.accountService.account.firstname);
         this.form.controls['lastName'].setValue(this.accountService.account.lastname);
         this.httpClient.get(this.urls.apiUrl + '/ranks').pipe(first()).subscribe({
-            next: (ranks: any[]) => {
+            next: (ranks: Rank[]) => {
                 const rank = ranks.find((x) => x.name === this.accountService.account.rank);
                 this.rank = rank ? rank.abbreviation : null;
             }

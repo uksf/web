@@ -162,7 +162,7 @@ export class ApplicationEditComponent implements OnDestroy {
         return this.original !== JSON.stringify(formObj);
     }
 
-    convertRolePreferencesFromGroup(): any {
+    convertRolePreferencesFromGroup(): Record<string, unknown> {
         const formObj = this.formGroup.getRawValue();
         const rolePreferences = [];
         const rolePreferencesGroup: UntypedFormGroup = this.formGroup.controls['rolePreferences'] as UntypedFormGroup;

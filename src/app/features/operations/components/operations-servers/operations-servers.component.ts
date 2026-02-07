@@ -280,9 +280,9 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         });
     }
 
-    showMissionReport(missionReports: any[]) {
+    showMissionReport(missionReports: MissionReport[]) {
         const missionReport = missionReports.shift();
-        let reportDialogClose: Observable<any>;
+        let reportDialogClose: Observable<boolean>;
         if (missionReport.reports.length > 0) {
             reportDialogClose = this.dialog
                 .open(ValidationReportModalComponent, {
@@ -598,7 +598,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         return {
             path: dropdownElement.value,
             name: dropdownElement.displayValue,
-            map: dropdownElement.data
+            map: dropdownElement.data as string
         };
     }
 
@@ -629,4 +629,9 @@ interface IMission {
     map: string;
     name: string;
     path: string;
+}
+
+interface MissionReport {
+    mission: string;
+    reports: string[];
 }

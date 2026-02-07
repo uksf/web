@@ -11,7 +11,7 @@ export class WorkshopModInterventionModalComponent {
     availablePbos: string[] = [];
     pboSelection: WorkshopModPboSelection[] = [];
 
-    constructor(public dialogRef: MatDialogRef<WorkshopModInterventionModalComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
+    constructor(public dialogRef: MatDialogRef<WorkshopModInterventionModalComponent>, @Inject(MAT_DIALOG_DATA) public data: { availablePbos: string[] }) {
         this.availablePbos = data.availablePbos;
         this.pboSelection = this.availablePbos.map((x: string) => {
             return { name: x, selected: false, conflict: false };

@@ -42,14 +42,14 @@ export class InlineDropdownComponent implements ControlValueAccessor, OnInit, On
     private validatorSubscription: Subscription | null = null;
     editing = false;
     invalid = false;
-    public onChange: any = Function.prototype;
-    public onTouched: any = Function.prototype;
+    public onChange: (value: string) => void = Function.prototype as () => void;
+    public onTouched: () => void = Function.prototype as () => void;
 
-    get value(): any {
+    get value(): string {
         return this._value;
     }
 
-    set value(v: any) {
+    set value(v: string) {
         if (v !== this._value) {
             this._value = v;
             this.onChange(v);
@@ -72,11 +72,11 @@ export class InlineDropdownComponent implements ControlValueAccessor, OnInit, On
         this.validatorSubscription?.unsubscribe();
     }
 
-    writeValue(value: any) {
+    writeValue(value: string) {
         this._value = value;
     }
 
-    public registerOnChange(fn: (_: any) => {}): void {
+    public registerOnChange(fn: (value: string) => void): void {
         this.onChange = fn;
     }
 

@@ -41,9 +41,9 @@ export class AddUnitModalComponent implements OnInit {
     availableParentUnits: ResponseUnit[] = [];
     unit: ResponseUnit;
     edit = false;
-    original;
+    original: string;
 
-    constructor(formbuilder: UntypedFormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: any) {
+    constructor(formbuilder: UntypedFormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: { unit?: ResponseUnit }) {
         this.form = formbuilder.group({
             name: ['', Validators.required, this.validateUnit.bind(this)],
             shortname: ['', Validators.required, this.validateUnit.bind(this)],
