@@ -1,12 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
-import { AddRankModalComponent } from '@app/features/command/modals/add-rank-modal/add-rank-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable, Subject, timer } from 'rxjs';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { Rank } from '@app/shared/models/rank';
+import { AddRankModalComponent } from '@app/features/command/modals/add-rank-modal/add-rank-modal.component';
+import { RanksService } from '../../services/ranks.service';
 
 @Component({
     selector: 'app-command-ranks',
@@ -15,10 +15,10 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 })
 export class CommandRanksComponent implements OnInit, OnDestroy {
     private destroy$ = new Subject<void>();
-    ranks;
+    ranks: Rank[];
     updatingOrder = false;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {}
+    constructor(private ranksService: RanksService, private dialog: MatDialog) {}
 
     ngOnInit() {
         this.getRanks();
@@ -29,22 +29,16 @@ export class CommandRanksComponent implements OnInit, OnDestroy {
         this.destroy$.complete();
     }
 
-    validateInlineRank(rank): Observable<boolean> {
+    validateInlineRank(rank: Rank): Observable<boolean> {
         return timer(200).pipe(
             switchMap(() => {
-                return this.httpClient
-                    .post(`${this.urls.apiUrl}/ranks/exists`, rank, {
-                        headers: new HttpHeaders({
-                            'Content-Type': 'application/json'
-                        })
-                    })
-                    .pipe(map((response) => (response ? true : false)));
+                return this.ranksService.checkRankExists(rank).pipe(map((response) => (response ? true : false)));
             })
         );
     }
 
     getRanks() {
-        this.httpClient.get(`${this.urls.apiUrl}/ranks`).pipe(takeUntil(this.destroy$)).subscribe({
+        this.ranksService.getRanks().pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
                 this.ranks = response;
             }
@@ -66,18 +60,11 @@ export class CommandRanksComponent implements OnInit, OnDestroy {
     editRank(check) {
         const rank = this.ranks.find((x) => x.name === check || x.abbreviation === check || x.teamspeakGroup === check || x.discordRoleId === check);
         if (rank) {
-            this.httpClient
-                .patch(`${this.urls.apiUrl}/ranks`, rank, {
-                    headers: new HttpHeaders({
-                        'Content-Type': 'application/json'
-                    })
-                })
-                .pipe(takeUntil(this.destroy$))
-                .subscribe({
-                    next: (response) => {
-                        this.ranks = response;
-                    }
-                });
+            this.ranksService.editRank(rank).pipe(takeUntil(this.destroy$)).subscribe({
+                next: (response) => {
+                    this.ranks = response;
+                }
+            });
         }
     }
 
@@ -89,7 +76,7 @@ export class CommandRanksComponent implements OnInit, OnDestroy {
         dialog.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
             next: (result) => {
                 if (result) {
-                    this.httpClient.delete(`${this.urls.apiUrl}/ranks/${rank.id}`).pipe(takeUntil(this.destroy$)).subscribe({
+                    this.ranksService.deleteRank(rank.id).pipe(takeUntil(this.destroy$)).subscribe({
                         next: (response) => {
                             this.ranks = response;
                         }
@@ -106,7 +93,7 @@ export class CommandRanksComponent implements OnInit, OnDestroy {
             return;
         }
         this.updatingOrder = true;
-        this.httpClient.post(`${this.urls.apiUrl}/ranks/order`, this.ranks).pipe(takeUntil(this.destroy$)).subscribe({
+        this.ranksService.updateRankOrder(this.ranks).pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
                 this.ranks = response;
                 this.updatingOrder = false;

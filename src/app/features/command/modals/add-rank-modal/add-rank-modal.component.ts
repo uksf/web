@@ -3,9 +3,8 @@ import { AbstractControl, FormBuilder, ValidationErrors, Validators } from '@ang
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { Observable, of, timer } from 'rxjs';
 import { first, map, switchMap } from 'rxjs/operators';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
+import { RanksService } from '../../services/ranks.service';
 
 @Component({
     selector: 'app-add-rank-modal',
@@ -31,7 +30,7 @@ export class AddRankModalComponent implements OnInit {
         teamspeakGroup: [{ type: 'rankTaken', message: 'That ID is already in use' }]
     };
 
-    constructor(private formBuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {}
+    constructor(private formBuilder: FormBuilder, private ranksService: RanksService, private dialog: MatDialog) {}
 
     trackByIndex(index: number): number {
         return index;
@@ -45,19 +44,12 @@ export class AddRankModalComponent implements OnInit {
         }
 
         this.pending = true;
-        this.httpClient
-            .post(`${this.urls.apiUrl}/ranks`, JSON.stringify(this.form.getRawValue()), {
-                headers: new HttpHeaders({
-                    'Content-Type': 'application/json'
-                })
-            })
-            .pipe(first())
-            .subscribe({
-                next: (_) => {
-                    this.dialog.closeAll();
-                    this.pending = false;
-                }
-            });
+        this.ranksService.addRank(JSON.stringify(this.form.getRawValue())).pipe(first()).subscribe({
+            next: (_) => {
+                this.dialog.closeAll();
+                this.pending = false;
+            }
+        });
     }
 
     private validateRank(control: AbstractControl): Observable<ValidationErrors> {
@@ -66,7 +58,7 @@ export class AddRankModalComponent implements OnInit {
                 if (control.pristine || !control.value) {
                     return of(null);
                 }
-                return this.httpClient.post(`${this.urls.apiUrl}/ranks/${control.value}`, {}).pipe(map((response) => (response ? { rankTaken: true } : null)));
+                return this.ranksService.checkRankName(control.value).pipe(map((response) => (response ? { rankTaken: true } : null)));
             })
         );
     }
