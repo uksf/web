@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from '@shared/shared.module';
 import { DocsRoutingModule } from './docs-routing.module';
+import { DocsService } from './services/docs.service';
 import { DocsPageComponent } from './components/docs-page/docs-page.component';
 import { DocsSidebarComponent } from './components/docs-sidebar/docs-sidebar.component';
 import { DocsFolderComponent } from './components/docs-sidebar/docs-folder/docs-folder.component';
@@ -37,5 +38,6 @@ import { QuillModule } from 'ngx-quill';
         MatDividerModule,
         QuillModule,
     ],
+    providers: [DocsService],
 })
 export class DocsModule {}

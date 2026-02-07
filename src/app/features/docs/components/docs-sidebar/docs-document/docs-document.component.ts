@@ -4,8 +4,7 @@ import { folderAnimations } from '@app/shared/services/animations.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateDocumentModalComponent, DocumentModalData } from '../../../modals/create-document-modal/create-document-modal.component';
 import { ConfirmationModalComponent, ConfirmationModalData } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
-import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
+import { DocsService } from '../../../services/docs.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UksfError } from '@app/shared/models/response';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
@@ -29,7 +28,7 @@ export class DocsDocumentComponent implements OnChanges, OnDestroy {
     menuOpen: boolean = false;
     selected: boolean = false;
 
-    constructor(private httpClient: HttpClient, private urlService: UrlService, private dialog: MatDialog, private route: ActivatedRoute, private router: Router) {}
+    constructor(private docsService: DocsService, private dialog: MatDialog, private route: ActivatedRoute, private router: Router) {}
 
     ngOnDestroy() {
         this.destroy$.next();
@@ -137,7 +136,7 @@ export class DocsDocumentComponent implements OnChanges, OnDestroy {
             .subscribe({
                 next: (result) => {
                     if (result) {
-                        this.httpClient.delete(`${this.urlService.apiUrl}/docs/folders/${this.folderMetadata.id}/documents/${this.documentMetadata.id}`).pipe(first()).subscribe({
+                        this.docsService.deleteDocument(this.folderMetadata.id, this.documentMetadata.id).pipe(first()).subscribe({
                             next: () => {
                                 this.refresh.emit();
                             },

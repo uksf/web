@@ -4,8 +4,7 @@ import { folderAnimations } from '@app/shared/services/animations.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateDocumentModalComponent, DocumentModalData } from '../../../modals/create-document-modal/create-document-modal.component';
 import { ConfirmationModalComponent, ConfirmationModalData } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
-import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
+import { DocsService } from '../../../services/docs.service';
 import { CreateFolderModalComponent, FolderModalData } from '../../../modals/create-folder-modal/create-folder-modal.component';
 import { UksfError } from '@app/shared/models/response';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
@@ -26,7 +25,7 @@ export class DocsFolderComponent {
     hover: boolean = false;
     menuOpen: boolean = false;
 
-    constructor(private httpClient: HttpClient, private urlService: UrlService, private dialog: MatDialog) {}
+    constructor(private docsService: DocsService, private dialog: MatDialog) {}
 
     trackByFolderId(_: number, folderMetadata: FolderMetadata) {
         return folderMetadata.id;
@@ -121,7 +120,7 @@ export class DocsFolderComponent {
             .subscribe({
                 next: (result) => {
                     if (result) {
-                        this.httpClient.delete(`${this.urlService.apiUrl}/docs/folders/${this.folderMetadata.id}`).pipe(first()).subscribe({
+                        this.docsService.deleteFolder(this.folderMetadata.id).pipe(first()).subscribe({
                             next: () => {
                                 this.refresh.emit();
                             },

@@ -1,10 +1,9 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { CreateDocumentRequest, DocumentPermissions, FolderMetadata } from '@app/features/docs/models/documents';
-import { HttpClient } from '@angular/common/http';
+import { DocsService } from '../../services/docs.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { NgForm } from '@angular/forms';
-import { UrlService } from '@app/core/services/url.service';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { Unit } from '@app/features/units/models/units';
@@ -12,8 +11,8 @@ import { Rank } from '@app/shared/models/rank';
 import { BasicAccount } from '@app/shared/models/account';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { defaultHeaders } from '@app/shared/services/constants';
 import { AccountService } from '@app/core/services/account.service';
+import { MembersService } from '@app/shared/services/members.service';
 
 @Component({
     selector: 'app-create-document-modal',
@@ -51,8 +50,8 @@ export class CreateDocumentModalComponent implements OnInit {
     accounts: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
 
     constructor(
-        private httpClient: HttpClient,
-        private urlService: UrlService,
+        private docsService: DocsService,
+        private membersService: MembersService,
         private dialog: MatDialog,
         private accountService: AccountService,
         @Inject(MAT_DIALOG_DATA) public data: DocumentModalData
@@ -67,7 +66,7 @@ export class CreateDocumentModalComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.httpClient.get(`${this.urlService.apiUrl}/accounts/members`).pipe(first()).subscribe({
+        this.membersService.getMembers().pipe(first()).subscribe({
             next: (accounts: BasicAccount[]) => {
                 const elements = accounts.map(BasicAccount.mapToElement);
                 this.accounts.next(elements);
@@ -109,13 +108,9 @@ export class CreateDocumentModalComponent implements OnInit {
         let request$: Observable<unknown>;
 
         if (this.initialData) {
-            request$ = this.httpClient.put(`${this.urlService.apiUrl}/docs/folders/${this.folderMetadata.id}/documents/${this.initialData.id}`, request, {
-                headers: defaultHeaders
-            });
+            request$ = this.docsService.updateDocument(this.folderMetadata.id, this.initialData.id, request);
         } else {
-            request$ = this.httpClient.post(`${this.urlService.apiUrl}/docs/folders/${this.folderMetadata.id}/documents`, request, {
-                headers: defaultHeaders
-            });
+            request$ = this.docsService.createDocument(this.folderMetadata.id, request);
         }
 
         request$.pipe(first()).subscribe({

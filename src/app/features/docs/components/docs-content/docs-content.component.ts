@@ -2,8 +2,7 @@ import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DocumentContent, DocumentMetadata, UpdateDocumentContentRequest } from '@app/features/docs/models/documents';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
+import { DocsService } from '../../services/docs.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { UksfError } from '@app/shared/models/response';
@@ -20,7 +19,7 @@ export class DocsContentComponent implements OnChanges, OnDestroy {
     editing: boolean = false;
     pending: boolean = false;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {}
+    constructor(private docsService: DocsService, private dialog: MatDialog) {}
 
     ngOnDestroy() {
         this.destroy$.next();
@@ -33,7 +32,7 @@ export class DocsContentComponent implements OnChanges, OnDestroy {
             return;
         }
 
-        this.httpClient.get(`${this.urls.apiUrl}/docs/folders/${this.documentMetadata.folder}/documents/${this.documentMetadata.id}/content`).pipe(takeUntil(this.destroy$)).subscribe({
+        this.docsService.getDocumentContent(this.documentMetadata.folder, this.documentMetadata.id).pipe(takeUntil(this.destroy$)).subscribe({
             next: (content: DocumentContent) => {
                 this.editing = false;
                 this.documentContent = content;
@@ -63,12 +62,7 @@ export class DocsContentComponent implements OnChanges, OnDestroy {
             newText: this.documentContent.text,
             lastKnownUpdated: this.documentContent.lastUpdated
         };
-        this.httpClient
-            .put(`${this.urls.apiUrl}/docs/folders/${this.documentMetadata.folder}/documents/${this.documentMetadata.id}/content`, updateContentRequest, {
-                headers: new HttpHeaders({
-                    'Content-Type': 'application/json'
-                })
-            })
+        this.docsService.updateDocumentContent(this.documentMetadata.folder, this.documentMetadata.id, updateContentRequest)
             .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (content: DocumentContent) => {

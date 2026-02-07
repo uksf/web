@@ -1,9 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { DocumentMetadata, FolderMetadata } from '@app/features/docs/models/documents';
+import { DocsService } from '../../services/docs.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UksfError } from '@app/shared/models/response';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
@@ -19,7 +18,7 @@ export class DocsPageComponent implements OnInit, OnDestroy {
     allFolderMetadata: FolderMetadata[] = [];
     selectedDocumentMetadata: DocumentMetadata;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private route: ActivatedRoute, private router: Router, private dialog: MatDialog) {}
+    constructor(private docsService: DocsService, private route: ActivatedRoute, private router: Router, private dialog: MatDialog) {}
 
     ngOnInit(): void {
         this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe({
@@ -36,7 +35,7 @@ export class DocsPageComponent implements OnInit, OnDestroy {
     }
 
     getAllFoldersMetadata() {
-        this.httpClient.get(`${this.urls.apiUrl}/docs/folders`).pipe(takeUntil(this.destroy$)).subscribe({
+        this.docsService.getFolders().pipe(takeUntil(this.destroy$)).subscribe({
             next: (allFolderMetadata: FolderMetadata[]) => {
                 this.allFolderMetadata = allFolderMetadata;
                 this.handleQueryParams(this.route.snapshot.queryParams);
@@ -52,7 +51,7 @@ export class DocsPageComponent implements OnInit, OnDestroy {
         const document = params.document;
 
         if (folder && document) {
-            this.httpClient.get(`${this.urls.apiUrl}/docs/folders/${folder}/documents/${document}`).pipe(takeUntil(this.destroy$)).subscribe({
+            this.docsService.getDocumentMetadata(folder, document).pipe(takeUntil(this.destroy$)).subscribe({
                 next: (documentMetadata: DocumentMetadata) => {
                     this.selectedDocumentMetadata = documentMetadata;
                 },
