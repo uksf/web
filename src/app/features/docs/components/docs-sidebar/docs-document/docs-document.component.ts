@@ -10,7 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UksfError } from '@app/shared/models/response';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { first, takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-docs-document',
@@ -119,7 +119,7 @@ export class DocsDocumentComponent implements OnChanges, OnDestroy {
                 }
             })
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (_) => {
                     this.refresh.emit();
@@ -133,11 +133,11 @@ export class DocsDocumentComponent implements OnChanges, OnDestroy {
                 data: { message: `Are you sure you want to delete '${this.documentMetadata.name}'` }
             })
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (result) => {
                     if (result) {
-                        this.httpClient.delete(`${this.urlService.apiUrl}/docs/folders/${this.folderMetadata.id}/documents/${this.documentMetadata.id}`).pipe(takeUntil(this.destroy$)).subscribe({
+                        this.httpClient.delete(`${this.urlService.apiUrl}/docs/folders/${this.folderMetadata.id}/documents/${this.documentMetadata.id}`).pipe(first()).subscribe({
                             next: () => {
                                 this.refresh.emit();
                             },

@@ -1,18 +1,16 @@
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { EditMemberTrainingModalData, EditTrainingItem, Training } from '@app/features/command/models/training';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 
 @Component({
     selector: 'app-edit-member-training-modal',
     templateUrl: './edit-member-training-modal.component.html',
     styleUrls: ['./edit-member-training-modal.component.scss']
 })
-export class EditMemberTrainingModalComponent implements OnInit, OnDestroy {
-    private destroy$ = new Subject<void>();
+export class EditMemberTrainingModalComponent implements OnInit {
     accountId: string;
     name: string;
     trainings: Training[];
@@ -31,13 +29,8 @@ export class EditMemberTrainingModalComponent implements OnInit, OnDestroy {
         return JSON.stringify(this.availableTrainings) !== this.before;
     }
 
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
-    }
-
     ngOnInit() {
-        this.httpClient.get(this.urls.apiUrl + `/trainings`).pipe(takeUntil(this.destroy$)).subscribe({
+        this.httpClient.get(this.urls.apiUrl + `/trainings`).pipe(first()).subscribe({
             next: (response: Training[]): void => {
                 this.availableTrainings = response.map((training: Training): EditTrainingItem => {
                     return { ...training, selected: !!this.trainings.find((x: Training): boolean => x.id === training.id) };
@@ -60,7 +53,7 @@ export class EditMemberTrainingModalComponent implements OnInit, OnDestroy {
                     'Content-Type': 'application/json'
                 })
             })
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (_) => {
                     this.dialog.closeAll();

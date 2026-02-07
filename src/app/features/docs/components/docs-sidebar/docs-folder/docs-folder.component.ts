@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DocumentMetadata, FolderMetadata } from '@app/features/docs/models/documents';
 import { folderAnimations } from '@app/shared/services/animations.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -9,8 +9,7 @@ import { UrlService } from '@app/core/services/url.service';
 import { CreateFolderModalComponent, FolderModalData } from '../../../modals/create-folder-modal/create-folder-modal.component';
 import { UksfError } from '@app/shared/models/response';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 
 @Component({
     selector: 'app-docs-folder',
@@ -18,8 +17,7 @@ import { takeUntil } from 'rxjs/operators';
     styleUrls: ['./docs-folder.component.scss'],
     animations: [folderAnimations.indicatorRotate, folderAnimations.folderExpansion]
 })
-export class DocsFolderComponent implements OnDestroy {
-    private destroy$ = new Subject<void>();
+export class DocsFolderComponent {
     @Input('allDocumentMetadata') allFolderMetadata: FolderMetadata[];
     @Input('folderMetadata') folderMetadata: FolderMetadata;
     @Output('refresh') refresh = new EventEmitter();
@@ -29,11 +27,6 @@ export class DocsFolderComponent implements OnDestroy {
     menuOpen: boolean = false;
 
     constructor(private httpClient: HttpClient, private urlService: UrlService, private dialog: MatDialog) {}
-
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
-    }
 
     trackByFolderId(_: any, folderMetadata: FolderMetadata) {
         return folderMetadata.id;
@@ -86,7 +79,7 @@ export class DocsFolderComponent implements OnDestroy {
                 }
             })
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (_) => {
                     this.expandSelf();
@@ -110,7 +103,7 @@ export class DocsFolderComponent implements OnDestroy {
                 }
             })
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (_) => {
                     this.refresh.emit();
@@ -124,11 +117,11 @@ export class DocsFolderComponent implements OnDestroy {
                 data: { message: `Are you sure you want to delete '${this.folderMetadata.name}' and all its folders and documents?` }
             })
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (result) => {
                     if (result) {
-                        this.httpClient.delete(`${this.urlService.apiUrl}/docs/folders/${this.folderMetadata.id}`).pipe(takeUntil(this.destroy$)).subscribe({
+                        this.httpClient.delete(`${this.urlService.apiUrl}/docs/folders/${this.folderMetadata.id}`).pipe(first()).subscribe({
                             next: () => {
                                 this.refresh.emit();
                             },
@@ -154,7 +147,7 @@ export class DocsFolderComponent implements OnDestroy {
                 }
             })
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (_) => {
                     this.expandSelf();

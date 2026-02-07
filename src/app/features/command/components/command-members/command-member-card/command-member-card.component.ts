@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Account } from '@app/shared/models/account';
 import { expansionAnimations } from '@app/shared/services/animations.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -11,8 +11,7 @@ import { UrlService } from '@app/core/services/url.service';
 import { EditMemberTrainingModalData } from '@app/features/command/models/training';
 import { EditMemberTrainingModalComponent } from '@app/features/command/modals/edit-member-training-modal/edit-member-training-modal.component';
 import { UnitBranch } from '@app/features/units/models/units';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 
 @Component({
     selector: 'app-command-member-card',
@@ -20,8 +19,7 @@ import { takeUntil } from 'rxjs/operators';
     styleUrls: ['./command-member-card.component.scss'],
     animations: [expansionAnimations.indicatorRotate, expansionAnimations.bodyExpansion]
 })
-export class CommandMemberCardComponent implements OnInit, OnDestroy {
-    private destroy$ = new Subject<void>();
+export class CommandMemberCardComponent implements OnInit {
     @Input('member') member: Account;
     expanded: boolean = false;
     hover: boolean = false;
@@ -30,11 +28,6 @@ export class CommandMemberCardComponent implements OnInit, OnDestroy {
     constructor(private dialog: MatDialog, private httpClient: HttpClient, private urls: UrlService) {}
 
     ngOnInit(): void {}
-
-    ngOnDestroy(): void {
-        this.destroy$.next();
-        this.destroy$.complete();
-    }
 
     editRank() {
         const data: RequestModalData = {
@@ -66,7 +59,7 @@ export class CommandMemberCardComponent implements OnInit, OnDestroy {
 
     updateQualifications() {
         this.qualificationsPending = true;
-        this.httpClient.put(`${this.urls.apiUrl}/accounts/${this.member.id}/qualifications`, this.member.qualifications).pipe(takeUntil(this.destroy$)).subscribe({
+        this.httpClient.put(`${this.urls.apiUrl}/accounts/${this.member.id}/qualifications`, this.member.qualifications).pipe(first()).subscribe({
             next: () => {
                 this.qualificationsPending = false;
             },

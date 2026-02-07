@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NgForm } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -8,16 +8,15 @@ import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.servi
 import { BasicAccount } from '@app/shared/models/account';
 import { CommandRequest } from '@app/features/command/models/command-request';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
+import { first } from 'rxjs/operators';
 
 @Component({
     selector: 'app-request-discharge-modal',
     templateUrl: './request-discharge-modal.component.html',
     styleUrls: ['./request-discharge-modal.component.scss', '../../components/command-page/command-page.component.scss']
 })
-export class RequestDischargeModalComponent implements OnInit, OnDestroy {
-    private destroy$ = new Subject<void>();
+export class RequestDischargeModalComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     pending = false;
@@ -32,13 +31,8 @@ export class RequestDischargeModalComponent implements OnInit, OnDestroy {
 
     constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService) {}
 
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
-    }
-
     ngOnInit(): void {
-        this.httpClient.get(`${this.urlService.apiUrl}/accounts/members?reverse=true`).pipe(takeUntil(this.destroy$)).subscribe({
+        this.httpClient.get(`${this.urlService.apiUrl}/accounts/members?reverse=true`).pipe(first()).subscribe({
             next: (accounts: BasicAccount[]) => {
                 this.accounts.next(accounts.map(BasicAccount.mapToElement));
                 this.accounts.complete();
@@ -63,7 +57,7 @@ export class RequestDischargeModalComponent implements OnInit, OnDestroy {
                     'Content-Type': 'application/json'
                 })
             })
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: () => {
                     this.dialog.closeAll();

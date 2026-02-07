@@ -1,12 +1,12 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NgForm } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
-import { BehaviorSubject, forkJoin, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, forkJoin } from 'rxjs';
+import { first } from 'rxjs/operators';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { BasicAccount } from '@app/shared/models/account';
 import { LoggingService } from '@app/core/services/logging.service';
@@ -18,8 +18,7 @@ import { CommandRequest } from '@app/features/command/models/command-request';
     templateUrl: './request-unit-removal-modal.component.html',
     styleUrls: ['./request-unit-removal-modal.component.scss', '../../components/command-page/command-page.component.scss']
 })
-export class RequestUnitRemovalModalComponent implements OnInit, OnDestroy {
-    private destroy$ = new Subject<void>();
+export class RequestUnitRemovalModalComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     pending = false;
@@ -36,13 +35,8 @@ export class RequestUnitRemovalModalComponent implements OnInit, OnDestroy {
 
     constructor(private dialog: MatDialog, private httpClient: HttpClient, private urlService: UrlService, private logger: LoggingService) {}
 
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
-    }
-
     ngOnInit() {
-        this.httpClient.get(`${this.urlService.apiUrl}/accounts/members`).pipe(takeUntil(this.destroy$)).subscribe({
+        this.httpClient.get(`${this.urlService.apiUrl}/accounts/members`).pipe(first()).subscribe({
             next: (accounts: BasicAccount[]) => {
                 this.accounts.next(accounts.map(BasicAccount.mapToElement));
                 this.accounts.complete();
@@ -64,7 +58,7 @@ export class RequestUnitRemovalModalComponent implements OnInit, OnDestroy {
         const auxiliaryRequest = this.httpClient.get<Unit[]>(`${this.urlService.apiUrl}/units?filter=auxiliary&accountId=${accountId}`);
         const secondaryRequest = this.httpClient.get<Unit[]>(`${this.urlService.apiUrl}/units?filter=secondary&accountId=${accountId}`);
 
-        forkJoin([auxiliaryRequest, secondaryRequest]).pipe(takeUntil(this.destroy$)).subscribe({
+        forkJoin([auxiliaryRequest, secondaryRequest]).pipe(first()).subscribe({
             next: ([auxiliaryUnits, secondaryUnits]) => {
                 // Combine the results from both calls
                 const allUnits = [...auxiliaryUnits, ...secondaryUnits];
@@ -89,7 +83,7 @@ export class RequestUnitRemovalModalComponent implements OnInit, OnDestroy {
         };
 
         this.pending = true;
-        this.httpClient.post(this.urlService.apiUrl + '/commandrequests/create/unitremoval', commandRequest).pipe(takeUntil(this.destroy$)).subscribe({
+        this.httpClient.post(this.urlService.apiUrl + '/commandrequests/create/unitremoval', commandRequest).pipe(first()).subscribe({
             next: () => {
                 this.dialog.closeAll();
                 this.pending = false;

@@ -1,11 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { PermissionsService } from '@app/core/services/permissions.service';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 
 export function passwordMatcher(form: AbstractControl) {
     if (!form.get('password').value || !form.get('confirmPass').value) {
@@ -19,8 +18,7 @@ export function passwordMatcher(form: AbstractControl) {
     templateUrl: './change-password-modal.component.html',
     styleUrls: ['./change-password-modal.component.scss']
 })
-export class ChangePasswordModalComponent implements OnInit, OnDestroy {
-    private destroy$ = new Subject<void>();
+export class ChangePasswordModalComponent implements OnInit {
     public form: UntypedFormGroup;
 
     constructor(public formbuilder: UntypedFormBuilder, private httpClient: HttpClient, private permissionsService: PermissionsService, private urls: UrlService, public dialog: MatDialog) {
@@ -35,11 +33,6 @@ export class ChangePasswordModalComponent implements OnInit, OnDestroy {
 
     ngOnInit() {}
 
-    ngOnDestroy(): void {
-        this.destroy$.next();
-        this.destroy$.complete();
-    }
-
     changePassword() {
         const formObj = this.form.getRawValue();
         delete formObj.confirmPass;
@@ -50,7 +43,7 @@ export class ChangePasswordModalComponent implements OnInit, OnDestroy {
                     'Content-Type': 'application/json'
                 })
             })
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: () => {
                     this.dialog.closeAll();

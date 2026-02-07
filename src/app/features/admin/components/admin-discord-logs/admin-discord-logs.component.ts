@@ -8,7 +8,7 @@ import { DiscordLog, DiscordUserEventType } from '@app/features/admin/models/log
 import { AdminLogsComponent } from '../admin-logs/admin-logs.component';
 import { PagedResult } from '@app/shared/models/paged-result';
 import { Clipboard } from '@angular/cdk/clipboard';
-import { takeUntil } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 
 @Component({
     selector: 'app-admin-discord-logs',
@@ -27,7 +27,7 @@ export class AdminDiscordLogsComponent extends AdminLogsComponent implements OnI
         const params = this.buildParams();
         this.httpClient
             .get<PagedResult<DiscordLog>>(`${this.urls.apiUrl}/logging/discord`, { params })
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (pagedResult: PagedResult<DiscordLog>) => {
                     this.dataLoaded = true;

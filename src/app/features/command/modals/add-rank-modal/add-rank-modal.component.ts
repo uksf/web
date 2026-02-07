@@ -1,8 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
-import { Observable, of, Subject, timer } from 'rxjs';
-import { map, switchMap, takeUntil } from 'rxjs/operators';
+import { Observable, of, timer } from 'rxjs';
+import { first, map, switchMap } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -12,8 +12,7 @@ import { MatDialog } from '@angular/material/dialog';
     templateUrl: './add-rank-modal.component.html',
     styleUrls: ['./add-rank-modal.component.scss']
 })
-export class AddRankModalComponent implements OnInit, OnDestroy {
-    private destroy$ = new Subject<void>();
+export class AddRankModalComponent implements OnInit {
     form: UntypedFormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     pending = false;
@@ -42,11 +41,6 @@ export class AddRankModalComponent implements OnInit, OnDestroy {
 
     ngOnInit() {}
 
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
-    }
-
     submit() {
         if (!this.form.valid || this.pending) {
             return;
@@ -59,7 +53,7 @@ export class AddRankModalComponent implements OnInit, OnDestroy {
                     'Content-Type': 'application/json'
                 })
             })
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (_) => {
                     this.dialog.closeAll();

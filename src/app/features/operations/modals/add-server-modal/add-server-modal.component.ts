@@ -2,7 +2,7 @@ import {Component, Inject, OnDestroy} from '@angular/core';
 import {AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {InstantErrorStateMatcher} from '@app/shared/services/form-helper.service';
 import {Observable, of, Subject, timer} from 'rxjs';
-import {map, switchMap, takeUntil} from 'rxjs/operators';
+import {first, map, switchMap, takeUntil} from 'rxjs/operators';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {UrlService} from '@app/core/services/url.service';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
@@ -116,7 +116,7 @@ export class AddServerModalComponent implements OnDestroy {
                         'Hub-Connection-Id': this.connectionId,
                     }),
                 })
-                .pipe(takeUntil(this.destroy$))
+                .pipe(first())
                 .subscribe({
                     next: (environmentChanged: boolean) => {
                         this.dialogRef.close(environmentChanged);
@@ -133,7 +133,7 @@ export class AddServerModalComponent implements OnDestroy {
                         'Hub-Connection-Id': this.connectionId
                     })
                 })
-                .pipe(takeUntil(this.destroy$))
+                .pipe(first())
                 .subscribe({
                     next: () => {
                         this.dialogRef.close(false);

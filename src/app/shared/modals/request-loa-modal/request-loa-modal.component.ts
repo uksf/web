@@ -7,7 +7,7 @@ import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.servi
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import moment, { Moment } from 'moment';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { first, takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-request-loa-modal',
@@ -142,7 +142,7 @@ export class RequestLoaModalComponent implements OnInit, OnDestroy {
                     'Content-Type': 'application/json'
                 })
             })
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (_) => {
                     this.dialog.closeAll();
@@ -153,7 +153,7 @@ export class RequestLoaModalComponent implements OnInit, OnDestroy {
                             data: { message: error.error }
                         })
                         .afterClosed()
-                        .pipe(takeUntil(this.destroy$))
+                        .pipe(first())
                         .subscribe({
                             next: () => {
                                 this.submitting = false;

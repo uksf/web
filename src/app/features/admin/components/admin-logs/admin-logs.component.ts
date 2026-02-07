@@ -12,7 +12,7 @@ import { PagedResult } from '@app/shared/models/paged-result';
 import { SortDirection } from '@app/shared/models/sort-direction';
 import { Subject } from 'rxjs';
 import { Clipboard } from '@angular/cdk/clipboard';
-import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-admin-logs',
@@ -88,7 +88,7 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
         const params = this.buildParams();
         this.httpClient
             .get<PagedResult<BasicLog>>(`${this.urls.apiUrl}/logging/basic`, { params })
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (pagedResult: PagedResult<BasicLog>) => {
                     this.dataLoaded = true;

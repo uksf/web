@@ -1,17 +1,15 @@
-import { Component, OnDestroy, Output, ViewChild, EventEmitter } from '@angular/core';
+import { Component, Output, ViewChild, EventEmitter } from '@angular/core';
 import { UntypedFormBuilder, NgForm } from '@angular/forms';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 
 @Component({
     selector: 'app-request-password-reset',
     templateUrl: './request-password-reset.component.html',
     styleUrls: ['./request-password-reset.component.scss', '../login-page/login-page.component.scss']
 })
-export class RequestPasswordResetComponent implements OnDestroy {
-    private destroy$ = new Subject<void>();
+export class RequestPasswordResetComponent {
     @ViewChild(NgForm) form!: NgForm;
     @Output() onReturnToLogin = new EventEmitter();
     instantErrorStateMatcher = new InstantErrorStateMatcher();
@@ -37,17 +35,12 @@ export class RequestPasswordResetComponent implements OnDestroy {
         }
 
         this.pending = true;
-        this.auth.requestPasswordReset(this.model.email).pipe(takeUntil(this.destroy$)).subscribe({
+        this.auth.requestPasswordReset(this.model.email).pipe(first()).subscribe({
             next: () => {
                 this.sent = true;
                 this.pending = false;
             }
         });
-    }
-
-    ngOnDestroy(): void {
-        this.destroy$.next();
-        this.destroy$.complete();
     }
 
     returnToLogin() {

@@ -1,10 +1,10 @@
-import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { NgForm } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
+import { first } from 'rxjs/operators';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { Account, BasicAccount } from '@app/shared/models/account';
 import { Role, RolesDataset } from '@app/shared/models/role';
@@ -18,8 +18,7 @@ import { MessageModalComponent } from '@app/shared/modals/message-modal/message-
     templateUrl: './request-role-modal.component.html',
     styleUrls: ['./request-role-modal.component.scss', '../../components/command-page/command-page.component.scss']
 })
-export class RequestRoleModalComponent implements OnInit, OnDestroy {
-    private destroy$ = new Subject<void>();
+export class RequestRoleModalComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;
     @ViewChild('accountList', { read: SelectionListComponent }) accountList: SelectionListComponent;
     pending: boolean = false;
@@ -41,13 +40,8 @@ export class RequestRoleModalComponent implements OnInit, OnDestroy {
         }
     }
 
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
-    }
-
     ngOnInit() {
-        this.httpClient.get(`${this.urlService.apiUrl}/accounts/members`).pipe(takeUntil(this.destroy$)).subscribe({
+        this.httpClient.get(`${this.urlService.apiUrl}/accounts/members`).pipe(first()).subscribe({
             next: (accounts: BasicAccount[]) => {
                 const elements = accounts.map(BasicAccount.mapToElement);
                 this.accounts.next(elements);
@@ -59,7 +53,7 @@ export class RequestRoleModalComponent implements OnInit, OnDestroy {
             }
         });
 
-        this.httpClient.get(`${this.urlService.apiUrl}/roles`).pipe(takeUntil(this.destroy$)).subscribe({
+        this.httpClient.get(`${this.urlService.apiUrl}/roles`).pipe(first()).subscribe({
             next: (rolesDataset: RolesDataset) => {
                 const elements = rolesDataset.roles.map(Role.mapToElement);
                 elements.unshift({ value: 'None', displayValue: 'None' });
@@ -83,7 +77,7 @@ export class RequestRoleModalComponent implements OnInit, OnDestroy {
                 return;
             }
 
-            this.httpClient.get(`${this.urlService.apiUrl}/accounts/${element.value}`).pipe(takeUntil(this.destroy$)).subscribe({
+            this.httpClient.get(`${this.urlService.apiUrl}/accounts/${element.value}`).pipe(first()).subscribe({
                 next: (account: Account) => {
                     element.disabled = account.roleAssignment === this.model.role.value;
                     this.revalidate();
@@ -110,7 +104,7 @@ export class RequestRoleModalComponent implements OnInit, OnDestroy {
             };
 
             this.pending = true;
-            this.httpClient.post(this.urlService.apiUrl + '/commandrequests/create/role', commandRequest).pipe(takeUntil(this.destroy$)).subscribe({
+            this.httpClient.post(this.urlService.apiUrl + '/commandrequests/create/role', commandRequest).pipe(first()).subscribe({
                 next: () => {
                     this.dialog.closeAll();
                     this.pending = false;
