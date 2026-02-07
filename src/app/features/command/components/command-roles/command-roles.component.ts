@@ -7,7 +7,7 @@ import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { MatDialog } from '@angular/material/dialog';
-import { Role } from '@app/shared/models/role';
+import { Role, RolesDataset } from '@app/shared/models/role';
 
 @Component({
     selector: 'app-command-roles',
@@ -30,9 +30,9 @@ export class CommandRolesComponent implements OnInit, OnDestroy {
     constructor(private formBuilder: FormBuilder, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {}
 
     ngOnInit() {
-        this.httpClient.get(`${this.urls.apiUrl}/roles`).pipe(takeUntil(this.destroy$)).subscribe({
+        this.httpClient.get<RolesDataset>(`${this.urls.apiUrl}/roles`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
-                this.roles = response['roles'];
+                this.roles = response.roles;
             }
         });
     }
@@ -63,8 +63,8 @@ export class CommandRolesComponent implements OnInit, OnDestroy {
             })
             .pipe(takeUntil(this.destroy$))
             .subscribe({
-                next: (response) => {
-                    this.roles = response['roles'];
+                next: (response: RolesDataset) => {
+                    this.roles = response.roles;
                     this.roleForm.reset();
                 }
             });
@@ -81,8 +81,8 @@ export class CommandRolesComponent implements OnInit, OnDestroy {
                 })
                 .pipe(takeUntil(this.destroy$))
                 .subscribe({
-                    next: (response) => {
-                        this.roles = response['roles'];
+                    next: (response: RolesDataset) => {
+                        this.roles = response.roles;
                     }
                 });
         }
@@ -96,9 +96,9 @@ export class CommandRolesComponent implements OnInit, OnDestroy {
         dialog.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
             next: (result) => {
                 if (result) {
-                    this.httpClient.delete(`${this.urls.apiUrl}/roles/${role.id}`).pipe(takeUntil(this.destroy$)).subscribe({
+                    this.httpClient.delete<RolesDataset>(`${this.urls.apiUrl}/roles/${role.id}`).pipe(takeUntil(this.destroy$)).subscribe({
                         next: (response) => {
-                            this.roles = response['roles'];
+                            this.roles = response.roles;
                         }
                     });
                 }

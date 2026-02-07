@@ -5,6 +5,7 @@ export interface CommandRequestReview {
 }
 
 export interface CommandRequest {
+    id?: string;
     value?: string;
     displayValue?: string;
     dateCreated?: Date;
@@ -17,4 +18,18 @@ export interface CommandRequest {
     reviews?: CommandRequestReview[];
     secondaryValue?: string;
     type?: string;
+}
+
+export interface CommandRequestItem {
+    data: CommandRequest;
+    reviews: CommandRequestReview[];
+    // Frontend-only properties
+    updating?: boolean;
+    reviewState?: number;
+    reviewOverriden?: boolean;
+}
+
+export interface CommandRequestsResponse {
+    myRequests: CommandRequestItem[];
+    otherRequests: CommandRequestItem[];
 }

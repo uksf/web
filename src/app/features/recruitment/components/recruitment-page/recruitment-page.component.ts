@@ -203,11 +203,11 @@ export class RecruitmentPageComponent implements OnInit, OnDestroy {
     }
 
     private getStats() {
-        this.httpClient.get(this.urls.apiUrl + '/recruitment/stats').pipe(takeUntil(this.destroy$)).subscribe({
-            next: (response: Object) => {
-                this.activity = response['activity'] as RecruiterActivity[];
-                this.yourStats = response['yourStats'] as RecruitmentStats;
-                this.sr1Stats = response['sr1Stats'] as RecruitmentStats;
+        this.httpClient.get<RecruitmentStatsResponse>(this.urls.apiUrl + '/recruitment/stats').pipe(takeUntil(this.destroy$)).subscribe({
+            next: (response) => {
+                this.activity = response.activity;
+                this.yourStats = response.yourStats;
+                this.sr1Stats = response.sr1Stats;
             }
         });
     }
@@ -229,4 +229,10 @@ interface RecruitmentStatField {
 interface RecruitmentStats {
     lastMonth: RecruitmentStatField[];
     overall: RecruitmentStatField[];
+}
+
+interface RecruitmentStatsResponse {
+    activity: RecruiterActivity[];
+    yourStats: RecruitmentStats;
+    sr1Stats: RecruitmentStats;
 }

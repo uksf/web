@@ -10,6 +10,18 @@ import { TimeAgoPipe } from '@app/shared/pipes/time.pipe';
 import { ObjectId } from '@app/shared/models/object-id';
 import { UksfError } from '@app/shared/models/response';
 
+interface Comment {
+    id: string;
+    author: string;
+    content: string;
+    displayName: string;
+    timestamp: Date;
+}
+
+interface CommentThreadResponse {
+    comments: Comment[];
+}
+
 @Component({
     selector: 'app-comment-display',
     templateUrl: './comment-display.component.html',
@@ -31,7 +43,7 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
             1
         );
     };
-    comments = [];
+    comments: Comment[] = [];
     commentForm = this.formBuilder.group({
         commentContent: ['', Validators.maxLength(1000)]
     });
@@ -61,10 +73,10 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
     }
 
     private getComments() {
-        this.httpClient.get(this.urls.apiUrl + '/commentthread/' + this.threadId).pipe(takeUntil(this.destroy$)).subscribe({
+        this.httpClient.get<CommentThreadResponse>(this.urls.apiUrl + '/commentthread/' + this.threadId).pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
                 if (this.previousResponse !== JSON.stringify(response)) {
-                    this.comments = response['comments'];
+                    this.comments = response.comments;
                     this.previousResponse = JSON.stringify(response);
                 }
             }

@@ -1,6 +1,4 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AddServerModalComponent } from '../../modals/add-server-modal/add-server-modal.component';
 import { EditServerModsModalComponent } from '../../modals/edit-server-mods-modal/edit-server-mods-modal.component';
@@ -16,6 +14,8 @@ import { PermissionsService } from '@app/core/services/permissions.service';
 import { UksfError } from '@app/shared/models/response';
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { OrderUpdateRequest } from '@app/shared/models/order-update-request';
+import { GameServer, Mission, MissionReport } from '../../models/game-server';
+import { GameServersService } from '../../services/game-servers.service';
 
 @Component({
     selector: 'app-operations-servers',
@@ -26,16 +26,16 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     @ViewChild('uploader') uploader: ElementRef;
     @ViewChild('serversContainer') serversContainer: ElementRef;
     missions: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
-    admin;
-    servers;
+    admin: boolean;
+    servers: GameServer[];
     disabled = false;
     updatingOrder = false;
-    uploadingFile;
-    updating;
-    progress;
-    message;
-    instanceCount;
-    updateRequest;
+    uploadingFile: boolean;
+    updating: boolean;
+    progress: number;
+    message: string;
+    instanceCount: number;
+    updateRequest: { unsubscribe: () => void };
     fileDragging;
     dropZoneHeight = 0;
     dropZoneWidth = 0;
@@ -60,18 +60,16 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         }
     };
 
-    private onReceiveMissionsUpdate = (connectionId: string, missions: IMission[]) => {
+    private onReceiveMissionsUpdate = (connectionId: string, missions: Mission[]) => {
         if (connectionId !== this.hubConnection.connection.connectionId) {
             this.missions.next(missions.map(this.mapMissionElement));
         }
     };
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog, private signalrService: SignalRService, private permissions: PermissionsService) {}
+    constructor(private gameServersService: GameServersService, private dialog: MatDialog, private signalrService: SignalRService, private permissions: PermissionsService) {}
 
-    private get headers(): HttpHeaders {
-        return new HttpHeaders({
-            'Hub-Connection-Id': this.hubConnection.connection.connectionId
-        });
+    private get connectionId(): string {
+        return this.hubConnection.connection.connectionId;
     }
 
     ngOnInit() {
@@ -116,11 +114,11 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
             this.updateRequest.unsubscribe();
         }
         this.updating = true;
-        this.updateRequest = this.httpClient.get(this.urls.apiUrl + '/gameservers').subscribe({
+        this.updateRequest = this.gameServersService.getServers().subscribe({
             next: (response) => {
-                this.servers = response['servers'];
-                this.instanceCount = response['instanceCount'];
-                this.missions.next(response['missions'].map(this.mapMissionElement));
+                this.servers = response.servers;
+                this.instanceCount = response.instanceCount;
+                this.missions.next(response.missions.map(this.mapMissionElement));
 
                 if (skip) {
                     this.updating = false;
@@ -173,8 +171,8 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     }
 
     getDisabledState() {
-        this.httpClient.get(this.urls.apiUrl + '/gameservers/disabled').pipe(takeUntil(this.destroy$)).subscribe({
-            next: (state: boolean) => {
+        this.gameServersService.getDisabledState().pipe(takeUntil(this.destroy$)).subscribe({
+            next: (state) => {
                 this.disabled = state;
             }
         });
@@ -186,11 +184,11 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         }
         this.updating = true;
         server.updating = true;
-        server.request = this.httpClient.get(`${this.urls.apiUrl}/gameservers/status/${server.id}`).subscribe({
+        server.request = this.gameServersService.getServerStatus(server.id).subscribe({
             next: (response) => {
-                const serverIndex = this.servers.findIndex((x) => x.id === response['gameServer'].id);
-                this.servers[serverIndex] = response['gameServer'];
-                this.instanceCount = response['instanceCount'];
+                const serverIndex = this.servers.findIndex((x) => x.id === response.gameServer.id);
+                this.servers[serverIndex] = response.gameServer;
+                this.instanceCount = response.instanceCount;
                 this.updating = false;
             },
             error: () => {
@@ -217,7 +215,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     }
 
     toggleDisabledState() {
-        this.httpClient.post(this.urls.apiUrl + '/gameservers/disabled', { state: !this.disabled }, { headers: this.headers }).pipe(takeUntil(this.destroy$)).subscribe();
+        this.gameServersService.toggleDisabledState(this.disabled, this.connectionId).pipe(takeUntil(this.destroy$)).subscribe();
     }
 
     editServer(event, server) {
@@ -253,7 +251,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
             .subscribe({
                 next: (result) => {
                     if (result) {
-                        this.httpClient.delete(`${this.urls.apiUrl}/gameservers/${server.id}`, { headers: this.headers }).pipe(takeUntil(this.destroy$)).subscribe({
+                        this.gameServersService.deleteServer(server.id, this.connectionId).pipe(takeUntil(this.destroy$)).subscribe({
                             next: (response) => {
                                 this.servers = response;
                             }
@@ -272,7 +270,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         moveItemInArray(this.servers, event.previousIndex, event.currentIndex);
 
         const body: OrderUpdateRequest = { previousIndex: event.previousIndex, newIndex: event.currentIndex };
-        this.httpClient.patch(`${this.urls.apiUrl}/gameservers/order`, body, { headers: this.headers }).pipe(takeUntil(this.destroy$)).subscribe({
+        this.gameServersService.updateServerOrder(body, this.connectionId).pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
                 this.servers = response;
                 this.updatingOrder = false;
@@ -316,16 +314,12 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         }
 
         this.uploadingFile = true;
-        this.httpClient
-            .post(`${this.urls.apiUrl}/gameservers/mission`, formData, {
-                reportProgress: true,
-                headers: this.headers
-            })
+        this.gameServersService.uploadMission(formData, this.connectionId)
             .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (response) => {
-                    this.missions.next(response['missions'].map(this.mapMissionElement));
-                    const missionReports = response['missionReports'];
+                    this.missions.next(response.missions.map(this.mapMissionElement));
+                    const missionReports = response.missionReports;
                     this.uploadingFile = false;
                     this.uploader.nativeElement.value = '';
                     this.showMissionReport(missionReports);
@@ -374,7 +368,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
 
     launch(server) {
         server.updating = true;
-        this.httpClient.post(`${this.urls.apiUrl}/gameservers/launch/${server.id}`, { missionName: server.missionSelection.value }, { headers: this.headers }).pipe(takeUntil(this.destroy$)).subscribe({
+        this.gameServersService.launchServer(server.id, server.missionSelection.value, this.connectionId).pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 server.updating = false;
                 this.refreshServerStatus(server);
@@ -417,11 +411,11 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
 
     runStop(server) {
         server.updating = true;
-        this.httpClient.get(`${this.urls.apiUrl}/gameservers/stop/${server.id}`, { headers: this.headers }).pipe(takeUntil(this.destroy$)).subscribe({
+        this.gameServersService.stopServer(server.id, this.connectionId).pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
-                const serverIndex = this.servers.findIndex((x) => x.id === response['gameServer'].id);
-                this.servers[serverIndex] = response['gameServer'];
-                this.instanceCount = response['instanceCount'];
+                const serverIndex = this.servers.findIndex((x) => x.id === response.gameServer.id);
+                this.servers[serverIndex] = response.gameServer;
+                this.instanceCount = response.instanceCount;
                 this.servers[serverIndex].status.stopping = true;
             },
             error: (error) => {
@@ -434,11 +428,11 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
 
     runKill(server) {
         server.updating = true;
-        this.httpClient.get(`${this.urls.apiUrl}/gameservers/kill/${server.id}`, { headers: this.headers }).pipe(takeUntil(this.destroy$)).subscribe({
+        this.gameServersService.killServer(server.id, this.connectionId).pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
-                const serverIndex = this.servers.findIndex((x) => x.id === response['gameServer'].id);
-                this.servers[serverIndex] = response['gameServer'];
-                this.instanceCount = response['instanceCount'];
+                const serverIndex = this.servers.findIndex((x) => x.id === response.gameServer.id);
+                this.servers[serverIndex] = response.gameServer;
+                this.instanceCount = response.instanceCount;
             },
             error: (error) => {
                 this.showError(error);
@@ -556,7 +550,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
             .subscribe({
                 next: (result) => {
                     if (result) {
-                        this.httpClient.get(`${this.urls.apiUrl}/gameservers/killall`, { headers: this.headers }).pipe(takeUntil(this.destroy$)).subscribe({
+                        this.gameServersService.killAllServers(this.connectionId).pipe(takeUntil(this.destroy$)).subscribe({
                             next: () => {
                                 this.getServers();
                             },
@@ -594,7 +588,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         return this.missionFormatter(mission.name.toLowerCase(), mission.map.toLowerCase()) === match;
     };
 
-    mapMission(dropdownElement: IDropdownElement): IMission {
+    mapMission(dropdownElement: IDropdownElement): Mission {
         return {
             path: dropdownElement.value,
             name: dropdownElement.displayValue,
@@ -602,7 +596,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         };
     }
 
-    mapMissionElement(mission: IMission): IDropdownElement {
+    mapMissionElement(mission: Mission): IDropdownElement {
         return {
             value: mission.path,
             displayValue: mission.name,
@@ -623,15 +617,4 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         const mission = this.mapMission(element);
         return `${mission.path}`;
     };
-}
-
-interface IMission {
-    map: string;
-    name: string;
-    path: string;
-}
-
-interface MissionReport {
-    mission: string;
-    reports: string[];
 }

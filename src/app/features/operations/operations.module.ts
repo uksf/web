@@ -13,6 +13,7 @@ import { OperationsServersComponent } from './components/operations-servers/oper
 import { OperationsAarComponent } from './components/operations-aar/operations-aar.component';
 import { AddServerModalComponent } from './modals/add-server-modal/add-server-modal.component';
 import { EditServerModsModalComponent } from './modals/edit-server-mods-modal/edit-server-mods-modal.component';
+import { GameServersService } from './services/game-servers.service';
 
 @NgModule({
     declarations: [
@@ -33,5 +34,6 @@ import { EditServerModsModalComponent } from './modals/edit-server-mods-modal/ed
         MatExpansionModule,
         MatTabsModule,
     ],
+    providers: [GameServersService],
 })
 export class OperationsModule {}

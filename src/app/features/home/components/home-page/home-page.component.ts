@@ -6,16 +6,27 @@ import { HttpClient } from '@angular/common/http';
 import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
 import { DebouncedCallback } from '@app/shared/utils/debounce-callback';
 
+interface TeamspeakOnlineUser {
+    displayName: string;
+}
+
+interface TeamspeakOnlineAccountsResponse {
+    commanders: TeamspeakOnlineUser[];
+    recruiters: TeamspeakOnlineUser[];
+    members: TeamspeakOnlineUser[];
+    guests: TeamspeakOnlineUser[];
+}
+
 @Component({
     selector: 'app-home-page',
     templateUrl: './home-page.component.html',
     styleUrls: ['./home-page.component.scss']
 })
 export class HomePageComponent implements OnInit, OnDestroy {
-    commanders;
-    recruiters;
-    members;
-    guests;
+    commanders: TeamspeakOnlineUser[];
+    recruiters: TeamspeakOnlineUser[];
+    members: TeamspeakOnlineUser[];
+    guests: TeamspeakOnlineUser[];
     content = [];
     instagramImages: InstagramImage[] = [];
     _time: Date;
@@ -70,21 +81,20 @@ export class HomePageComponent implements OnInit, OnDestroy {
     }
 
     private getClients() {
-        // this.httpClient.get('https://api.uk-sf.co.uk/teamspeak/onlineAccounts').subscribe(
-        this.httpClient.get(this.urls.apiUrl + '/teamspeak/onlineAccounts').pipe(takeUntil(this.destroy$)).subscribe({
+        this.httpClient.get<TeamspeakOnlineAccountsResponse>(this.urls.apiUrl + '/teamspeak/onlineAccounts').pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
                 if (response) {
-                    if (response['commanders']) {
-                        this.commanders = response['commanders'];
+                    if (response.commanders) {
+                        this.commanders = response.commanders;
                     }
-                    if (response['recruiters']) {
-                        this.recruiters = response['recruiters'];
+                    if (response.recruiters) {
+                        this.recruiters = response.recruiters;
                     }
-                    if (response['members']) {
-                        this.members = response['members'];
+                    if (response.members) {
+                        this.members = response.members;
                     }
-                    if (response['guests']) {
-                        this.guests = response['guests'];
+                    if (response.guests) {
+                        this.guests = response.guests;
                     }
                 }
             }

@@ -13,7 +13,7 @@ import { AccountService } from '@app/core/services/account.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { RequestModalData } from '@app/shared/models/shared';
 import { UnitBranch } from '@app/features/units/models/units';
-import { CommandRequestReview } from '@app/features/command/models/command-request';
+import { CommandRequestItem, CommandRequestReview, CommandRequestsResponse } from '@app/features/command/models/command-request';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -24,8 +24,8 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class CommandRequestsComponent implements OnInit, OnDestroy {
     reviewState = ReviewState;
-    myRequests = [];
-    otherRequests = [];
+    myRequests: CommandRequestItem[] = [];
+    otherRequests: CommandRequestItem[] = [];
     updating;
     private hubConnection: ConnectionContainer;
     private destroy$ = new Subject<void>();
@@ -57,10 +57,10 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
 
     getRequests() {
         this.updating = true;
-        this.httpClient.get(`${this.urls.apiUrl}/commandrequests`).pipe(takeUntil(this.destroy$)).subscribe({
+        this.httpClient.get<CommandRequestsResponse>(`${this.urls.apiUrl}/commandrequests`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
-                this.myRequests = response['myRequests'];
-                this.otherRequests = response['otherRequests'];
+                this.myRequests = response.myRequests;
+                this.otherRequests = response.otherRequests;
                 this.updating = false;
             },
             error: (_) => {
