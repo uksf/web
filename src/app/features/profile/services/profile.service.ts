@@ -5,7 +5,7 @@ import { UrlService } from '@app/core/services/url.service';
 
 const jsonHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ProfileService {
     constructor(private httpClient: HttpClient, private urls: UrlService) {}
 

@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { SharedModule } from '@shared/shared.module';
 import { ProfileRoutingModule } from './profile-routing.module';
-import { ProfileService } from './services/profile.service';
 
 // Components
 import { ProfilePageComponent } from './components/profile-page/profile-page.component';
@@ -26,6 +25,5 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
         ProfileRoutingModule,
         MatSlideToggleModule,
     ],
-    providers: [ProfileService],
 })
 export class ProfileModule {}

@@ -1,13 +1,13 @@
 import { Component, OnDestroy, OnInit, Output, EventEmitter } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { AccountService } from '@app/core/services/account.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
+import { ProfileService } from '@app/features/profile/services/profile.service';
 
 @Component({
     selector: 'app-application-communications',
@@ -20,7 +20,7 @@ export class ApplicationCommunicationsComponent implements OnInit, OnDestroy {
     mode = 'pending';
     private pendingValidation = false;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, public dialog: MatDialog, private accountService: AccountService, private router: Router, private route: ActivatedRoute) {
+    constructor(private profileService: ProfileService, private urls: UrlService, public dialog: MatDialog, private accountService: AccountService, private router: Router, private route: ActivatedRoute) {
         if (window.location.href.indexOf('steamid=') !== -1) {
             this.pendingValidation = true;
             const id = this.route.snapshot.queryParams['steamid'];
@@ -34,7 +34,7 @@ export class ApplicationCommunicationsComponent implements OnInit, OnDestroy {
                 });
             } else {
                 const code = this.route.snapshot.queryParams['validation'];
-                this.httpClient.post(this.urls.apiUrl + '/steamcode/' + id, { code: code }).pipe(takeUntil(this.destroy$)).subscribe({
+                this.profileService.connectSteam(id, { code: code }).pipe(takeUntil(this.destroy$)).subscribe({
                     next: () => {
                         this.router.navigate(['/application']).then(() => {
                             this.pendingValidation = false;
@@ -68,7 +68,7 @@ export class ApplicationCommunicationsComponent implements OnInit, OnDestroy {
             } else {
                 const code = this.route.snapshot.queryParams['validation'];
                 const added = this.route.snapshot.queryParams['added'];
-                this.httpClient.post(this.urls.apiUrl + '/discordcode/' + id, { code: code }).pipe(takeUntil(this.destroy$)).subscribe({
+                this.profileService.connectDiscord(id, { code: code }).pipe(takeUntil(this.destroy$)).subscribe({
                     next: () => {
                         this.router.navigate(['/application']).then(() => {
                             this.pendingValidation = false;

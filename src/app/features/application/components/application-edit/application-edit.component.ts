@@ -5,13 +5,12 @@ import { takeUntil } from 'rxjs/operators';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AccountService } from '@app/core/services/account.service';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { Router } from '@angular/router';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { Permissions } from '@app/core/services/permissions';
 import { ApplicationState } from '@app/features/application/models/application';
+import { ApplicationService } from '../../services/application.service';
 
 export class InstantErrorStateMatcher implements ErrorStateMatcher {
     isErrorState(control: UntypedFormControl | null, form: FormGroupDirective | NgForm | null): boolean {
@@ -51,8 +50,7 @@ export class ApplicationEditComponent implements OnDestroy {
     constructor(
         public formBuilder: UntypedFormBuilder,
         public dialog: MatDialog,
-        private httpClient: HttpClient,
-        private urls: UrlService,
+        private applicationService: ApplicationService,
         private accountService: AccountService,
         private permissions: PermissionsService,
         private router: Router
@@ -124,10 +122,7 @@ export class ApplicationEditComponent implements OnDestroy {
         this.pending = true;
         const formObj = this.convertRolePreferencesFromGroup();
         const formString = JSON.stringify(formObj).replace(/[\n\r]/g, '');
-        this.httpClient
-            .put(`${this.urls.apiUrl}/accounts/${this.accountService.account.id}/application`, formString, {
-                headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-            })
+        this.applicationService.updateApplication(this.accountService.account.id, formString)
             .subscribe({
                 next: () => {
                     this.pending = false;

@@ -1,7 +1,5 @@
 import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject, Observable, of, timer } from 'rxjs';
 import { first, map, switchMap } from 'rxjs/operators';
@@ -15,6 +13,7 @@ import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/
 import { CreateAccount } from '@app/shared/models/account';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
 import { PermissionsService } from '@app/core/services/permissions.service';
+import { ApplicationService } from '../../services/application.service';
 
 function matchingPasswords(passwordKey: string, confirmPasswordKey: string) {
     return (group: UntypedFormGroup): ValidationErrors | null => {
@@ -111,8 +110,7 @@ export class ApplicationIdentityComponent implements OnInit {
     constructor(
         public dialog: MatDialog,
         public formBuilder: UntypedFormBuilder,
-        private httpClient: HttpClient,
-        private urls: UrlService,
+        private applicationService: ApplicationService,
         private authenticationService: AuthenticationService,
         private permissionsService: PermissionsService
     ) {
@@ -141,7 +139,7 @@ export class ApplicationIdentityComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.httpClient.get(`${this.urls.apiUrl}/accounts/nations`).pipe(first()).subscribe({
+        this.applicationService.getNations().pipe(first()).subscribe({
             next: (orderedCountries: string[]) => {
                 const countries = CountryPickerService.countries;
                 orderedCountries.forEach((countryValue: string, orderedIndex: number) => {
@@ -168,7 +166,7 @@ export class ApplicationIdentityComponent implements OnInit {
                     this.validating = false;
                     return of(null);
                 }
-                return this.httpClient.get(this.urls.apiUrl + '/accounts/exists?check=' + control.value).pipe(
+                return this.applicationService.checkEmailExists(control.value).pipe(
                     map((exists: boolean) => {
                         this.validating = false;
                         return exists ? { emailTaken: true } : null;

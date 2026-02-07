@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { SharedModule } from '@shared/shared.module';
 import { ApplicationRoutingModule } from './application-routing.module';
+import { ApplicationService } from './services/application.service';
 
 // Components
 import { ApplicationPageComponent } from './components/application-page/application-page.component';
@@ -27,5 +28,6 @@ import { ApplicationEditComponent } from './components/application-edit/applicat
         ApplicationSubmitComponent,
         ApplicationEditComponent,
     ],
+    providers: [ApplicationService],
 })
 export class ApplicationModule {}

@@ -1,12 +1,10 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { HttpHeaders } from '@angular/common/http';
-import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { AccountService } from '@app/core/services/account.service';
+import { ApplicationService } from '../../services/application.service';
 import { first } from 'rxjs/operators';
 
 @Component({
@@ -23,9 +21,8 @@ export class ApplicationEmailConfirmationComponent {
     resent = false;
 
     constructor(
-        private httpClient: HttpClient,
+        private applicationService: ApplicationService,
         private formBuilder: FormBuilder,
-        private urls: UrlService,
         public dialog: MatDialog,
         public accountService: AccountService,
         private permissionsService: PermissionsService
@@ -47,16 +44,10 @@ export class ApplicationEmailConfirmationComponent {
 
         this.pending = true;
         this.formGroup.controls.code.disable();
-        const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-        this.httpClient
-            .post(
-                this.urls.apiUrl + '/accounts/code',
-                {
-                    email: this.accountService.account.email,
-                    code: sanitisedCode
-                },
-                { headers: headers }
-            )
+        this.applicationService.validateEmailCode({
+                email: this.accountService.account.email,
+                code: sanitisedCode
+            })
             .pipe(first())
             .subscribe({
                 next: () => {
@@ -85,7 +76,7 @@ export class ApplicationEmailConfirmationComponent {
 
     resend() {
         this.pending = true;
-        this.httpClient.post(this.urls.apiUrl + '/accounts/resend-email-code', {}).pipe(first()).subscribe({
+        this.applicationService.resendEmailCode().pipe(first()).subscribe({
             next: () => {
                 this.dialog.open(MessageModalComponent, {
                     data: { message: 'Resent email confirmation code' }

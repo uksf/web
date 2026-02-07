@@ -2,12 +2,11 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { AccountService } from '@app/core/services/account.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { MembershipState } from '@app/shared/models/account';
 import { ApplicationState } from '@app/features/application/models/application';
+import { ApplicationService } from '../../services/application.service';
 
 @Component({
     selector: 'app-application-page',
@@ -19,7 +18,7 @@ export class ApplicationPageComponent implements OnInit, OnDestroy {
     step = 1;
     details: string;
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, public dialog: MatDialog, private accountService: AccountService) {}
+    constructor(private applicationService: ApplicationService, public dialog: MatDialog, private accountService: AccountService) {}
 
     ngOnInit() {
         this.checkStep();
@@ -95,10 +94,7 @@ export class ApplicationPageComponent implements OnInit, OnDestroy {
     }
 
     submit() {
-        this.httpClient
-            .post(`${this.urls.apiUrl}/accounts/${this.accountService.account.id}/application`, this.details, {
-                headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-            })
+        this.applicationService.submitApplication(this.accountService.account.id, this.details)
             .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: () => {
