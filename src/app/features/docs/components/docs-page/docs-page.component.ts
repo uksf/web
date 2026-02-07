@@ -22,6 +22,11 @@ export class DocsPageComponent implements OnInit, OnDestroy {
     constructor(private httpClient: HttpClient, private urls: UrlService, private route: ActivatedRoute, private router: Router, private dialog: MatDialog) {}
 
     ngOnInit(): void {
+        this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe({
+            next: (params) => {
+                this.handleQueryParams(params);
+            }
+        });
         this.getAllFoldersMetadata();
     }
 
@@ -34,38 +39,34 @@ export class DocsPageComponent implements OnInit, OnDestroy {
         this.httpClient.get(`${this.urls.apiUrl}/docs/folders`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (allFolderMetadata: FolderMetadata[]) => {
                 this.allFolderMetadata = allFolderMetadata;
-                this.setSelectedDocument();
+                this.handleQueryParams(this.route.snapshot.queryParams);
             },
             error: () => {
-                this.setSelectedDocument();
+                this.handleQueryParams(this.route.snapshot.queryParams);
             }
         });
     }
 
-    setSelectedDocument() {
-        this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe({
-            next: (params) => {
-                const folder = params.folder;
-                const document = params.document;
+    private handleQueryParams(params: Record<string, string>) {
+        const folder = params.folder;
+        const document = params.document;
 
-                if (folder && document) {
-                    this.httpClient.get(`${this.urls.apiUrl}/docs/folders/${folder}/documents/${document}`).pipe(takeUntil(this.destroy$)).subscribe({
-                        next: (documentMetadata: DocumentMetadata) => {
-                            this.selectedDocumentMetadata = documentMetadata;
-                        },
-                        error: (error: UksfError) => {
-                            this.dialog.open(MessageModalComponent, {
-                                data: { message: error.error }
-                            });
-
-                            this.resetSelectedDocument();
-                        }
+        if (folder && document) {
+            this.httpClient.get(`${this.urls.apiUrl}/docs/folders/${folder}/documents/${document}`).pipe(takeUntil(this.destroy$)).subscribe({
+                next: (documentMetadata: DocumentMetadata) => {
+                    this.selectedDocumentMetadata = documentMetadata;
+                },
+                error: (error: UksfError) => {
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: error.error }
                     });
-                } else {
+
                     this.resetSelectedDocument();
                 }
-            }
-        });
+            });
+        } else {
+            this.resetSelectedDocument();
+        }
     }
 
     resetSelectedDocument() {

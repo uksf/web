@@ -22,7 +22,7 @@ describe('SignalRService', () => {
     describe('ConnectionContainer', () => {
         it('stores connection and reconnect event', () => {
             const mockConnection = { stop: vi.fn() } as any;
-            const mockEvent = {} as any;
+            const mockEvent = { complete: vi.fn() } as any;
             const container = new ConnectionContainer(mockConnection, mockEvent);
 
             expect(container.connection).toBe(mockConnection);
@@ -31,7 +31,7 @@ describe('SignalRService', () => {
 
         it('has a dispose method to clear reconnection intervals', () => {
             const mockConnection = { stop: vi.fn() } as any;
-            const mockEvent = {} as any;
+            const mockEvent = { complete: vi.fn() } as any;
             const container = new ConnectionContainer(mockConnection, mockEvent);
 
             expect(typeof container.dispose).toBe('function');
@@ -39,7 +39,7 @@ describe('SignalRService', () => {
 
         it('clears reconnection interval on dispose', () => {
             const mockConnection = { stop: vi.fn() } as any;
-            const mockEvent = {} as any;
+            const mockEvent = { complete: vi.fn() } as any;
             const container = new ConnectionContainer(mockConnection, mockEvent);
 
             // Simulate a reconnection interval being set
@@ -53,7 +53,7 @@ describe('SignalRService', () => {
 
         it('clears connect timeout on dispose', () => {
             const mockConnection = { stop: vi.fn() } as any;
-            const mockEvent = {} as any;
+            const mockEvent = { complete: vi.fn() } as any;
             const container = new ConnectionContainer(mockConnection, mockEvent);
 
             container.connectTimeoutId = setTimeout(() => {}, 5000);
@@ -62,6 +62,16 @@ describe('SignalRService', () => {
             container.dispose();
 
             expect(container.connectTimeoutId).toBeUndefined();
+        });
+
+        it('completes reconnectEvent Subject on dispose', () => {
+            const mockConnection = { stop: vi.fn() } as any;
+            const mockEvent = { complete: vi.fn() } as any;
+            const container = new ConnectionContainer(mockConnection, mockEvent);
+
+            container.dispose();
+
+            expect(mockEvent.complete).toHaveBeenCalled();
         });
     });
 });

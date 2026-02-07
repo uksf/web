@@ -12,7 +12,7 @@ import { Permissions } from '@app/core/services/permissions';
 import { CountryPickerService, ICountry } from '@app/shared/services/country-picker/country-picker.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
-import { Subject, Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { Account, MembershipState } from '@app/shared/models/account';
@@ -32,7 +32,6 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
         notificationsTeamspeak: [''],
         sr1Enabled: ['']
     });
-    accountSubscription: Subscription;
     isNco: boolean;
     isAdmin: boolean;
     isRecruiter: boolean;
@@ -218,11 +217,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
         this.account = account;
         this.populateSettings();
 
-        if (this.accountSubscription) {
-            this.accountSubscription.unsubscribe();
-        }
-
-        this.accountSubscription = this.accountService.accountChange$.subscribe({
+        this.accountService.accountChange$.pipe(takeUntil(this.destroy$)).subscribe({
             next: (newAccount) => {
                 this.account = newAccount;
                 this.populateSettings();
@@ -343,10 +338,6 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.destroy$.next();
         this.destroy$.complete();
-
-        if (this.accountSubscription) {
-            this.accountSubscription.unsubscribe();
-        }
 
         if (this.settingsTimeoutId !== null) {
             clearTimeout(this.settingsTimeoutId);

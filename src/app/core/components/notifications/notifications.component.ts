@@ -184,20 +184,24 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         window.scrollTo(0, 0);
     }
 
-    waitForId(): Promise<string> {
-        return new Promise<string>(async (resolve) => {
-            while (!this.accountService.account || !this.accountService.account.id) {
-                await this.delay(100);
-            }
-            resolve(this.accountService.account.id);
+    private waitForId(): Promise<string> {
+        if (this.accountService.account?.id) {
+            return Promise.resolve(this.accountService.account.id);
+        }
+
+        return new Promise<string>((resolve) => {
+            const subscription = this.accountService.accountChange$.subscribe({
+                next: (account) => {
+                    if (account?.id) {
+                        subscription.unsubscribe();
+                        resolve(account.id);
+                    }
+                }
+            });
         });
     }
 
     trackById(index: number, item: Notification): string {
         return item.id;
-    }
-
-    async delay(delay: number) {
-        return new Promise((resolve) => setTimeout(resolve, delay));
     }
 }

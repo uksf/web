@@ -49,6 +49,6 @@ export class ChangePasswordModalComponent {
     }
 
     get formErrors() {
-        return this.form.errors.error;
+        return this.form.errors?.error;
     }
 }

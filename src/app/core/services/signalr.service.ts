@@ -85,5 +85,6 @@ export class ConnectionContainer {
             clearTimeout(this.connectTimeoutId);
             this.connectTimeoutId = undefined;
         }
+        this.reconnectEvent.complete();
     }
 }

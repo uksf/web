@@ -61,7 +61,7 @@ export class ChangeFirstLastModalComponent implements OnInit {
     }
 
     get formErrors() {
-        return this.form.errors.error;
+        return this.form.errors?.error;
     }
 
     get displayName(): string {
