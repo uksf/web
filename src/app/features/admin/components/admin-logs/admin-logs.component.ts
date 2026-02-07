@@ -79,6 +79,7 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.destroy$.complete();
         if (this.hubConnection) {
             this.hubConnection.connection.off('ReceiveLog', this.onReceiveLog);
+            this.hubConnection.dispose();
             this.hubConnection.connection.stop();
         }
     }
@@ -87,6 +88,7 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
         const params = this.buildParams();
         this.httpClient
             .get<PagedResult<BasicLog>>(`${this.urls.apiUrl}/logging/basic`, { params })
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (pagedResult: PagedResult<BasicLog>) => {
                     this.dataLoaded = true;

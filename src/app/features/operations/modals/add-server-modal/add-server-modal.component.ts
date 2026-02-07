@@ -1,8 +1,8 @@
-import {Component, Inject} from '@angular/core';
+import {Component, Inject, OnDestroy} from '@angular/core';
 import {AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {InstantErrorStateMatcher} from '@app/shared/services/form-helper.service';
-import {Observable, of, timer} from 'rxjs';
-import {map, switchMap} from 'rxjs/operators';
+import {Observable, of, Subject, timer} from 'rxjs';
+import {map, switchMap, takeUntil} from 'rxjs/operators';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {UrlService} from '@app/core/services/url.service';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
@@ -12,7 +12,8 @@ import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog
     templateUrl: './add-server-modal.component.html',
     styleUrls: ['./add-server-modal.component.scss']
 })
-export class AddServerModalComponent {
+export class AddServerModalComponent implements OnDestroy {
+    private destroy$ = new Subject<void>();
     form: UntypedFormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     environments = [
@@ -75,7 +76,7 @@ export class AddServerModalComponent {
             this.connectionId = data.connectionId;
             this.form.patchValue(this.server);
             Object.keys(this.form.controls).forEach((key) => {
-                this.form.get(key).valueChanges.subscribe({
+                this.form.get(key).valueChanges.pipe(takeUntil(this.destroy$)).subscribe({
                     next: (change) => {
                         if (change !== this.server[key]) {
                             this.changes.add(key);
@@ -88,6 +89,11 @@ export class AddServerModalComponent {
         } else {
             this.changes.add('dummy');
         }
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     submit() {
@@ -110,6 +116,7 @@ export class AddServerModalComponent {
                         'Hub-Connection-Id': this.connectionId,
                     }),
                 })
+                .pipe(takeUntil(this.destroy$))
                 .subscribe({
                     next: (environmentChanged: boolean) => {
                         this.dialogRef.close(environmentChanged);
@@ -126,6 +133,7 @@ export class AddServerModalComponent {
                         'Hub-Connection-Id': this.connectionId
                     })
                 })
+                .pipe(takeUntil(this.destroy$))
                 .subscribe({
                     next: () => {
                         this.dialogRef.close(false);

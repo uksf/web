@@ -8,6 +8,7 @@ import { AuditLog } from '@app/features/admin/models/logging';
 import { PagedResult } from '@app/shared/models/paged-result';
 import { AdminLogsComponent } from '../admin-logs/admin-logs.component';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-admin-audit-logs',
@@ -26,6 +27,7 @@ export class AdminAuditLogsComponent extends AdminLogsComponent implements OnIni
         const params = this.buildParams();
         this.httpClient
             .get<PagedResult<AuditLog>>(`${this.urls.apiUrl}/logging/audit`, { params })
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (pagedResult: PagedResult<AuditLog>) => {
                     this.dataLoaded = true;

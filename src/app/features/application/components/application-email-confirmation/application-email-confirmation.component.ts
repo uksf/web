@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { HttpHeaders } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
@@ -7,13 +7,16 @@ import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { AccountService } from '@app/core/services/account.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-application-email-confirmation',
     templateUrl: './application-email-confirmation.component.html',
     styleUrls: ['./application-email-confirmation.component.scss', '../application-page/application-page.component.scss']
 })
-export class ApplicationEmailConfirmationComponent {
+export class ApplicationEmailConfirmationComponent implements OnDestroy {
+    private destroy$ = new Subject<void>();
     @Output() confirmedEvent = new EventEmitter();
     formGroup: UntypedFormGroup;
     pending = false;
@@ -30,6 +33,11 @@ export class ApplicationEmailConfirmationComponent {
         this.formGroup = formBuilder.group({
             code: ['', Validators.required]
         });
+    }
+
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     changed(code: string) {
@@ -58,6 +66,7 @@ export class ApplicationEmailConfirmationComponent {
                 },
                 { headers: headers }
             )
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: () => {
                     this.permissionsService.refresh().then(() => {
@@ -71,6 +80,7 @@ export class ApplicationEmailConfirmationComponent {
                             data: { message: error.message }
                         })
                         .afterClosed()
+                        .pipe(takeUntil(this.destroy$))
                         .subscribe({
                             next: () => {
                                 this.formGroup.controls['code'].enable();
@@ -84,7 +94,7 @@ export class ApplicationEmailConfirmationComponent {
 
     resend() {
         this.pending = true;
-        this.httpClient.post(this.urls.apiUrl + '/accounts/resend-email-code', {}).subscribe({
+        this.httpClient.post(this.urls.apiUrl + '/accounts/resend-email-code', {}).pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.dialog.open(MessageModalComponent, {
                     data: { message: 'Resent email confirmation code' }

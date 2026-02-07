@@ -1,14 +1,17 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-edit-server-mods-modal',
     templateUrl: './edit-server-mods-modal.component.html',
     styleUrls: ['./edit-server-mods-modal.component.scss'],
 })
-export class EditServerModsModalComponent implements OnInit {
+export class EditServerModsModalComponent implements OnInit, OnDestroy {
+    private destroy$ = new Subject<void>();
     server;
     before: string;
     availableMods;
@@ -25,8 +28,13 @@ export class EditServerModsModalComponent implements OnInit {
         this.getAvailableMods();
     }
 
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
     getAvailableMods() {
-        this.httpClient.get(this.urls.apiUrl + `/gameservers/${this.server.id}/mods`).subscribe({
+        this.httpClient.get(this.urls.apiUrl + `/gameservers/${this.server.id}/mods`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
                 this.populateServerMods(response);
                 this.before = JSON.stringify(this.availableMods);
@@ -69,6 +77,7 @@ export class EditServerModsModalComponent implements OnInit {
                     }),
                 }
             )
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: () => {
                     this.dialog.closeAll();
@@ -83,6 +92,7 @@ export class EditServerModsModalComponent implements OnInit {
                     'Content-Type': 'application/json',
                 }),
             })
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: ({ availableMods, mods, serverMods }: any) => {
                     this.server.mods = mods;

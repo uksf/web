@@ -8,6 +8,7 @@ import { LauncherLog } from '@app/features/admin/models/logging';
 import { AdminLogsComponent } from '../admin-logs/admin-logs.component';
 import { PagedResult } from '@app/shared/models/paged-result';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-admin-launcher-logs',
@@ -26,6 +27,7 @@ export class AdminLauncherLogsComponent extends AdminLogsComponent implements On
         const params = this.buildParams();
         this.httpClient
             .get<PagedResult<LauncherLog>>(`${this.urls.apiUrl}/logging/launcher`, { params })
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (pagedResult: PagedResult<LauncherLog>) => {
                     this.dataLoaded = true;

@@ -1,16 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { AccountService } from '@app/core/services/account.service';
 import { nameCase, titleCase } from '@app/shared/services/helper.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-change-first-last-modal',
     templateUrl: './change-first-last-modal.component.html',
     styleUrls: ['./change-first-last-modal.component.scss']
 })
-export class ChangeFirstLastModalComponent implements OnInit {
+export class ChangeFirstLastModalComponent implements OnInit, OnDestroy {
+    private destroy$ = new Subject<void>();
     form: UntypedFormGroup;
     changed = false;
     original;
@@ -23,7 +26,7 @@ export class ChangeFirstLastModalComponent implements OnInit {
         });
         this.form.controls['firstName'].setValue(this.accountService.account.firstname);
         this.form.controls['lastName'].setValue(this.accountService.account.lastname);
-        this.httpClient.get(this.urls.apiUrl + '/ranks').subscribe({
+        this.httpClient.get(this.urls.apiUrl + '/ranks').pipe(takeUntil(this.destroy$)).subscribe({
             next: (ranks: any[]) => {
                 const rank = ranks.find((x) => x.name === this.accountService.account.rank);
                 this.rank = rank ? rank.abbreviation : null;
@@ -35,6 +38,11 @@ export class ChangeFirstLastModalComponent implements OnInit {
         this.original = JSON.stringify(this.form.getRawValue());
     }
 
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
     changeName() {
         const formString = JSON.stringify(this.form.getRawValue()).replace(/[\n\r]/g, '');
         this.httpClient
@@ -43,6 +51,7 @@ export class ChangeFirstLastModalComponent implements OnInit {
                     'Content-Type': 'application/json'
                 })
             })
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: () => {
                     this.accountService.getAccount()?.subscribe({

@@ -1,9 +1,10 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { AccountService } from './account.service';
 import { SessionService } from './authentication/session.service';
 import { Permissions } from './permissions';
 import { ConnectionContainer, SignalRService } from './signalr.service';
+import { Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from './url.service';
 import { AuthenticationService } from './authentication/authentication.service';
@@ -18,7 +19,7 @@ export class PermissionsService {
     private accountHubConnection: ConnectionContainer;
     private refreshing = false;
     private updateTimeout: number;
-    public accountUpdateEvent = new EventEmitter();
+    public accountUpdateEvent = new Subject<void>();
 
     constructor(
         private ngxPermissionsService: NgxPermissionsService,
@@ -115,7 +116,7 @@ export class PermissionsService {
             promise
                 .then(() => {
                     this.refreshing = false;
-                    this.accountUpdateEvent.emit();
+                    this.accountUpdateEvent.next();
                 })
                 .catch((reason) => {
                     this.refreshing = false;

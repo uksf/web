@@ -1,8 +1,8 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
-import { Observable, of, timer } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { Observable, of, Subject, timer } from 'rxjs';
+import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
@@ -14,7 +14,8 @@ import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-moda
     templateUrl: './add-unit-modal.component.html',
     styleUrls: ['./add-unit-modal.component.scss']
 })
-export class AddUnitModalComponent implements OnInit {
+export class AddUnitModalComponent implements OnInit, OnDestroy {
+    private destroy$ = new Subject<void>();
     form: UntypedFormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     pending = false;
@@ -64,12 +65,17 @@ export class AddUnitModalComponent implements OnInit {
 
     ngOnInit() {
         this.original = JSON.stringify(this.form.getRawValue());
-        this.httpClient.get(`${this.urls.apiUrl}/units`).subscribe({
+        this.httpClient.get(`${this.urls.apiUrl}/units`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (units: ResponseUnit[]) => {
                 this.units = units;
                 this.resolveAvailableParentUnits();
             }
         });
+    }
+
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     get changesMade() {
@@ -129,6 +135,7 @@ export class AddUnitModalComponent implements OnInit {
                         'Content-Type': 'application/json'
                     })
                 })
+                .pipe(takeUntil(this.destroy$))
                 .subscribe({
                     next: () => {
                         this.dialog.closeAll();
@@ -143,6 +150,7 @@ export class AddUnitModalComponent implements OnInit {
                         'Content-Type': 'application/json'
                     })
                 })
+                .pipe(takeUntil(this.destroy$))
                 .subscribe({
                     next: () => {
                         this.dialog.closeAll();
@@ -168,10 +176,10 @@ export class AddUnitModalComponent implements OnInit {
         const dialog = this.dialog.open(ConfirmationModalComponent, {
             data: { message: `Are you sure you want to delete '${this.unit.name}'?` }
         });
-        dialog.afterClosed().subscribe({
+        dialog.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
             next: (result) => {
                 if (result) {
-                    this.httpClient.delete(`${this.urls.apiUrl}/units/${this.unit.id}`).subscribe({
+                    this.httpClient.delete(`${this.urls.apiUrl}/units/${this.unit.id}`).pipe(takeUntil(this.destroy$)).subscribe({
                         next: (_) => {
                             this.dialog.closeAll();
                         }

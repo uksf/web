@@ -1,7 +1,8 @@
-import { Component, forwardRef, Input, OnInit, Type, ViewChild } from '@angular/core';
+import { Component, forwardRef, Input, OnDestroy, OnInit, Type, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
-import { BehaviorSubject, forkJoin } from 'rxjs';
+import { BehaviorSubject, forkJoin, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { Rank } from '@app/shared/models/rank';
 import { Unit } from '@app/features/units/models/units';
@@ -33,7 +34,8 @@ interface FormModel {
     ],
     viewProviders: [{ provide: ControlContainer, useExisting: UntypedFormGroup }, MatExpansionPanel]
 })
-export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
+export class DocsPermissionsComponent implements OnInit, OnDestroy, ControlValueAccessor {
+    private destroy$ = new Subject<void>();
     @ViewChild(NgForm) form!: NgForm;
     @Input('type') type: PermissionsType = 'viewers';
     @Input('initialData') initialData: DocumentPermission = null;
@@ -54,12 +56,17 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
         this.loadDropdownData();
     }
 
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
     private loadDropdownData(): void {
         forkJoin({
             units: this.httpClient.get<Unit[]>(`${this.urlService.apiUrl}/units`),
             ranks: this.httpClient.get<Rank[]>(`${this.urlService.apiUrl}/ranks`),
             members: this.httpClient.get<BasicAccount[]>(`${this.urlService.apiUrl}/accounts/members`)
-        }).subscribe({
+        }).pipe(takeUntil(this.destroy$)).subscribe({
             next: ({ units, ranks, members }) => {
                 this.units.next(units.map(Unit.mapToElement));
                 this.ranks.next(ranks.map(Rank.mapToElement).reverse());

@@ -1,10 +1,11 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { NgForm } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { BehaviorSubject, forkJoin, of } from 'rxjs';
+import { BehaviorSubject, forkJoin, of, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { Account, BasicAccount } from '@app/shared/models/account';
 import { CommandRequest } from '@app/features/command/models/command-request';
@@ -18,7 +19,8 @@ import { LoggingService } from '@app/core/services/logging.service';
     templateUrl: './request-transfer-modal.component.html',
     styleUrls: ['./request-transfer-modal.component.scss', '../../components/command-page/command-page.component.scss']
 })
-export class RequestTransferModalComponent implements OnInit {
+export class RequestTransferModalComponent implements OnInit, OnDestroy {
+    private destroy$ = new Subject<void>();
     @ViewChild(NgForm) form!: NgForm;
     @ViewChild('accountList', { read: SelectionListComponent }) accountList: SelectionListComponent;
     pending: boolean = false;
@@ -46,8 +48,13 @@ export class RequestTransferModalComponent implements OnInit {
         }
     }
 
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
     ngOnInit() {
-        this.httpClient.get(`${this.urlService.apiUrl}/accounts/members`).subscribe({
+        this.httpClient.get(`${this.urlService.apiUrl}/accounts/members`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (accounts: BasicAccount[]) => {
                 const elements = accounts.map(BasicAccount.mapToElement);
                 this.accounts.next(elements);
@@ -62,7 +69,7 @@ export class RequestTransferModalComponent implements OnInit {
         // Fetch units based on allowed branches
         if (this.allowedBranches.length === 3) {
             // If all branches are allowed, fetch without filter
-            this.httpClient.get<Unit[]>(`${this.urlService.apiUrl}/units`).subscribe({
+            this.httpClient.get<Unit[]>(`${this.urlService.apiUrl}/units`).pipe(takeUntil(this.destroy$)).subscribe({
                 next: (units: Unit[]) => {
                     this.units.next(units.map(Unit.mapToElement));
                 }
@@ -74,7 +81,7 @@ export class RequestTransferModalComponent implements OnInit {
                 return this.httpClient.get<Unit[]>(`${this.urlService.apiUrl}/units?filter=${branchName}`);
             });
 
-            forkJoin(requests).subscribe({
+            forkJoin(requests).pipe(takeUntil(this.destroy$)).subscribe({
                 next: (branchResults) => {
                     // Combine results from all branch requests using concat instead of flat() for compatibility
                     const allUnits = [].concat(...branchResults);
@@ -112,7 +119,7 @@ export class RequestTransferModalComponent implements OnInit {
                 return;
             }
 
-            this.httpClient.get(`${this.urlService.apiUrl}/accounts/${element.value}`).subscribe({
+            this.httpClient.get(`${this.urlService.apiUrl}/accounts/${element.value}`).pipe(takeUntil(this.destroy$)).subscribe({
                 next: (account: Account) => {
                     element.disabled = account.unitAssignment === this.model.unit.displayValue;
                     this.revalidate();
@@ -139,7 +146,7 @@ export class RequestTransferModalComponent implements OnInit {
             };
 
             this.pending = true;
-            this.httpClient.post(`${this.urlService.apiUrl}/commandrequests/create/transfer`, commandRequest).subscribe({
+            this.httpClient.post(`${this.urlService.apiUrl}/commandrequests/create/transfer`, commandRequest).pipe(takeUntil(this.destroy$)).subscribe({
                 next: () => {
                     this.dialog.closeAll();
                     this.pending = false;

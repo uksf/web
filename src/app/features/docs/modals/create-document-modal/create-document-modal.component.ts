@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { CreateDocumentRequest, DocumentPermissions, FolderMetadata } from '@app/features/docs/models/documents';
 import { HttpClient } from '@angular/common/http';
@@ -10,7 +10,8 @@ import { IDropdownElement, mapFromElement } from '@app/shared/components/element
 import { Unit } from '@app/features/units/models/units';
 import { Rank } from '@app/shared/models/rank';
 import { BasicAccount } from '@app/shared/models/account';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { defaultHeaders } from '@app/shared/services/constants';
 import { AccountService } from '@app/core/services/account.service';
 
@@ -19,7 +20,8 @@ import { AccountService } from '@app/core/services/account.service';
     templateUrl: './create-document-modal.component.html',
     styleUrls: ['./create-document-modal.component.scss']
 })
-export class CreateDocumentModalComponent implements OnInit {
+export class CreateDocumentModalComponent implements OnInit, OnDestroy {
+    private destroy$ = new Subject<void>();
     @ViewChild(NgForm) form!: NgForm;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     model: FormModel = {
@@ -65,8 +67,13 @@ export class CreateDocumentModalComponent implements OnInit {
         }
     }
 
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
     ngOnInit(): void {
-        this.httpClient.get(`${this.urlService.apiUrl}/accounts/members`).subscribe({
+        this.httpClient.get(`${this.urlService.apiUrl}/accounts/members`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (accounts: BasicAccount[]) => {
                 const elements = accounts.map(BasicAccount.mapToElement);
                 this.accounts.next(elements);
@@ -117,7 +124,7 @@ export class CreateDocumentModalComponent implements OnInit {
             });
         }
 
-        request$.subscribe({
+        request$.pipe(takeUntil(this.destroy$)).subscribe({
             next: (_) => {
                 this.pending = false;
                 this.dialog.closeAll();

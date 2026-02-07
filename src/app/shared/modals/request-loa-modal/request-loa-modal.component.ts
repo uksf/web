@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -6,13 +6,16 @@ import { UrlService } from '@app/core/services/url.service';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import moment, { Moment } from 'moment';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-request-loa-modal',
     templateUrl: './request-loa-modal.component.html',
     styleUrls: ['./request-loa-modal.component.scss']
 })
-export class RequestLoaModalComponent implements OnInit {
+export class RequestLoaModalComponent implements OnInit, OnDestroy {
+    private destroy$ = new Subject<void>();
     form: UntypedFormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     validationMessages = {
@@ -37,12 +40,12 @@ export class RequestLoaModalComponent implements OnInit {
             emergency: [false],
             late: [false]
         });
-        this.form.controls['start'].valueChanges.subscribe({
+        this.form.controls['start'].valueChanges.pipe(takeUntil(this.destroy$)).subscribe({
             next: (_) => {
                 this.datesValid = this.validateDates();
             }
         });
-        this.form.controls['end'].valueChanges.subscribe({
+        this.form.controls['end'].valueChanges.pipe(takeUntil(this.destroy$)).subscribe({
             next: (_) => {
                 this.datesValid = this.validateDates();
             }
@@ -51,6 +54,11 @@ export class RequestLoaModalComponent implements OnInit {
 
     ngOnInit() {
         this.mobile = window.screen.width < 400 || window.screen.height < 500;
+    }
+
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     @HostListener('window:resize')
@@ -134,6 +142,7 @@ export class RequestLoaModalComponent implements OnInit {
                     'Content-Type': 'application/json'
                 })
             })
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (_) => {
                     this.dialog.closeAll();
@@ -144,6 +153,7 @@ export class RequestLoaModalComponent implements OnInit {
                             data: { message: error.error }
                         })
                         .afterClosed()
+                        .pipe(takeUntil(this.destroy$))
                         .subscribe({
                             next: () => {
                                 this.submitting = false;

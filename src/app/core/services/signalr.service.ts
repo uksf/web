@@ -1,14 +1,15 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { UrlService } from './url.service';
 import { HubConnectionBuilder, HubConnectionState, HttpTransportType, LogLevel, HubConnection } from '@microsoft/signalr';
 import { SessionService } from './authentication/session.service';
+import { Subject } from 'rxjs';
 
 @Injectable()
 export class SignalRService {
     constructor(public readonly urls: UrlService, private sessionService: SessionService) {}
 
     connect(endpoint: String): ConnectionContainer {
-        const reconnectEvent = new EventEmitter();
+        const reconnectEvent = new Subject<void>();
         const connection = new HubConnectionBuilder()
             .withUrl(`${this.urls.apiUrl}/hub/${endpoint}`, {
                 accessTokenFactory: () => {
@@ -27,7 +28,7 @@ export class SignalRService {
                         if (connection.state === HubConnectionState.Connected) {
                             clearInterval(container.reconnectIntervalId);
                             container.reconnectIntervalId = undefined;
-                            reconnectEvent.emit();
+                            reconnectEvent.next();
                             return;
                         }
                         connection
@@ -35,7 +36,7 @@ export class SignalRService {
                             .then(() => {
                                 clearInterval(container.reconnectIntervalId);
                                 container.reconnectIntervalId = undefined;
-                                reconnectEvent.emit();
+                                reconnectEvent.next();
                             })
                             .catch(() => {});
                     }, 5000);
@@ -66,11 +67,11 @@ export class SignalRService {
 
 export class ConnectionContainer {
     connection: HubConnection;
-    reconnectEvent: EventEmitter<any>;
+    reconnectEvent: Subject<void>;
     reconnectIntervalId: ReturnType<typeof setInterval> | undefined;
     connectTimeoutId: ReturnType<typeof setTimeout> | undefined;
 
-    constructor(connection: HubConnection, reconnectEvent: EventEmitter<any>) {
+    constructor(connection: HubConnection, reconnectEvent: Subject<void>) {
         this.connection = connection;
         this.reconnectEvent = reconnectEvent;
     }

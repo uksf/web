@@ -1,22 +1,25 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
 import { UrlService } from '@app/core/services/url.service';
 import { Router } from '@angular/router';
 import { ResponseUnitChartNode } from '@app/features/units/models/units';
 import { TreeNode } from 'primeng/api';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-units-orbat-aux',
     templateUrl: './units-orbat-aux.component.html',
     styleUrls: ['../units-page/units-page.component.scss', './units-orbat-aux.component.scss'],
 })
-export class UnitsOrbatAuxComponent {
+export class UnitsOrbatAuxComponent implements OnDestroy {
+    private destroy$ = new Subject<void>();
     rootNodes: TreeNode[];
     selectedNode;
 
     constructor(private httpClient: HttpClient, private urls: UrlService, private auth: AuthenticationService, private router: Router) {
-        this.httpClient.get(`${this.urls.apiUrl}/units/chart/auxiliary`).subscribe({
+        this.httpClient.get(`${this.urls.apiUrl}/units/chart/auxiliary`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (rootNodeData: ResponseUnitChartNode) => {
                 const rootNode: TreeNode = this.mapToTreeNode(rootNodeData);
                 this.rootNodes = [rootNode];
@@ -30,6 +33,11 @@ export class UnitsOrbatAuxComponent {
 
     onNodeSelect(event) {
         this.router.navigate(['/units', event.node.data.id]);
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     private mapToTreeNode(nodeData: ResponseUnitChartNode): TreeNode {

@@ -1,10 +1,10 @@
-import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
-import { BehaviorSubject, Observable, of, timer } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, Subject, timer } from 'rxjs';
+import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { CountryPickerService, ICountry } from '@app/shared/services/country-picker/country-picker.service';
 import { CountryImage } from '@app/shared/pipes/country.pipe';
@@ -70,7 +70,8 @@ function validDob(dayKey: string, monthKey: string, yearKey: string) {
     templateUrl: './application-identity.component.html',
     styleUrls: ['../application-page/application-page.component.scss', './application-identity.component.scss']
 })
-export class ApplicationIdentityComponent implements OnInit {
+export class ApplicationIdentityComponent implements OnInit, OnDestroy {
+    private destroy$ = new Subject<void>();
     @Output() nextEvent = new EventEmitter();
     @Output() previousEvent = new EventEmitter();
     @ViewChild('day') dobDay: ElementRef;
@@ -140,7 +141,7 @@ export class ApplicationIdentityComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.httpClient.get(`${this.urls.apiUrl}/accounts/nations`).subscribe({
+        this.httpClient.get(`${this.urls.apiUrl}/accounts/nations`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (orderedCountries: string[]) => {
                 const countries = CountryPickerService.countries;
                 orderedCountries.forEach((countryValue: string, orderedIndex: number) => {
@@ -153,6 +154,11 @@ export class ApplicationIdentityComponent implements OnInit {
                 this.countries.complete();
             }
         });
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     private validateEmail(control: AbstractControl): Observable<ValidationErrors> {
@@ -221,7 +227,7 @@ export class ApplicationIdentityComponent implements OnInit {
             nation: formObj.nation.value
         };
 
-        this.authenticationService.createAccount(body).subscribe({
+        this.authenticationService.createAccount(body).pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.permissionsService.refresh().then(() => {
                     this.pending = false;

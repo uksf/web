@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { DocumentMetadata, FolderMetadata } from '@app/features/docs/models/documents';
 import { folderAnimations } from '@app/shared/services/animations.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -9,6 +9,8 @@ import { UrlService } from '@app/core/services/url.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UksfError } from '@app/shared/models/response';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-docs-document',
@@ -16,7 +18,8 @@ import { MessageModalComponent } from '@app/shared/modals/message-modal/message-
     styleUrls: ['./docs-document.component.scss'],
     animations: [folderAnimations.indicatorRotate, folderAnimations.folderExpansion]
 })
-export class DocsDocumentComponent implements OnChanges {
+export class DocsDocumentComponent implements OnChanges, OnDestroy {
+    private destroy$ = new Subject<void>();
     @Input('allDocumentMetadata') allFolderMetadata: FolderMetadata[];
     @Input('folderMetadata') folderMetadata: FolderMetadata;
     @Input('documentMetadata') documentMetadata: DocumentMetadata;
@@ -28,9 +31,14 @@ export class DocsDocumentComponent implements OnChanges {
 
     constructor(private httpClient: HttpClient, private urlService: UrlService, private dialog: MatDialog, private route: ActivatedRoute, private router: Router) {}
 
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.folderMetadata.isFirstChange() && changes.documentMetadata.isFirstChange()) {
-            this.route.queryParams.subscribe({
+            this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe({
                 next: (params) => {
                     const folder = params.folder;
                     const document = params.document;
@@ -111,6 +119,7 @@ export class DocsDocumentComponent implements OnChanges {
                 }
             })
             .afterClosed()
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (_) => {
                     this.refresh.emit();
@@ -124,10 +133,11 @@ export class DocsDocumentComponent implements OnChanges {
                 data: { message: `Are you sure you want to delete '${this.documentMetadata.name}'` }
             })
             .afterClosed()
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (result) => {
                     if (result) {
-                        this.httpClient.delete(`${this.urlService.apiUrl}/docs/folders/${this.folderMetadata.id}/documents/${this.documentMetadata.id}`).subscribe({
+                        this.httpClient.delete(`${this.urlService.apiUrl}/docs/folders/${this.folderMetadata.id}/documents/${this.documentMetadata.id}`).pipe(takeUntil(this.destroy$)).subscribe({
                             next: () => {
                                 this.refresh.emit();
                             },

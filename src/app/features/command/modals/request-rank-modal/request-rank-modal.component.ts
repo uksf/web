@@ -1,9 +1,10 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { NgForm } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { BasicAccount } from '@app/shared/models/account';
 import { Rank } from '@app/shared/models/rank';
@@ -17,7 +18,8 @@ import { MessageModalComponent } from '@app/shared/modals/message-modal/message-
     templateUrl: './request-rank-modal.component.html',
     styleUrls: ['./request-rank-modal.component.scss', '../../components/command-page/command-page.component.scss']
 })
-export class RequestRankModalComponent implements OnInit {
+export class RequestRankModalComponent implements OnInit, OnDestroy {
+    private destroy$ = new Subject<void>();
     @ViewChild(NgForm) form!: NgForm;
     @ViewChild('accountList', { read: SelectionListComponent }) accountList: SelectionListComponent;
     pending: boolean = false;
@@ -39,8 +41,13 @@ export class RequestRankModalComponent implements OnInit {
         }
     }
 
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
     ngOnInit() {
-        this.httpClient.get(`${this.urlService.apiUrl}/accounts/members`).subscribe({
+        this.httpClient.get(`${this.urlService.apiUrl}/accounts/members`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (accounts: BasicAccount[]) => {
                 const elements = accounts.map(BasicAccount.mapToElement);
                 this.accounts.next(elements);
@@ -52,7 +59,7 @@ export class RequestRankModalComponent implements OnInit {
             }
         });
 
-        this.httpClient.get(`${this.urlService.apiUrl}/ranks`).subscribe({
+        this.httpClient.get(`${this.urlService.apiUrl}/ranks`).pipe(takeUntil(this.destroy$)).subscribe({
             next: (ranks: Rank[]) => {
                 let elements = ranks.map(Rank.mapToElement).reverse();
                 this.ranks.next(elements);
@@ -105,6 +112,7 @@ export class RequestRankModalComponent implements OnInit {
                         'Content-Type': 'application/json'
                     })
                 })
+                .pipe(takeUntil(this.destroy$))
                 .subscribe({
                     next: () => {
                         this.dialog.closeAll();

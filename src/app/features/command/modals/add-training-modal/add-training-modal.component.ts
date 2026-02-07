@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
-import { Observable, of, timer } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { Observable, of, Subject, timer } from 'rxjs';
+import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -12,7 +12,8 @@ import { MatDialog } from '@angular/material/dialog';
     templateUrl: './add-training-modal.component.html',
     styleUrls: ['./add-training-modal.component.scss']
 })
-export class AddTrainingModalComponent {
+export class AddTrainingModalComponent implements OnDestroy {
+    private destroy$ = new Subject<void>();
     form: UntypedFormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     pending = false;
@@ -34,6 +35,11 @@ export class AddTrainingModalComponent {
         });
     }
 
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
     submit(): void {
         if (!this.form.valid || this.pending) {
             return;
@@ -46,6 +52,7 @@ export class AddTrainingModalComponent {
                     'Content-Type': 'application/json'
                 })
             })
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (_): void => {
                     this.dialog.closeAll();

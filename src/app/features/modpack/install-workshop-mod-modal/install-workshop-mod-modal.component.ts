@@ -1,15 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { InstallWorkshopModData } from '../models/workshop-mod';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-install-workshop-mod-modal',
     templateUrl: './install-workshop-mod-modal.component.html',
     styleUrls: ['./install-workshop-mod-modal.component.scss']
 })
-export class InstallWorkshopModModalComponent {
+export class InstallWorkshopModModalComponent implements OnDestroy {
+    private destroy$ = new Subject<void>();
     form: UntypedFormGroup;
     instantErrorStateMatcher: InstantErrorStateMatcher = new InstantErrorStateMatcher();
     validationMessages: { steamId: { type: string; message: string }[] } = {
@@ -24,7 +27,7 @@ export class InstallWorkshopModModalComponent {
             folderName: [{ value: '', disabled: true }]
         });
 
-        this.form.get('rootMod').valueChanges.subscribe({
+        this.form.get('rootMod').valueChanges.pipe(takeUntil(this.destroy$)).subscribe({
             next: (isRootMod: boolean) => {
                 const folderNameControl = this.form.get('folderName');
                 if (isRootMod) {
@@ -34,6 +37,11 @@ export class InstallWorkshopModModalComponent {
                 }
             }
         });
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     get isRootMod(): boolean {

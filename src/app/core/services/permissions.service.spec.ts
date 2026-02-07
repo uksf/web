@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Subject } from 'rxjs';
-import { EventEmitter } from '@angular/core';
 import { PermissionsService } from './permissions.service';
 import { Account, MembershipState } from '@app/shared/models/account';
 
@@ -48,7 +47,7 @@ describe('PermissionsService', () => {
         };
         mockConnectionContainer = {
             connection: mockConnection,
-            reconnectEvent: new EventEmitter(),
+            reconnectEvent: new Subject<void>(),
             dispose: vi.fn()
         };
 
