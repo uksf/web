@@ -2,10 +2,8 @@ import { Component, Output, EventEmitter, Input, OnInit, OnDestroy } from '@angu
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FormBuilder, Validators } from '@angular/forms';
-import { HttpHeaders } from '@angular/common/http';
-import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
+import { TeamspeakConnectService } from '@app/shared/services/teamspeak-connect.service';
 import { AccountService } from '@app/core/services/account.service';
 import { SignalRService, ConnectionContainer } from '@app/core/services/signalr.service';
 import { nextFrame } from '@app/shared/services/helper.service';
@@ -46,9 +44,8 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
     };
 
     constructor(
-        private httpClient: HttpClient,
+        private teamspeakConnectService: TeamspeakConnectService,
         private formBuilder: FormBuilder,
-        private urls: UrlService,
         public dialog: MatDialog,
         private accountService: AccountService,
         private signalrService: SignalRService
@@ -77,8 +74,8 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
     }
 
     findTeamspeakClients() {
-        this.httpClient.get(this.urls.apiUrl + '/teamspeak/online').subscribe({
-            next: (clients: TeamspeakConnectClient[]) => {
+        this.teamspeakConnectService.getOnlineClients().subscribe({
+            next: (clients) => {
                 this.updateClients(clients);
             }
         });
@@ -109,8 +106,7 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
     }
 
     requestCode() {
-        const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-        this.httpClient.get(this.urls.apiUrl + `/teamspeak/${this.teamspeakForm.value.teamspeakId}`, { headers: headers }).subscribe({
+        this.teamspeakConnectService.requestCode(this.teamspeakForm.value.teamspeakId).subscribe({
             next: () => {
                 this.state = 1;
             }
@@ -136,15 +132,8 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
         }
 
         this.pending = true;
-        const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-        this.httpClient
-            .post(
-                this.urls.apiUrl + `/accounts/${this.accountService.account.id}/teamspeak/${this.teamspeakForm.value.teamspeakId}`,
-                {
-                    code: sanitisedCode
-                },
-                { headers: headers }
-            )
+        this.teamspeakConnectService
+            .connectTeamspeak(this.accountService.account.id, this.teamspeakForm.value.teamspeakId, sanitisedCode)
             .subscribe({
                 next: () => {
                     this.pending = false;

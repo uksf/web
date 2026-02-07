@@ -1,21 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { UrlService } from '@app/core/services/url.service';
-import { HttpClient } from '@angular/common/http';
 import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
 import { DebouncedCallback } from '@app/shared/utils/debounce-callback';
-
-interface TeamspeakOnlineUser {
-    displayName: string;
-}
-
-interface TeamspeakOnlineAccountsResponse {
-    commanders: TeamspeakOnlineUser[];
-    recruiters: TeamspeakOnlineUser[];
-    members: TeamspeakOnlineUser[];
-    guests: TeamspeakOnlineUser[];
-}
+import { HomeService, InstagramImage, TeamspeakOnlineUser } from '../../services/home.service';
 
 @Component({
     selector: 'app-home-page',
@@ -41,7 +29,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
         });
     };
 
-    constructor(private httpClient: HttpClient, private urls: UrlService, private signalrService: SignalRService) {
+    constructor(private homeService: HomeService, private signalrService: SignalRService) {
         this._time = new Date();
         this.timeInterval = setInterval(() => {
             this._time = new Date();
@@ -81,7 +69,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
     }
 
     private getClients() {
-        this.httpClient.get<TeamspeakOnlineAccountsResponse>(this.urls.apiUrl + '/teamspeak/onlineAccounts').pipe(takeUntil(this.destroy$)).subscribe({
+        this.homeService.getOnlineAccounts().pipe(takeUntil(this.destroy$)).subscribe({
             next: (response) => {
                 if (response) {
                     if (response.commanders) {
@@ -110,21 +98,12 @@ export class HomePageComponent implements OnInit, OnDestroy {
     }
 
     private getInstagramImages() {
-        this.httpClient.get(this.urls.apiUrl + '/instagram').pipe(takeUntil(this.destroy$)).subscribe({
-            next: (response: InstagramImage[]) => {
+        this.homeService.getInstagramImages().pipe(takeUntil(this.destroy$)).subscribe({
+            next: (response) => {
                 if (response.length > 0) {
                     this.instagramImages = response;
                 }
             }
         });
     }
-}
-
-export interface InstagramImage {
-    id: string;
-    permalink: string;
-    media_type: string;
-    media_url: string;
-    timestamp: Date;
-    base64: string;
 }

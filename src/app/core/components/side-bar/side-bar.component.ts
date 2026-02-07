@@ -4,9 +4,8 @@ import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { Permissions } from '@app/core/services/permissions';
 import { AccountService } from '@app/core/services/account.service';
-import { HttpClient } from '@angular/common/http';
-import { UrlService } from '@app/core/services/url.service';
 import { AppComponent } from '@app/app.component';
+import { VersionService } from '@app/core/services/version.service';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { ApplicationState } from '@app/features/application/models/application';
 
@@ -54,7 +53,7 @@ export class SideBarComponent implements OnInit, OnDestroy {
     private currentAccount;
     private cachedSideBarElements;
 
-    constructor(private router: Router, private permissions: PermissionsService, private accountService: AccountService, private httpClient: HttpClient, private urls: UrlService) {}
+    constructor(private router: Router, private permissions: PermissionsService, private accountService: AccountService, private versionService: VersionService) {}
 
     ngOnInit() {
         this.checkVersion();
@@ -116,9 +115,8 @@ export class SideBarComponent implements OnInit, OnDestroy {
     }
 
     checkVersion() {
-        this.httpClient.get(this.urls.apiUrl + '/version').pipe(takeUntil(this.destroy$)).subscribe({
-            next: (response) => {
-                const version = response as number;
+        this.versionService.getVersion().pipe(takeUntil(this.destroy$)).subscribe({
+            next: (version) => {
                 if (this.version !== 0 && version > this.version) {
                     this.newVersion = true;
                 }

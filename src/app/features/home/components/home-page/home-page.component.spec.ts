@@ -4,16 +4,15 @@ import { of } from 'rxjs';
 
 describe('HomePageComponent', () => {
     let component: HomePageComponent;
-    let mockHttpClient: any;
-    let mockUrls: any;
+    let mockHomeService: any;
     let mockSignalrService: any;
 
     beforeEach(() => {
         vi.useFakeTimers();
-        mockHttpClient = {
-            get: vi.fn().mockReturnValue(of({}))
+        mockHomeService = {
+            getOnlineAccounts: vi.fn().mockReturnValue(of({})),
+            getInstagramImages: vi.fn().mockReturnValue(of([]))
         };
-        mockUrls = { apiUrl: 'http://localhost:5500' };
         mockSignalrService = {
             connect: vi.fn().mockReturnValue({
                 connection: {
@@ -25,7 +24,7 @@ describe('HomePageComponent', () => {
             })
         };
 
-        component = new HomePageComponent(mockHttpClient, mockUrls, mockSignalrService);
+        component = new HomePageComponent(mockHomeService, mockSignalrService);
     });
 
     afterEach(() => {
@@ -46,7 +45,7 @@ describe('HomePageComponent', () => {
                 members: [{ displayName: 'Member 1' }, { displayName: 'Member 2' }],
                 guests: [{ displayName: 'Guest 1' }]
             };
-            mockHttpClient.get.mockReturnValue(of(mockResponse));
+            mockHomeService.getOnlineAccounts.mockReturnValue(of(mockResponse));
 
             component.ngOnInit();
 
@@ -57,7 +56,7 @@ describe('HomePageComponent', () => {
         });
 
         it('does not assign when response properties are missing', () => {
-            mockHttpClient.get.mockReturnValue(of({}));
+            mockHomeService.getOnlineAccounts.mockReturnValue(of({}));
 
             component.ngOnInit();
 
@@ -66,7 +65,7 @@ describe('HomePageComponent', () => {
         });
 
         it('does not assign when response is null', () => {
-            mockHttpClient.get.mockReturnValue(of(null));
+            mockHomeService.getOnlineAccounts.mockReturnValue(of(null));
 
             component.ngOnInit();
 
@@ -102,13 +101,9 @@ describe('HomePageComponent', () => {
         });
 
         it('fetches instagram images', () => {
-            mockHttpClient.get.mockReturnValue(of([]));
-
             component.ngOnInit();
 
-            const calls = mockHttpClient.get.mock.calls;
-            const instagramCall = calls.find(c => c[0].includes('/instagram'));
-            expect(instagramCall).toBeDefined();
+            expect(mockHomeService.getInstagramImages).toHaveBeenCalled();
         });
     });
 

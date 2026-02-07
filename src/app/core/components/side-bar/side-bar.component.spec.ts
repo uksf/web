@@ -10,15 +10,13 @@ describe('SideBarComponent', () => {
     let mockRouter: any;
     let mockPermissions: any;
     let mockAccountService: any;
-    let mockHttpClient: any;
-    let mockUrls: any;
+    let mockVersionService: any;
 
     beforeEach(() => {
         mockRouter = { url: '/home' };
         mockPermissions = { getPermissions: vi.fn().mockReturnValue({}) };
         mockAccountService = { account: { displayName: 'User', application: null } };
-        mockHttpClient = { get: vi.fn().mockReturnValue(of(0)) };
-        mockUrls = { apiUrl: 'http://localhost:5500' };
+        mockVersionService = { getVersion: vi.fn().mockReturnValue(of(0)) };
 
         // Mock AppComponent static hub
         (AppComponent as any).utilityHubConnection = {
@@ -30,8 +28,7 @@ describe('SideBarComponent', () => {
             mockRouter,
             mockPermissions,
             mockAccountService,
-            mockHttpClient,
-            mockUrls
+            mockVersionService
         );
     });
 
@@ -186,17 +183,17 @@ describe('SideBarComponent', () => {
 
     describe('checkVersion', () => {
         it('fetches version from API', () => {
-            mockHttpClient.get.mockReturnValue(of(5));
+            mockVersionService.getVersion.mockReturnValue(of(5));
 
             component.checkVersion();
 
-            expect(mockHttpClient.get).toHaveBeenCalledWith('http://localhost:5500/version');
+            expect(mockVersionService.getVersion).toHaveBeenCalled();
             expect(component.version).toBe(5);
         });
 
         it('sets newVersion when API returns higher version', () => {
             component.version = 3;
-            mockHttpClient.get.mockReturnValue(of(5));
+            mockVersionService.getVersion.mockReturnValue(of(5));
 
             component.checkVersion();
 
@@ -205,7 +202,7 @@ describe('SideBarComponent', () => {
 
         it('does not set newVersion on initial load', () => {
             component.version = 0;
-            mockHttpClient.get.mockReturnValue(of(5));
+            mockVersionService.getVersion.mockReturnValue(of(5));
 
             component.checkVersion();
 
@@ -215,11 +212,11 @@ describe('SideBarComponent', () => {
 
     describe('ngOnInit', () => {
         it('calls checkVersion and registers SignalR handler', () => {
-            mockHttpClient.get.mockReturnValue(of(1));
+            mockVersionService.getVersion.mockReturnValue(of(1));
 
             component.ngOnInit();
 
-            expect(mockHttpClient.get).toHaveBeenCalledWith('http://localhost:5500/version');
+            expect(mockVersionService.getVersion).toHaveBeenCalled();
             expect(AppComponent.utilityHubConnection.connection.on).toHaveBeenCalledWith(
                 'ReceiveFrontendUpdate',
                 expect.any(Function)
