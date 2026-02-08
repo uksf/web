@@ -1,0 +1,64 @@
+<app-default-content-areas>
+    <app-main-content-area style="grid-column: span 3">
+        <div class="flex-container">
+            <div class="div-container">
+                <div class="flex-container-slim">
+                    <div class="loa-buttons-container">
+                        <div>
+                            <button mat-raised-button class="new-loa-button" color="primary" (click)="createLoa()">New LOA</button>
+                        </div>
+                        <app-flex-filler></app-flex-filler>
+                        <mat-form-field>
+                            <input (keyup)="filter()" [(ngModel)]="filterString" matInput matTooltip="Use operators 'AND' or 'OR' to combine filters" placeholder="Filter" />
+                            <button mat-button *ngIf="filterString" matSuffix mat-icon-button aria-label="Clear" (click)="filterString = ''; filter(); $event.stopPropagation()">
+                                <mat-icon>close</mat-icon>
+                            </button>
+                        </mat-form-field>
+                        <div class="loa-filter-buttons-container">
+                            <button [matMenuTriggerFor]="viewModeMenu" mat-raised-button matTooltip="Change view mode to see LOAs for the selected group">
+                                <mat-icon class="icon-right">{{ viewMode.icon }}</mat-icon>
+                                <span class="item-text">{{ viewMode.name }}</span>
+                            </button>
+                            <mat-menu #viewModeMenu="matMenu">
+                                <button (click)="changeViewMode(mode)" *ngFor="let mode of viewModes" [disabled]="viewMode.mode === mode.mode" mat-menu-item>
+                                    <mat-icon class="icon-right">{{ mode.icon }}</mat-icon>
+                                    <span class="item-text">{{ mode.name }}</span>
+                                </button>
+                            </mat-menu>
+                            <button [matMenuTriggerFor]="dateModeMenu" mat-raised-button matTooltip="Change date mode to see LOAs for the selected mode">
+                                <mat-icon class="icon-right">{{ dateMode.icon }}</mat-icon>
+                                <span class="item-text">{{ dateMode.name }}{{ getDisplayForDateMode(dateMode.mode) }}</span>
+                            </button>
+                            <mat-menu #dateModeMenu="matMenu">
+                                <button (click)="changeDateMode(mode)" *ngFor="let mode of dateModes" [disabled]="dateMode.mode === mode.mode" mat-menu-item>
+                                    <mat-icon class="icon-right">{{ mode.icon }}</mat-icon>
+                                    <span class="item-text">{{ mode.name }}</span>
+                                </button>
+                            </mat-menu>
+                        </div>
+                        <mat-form-field *ngIf="dateMode.mode === 'select'" class="select-date-picker">
+                            <input
+                                matInput
+                                ng-model-options="{timezone: 'utc'}"
+                                placeholder="Select date"
+                                readonly
+                                (click)="datePicker.open()"
+                                (dateInput)="update()"
+                                [(ngModel)]="selectedDate"
+                                [matDatepicker]="datePicker"
+                            />
+                            <mat-datepicker-toggle [for]="datePicker" matSuffix></mat-datepicker-toggle>
+                            <mat-datepicker #datePicker [touchUi]="mobile"></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    <h6>All dates and times are in GMT</h6>
+                    <div>
+                        <app-personnel-loas-list [selectionMode]="'current'" (deleteEvent)="delete($event)"></app-personnel-loas-list>
+                        <app-personnel-loas-list [selectionMode]="'future'" (deleteEvent)="delete($event)"></app-personnel-loas-list>
+                        <app-personnel-loas-list [selectionMode]="'past'" [deletable]="false"></app-personnel-loas-list>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </app-main-content-area>
+</app-default-content-areas>

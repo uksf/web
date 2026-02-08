@@ -1,0 +1,19 @@
+@use '@angular/material' as mat;
+
+@mixin inline-dropdown-component-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+    $warn: map-get($theme, warn);
+
+    app-inline-dropdown {
+        input {
+            border-color: mat.get-color-from-palette($foreground, divider);
+            color: mat.get-color-from-palette($foreground, text);
+            background-color: mat.get-color-from-palette($background, card);
+        }
+
+        .invalid {
+            border-color: mat.get-color-from-palette($warn);
+        }
+    }
+}

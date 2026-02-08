@@ -1,0 +1,178 @@
+import { Component, forwardRef, Input, OnInit, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import {
+    AbstractControl,
+    ControlContainer,
+    ControlValueAccessor,
+    UntypedFormControl,
+    UntypedFormGroup,
+    FormGroupDirective,
+    NG_VALIDATORS,
+    NG_VALUE_ACCESSOR,
+    NgForm,
+    ValidationErrors,
+    Validator,
+    ValidatorFn
+} from '@angular/forms';
+import { MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { DropdownBaseComponent, IDropdownElement } from '../dropdown-base/dropdown-base.component';
+import { any, nextFrame } from '@app/shared/services/helper.service';
+import { ErrorStateMatcher } from '@angular/material/core';
+
+export class SelectionListErrorStateMatcher implements ErrorStateMatcher {
+    isErrorState(control: UntypedFormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+        return !!(control && (control.dirty || control.touched) && control.parent.get('list').errors !== null);
+    }
+}
+
+export function SelectionListValidator(required: boolean): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+        if (!control.value) {
+            return null;
+        }
+
+        const list = control.value;
+        if (any(list, (element: IDropdownElement) => element.disabled)) {
+            return { someDisabled: true };
+        }
+
+        return list.length === 0 && required ? { noneSelected: true } : null;
+    };
+}
+
+@Component({
+    selector: 'app-selection-list',
+    templateUrl: './selection-list.component.html',
+    styleUrls: ['./selection-list.component.scss'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => SelectionListComponent),
+            multi: true
+        },
+        {
+            provide: NG_VALIDATORS,
+            useExisting: forwardRef(() => SelectionListComponent),
+            multi: true
+        }
+    ],
+    viewProviders: [{ provide: ControlContainer, useExisting: UntypedFormGroup }]
+})
+export class SelectionListComponent extends DropdownBaseComponent implements OnInit, OnChanges, ControlValueAccessor, Validator {
+    @Input('listDisabledTooltip') listDisabledTooltip: (element: IDropdownElement) => string = () => '';
+    @Input('listPosition') listPosition: string ='top';
+    @Input('inputTooltip') inputTooltip: string = '';
+    @ViewChild(MatAutocompleteTrigger) autocomplete: MatAutocompleteTrigger;
+    form: UntypedFormGroup = new UntypedFormGroup({
+        textInput: new UntypedFormControl({ value: '', disabled: this.disabled }),
+        list: new UntypedFormControl([], SelectionListValidator(this.required))
+    });
+    listErrorStateMatcher = new SelectionListErrorStateMatcher();
+    validationMessages = [
+        {
+            type: 'noneSelected',
+            message: () => `At least one ${this.elementName} is required`
+        },
+        {
+            type: 'someDisabled',
+            message: () => `No selected ${this.elementName} can be invalid`
+        }
+    ];
+    _listModel: IDropdownElement[] = [];
+
+    get listModel(): IDropdownElement[] {
+        return this._listModel;
+    }
+
+    set listModel(value: IDropdownElement[]) {
+        this._listModel = value;
+        this.form.get('list').setValue(this._listModel);
+
+        if (value !== null && value.length > 0) {
+            this.form.get('textInput').markAsTouched();
+        }
+
+        this.onListChange(value);
+        this.revalidate();
+    }
+
+    constructor() {
+        super();
+    }
+
+    ngOnInit(): void {
+        this.elementDisabled = this.getDisabled;
+        super.ngOnInit();
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.disabled && this.form) {
+            if (this.disabled) {                
+                this.form.get('textInput').disable();
+                this.form.get('textInput').setValue('');
+            } else {
+                this.form.get('textInput').enable();
+            }
+        }
+    }
+
+    onSelect(event: MatAutocompleteSelectedEvent) {
+        this.model = event.option.value;
+
+        if (this.clearOnSelect) {
+            nextFrame(() => {
+                this.form.get('textInput').setValue('');
+                this.autocomplete.closePanel();
+                this.textInputElement.nativeElement.blur();
+            });
+        }
+
+        if (this.model === null) {
+            return;
+        }
+
+        if (this.listModel.includes(this.model)) {
+            return;
+        }
+
+        this.listModel = [...this.listModel, this.model];
+    }
+
+    remove(element: IDropdownElement) {
+        const index = this.listModel.indexOf(element);
+        this.listModel.splice(index, 1);
+        this.listModel = [...this.listModel];
+    }
+
+    getDisabled = (element: IDropdownElement): boolean => {
+        return this.listModel.includes(element);
+    };
+
+    writeValue(value: IDropdownElement[] | null) {
+        if (value === null) {
+            return;
+        }
+
+        this.listModel = value;
+    }
+
+    registerOnTouched() {}
+
+    registerOnChange(func) {
+        this.onListChange = func;
+    }
+
+    onListChange = (_: IDropdownElement[]) => {};
+
+    revalidate() {
+        this.form.get('textInput').updateValueAndValidity();
+        this.form.get('list').updateValueAndValidity();
+    }
+
+    validate(control: AbstractControl): ValidationErrors | null {
+        return this.form.get('list').errors;
+    }
+
+    public isTouched(): boolean {
+        return this.form.get('textInput').touched;
+    }
+}

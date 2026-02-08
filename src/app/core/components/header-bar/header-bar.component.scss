@@ -1,0 +1,189 @@
+@use 'styles/variables' as v;
+
+.header-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
+}
+
+.name-wrapper {
+    height: v.$header-height;
+    line-height: v.$header-height;
+    text-align: center;
+    cursor: pointer;
+
+    span {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: normal;
+        margin-right: v.$spacing-20px;
+    }
+}
+
+.logo-wrapper {
+    font-size: 28px;
+    padding: 0;
+    height: 100%;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+}
+
+.logo {
+    width: 65px;
+    margin-left: 10px;
+    margin-top: 6px;
+    margin-bottom: v.$spacing-4px;
+
+    span {
+        line-height: v.$header-height;
+    }
+}
+
+.button-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
+}
+
+.button {
+    flex: 1;
+    padding: 0 10px 0 5px;
+    margin-right: 10px;
+    min-width: fit-content;
+
+    div {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        span {
+            text-align: center;
+            width: 100%;
+        }
+
+        > .mat-icon {
+            height: 30px;
+            margin: 0 5px 0 0;
+        }
+    }
+
+    &.profile {
+        padding: 5px;
+        min-width: 25px;
+        border-radius: v.$spacing-20px;
+        height: 40px;
+
+        .mat-icon {
+            font-size: 30px;
+            width: 30px;
+            margin: 0;
+            height: 30px;
+        }
+    }
+}
+
+.notifications-button {
+    margin-right: 5px;
+}
+
+.mat-icon {
+    align-items: center;
+    display: flex;
+    height: 40px;
+    margin: 0 15px 0 v.$spacing-8px;
+}
+
+a {
+    text-decoration: none;
+}
+
+@include v.below(v.$layout-medium) {
+    .header-wrapper {
+        flex-direction: column;
+    }
+
+    .name-wrapper {
+        display: none;
+    }
+
+    .logo-wrapper {
+        position: absolute;
+        left: 0;
+        top: 0;
+
+        .logo {
+            height: 40px;
+            width: auto;
+            margin: auto;
+        }
+
+        span {
+            display: none;
+        }
+    }
+
+    .button-wrapper {
+        height: 100%;
+        margin: 5px 0;
+    }
+
+    .button {
+        padding: 0 16px;
+
+        &:last-of-type {
+            margin-right: 0;
+        }
+    }
+
+    app-notifications {
+        padding: 0 !important;
+        margin: auto 5px auto 0 !important;
+    }
+
+    .notifications {
+        position: absolute;
+        right: 5px;
+        margin-right: 0;
+    }
+
+    .mat-icon {
+        text-align: center;
+        align-items: center;
+        display: flex;
+        height: 40px;
+        margin: 0 8px;
+    }
+}
+
+@include v.below(v.$layout-compact) {
+    .logo-wrapper {
+        .logo {
+            height: 36px;
+            width: auto;
+            margin: auto;
+        }
+    }
+
+    .button-wrapper {
+        flex-direction: row;
+        align-items: flex-end;
+        height: 100%;
+        margin: 0;
+    }
+
+    .mat-icon {
+        text-align: center;
+        align-items: center;
+        display: flex;
+        height: 40px;
+        margin: 0 v.$spacing-8px;
+    }
+
+    app-notifications {
+        margin: auto 0 !important;
+    }
+}

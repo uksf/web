@@ -1,0 +1,155 @@
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
+import { DocumentMetadata, FolderMetadata } from '@app/features/docs/models/documents';
+import { folderAnimations } from '@app/shared/services/animations.service';
+import { MatDialog } from '@angular/material/dialog';
+import { CreateDocumentModalComponent, DocumentModalData } from '../../../modals/create-document-modal/create-document-modal.component';
+import { ConfirmationModalComponent, ConfirmationModalData } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
+import { DocsService } from '../../../services/docs.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { UksfError } from '@app/shared/models/response';
+import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
+import { Subject } from 'rxjs';
+import { first, takeUntil } from 'rxjs/operators';
+
+@Component({
+    selector: 'app-docs-document',
+    templateUrl: './docs-document.component.html',
+    styleUrls: ['./docs-document.component.scss'],
+    animations: [folderAnimations.indicatorRotate, folderAnimations.folderExpansion]
+})
+export class DocsDocumentComponent implements OnChanges, OnDestroy {
+    private destroy$ = new Subject<void>();
+    @Input('allDocumentMetadata') allFolderMetadata: FolderMetadata[];
+    @Input('folderMetadata') folderMetadata: FolderMetadata;
+    @Input('documentMetadata') documentMetadata: DocumentMetadata;
+    @Output('refresh') refresh = new EventEmitter();
+    @Output('expandFolder') expandFolder = new EventEmitter();
+    hover: boolean = false;
+    menuOpen: boolean = false;
+    selected: boolean = false;
+
+    constructor(private docsService: DocsService, private dialog: MatDialog, private route: ActivatedRoute, private router: Router) {}
+
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.folderMetadata.isFirstChange() && changes.documentMetadata.isFirstChange()) {
+            this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe({
+                next: (params) => {
+                    const folder = params.folder;
+                    const document = params.document;
+
+                    if (folder && document) {
+                        this.selected = folder === this.folderMetadata?.id && document === this.documentMetadata?.id;
+                        this.showSelfInFolderTree();
+                    } else {
+                        this.selected = false;
+                    }
+                }
+            });
+        }
+    }
+
+    selectDocument() {
+        if (this.selected) {
+            this.close();
+        } else {
+            this.open();
+        }
+    }
+
+    open() {
+        this.router
+            .navigate([], {
+                relativeTo: this.route,
+                queryParams: { folder: this.folderMetadata.id, document: this.documentMetadata.id }
+            })
+            .then();
+    }
+
+    close() {
+        this.router
+            .navigate([], {
+                relativeTo: this.route,
+                queryParams: { folder: null, document: null }
+            })
+            .then();
+    }
+
+    showSelfInFolderTree() {
+        if (!this.selected) {
+            return;
+        }
+
+        this.expandFolder.emit();
+    }
+
+    onMouseOver() {
+        this.hover = true;
+    }
+
+    onMouseLeave() {
+        this.hover = false;
+    }
+
+    menuOpened() {
+        this.menuOpen = true;
+    }
+
+    menuClosed() {
+        this.menuOpen = false;
+    }
+
+    editDocument() {
+        this.dialog
+            .open<CreateDocumentModalComponent, DocumentModalData>(CreateDocumentModalComponent, {
+                data: {
+                    folderMetadata: this.folderMetadata,
+                    inheritedPermissions: this.documentMetadata.inheritedPermissions,
+                    initialData: {
+                        id: this.documentMetadata.id,
+                        name: this.documentMetadata.name,
+                        owner: this.documentMetadata.owner,
+                        permissions: this.documentMetadata.permissions
+                    }
+                }
+            })
+            .afterClosed()
+            .pipe(first())
+            .subscribe({
+                next: (_) => {
+                    this.refresh.emit();
+                }
+            });
+    }
+
+    deleteDocument() {
+        this.dialog
+            .open<ConfirmationModalComponent, ConfirmationModalData>(ConfirmationModalComponent, {
+                data: { message: `Are you sure you want to delete '${this.documentMetadata.name}'` }
+            })
+            .afterClosed()
+            .pipe(first())
+            .subscribe({
+                next: (result) => {
+                    if (result) {
+                        this.docsService.deleteDocument(this.folderMetadata.id, this.documentMetadata.id).pipe(first()).subscribe({
+                            next: () => {
+                                this.refresh.emit();
+                            },
+                            error: (error: UksfError) => {
+                                this.dialog.open(MessageModalComponent, {
+                                    data: { message: error.error }
+                                });
+
+                                this.refresh.emit();
+                            }
+                        });
+                    }
+                }
+            });
+    }
+}

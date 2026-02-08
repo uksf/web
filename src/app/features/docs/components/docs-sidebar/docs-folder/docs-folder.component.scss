@@ -1,0 +1,188 @@
+@use 'styles/variables' as v;
+
+:host {
+    display: flex;
+    flex-direction: column;
+    margin-top: 2px;
+}
+
+.folder-header-container {
+    display: flex;
+    flex-direction: row;
+
+    .folder-header-line {
+        width: 6px;
+        margin-top: 14px;
+        padding-top: 13px;
+        border-top-style: solid;
+        border-top-width: 1px;
+    }
+
+    .folder-toggle-line {
+        width: 11px;
+        margin-right: v.$spacing-4px;
+        margin-top: 14px;
+        padding-top: 13px;
+        border-top-style: solid;
+        border-top-width: 1px;
+    }
+
+    .folder-header {
+        flex: 1;
+        display: flex;
+        border-radius: v.$spacing-4px;
+        padding-right: 1px;
+        min-width: 0;
+        align-items: center;
+
+        .mat-icon {
+            font-size: v.$spacing-24px;
+            height: v.$spacing-24px;
+            width: 26px;
+
+            &.folder-icon {
+                padding-left: 2px;
+            }
+        }
+
+        .folder-toggle {
+            display: flex;
+            padding-right: 2px;
+            align-items: center;
+            cursor: pointer;
+            border-radius: v.$spacing-4px;
+            height: 28px;
+
+            &.blank {
+                cursor: default;
+            }
+
+            .indicator-container {
+                display: flex;
+                width: v.$spacing-16px;
+                margin-left: 1px;
+
+                .mat-icon {
+                    font-size: v.$spacing-16px;
+                    height: v.$spacing-16px;
+                    width: v.$spacing-16px;
+                }
+            }
+        }
+
+        .folder-title {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .folder-name {
+            flex: 1;
+            padding: 0 0 0 v.$spacing-4px;
+            line-height: v.$spacing-24px;
+            align-self: flex-end;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .folder-header-button-container {
+            display: none;
+
+            .icon-container {
+                display: flex;
+                height: 26px;
+                width: 26px;
+                border-radius: 4px;
+
+                .mat-icon {
+                    font-size: 20px;
+                    height: 20px;
+                    width: 20px;
+                    margin: auto;
+                    cursor: pointer;
+                }
+            }
+
+            &.hover {
+                display: flex;
+                align-items: center;
+            }
+
+            .folder-header-menu {
+                button {
+                    .mat-icon {
+                        font-size: 20px;
+                        height: 20px;
+                        width: 20px;
+                        margin: auto;
+                        cursor: pointer;
+                    }
+
+                    span {
+                    }
+                }
+            }
+        }
+    }
+}
+
+.folder-panel {
+    margin-left: 14px;
+    display: flex;
+    flex-direction: row;
+
+    .folder-panel-line-container {
+        display: flex;
+        flex-direction: row;
+
+        .folder-panel-line {
+            flex: 1;
+            height: calc(100% - 13px);
+            border-left-style: solid;
+            border-left-width: 1px;
+        }
+    }
+
+    .folder-panel-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+
+        .documents-container {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            margin-top: 2px;
+
+            .documents-container-line {
+                width: 17px;
+                margin-right: v.$spacing-4px;
+                margin-top: 14px;
+                padding-top: 13px;
+                border-top-style: solid;
+                border-top-width: 1px;
+            }
+
+            .documents-container-title {
+                flex: 1;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                border-radius: v.$spacing-4px;
+                padding: 2px 0 2px 2px;
+
+                .document-name {
+                    flex: 1;
+                    padding: 0 0 0 v.$spacing-4px;
+                    line-height: 22px;
+                    align-self: flex-end;
+                }
+            }
+        }
+    }
+}

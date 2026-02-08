@@ -1,0 +1,30 @@
+@use 'styles/variables' as v;
+
+.block {
+    display: inline-block;
+}
+
+.inline-edit {
+    text-decoration: none;
+    border-bottom: 0;
+    cursor: pointer;
+    text-align: left;
+    padding: 0.5em 0;
+    width: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+input {
+    width: 100%;
+    border: 1px solid;
+    border-radius: 2px;
+    margin: 0;
+    margin-left: -6px;
+    padding: 3px 5px;
+}
+
+.invalid {
+    border: 1px solid;
+}

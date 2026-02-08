@@ -1,0 +1,75 @@
+<mat-card class="member-panel" [ngClass]="{ hover: hover }">
+    <div class="header-panel">
+        <div class="header-title-container">
+            <div class="toggle" [@indicatorRotate]="toggleState" (click)="toggle($event)" (mouseenter)="onMouseOver()" (mouseleave)="onMouseLeave()">
+                <mat-icon color="primary">expand_more</mat-icon>
+            </div>
+            <div class="header-title hover" (click)="toggle($event)" (mouseenter)="onMouseOver()" (mouseleave)="onMouseLeave()">
+                <span>{{ displayName }}</span>
+            </div>
+            <div class="header-title edit" (click)="editRank(); $event.stopPropagation()" matTooltip="Click to edit rank">
+                <span>{{ member.rankObject.name }}</span>
+                <div class="underline"></div>
+            </div>
+            <div class="header-title edit" (click)="editRole(); $event.stopPropagation()" matTooltip="Click to edit role">
+                <span>{{ member.roleObject.name }}</span>
+                <div class="underline"></div>
+            </div>
+            <div class="header-title edit" (click)="editUnit(); $event.stopPropagation()" matTooltip="Click to edit unit">
+                <span>{{ member.unitObject.name }}</span>
+                <div class="underline"></div>
+            </div>
+        </div>
+        <!--        <div class="header-button-container">-->
+        <!--            <mat-icon>more_horiz</mat-icon>-->
+        <!--        </div>-->
+    </div>
+
+    <div class="member-panel-content-container" *ngIf="expanded" [@bodyExpansion]="expanded">
+        <div class="member-panel-content">
+            <div class="member-panel-content-item left">
+                <h4>Units</h4>
+                <div *ngFor="let unit of member.unitObjects; trackBy: trackByUnitId" class="member-panel-content-element">
+                    <div>{{ unit.name }}</div>
+                    <div>{{ unit.memberRole }}</div>
+                </div>
+            </div>
+            <div class="member-panel-content-item right">
+                <h4>Training</h4>
+                <div class="member-panel-content-elements-container">
+                    <div *ngFor="let training of member.trainings; trackBy: trackByName" class="member-panel-content-element training">
+                        <div>{{ training.name }}</div>
+                    </div>
+                </div>
+                <div (click)="editTraining()" class="member-panel-content-element edit">
+                    <span>Add / Remove</span>
+                </div>
+            </div>
+            <div class="member-panel-content-item right small">
+                <h4>Qualifications</h4>
+                <div class="member-panel-content-element">
+                    <mat-checkbox
+                        color="primary"
+                        [(ngModel)]="member.qualifications.medic"
+                        (change)="updateQualifications()"
+                        [disabled]="qualificationsPending"
+                        matTooltip="When enabled, {{ displayName }} will be assigned as a medic in-game"
+                    >
+                        Medic
+                    </mat-checkbox>
+                </div>
+                <div class="member-panel-content-element">
+                    <mat-checkbox
+                        color="primary"
+                        [(ngModel)]="member.qualifications.engineer"
+                        (change)="updateQualifications()"
+                        [disabled]="qualificationsPending"
+                        matTooltip="When enabled, {{ displayName }} will be assigned as an engineer in-game"
+                    >
+                        Engineer
+                    </mat-checkbox>
+                </div>
+            </div>
+        </div>
+    </div>
+</mat-card>

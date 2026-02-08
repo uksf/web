@@ -29,6 +29,17 @@ stages:
             displayName: 'bun install'
 
           - script: |
+              bun run test
+            displayName: 'Unit Tests'
+
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: 'test-results/junit.xml'
+            condition: succeededOrFailed()
+
+          - script: |
               bun x ng build -c production --aot --build-optimizer --optimization
             displayName: 'ng build'
 

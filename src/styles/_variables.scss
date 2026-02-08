@@ -1,0 +1,88 @@
+// ============================================
+// UKSF Web Frontend - SCSS Variables
+// ============================================
+// Self-describing variable names for clarity.
+// Import with: @use 'styles/variables' as v;
+
+// ============================================
+// SPACING SCALE (4px base unit)
+// ============================================
+// Use these for margins, padding, gaps
+// Named by their pixel value for clarity
+
+$spacing-4px: 4px;    // Tight: borders, small gaps
+$spacing-8px: 8px;    // Small: icon gaps, compact lists
+$spacing-12px: 12px;  // Medium: form field gaps
+$spacing-16px: 16px;  // Standard: card padding, section gaps
+$spacing-20px: 20px;  // Large: between components
+$spacing-24px: 24px;  // XL: section padding
+$spacing-32px: 32px;  // XXL: page sections
+$spacing-40px: 40px;  // Major: hero sections
+
+// ============================================
+// LAYOUT BREAKPOINTS
+// ============================================
+// These are layout breakpoints, not device targets.
+// They define where layout elements shift (sidebar to top, etc.)
+// Components may need custom breakpoints - that's OK.
+//
+// Current codebase uses 23 different breakpoint values.
+// These are the consolidated standards - use them when possible,
+// but keep custom values if they serve a specific layout need.
+
+$layout-compact: 375px;     // Minimal width, hide labels
+$layout-narrow: 600px;      // Stack elements vertically
+$layout-medium: 768px;      // Sidebar moves to top
+$layout-standard: 1024px;   // Standard desktop layout
+$layout-wide: 1360px;       // Full desktop with all elements
+
+// Mixin for responsive styles
+// Usage: @include below($layout-medium) { ... }
+@mixin below($breakpoint) {
+  @media screen and (max-width: $breakpoint) {
+    @content;
+  }
+}
+
+// Mixin for min-width queries (less common)
+// Usage: @include above($layout-standard) { ... }
+@mixin above($breakpoint) {
+  @media screen and (min-width: $breakpoint) {
+    @content;
+  }
+}
+
+// ============================================
+// LAYOUT CONSTANTS
+// ============================================
+// Fixed dimensions used across the app
+
+$sidebar-width: 225px;
+$header-height: 75px;
+$footer-height: auto;
+
+// ============================================
+// Z-INDEX SCALE
+// ============================================
+// Centralized z-index values to prevent conflicts
+
+$z-index-dropdown: 100;
+$z-index-sticky: 200;
+$z-index-fixed: 300;
+$z-index-modal-backdrop: 400;
+$z-index-modal: 500;
+$z-index-popover: 600;
+$z-index-tooltip: 700;
+
+// ============================================
+// ANIMATION TIMING
+// ============================================
+// Consistent animation durations
+
+$transition-fast: 150ms;
+$transition-normal: 250ms;
+$transition-slow: 400ms;
+
+$ease-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
+$ease-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1);
+$ease-accelerate: cubic-bezier(0.4, 0.0, 1, 1);

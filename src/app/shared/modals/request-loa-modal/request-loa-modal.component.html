@@ -1,0 +1,51 @@
+<h2 mat-dialog-title>LOA Request</h2>
+<h6>Dates should be considered as GMT</h6>
+<mat-dialog-content>
+    <form [formGroup]="form" class="container">
+        <div class="container-body">
+            <mat-form-field>
+                <input matInput placeholder="Reason" formControlName="reason" />
+                <mat-error *ngFor="let validation of validationMessages.reason; trackBy: trackByIndex">
+                    <mat-error class="error-message" *ngIf="form.get('reason').hasError(validation.type)">{{ validation.message }}</mat-error>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field>
+                <input
+                    (click)="pickerStart.open()"
+                    [matDatepicker]="pickerStart"
+                    [max]="maxStartDate"
+                    [min]="minStartDate"
+                    formControlName="start"
+                    matInput
+                    ng-model-options="{timezone: 'utc'}"
+                    placeholder="Start date"
+                    readonly
+                />
+                <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
+                <mat-datepicker #pickerStart [touchUi]="mobile"></mat-datepicker>
+            </mat-form-field>
+            <br />
+            <mat-form-field>
+                <input
+                    (click)="pickerEnd.open()"
+                    [matDatepicker]="pickerEnd"
+                    [min]="minEndDate"
+                    formControlName="end"
+                    matInput
+                    ng-model-options="{timezone: 'utc'}"
+                    placeholder="End date (inclusive)"
+                    readonly
+                />
+                <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+                <mat-datepicker #pickerEnd [touchUi]="mobile"></mat-datepicker>
+            </mat-form-field>
+            <mat-checkbox color="primary" formControlName="emergency" *ngIf="late" matTooltip="If this is an emergency, tick this box">Emergency</mat-checkbox>
+        </div>
+        <div class="invalid-message" *ngIf="invalidMessage">
+            <span>{{ invalidMessage }}</span>
+        </div>
+        <div class="button-container">
+            <button mat-raised-button color="primary" type="button" #button (click)="submit()" [disabled]="!form.valid || !datesValid || submitting">Submit</button>
+        </div>
+    </form>
+</mat-dialog-content>

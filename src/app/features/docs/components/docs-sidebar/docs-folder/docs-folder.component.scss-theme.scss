@@ -1,0 +1,65 @@
+@use '@angular/material' as mat;
+@import '@angular/material/theming';
+
+@mixin docs-folder-component-theme($theme) {
+    $background: map-get($theme, background);
+    $primary: map-get($theme, primary);
+
+    app-docs-folder {
+        .folder-header-container {
+            .folder-header-line,
+            .folder-toggle-line {
+                border-top-color: mat.get-color-from-palette($background, 200);
+            }
+
+            .folder-header {
+                &.hover {
+                    background-color: mat.get-color-from-palette($background, app-bar-hover);
+                }
+
+                .folder-toggle {
+                    &:hover {
+                        background-color: mat.get-color-from-palette($background, hover);
+                    }
+
+                    &.blank {
+                        background-color: transparent;
+                    }
+                }
+
+                .folder-header-button-container {
+                    .icon-container {
+                        &:hover {
+                            background-color: mat.get-color-from-palette($background, hover);
+                        }
+
+                        .mat-icon {
+                        }
+                    }
+                }
+            }
+        }
+
+        .folder-panel {
+            .folder-panel-line-container {
+                .folder-panel-line {
+                    border-left-color: mat.get-color-from-palette($background, 200);
+                }
+            }
+
+            .folder-panel-body {
+                .documents-container {
+                    .documents-container-line {
+                        border-top-color: mat.get-color-from-palette($background, 200);
+                    }
+
+                    .documents-container-title {
+                        &:hover {
+                            background-color: mat.get-color-from-palette($background, app-bar-hover);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

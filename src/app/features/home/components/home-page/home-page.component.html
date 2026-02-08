@@ -1,0 +1,82 @@
+<app-default-content-areas>
+    <app-main-content-area>
+        <div class="timezone-container">
+            <div class="timezone">
+                <span class="normal">Your Local Time</span>
+                <span class="short">Local</span>
+                <span class="normal-time">{{ time | zonedTime: 'Local' }}</span>
+                <span class="short-time">{{ time | zonedTime: 'Local':true }}</span>
+            </div>
+            <div class="timezone">
+                <span class="normal">Greenwich Mean Time</span>
+                <span class="short">GMT</span>
+                <span class="normal-time">{{ time | zonedTime: 'Europe/London' }}</span>
+                <span class="short-time">{{ time | zonedTime: 'Europe/London':true }}</span>
+            </div>
+            <div class="timezone">
+                <span class="normal">Central European Time</span>
+                <span class="short">CET</span>
+                <span class="normal-time">{{ time | zonedTime: 'Europe/Berlin' }}</span>
+                <span class="short-time">{{ time | zonedTime: 'Europe/Berlin':true }}</span>
+            </div>
+            <div class="timezone">
+                <span class="normal">US Eastern Standard Time</span>
+                <span class="short">EST</span>
+                <span class="normal-time">{{ time | zonedTime: 'America/New_York' }}</span>
+                <span class="short-time">{{ time | zonedTime: 'America/New_York':true }}</span>
+            </div>
+        </div>
+        <div class="flex-container instagram-feed" *ngIf="instagramImages.length > 0">
+            <div class="instagram-image" *ngFor="let instagramImage of instagramImages; trackBy: trackByInstagramId">
+                <img [src]="instagramImage.base64" alt="UKSF Image" />
+            </div>
+        </div>
+    </app-main-content-area>
+    <app-side-content-area>
+        <div class="flex-container">
+            <mat-card class="teamspeak-container">
+                <div class="teamspeak-header">
+                    <span class="teamspeak-text">TeamSpeak Online (<a href="ts3server://uk-sf.co.uk">Join</a>)</span>
+                    <a href="ts3server://uk-sf.co.uk">
+                        <i class="fab fa-teamspeak teamspeak-icon" width="25"></i>
+                    </a>
+                </div>
+                <div class="teamspeak-content-container">
+                    <div class="spinner-container" *ngIf="!commanders && !recruiters && !members && !guests">
+                        <app-flex-filler></app-flex-filler>
+                        <mat-spinner></mat-spinner>
+                        <app-flex-filler></app-flex-filler>
+                    </div>
+                    <div *ngIf="commanders || recruiters || members || guests">
+                        <div *ngIf="commanders && commanders.length > 0">
+                            <h4>Command Staff</h4>
+                            <ul>
+                                <li *ngFor="let user of commanders; trackBy: trackByDisplayName">{{ user.displayName }}</li>
+                            </ul>
+                        </div>
+                        <div *ngIf="recruiters && recruiters.length > 0">
+                            <h4>Recruitment Staff</h4>
+                            <ul>
+                                <li *ngFor="let user of recruiters; trackBy: trackByDisplayName">{{ user.displayName }}</li>
+                            </ul>
+                        </div>
+                        <hr *ngIf="((recruiters && recruiters.length > 0) || (commanders && commanders.length > 0)) && ((members && members.length > 0) || (guests && guests.length > 0))" />
+                        <div *ngIf="members && members.length > 0">
+                            <h4>Members</h4>
+                            <ul>
+                                <li *ngFor="let user of members; trackBy: trackByDisplayName">{{ user.displayName }}</li>
+                            </ul>
+                        </div>
+                        <div *ngIf="guests && guests.length > 0">
+                            <h4>Guests</h4>
+                            <ul>
+                                <li *ngFor="let user of guests; trackBy: trackByDisplayName">{{ user.displayName }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+            <iframe height="500" src="https://discordapp.com/widget?id=311543678126653451&theme=dark" style="width: 100%; border: none"></iframe>
+        </div>
+    </app-side-content-area>
+</app-default-content-areas>

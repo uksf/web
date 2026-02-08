@@ -1,0 +1,102 @@
+@use 'styles/variables' as v;
+
+.sideNav {
+    .sideNavItem {
+        padding-left: 30px;
+        display: flex;
+        flex-direction: row;
+        line-height: 48px;
+        font-size: large;
+        align-items: center;
+
+        &.selected {
+            &:hover {
+                cursor: pointer;
+            }
+        }
+
+        &:hover {
+            cursor: pointer;
+        }
+
+        .mat-icon {
+            margin-right: v.$spacing-20px;
+            transform: rotate(0.03deg);
+        }
+
+        span {
+            height: 100%;
+        }
+    }
+}
+
+@include v.below(v.$layout-standard) {
+    .sideNav {
+        display: flex;
+        overflow-x: auto;
+        justify-content: center;
+
+        .sideNavItem {
+            padding: 5px v.$spacing-8px;
+            font-size: small;
+            flex-direction: column;
+            line-height: unset;
+
+            &.selected {
+                box-shadow: unset;
+            }
+
+            .mat-icon {
+                margin: 0px;
+            }
+
+            &:first-of-type {
+                padding-left: 10px;
+            }
+
+            &:last-of-type {
+                padding-right: 10px;
+            }
+        }
+    }
+}
+
+@include v.below(v.$layout-medium) {
+    .sideNav {
+        .sideNavItem {
+            .mat-icon {
+                margin: 0px;
+                font-size: 20px;
+                height: 20px;
+                width: 20px;
+            }
+
+            span {
+                font-size: 10px;
+            }
+        }
+        .newVersionNavItem {
+            justify-content: center;
+            span {
+                white-space: nowrap;
+            }
+        }
+    }
+}
+
+@include v.below(v.$layout-narrow) {
+    .sideNav {
+        justify-content: flex-start;
+    }
+}
+
+@include v.below(v.$layout-compact) {
+    .sideNav {
+        .sideNavItem {
+            padding: v.$spacing-8px;
+            span {
+                display: none;
+            }
+        }
+    }
+}

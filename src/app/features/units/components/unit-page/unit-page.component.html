@@ -1,0 +1,47 @@
+<!--TODO: Redo-->
+<app-default-content-areas>
+    <app-main-content-area *ngIf="unit">
+        <div class="flex-container">
+            <div style="min-width: 400px">
+                <img style="width: 135px" alt="Unit insignia" />
+                <h2><mat-icon matTooltip="Back to units" (click)="back()" style="cursor: pointer">arrow_back</mat-icon> {{ unit.name }}</h2>
+                <br />
+            </div>
+            <mat-card>
+                <div>
+                    Org structure
+                    <mat-grid-list cols="2" rowHeight="75px">
+                        <mat-grid-tile [colspan]="1" [rowspan]="1">
+                            <span>Unit code: {{ unit.code }}</span>
+                        </mat-grid-tile>
+                        <mat-grid-tile [colspan]="1" [rowspan]="1" *ngIf="unit.parentName">
+                            <span
+                                >Parent unit: <a [routerLink]="['/units', unit.parent]">{{ unit.parentName }}</a></span
+                            >
+                        </mat-grid-tile>
+                    </mat-grid-list>
+                </div>
+            </mat-card>
+            <br />
+            <h3>Members</h3>
+            <div class="example-container mat-elevation-z8">
+                <mat-table [dataSource]="unit.unitMembers">
+                    <ng-container matColumnDef="chainOfCommandPosition">
+                        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                        <mat-cell *matCellDef="let element">{{ element.chainOfCommandPosition }}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="name">
+                        <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+                        <mat-cell *matCellDef="let element">{{ element.name }}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="role">
+                        <mat-header-cell *matHeaderCellDef> Role </mat-header-cell>
+                        <mat-cell *matCellDef="let element">{{ element.role }}</mat-cell>
+                    </ng-container>
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+                </mat-table>
+            </div>
+        </div>
+    </app-main-content-area>
+</app-default-content-areas>

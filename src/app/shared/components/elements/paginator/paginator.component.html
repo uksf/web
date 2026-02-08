@@ -1,0 +1,14 @@
+<div class="paginator-container">
+    <span class="current-page">{{ pageIndex * pageSize + 1 }} - {{ min((pageIndex + 1) * pageSize, total) }} of {{ total }}</span>
+    <button mat-raised-button color="primary" [disabled]="pageIndex <= 0" (click)="pageChange(-1)" matTooltip="Previous">
+        <mat-icon>chevron_left</mat-icon>
+    </button>
+    <button mat-raised-button color="primary" [disabled]="(pageIndex + 1) * pageSize >= total" (click)="pageChange(1)" matTooltip="Next">
+        <mat-icon>chevron_right</mat-icon>
+    </button>
+    <mat-select [(ngModel)]="pageSize" (selectionChange)="pageIndex = 0; pageChange(0)">
+        <mat-option *ngFor="let option of pageSizes; trackBy: trackByIndex" [value]="option">
+            {{ option }}
+        </mat-option>
+    </mat-select>
+</div>
