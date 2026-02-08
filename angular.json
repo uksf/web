@@ -88,10 +88,10 @@
           },
           "configurations": {
             "production": {
-              "browserTarget": "uksf:build:production"
+              "buildTarget": "uksf:build:production"
             },
             "development": {
-              "browserTarget": "uksf:build:development"
+              "buildTarget": "uksf:build:development"
             }
           },
           "defaultConfiguration": "development"
