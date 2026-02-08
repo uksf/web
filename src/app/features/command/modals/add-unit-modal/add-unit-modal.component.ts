@@ -3,7 +3,7 @@ import { AbstractControl, FormBuilder, ValidationErrors, Validators } from '@ang
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { Observable, of, timer } from 'rxjs';
 import { first, map, switchMap } from 'rxjs/operators';
-import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
+import { MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { ResponseUnit, UnitBranch } from '@app/features/units/models/units';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { UnitsService } from '../../services/units.service';

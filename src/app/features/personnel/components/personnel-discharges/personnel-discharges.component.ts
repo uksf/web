@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { MatExpansionPanel } from '@angular/material/expansion';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { ActivatedRoute } from '@angular/router';

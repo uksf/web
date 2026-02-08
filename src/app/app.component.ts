@@ -1,7 +1,7 @@
 import { Component, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { isPlatformBrowser } from '@angular/common';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
 import { SignalRHubsService } from '@app/core/services/signalr-hubs.service';

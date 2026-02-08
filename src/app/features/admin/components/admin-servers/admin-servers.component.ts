@@ -1,5 +1,5 @@
 import { Component, HostListener, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { first } from 'rxjs/operators';
 import type { ServerInfrastructureCurrent, ServerInfrastructureInstalled, ServerInfrastructureLatest } from '@app/shared/models/server-infrastructure';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';

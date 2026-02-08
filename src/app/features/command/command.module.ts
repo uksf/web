@@ -30,10 +30,10 @@ import { RequestUnitRemovalModalComponent } from './modals/request-unit-removal-
 
 // Material modules
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatTableModule } from '@angular/material/table';
+import { MatLegacyTabsModule as MatTabsModule } from '@angular/material/legacy-tabs';
+import { MatLegacyTableModule as MatTableModule } from '@angular/material/legacy-table';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatLegacySlideToggleModule as MatSlideToggleModule } from '@angular/material/legacy-slide-toggle';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { TreeModule } from '@circlon/angular-tree-component';
 import { RolesService } from './services/roles.service';

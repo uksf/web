@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
 import { FormBuilder, Validators } from '@angular/forms';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { InstallWorkshopModData } from '../models/workshop-mod';

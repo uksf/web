@@ -4,7 +4,7 @@ import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.
 import { InstallWorkshopModData, WorkshopMod } from '../models/workshop-mod';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { UksfError } from '@app/shared/models/response';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { InstallWorkshopModModalComponent } from '../install-workshop-mod-modal/install-workshop-mod-modal.component';
 import { WorkshopModInterventionModalComponent } from '../workshop-mod-intervention-modal/workshop-mod-intervention-modal.component';
 import { WorkshopService } from '../services/workshop.service';

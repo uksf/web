@@ -3,7 +3,7 @@ import { AbstractControl, FormBuilder, ValidationErrors, Validators } from '@ang
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { Observable, of, Subject, timer } from 'rxjs';
 import { first, map, switchMap, takeUntil } from 'rxjs/operators';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialog as MatDialog, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
 import { GameServersService } from '../../services/game-servers.service';
 
 @Component({

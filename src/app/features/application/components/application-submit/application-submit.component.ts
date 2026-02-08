@@ -1,6 +1,6 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 
 @Component({

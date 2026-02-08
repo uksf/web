@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, Subject, tap } from 'rxjs';
 import { UrlService } from './url.service';
 import { ConnectTeamspeakModalComponent } from '@app/features/profile/modals/connect-teamspeak-modal/connect-teamspeak-modal.component';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { SessionService } from './authentication/session.service';
 import { Account, MembershipState } from '@app/shared/models/account';

@@ -12,8 +12,8 @@ import { DocsPermissionsComponent } from './components/docs-permissions/docs-per
 import { CreateDocumentModalComponent } from './modals/create-document-modal/create-document-modal.component';
 import { CreateFolderModalComponent } from './modals/create-folder-modal/create-folder-modal.component';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatTableModule } from '@angular/material/table';
+import { MatLegacyTabsModule as MatTabsModule } from '@angular/material/legacy-tabs';
+import { MatLegacyTableModule as MatTableModule } from '@angular/material/legacy-table';
 import { MatDividerModule } from '@angular/material/divider';
 import { QuillModule } from 'ngx-quill';
 

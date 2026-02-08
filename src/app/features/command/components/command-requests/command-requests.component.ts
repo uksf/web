@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { RequestRankModalComponent } from '@app/features/command/modals/request-rank-modal/request-rank-modal.component';
 import { RequestTransferModalComponent } from '@app/features/command/modals/request-transfer-modal/request-transfer-modal.component';
 import { RequestRoleModalComponent } from '@app/features/command/modals/request-role-modal/request-role-modal.component';

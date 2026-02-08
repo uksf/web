@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { first } from 'rxjs/operators';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { AddUnitModalComponent } from '@app/features/command/modals/add-unit-modal/add-unit-modal.component';
 import { ITreeOptions, KEYS, TREE_ACTIONS, TreeNode } from '@circlon/angular-tree-component';
 import { Permissions } from '@app/core/services/permissions';

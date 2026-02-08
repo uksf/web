@@ -1,7 +1,7 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, UntypedFormControl, FormGroupDirective, NgForm, AbstractControl } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 
 export class InstantErrorStateMatcher implements ErrorStateMatcher {
     isErrorState(control: UntypedFormControl | null, form: FormGroupDirective | NgForm | null): boolean {

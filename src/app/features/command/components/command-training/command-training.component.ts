@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Observable, timer } from 'rxjs';
 import { first, switchMap } from 'rxjs/operators';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
 import { Training } from '@app/features/command/models/training';
 import { AddTrainingModalComponent } from '@app/features/command/modals/add-training-modal/add-training-modal.component';
 import { TrainingsService } from '../../services/trainings.service';

@@ -2,7 +2,7 @@ import { Component, Output, EventEmitter, Input, OnInit, OnDestroy } from '@angu
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FormBuilder, Validators } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { TeamspeakConnectService } from '@app/shared/services/teamspeak-connect.service';
 import { AccountService } from '@app/core/services/account.service';
 import { SignalRService, ConnectionContainer } from '@app/core/services/signalr.service';

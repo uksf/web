@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { NgForm } from '@angular/forms';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';

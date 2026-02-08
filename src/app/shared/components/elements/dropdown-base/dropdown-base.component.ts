@@ -3,7 +3,7 @@ import { NgModel } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { nextFrame } from '@app/shared/services/helper.service';
 import { map, startWith, takeUntil } from 'rxjs/operators';
-import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatLegacyAutocompleteSelectedEvent as MatAutocompleteSelectedEvent } from '@angular/material/legacy-autocomplete';
 import { DestroyableComponent } from '@app/shared/components';
 
 @Component({

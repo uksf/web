@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { AddServerModalComponent } from '../../modals/add-server-modal/add-server-modal.component';
 import { EditServerModsModalComponent } from '../../modals/edit-server-mods-modal/edit-server-mods-modal.component';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';

@@ -5,7 +5,7 @@ import { catchError } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PermissionsService } from '../permissions.service';
 import { UksfError } from '@app/shared/models/response';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { RedirectService } from './redirect.service';
 

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { MatAccordion } from '@angular/material/expansion';
 import { Observable, timer, of } from 'rxjs';
 import { switchMap, map, first } from 'rxjs/operators';

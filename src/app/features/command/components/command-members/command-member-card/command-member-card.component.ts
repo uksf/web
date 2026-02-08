@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Account } from '@app/shared/models/account';
 import { expansionAnimations } from '@app/shared/services/animations.service';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { RequestRankModalComponent } from '@app/features/command/modals/request-rank-modal/request-rank-modal.component';
 import { RequestRoleModalComponent } from '@app/features/command/modals/request-role-modal/request-role-modal.component';
 import { RequestTransferModalComponent } from '@app/features/command/modals/request-transfer-modal/request-transfer-modal.component';

@@ -3,7 +3,7 @@ import { first } from 'rxjs/operators';
 import { DocumentContent, DocumentMetadata, UpdateDocumentContentRequest } from '@app/features/docs/models/documents';
 import { DocsService } from '../../services/docs.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { UksfError } from '@app/shared/models/response';
 
 @Component({

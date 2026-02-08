@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, UntypedFormControl, FormGroupDirective, NgForm, AbstractControl } from '@angular/forms';
 import { first, takeUntil } from 'rxjs/operators';
 import { ErrorStateMatcher } from '@angular/material/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { AccountService } from '@app/core/services/account.service';
 import { Router } from '@angular/router';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';

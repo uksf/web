@@ -6,7 +6,7 @@ import { ModpackRelease } from './models/modpack-release';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { NewModpackReleaseModalComponent } from './new-modpack-release-modal/new-modpack-release-modal.component';
 import { UksfError } from '@app/shared/models/response';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 
 @Injectable()
 export class ModpackReleaseService implements OnDestroy {

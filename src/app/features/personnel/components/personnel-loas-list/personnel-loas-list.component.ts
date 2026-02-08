@@ -13,7 +13,7 @@ import { DateMode, DateModeItem, ViewMode, ViewModeItem } from '../personnel-loa
 import { Moment } from 'moment/moment';
 import { UksfError } from '@app/shared/models/response';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 
 export type SelectionMode = 'current' | 'future' | 'past';
 

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { first } from 'rxjs/operators';
 import { FolderMetadata } from '@app/features/docs/models/documents';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { CreateFolderModalComponent } from '../../modals/create-folder-modal/create-folder-modal.component';
 import { collapseAnimations } from '@app/shared/services/animations.service';
 

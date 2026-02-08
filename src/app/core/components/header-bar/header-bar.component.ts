@@ -1,6 +1,6 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { AccountService } from '@app/core/services/account.service';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { RequestLoaModalComponent } from '@app/shared/modals/request-loa-modal/request-loa-modal.component';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { AppSettingsService, Environments } from '@app/core/services/app-settings.service';

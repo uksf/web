@@ -1,5 +1,5 @@
 import { Component, HostListener, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { LoaService } from '@app/shared/services/loa.service';
 import { RequestLoaModalComponent } from '@app/shared/modals/request-loa-modal/request-loa-modal.component';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';

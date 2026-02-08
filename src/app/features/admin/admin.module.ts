@@ -3,10 +3,10 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 
 // Angular Material (admin-specific)
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatLegacyTableModule as MatTableModule } from '@angular/material/legacy-table';
+import { MatLegacyPaginatorModule as MatPaginatorModule } from '@angular/material/legacy-paginator';
 import { MatSortModule } from '@angular/material/sort';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatLegacyTabsModule as MatTabsModule } from '@angular/material/legacy-tabs';
 
 // Routing
 import { AdminRoutingModule } from './admin-routing.module';
