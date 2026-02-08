@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router, RouterEvent } from '@angular/router';
+import { ActivatedRoute, Event, NavigationEnd, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 
@@ -20,7 +20,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
 
         this.router.events
             .pipe(
-                filter((event: RouterEvent) => event instanceof NavigationEnd),
+                filter((event: Event): event is NavigationEnd => event instanceof NavigationEnd),
                 takeUntil(this.destroyed)
             )
             .subscribe({
