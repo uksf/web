@@ -91,7 +91,7 @@ export class ModpackReleasesComponent implements OnInit {
                 queryParamsHandling: 'merge'
             });
         } else {
-            this.changelogMarkdown = this.markdownService.compile(this.selectedRelease.changelog);
+            this.changelogMarkdown = this.markdownService.parse(this.selectedRelease.changelog);
             this.router.navigate([], {
                 relativeTo: this.route,
                 queryParams: { version: this.selectedReleaseVersion },
@@ -122,7 +122,7 @@ export class ModpackReleasesComponent implements OnInit {
     regenerateChangelog() {
         this.savingChangelog = true;
         this.modpackReleaseService.regenerateChangelog(this.selectedReleaseVersion, (changelog: string) => {
-            this.changelogMarkdown = this.markdownService.compile(changelog);
+            this.changelogMarkdown = this.markdownService.parse(changelog);
             this.savingChangelog = false;
         });
     }
@@ -137,7 +137,7 @@ export class ModpackReleasesComponent implements OnInit {
         this.preview = !this.preview;
         if (this.preview) {
             this.formatChangelog(false);
-            this.changelogMarkdown = this.markdownService.compile(this.changelogStaging);
+            this.changelogMarkdown = this.markdownService.parse(this.changelogStaging);
         }
     }
 
@@ -148,7 +148,7 @@ export class ModpackReleasesComponent implements OnInit {
         this.formatChangelog(this.editing);
         this.selectedRelease.changelog = this.changelogStaging;
         this.modpackReleaseService.saveReleaseChanges(this.selectedRelease, () => {
-            this.changelogMarkdown = this.markdownService.compile(this.selectedRelease.changelog);
+            this.changelogMarkdown = this.markdownService.parse(this.selectedRelease.changelog);
             this.savingChangelog = false;
         });
     }
@@ -158,7 +158,7 @@ export class ModpackReleasesComponent implements OnInit {
         this.preview = false;
         this.changelogEditing = '';
         this.changelogStaging = '';
-        this.changelogMarkdown = this.markdownService.compile(this.selectedRelease.changelog);
+        this.changelogMarkdown = this.markdownService.parse(this.selectedRelease.changelog);
     }
 
     formatChangelog(editing: boolean) {

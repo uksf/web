@@ -129,7 +129,7 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
 
     compilePreviousChanges() {
         if (this.selectedBuild.commit) {
-            this.changesMarkdown = this.markdownService.compile(this.selectedBuild.commit.message);
+            this.changesMarkdown = this.markdownService.parse(this.selectedBuild.commit.message);
 
             let changesSincePreviousRelease = '';
             const index = this.selectedRc.builds.indexOf(this.selectedBuild) + 1;
@@ -143,7 +143,7 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
                 }
             }
 
-            this.additionalChangesMarkdown = this.markdownService.compile(changesSincePreviousRelease);
+            this.additionalChangesMarkdown = this.markdownService.parse(changesSincePreviousRelease);
         }
     }
 

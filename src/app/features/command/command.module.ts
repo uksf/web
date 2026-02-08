@@ -35,7 +35,7 @@ import { MatLegacyTableModule as MatTableModule } from '@angular/material/legacy
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatLegacySlideToggleModule as MatSlideToggleModule } from '@angular/material/legacy-slide-toggle';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { TreeModule } from '@circlon/angular-tree-component';
+import { TreeModule } from '@ali-hm/angular-tree-component';
 import { RolesService } from './services/roles.service';
 import { TrainingsService } from './services/trainings.service';
 
