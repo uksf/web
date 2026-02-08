@@ -100,7 +100,7 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
                     this.builderName = 'UKSF Bot';
                 }
             );
-            this.changesMarkdown = this.markdownService.parse(this.selectedBuild.commit.message);
+            this.changesMarkdown = this.markdownService.parse(this.selectedBuild.commit.message) as string;
             if (this.logOpen) {
                 this.openLog();
             }
