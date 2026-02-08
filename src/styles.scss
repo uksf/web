@@ -3,15 +3,7 @@
 @use 'app/features/operations/components/operations-servers/servers-list-item-layout' as servers-layout;
 @import '~@ali-hm/angular-tree-component/css/angular-tree-component.css';
 
-// Core
-// TODO(v15): As of v15 mat.legacy-core no longer includes default typography styles.
-//  The following line adds:
-//    1. Default typography styles for all components
-//    2. Styles for typography hierarchy classes (e.g. .mat-headline-1)
-//  If you specify typography styles for the components you use elsewhere, you should delete this line.
-//  If you don't need the default component typographies but still want the hierarchy styles,
-//  you can delete this line and instead use:
-//    `@include mat.legacy-typography-hierarchy(mat.define-typography-config());`
+// Core — default typography styles for all components + hierarchy classes
 @include mat.all-component-typographies();
 @include mat.core();
 
