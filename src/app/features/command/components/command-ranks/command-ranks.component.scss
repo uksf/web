@@ -1,3 +1,5 @@
+@use 'ranks-list-item-layout' as layout;
+
 .flex-container {
     display: flex;
     flex-direction: row;
@@ -24,52 +26,8 @@
             font-weight: bold;
         }
     }
-}
 
-.handle {
-    font-size: 30px;
-    width: 40px;
-    line-height: 0;
-}
-
-.mat-mdc-card {
-    display: flex;
-    flex-direction: row;
-    padding: 0 10px;
-    align-items: center;
-    width: 800px;
-    margin-bottom: 1px;
-    height: 36px;
-}
-
-.filler {
-    flex: 1;
-    flex-basis: 5%;
-}
-
-.name {
-    flex: 1;
-    flex-basis: 40%;
-}
-
-.abbreviation {
-    flex: 1;
-    flex-basis: 20%;
-}
-
-.teamspeakGroup {
-    flex: 1;
-    flex-basis: 15%;
-}
-
-.discordRoleId {
-    flex: 1;
-    flex-basis: 25%;
-}
-
-.delete-icon {
-    color: red;
-    cursor: pointer;
+    @include layout.ranks-list-item-layout;
 }
 
 .disabled {

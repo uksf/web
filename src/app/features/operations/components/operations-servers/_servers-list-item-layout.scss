@@ -1,0 +1,11 @@
+// Shared layout for servers-list-item — used by both component and CDK drag preview (styles.scss).
+// Keep in sync: any layout changes here affect the drag preview appearance.
+
+@mixin servers-list-item-layout {
+    cursor: default;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 150px;
+    padding: 10px;
+}

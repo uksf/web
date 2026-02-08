@@ -1,0 +1,31 @@
+// Shared layout for ranks-list-item — used by both component and CDK drag preview (styles.scss).
+// Keep in sync: any layout changes here affect the drag preview appearance.
+
+@mixin ranks-list-item-layout {
+    .mat-mdc-card {
+        display: flex;
+        flex-direction: row;
+        padding: 0 10px;
+        align-items: center;
+        width: 800px;
+        margin-bottom: 1px;
+        height: 36px;
+    }
+
+    .handle {
+        font-size: 30px;
+        width: 40px;
+        line-height: 0;
+    }
+
+    .name { flex: 1; flex-basis: 40%; }
+    .abbreviation { flex: 1; flex-basis: 20%; }
+    .teamspeakGroup { flex: 1; flex-basis: 15%; }
+    .discordRoleId { flex: 1; flex-basis: 25%; }
+    .filler { flex: 1; flex-basis: 5%; }
+
+    .delete-icon {
+        color: red;
+        cursor: pointer;
+    }
+}

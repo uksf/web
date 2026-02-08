@@ -1,3 +1,5 @@
+@use 'servers-list-item-layout' as layout;
+
 .column {
     flex-direction: column;
 }
@@ -34,7 +36,6 @@
 
 .server-updating {
     animation: rotation 2s infinite linear;
-    -webkit-animation: rotation 2s infinite linear;
 }
 
 .uploading-button {
@@ -48,7 +49,6 @@
     min-width: 34px;
     padding: 0;
     animation: rotation 2s infinite linear;
-    -webkit-animation: rotation 2s infinite linear;
 }
 
 .servers-container {
@@ -67,13 +67,8 @@
 
 // Keep at root for .cdk-drag-preview
 .servers-list-item {
-    cursor: default;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 150px;
+    @include layout.servers-list-item-layout;
     margin: 10px 10px 0 0;
-    padding: 10px;
 
     .server-header {
         display: flex;
@@ -160,19 +155,10 @@
 
 @keyframes rotation {
     from {
-        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
     }
     to {
-        -webkit-transform: rotate(359deg);
-    }
-}
-
-@-webkit-keyframes rotation {
-    from {
-        -webkit-transform: rotate(0deg);
-    }
-    to {
-        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
     }
 }
 
