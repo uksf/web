@@ -137,11 +137,19 @@
 }
 
 :host ::ng-deep .mission-select {
-    top: -8px;
-    height: 36px;
     width: 450px !important;
     margin: 0 10px;
     align-self: center;
+
+    .mat-mdc-form-field-infix {
+        min-height: unset;
+        padding-top: 8px !important;
+        padding-bottom: 8px !important;
+    }
+
+    .mat-mdc-form-field-subscript-wrapper {
+        display: none;
+    }
 }
 
 .disabled {
