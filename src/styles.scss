@@ -228,6 +228,16 @@
             border-bottom-color: mat.get-color-from-palette($foreground, divider);
         }
     }
+
+    // Reduce MDC form field height to match legacy standard appearance
+    .mat-mdc-text-field-wrapper:not(.mdc-text-field--outlined) .mat-mdc-form-field-infix {
+        padding-top: 18px;
+        padding-bottom: 4px;
+    }
+
+    .mat-mdc-form-field-infix {
+        min-height: 48px;
+    }
 }
 
 // MDC checkbox: allow label text to wrap
@@ -270,16 +280,36 @@
     }
 }
 
+// Reset MDC typography overrides to match legacy Material
 .mat-mdc-button,
 .mat-mdc-raised-button,
 .mat-mdc-icon-button,
 .mat-mdc-outlined-button,
 .mat-mdc-unelevated-button,
 .mat-mdc-fab,
-.mat-mdc-mini-fab,
+.mat-mdc-mini-fab {
+    font-weight: unset;
+    letter-spacing: normal;
+
+    .mdc-button__label {
+        letter-spacing: normal;
+    }
+}
+
 .mat-mdc-tab,
 .mat-mdc-tab-link {
     font-weight: unset;
+    letter-spacing: normal;
+    min-width: 72px;
+
+    .mdc-tab__text-label {
+        letter-spacing: normal;
+    }
+}
+
+.mdc-tab.mat-mdc-tab,
+.mdc-tab.mat-mdc-tab-link {
+    padding: 0 16px;
 }
 
 .mat-mdc-autocomplete-panel {
