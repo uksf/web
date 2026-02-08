@@ -9,7 +9,8 @@
                         </div>
                         <app-flex-filler></app-flex-filler>
                         <mat-form-field>
-                            <input (keyup)="filter()" [(ngModel)]="filterString" matInput matTooltip="Use operators 'AND' or 'OR' to combine filters" placeholder="Filter" />
+                            <mat-label>Filter</mat-label>
+                            <input (keyup)="filter()" [(ngModel)]="filterString" matInput matTooltip="Use operators 'AND' or 'OR' to combine filters" />
                             <button mat-button *ngIf="filterString" matSuffix mat-icon-button aria-label="Clear" (click)="filterString = ''; filter(); $event.stopPropagation()">
                                 <mat-icon>close</mat-icon>
                             </button>
@@ -37,10 +38,11 @@
                             </mat-menu>
                         </div>
                         <mat-form-field *ngIf="dateMode.mode === 'select'" class="select-date-picker">
+                            <mat-label>Select date</mat-label>
                             <input
                                 matInput
                                 ng-model-options="{timezone: 'utc'}"
-                                placeholder="Select date"
+                               
                                 readonly
                                 (click)="datePicker.open()"
                                 (dateInput)="update()"

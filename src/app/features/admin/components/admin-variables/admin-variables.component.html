@@ -9,13 +9,15 @@
                 <div class="variables-header">
                     <form [formGroup]="form" class="variables-form-container">
                         <mat-form-field class="key-field">
-                            <input #input matInput formControlName="key" required placeholder="Key" [errorStateMatcher]="instantErrorStateMatcher" />
+                            <mat-label>Key</mat-label>
+                            <input #input matInput formControlName="key" required [errorStateMatcher]="instantErrorStateMatcher" />
                             <mat-error *ngFor="let validation of validationMessages.key">
                                 <mat-error class="error-message" *ngIf="form.get('key').hasError(validation.type)">{{ validation.message }}</mat-error>
                             </mat-error>
                         </mat-form-field>
                         <mat-form-field class="item-field">
-                            <input #input matInput formControlName="item" required placeholder="Item" [errorStateMatcher]="instantErrorStateMatcher" />
+                            <mat-label>Item</mat-label>
+                            <input #input matInput formControlName="item" required [errorStateMatcher]="instantErrorStateMatcher" />
                             <mat-error *ngFor="let validation of validationMessages.item">
                                 <mat-error class="error-message" *ngIf="form.get('item').hasError(validation.type)">{{ validation.message }}</mat-error>
                             </mat-error>

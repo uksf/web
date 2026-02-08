@@ -6,27 +6,31 @@
             <div class="container">
                 <h4>Required Fields</h4>
                 <mat-form-field class="normal">
-                    <input [errorStateMatcher]="instantErrorStateMatcher" formControlName="name" matInput placeholder="Unit Name" required />
+                    <mat-label>Unit Name</mat-label>
+                    <input [errorStateMatcher]="instantErrorStateMatcher" formControlName="name" matInput required />
                     <mat-error *ngFor="let validation of validationMessages.name; trackBy: trackByIndex">
                         <mat-error *ngIf="form.get('name').hasError(validation.type)" class="error-message">{{ validation.message }}</mat-error>
                     </mat-error>
                 </mat-form-field>
                 <mat-form-field class="normal">
-                    <input matInput formControlName="shortname" required placeholder="Short Name" [errorStateMatcher]="instantErrorStateMatcher" />
+                    <mat-label>Short Name</mat-label>
+                    <input matInput formControlName="shortname" required [errorStateMatcher]="instantErrorStateMatcher" />
                     <mat-error *ngFor="let validation of validationMessages.shortname; trackBy: trackByIndex">
                         <mat-error class="error-message" *ngIf="form.get('shortname').hasError(validation.type)">{{ validation.message }}</mat-error>
                     </mat-error>
                 </mat-form-field>
                 <mat-checkbox color="primary" formControlName="preferShortname">Prefer displaying short name</mat-checkbox>
                 <mat-form-field class="normal">
-                    <mat-select placeholder="Branch Type" formControlName="branch" required (selectionChange)="resolveAvailableParentUnits()">
+                    <mat-label>Branch Type</mat-label>
+                    <mat-select formControlName="branch" required (selectionChange)="resolveAvailableParentUnits()">
                         <mat-option *ngFor="let type of branchTypes; trackBy: trackByIndex" [value]="type.value">
                             {{ type.viewValue }}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
                 <mat-form-field class="normal" *ngIf="!this.edit || this.unit.parent !== '000000000000000000000000'">
-                    <mat-select placeholder="Parent Unit" formControlName="parent" required>
+                    <mat-label>Parent Unit</mat-label>
+                    <mat-select formControlName="parent" required>
                         <mat-option *ngFor="let unit of availableParentUnits; trackBy: trackByUnitId" [value]="unit.id">
                             {{ unit.name }}
                         </mat-option>
@@ -40,25 +44,29 @@
             <div class="container">
                 <h4>Optional Fields</h4>
                 <mat-form-field class="normal">
-                    <input matInput formControlName="teamspeakGroup" placeholder="TeamSpeak Group ID" type="number" [errorStateMatcher]="instantErrorStateMatcher" />
+                    <mat-label>TeamSpeak Group ID</mat-label>
+                    <input matInput formControlName="teamspeakGroup" type="number" [errorStateMatcher]="instantErrorStateMatcher" />
                     <mat-error *ngFor="let validation of validationMessages.teamspeakGroup; trackBy: trackByIndex">
                         <mat-error class="error-message" *ngIf="form.get('teamspeakGroup').hasError(validation.type)">{{ validation.message }}</mat-error>
                     </mat-error>
                 </mat-form-field>
                 <mat-form-field class="normal">
-                    <input matInput formControlName="discordRoleId" placeholder="Discord Role ID" [errorStateMatcher]="instantErrorStateMatcher" />
+                    <mat-label>Discord Role ID</mat-label>
+                    <input matInput formControlName="discordRoleId" [errorStateMatcher]="instantErrorStateMatcher" />
                     <mat-error *ngFor="let validation of validationMessages.discordRoleId; trackBy: trackByIndex">
                         <mat-error class="error-message" *ngIf="form.get('discordRoleId').hasError(validation.type)">{{ validation.message }}</mat-error>
                     </mat-error>
                 </mat-form-field>
                 <mat-form-field class="normal">
-                    <input matInput formControlName="callsign" placeholder="Callsign" [errorStateMatcher]="instantErrorStateMatcher" />
+                    <mat-label>Callsign</mat-label>
+                    <input matInput formControlName="callsign" [errorStateMatcher]="instantErrorStateMatcher" />
                     <mat-error *ngFor="let validation of validationMessages.callsign">
                         <mat-error class="error-message" *ngIf="form.get('callsign').hasError(validation.type)">{{ validation.message }}</mat-error>
                     </mat-error>
                 </mat-form-field>
                 <mat-form-field class="normal">
-                    <input matInput formControlName="icon" placeholder="Unit Icon" />
+                    <mat-label>Unit Icon</mat-label>
+                    <input matInput formControlName="icon" />
                 </mat-form-field>
             </div>
             <div class="button-container">

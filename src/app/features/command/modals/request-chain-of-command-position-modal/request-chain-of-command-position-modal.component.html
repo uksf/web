@@ -52,6 +52,7 @@
         </app-dropdown>
         <br />
         <mat-form-field>
+            <mat-label>Reason</mat-label>
             <textarea
                 #reason="ngModel"
                 [(ngModel)]="model.reason"
@@ -61,7 +62,7 @@
                 matInput
                 matTextareaAutosize
                 name="formReason"
-                placeholder="Reason"
+               
                 required
                 type="text"
             ></textarea>

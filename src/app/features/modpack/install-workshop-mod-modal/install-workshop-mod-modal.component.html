@@ -2,7 +2,8 @@
 <mat-dialog-content>
     <form [formGroup]="form" class="form-container">
         <mat-form-field class="normal">
-            <input matInput formControlName="steamId" placeholder="Steam ID or Workshop Link" [errorStateMatcher]="instantErrorStateMatcher" />
+            <mat-label>Steam ID or Workshop Link</mat-label>
+            <input matInput formControlName="steamId" [errorStateMatcher]="instantErrorStateMatcher" />
             <mat-error *ngFor="let validation of validationMessages.steamId">
                 <mat-error class="error-message" *ngIf="form.get('steamId').hasError(validation.type)">{{ validation.message }}</mat-error>
             </mat-error>
@@ -11,7 +12,8 @@
             <mat-checkbox color="primary" formControlName="rootMod" matTooltip="Root mods are copied as entire folders to the repo root (e.g. @CBA_A3), including addons, signatures, and keys">Install as root mod</mat-checkbox>
         </div>
         <mat-form-field class="normal">
-            <input matInput formControlName="folderName" placeholder="Custom root folder name (optional, e.g. @CBA_A3)" />
+            <mat-label>Custom root folder name (optional, e.g. @CBA_A3)</mat-label>
+            <input matInput formControlName="folderName" />
             <mat-hint>Leave blank to use the mod name with @ prefix</mat-hint>
         </mat-form-field>
         <app-flex-filler></app-flex-filler>

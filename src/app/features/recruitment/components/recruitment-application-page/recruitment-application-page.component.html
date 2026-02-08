@@ -65,9 +65,9 @@
             <div class="flex-container flex-row no-padding recruiter">
                 <div>
                     <mat-form-field [floatLabel]="'never'" class="select-thin">
+                        <mat-label>{{ application.recruiter }}</mat-label>
                         <mat-select
                             [(ngModel)]="selected"
-                            placeholder="{{ application.recruiter }}"
                             (selectionChange)="setNewRecruiter($event.value)"
                             [disableOptionCentering]="true"
                             [panelClass]="'select-small'"

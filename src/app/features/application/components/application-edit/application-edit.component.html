@@ -54,9 +54,9 @@
                 </div>
                 <div>
                     <mat-form-field class="large-input">
+                        <mat-label>How much experience do you have playing Arma?</mat-label>
                         <textarea
                             matInput
-                            placeholder="How much experience do you have playing Arma?"
                             matTextareaAutosize
                             matAutosizeMinRows="2"
                             matAutosizeMaxRows="5"
@@ -71,9 +71,9 @@
                     </mat-form-field>
                     <br />
                     <mat-form-field class="large-input">
+                        <mat-label>Other Units - have you ever been in an Arma unit? Which?</mat-label>
                         <textarea
                             matInput
-                            placeholder="Other Units - have you ever been in an Arma unit? Which?"
                             matTextareaAutosize
                             matAutosizeMinRows="2"
                             matAutosizeMaxRows="4"
@@ -88,9 +88,9 @@
                     </mat-form-field>
                     <br />
                     <mat-form-field class="large-input">
+                        <mat-label>Personal background - tell us a little about yourself</mat-label>
                         <textarea
                             matInput
-                            placeholder="Personal background - tell us a little about yourself"
                             matTextareaAutosize
                             matAutosizeMinRows="5"
                             matAutosizeMaxRows="10"
@@ -115,7 +115,8 @@
                 </div>
                 <br />
                 <mat-form-field>
-                    <mat-select placeholder="Where did you hear about UKSF?" formControlName="reference">
+                    <mat-label>Where did you hear about UKSF?</mat-label>
+                    <mat-select formControlName="reference">
                         <mat-option *ngFor="let referenceOption of referenceOptions" [value]="referenceOption.value">
                             {{ referenceOption.viewValue }}
                         </mat-option>

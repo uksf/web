@@ -4,7 +4,8 @@
     <form #form="ngForm" (ngSubmit)="submit()" class="form-container">
         <div class="basics-container">
             <mat-form-field class="full-width">
-                <input #name="ngModel" [(ngModel)]="model.name" [errorStateMatcher]="instantErrorStateMatcher" id="name" matInput name="formName" placeholder="Document name" required type="text" />
+                <mat-label>Document name</mat-label>
+                <input #name="ngModel" [(ngModel)]="model.name" [errorStateMatcher]="instantErrorStateMatcher" id="name" matInput name="formName" required type="text" />
                 <mat-error *ngFor="let validation of validationMessages.name">
                     <mat-error *ngIf="name.hasError(validation.type)" class="error-message">{{ validation.message }}</mat-error>
                 </mat-error>

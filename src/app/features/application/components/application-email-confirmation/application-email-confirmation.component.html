@@ -7,7 +7,8 @@
         <p>If the code does not work or you did not receive a code, press 'Resend Code' (This will invalidate the previous code)</p>
         <br />
         <mat-form-field class="normal">
-            <input matInput formControlName="code" required placeholder="Enter confirmation code" (ngModelChange)="changed($event)" autocomplete="off" />
+            <mat-label>Enter confirmation code</mat-label>
+            <input matInput formControlName="code" required (ngModelChange)="changed($event)" autocomplete="off" />
         </mat-form-field>
         <div class="button-next">
             <app-button (clicked)="resend()" [disabled]="pending || resent" [pending]="pending">Resend Code</app-button>

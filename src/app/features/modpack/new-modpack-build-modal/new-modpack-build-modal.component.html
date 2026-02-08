@@ -3,7 +3,8 @@
     <p class="hint-text">Select a branch or enter a commit id to run a new build from</p>
     <form [formGroup]="form" class="container">
         <mat-form-field class="normal">
-            <mat-select placeholder="Configuration" formControlName="configuration" [errorStateMatcher]="instantErrorStateMatcher">
+            <mat-label>Configuration</mat-label>
+            <mat-select formControlName="configuration" [errorStateMatcher]="instantErrorStateMatcher">
                 <mat-option *ngFor="let configuration of configurations" [value]="configuration">
                     {{ configuration }}
                 </mat-option>
@@ -11,14 +12,16 @@
         </mat-form-field>
         <div formGroupName="referenceGroup">
             <mat-form-field class="normal">
-                <mat-select placeholder="{{ branches.length === 0 ? 'Loading branches...' : 'Select branch' }}" formControlName="branch" [errorStateMatcher]="instantErrorStateMatcher">
+                <mat-label>{{ branches.length === 0 ? 'Loading branches...' : 'Select branch' }}</mat-label>
+                <mat-select formControlName="branch" [errorStateMatcher]="instantErrorStateMatcher">
                     <mat-option *ngFor="let branch of branches" [value]="branch">
                         {{ branch }}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
             <mat-form-field class="normal">
-                <input matInput formControlName="commitId" placeholder="Commit ID" [errorStateMatcher]="instantErrorStateMatcher" />
+                <mat-label>Commit ID</mat-label>
+                <input matInput formControlName="commitId" [errorStateMatcher]="instantErrorStateMatcher" />
                 <mat-error *ngFor="let validation of validationMessages.commitId">
                     <mat-error class="error-message" *ngIf="form.get('referenceGroup.commitId').hasError(validation.type)">{{ validation.message }}</mat-error>
                 </mat-error>

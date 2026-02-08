@@ -5,7 +5,8 @@
     <div class="members-list-container" *ngIf="loaded">
         <div class="members-list-header">
             <mat-form-field style="width: 30%">
-                <input matInput (keyup)="filter()" [(ngModel)]="filterString" placeholder="Filter" matTooltip="Use operators 'AND' or 'OR' to combine filters" />
+                <mat-label>Filter</mat-label>
+                <input matInput (keyup)="filter()" [(ngModel)]="filterString" matTooltip="Use operators 'AND' or 'OR' to combine filters" />
                 <button mat-button *ngIf="filterString" matSuffix mat-icon-button aria-label="Clear" (click)="filterString = ''; filter(); $event.stopPropagation()">
                     <mat-icon>close</mat-icon>
                 </button>

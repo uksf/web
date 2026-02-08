@@ -210,10 +210,28 @@
     .mat-mdc-tab-nav-bar {
         overflow: auto;
     }
+
+    // Restore underline-only appearance for MDC form fields (matches legacy "standard" look)
+    .mat-mdc-form-field.mat-form-field-appearance-fill {
+        .mdc-text-field--filled {
+            background-color: transparent;
+            border-radius: 0;
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .mat-mdc-form-field-focus-overlay {
+            background-color: transparent;
+        }
+
+        .mdc-line-ripple::before {
+            border-bottom-color: mat.get-color-from-palette($foreground, divider);
+        }
+    }
 }
 
-/* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version.*/
-.mat-checkbox-layout {
+// MDC checkbox: allow label text to wrap
+.mat-mdc-checkbox label {
     white-space: normal !important;
 }
 
@@ -230,27 +248,20 @@
     }
 }
 
-.mods-list-item-container {
-    /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version.*/
-    .mat-checkbox-layout {
-        margin-bottom: 0;
-    }
-}
-
-.trainings-list-item-container {
-    /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version.*/
-    .mat-checkbox-layout {
+.mods-list-item-container,
+.trainings-list-item-container,
+.pbos-list-item-container,
+.stats-item {
+    .mat-mdc-checkbox {
         margin-bottom: 0;
     }
 }
 
 .member-panel-content-element {
-    /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version.*/
-    /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version.*/
-    .mat-checkbox-layout {
+    .mat-mdc-checkbox {
         margin: 0;
-        /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version.*/
-        .mat-checkbox-label {
+
+        label {
             color: white;
             font-size: 14px;
             font-weight: 300;
@@ -259,21 +270,6 @@
     }
 }
 
-.pbos-list-item-container {
-    /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version.*/
-    .mat-checkbox-layout {
-        margin-bottom: 0;
-    }
-}
-
-.stats-item {
-    /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version.*/
-    .mat-checkbox-layout {
-        margin-bottom: 0;
-    }
-}
-
-/* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
 .mat-mdc-button,
 .mat-mdc-raised-button,
 .mat-mdc-icon-button,
@@ -281,26 +277,23 @@
 .mat-mdc-unelevated-button,
 .mat-mdc-fab,
 .mat-mdc-mini-fab,
-.mat-tab-label,
+.mat-mdc-tab,
 .mat-mdc-tab-link {
     font-weight: unset;
 }
 
-/* TODO(mdc-migration): The following rule targets internal classes of autocomplete that may no longer apply for the MDC version.*/
-.mat-autocomplete-panel {
+.mat-mdc-autocomplete-panel {
     max-height: 456px !important;
 }
 
 @media screen and (max-height: 800px) {
-    /* TODO(mdc-migration): The following rule targets internal classes of autocomplete that may no longer apply for the MDC version.*/
-    .mat-autocomplete-panel {
+    .mat-mdc-autocomplete-panel {
         max-height: 312px !important;
     }
 }
 
 @media screen and (max-height: 700px) {
-    /* TODO(mdc-migration): The following rule targets internal classes of autocomplete that may no longer apply for the MDC version.*/
-    .mat-autocomplete-panel {
+    .mat-mdc-autocomplete-panel {
         max-height: 264px !important;
     }
 }

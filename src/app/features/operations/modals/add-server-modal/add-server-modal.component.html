@@ -4,55 +4,64 @@
     <form [formGroup]="form" class="container">
         <div class="overflow-container">
             <mat-form-field class="normal">
-                <input #input matInput formControlName="name" required placeholder="Server Name" [errorStateMatcher]="instantErrorStateMatcher">
+                <mat-label>Server Name</mat-label>
+                <input #input matInput formControlName="name" required [errorStateMatcher]="instantErrorStateMatcher">
                 <mat-error *ngFor="let validation of validationMessages.name">
                     <mat-error class="error-message" *ngIf="form.get('name').hasError(validation.type)">{{validation.message}}</mat-error>
                 </mat-error>
             </mat-form-field>
             <mat-form-field class="normal">
-                <input #input matInput formControlName="port" required placeholder="Port" type="number" [errorStateMatcher]="instantErrorStateMatcher">
+                <mat-label>Port</mat-label>
+                <input #input matInput formControlName="port" required type="number" [errorStateMatcher]="instantErrorStateMatcher">
                 <mat-error *ngFor="let validation of validationMessages.port">
                     <mat-error class="error-message" *ngIf="form.get('port').hasError(validation.type)">{{validation.message}}</mat-error>
                 </mat-error>
             </mat-form-field>
             <mat-form-field class="normal">
-                <input #input matInput formControlName="apiPort" required placeholder="Api Port" type="number" [errorStateMatcher]="instantErrorStateMatcher">
+                <mat-label>Api Port</mat-label>
+                <input #input matInput formControlName="apiPort" required type="number" [errorStateMatcher]="instantErrorStateMatcher">
                 <mat-error *ngFor="let validation of validationMessages.apiPort">
                     <mat-error class="error-message" *ngIf="form.get('apiPort').hasError(validation.type)">{{validation.message}}</mat-error>
                 </mat-error>
             </mat-form-field>
             <mat-form-field class="normal">
-                <input #input matInput formControlName="numberHeadlessClients" placeholder="Headless clients required" type="number" [errorStateMatcher]="instantErrorStateMatcher">
+                <mat-label>Headless clients required</mat-label>
+                <input #input matInput formControlName="numberHeadlessClients" type="number" [errorStateMatcher]="instantErrorStateMatcher">
                 <mat-error *ngFor="let validation of validationMessages.numberHeadlessClients">
                     <mat-error class="error-message" *ngIf="form.get('numberHeadlessClients').hasError(validation.type)">{{validation.message}}</mat-error>
                 </mat-error>
             </mat-form-field>
             <mat-form-field class="normal">
-                <input #input matInput formControlName="profileName" required placeholder="Server Profile Name" [errorStateMatcher]="instantErrorStateMatcher">
+                <mat-label>Server Profile Name</mat-label>
+                <input #input matInput formControlName="profileName" required [errorStateMatcher]="instantErrorStateMatcher">
                 <mat-error *ngFor="let validation of validationMessages.profileName">
                     <mat-error class="error-message" *ngIf="form.get('profileName').hasError(validation.type)">{{validation.message}}</mat-error>
                 </mat-error>
             </mat-form-field>
             <mat-form-field class="normal">
-                <input #input matInput formControlName="hostName" required placeholder="Server Display Name" [errorStateMatcher]="instantErrorStateMatcher">
+                <mat-label>Server Display Name</mat-label>
+                <input #input matInput formControlName="hostName" required [errorStateMatcher]="instantErrorStateMatcher">
                 <mat-error *ngFor="let validation of validationMessages.hostName">
                     <mat-error class="error-message" *ngIf="form.get('hostName').hasError(validation.type)">{{validation.message}}</mat-error>
                 </mat-error>
             </mat-form-field>
             <mat-form-field class="normal">
-                <input #input matInput formControlName="password" required placeholder="Server Password" [errorStateMatcher]="instantErrorStateMatcher">
+                <mat-label>Server Password</mat-label>
+                <input #input matInput formControlName="password" required [errorStateMatcher]="instantErrorStateMatcher">
                 <mat-error *ngFor="let validation of validationMessages.password">
                     <mat-error class="error-message" *ngIf="form.get('password').hasError(validation.type)">{{validation.message}}</mat-error>
                 </mat-error>
             </mat-form-field>
             <mat-form-field class="normal">
-                <input #input matInput formControlName="adminPassword" required placeholder="Admin Password" [errorStateMatcher]="instantErrorStateMatcher">
+                <mat-label>Admin Password</mat-label>
+                <input #input matInput formControlName="adminPassword" required [errorStateMatcher]="instantErrorStateMatcher">
                 <mat-error *ngFor="let validation of validationMessages.adminPassword">
                     <mat-error class="error-message" *ngIf="form.get('adminPassword').hasError(validation.type)">{{validation.message}}</mat-error>
                 </mat-error>
             </mat-form-field>
             <mat-form-field class="normal">
-                <mat-select formControlName="environment" placeholder="Environment" required>
+                <mat-label>Environment</mat-label>
+                <mat-select formControlName="environment" required>
                     <mat-option *ngFor="let option of environments" [value]="option.value">
                         {{ option.viewValue }}
                     </mat-option>
@@ -62,7 +71,8 @@
                 </mat-error>
             </mat-form-field>
             <mat-form-field class="normal">
-                <mat-select formControlName="serverOption" placeholder="Server options" required>
+                <mat-label>Server options</mat-label>
+                <mat-select formControlName="serverOption" required>
                     <mat-option *ngFor="let option of serverOptions" [value]="option.value">
                         {{ option.viewValue }}
                     </mat-option>

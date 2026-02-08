@@ -6,7 +6,8 @@
                     <mat-icon [ngClass]="{ updating: updating }" matTooltip="Refresh">refresh</mat-icon>
                 </button>
                 <mat-form-field style="width: 30%">
-                    <input (keyup)="filter()" [(ngModel)]="filterString" matInput placeholder="Filter" />
+                    <mat-label>Filter</mat-label>
+                    <input (keyup)="filter()" [(ngModel)]="filterString" matInput />
                     <button mat-button *ngIf="filterString" matSuffix mat-icon-button aria-label="Clear" (click)="filterString = ''; filter(); $event.stopPropagation()">
                         <mat-icon>close</mat-icon>
                     </button>

@@ -4,12 +4,14 @@
     <form [formGroup]="form" class="container">
         <div class="container-body">
             <mat-form-field>
-                <input matInput placeholder="Reason" formControlName="reason" />
+                <mat-label>Reason</mat-label>
+                <input matInput formControlName="reason" />
                 <mat-error *ngFor="let validation of validationMessages.reason; trackBy: trackByIndex">
                     <mat-error class="error-message" *ngIf="form.get('reason').hasError(validation.type)">{{ validation.message }}</mat-error>
                 </mat-error>
             </mat-form-field>
             <mat-form-field>
+                <mat-label>Start date</mat-label>
                 <input
                     (click)="pickerStart.open()"
                     [matDatepicker]="pickerStart"
@@ -18,7 +20,7 @@
                     formControlName="start"
                     matInput
                     ng-model-options="{timezone: 'utc'}"
-                    placeholder="Start date"
+                   
                     readonly
                 />
                 <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
@@ -26,6 +28,7 @@
             </mat-form-field>
             <br />
             <mat-form-field>
+                <mat-label>End date (inclusive)</mat-label>
                 <input
                     (click)="pickerEnd.open()"
                     [matDatepicker]="pickerEnd"
@@ -33,7 +36,7 @@
                     formControlName="end"
                     matInput
                     ng-model-options="{timezone: 'utc'}"
-                    placeholder="End date (inclusive)"
+                   
                     readonly
                 />
                 <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>

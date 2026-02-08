@@ -11,7 +11,8 @@
                         <div>
                             <form [formGroup]="roleForm" class="flex-container-input">
                                 <mat-form-field class="normal">
-                                    <input #input (blur)="unfocus()" [errorStateMatcher]="instantErrorStateMatcher" formControlName="name" matInput placeholder="Role" required />
+                                    <mat-label>Role</mat-label>
+                                    <input #input (blur)="unfocus()" [errorStateMatcher]="instantErrorStateMatcher" formControlName="name" matInput required />
                                     <mat-error *ngFor="let validation of validationMessages; trackBy: trackByIndex">
                                         <mat-error *ngIf="roleForm.get('name').hasError(validation.type)" class="error-message">{{ validation.message }}</mat-error>
                                     </mat-error>

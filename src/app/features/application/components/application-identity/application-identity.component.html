@@ -6,7 +6,8 @@
             <input type="text" id="name" formControlName="name" tabindex="-1" autocomplete="off" />
         </div>
         <mat-form-field class="normal">
-            <input matInput formControlName="email" required placeholder="Email" autocomplete="username" [errorStateMatcher]="instantErrorStateMatcher" />
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" required autocomplete="username" [errorStateMatcher]="instantErrorStateMatcher" />
             <mat-error *ngFor="let validation of validation_messages.email">
                 <mat-error class="error-message" *ngIf="formGroup.get('email').hasError(validation.type)">{{ validation.message }}</mat-error>
             </mat-error>
@@ -14,7 +15,8 @@
         <br />
         <div formGroupName="passwordGroup">
             <mat-form-field class="normal">
-                <input matInput formControlName="password" type="password" required placeholder="Password (min 12 chars)" autocomplete="new-password" [errorStateMatcher]="instantErrorStateMatcher" />
+                <mat-label>Password (min 12 chars)</mat-label>
+                <input matInput formControlName="password" type="password" required autocomplete="new-password" [errorStateMatcher]="instantErrorStateMatcher" />
                 <mat-error *ngFor="let validation of validation_messages.password">
                     <mat-error class="error-message" *ngIf="formGroup.get('passwordGroup').hasError(validation.type) || formGroup.get('passwordGroup.password').hasError(validation.type)">{{
                         validation.message
@@ -23,7 +25,8 @@
             </mat-form-field>
             <br />
             <mat-form-field class="normal">
-                <input matInput formControlName="confirmPassword" type="password" required placeholder="Confirm Password" autocomplete="new-password" [errorStateMatcher]="confirmValidParentMatcher" />
+                <mat-label>Confirm Password</mat-label>
+                <input matInput formControlName="confirmPassword" type="password" required autocomplete="new-password" [errorStateMatcher]="confirmValidParentMatcher" />
                 <mat-error *ngFor="let validation of validation_messages.confirmPassword">
                     <mat-error class="error-message" *ngIf="formGroup.get('passwordGroup').hasError(validation.type) || formGroup.get('passwordGroup.confirmPassword').hasError(validation.type)">{{
                         validation.message
@@ -37,10 +40,12 @@
             <p>If you do not wish to use your real name, you may use a realistic fake name (for example, Barry Miller)</p>
             <div class="names-container">
                 <mat-form-field class="name">
-                    <input matInput formControlName="firstName" placeholder="First name" required autocomplete="given-name" appCharacterBlock />
+                    <mat-label>First name</mat-label>
+                    <input matInput formControlName="firstName" required autocomplete="given-name" appCharacterBlock />
                 </mat-form-field>
                 <mat-form-field class="name">
-                    <input matInput formControlName="lastName" placeholder="Last name" required autocomplete="family-name" appCharacterBlock />
+                    <mat-label>Last name</mat-label>
+                    <input matInput formControlName="lastName" required autocomplete="family-name" appCharacterBlock />
                 </mat-form-field>
             </div>
             <span *ngIf="formGroup.value.firstName && formGroup.value.lastName">
@@ -56,11 +61,13 @@
                 <input matInput type="number" formControlName="day" #day placeholder="dd" maxlength="2" required autocomplete="bday-day" (keyup)="numberOnly($event, 'day', 0, 31)" /> </mat-form-field
             >/
             <mat-form-field class="dob">
-                <input #month (keyup)="numberOnly($event, 'month', 0, 12)" autocomplete="bday-month" formControlName="month" matInput maxlength="2" placeholder="mm" required type="number"
+                <mat-label>mm</mat-label>
+                <input #month (keyup)="numberOnly($event, 'month', 0, 12)" autocomplete="bday-month" formControlName="month" matInput maxlength="2" required type="number"
             /></mat-form-field>
             /
             <mat-form-field class="dob year">
-                <input #year (keyup)="numberOnly($event, 'year', 1, 2030)" autocomplete="bday-year" formControlName="year" matInput maxlength="4" placeholder="yyyy" required type="number" />
+                <mat-label>yyyy</mat-label>
+                <input #year (keyup)="numberOnly($event, 'year', 1, 2030)" autocomplete="bday-year" formControlName="year" matInput maxlength="4" required type="number" />
             </mat-form-field>
             <mat-error *ngFor="let validation of validation_messages.dob">
                 <mat-error *ngIf="formGroup.get('dobGroup').hasError(validation.type)" class="error-message">{{ validation.message }}</mat-error>

@@ -4,7 +4,8 @@
     <form [formGroup]="teamspeakForm">
         <div class="row-container">
             <mat-form-field>
-                <mat-select placeholder="{{ clients.length === 0 ? 'TeamSpeak service not connected' : 'Select your TeamSpeak name' }}" formControlName="teamspeakId">
+                <mat-label>{{ clients.length === 0 ? 'TeamSpeak service not connected' : 'Select your TeamSpeak name' }}</mat-label>
+                <mat-select formControlName="teamspeakId">
                     <mat-option *ngFor="let client of clients; trackBy: trackByClientDbId" [value]="client.clientDbId" [matTooltip]="getTooltip(client)">
                         <span [ngClass]="{ 'account-connected': isConnectedToAccount(client), connected: isConnected(client) }">{{ client.clientName }}</span>
                     </mat-option>
@@ -22,7 +23,8 @@
     <form [formGroup]="formGroup">
         <div class="row-container">
             <mat-form-field class="normal">
-                <input matInput formControlName="code" required placeholder="Enter confirmation code" (ngModelChange)="changed($event)" />
+                <mat-label>Enter confirmation code</mat-label>
+                <input matInput formControlName="code" required (ngModelChange)="changed($event)" />
             </mat-form-field>
             <app-flex-filler></app-flex-filler>
             <button mat-raised-button color="warn" *ngIf="showCancel" (click)="cancel()">Cancel</button>
