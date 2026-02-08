@@ -12,6 +12,7 @@ import { ConnectTeamspeakModalComponent } from './modals/connect-teamspeak-modal
 
 // Material modules
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { NgxPermissionsModule } from 'ngx-permissions';
 
 @NgModule({
     declarations: [
@@ -24,6 +25,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
         SharedModule,
         ProfileRoutingModule,
         MatSlideToggleModule,
+        NgxPermissionsModule.forChild(),
     ],
 })
 export class ProfileModule {}
