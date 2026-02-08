@@ -1,7 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import { AccountService } from '@app/core/services/account.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { MembershipState } from '@app/shared/models/account';
@@ -13,8 +12,7 @@ import { ApplicationService } from '../../services/application.service';
     templateUrl: './application-page.component.html',
     styleUrls: ['./application-page.component.scss']
 })
-export class ApplicationPageComponent implements OnInit, OnDestroy {
-    private destroy$ = new Subject<void>();
+export class ApplicationPageComponent implements OnInit {
     step = 1;
     details: string;
 
@@ -22,11 +20,6 @@ export class ApplicationPageComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.checkStep();
-    }
-
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
     }
 
     checkStep() {
@@ -95,10 +88,10 @@ export class ApplicationPageComponent implements OnInit, OnDestroy {
 
     submit() {
         this.applicationService.submitApplication(this.accountService.account.id, this.details)
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: () => {
-                    this.accountService.getAccount()?.pipe(takeUntil(this.destroy$)).subscribe({
+                    this.accountService.getAccount()?.pipe(first()).subscribe({
                         next: () => {
                             this.next(null);
                         }

@@ -1,24 +1,25 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Component, OnInit } from '@angular/core';
+import { first, takeUntil } from 'rxjs/operators';
 import { DocumentMetadata, FolderMetadata } from '@app/features/docs/models/documents';
 import { DocsService } from '../../services/docs.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UksfError } from '@app/shared/models/response';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { MatDialog } from '@angular/material/dialog';
+import { DestroyableComponent } from '@app/shared/components';
 
 @Component({
     selector: 'app-docs-page',
     templateUrl: './docs-page.component.html',
     styleUrls: ['./docs-page.component.scss']
 })
-export class DocsPageComponent implements OnInit, OnDestroy {
-    private destroy$ = new Subject<void>();
+export class DocsPageComponent extends DestroyableComponent implements OnInit {
     allFolderMetadata: FolderMetadata[] = [];
     selectedDocumentMetadata: DocumentMetadata;
 
-    constructor(private docsService: DocsService, private route: ActivatedRoute, private router: Router, private dialog: MatDialog) {}
+    constructor(private docsService: DocsService, private route: ActivatedRoute, private router: Router, private dialog: MatDialog) {
+        super();
+    }
 
     ngOnInit(): void {
         this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe({
@@ -29,13 +30,8 @@ export class DocsPageComponent implements OnInit, OnDestroy {
         this.getAllFoldersMetadata();
     }
 
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
-    }
-
     getAllFoldersMetadata() {
-        this.docsService.getFolders().pipe(takeUntil(this.destroy$)).subscribe({
+        this.docsService.getFolders().pipe(first()).subscribe({
             next: (allFolderMetadata: FolderMetadata[]) => {
                 this.allFolderMetadata = allFolderMetadata;
                 this.handleQueryParams(this.route.snapshot.queryParams);
@@ -51,7 +47,7 @@ export class DocsPageComponent implements OnInit, OnDestroy {
         const document = params.document;
 
         if (folder && document) {
-            this.docsService.getDocumentMetadata(folder, document).pipe(takeUntil(this.destroy$)).subscribe({
+            this.docsService.getDocumentMetadata(folder, document).pipe(first()).subscribe({
                 next: (documentMetadata: DocumentMetadata) => {
                     this.selectedDocumentMetadata = documentMetadata;
                 },

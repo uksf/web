@@ -1,9 +1,9 @@
-import { Component, isDevMode, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, isDevMode, OnInit, ViewChild } from '@angular/core';
 import { AccountService } from '@app/core/services/account.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
+import { first } from 'rxjs/operators';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { BasicAccount } from '@app/shared/models/account';
 import { PermissionsService } from '@app/core/services/permissions.service';
@@ -19,8 +19,7 @@ import { AdminToolsService } from '../../services/admin-tools.service';
     templateUrl: './admin-tools.component.html',
     styleUrls: ['../admin-page/admin-page.component.scss', './admin-tools.component.scss']
 })
-export class AdminToolsComponent implements OnInit, OnDestroy {
-    private destroy$ = new Subject<void>();
+export class AdminToolsComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;
     accountId;
     tools: Tool[] = [];
@@ -66,13 +65,8 @@ export class AdminToolsComponent implements OnInit, OnDestroy {
         }
     }
 
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
-    }
-
     getAccounts(): void {
-        this.adminToolsService.getActiveAccounts().pipe(takeUntil(this.destroy$)).subscribe({
+        this.adminToolsService.getActiveAccounts().pipe(first()).subscribe({
             next: (accounts: BasicAccount[]): void => {
                 const elements: IDropdownElement[] = accounts.map(BasicAccount.mapToElement);
                 this.accounts.next(elements);
@@ -96,12 +90,12 @@ export class AdminToolsComponent implements OnInit, OnDestroy {
 
     invalidateCaches(): void {
         let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'invalidate');
-        this.adminToolsService.invalidateCaches().pipe(takeUntil(this.destroy$)).subscribe(this.setPending(tool));
+        this.adminToolsService.invalidateCaches().pipe(first()).subscribe(this.setPending(tool));
     }
 
     getDiscordRoles(): void {
         let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'getDiscord');
-        this.adminToolsService.getDiscordRoles().pipe(takeUntil(this.destroy$)).subscribe({
+        this.adminToolsService.getDiscordRoles().pipe(first()).subscribe({
             next: (response: string): void => {
                 this.dialog.open(MessageModalComponent, {
                     data: { message: response }
@@ -119,27 +113,27 @@ export class AdminToolsComponent implements OnInit, OnDestroy {
 
     updateDiscordRoles(): void {
         let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'updateDiscord');
-        this.adminToolsService.updateDiscordRoles().pipe(takeUntil(this.destroy$)).subscribe(this.setPending(tool));
+        this.adminToolsService.updateDiscordRoles().pipe(first()).subscribe(this.setPending(tool));
     }
 
     deleteGithubIssueCommand(): void {
         let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'deleteGithubIssueCommand');
-        this.adminToolsService.deleteGithubIssueCommand().pipe(takeUntil(this.destroy$)).subscribe(this.setPending(tool));
+        this.adminToolsService.deleteGithubIssueCommand().pipe(first()).subscribe(this.setPending(tool));
     }
 
     reloadTeamspeak(): void {
         let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'reloadTeamspeak');
-        this.adminToolsService.reloadTeamspeak().pipe(takeUntil(this.destroy$)).subscribe(this.setPending(tool));
+        this.adminToolsService.reloadTeamspeak().pipe(first()).subscribe(this.setPending(tool));
     }
 
     testNotification(): void {
         let tool: Tool = this.debugTools.find((x: Tool): boolean => x.key === 'notification');
-        this.adminToolsService.testNotification().pipe(takeUntil(this.destroy$)).subscribe(this.setPending(tool));
+        this.adminToolsService.testNotification().pipe(first()).subscribe(this.setPending(tool));
     }
 
     emergencyCleanupStuckBuilds(): void {
         let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'emergencyCleanup');
-        this.adminToolsService.emergencyCleanupStuckBuilds().pipe(takeUntil(this.destroy$)).subscribe({
+        this.adminToolsService.emergencyCleanupStuckBuilds().pipe(first()).subscribe({
             next: (response: { message: string }): void => {
                 this.dialog.open(MessageModalComponent, {
                     data: { message: response.message }
@@ -157,7 +151,7 @@ export class AdminToolsComponent implements OnInit, OnDestroy {
 
     impersonate(): void {
         this.impersonationPending = true;
-        this.auth.impersonate(mapFromElement(BasicAccount, this.model.accountId).id).pipe(takeUntil(this.destroy$)).subscribe({
+        this.auth.impersonate(mapFromElement(BasicAccount, this.model.accountId).id).pipe(first()).subscribe({
             next: (): void => {
                 this.impersonationPending = false;
                 this.permissions.refresh().then((): void => {

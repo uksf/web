@@ -1,6 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Component, OnInit } from '@angular/core';
+import { first, takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { Permissions } from '@app/core/services/permissions';
 import { AccountService } from '@app/core/services/account.service';
@@ -8,16 +7,16 @@ import { AppComponent } from '@app/app.component';
 import { VersionService } from '@app/core/services/version.service';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { ApplicationState } from '@app/features/application/models/application';
+import { DestroyableComponent } from '@app/shared/components';
 
 @Component({
     selector: 'app-side-bar',
     templateUrl: './side-bar.component.html',
     styleUrls: ['./side-bar.component.scss']
 })
-export class SideBarComponent implements OnInit, OnDestroy {
+export class SideBarComponent extends DestroyableComponent implements OnInit {
     newVersion = false;
     version = 0;
-    private destroy$ = new Subject<void>();
     private onReceiveFrontendUpdate = (version) => {
         if (parseInt(version, 10) > this.version) {
             this.newVersion = true;
@@ -53,7 +52,9 @@ export class SideBarComponent implements OnInit, OnDestroy {
     private currentAccount;
     private cachedSideBarElements;
 
-    constructor(private router: Router, private permissions: PermissionsService, private accountService: AccountService, private versionService: VersionService) {}
+    constructor(private router: Router, private permissions: PermissionsService, private accountService: AccountService, private versionService: VersionService) {
+        super();
+    }
 
     ngOnInit() {
         this.checkVersion();
@@ -65,9 +66,8 @@ export class SideBarComponent implements OnInit, OnDestroy {
         });
     }
 
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
+    override ngOnDestroy() {
+        super.ngOnDestroy();
         AppComponent.utilityHubConnection.connection.off('ReceiveFrontendUpdate', this.onReceiveFrontendUpdate);
     }
 
@@ -115,7 +115,7 @@ export class SideBarComponent implements OnInit, OnDestroy {
     }
 
     checkVersion() {
-        this.versionService.getVersion().pipe(takeUntil(this.destroy$)).subscribe({
+        this.versionService.getVersion().pipe(first()).subscribe({
             next: (version) => {
                 if (this.version !== 0 && version > this.version) {
                     this.newVersion = true;

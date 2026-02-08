@@ -1,7 +1,7 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Observable, Subject, timer } from 'rxjs';
-import { map, switchMap, takeUntil } from 'rxjs/operators';
+import { Observable, timer } from 'rxjs';
+import { first, map, switchMap } from 'rxjs/operators';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Rank } from '@app/shared/models/rank';
@@ -13,8 +13,7 @@ import { RanksService } from '../../services/ranks.service';
     templateUrl: './command-ranks.component.html',
     styleUrls: ['../command-page/command-page.component.scss', './command-ranks.component.scss']
 })
-export class CommandRanksComponent implements OnInit, OnDestroy {
-    private destroy$ = new Subject<void>();
+export class CommandRanksComponent implements OnInit {
     ranks: Rank[];
     updatingOrder = false;
 
@@ -22,11 +21,6 @@ export class CommandRanksComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.getRanks();
-    }
-
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
     }
 
     validateInlineRank(rank: Rank): Observable<boolean> {
@@ -38,7 +32,7 @@ export class CommandRanksComponent implements OnInit, OnDestroy {
     }
 
     getRanks() {
-        this.ranksService.getRanks().pipe(takeUntil(this.destroy$)).subscribe({
+        this.ranksService.getRanks().pipe(first()).subscribe({
             next: (response) => {
                 this.ranks = response;
             }
@@ -49,7 +43,7 @@ export class CommandRanksComponent implements OnInit, OnDestroy {
         this.dialog
             .open(AddRankModalComponent, {})
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (_) => {
                     this.getRanks();
@@ -60,7 +54,7 @@ export class CommandRanksComponent implements OnInit, OnDestroy {
     editRank(check) {
         const rank = this.ranks.find((x) => x.name === check || x.abbreviation === check || x.teamspeakGroup === check || x.discordRoleId === check);
         if (rank) {
-            this.ranksService.editRank(rank).pipe(takeUntil(this.destroy$)).subscribe({
+            this.ranksService.editRank(rank).pipe(first()).subscribe({
                 next: (response) => {
                     this.ranks = response;
                 }
@@ -73,10 +67,10 @@ export class CommandRanksComponent implements OnInit, OnDestroy {
         const dialog = this.dialog.open(ConfirmationModalComponent, {
             data: { message: `Are you sure you want to delete '${rank.name}'?` }
         });
-        dialog.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
+        dialog.afterClosed().pipe(first()).subscribe({
             next: (result) => {
                 if (result) {
-                    this.ranksService.deleteRank(rank.id).pipe(takeUntil(this.destroy$)).subscribe({
+                    this.ranksService.deleteRank(rank.id).pipe(first()).subscribe({
                         next: (response) => {
                             this.ranks = response;
                         }
@@ -93,7 +87,7 @@ export class CommandRanksComponent implements OnInit, OnDestroy {
             return;
         }
         this.updatingOrder = true;
-        this.ranksService.updateRankOrder(this.ranks).pipe(takeUntil(this.destroy$)).subscribe({
+        this.ranksService.updateRankOrder(this.ranks).pipe(first()).subscribe({
             next: (response) => {
                 this.ranks = response;
                 this.updatingOrder = false;

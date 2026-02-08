@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, HostListener, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { LoaService } from '@app/shared/services/loa.service';
 import { RequestLoaModalComponent } from '@app/shared/modals/request-loa-modal/request-loa-modal.component';
@@ -7,8 +7,9 @@ import { formatDate } from '@angular/common';
 import { Loa } from '@app/features/command/models/loa';
 import { PersonnelLoasListComponent } from '../personnel-loas-list/personnel-loas-list.component';
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
 import moment, { Moment } from 'moment';
+import { DestroyableComponent } from '@app/shared/components';
 
 export type ViewMode = 'all' | 'coc' | 'mine';
 export type DateMode = 'all' | 'nextOp' | 'nextTraining' | 'select';
@@ -30,8 +31,7 @@ export interface DateModeItem {
     templateUrl: './personnel-loas.component.html',
     styleUrls: ['../personnel-page/personnel-page.component.scss', './personnel-loas.component.scss']
 })
-export class PersonnelLoasComponent implements OnInit, OnDestroy {
-    private destroy$ = new Subject<void>();
+export class PersonnelLoasComponent extends DestroyableComponent implements OnInit {
     @ViewChildren(PersonnelLoasListComponent) loaLists: QueryList<PersonnelLoasListComponent>;
     mobile = false;
     viewModes: ViewModeItem[] = [
@@ -52,6 +52,7 @@ export class PersonnelLoasComponent implements OnInit, OnDestroy {
     private filterSubject = new Subject<string>();
 
     constructor(private loaService: LoaService, private dialog: MatDialog) {
+        super();
         this.dateMode = this.dateModes[0];
         this.viewMode = this.viewModes[0];
     }
@@ -64,11 +65,6 @@ export class PersonnelLoasComponent implements OnInit, OnDestroy {
         });
 
         this.mobile = window.screen.width < 400 || window.screen.height < 500;
-    }
-
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
     }
 
     @HostListener('window:resize')
@@ -104,7 +100,7 @@ export class PersonnelLoasComponent implements OnInit, OnDestroy {
         this.dialog
             .open(RequestLoaModalComponent, {})
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (_) => {
                     this.update();
@@ -120,13 +116,13 @@ export class PersonnelLoasComponent implements OnInit, OnDestroy {
                 }
             })
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (result) => {
                     if (!result) {
                         return;
                     }
-                    this.loaService.deleteLoa(loa.id).pipe(takeUntil(this.destroy$)).subscribe({
+                    this.loaService.deleteLoa(loa.id).pipe(first()).subscribe({
                         next: (_) => {
                             this.update();
                         }

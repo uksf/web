@@ -6,8 +6,8 @@ import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-moda
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { ValidationReportModalComponent } from '@app/shared/modals/validation-report-modal/validation-report-modal.component';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { first, takeUntil } from 'rxjs/operators';
 import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
 import { Permissions } from '@app/core/services/permissions';
 import { PermissionsService } from '@app/core/services/permissions.service';
@@ -16,13 +16,14 @@ import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/
 import { OrderUpdateRequest } from '@app/shared/models/order-update-request';
 import { GameServer, Mission, MissionReport } from '../../models/game-server';
 import { GameServersService } from '../../services/game-servers.service';
+import { DestroyableComponent } from '@app/shared/components';
 
 @Component({
     selector: 'app-operations-servers',
     templateUrl: './operations-servers.component.html',
     styleUrls: ['../operations-page/operations-page.component.scss', './operations-servers.component.scss']
 })
-export class OperationsServersComponent implements OnInit, OnDestroy {
+export class OperationsServersComponent extends DestroyableComponent implements OnInit, OnDestroy {
     @ViewChild('uploader') uploader: ElementRef;
     @ViewChild('serversContainer') serversContainer: ElementRef;
     missions: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
@@ -40,7 +41,6 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     dropZoneHeight = 0;
     dropZoneWidth = 0;
     private hubConnection: ConnectionContainer;
-    private destroy$ = new Subject<void>();
     private uptimeInterval: number;
 
     private onReceiveDisabledState = (state) => {
@@ -66,7 +66,9 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         }
     };
 
-    constructor(private gameServersService: GameServersService, private dialog: MatDialog, private signalrService: SignalRService, private permissions: PermissionsService) {}
+    constructor(private gameServersService: GameServersService, private dialog: MatDialog, private signalrService: SignalRService, private permissions: PermissionsService) {
+        super();
+    }
 
     private get connectionId(): string {
         return this.hubConnection.connection.connectionId;
@@ -96,9 +98,8 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         }, 1000);
     }
 
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
+    override ngOnDestroy() {
+        super.ngOnDestroy();
         if (this.uptimeInterval) {
             clearInterval(this.uptimeInterval);
         }
@@ -171,7 +172,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     }
 
     getDisabledState() {
-        this.gameServersService.getDisabledState().pipe(takeUntil(this.destroy$)).subscribe({
+        this.gameServersService.getDisabledState().pipe(first()).subscribe({
             next: (state) => {
                 this.disabled = state;
             }
@@ -206,7 +207,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         this.dialog
             .open(AddServerModalComponent, {})
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: () => {
                     this.getServers(true);
@@ -215,7 +216,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
     }
 
     toggleDisabledState() {
-        this.gameServersService.toggleDisabledState(this.disabled, this.connectionId).pipe(takeUntil(this.destroy$)).subscribe();
+        this.gameServersService.toggleDisabledState(this.disabled, this.connectionId).pipe(first()).subscribe();
     }
 
     editServer(event, server) {
@@ -228,7 +229,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                 }
             })
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (environmentChanged: boolean) => {
                     if (environmentChanged) {
@@ -247,11 +248,11 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                 data: { message: `Are you sure you want to delete '${server.name}'?` }
             })
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (result) => {
                     if (result) {
-                        this.gameServersService.deleteServer(server.id, this.connectionId).pipe(takeUntil(this.destroy$)).subscribe({
+                        this.gameServersService.deleteServer(server.id, this.connectionId).pipe(first()).subscribe({
                             next: (response) => {
                                 this.servers = response;
                             }
@@ -270,7 +271,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
         moveItemInArray(this.servers, event.previousIndex, event.currentIndex);
 
         const body: OrderUpdateRequest = { previousIndex: event.previousIndex, newIndex: event.currentIndex };
-        this.gameServersService.updateServerOrder(body, this.connectionId).pipe(takeUntil(this.destroy$)).subscribe({
+        this.gameServersService.updateServerOrder(body, this.connectionId).pipe(first()).subscribe({
             next: (response) => {
                 this.servers = response;
                 this.updatingOrder = false;
@@ -294,7 +295,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                 })
                 .afterClosed();
         }
-        reportDialogClose.pipe(takeUntil(this.destroy$)).subscribe({
+        reportDialogClose.pipe(first()).subscribe({
             next: () => {
                 if (missionReports.length > 0) {
                     this.showMissionReport(missionReports);
@@ -315,7 +316,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
 
         this.uploadingFile = true;
         this.gameServersService.uploadMission(formData, this.connectionId)
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (response) => {
                     this.missions.next(response.missions.map(this.mapMissionElement));
@@ -353,7 +354,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                     data: { message: `There are still ${server.status.players} players on '${server.name}'. Are you sure you want to stop the server?` }
                 })
                 .afterClosed()
-                .pipe(takeUntil(this.destroy$))
+                .pipe(first())
                 .subscribe({
                     next: (result) => {
                         if (result) {
@@ -368,7 +369,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
 
     launch(server) {
         server.updating = true;
-        this.gameServersService.launchServer(server.id, server.missionSelection.value, this.connectionId).pipe(takeUntil(this.destroy$)).subscribe({
+        this.gameServersService.launchServer(server.id, server.missionSelection.value, this.connectionId).pipe(first()).subscribe({
             next: () => {
                 server.updating = false;
                 this.refreshServerStatus(server);
@@ -399,7 +400,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                 data: { message: `Are you sure you want to kill '${server.name}'? This could have unexpected effects on the server` }
             })
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (result) => {
                     if (result) {
@@ -411,7 +412,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
 
     runStop(server) {
         server.updating = true;
-        this.gameServersService.stopServer(server.id, this.connectionId).pipe(takeUntil(this.destroy$)).subscribe({
+        this.gameServersService.stopServer(server.id, this.connectionId).pipe(first()).subscribe({
             next: (response) => {
                 const serverIndex = this.servers.findIndex((x) => x.id === response.gameServer.id);
                 this.servers[serverIndex] = response.gameServer;
@@ -428,7 +429,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
 
     runKill(server) {
         server.updating = true;
-        this.gameServersService.killServer(server.id, this.connectionId).pipe(takeUntil(this.destroy$)).subscribe({
+        this.gameServersService.killServer(server.id, this.connectionId).pipe(first()).subscribe({
             next: (response) => {
                 const serverIndex = this.servers.findIndex((x) => x.id === response.gameServer.id);
                 this.servers[serverIndex] = response.gameServer;
@@ -451,7 +452,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                 }
             })
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: () => {
                     this.getServers(true);
@@ -516,7 +517,7 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                         data: { message: message }
                     })
                     .afterClosed()
-                    .pipe(takeUntil(this.destroy$))
+                    .pipe(first())
                     .subscribe({
                         next: (result) => {
                             if (result) {
@@ -546,11 +547,11 @@ export class OperationsServersComponent implements OnInit, OnDestroy {
                 data: { message: `Are you sure you want to kill ${this.instanceCount} servers?\nThere could be players still on and this could have unexpected effects on the server` }
             })
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (result) => {
                     if (result) {
-                        this.gameServersService.killAllServers(this.connectionId).pipe(takeUntil(this.destroy$)).subscribe({
+                        this.gameServersService.killAllServers(this.connectionId).pipe(first()).subscribe({
                             next: () => {
                                 this.getServers();
                             },

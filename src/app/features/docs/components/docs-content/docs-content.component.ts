@@ -1,6 +1,5 @@
-import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { first } from 'rxjs/operators';
 import { DocumentContent, DocumentMetadata, UpdateDocumentContentRequest } from '@app/features/docs/models/documents';
 import { DocsService } from '../../services/docs.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
@@ -12,8 +11,7 @@ import { UksfError } from '@app/shared/models/response';
     templateUrl: './docs-content.component.html',
     styleUrls: ['./docs-content.component.scss', './docs-content.quill.scss']
 })
-export class DocsContentComponent implements OnChanges, OnDestroy {
-    private destroy$ = new Subject<void>();
+export class DocsContentComponent implements OnChanges {
     @Input('documentMetadata') documentMetadata: DocumentMetadata;
     documentContent: DocumentContent;
     editing: boolean = false;
@@ -21,18 +19,13 @@ export class DocsContentComponent implements OnChanges, OnDestroy {
 
     constructor(private docsService: DocsService, private dialog: MatDialog) {}
 
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
-    }
-
     ngOnChanges(changes: SimpleChanges): void {
         if (!this.documentMetadata) {
             this.documentContent = null;
             return;
         }
 
-        this.docsService.getDocumentContent(this.documentMetadata.folder, this.documentMetadata.id).pipe(takeUntil(this.destroy$)).subscribe({
+        this.docsService.getDocumentContent(this.documentMetadata.folder, this.documentMetadata.id).pipe(first()).subscribe({
             next: (content: DocumentContent) => {
                 this.editing = false;
                 this.documentContent = content;
@@ -63,7 +56,7 @@ export class DocsContentComponent implements OnChanges, OnDestroy {
             lastKnownUpdated: this.documentContent.lastUpdated
         };
         this.docsService.updateDocumentContent(this.documentMetadata.folder, this.documentMetadata.id, updateContentRequest)
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (content: DocumentContent) => {
                     this.pending = false;

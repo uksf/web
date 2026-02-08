@@ -1,6 +1,5 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { first } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { AddUnitModalComponent } from '@app/features/command/modals/add-unit-modal/add-unit-modal.component';
 import { ITreeOptions, KEYS, TREE_ACTIONS, TreeNode } from '@circlon/angular-tree-component';
@@ -14,8 +13,7 @@ import { UnitsService } from '../../services/units.service';
     templateUrl: './command-units.component.html',
     styleUrls: ['../command-page/command-page.component.scss', './command-units.component.scss']
 })
-export class CommandUnitsComponent implements OnInit, OnDestroy {
-    private destroy$ = new Subject<void>();
+export class CommandUnitsComponent implements OnInit {
     @ViewChild('combatUnitsTree') combatUnitsTree: TreeNode;
     @ViewChild('auxiliaryUnitsTree') auxiliaryUnitsTree: TreeNode;
     @ViewChild('secondaryUnitsTree') secondaryUnitsTree: TreeNode;
@@ -54,11 +52,6 @@ export class CommandUnitsComponent implements OnInit, OnDestroy {
         this.getUnits();
     }
 
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
-    }
-
     resetTree() {
         this.updatingOrder = false;
         this.combatUnitsTree.treeModel.expandAll();
@@ -79,7 +72,7 @@ export class CommandUnitsComponent implements OnInit, OnDestroy {
     }
 
     getUnits() {
-        this.unitsService.getUnitTree().pipe(takeUntil(this.destroy$)).subscribe({
+        this.unitsService.getUnitTree().pipe(first()).subscribe({
             next: (response: UnitTreeDataSet) => {
                 this.combat = response.combatNodes;
                 this.auxiliary = response.auxiliaryNodes;
@@ -95,7 +88,7 @@ export class CommandUnitsComponent implements OnInit, OnDestroy {
         this.dialog
             .open(AddUnitModalComponent, {})
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (_) => {
                     this.getUnits();
@@ -104,7 +97,7 @@ export class CommandUnitsComponent implements OnInit, OnDestroy {
     }
 
     editUnit(event) {
-        this.unitsService.getUnit(event.node.id).pipe(takeUntil(this.destroy$)).subscribe({
+        this.unitsService.getUnit(event.node.id).pipe(first()).subscribe({
             next: (unit) => {
                 this.dialog
                     .open(AddUnitModalComponent, {
@@ -113,7 +106,7 @@ export class CommandUnitsComponent implements OnInit, OnDestroy {
                         }
                     })
                     .afterClosed()
-                    .pipe(takeUntil(this.destroy$))
+                    .pipe(first())
                     .subscribe({
                         next: (_) => {
                             this.getUnits();
@@ -130,7 +123,7 @@ export class CommandUnitsComponent implements OnInit, OnDestroy {
                 index: event.to.index,
                 parentId: event.to.parent.id
             };
-            this.unitsService.updateParent(event.node.id, body).pipe(takeUntil(this.destroy$)).subscribe({
+            this.unitsService.updateParent(event.node.id, body).pipe(first()).subscribe({
                 next: (_) => {
                     this.getUnits();
                 }
@@ -139,7 +132,7 @@ export class CommandUnitsComponent implements OnInit, OnDestroy {
             const body: RequestUnitUpdateOrder = {
                 index: event.to.index
             };
-            this.unitsService.updateOrder(event.node.id, body).pipe(takeUntil(this.destroy$)).subscribe({
+            this.unitsService.updateOrder(event.node.id, body).pipe(first()).subscribe({
                 next: (_) => {
                     this.getUnits();
                 }

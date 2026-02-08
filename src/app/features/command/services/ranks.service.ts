@@ -14,8 +14,8 @@ export class RanksService {
         return this.httpClient.get<Rank[]>(`${this.urls.apiUrl}/ranks`);
     }
 
-    checkRankExists(rank: Rank): Observable<boolean> {
-        return this.httpClient.post<boolean>(`${this.urls.apiUrl}/ranks/exists`, rank, { headers: jsonHeaders });
+    checkRankExists(rank: Rank): Observable<Rank | null> {
+        return this.httpClient.post<Rank | null>(`${this.urls.apiUrl}/ranks/exists`, rank, { headers: jsonHeaders });
     }
 
     editRank(rank: Rank): Observable<Rank[]> {
@@ -30,8 +30,8 @@ export class RanksService {
         return this.httpClient.post<void>(`${this.urls.apiUrl}/ranks`, formJson, { headers: jsonHeaders });
     }
 
-    checkRankName(name: string): Observable<boolean> {
-        return this.httpClient.post<boolean>(`${this.urls.apiUrl}/ranks/${name}`, {});
+    checkRankName(name: string): Observable<Rank | null> {
+        return this.httpClient.post<Rank | null>(`${this.urls.apiUrl}/ranks/${name}`, {});
     }
 
     updateRankOrder(ranks: Rank[]): Observable<Rank[]> {

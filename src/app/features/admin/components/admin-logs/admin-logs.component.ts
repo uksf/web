@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -9,6 +9,7 @@ import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.
 import { BasicLog, LogLevel } from '@app/features/admin/models/logging';
 import { PagedResult } from '@app/shared/models/paged-result';
 import { SortDirection } from '@app/shared/models/sort-direction';
+import { DestroyableComponent } from '@app/shared/components';
 import { Subject } from 'rxjs';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { debounceTime, distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
@@ -19,7 +20,7 @@ import { LogsService } from '../../services/logs.service';
     templateUrl: './admin-logs.component.html',
     styleUrls: ['../admin-page/admin-page.component.scss', './admin-logs.component.scss'],
 })
-export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class AdminLogsComponent extends DestroyableComponent implements OnInit, AfterViewInit {
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
     protected logsService: LogsService;
@@ -27,7 +28,6 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
     protected signalrService: SignalRService;
     protected hubConnection: ConnectionContainer;
     protected filterSubject = new Subject<string>();
-    protected destroy$ = new Subject<void>();
 
     private onReceiveLog = () => {
         this.refreshData();
@@ -38,6 +38,7 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
     datasource: MatTableDataSource<BasicLog> = new MatTableDataSource<BasicLog>();
 
     constructor(logsService: LogsService, dialog: MatDialog, signalrService: SignalRService, private clipboard: Clipboard) {
+        super();
         this.logsService = logsService;
         this.dialog = dialog;
         this.signalrService = signalrService;
@@ -72,9 +73,8 @@ export class AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.refreshData();
     }
 
-    ngOnDestroy(): void {
-        this.destroy$.next();
-        this.destroy$.complete();
+    override ngOnDestroy(): void {
+        super.ngOnDestroy();
         if (this.hubConnection) {
             this.hubConnection.connection.off('ReceiveLog', this.onReceiveLog);
             this.hubConnection.dispose();

@@ -1,6 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Observable, Subject, timer } from 'rxjs';
-import { switchMap, takeUntil } from 'rxjs/operators';
+import { Component, OnInit } from '@angular/core';
+import { Observable, timer } from 'rxjs';
+import { first, switchMap } from 'rxjs/operators';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Training } from '@app/features/command/models/training';
@@ -12,19 +12,13 @@ import { TrainingsService } from '../../services/trainings.service';
     templateUrl: './command-training.component.html',
     styleUrls: ['../command-page/command-page.component.scss', './command-training.component.scss']
 })
-export class CommandTrainingComponent implements OnInit, OnDestroy {
-    private destroy$ = new Subject<void>();
+export class CommandTrainingComponent implements OnInit {
     trainings: Training[];
 
     constructor(private trainingsService: TrainingsService, private dialog: MatDialog) {}
 
     ngOnInit() {
         this.getTrainings();
-    }
-
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
     }
 
     validateInlineTraining(value): Observable<boolean> {
@@ -36,7 +30,7 @@ export class CommandTrainingComponent implements OnInit, OnDestroy {
     }
 
     getTrainings() {
-        this.trainingsService.getTrainings().pipe(takeUntil(this.destroy$)).subscribe({
+        this.trainingsService.getTrainings().pipe(first()).subscribe({
             next: (response: Training[]) => {
                 this.trainings = response;
             }
@@ -47,7 +41,7 @@ export class CommandTrainingComponent implements OnInit, OnDestroy {
         this.dialog
             .open(AddTrainingModalComponent, {})
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (_) => {
                     this.getTrainings();
@@ -58,7 +52,7 @@ export class CommandTrainingComponent implements OnInit, OnDestroy {
     editTraining(check: string) {
         const training: Training = this.trainings.find((x: Training): boolean => x.name === check || x.shortName === check || x.teamspeakGroup === check);
         if (training) {
-            this.trainingsService.editTraining(training).pipe(takeUntil(this.destroy$)).subscribe({
+            this.trainingsService.editTraining(training).pipe(first()).subscribe({
                 next: (response: Training[]): void => {
                     this.trainings = response;
                 }
@@ -75,10 +69,10 @@ export class CommandTrainingComponent implements OnInit, OnDestroy {
         const dialog: MatDialogRef<ConfirmationModalComponent> = this.dialog.open(ConfirmationModalComponent, {
             data: { message: `Are you sure you want to delete '${training.name}'?` }
         });
-        dialog.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
+        dialog.afterClosed().pipe(first()).subscribe({
             next: (result): void => {
                 if (result) {
-                    this.trainingsService.deleteTraining(training.id).pipe(takeUntil(this.destroy$)).subscribe({
+                    this.trainingsService.deleteTraining(training.id).pipe(first()).subscribe({
                         next: (response: Training[]): void => {
                             this.trainings = response;
                         }

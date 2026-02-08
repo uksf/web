@@ -1,15 +1,15 @@
-import { Component, ContentChild, ElementRef, HostListener, Input, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ContentChild, ElementRef, HostListener, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgModel } from '@angular/forms';
-import { Observable, of, Subject } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { nextFrame } from '@app/shared/services/helper.service';
 import { map, startWith, takeUntil } from 'rxjs/operators';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { DestroyableComponent } from '@app/shared/components';
 
 @Component({
     template: ``
 })
-export class DropdownBaseComponent implements OnInit, OnDestroy {
-    private destroy$ = new Subject<void>();
+export class DropdownBaseComponent extends DestroyableComponent implements OnInit {
     @ViewChild('textInput') textInput: NgModel;
     @ViewChild('textInput', { read: ElementRef }) textInputElement: ElementRef;
     @ContentChild('element', { static: false }) elementTemplateRef: TemplateRef<IDropdownElement>;
@@ -40,7 +40,9 @@ export class DropdownBaseComponent implements OnInit, OnDestroy {
     cachedFilteredElements: IDropdownElement[];
     screenHeight: number = 1024;
 
-    constructor() {}
+    constructor() {
+        super();
+    }
 
     get model(): IDropdownElement {
         return this._model;
@@ -68,11 +70,6 @@ export class DropdownBaseComponent implements OnInit, OnDestroy {
                 });
             }
         });
-    }
-
-    ngOnDestroy(): void {
-        this.destroy$.next();
-        this.destroy$.complete();
     }
 
     @HostListener('window:resize')

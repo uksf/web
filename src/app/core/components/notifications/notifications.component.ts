@@ -1,23 +1,22 @@
-import { Component, OnInit, ElementRef, HostListener, ViewChild, OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Component, OnInit, ElementRef, HostListener } from '@angular/core';
+import { first, takeUntil } from 'rxjs/operators';
 import { Router, NavigationEnd } from '@angular/router';
 import { SignalRService, ConnectionContainer } from '@app/core/services/signalr.service';
 import { AccountService } from '@app/core/services/account.service';
 import { Notification, NotificationsService } from '@app/core/services/notifications.service';
+import { DestroyableComponent } from '@app/shared/components';
 
 @Component({
     selector: 'app-notifications',
     templateUrl: './notifications.component.html',
     styleUrls: ['./notifications.component.scss']
 })
-export class NotificationsComponent implements OnInit, OnDestroy {
+export class NotificationsComponent extends DestroyableComponent implements OnInit {
     panel = false;
     notifications: Notification[] = [];
     unreadNotifications: Notification[] = [];
     private unreadTimeout: ReturnType<typeof setTimeout>;
     private hubConnection: ConnectionContainer;
-    private destroy$ = new Subject<void>();
 
     private onReceiveNotification = (notification: Notification) => {
         this.notifications.unshift(notification);
@@ -51,6 +50,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         private signalrService: SignalRService,
         private accountService: AccountService
     ) {
+        super();
         router.events.pipe(takeUntil(this.destroy$)).subscribe({
             next: (event) => {
                 this.onClose();
@@ -78,9 +78,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         });
     }
 
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
+    override ngOnDestroy() {
+        super.ngOnDestroy();
         if (this.hubConnection) {
             this.hubConnection.connection.off('ReceiveNotification', this.onReceiveNotification);
             this.hubConnection.connection.off('ReceiveRead', this.onReceiveRead);
@@ -91,7 +90,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     }
 
     getNotifications() {
-        this.notificationsService.getNotifications().pipe(takeUntil(this.destroy$)).subscribe({
+        this.notificationsService.getNotifications().pipe(first()).subscribe({
             next: (notifications) => {
                 this.notifications = notifications;
                 this.updateNotifications();
@@ -122,7 +121,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
             if (this.unreadNotifications.length > 0) {
                 this.unreadTimeout = setTimeout(() => {
                     this.notificationsService.markRead(this.unreadNotifications)
-                        .pipe(takeUntil(this.destroy$))
+                        .pipe(first())
                         .subscribe({
                             next: () => {
                                 this.unreadTimeout = null;
@@ -151,7 +150,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     clear(notification: Notification = null) {
         const clear = notification ? [notification] : this.notifications;
         this.notificationsService.clear(clear)
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe();
     }
 

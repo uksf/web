@@ -12,28 +12,28 @@ import { MessageModalComponent } from '@app/shared/modals/message-modal/message-
 import { RequestModalData } from '@app/shared/models/shared';
 import { UnitBranch } from '@app/features/units/models/units';
 import { CommandRequestItem, CommandRequestReview } from '@app/features/command/models/command-request';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { first, takeUntil } from 'rxjs/operators';
 import { CommandRequestsService } from '../../services/command-requests.service';
+import { DestroyableComponent } from '@app/shared/components';
 
 @Component({
     selector: 'app-command-requests',
     templateUrl: './command-requests.component.html',
     styleUrls: ['../command-page/command-page.component.scss', './command-requests.component.scss']
 })
-export class CommandRequestsComponent implements OnInit, OnDestroy {
+export class CommandRequestsComponent extends DestroyableComponent implements OnInit, OnDestroy {
     reviewState = ReviewState;
     myRequests: CommandRequestItem[] = [];
     otherRequests: CommandRequestItem[] = [];
     updating;
     private hubConnection: ConnectionContainer;
-    private destroy$ = new Subject<void>();
 
     private onReceiveRequestUpdate = () => {
         this.getRequests();
     };
 
     constructor(private commandRequestsService: CommandRequestsService, public dialog: MatDialog, private signalrService: SignalRService, private accountService: AccountService) {
+        super();
         this.getRequests();
     }
 
@@ -47,16 +47,15 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
         });
     }
 
-    ngOnDestroy(): void {
-        this.destroy$.next();
-        this.destroy$.complete();
+    override ngOnDestroy(): void {
+        super.ngOnDestroy();
         this.hubConnection.connection.off('ReceiveRequestUpdate', this.onReceiveRequestUpdate);
         this.hubConnection.connection.stop();
     }
 
     getRequests() {
         this.updating = true;
-        this.commandRequestsService.getRequests().pipe(takeUntil(this.destroy$)).subscribe({
+        this.commandRequestsService.getRequests().pipe(first()).subscribe({
             next: (response) => {
                 this.myRequests = response.myRequests;
                 this.otherRequests = response.otherRequests;
@@ -80,7 +79,7 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
         request.updating = true;
         request.reviewState = reviewState;
         request.reviewOverriden = overriden;
-        this.commandRequestsService.setReview(request.data.id, reviewState, overriden).pipe(takeUntil(this.destroy$)).subscribe({
+        this.commandRequestsService.setReview(request.data.id, reviewState, overriden).pipe(first()).subscribe({
             next: (_) => this.getRequests(),
             error: (error) => {
                 this.getRequests();
@@ -99,7 +98,7 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
         const dialog = this.dialog.open(RequestTransferModalComponent, {
             data: data
         });
-        dialog.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
+        dialog.afterClosed().pipe(first()).subscribe({
             next: (_) => {
                 this.getRequests();
             }
@@ -108,7 +107,7 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
 
     rankRequest(): void {
         const dialog = this.dialog.open(RequestRankModalComponent, {});
-        dialog.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
+        dialog.afterClosed().pipe(first()).subscribe({
             next: (_) => {
                 this.getRequests();
             }
@@ -117,7 +116,7 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
 
     roleRequest(): void {
         const dialog = this.dialog.open(RequestRoleModalComponent, {});
-        dialog.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
+        dialog.afterClosed().pipe(first()).subscribe({
             next: (_) => {
                 this.getRequests();
             }
@@ -126,7 +125,7 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
 
     chainOfCommandPositionRequest() {
         const dialog = this.dialog.open(RequestChainOfCommandPositionModalComponent, {});
-        dialog.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
+        dialog.afterClosed().pipe(first()).subscribe({
             next: (_) => {
                 this.getRequests();
             }
@@ -135,7 +134,7 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
 
     unitRemovalRequest() {
         const dialog = this.dialog.open(RequestUnitRemovalModalComponent, {});
-        dialog.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
+        dialog.afterClosed().pipe(first()).subscribe({
             next: (_) => {
                 this.getRequests();
             }
@@ -152,7 +151,7 @@ export class CommandRequestsComponent implements OnInit, OnDestroy {
 
     dischargeRequest() {
         const dialog = this.dialog.open(RequestDischargeModalComponent, {});
-        dialog.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
+        dialog.afterClosed().pipe(first()).subscribe({
             next: (_) => {
                 this.getRequests();
             }

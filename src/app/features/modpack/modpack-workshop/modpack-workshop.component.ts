@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { first, takeUntil } from 'rxjs/operators';
 import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
 import { InstallWorkshopModData, WorkshopMod } from '../models/workshop-mod';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
@@ -9,20 +8,22 @@ import { MatDialog } from '@angular/material/dialog';
 import { InstallWorkshopModModalComponent } from '../install-workshop-mod-modal/install-workshop-mod-modal.component';
 import { WorkshopModInterventionModalComponent } from '../workshop-mod-intervention-modal/workshop-mod-intervention-modal.component';
 import { WorkshopService } from '../services/workshop.service';
+import { DestroyableComponent } from '@app/shared/components';
 
 @Component({
     selector: 'app-modpack-workshop',
     templateUrl: './modpack-workshop.component.html',
     styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-workshop.component.scss', './modpack-workshop.component.scss-theme.scss']
 })
-export class ModpackWorkshopComponent implements OnInit, OnDestroy {
+export class ModpackWorkshopComponent extends DestroyableComponent implements OnInit, OnDestroy {
     private hubConnection: ConnectionContainer;
-    private destroy$ = new Subject<void>();
     private onReceiveWorkshopModAdded = () => this.getData();
     private onReceiveWorkshopModUpdate = (id: string) => this.getDataForMod(id);
     mods: WorkshopMod[] = [];
 
-    constructor(private workshopService: WorkshopService, private signalrService: SignalRService, private dialog: MatDialog) {}
+    constructor(private workshopService: WorkshopService, private signalrService: SignalRService, private dialog: MatDialog) {
+        super();
+    }
 
     ngOnInit() {
         this.getData(() => {
@@ -40,16 +41,15 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
         });
     }
 
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
+    override ngOnDestroy() {
+        super.ngOnDestroy();
         this.hubConnection.connection.off('ReceiveWorkshopModAdded', this.onReceiveWorkshopModAdded);
         this.hubConnection.connection.off('ReceiveWorkshopModUpdate', this.onReceiveWorkshopModUpdate);
         this.hubConnection.connection.stop();
     }
 
     getData(callback: () => void = null) {
-        this.workshopService.getMods().pipe(takeUntil(this.destroy$)).subscribe({
+        this.workshopService.getMods().pipe(first()).subscribe({
             next: (mods: WorkshopMod[]) => {
                 this.mods = mods;
                 if (callback) {
@@ -60,7 +60,7 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
     }
 
     getDataForMod(id: string) {
-        this.workshopService.getMod(id).pipe(takeUntil(this.destroy$)).subscribe({
+        this.workshopService.getMod(id).pipe(first()).subscribe({
             next: (mod: WorkshopMod) => {
                 const index: number = this.mods.findIndex((x: WorkshopMod) => x.id === mod.id);
                 if (index === -1) {
@@ -73,7 +73,7 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
     }
 
     getModUpdatedDate(mod: WorkshopMod) {
-        this.workshopService.getModUpdatedDate(mod.steamId).pipe(takeUntil(this.destroy$)).subscribe({
+        this.workshopService.getModUpdatedDate(mod.steamId).pipe(first()).subscribe({
             next: (updatedDateResponse) => {
                 mod.updatedDate = updatedDateResponse.updatedDate;
             }
@@ -101,10 +101,10 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
     }
 
     install() {
-        this.dialog.open(InstallWorkshopModModalComponent).afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
+        this.dialog.open(InstallWorkshopModModalComponent).afterClosed().pipe(first()).subscribe({
             next: (data: InstallWorkshopModData) => {
                 if (data) {
-                    this.workshopService.installMod(data).pipe(takeUntil(this.destroy$)).subscribe({
+                    this.workshopService.installMod(data).pipe(first()).subscribe({
                         next: () => {},
                         error: (error: UksfError) => {
                             this.dialog.open(MessageModalComponent, {
@@ -125,11 +125,11 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
                 }
             })
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (selectedPbos: string[]) => {
                     if (selectedPbos) {
-                        this.workshopService.resolveIntervention(mod.steamId, selectedPbos).pipe(takeUntil(this.destroy$)).subscribe({
+                        this.workshopService.resolveIntervention(mod.steamId, selectedPbos).pipe(first()).subscribe({
                             next: () => {},
                             error: (error: UksfError) => {
                                 this.dialog.open(MessageModalComponent, {
@@ -143,19 +143,19 @@ export class ModpackWorkshopComponent implements OnInit, OnDestroy {
     }
 
     update(mod: WorkshopMod) {
-        this.workshopService.updateMod(mod.steamId).pipe(takeUntil(this.destroy$)).subscribe({
+        this.workshopService.updateMod(mod.steamId).pipe(first()).subscribe({
             next: () => {}
         });
     }
 
     uninstall(mod: WorkshopMod) {
-        this.workshopService.uninstallMod(mod.steamId).pipe(takeUntil(this.destroy$)).subscribe({
+        this.workshopService.uninstallMod(mod.steamId).pipe(first()).subscribe({
             next: () => {}
         });
     }
 
     delete(mod: WorkshopMod) {
-        this.workshopService.deleteMod(mod.steamId).pipe(takeUntil(this.destroy$)).subscribe({
+        this.workshopService.deleteMod(mod.steamId).pipe(first()).subscribe({
             next: () => {}
         });
     }

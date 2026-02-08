@@ -14,8 +14,8 @@ export class RolesService {
         return this.httpClient.get<RolesDataset>(`${this.urls.apiUrl}/roles`);
     }
 
-    checkRoleName(name: string, body: object = {}): Observable<boolean> {
-        return this.httpClient.post<boolean>(`${this.urls.apiUrl}/roles/${name}`, body);
+    checkRoleName(name: string, body: object = {}): Observable<Role | null> {
+        return this.httpClient.post<Role | null>(`${this.urls.apiUrl}/roles/${name}`, body);
     }
 
     addRole(formJson: string): Observable<RolesDataset> {

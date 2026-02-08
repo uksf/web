@@ -32,11 +32,12 @@ describe('RolesService', () => {
     });
 
     it('checkRoleName calls POST /roles/:name with body', () => {
-        mockHttpClient.post.mockReturnValue(of(true));
+        const existingRole = { name: 'test' } as any;
+        mockHttpClient.post.mockReturnValue(of(existingRole));
         const role = { name: 'test' };
 
         service.checkRoleName('test', role).subscribe({
-            next: (result) => expect(result).toBe(true)
+            next: (result) => expect(result).toEqual(existingRole)
         });
 
         expect(mockHttpClient.post).toHaveBeenCalledWith('http://localhost:5500/roles/test', role);

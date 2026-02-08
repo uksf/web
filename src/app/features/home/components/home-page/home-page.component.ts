@@ -1,8 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Component, OnInit } from '@angular/core';
+import { first, takeUntil } from 'rxjs/operators';
 import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
 import { DebouncedCallback } from '@app/shared/utils/debounce-callback';
+import { DestroyableComponent } from '@app/shared/components';
 import { HomeService, InstagramImage, TeamspeakOnlineUser } from '../../services/home.service';
 
 @Component({
@@ -10,7 +10,7 @@ import { HomeService, InstagramImage, TeamspeakOnlineUser } from '../../services
     templateUrl: './home-page.component.html',
     styleUrls: ['./home-page.component.scss']
 })
-export class HomePageComponent implements OnInit, OnDestroy {
+export class HomePageComponent extends DestroyableComponent implements OnInit {
     commanders: TeamspeakOnlineUser[];
     recruiters: TeamspeakOnlineUser[];
     members: TeamspeakOnlineUser[];
@@ -21,7 +21,6 @@ export class HomePageComponent implements OnInit, OnDestroy {
     private hubConnection: ConnectionContainer;
     private debouncedUpdate = new DebouncedCallback();
     private timeInterval: ReturnType<typeof setInterval>;
-    private destroy$ = new Subject<void>();
 
     private onReceiveClients = () => {
         this.debouncedUpdate.schedule(() => {
@@ -30,6 +29,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
     };
 
     constructor(private homeService: HomeService, private signalrService: SignalRService) {
+        super();
         this._time = new Date();
         this.timeInterval = setInterval(() => {
             this._time = new Date();
@@ -51,9 +51,8 @@ export class HomePageComponent implements OnInit, OnDestroy {
         this.getInstagramImages();
     }
 
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
+    override ngOnDestroy() {
+        super.ngOnDestroy();
         if (this.timeInterval) {
             clearInterval(this.timeInterval);
         }
@@ -69,7 +68,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
     }
 
     private getClients() {
-        this.homeService.getOnlineAccounts().pipe(takeUntil(this.destroy$)).subscribe({
+        this.homeService.getOnlineAccounts().pipe(first()).subscribe({
             next: (response) => {
                 if (response) {
                     if (response.commanders) {
@@ -98,7 +97,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
     }
 
     private getInstagramImages() {
-        this.homeService.getInstagramImages().pipe(takeUntil(this.destroy$)).subscribe({
+        this.homeService.getInstagramImages().pipe(first()).subscribe({
             next: (response) => {
                 if (response.length > 0) {
                     this.instagramImages = response;

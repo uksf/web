@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, ViewChild } from '@angular/core';
+import { Component, HostListener, ViewChild } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RecruitmentService } from '../../services/recruitment.service';
@@ -6,8 +6,8 @@ import { CommentDisplayComponent } from '@app/shared/components/comment-display/
 import { AccountService } from '@app/core/services/account.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MembershipState } from '@app/shared/models/account';
-import { AsyncSubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { AsyncSubject } from 'rxjs';
+import { first } from 'rxjs/operators';
 import { ApplicationState, DetailedApplication, Recruiter } from '@app/features/application/models/application';
 import { OnlineState } from '@app/shared/models/online-state';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
@@ -22,8 +22,7 @@ import { Permissions } from '@app/core/services/permissions';
     styleUrls: ['./recruitment-application-page.component.scss'],
     providers: [DatePipe]
 })
-export class RecruitmentApplicationPageComponent implements OnDestroy {
-    private destroy$ = new Subject<void>();
+export class RecruitmentApplicationPageComponent {
     @ViewChild('recruiterCommentsDisplay') recruiterCommentDisplay: CommentDisplayComponent;
     @ViewChild('applicationCommentsDisplay') applicationCommentDisplay: CommentDisplayComponent;
     membershipState = MembershipState;
@@ -59,11 +58,6 @@ export class RecruitmentApplicationPageComponent implements OnDestroy {
         this.getApplication();
     }
 
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
-    }
-
     @HostListener('window:keydown', ['$event'])
     @HostListener('window:keyup', ['$event'])
     onKey(event: KeyboardEvent) {
@@ -71,7 +65,7 @@ export class RecruitmentApplicationPageComponent implements OnDestroy {
     }
 
     getApplication() {
-        this.recruitmentService.getApplication(this.accountId).pipe(takeUntil(this.destroy$)).subscribe({
+        this.recruitmentService.getApplication(this.accountId).pipe(first()).subscribe({
             next: (response: DetailedApplication) => {
                 const application = response;
                 if (application.account.id === this.accountService.account.id && application.account.application.state === ApplicationState.WAITING) {
@@ -90,7 +84,7 @@ export class RecruitmentApplicationPageComponent implements OnDestroy {
                     this.getDiscordState();
 
                     if (this.permissions.hasPermission(Permissions.RECRUITER_LEAD)) {
-                        this.recruitmentService.getRecruiters().pipe(takeUntil(this.destroy$)).subscribe({
+                        this.recruitmentService.getRecruiters().pipe(first()).subscribe({
                             next: (recruiters) => {
                                 this.recruiters = recruiters.filter((x: Recruiter) => x.active);
                                 this.selected = this.application.recruiterId;
@@ -106,7 +100,7 @@ export class RecruitmentApplicationPageComponent implements OnDestroy {
     }
 
     getTeamspeakState() {
-        this.recruitmentService.getTeamspeakOnlineState(this.accountId).pipe(takeUntil(this.destroy$)).subscribe({
+        this.recruitmentService.getTeamspeakOnlineState(this.accountId).pipe(first()).subscribe({
             next: (state) => {
                 this.teamspeakState.next(state);
                 this.teamspeakState.complete();
@@ -115,7 +109,7 @@ export class RecruitmentApplicationPageComponent implements OnDestroy {
     }
 
     getDiscordState() {
-        this.recruitmentService.getDiscordOnlineState(this.accountId).pipe(takeUntil(this.destroy$)).subscribe({
+        this.recruitmentService.getDiscordOnlineState(this.accountId).pipe(first()).subscribe({
             next: (state) => {
                 this.discordState.next(state);
                 this.discordState.complete();
@@ -125,7 +119,7 @@ export class RecruitmentApplicationPageComponent implements OnDestroy {
 
     setNewRecruiter(newRecruiter: string) {
         this.updating = true;
-        this.recruitmentService.setRecruiter(this.accountId, newRecruiter).pipe(takeUntil(this.destroy$)).subscribe({
+        this.recruitmentService.setRecruiter(this.accountId, newRecruiter).pipe(first()).subscribe({
             next: () => {
                 this.getApplication();
                 this.recruiterCommentDisplay.getCanPostComment();
@@ -142,7 +136,7 @@ export class RecruitmentApplicationPageComponent implements OnDestroy {
 
     updateApplicationState(updatedState: ApplicationState) {
         this.updating = true;
-        this.recruitmentService.updateApplicationState(this.accountId, updatedState).pipe(takeUntil(this.destroy$)).subscribe({
+        this.recruitmentService.updateApplicationState(this.accountId, updatedState).pipe(first()).subscribe({
             next: () => {
                 this.getApplication();
             },
@@ -161,7 +155,7 @@ export class RecruitmentApplicationPageComponent implements OnDestroy {
                 data: { message: `Are you sure you want to reset ${this.application.displayName} to a Candidate?\nThis will remove any rank, unit, and role assignments.` }
             })
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (result) => {
                     if (result) {

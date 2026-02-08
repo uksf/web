@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AccountService } from '@app/core/services/account.service';
 import { UrlService } from '@app/core/services/url.service';
@@ -13,17 +13,17 @@ import { Permissions } from '@app/core/services/permissions';
 import { CountryPickerService, ICountry } from '@app/shared/services/country-picker/country-picker.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { first, takeUntil } from 'rxjs/operators';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { Account, MembershipState } from '@app/shared/models/account';
+import { DestroyableComponent } from '@app/shared/components';
 
 @Component({
     selector: 'app-profile-page',
     templateUrl: './profile-page.component.html',
     styleUrls: ['./profile-page.component.scss']
 })
-export class ProfilePageComponent implements OnInit, OnDestroy {
+export class ProfilePageComponent extends DestroyableComponent implements OnInit {
     countries: ICountry[];
     membershipState = MembershipState;
     account;
@@ -37,7 +37,6 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     isAdmin: boolean;
     isRecruiter: boolean;
 
-    private destroy$ = new Subject<void>();
     private settingsTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
     constructor(
@@ -51,6 +50,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
         private formBuilder: FormBuilder,
         private permissions: PermissionsService
     ) {
+        super();
         this.countries = CountryPickerService.countries;
 
         this.isNco = this.permissions.hasPermission(Permissions.NCO);
@@ -69,7 +69,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
                             data: { message: 'Steam failed to connect' }
                         })
                         .afterClosed()
-                        .pipe(takeUntil(this.destroy$))
+                        .pipe(first())
                         .subscribe({
                             next: () => {
                                 this.accountService.checkConnections();
@@ -78,7 +78,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
                 });
             } else {
                 const code = this.route.snapshot.queryParams['validation'];
-                this.profileService.connectSteam(id, { code: code }).pipe(takeUntil(this.destroy$)).subscribe({
+                this.profileService.connectSteam(id, { code: code }).pipe(first()).subscribe({
                     next: () => {
                         this.router.navigate(['/profile']).then(() => {
                             this.getAccount();
@@ -87,7 +87,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
                                     data: { message: 'Steam successfully connected' }
                                 })
                                 .afterClosed()
-                                .pipe(takeUntil(this.destroy$))
+                                .pipe(first())
                                 .subscribe({
                                     next: () => {
                                         this.accountService.checkConnections();
@@ -103,7 +103,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
                                     data: { message: error.error }
                                 })
                                 .afterClosed()
-                                .pipe(takeUntil(this.destroy$))
+                                .pipe(first())
                                 .subscribe({
                                     next: () => {
                                         this.accountService.checkConnections();
@@ -123,7 +123,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
                             data: { message: 'Discord failed to connect' }
                         })
                         .afterClosed()
-                        .pipe(takeUntil(this.destroy$))
+                        .pipe(first())
                         .subscribe({
                             next: () => {
                                 this.accountService.checkConnections();
@@ -133,7 +133,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
             } else {
                 const code = this.route.snapshot.queryParams['validation'];
                 const added = this.route.snapshot.queryParams['added'];
-                this.profileService.connectDiscord(id, { code: code }).pipe(takeUntil(this.destroy$)).subscribe({
+                this.profileService.connectDiscord(id, { code: code }).pipe(first()).subscribe({
                     next: () => {
                         this.router.navigate(['/profile']).then(() => {
                             this.getAccount();
@@ -143,7 +143,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
                                         data: { message: 'Discord successfully connected' }
                                     })
                                     .afterClosed()
-                                    .pipe(takeUntil(this.destroy$))
+                                    .pipe(first())
                                     .subscribe({
                                         next: () => {
                                             this.accountService.checkConnections();
@@ -158,7 +158,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
                                         }
                                     })
                                     .afterClosed()
-                                    .pipe(takeUntil(this.destroy$))
+                                    .pipe(first())
                                     .subscribe({
                                         next: (result) => {
                                             this.accountService.checkConnections();
@@ -178,7 +178,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
                                     data: { message: error.error }
                                 })
                                 .afterClosed()
-                                .pipe(takeUntil(this.destroy$))
+                                .pipe(first())
                                 .subscribe({
                                     next: () => {
                                         this.accountService.checkConnections();
@@ -196,7 +196,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     getAccount(forceRefresh: boolean = false) {
         if (this.route.snapshot.params.id) {
             this.accountId = this.route.snapshot.params.id;
-            this.membersService.getAccount(this.accountId).pipe(takeUntil(this.destroy$)).subscribe({
+            this.membersService.getAccount(this.accountId).pipe(first()).subscribe({
                 next: (response) => {
                     this.account = response;
                     this.populateSettings();
@@ -204,7 +204,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
             });
         } else {
             if (forceRefresh) {
-                this.accountService.getAccount()?.pipe(takeUntil(this.destroy$)).subscribe({
+                this.accountService.getAccount()?.pipe(first()).subscribe({
                     next: (account) => {
                         this.setAccount(account);
                     }
@@ -239,7 +239,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
         this.dialog
             .open(ChangeFirstLastModalComponent, {})
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: () => {
                     this.getAccount(true);
@@ -255,7 +255,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
         this.dialog
             .open(ConnectTeamspeakModalComponent, { disableClose: true })
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: () => {
                     this.getAccount(true);
@@ -277,7 +277,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
                 }
             })
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (result) => {
                     if (result) {
@@ -301,7 +301,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
                 }
             })
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (result) => {
                     if (result) {
@@ -325,7 +325,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
 
     changeSetting() {
         this.settingsFormGroup.disable();
-        this.profileService.updateSetting(this.account.id, this.settingsFormGroup.value).pipe(takeUntil(this.destroy$)).subscribe({
+        this.profileService.updateSetting(this.account.id, this.settingsFormGroup.value).pipe(first()).subscribe({
             next: () => {
                 this.getAccount(true);
                 this.settingsFormGroup.enable();
@@ -337,9 +337,8 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
         return index;
     }
 
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
+    override ngOnDestroy() {
+        super.ngOnDestroy();
 
         if (this.settingsTimeoutId !== null) {
             clearTimeout(this.settingsTimeoutId);

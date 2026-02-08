@@ -32,10 +32,11 @@ describe('RanksService', () => {
 
     it('checkRankExists calls POST /ranks/exists with JSON headers', () => {
         const rank = { name: 'Private' } as Rank;
-        mockHttpClient.post.mockReturnValue(of(true));
+        const existingRank = { name: 'Private' } as Rank;
+        mockHttpClient.post.mockReturnValue(of(existingRank));
 
         service.checkRankExists(rank).subscribe({
-            next: (result) => expect(result).toBe(true)
+            next: (result) => expect(result).toEqual(existingRank)
         });
 
         expect(mockHttpClient.post).toHaveBeenCalledWith(
@@ -81,10 +82,11 @@ describe('RanksService', () => {
     });
 
     it('checkRankName calls POST /ranks/:name with empty body', () => {
-        mockHttpClient.post.mockReturnValue(of(true));
+        const existingRank = { name: 'Private' } as Rank;
+        mockHttpClient.post.mockReturnValue(of(existingRank));
 
         service.checkRankName('Private').subscribe({
-            next: (result) => expect(result).toBe(true)
+            next: (result) => expect(result).toEqual(existingRank)
         });
 
         expect(mockHttpClient.post).toHaveBeenCalledWith('http://localhost:5500/ranks/Private', {});

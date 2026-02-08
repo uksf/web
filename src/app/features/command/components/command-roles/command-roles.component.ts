@@ -1,7 +1,7 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormBuilder, ValidationErrors, Validators } from '@angular/forms';
-import { Observable, of, Subject, timer } from 'rxjs';
-import { map, switchMap, takeUntil } from 'rxjs/operators';
+import { Observable, of, timer } from 'rxjs';
+import { first, map, switchMap } from 'rxjs/operators';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -13,8 +13,7 @@ import { RolesService } from '../../services/roles.service';
     templateUrl: './command-roles.component.html',
     styleUrls: ['../command-page/command-page.component.scss', './command-roles.component.scss']
 })
-export class CommandRolesComponent implements OnInit, OnDestroy {
-    private destroy$ = new Subject<void>();
+export class CommandRolesComponent implements OnInit {
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     roleForm = this.formBuilder.group({
         name: ['', Validators.required, this.validateRole()]
@@ -29,16 +28,11 @@ export class CommandRolesComponent implements OnInit, OnDestroy {
     constructor(private formBuilder: FormBuilder, private rolesService: RolesService, private dialog: MatDialog) {}
 
     ngOnInit() {
-        this.rolesService.getRoles().pipe(takeUntil(this.destroy$)).subscribe({
+        this.rolesService.getRoles().pipe(first()).subscribe({
             next: (response) => {
                 this.roles = response.roles;
             }
         });
-    }
-
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
     }
 
     validateInlineRole(role): Observable<boolean> {
@@ -54,7 +48,7 @@ export class CommandRolesComponent implements OnInit, OnDestroy {
 
     addRole(type) {
         let formString = JSON.stringify(this.roleForm.getRawValue()).replace(/[\n\r]/g, '');
-        this.rolesService.addRole(formString).pipe(takeUntil(this.destroy$)).subscribe({
+        this.rolesService.addRole(formString).pipe(first()).subscribe({
             next: (response) => {
                 this.roles = response.roles;
                 this.roleForm.reset();
@@ -65,7 +59,7 @@ export class CommandRolesComponent implements OnInit, OnDestroy {
     editRole(name) {
         const role = this.roles.find((x) => x.name === name);
         if (role) {
-            this.rolesService.editRole(role).pipe(takeUntil(this.destroy$)).subscribe({
+            this.rolesService.editRole(role).pipe(first()).subscribe({
                 next: (response) => {
                     this.roles = response.roles;
                 }
@@ -78,10 +72,10 @@ export class CommandRolesComponent implements OnInit, OnDestroy {
         const dialog = this.dialog.open(ConfirmationModalComponent, {
             data: { message: `Are you sure you want to delete '${role.name}'?` }
         });
-        dialog.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
+        dialog.afterClosed().pipe(first()).subscribe({
             next: (result) => {
                 if (result) {
-                    this.rolesService.deleteRole(role.id).pipe(takeUntil(this.destroy$)).subscribe({
+                    this.rolesService.deleteRole(role.id).pipe(first()).subscribe({
                         next: (response) => {
                             this.roles = response.roles;
                         }

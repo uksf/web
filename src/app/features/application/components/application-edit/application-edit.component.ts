@@ -1,7 +1,6 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, UntypedFormControl, FormGroupDirective, NgForm, AbstractControl } from '@angular/forms';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { first, takeUntil } from 'rxjs/operators';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AccountService } from '@app/core/services/account.service';
@@ -11,6 +10,7 @@ import { PermissionsService } from '@app/core/services/permissions.service';
 import { Permissions } from '@app/core/services/permissions';
 import { ApplicationState } from '@app/features/application/models/application';
 import { ApplicationService } from '../../services/application.service';
+import { DestroyableComponent } from '@app/shared/components';
 
 export class InstantErrorStateMatcher implements ErrorStateMatcher {
     isErrorState(control: UntypedFormControl | null, form: FormGroupDirective | NgForm | null): boolean {
@@ -23,8 +23,7 @@ export class InstantErrorStateMatcher implements ErrorStateMatcher {
     templateUrl: './application-edit.component.html',
     styleUrls: ['../application-page/application-page.component.scss', './application-edit.component.scss']
 })
-export class ApplicationEditComponent implements OnDestroy {
-    private destroy$ = new Subject<void>();
+export class ApplicationEditComponent extends DestroyableComponent {
     formGroup: UntypedFormGroup;
     pending: boolean = false;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
@@ -55,6 +54,7 @@ export class ApplicationEditComponent implements OnDestroy {
         private permissions: PermissionsService,
         private router: Router
     ) {
+        super();
         if (this.permissions.hasPermission(Permissions.RECRUITER)) {
             this.router.navigate(['/recruitment/' + this.accountService.account.id]);
             return;
@@ -82,11 +82,6 @@ export class ApplicationEditComponent implements OnDestroy {
                 this.updateOriginal();
             }
         });
-    }
-
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
     }
 
     get accepted() {
@@ -123,10 +118,11 @@ export class ApplicationEditComponent implements OnDestroy {
         const formObj = this.convertRolePreferencesFromGroup();
         const formString = JSON.stringify(formObj).replace(/[\n\r]/g, '');
         this.applicationService.updateApplication(this.accountService.account.id, formString)
+            .pipe(first())
             .subscribe({
                 next: () => {
                     this.pending = false;
-                    this.accountService.getAccount()?.pipe(takeUntil(this.destroy$)).subscribe({
+                    this.accountService.getAccount()?.pipe(first()).subscribe({
                         next: () => {
                             this.updateOriginal();
                         }

@@ -210,6 +210,8 @@ bun run test          # Run once
 bun run test:watch    # Watch mode
 ```
 
+**IMPORTANT:** Use `bun run test` NOT `bun test`. `bun test` invokes bun's built-in test runner which picks up e2e files and fails.
+
 Test pure functions in Services and Pipes.
 
 ### E2E Tests (Playwright)
@@ -227,6 +229,48 @@ bun run test:e2e:update-snapshots # Update visual baselines
 TEST_EMAIL=your-test-email
 TEST_PASSWORD=your-test-password
 ```
+
+### Test Safety
+
+**CRITICAL: Tests run on a CI agent that shares the live production environment.** Unit tests (Vitest) run in Node.js — they have no browser and must not interact with any real services. A test that accidentally makes a real API call or WebSocket connection could affect production.
+
+**All external dependencies MUST be mocked in unit tests.**
+
+#### HTTP / API Calls
+- Mock all service methods that return Observables — never let `HttpClient` make real requests
+- Use Angular `HttpTestingController` if testing HTTP layer directly
+- Never make real HTTP requests to localhost, the API, or external URLs
+
+#### SignalR / WebSocket Connections
+- Mock `SignalRService` and all hub connections
+- Mock `HubConnection`, `ConnectionContainer`, and connection events (`on()`, `invoke()`)
+- **Never establish real WebSocket connections** — the live API with active SignalR hubs is on the same box
+
+#### window, document, and Browser APIs
+- Unit tests run in Node.js — there is no real browser
+- Mock `window` object: `(globalThis as any).window = { ... }` in `beforeEach`, clean up in `afterEach`
+- Mock `document` methods (`getElementById`, `querySelector`, etc.)
+- Mock `localStorage` / `sessionStorage` with fake storage objects
+- Mock `window.location`, `window.postMessage`, `window.open`
+- **Never call real `postMessage`** — on the production box this could interact with other running processes
+
+#### File / Blob APIs
+- Mock `File`, `FileReader`, `FormData` for upload-related tests
+- Use fake File objects, never read real files from disk
+
+#### Timers and Async
+- Use `vi.useFakeTimers()` for setTimeout/setInterval-dependent code
+- Use `fakeAsync` / `tick` for Angular-specific async testing
+
+#### Acceptable Real Interactions in Unit Tests
+- Importing and instantiating Angular components/services with mocked deps
+- RxJS observable testing with real operators
+- Pure function testing (pipes, utilities, validators)
+
+#### E2E Tests (Playwright)
+- E2E tests run against a real dev server — real HTTP calls and browser interactions are expected there
+- E2E tests should use dedicated test accounts, never production user credentials
+- E2E tests should not modify production data
 
 ## API Communication
 

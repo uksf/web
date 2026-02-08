@@ -3,8 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionPanel } from '@angular/material/expansion';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { ActivatedRoute } from '@angular/router';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import { TextInputModalComponent } from '@app/shared/modals/text-input-modal/text-input-modal.component';
 import { nextFrame } from '@app/shared/services/helper.service';
 import { DischargesService } from '../../services/discharges.service';
@@ -30,7 +29,6 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
         { value: 30, name: '30' }
     ];
     filterString = '';
-    private destroy$ = new Subject<void>();
     private timeout: number;
 
     constructor(
@@ -49,8 +47,6 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.destroy$.next();
-        this.destroy$.complete();
         if (this.timeout) {
             clearTimeout(this.timeout);
         }
@@ -59,7 +55,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
     refresh(initialFilter = '') {
         this.completeDischargeCollections = undefined;
         this.updating = true;
-        this.dischargesService.getDischarges().pipe(takeUntil(this.destroy$)).subscribe({
+        this.dischargesService.getDischarges().pipe(first()).subscribe({
             next: (response: DischargeCollection[]) => {
                 this.completeDischargeCollections = response;
                 if (initialFilter) {
@@ -120,7 +116,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
 
     reinstate(event: Event, dischargeCollection: DischargeCollection) {
         event.stopPropagation();
-        this.dischargesService.reinstateDischarge(dischargeCollection.id).pipe(takeUntil(this.destroy$)).subscribe({
+        this.dischargesService.reinstateDischarge(dischargeCollection.id).pipe(first()).subscribe({
             next: (response: DischargeCollection[]) => {
                 this.dischargeCollections = response;
             },
@@ -139,7 +135,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
                 data: { message: 'Please provide a reason for the reinstate request' }
             })
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (reason: string) => {
                     if (!reason) {
@@ -147,7 +143,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
                     }
                     this.commandRequestsService
                         .createReinstate({ recipient: dischargeCollection.accountId, reason: reason })
-                        .pipe(takeUntil(this.destroy$))
+                        .pipe(first())
                         .subscribe({
                             next: (_) => {
                                 const body: CommandRequestExistsBody = {
@@ -158,7 +154,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
                                 };
                                 this.commandRequestsService
                                     .checkExists(body)
-                                    .pipe(takeUntil(this.destroy$))
+                                    .pipe(first())
                                     .subscribe({
                                         next: (response: boolean) => {
                                             dischargeCollection.requestExists = response;

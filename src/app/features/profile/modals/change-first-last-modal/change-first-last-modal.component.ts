@@ -42,7 +42,7 @@ export class ChangeFirstLastModalComponent implements OnInit {
             .pipe(first())
             .subscribe({
                 next: () => {
-                    this.accountService.getAccount()?.subscribe({
+                    this.accountService.getAccount()?.pipe(first()).subscribe({
                         next: () => {
                             this.changed = true;
                         }

@@ -1,10 +1,11 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import { first } from 'rxjs/operators';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
-import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
     selector: 'app-password-reset',
@@ -51,7 +52,7 @@ export class PasswordResetComponent implements OnInit {
         }
 
         this.pending = true;
-        this.auth.passwordReset(this.model.email, this.model.password, this.resetPasswordCode, this.stayLogged).subscribe({
+        this.auth.passwordReset(this.model.email, this.model.password, this.resetPasswordCode, this.stayLogged).pipe(first()).subscribe({
             next: () => {
                 this.permissionsService.refresh().then(() => {
                     this.router.navigate(['/home']).then();

@@ -1,6 +1,5 @@
-import { Component, OnDestroy, OnInit, Output, EventEmitter } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { first } from 'rxjs/operators';
 import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
@@ -14,8 +13,7 @@ import { ProfileService } from '@app/features/profile/services/profile.service';
     templateUrl: './application-communications.component.html',
     styleUrls: ['./application-communications.component.scss', '../application-page/application-page.component.scss'],
 })
-export class ApplicationCommunicationsComponent implements OnInit, OnDestroy {
-    private destroy$ = new Subject<void>();
+export class ApplicationCommunicationsComponent implements OnInit {
     @Output() nextEvent = new EventEmitter();
     mode = 'pending';
     private pendingValidation = false;
@@ -34,7 +32,7 @@ export class ApplicationCommunicationsComponent implements OnInit, OnDestroy {
                 });
             } else {
                 const code = this.route.snapshot.queryParams['validation'];
-                this.profileService.connectSteam(id, { code: code }).pipe(takeUntil(this.destroy$)).subscribe({
+                this.profileService.connectSteam(id, { code: code }).pipe(first()).subscribe({
                     next: () => {
                         this.router.navigate(['/application']).then(() => {
                             this.pendingValidation = false;
@@ -68,7 +66,7 @@ export class ApplicationCommunicationsComponent implements OnInit, OnDestroy {
             } else {
                 const code = this.route.snapshot.queryParams['validation'];
                 const added = this.route.snapshot.queryParams['added'];
-                this.profileService.connectDiscord(id, { code: code }).pipe(takeUntil(this.destroy$)).subscribe({
+                this.profileService.connectDiscord(id, { code: code }).pipe(first()).subscribe({
                     next: () => {
                         this.router.navigate(['/application']).then(() => {
                             this.pendingValidation = false;
@@ -86,7 +84,7 @@ export class ApplicationCommunicationsComponent implements OnInit, OnDestroy {
                                         },
                                     })
                                     .afterClosed()
-                                    .pipe(takeUntil(this.destroy$))
+                                    .pipe(first())
                                     .subscribe({
                                         next: (result) => {
                                             if (result) {
@@ -114,11 +112,6 @@ export class ApplicationCommunicationsComponent implements OnInit, OnDestroy {
         this.checkModes();
     }
 
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
-    }
-
     connected() {
         this.checkModes();
     }
@@ -129,7 +122,7 @@ export class ApplicationCommunicationsComponent implements OnInit, OnDestroy {
         }
 
         if (this.accountService.account) {
-            this.accountService.getAccount()?.pipe(takeUntil(this.destroy$)).subscribe({
+            this.accountService.getAccount()?.pipe(first()).subscribe({
                 next: () => {
                     if (!this.accountService.account.teamspeakIdentities || this.accountService.account.teamspeakIdentities.length === 0) {
                         this.mode = 'teamspeak';
@@ -161,7 +154,7 @@ export class ApplicationCommunicationsComponent implements OnInit, OnDestroy {
                 },
             })
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (result) => {
                     if (result) {
@@ -186,7 +179,7 @@ export class ApplicationCommunicationsComponent implements OnInit, OnDestroy {
                 },
             })
             .afterClosed()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(first())
             .subscribe({
                 next: (result) => {
                     if (result) {

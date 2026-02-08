@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { first, takeUntil } from 'rxjs/operators';
 import { AccountService } from '@app/core/services/account.service';
 import { FormBuilder, Validators } from '@angular/forms';
 import { SignalRService, ConnectionContainer } from '@app/core/services/signalr.service';
@@ -8,6 +7,7 @@ import { TimeAgoPipe } from '@app/shared/pipes/time.pipe';
 import { ObjectId } from '@app/shared/models/object-id';
 import { CommentThreadService } from '@app/shared/services/comment-thread.service';
 import type { Comment } from '@app/shared/services/comment-thread.service';
+import { DestroyableComponent } from '@app/shared/components';
 
 @Component({
     selector: 'app-comment-display',
@@ -15,12 +15,11 @@ import type { Comment } from '@app/shared/services/comment-thread.service';
     styleUrls: ['./comment-display.component.scss'],
     providers: [TimeAgoPipe]
 })
-export class CommentDisplayComponent implements OnInit, OnDestroy {
+export class CommentDisplayComponent extends DestroyableComponent implements OnInit, OnDestroy {
     @Input() threadId: string;
     private canPostComment;
     private previousResponse;
     private hubConnection: ConnectionContainer;
-    private destroy$ = new Subject<void>();
     private onReceiveComment = (comment) => {
         this.comments.unshift(comment);
     };
@@ -35,7 +34,9 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
         commentContent: ['', Validators.maxLength(1000)]
     });
 
-    constructor(private commentThreadService: CommentThreadService, private formBuilder: FormBuilder, private accountService: AccountService, private signalrService: SignalRService) {}
+    constructor(private commentThreadService: CommentThreadService, private formBuilder: FormBuilder, private accountService: AccountService, private signalrService: SignalRService) {
+        super();
+    }
 
     ngOnInit() {
         this.getComments();
@@ -51,16 +52,15 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
         });
     }
 
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
+    override ngOnDestroy() {
+        super.ngOnDestroy();
         this.hubConnection.connection.off('ReceiveComment', this.onReceiveComment);
         this.hubConnection.connection.off('DeleteComment', this.onDeleteComment);
         this.hubConnection.connection.stop();
     }
 
     private getComments() {
-        this.commentThreadService.getComments(this.threadId).pipe(takeUntil(this.destroy$)).subscribe({
+        this.commentThreadService.getComments(this.threadId).pipe(first()).subscribe({
             next: (response) => {
                 if (this.previousResponse !== JSON.stringify(response)) {
                     this.comments = response.comments;
@@ -71,7 +71,7 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
     }
 
     getCanPostComment() {
-        this.commentThreadService.canPost(this.threadId).pipe(takeUntil(this.destroy$)).subscribe({
+        this.commentThreadService.canPost(this.threadId).pipe(first()).subscribe({
             next: (canPost: boolean) => {
                 this.canPostComment = canPost;
             }
@@ -91,7 +91,7 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.commentThreadService.postComment(this.threadId, this.commentForm.controls.commentContent.value).pipe(takeUntil(this.destroy$)).subscribe({
+        this.commentThreadService.postComment(this.threadId, this.commentForm.controls.commentContent.value).pipe(first()).subscribe({
             next: (_) => {
                 this.commentForm.controls.commentContent.setValue('');
             }
@@ -103,7 +103,7 @@ export class CommentDisplayComponent implements OnInit, OnDestroy {
     }
 
     deleteComment(comment) {
-        this.commentThreadService.deleteComment(this.threadId, comment.id).pipe(takeUntil(this.destroy$)).subscribe({
+        this.commentThreadService.deleteComment(this.threadId, comment.id).pipe(first()).subscribe({
             next: () => {
                 this.commentForm.controls.commentContent.setValue('');
             }

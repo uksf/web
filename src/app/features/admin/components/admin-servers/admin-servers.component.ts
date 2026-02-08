@@ -1,7 +1,6 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import type { ServerInfrastructureCurrent, ServerInfrastructureInstalled, ServerInfrastructureLatest } from '@app/shared/models/server-infrastructure';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { UksfError } from '@app/shared/models/response';
@@ -12,8 +11,7 @@ import { InfrastructureService } from '../../services/infrastructure.service';
     templateUrl: './admin-servers.component.html',
     styleUrls: ['../admin-page/admin-page.component.scss', './admin-servers.component.scss']
 })
-export class AdminServersComponent implements OnInit, OnDestroy {
-    private destroy$ = new Subject<void>();
+export class AdminServersComponent implements OnInit {
     latest: ServerInfrastructureLatest;
     current: ServerInfrastructureCurrent;
     installed: ServerInfrastructureInstalled;
@@ -32,28 +30,23 @@ export class AdminServersComponent implements OnInit, OnDestroy {
         this.getInfrastructureInfo();
     }
 
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
-    }
-
     getInfrastructureInfo() {
-        this.infrastructureService.isUpdating().pipe(takeUntil(this.destroy$)).subscribe({
+        this.infrastructureService.isUpdating().pipe(first()).subscribe({
             next: (updating: boolean) => {
                 this.updating = updating;
             }
         });
-        this.infrastructureService.getLatest().pipe(takeUntil(this.destroy$)).subscribe({
+        this.infrastructureService.getLatest().pipe(first()).subscribe({
             next: (info: ServerInfrastructureLatest) => {
                 this.latest = info;
             }
         });
-        this.infrastructureService.getCurrent().pipe(takeUntil(this.destroy$)).subscribe({
+        this.infrastructureService.getCurrent().pipe(first()).subscribe({
             next: (info: ServerInfrastructureCurrent) => {
                 this.current = info;
             }
         });
-        this.infrastructureService.getInstalled().pipe(takeUntil(this.destroy$)).subscribe({
+        this.infrastructureService.getInstalled().pipe(first()).subscribe({
             next: (info: ServerInfrastructureInstalled) => {
                 this.installed = info;
             }
@@ -106,7 +99,7 @@ export class AdminServersComponent implements OnInit, OnDestroy {
         }
 
         this.updating = true;
-        this.infrastructureService.update().pipe(takeUntil(this.destroy$)).subscribe({
+        this.infrastructureService.update().pipe(first()).subscribe({
             next: (updateResult) => {
                 this.dialog
                     .open(MessageModalComponent, {
@@ -115,7 +108,7 @@ export class AdminServersComponent implements OnInit, OnDestroy {
                         }
                     })
                     .afterClosed()
-                    .pipe(takeUntil(this.destroy$))
+                    .pipe(first())
                     .subscribe({
                         next: () => {
                             this.getInfrastructureInfo();
