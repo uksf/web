@@ -167,6 +167,7 @@
 
     $foreground: map-get($dark-theme, foreground);
     $background: map-get($dark-theme, background);
+    $primary: map-get($dark-theme, primary);
 
     .mat-impersonated {
         color: #eee !important;
@@ -184,13 +185,22 @@
             color: mat.get-color-from-palette($foreground, base);
             background-color: mat.get-color-from-palette($background, background);
 
-            // Hide MDC underline indicator, use background change instead (legacy behavior)
-            .mdc-tab-indicator {
-                display: none;
+            // Yellow underline on active tab (legacy behavior)
+            .mdc-tab-indicator .mdc-tab-indicator__content--underline {
+                border-color: mat.get-color-from-palette($primary, default);
             }
 
-            &.mdc-tab--active {
-                background-color: mat.get-color-from-palette($background, hover);
+            // Remove focus ring/outline on click
+            .mdc-tab__ripple::before {
+                background-color: transparent;
+            }
+
+            &:focus {
+                outline: none;
+            }
+
+            .mat-mdc-focus-indicator::before {
+                border: none;
             }
 
             &:hover {
@@ -302,7 +312,7 @@
     }
 }
 
-// MDC flat/raised buttons: restore 24px icons (MDC scales them down)
+// MDC flat/raised buttons: restore 24px icons and center them (MDC scales them down)
 .mat-mdc-button .mat-icon,
 .mat-mdc-raised-button .mat-icon,
 .mat-mdc-outlined-button .mat-icon,
@@ -311,6 +321,17 @@
     width: 24px !important;
     height: 24px !important;
     line-height: 24px !important;
+    vertical-align: middle;
+}
+
+// MDC buttons: flex centering for icon-only and mixed-content buttons
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button,
+.mat-mdc-unelevated-button {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
 }
 
 // MDC tab nav bar: don't stretch tabs to fill width
@@ -324,13 +345,20 @@
     flex-grow: 0 !important;
 }
 
-// MDC form field: reduce subscript wrapper height to match legacy
+// MDC form field: collapse subscript wrapper (error labels sit just below the underline)
 .mat-mdc-form-field-subscript-wrapper {
     min-height: 0 !important;
+    padding: 0 !important;
+
+    .mat-mdc-form-field-error-wrapper,
+    .mat-mdc-form-field-hint-wrapper {
+        padding: 0;
+        position: relative;
+    }
 }
 
 .mat-mdc-form-field-bottom-align::before {
-    height: 0 !important;
+    display: none;
 }
 
 // MDC tab nav panel: flex to fill available space (for AAR iframe etc.)
@@ -342,6 +370,52 @@ mat-tab-nav-panel,
     min-height: 0;
 }
 
+
+// CDK drag preview: global styles for overlay-rendered drag previews
+// Component-scoped styles can't reach the CDK overlay, so these must be global
+.cdk-drag-preview {
+    box-sizing: border-box;
+
+    // Ranks list item drag preview
+    &.ranks-list-item {
+        .mat-mdc-card {
+            display: flex;
+            flex-direction: row;
+            padding: 0 10px;
+            align-items: center;
+            width: 800px;
+            margin-bottom: 1px;
+            height: 36px;
+        }
+
+        .handle {
+            font-size: 30px;
+            width: 40px;
+            line-height: 0;
+        }
+
+        .name { flex: 1; flex-basis: 40%; }
+        .abbreviation { flex: 1; flex-basis: 20%; }
+        .teamspeakGroup { flex: 1; flex-basis: 15%; }
+        .discordRoleId { flex: 1; flex-basis: 25%; }
+        .filler { flex: 1; flex-basis: 5%; }
+
+        .delete-icon {
+            color: red;
+            cursor: pointer;
+        }
+    }
+
+    // Servers list item drag preview
+    &.servers-list-item {
+        cursor: default;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 150px;
+        padding: 10px;
+    }
+}
 
 // MDC checkbox: allow label text to wrap
 .mat-mdc-checkbox label {
@@ -415,8 +489,13 @@ mat-tab-nav-panel,
     padding: 0 16px;
 }
 
+// Autocomplete panel: when using virtual scroll, hide the outer scrollbar
 .mat-mdc-autocomplete-panel {
     max-height: 456px !important;
+
+    &:has(cdk-virtual-scroll-viewport) {
+        overflow: hidden !important;
+    }
 }
 
 @media screen and (max-height: 800px) {
