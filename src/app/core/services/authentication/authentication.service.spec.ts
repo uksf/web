@@ -180,29 +180,12 @@ describe('AuthenticationService', () => {
     });
 
     describe('logout', () => {
-        it('removes tokens and clears account', () => {
+        it('removes tokens, clears account, and navigates to login', () => {
             service.logout();
 
             expect(mockSessionService.removeTokens).toHaveBeenCalled();
             expect(mockAccountService.clear).toHaveBeenCalled();
-        });
-
-        it('redirects to login with redirect param', () => {
-            service.logout('/home');
-
-            expect(mockRouter.navigate).toHaveBeenCalledWith(['/login'], { queryParams: { redirect: '/home' } });
-        });
-
-        it('redirects to login without redirect when url is /login', () => {
-            service.logout('/login');
-
-            expect(mockRouter.navigate).toHaveBeenCalledWith(['/login'], {});
-        });
-
-        it('does not redirect when redirectUrl already contains redirect param', () => {
-            service.logout('/login?redirect=home');
-
-            expect(mockRouter.navigate).not.toHaveBeenCalled();
+            expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
         });
     });
 

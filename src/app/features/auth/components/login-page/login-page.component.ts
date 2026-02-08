@@ -9,7 +9,6 @@ import { filter, takeUntil } from 'rxjs/operators';
     styleUrls: ['./login-page.component.scss'],
 })
 export class LoginPageComponent implements OnInit, OnDestroy {
-    public static staticRedirect;
     private destroyed = new Subject<void>();
     resetPasswordCode: string;
     mode = 0;

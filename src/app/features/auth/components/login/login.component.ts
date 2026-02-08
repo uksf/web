@@ -1,9 +1,9 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { PermissionsService } from '@app/core/services/permissions.service';
-import { LoginPageComponent } from '../login-page/login-page.component';
+import { RedirectService } from '@app/core/services/authentication/redirect.service';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { UksfError } from '@app/shared/models/response';
 import { first } from 'rxjs/operators';
@@ -13,11 +13,10 @@ import { first } from 'rxjs/operators';
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss', '../login-page/login-page.component.scss'],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
     @ViewChild(NgForm) form!: NgForm;
     @Output() onRequestPasswordReset = new EventEmitter();
     instantErrorStateMatcher = new InstantErrorStateMatcher();
-    private redirect = '/home';
     pending = false;
     stayLogged = true;
     loginError = '';
@@ -34,18 +33,12 @@ export class LoginComponent implements OnInit {
         password: [{ type: 'required', message: 'Password is required' }],
     };
 
-    constructor(private auth: AuthenticationService, private route: ActivatedRoute, private router: Router, private permissionsService: PermissionsService) {}
-
-    ngOnInit() {
-        const params = this.route.snapshot.queryParams;
-
-        if (params['redirect']) {
-            this.redirect = '/' + params['redirect'];
-        } else if (LoginPageComponent.staticRedirect) {
-            this.redirect = '/' + LoginPageComponent.staticRedirect;
-            LoginPageComponent.staticRedirect = null;
-        }
-    }
+    constructor(
+        private auth: AuthenticationService,
+        private router: Router,
+        private permissionsService: PermissionsService,
+        private redirectService: RedirectService
+    ) {}
 
     submit() {
         // Honeypot field must be empty
@@ -58,7 +51,8 @@ export class LoginComponent implements OnInit {
         this.auth.login(this.model.email, this.model.password, this.stayLogged).pipe(first()).subscribe({
             next: () => {
                 this.permissionsService.refresh().then(() => {
-                    this.router.navigate([this.redirect]).then();
+                    const redirect = this.redirectService.getAndClearRedirectUrl() ?? '/home';
+                    this.router.navigateByUrl(redirect);
                 });
             },
             error: (error: UksfError) => {

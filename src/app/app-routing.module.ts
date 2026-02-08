@@ -1,10 +1,10 @@
-import { Injectable, NgModule } from '@angular/core';
+import { Injectable, Injector, NgModule } from '@angular/core';
 import { ActivatedRouteSnapshot, DefaultUrlSerializer, RouterModule, RouterStateSnapshot, Routes, UrlTree } from '@angular/router';
 import { HomePageComponent } from './features/home/components/home-page/home-page.component';
 import { LoginPageComponent } from './features/auth/components/login-page/login-page.component';
 import { NgxPermissionsGuard } from 'ngx-permissions';
-import { HttpClient } from '@angular/common/http';
 import { Permissions } from '@app/core/services/permissions';
+import { RedirectService } from '@app/core/services/authentication/redirect.service';
 
 const appRoutes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -160,14 +160,15 @@ const appRoutes: Routes = [
     exports: [RouterModule]
 })
 export class AppRoutingModule {
-    static instance: AppRoutingModule;
-    constructor(public httpClient: HttpClient) {
-        AppRoutingModule.instance = this;
+    static injector: Injector;
+    constructor(injector: Injector) {
+        AppRoutingModule.injector = injector;
     }
 }
 
 export function loginRedirect(rejectedPermissionName: string, activatedRouteSnapshot: ActivatedRouteSnapshot, routerStateSnapshot: RouterStateSnapshot) {
-    LoginPageComponent.staticRedirect = routerStateSnapshot.url.substring(1);
+    const redirectService = AppRoutingModule.injector.get(RedirectService);
+    redirectService.setRedirectUrl(routerStateSnapshot.url);
     return '/login';
 }
 

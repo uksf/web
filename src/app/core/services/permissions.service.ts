@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { NgxPermissionsService } from 'ngx-permissions';
+import { firstValueFrom, Subject } from 'rxjs';
 import { AccountService } from './account.service';
 import { SessionService } from './authentication/session.service';
 import { Permissions } from './permissions';
 import { ConnectionContainer, SignalRService } from './signalr.service';
-import { Subject } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { UrlService } from './url.service';
 import { AuthenticationService } from './authentication/authentication.service';
 import { Account, MembershipState } from '@app/shared/models/account';
 import { JwtHelperService } from '@auth0/angular-jwt';
@@ -27,8 +26,7 @@ export class PermissionsService {
         private sessionService: SessionService,
         private accountService: AccountService,
         private signalrService: SignalRService,
-        private httpClient: HttpClient,
-        private urls: UrlService,
+        private router: Router,
         private authenticationService: AuthenticationService,
         private jwtHelperService: JwtHelperService,
         private appSettings: AppSettingsService,
@@ -80,66 +78,72 @@ export class PermissionsService {
         return this.ngxPermissionsService.getPermissions();
     }
 
-    public async refresh(): Promise<any> {
+    public async refresh(): Promise<void> {
         if (this.refreshing) {
             return;
         }
 
         this.refreshing = true;
         try {
-            const promise = new Promise((resolve, reject) => {
-                if (this.sessionService.hasStorageToken()) {
-                    this.sessionService.setSessionToken();
-                    this.authenticationService.refresh().subscribe({
-                        next: () => {
-                            // logged in
-                            this.accountService.getAccount()?.subscribe({
-                                next: (account) => {
-                                    this.setPermissions(account);
-                                    this.connect();
-                                    resolve(null);
-                                },
-                                error: () => {
-                                    reject('Token invalid, resetting');
-                                }
-                            });
-                        },
-                        error: (error) => {
-                            reject(error?.error || error);
-                        }
-                    });
-                } else {
-                    // not logged in
+            if (!this.sessionService.hasStorageToken()) {
+                this.setUnlogged();
+                return;
+            }
+
+            this.sessionService.setSessionToken();
+
+            try {
+                await firstValueFrom(this.authenticationService.refresh());
+            } catch (refreshError: unknown) {
+                if (this.isAuthError(refreshError)) {
+                    this.sessionService.removeTokens();
                     this.setUnlogged();
-                    resolve(null);
+                    this.router.navigate(['/login']);
+                    return;
                 }
-            });
-            promise
-                .then(() => {
-                    this.refreshing = false;
-                    this.accountUpdateEvent.next();
-                })
-                .catch((reason) => {
-                    this.refreshing = false;
-                    this.logger.error('PermissionsService', 'Refresh failed', reason);
-                    localStorage.clear();
-                    sessionStorage.clear();
+                this.logger.warn('PermissionsService', 'Token refresh failed (transient)', refreshError);
+            }
+
+            const account$ = this.accountService.getAccount();
+            if (!account$) {
+                this.setUnlogged();
+                return;
+            }
+
+            try {
+                const account = await firstValueFrom(account$);
+                this.setPermissions(account);
+                this.connect();
+                this.accountUpdateEvent.next();
+            } catch (accountError: unknown) {
+                if (this.isAuthError(accountError)) {
+                    this.sessionService.removeTokens();
                     this.setUnlogged();
-                    window.location.replace('/login');
-                });
-            return promise;
-        } catch (error) {
-            this.logger.error('PermissionsService', 'Unexpected error during refresh', error);
+                    this.router.navigate(['/login']);
+                    return;
+                }
+                this.logger.warn('PermissionsService', 'Account fetch failed (transient)', accountError);
+            }
+        } finally {
+            this.refreshing = false;
         }
     }
 
-    public revoke(redirectAfterLogin?: string) {
+    public revoke(): void {
         if (this.hasPermission(Permissions.UNLOGGED)) {
             return;
         }
 
-        this.authenticationService.logout(redirectAfterLogin);
+        this.authenticationService.logout();
         this.setUnlogged();
+    }
+
+    private isAuthError(error: unknown): boolean {
+        if (error && typeof error === 'object') {
+            const status = (error as Record<string, unknown>).status;
+            return status === 401 || status === 403;
+        }
+        return false;
     }
 
     private setPermissions(account: Account) {

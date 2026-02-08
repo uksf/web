@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { NavigationExtras, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { UrlService } from '../url.service';
 import { SessionService } from './session.service';
@@ -37,18 +37,10 @@ export class AuthenticationService {
         );
     }
 
-    public logout(redirectUrl?: string) {
+    public logout(): void {
         this.sessionService.removeTokens();
         this.accountService.clear();
-        if (redirectUrl && redirectUrl.includes('redirect')) {
-            return;
-        }
-
-        if (redirectUrl && redirectUrl !== '/login') {
-            this.finish('/login', { queryParams: { redirect: redirectUrl } });
-        } else {
-            this.finish('/login');
-        }
+        this.router.navigate(['/login']);
     }
 
     public requestPasswordReset(email: string): Observable<void> {
@@ -103,7 +95,4 @@ export class AuthenticationService {
         return !!impersonatingUserId;
     }
 
-    private finish(redirect: string, queryParams: NavigationExtras = {}) {
-        this.router.navigate([redirect], queryParams).then();
-    }
 }

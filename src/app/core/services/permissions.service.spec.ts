@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Subject } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { PermissionsService } from './permissions.service';
 import { Account, MembershipState } from '@app/shared/models/account';
 
@@ -9,8 +9,7 @@ describe('PermissionsService', () => {
     let mockSessionService: any;
     let mockAccountService: any;
     let mockSignalrService: any;
-    let mockHttpClient: any;
-    let mockUrls: any;
+    let mockRouter: any;
     let mockAuthenticationService: any;
     let mockJwtHelperService: any;
     let mockAppSettings: any;
@@ -31,7 +30,8 @@ describe('PermissionsService', () => {
         mockSessionService = {
             hasStorageToken: vi.fn().mockReturnValue(false),
             setSessionToken: vi.fn(),
-            getSessionToken: vi.fn().mockReturnValue('mock-token')
+            getSessionToken: vi.fn().mockReturnValue('mock-token'),
+            removeTokens: vi.fn()
         };
 
         mockAccountService = {
@@ -55,8 +55,9 @@ describe('PermissionsService', () => {
             connect: vi.fn().mockReturnValue(mockConnectionContainer)
         };
 
-        mockHttpClient = {};
-        mockUrls = { apiUrl: 'http://localhost:5500' };
+        mockRouter = {
+            navigate: vi.fn().mockResolvedValue(true)
+        };
 
         mockAuthenticationService = {
             refresh: vi.fn(),
@@ -83,8 +84,7 @@ describe('PermissionsService', () => {
             mockSessionService,
             mockAccountService,
             mockSignalrService,
-            mockHttpClient,
-            mockUrls,
+            mockRouter,
             mockAuthenticationService,
             mockJwtHelperService,
             mockAppSettings,
@@ -184,11 +184,126 @@ describe('PermissionsService', () => {
         it('calls logout and sets unlogged when logged in', () => {
             mockNgxPermissionsService.getPermissions.mockReturnValue({ MEMBER: { name: 'MEMBER' } });
 
-            service.revoke('/home');
+            service.revoke();
 
-            expect(mockAuthenticationService.logout).toHaveBeenCalledWith('/home');
+            expect(mockAuthenticationService.logout).toHaveBeenCalled();
             expect(mockNgxPermissionsService.flushPermissions).toHaveBeenCalled();
             expect(mockNgxPermissionsService.addPermission).toHaveBeenCalledWith('UNLOGGED');
+        });
+    });
+
+    describe('refresh', () => {
+        it('sets unlogged when no storage token exists', async () => {
+            mockSessionService.hasStorageToken.mockReturnValue(false);
+
+            await service.refresh();
+
+            expect(mockNgxPermissionsService.flushPermissions).toHaveBeenCalled();
+            expect(mockNgxPermissionsService.addPermission).toHaveBeenCalledWith('UNLOGGED');
+        });
+
+        it('refreshes token and fetches account on success', async () => {
+            mockSessionService.hasStorageToken.mockReturnValue(true);
+            mockAuthenticationService.refresh.mockReturnValue(of({ token: 'new-token' }));
+            const mockAccount: Account = { id: 'test-id', membershipState: MembershipState.MEMBER } as Account;
+            mockAccountService.getAccount.mockReturnValue(of(mockAccount));
+            mockJwtHelperService.decodeToken.mockReturnValue({
+                'http://schemas.microsoft.com/ws/2008/06/identity/claims/role': []
+            });
+
+            await service.refresh();
+
+            expect(mockSessionService.setSessionToken).toHaveBeenCalled();
+            expect(mockAuthenticationService.refresh).toHaveBeenCalled();
+            expect(mockAccountService.getAccount).toHaveBeenCalled();
+            expect(mockNgxPermissionsService.addPermission).toHaveBeenCalledWith('MEMBER');
+        });
+
+        it('navigates to login on 401 during token refresh', async () => {
+            mockSessionService.hasStorageToken.mockReturnValue(true);
+            mockAuthenticationService.refresh.mockReturnValue(throwError(() => ({ status: 401 })));
+
+            await service.refresh();
+
+            expect(mockSessionService.removeTokens).toHaveBeenCalled();
+            expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
+            expect(mockNgxPermissionsService.addPermission).toHaveBeenCalledWith('UNLOGGED');
+        });
+
+        it('navigates to login on 403 during token refresh', async () => {
+            mockSessionService.hasStorageToken.mockReturnValue(true);
+            mockAuthenticationService.refresh.mockReturnValue(throwError(() => ({ status: 403 })));
+
+            await service.refresh();
+
+            expect(mockSessionService.removeTokens).toHaveBeenCalled();
+            expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
+        });
+
+        it('tolerates transient errors during token refresh and still fetches account', async () => {
+            mockSessionService.hasStorageToken.mockReturnValue(true);
+            mockAuthenticationService.refresh.mockReturnValue(throwError(() => ({ status: 0 })));
+            const mockAccount: Account = { id: 'test-id', membershipState: MembershipState.MEMBER } as Account;
+            mockAccountService.getAccount.mockReturnValue(of(mockAccount));
+            mockJwtHelperService.decodeToken.mockReturnValue({
+                'http://schemas.microsoft.com/ws/2008/06/identity/claims/role': []
+            });
+
+            await service.refresh();
+
+            expect(mockSessionService.removeTokens).not.toHaveBeenCalled();
+            expect(mockRouter.navigate).not.toHaveBeenCalled();
+            expect(mockAccountService.getAccount).toHaveBeenCalled();
+            expect(mockNgxPermissionsService.addPermission).toHaveBeenCalledWith('MEMBER');
+        });
+
+        it('navigates to login on 401 during account fetch', async () => {
+            mockSessionService.hasStorageToken.mockReturnValue(true);
+            mockAuthenticationService.refresh.mockReturnValue(of({ token: 'new-token' }));
+            mockAccountService.getAccount.mockReturnValue(throwError(() => ({ status: 401 })));
+
+            await service.refresh();
+
+            expect(mockSessionService.removeTokens).toHaveBeenCalled();
+            expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
+        });
+
+        it('tolerates transient errors during account fetch', async () => {
+            mockSessionService.hasStorageToken.mockReturnValue(true);
+            mockAuthenticationService.refresh.mockReturnValue(of({ token: 'new-token' }));
+            mockAccountService.getAccount.mockReturnValue(throwError(() => ({ status: 0 })));
+
+            await service.refresh();
+
+            expect(mockSessionService.removeTokens).not.toHaveBeenCalled();
+            expect(mockRouter.navigate).not.toHaveBeenCalled();
+        });
+
+        it('sets unlogged when getAccount returns null', async () => {
+            mockSessionService.hasStorageToken.mockReturnValue(true);
+            mockAuthenticationService.refresh.mockReturnValue(of({ token: 'new-token' }));
+            mockAccountService.getAccount.mockReturnValue(null);
+
+            await service.refresh();
+
+            expect(mockNgxPermissionsService.addPermission).toHaveBeenCalledWith('UNLOGGED');
+        });
+
+        it('does not run concurrently', async () => {
+            mockSessionService.hasStorageToken.mockReturnValue(true);
+            mockAuthenticationService.refresh.mockReturnValue(of({ token: 'new-token' }));
+            const mockAccount: Account = { id: 'test-id', membershipState: MembershipState.MEMBER } as Account;
+            mockAccountService.getAccount.mockReturnValue(of(mockAccount));
+            mockJwtHelperService.decodeToken.mockReturnValue({
+                'http://schemas.microsoft.com/ws/2008/06/identity/claims/role': []
+            });
+
+            const promise1 = service.refresh();
+            const promise2 = service.refresh();
+
+            await Promise.all([promise1, promise2]);
+
+            expect(mockAuthenticationService.refresh).toHaveBeenCalledTimes(1);
         });
     });
 });

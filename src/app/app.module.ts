@@ -25,6 +25,7 @@ import { AccountService } from '@app/core/services/account.service';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { SessionService } from '@app/core/services/authentication/session.service';
 import { AuthHttpInterceptor } from '@app/core/services/authentication/auth-http-interceptor';
+import { RedirectService } from '@app/core/services/authentication/redirect.service';
 import { SignalRService } from '@app/core/services/signalr.service';
 import { SignalRHubsService } from '@app/core/services/signalr-hubs.service';
 import { AppSettingsService } from '@app/core/services/app-settings.service';
@@ -102,6 +103,7 @@ export function tokenGetter() {
         AuthenticationService,
         AccountService,
         PermissionsService,
+        RedirectService,
         UrlService,
         CountryPickerService,
         SignalRService,
