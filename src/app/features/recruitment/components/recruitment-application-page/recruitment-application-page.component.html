@@ -89,7 +89,7 @@
             <div class="flex-container flex-two-thirds no-padding padding-right">
                 <div class="flex-container flex-grow no-padding">
                     <h4>Candidate Information</h4>
-                    <mat-card>
+                    <mat-card appearance="outlined">
                         <div class="flex-container flex-row no-padding margin-bottom">
                             <div class="header"><b>Name</b></div>
                             <div>{{ application.account.firstname }} {{ application.account.lastname }}</div>
@@ -124,7 +124,7 @@
                     <div class="flex-container flex-row flex-third no-padding">
                         <div class="flex-container flex-grow no-padding">
                             <h4>Candidate Experience</h4>
-                            <mat-card>
+                            <mat-card appearance="outlined">
                                 <div class="flex-container no-padding">
                                     <div class="header"><b>Arma Experience</b></div>
                                     <p class="scrollable">
@@ -145,7 +145,7 @@
                         </div>
                         <div class="flex-container flex-grow no-padding padding-left">
                             <h4>Specialist Preferences</h4>
-                            <mat-card *ngIf="application.account.rolePreferences.length > 0">
+                            <mat-card appearance="outlined" *ngIf="application.account.rolePreferences.length > 0">
                                 <div *ngFor="let rolePreference of application.account.rolePreferences" class="flex-container flex-row no-padding margin-bottom-small">
                                     <div class="header">
                                         <b>{{ rolePreference }}</b>
@@ -159,7 +159,7 @@
                                     </div>
                                 </div>
                             </mat-card>
-                            <mat-card *ngIf="application.account.rolePreferences.length === 0">
+                            <mat-card appearance="outlined" *ngIf="application.account.rolePreferences.length === 0">
                                 <div class="flex-container flex-row no-padding margin-bottom-small">
                                     <div class="header"><b>None</b></div>
                                 </div>
@@ -171,7 +171,7 @@
             <div class="flex-container flex-third no-padding">
                 <div class="flex-container no-padding">
                     <h4>Application Dates</h4>
-                    <mat-card>
+                    <mat-card appearance="outlined">
                         <div class="flex-container flex-row flex-grow no-padding margin-bottom">
                             <div class="header"><b>Date Applied</b></div>
                             <div>{{ application.account.application.dateCreated | date: 'd MMM y':'Europe/London' }}</div>
@@ -204,7 +204,7 @@
                 </div>
                 <div class="flex-container no-padding">
                     <h4>Candidate Contacts</h4>
-                    <mat-card>
+                    <mat-card appearance="outlined">
                         <div class="flex-container flex-row flex-grow no-padding margin-bottom">
                             <div class="header"><b>TeamSpeak</b></div>
                             <div *ngIf="teamspeakState | async as teamspeakState; else teamspeakStateLoading">
@@ -243,7 +243,7 @@
             <div class="flex-container flex-row flex-grow no-padding padding-top collapse-small">
                 <div class="flex-container flex-grow no-padding fit-content">
                     <h4>Application Chat</h4>
-                    <mat-card>
+                    <mat-card appearance="outlined">
                         <ng-template [ngxPermissionsOnly]="['RECRUITER']">
                             <sup>Visible to candidate</sup>
                         </ng-template>
@@ -253,7 +253,7 @@
                 <ng-template [ngxPermissionsOnly]="['RECRUITER']">
                     <div class="flex-container flex-grow no-padding padding-left fit-content">
                         <h4>Recruiter Chat</h4>
-                        <mat-card>
+                        <mat-card appearance="outlined">
                             <sup>Only visible to SR1</sup>
                             <app-comment-display #recruiterCommentsDisplay [threadId]="application.account.application.recruiterCommentThread"></app-comment-display>
                         </mat-card>

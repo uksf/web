@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
+import { MatTableDataSource } from '@angular/material/table';
 import { CountryPickerService, ICountry } from '@app/shared/services/country-picker/country-picker.service';
 import { RosterAccount } from '@app/shared/models/account';
 import { first } from 'rxjs/operators';

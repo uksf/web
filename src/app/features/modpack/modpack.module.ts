@@ -3,8 +3,8 @@ import { SharedModule } from '@shared/shared.module';
 import { ModpackRoutingModule } from './modpack-routing.module';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { MarkdownModule } from 'ngx-markdown';
-import { MatLegacyRadioModule as MatRadioModule } from '@angular/material/legacy-radio';
-import { MatLegacyTabsModule as MatTabsModule } from '@angular/material/legacy-tabs';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatTabsModule } from '@angular/material/tabs';
 
 // Components
 import { ModpackPageComponent } from './modpack-page/modpack-page.component';

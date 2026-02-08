@@ -11,7 +11,7 @@
         }
 
         .request-button-sub-container {
-            .mat-button {
+            .mat-mdc-button {
               background-color: mat.get-color-from-palette($background, card);
             }
         }

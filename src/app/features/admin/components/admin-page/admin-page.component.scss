@@ -42,26 +42,26 @@ a {
     font-size: 11px;
 }
 
-.mat-form-field {
+.mat-mdc-form-field {
     font-size: 14px;
     width: 100%;
 }
 
-.mat-table {
+.mat-mdc-table {
     overflow: auto;
     min-height: 360px;
 }
 
-.mat-row {
+.mat-mdc-row {
     min-height: 30px;
     padding: 0 10px;
 }
 
-.mat-header-row {
+.mat-mdc-header-row {
     padding: 0 10px;
 }
 
-.mat-cell {
+.mat-mdc-cell {
     overflow: hidden;
     max-height: 75px;
     font-size: 11px;
@@ -76,7 +76,7 @@ a {
     }
 }
 
-.mat-header-cell {
+.mat-mdc-header-cell {
     overflow: unset;
 
     &:first-of-type {

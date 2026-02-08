@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { first } from 'rxjs/operators';
 import { UrlService } from '@app/core/services/url.service';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { AccountService } from '@app/core/services/account.service';
 import { Router, ActivatedRoute } from '@angular/router';

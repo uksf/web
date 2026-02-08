@@ -1,7 +1,7 @@
 <app-default-content-areas>
     <app-main-content-area style="grid-column: span 3">
         <div class="flex-container">
-            <mat-card *ngIf="step != 7">
+            <mat-card appearance="outlined" *ngIf="step != 7">
                 <h2>Application to join UKSF</h2>
                 <p *ngIf="loggedOut()">
                     If you have already started an application, please <a [routerLink]="['/login']" [queryParams]="{ redirect: 'application' }">login</a> to continue the application

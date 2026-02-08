@@ -7,7 +7,7 @@
     $primary: map-get($theme, primary);
 
     app-personnel-roster {
-        .mat-row:hover {
+        .mat-mdc-row:hover {
             background-color: mat.get-color-from-palette($background, hover);
         }
     }

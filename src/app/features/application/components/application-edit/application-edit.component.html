@@ -1,25 +1,25 @@
 <div *ngIf="accepted">
-    <mat-card>
+    <mat-card appearance="outlined">
         <h2>{{ applicationState }}</h2>
         <p>Congratulations! Your application to join UKSF was accepted.</p>
         <p>Your next steps will be detailed to you by either an SR1, or a member of SFSG.</p>
     </mat-card>
 </div>
 <div *ngIf="rejected">
-    <mat-card>
+    <mat-card appearance="outlined">
         <h2>{{ applicationState }}</h2>
         <p>We are sorry but your application to join UKSF has been rejected</p>
         <p>Thank you for your interest in our unit. We hope you find a suitable alternative.</p>
     </mat-card>
     <div class="application-container">
-        <mat-card class="no-margin-right">
+        <mat-card appearance="outlined" class="no-margin-right">
             <h3>Application Chat</h3>
             <app-comment-display [threadId]="applicationCommentThread"></app-comment-display>
         </mat-card>
     </div>
 </div>
 <div *ngIf="!accepted && !rejected">
-    <mat-card>
+    <mat-card appearance="outlined">
         <h2>{{ applicationState }}</h2>
         <p>Your application has been successfully submitted. Please wait for your SR1 recruitment officer to contact you.</p>
         <p>They will take you through some information and answer any questions you have. Your SR1 is your point of contact during the application process.</p>
@@ -45,7 +45,7 @@
         </p>
     </mat-card>
     <div class="application-container">
-        <mat-card>
+        <mat-card appearance="outlined">
             <h3>Edit Application</h3>
             <form [formGroup]="formGroup">
                 <div class="special-field-form-container">
@@ -128,7 +128,7 @@
                 </div>
             </form>
         </mat-card>
-        <mat-card>
+        <mat-card appearance="outlined">
             <h3>Application Chat</h3>
             <app-comment-display [threadId]="applicationCommentThread"></app-comment-display>
         </mat-card>

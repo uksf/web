@@ -18,7 +18,7 @@
             align-self: center;
         }
 
-        .mat-icon-button {
+        .mat-mdc-icon-button {
             background-color: transparent;
 
             .mat-icon {
@@ -64,7 +64,7 @@
                     vertical-align: middle;
                 }
             }
-
+            /* TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version. */
             mat-select {
                 width: 40px;
                 align-self: center;
@@ -132,21 +132,21 @@
     max-width: 100vw;
 }
 
-.mat-table {
+.mat-mdc-table {
     overflow: auto;
     margin: 0 0 20px 0;
 }
 
-.mat-row {
+.mat-mdc-row {
     min-height: 30px;
     padding: 0 10px;
 }
 
-.mat-header-row {
+.mat-mdc-header-row {
     padding: 0 10px;
 }
 
-.mat-cell {
+.mat-mdc-cell {
     overflow: hidden;
     max-height: 75px;
     font-size: 11px;
@@ -155,7 +155,7 @@
     padding: 2px;
 }
 
-.mat-header-cell {
+.mat-mdc-header-cell {
     overflow: unset;
 }
 

@@ -134,7 +134,7 @@ img {
     margin: auto;
     justify-content: flex-end;
 
-    .mat-button {
+    .mat-mdc-button {
         margin-left: 16px;
     }
 }
@@ -186,7 +186,7 @@ img {
     .controls {
         justify-content: flex-start;
 
-        .mat-button {
+        .mat-mdc-button {
             margin-left: 8px;
 
             &:first-child {
@@ -240,7 +240,7 @@ img {
         margin: 0;
         justify-content: center;
 
-        .mat-button {
+        .mat-mdc-button {
             margin: 0 4px;
             flex: 1;
             max-width: 200px;

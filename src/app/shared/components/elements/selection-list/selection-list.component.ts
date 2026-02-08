@@ -13,7 +13,7 @@ import {
     Validator,
     ValidatorFn
 } from '@angular/forms';
-import { MatLegacyAutocompleteSelectedEvent as MatAutocompleteSelectedEvent, MatLegacyAutocompleteTrigger as MatAutocompleteTrigger } from '@angular/material/legacy-autocomplete';
+import { MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { DropdownBaseComponent, IDropdownElement } from '../dropdown-base/dropdown-base.component';
 import { any, nextFrame } from '@app/shared/services/helper.service';
 import { ErrorStateMatcher } from '@angular/material/core';

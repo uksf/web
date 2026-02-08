@@ -37,7 +37,7 @@
             .log-output {
                 .log-output-header {
                     .buttons {
-                        .mat-raised-button {
+                        .mat-mdc-raised-button {
                             &.scroll {
                                 &.autoScroll {
                                     background-color: mat.get-color-from-palette($background, selected);

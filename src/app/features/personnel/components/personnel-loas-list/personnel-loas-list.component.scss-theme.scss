@@ -7,7 +7,7 @@
 
     app-personnel-loas-list {
         .list-container {
-            .mat-card {
+            .mat-mdc-card {
                 &.hover:hover {
                     background-color: mat.get-color-from-palette($background, hover);
                 }

@@ -1,4 +1,4 @@
-<mat-card>
+<mat-card appearance="outlined">
     <h2>Details</h2>
     <form [formGroup]="formGroup">
         <div class="special-field-form-container">
@@ -8,7 +8,7 @@
         <div>
             <mat-form-field class="large-input">
                 <textarea matInput matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="5" formControlName="armaExperience" maxlength="500" #armaText></textarea>
-                <mat-placeholder>How much experience do you have playing Arma?</mat-placeholder>
+                <mat-label>How much experience do you have playing Arma?</mat-label>
                 <mat-hint *ngIf="armaText.value.length > 200">{{ armaText.value.length }} / 500</mat-hint>
                 <mat-error *ngFor="let validation of validation_messages.armaExperience">
                     <mat-error class="error-message" *ngIf="formGroup.get('armaExperience').hasError(validation.type)">{{ validation.message }}</mat-error>
@@ -17,7 +17,7 @@
             <br />
             <mat-form-field class="large-input">
                 <textarea matInput matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="4" formControlName="unitsExperience" maxlength="250" #unitsText></textarea>
-                <mat-placeholder>Other Units - have you ever been in an Arma unit? Which?</mat-placeholder>
+                <mat-label>Other Units - have you ever been in an Arma unit? Which?</mat-label>
                 <mat-hint *ngIf="unitsText.value.length > 200">{{ unitsText.value.length }} / 250</mat-hint>
                 <mat-error *ngFor="let validation of validation_messages.unitsExperience">
                     <mat-error class="error-message" *ngIf="formGroup.get('unitsExperience').hasError(validation.type)">{{ validation.message }}</mat-error>
@@ -26,7 +26,7 @@
             <br />
             <mat-form-field class="large-input">
                 <textarea matInput matTextareaAutosize matAutosizeMinRows="5" matAutosizeMaxRows="10" formControlName="background" maxlength="500" #backgroundText></textarea>
-                <mat-placeholder>Personal background - tell us a little about yourself</mat-placeholder>
+                <mat-label>Personal background - tell us a little about yourself</mat-label>
                 <mat-hint *ngIf="backgroundText.value.length > 400">{{ backgroundText.value.length }} / 500</mat-hint>
                 <mat-error *ngFor="let validation of validation_messages.background">
                     <mat-error class="error-message" *ngIf="formGroup.get('background').hasError(validation.type)">{{ validation.message }}</mat-error>
@@ -49,7 +49,7 @@
                     {{ referenceOption.viewValue }}
                 </mat-option>
             </mat-select>
-            <mat-placeholder>Where did you hear about UKSF?</mat-placeholder>
+            <mat-label>Where did you hear about UKSF?</mat-label>
         </mat-form-field>
         <br />
         <div class="button-next">

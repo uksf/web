@@ -15,7 +15,7 @@
     .loa-filter-buttons-container {
         display: flex;
 
-        .mat-raised-button {
+        .mat-mdc-raised-button {
             margin-left: 8px;
 
             .icon-right {
@@ -24,7 +24,7 @@
         }
     }
 
-    .mat-form-field {
+    .mat-mdc-form-field {
         width: 30%;
         margin-right: 10px;
 
@@ -34,7 +34,7 @@
             margin-left: 10px;
         }
 
-        .mat-icon-button {
+        .mat-mdc-icon-button {
             background-color: transparent;
 
             .mat-icon {
@@ -55,13 +55,13 @@
             margin-bottom: 5px;
         }
 
-        .mat-form-field {
+        .mat-mdc-form-field {
             width: 95%;
         }
     }
 }
 
-::ng-deep .mat-menu-item {
+::ng-deep .mat-mdc-menu-item {
     ::ng-deep .icon-right {
         margin-right: 6px;
     }

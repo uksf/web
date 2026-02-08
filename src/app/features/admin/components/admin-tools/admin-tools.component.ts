@@ -1,6 +1,6 @@
 import { Component, isDevMode, OnInit, ViewChild } from '@angular/core';
 import { AccountService } from '@app/core/services/account.service';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';

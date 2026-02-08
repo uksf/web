@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
-import { MatLegacyTabsModule as MatTabsModule } from '@angular/material/legacy-tabs';
+import { MatTabsModule } from '@angular/material/tabs';
 import { SharedModule } from '@shared/shared.module';
 import { RecruitmentRoutingModule } from './recruitment-routing.module';
 import { RecruitmentService } from './services/recruitment.service';

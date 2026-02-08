@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, Validators } from '@angular/forms';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { ProfileService } from '../../services/profile.service';
 import { first } from 'rxjs/operators';

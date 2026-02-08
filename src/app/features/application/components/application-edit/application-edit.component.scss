@@ -8,11 +8,11 @@
         margin-bottom: 10px;
     }
 
-    .mat-select {
+    .mat-mdc-select {
         width: 300px;
     }
 
-    .mat-card:first-child {
+    .mat-mdc-card:first-child {
         flex-basis: 40%;
         margin-right: 10px;
 
@@ -21,7 +21,7 @@
         }
     }
 
-    .mat-card {
+    .mat-mdc-card {
         flex: 1;
     }
 }

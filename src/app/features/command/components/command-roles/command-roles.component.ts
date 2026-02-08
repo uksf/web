@@ -4,7 +4,7 @@ import { Observable, of, timer } from 'rxjs';
 import { first, map, switchMap } from 'rxjs/operators';
 import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { Role } from '@app/shared/models/role';
 import { RolesService } from '../../services/roles.service';
 

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Location } from '@angular/common';
 import { first, takeUntil } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { ResponseUnit } from '@app/features/units/models/units';
 import { UnitsService } from '@app/features/command/services/units.service';
 import { DestroyableComponent } from '@app/shared/components';

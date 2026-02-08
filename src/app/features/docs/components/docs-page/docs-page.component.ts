@@ -5,7 +5,7 @@ import { DocsService } from '../../services/docs.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UksfError } from '@app/shared/models/response';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { DestroyableComponent } from '@app/shared/components';
 
 @Component({

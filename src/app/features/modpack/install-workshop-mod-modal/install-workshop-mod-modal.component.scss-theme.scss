@@ -4,14 +4,14 @@
     $primary: map-get($theme, primary);
 
     app-new-modpack-release-modal {
-        .mat-dialog-content {
+        .mat-mdc-dialog-content {
             .previous-version {
                 color: mat.get-color-from-palette($primary);
             }
 
             .form-container {
                 .versions-container {
-                    .mat-radio-button {
+                    .mat-mdc-radio-button {
                         .version-label {
                             color: white;
 

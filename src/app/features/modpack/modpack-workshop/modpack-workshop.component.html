@@ -9,7 +9,7 @@
                 </ng-template>
             </div>
             <div class="mods-container">
-                <mat-card class="mod-card" *ngFor="let mod of mods; trackBy: trackBySteamId">
+                <mat-card appearance="outlined" class="mod-card" *ngFor="let mod of mods; trackBy: trackBySteamId">
                     <div class="mod-card-section">
                         <h3>{{ mod.name }}</h3>
                         <span *ngIf="mod.rootMod" class="mod-badge root-mod">Root Mod</span>

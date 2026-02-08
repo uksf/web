@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RecruitmentService } from '../../services/recruitment.service';
 import { CommentDisplayComponent } from '@app/shared/components/comment-display/comment-display.component';
 import { AccountService } from '@app/core/services/account.service';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { MembershipState } from '@app/shared/models/account';
 import { AsyncSubject } from 'rxjs';
 import { first } from 'rxjs/operators';

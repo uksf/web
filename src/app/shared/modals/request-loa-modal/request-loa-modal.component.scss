@@ -1,4 +1,4 @@
-.mat-dialog-title {
+.mat-mdc-dialog-title {
     margin: 0 0 5px;
 }
 
@@ -6,7 +6,7 @@ h6 {
     margin: 0 0 10px;
 }
 
-.mat-dialog-content {
+.mat-mdc-dialog-content {
     .container {
         display: flex;
         flex-direction: column;
@@ -15,7 +15,7 @@ h6 {
         .container-body {
             width: 100%;
 
-            .mat-form-field {
+            .mat-mdc-form-field {
                 width: 100%;
                 margin: 5px 0;
 

@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { EditMemberTrainingModalData, EditTrainingItem, Training } from '@app/features/command/models/training';
 import { first } from 'rxjs/operators';
 import { TrainingsService } from '../../services/trainings.service';

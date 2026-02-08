@@ -26,7 +26,7 @@
             display: flex;
             flex-direction: row;
 
-            .mat-icon-button {
+            .mat-mdc-icon-button {
                 background-color: transparent;
 
                 .mat-icon {
@@ -39,7 +39,7 @@
             .members-list-header-buttons {
                 margin: auto;
 
-                .mat-raised-button {
+                .mat-mdc-raised-button {
                     margin-left: 8px;
 
                     .icon-right {
@@ -57,7 +57,7 @@
             }
         }
 
-        .mat-card {
+        .mat-mdc-card {
             margin-bottom: 5px;
         }
 
@@ -68,7 +68,7 @@
     }
 }
 
-::ng-deep .mat-menu-item {
+::ng-deep .mat-mdc-menu-item {
     ::ng-deep .icon-right {
         margin-right: 6px;
     }

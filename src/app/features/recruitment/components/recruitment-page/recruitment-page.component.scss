@@ -124,10 +124,10 @@ app-side-content-area {
                     &.search {
                         flex-grow: 1;
 
-                        .mat-form-field {
+                        .mat-mdc-form-field {
                             width: 100%;
 
-                            .mat-icon-button {
+                            .mat-mdc-icon-button {
                                 background-color: transparent;
                                 margin-left: -21px;
 
@@ -557,7 +557,7 @@ app-side-content-area {
             .stats-container {
                 .stats-item {
                     &.statistics {
-                        .mat-card {
+                        .mat-mdc-card {
                             padding: 8px;
                         }
                     }
@@ -591,7 +591,7 @@ app-side-content-area {
             .stats-container {
                 .stats-item {
                     &.activity {
-                        .mat-card {
+                        .mat-mdc-card {
                             padding: 8px;
                         }
 
@@ -607,6 +607,7 @@ app-side-content-area {
                     }
 
                     &.statistics {
+                        /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
                         ::ng-deep .mat-tab-label {
                             padding: 0 12px !important;
                         }

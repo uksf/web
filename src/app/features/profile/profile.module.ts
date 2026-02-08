@@ -11,7 +11,7 @@ import { ChangePasswordModalComponent } from './modals/change-password-modal/cha
 import { ConnectTeamspeakModalComponent } from './modals/connect-teamspeak-modal/connect-teamspeak-modal.component';
 
 // Material modules
-import { MatLegacySlideToggleModule as MatSlideToggleModule } from '@angular/material/legacy-slide-toggle';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @NgModule({
     declarations: [

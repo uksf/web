@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatDialog } from '@angular/material/dialog';
 import { SignalRService } from '@app/core/services/signalr.service';
 import { ErrorLog } from '@app/features/admin/models/logging';
 import { AdminLogsComponent } from '../admin-logs/admin-logs.component';

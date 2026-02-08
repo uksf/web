@@ -9,9 +9,9 @@
 //  If you specify typography styles for the components you use elsewhere, you should delete this line.
 //  If you don't need the default component typographies but still want the hierarchy styles,
 //  you can delete this line and instead use:
-//    `@include mat.legacy-typography-hierarchy(mat.define-legacy-typography-config());`
-@include mat.all-legacy-component-typographies();
-@include mat.legacy-core();
+//    `@include mat.legacy-typography-hierarchy(mat.define-typography-config());`
+@include mat.all-component-typographies();
+@include mat.core();
 
 // Themes
 @import 'darkTheme.scss';
@@ -162,7 +162,7 @@
 }
 
 .dark-theme {
-    @include mat.all-legacy-component-themes($dark-theme);
+    @include mat.all-component-themes($dark-theme);
     @include custom-components-theme($dark-theme);
 
     $foreground: map-get($dark-theme, foreground);
@@ -180,7 +180,7 @@
         display: block;
         padding: 0 0 12px 0;
 
-        .mat-tab-link {
+        .mat-mdc-tab-link {
             color: mat.get-color-from-palette($foreground, base);
             background-color: mat.get-color-from-palette($background, background);
 
@@ -194,7 +194,7 @@
         filter: blur(0px);
     }
 
-    .mat-button {
+    .mat-mdc-button {
         background-color: mat.get-color-from-palette($background, selected);
     }
 
@@ -207,11 +207,12 @@
         transform: rotate(45deg) translate(-2px, -2px);
     }
 
-    .mat-tab-nav-bar {
+    .mat-mdc-tab-nav-bar {
         overflow: auto;
     }
 }
 
+/* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version.*/
 .mat-checkbox-layout {
     white-space: normal !important;
 }
@@ -230,21 +231,25 @@
 }
 
 .mods-list-item-container {
+    /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version.*/
     .mat-checkbox-layout {
         margin-bottom: 0;
     }
 }
 
 .trainings-list-item-container {
+    /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version.*/
     .mat-checkbox-layout {
         margin-bottom: 0;
     }
 }
 
 .member-panel-content-element {
+    /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version.*/
+    /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version.*/
     .mat-checkbox-layout {
         margin: 0;
-
+        /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version.*/
         .mat-checkbox-label {
             color: white;
             font-size: 14px;
@@ -255,40 +260,46 @@
 }
 
 .pbos-list-item-container {
+    /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version.*/
     .mat-checkbox-layout {
         margin-bottom: 0;
     }
 }
 
 .stats-item {
+    /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version.*/
     .mat-checkbox-layout {
         margin-bottom: 0;
     }
 }
 
-.mat-button,
-.mat-raised-button,
-.mat-icon-button,
-.mat-stroked-button,
-.mat-flat-button,
-.mat-fab,
-.mat-mini-fab,
+/* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-icon-button,
+.mat-mdc-outlined-button,
+.mat-mdc-unelevated-button,
+.mat-mdc-fab,
+.mat-mdc-mini-fab,
 .mat-tab-label,
-.mat-tab-link {
+.mat-mdc-tab-link {
     font-weight: unset;
 }
 
+/* TODO(mdc-migration): The following rule targets internal classes of autocomplete that may no longer apply for the MDC version.*/
 .mat-autocomplete-panel {
     max-height: 456px !important;
 }
 
 @media screen and (max-height: 800px) {
+    /* TODO(mdc-migration): The following rule targets internal classes of autocomplete that may no longer apply for the MDC version.*/
     .mat-autocomplete-panel {
         max-height: 312px !important;
     }
 }
 
 @media screen and (max-height: 700px) {
+    /* TODO(mdc-migration): The following rule targets internal classes of autocomplete that may no longer apply for the MDC version.*/
     .mat-autocomplete-panel {
         max-height: 264px !important;
     }

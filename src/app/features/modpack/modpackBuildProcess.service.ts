@@ -3,7 +3,7 @@ import { DisplayNameService } from '@app/shared/services/display-name.service';
 import moment from 'moment';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { NewBuild } from './models/new-build';
 import { ModpackBuild } from './models/modpack-build';
 import { NewModpackBuildModalComponent } from './new-modpack-build-modal/new-modpack-build-modal.component';

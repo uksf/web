@@ -1,5 +1,5 @@
 <app-centre-wrapper>
-    <mat-card class="container">
+    <mat-card appearance="outlined" class="container">
         <app-login *ngIf="mode == 0" (onRequestPasswordReset)="setMode(1)"></app-login>
         <app-request-password-reset *ngIf="mode == 1" (onReturnToLogin)="setMode(0)"></app-request-password-reset>
         <app-password-reset *ngIf="mode == 2" [resetPasswordCode]="resetPasswordCode"></app-password-reset>

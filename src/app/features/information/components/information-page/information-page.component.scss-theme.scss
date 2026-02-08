@@ -7,7 +7,7 @@
 
     app-information-page {
         .flex-container {
-            .mat-card {
+            .mat-mdc-card {
                 &:hover {
                   background-color: mat.get-color-from-palette($background, hover);
                 }

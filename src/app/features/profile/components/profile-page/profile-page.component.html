@@ -42,7 +42,7 @@
     <app-main-content-area>
         <div class="flex-container padding-bottom">
             <div *ngIf="account.membershipState == membershipState.MEMBER">
-                <mat-card>
+                <mat-card appearance="outlined">
                     <div class="details-container">
                         <h3>Details</h3>
                         <div class="details-panel" *ngIf="isMyProfile || isNco">
@@ -58,7 +58,7 @@
 
                 <div *ngIf="account.application != null && (isRecruiter || (isMyProfile && !isRecruiter))">
                     <br />
-                    <mat-card style="text-align: center; vertical-align: middle">
+                    <mat-card appearance="outlined" style="text-align: center; vertical-align: middle">
                         <h2 *ngIf="isRecruiter">
                             <a routerLink="/recruitment/{{ account.id }}">View application</a>
                         </h2>
@@ -69,7 +69,7 @@
                 </div>
                 <br />
                 <h3 class="service-record-title">Service History</h3>
-                <mat-card *ngFor="let serviceItem of account.serviceRecord; trackBy: trackByIndex" class="service-record">
+                <mat-card appearance="outlined" *ngFor="let serviceItem of account.serviceRecord; trackBy: trackByIndex" class="service-record">
                     <span>{{ serviceItem.occurence }}</span>
                     <app-flex-filler></app-flex-filler>
                     <span class="date">{{ serviceItem.timestamp | date: 'mediumDate':'Europe/London' }}</span>
@@ -79,7 +79,7 @@
     </app-main-content-area>
     <app-side-content-area>
         <div class="flex-container settings">
-            <mat-card *ngIf="!accountId || isAdmin">
+            <mat-card appearance="outlined" *ngIf="!accountId || isAdmin">
                 <h3>Settings</h3>
                 <form [formGroup]="settingsFormGroup">
                     <div>
