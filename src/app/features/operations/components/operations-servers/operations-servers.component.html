@@ -38,7 +38,7 @@
                             class="servers-list"
                         >
                             <div (cdkDragStarted)="onDragStarted($event)" *ngFor="let server of servers" cdkDrag>
-                                <mat-card appearance="outlined" [ngClass]="{ 'server-running': server.status.running }" class="servers-list-item">
+                                <mat-card [ngClass]="{ 'server-running': server.status.running }" class="servers-list-item">
                                     <div class="server-header">
                                         <ng-template [ngxPermissionsOnly]="['ADMIN']">
                                             <span [class.disabled]="updating || updatingOrder" cdkDragHandle class="handle">=</span>

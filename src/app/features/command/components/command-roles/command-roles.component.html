@@ -23,7 +23,7 @@
                         <br />
                         <div class="roles-list">
                             <div *ngFor="let role of roles; trackBy: trackByRoleName">
-                                <mat-card appearance="outlined" class="roles-list-item">
+                                <mat-card class="roles-list-item">
                                     <app-inline-edit
                                         (finishedEvent)="editRole($event)"
                                         [(ngModel)]="role.name"
@@ -42,7 +42,7 @@
                         <br />
                         <div class="roles-list">
                             <div *ngFor="let role of roles; trackBy: trackByRoleName">
-                                <mat-card appearance="outlined" class="roles-list-item">
+                                <mat-card class="roles-list-item">
                                     <span>{{ role.name }}</span>
                                 </mat-card>
                             </div>

@@ -40,7 +40,7 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <ng-template matExpansionPanelContent>
-                                <mat-card appearance="outlined" class="variable-item" *ngFor="let variable of variableList.items; trackBy: trackByVariableItem">
+                                <mat-card class="variable-item" *ngFor="let variable of variableList.items; trackBy: trackByVariableItem">
                                     <mat-icon class="delete-icon" (click)="deleteVariable($event, variable)" [ngClass]="{ disabled: updating }" matTooltip="Delete variable">highlight_off</mat-icon>
                                     <span class="key">{{ variable.key }}</span>
                                     <app-inline-edit class="item" [(ngModel)]="variable.item" [required]="true" type="text" (finishedEvent)="editVariable(variable)"></app-inline-edit>

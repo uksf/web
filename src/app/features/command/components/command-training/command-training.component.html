@@ -11,14 +11,14 @@
                     </div>
                     <br />
                     <div class="trainings-list">
-                        <mat-card appearance="outlined" class="trainings-list-item header">
+                        <mat-card class="trainings-list-item header">
                             <span class="name">Name</span>
                             <span class="shortName">Short Name</span>
                             <span class="teamspeakGroup">TS Group ID</span>
                             <span class="filler"></span>
                         </mat-card>
                         <div *ngFor="let training of trainings; trackBy: trackByTrainingId">
-                            <mat-card appearance="outlined" class="trainings-list-item">
+                            <mat-card class="trainings-list-item">
                                 <app-inline-edit
                                     (finishedEvent)="editTraining($event)"
                                     [(ngModel)]="training.name"

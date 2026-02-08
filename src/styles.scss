@@ -240,6 +240,70 @@
     }
 }
 
+// MDC card: remove default border, restore legacy shadow and 16px padding
+.mat-mdc-card {
+    border: none;
+    padding: 16px;
+    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2),
+                0 1px 1px 0 rgba(0, 0, 0, 0.14),
+                0 1px 3px 0 rgba(0, 0, 0, 0.12);
+
+    .mat-mdc-card-content {
+        padding: 0 16px;
+
+        &:first-child {
+            padding-top: 16px;
+        }
+
+        &:last-child {
+            padding-bottom: 16px;
+        }
+    }
+}
+
+// MDC button: restore legacy 36px height
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button,
+.mat-mdc-unelevated-button {
+    height: 36px;
+    line-height: 36px;
+}
+
+// MDC icon-button: restore legacy 40px sizing with 24px icon
+.mat-mdc-icon-button {
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+
+    .mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+        line-height: 24px;
+    }
+}
+
+// MDC tab nav bar: don't stretch tabs to fill width
+.mat-mdc-tab-nav-bar .mat-mdc-tab-links,
+.mat-mdc-tab-header .mat-mdc-tab-labels {
+    flex-grow: 0;
+}
+
+.mat-mdc-tab-link,
+.mat-mdc-tab {
+    flex-grow: 0 !important;
+}
+
+// MDC form field: reduce subscript wrapper height
+.mat-mdc-form-field-subscript-wrapper {
+    min-height: 0;
+}
+
+.mat-mdc-form-field-bottom-align::before {
+    height: 16px;
+}
+
 // MDC checkbox: allow label text to wrap
 .mat-mdc-checkbox label {
     white-space: normal !important;

@@ -11,19 +11,19 @@
                 <div class="flex-container-slim">
                     <div class="column-container">
                         <h3>Combat Units</h3>
-                        <mat-card appearance="outlined">
+                        <mat-card>
                             <tree-root #combatUnitsTree [nodes]="combat" [options]="options" (activate)="editUnit($event)" (moveNode)="onMove($event)"></tree-root>
                         </mat-card>
                     </div>
                     <div class="column-container">
                         <h3>Auxiliary Units</h3>
-                        <mat-card appearance="outlined">
+                        <mat-card>
                             <tree-root #auxiliaryUnitsTree [nodes]="auxiliary" [options]="options" (activate)="editUnit($event)" (moveNode)="onMove($event)"></tree-root>
                         </mat-card>
                     </div>
                     <div class="column-container">
                         <h3>Secondary Units</h3>
-                        <mat-card appearance="outlined">
+                        <mat-card>
                             <tree-root #secondaryUnitsTree [nodes]="secondary" [options]="options" (activate)="editUnit($event)" (moveNode)="onMove($event)"></tree-root>
                         </mat-card>
                     </div>

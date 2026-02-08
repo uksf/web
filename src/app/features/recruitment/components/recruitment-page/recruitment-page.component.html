@@ -8,7 +8,7 @@
                     <h4>You have no active applications</h4>
                 </div>
                 <div *ngIf="userActiveApplications.length > 0" class="applications-container">
-                    <mat-card appearance="outlined" (click)="openApplication(application)" *ngFor="let application of userActiveApplications" class="application-card mine">
+                    <mat-card (click)="openApplication(application)" *ngFor="let application of userActiveApplications" class="application-card mine">
                         <div class="name">
                             <h4 [ngStyle]="{ color: getApplicationColour(application) }">{{ application.account.firstname }} {{ application.account.lastname }}</h4>
                         </div>
@@ -65,7 +65,7 @@
                 </div>
                 <div *ngIf="allOtherActiveApplications.length > 0" class="applications-container">
                     <h4>Other Applications</h4>
-                    <mat-card appearance="outlined" (click)="openApplication(application)" *ngFor="let application of allOtherActiveApplications" class="application-card others">
+                    <mat-card (click)="openApplication(application)" *ngFor="let application of allOtherActiveApplications" class="application-card others">
                         <div class="name">
                             <h4 [ngStyle]="{ color: getApplicationColour(application) }">{{ application.account.firstname }} {{ application.account.lastname }}</h4>
                         </div>
@@ -165,7 +165,7 @@
                     </div>
                 </span>
                 <div class="history-applications" *ngIf="loaded">
-                    <mat-card appearance="outlined" (click)="openApplication(application)" *ngFor="let application of completedApplications; trackBy: trackByApplication" class="history-application">
+                    <mat-card (click)="openApplication(application)" *ngFor="let application of completedApplications; trackBy: trackByApplication" class="history-application">
                         <div class="name">
                             <b [ngClass]="getHistoryColour(application)">{{ application.displayName }}</b>
                         </div>
@@ -206,7 +206,7 @@
             <div *ngIf="getUserAccount() != null" class="stats-container">
                 <div class="stats-item">
                     <h3>SR1 State</h3>
-                    <mat-card appearance="outlined">
+                    <mat-card>
                         <div class="state-container">
                             <h4 *ngIf="getUserAccount().settings.sr1Enabled" class="enabled">You are taking applications</h4>
                             <h4 *ngIf="!getUserAccount().settings.sr1Enabled" class="disabled">You are not taking applications</h4>
@@ -219,7 +219,7 @@
                 </div>
                 <div class="stats-item activity">
                     <h3>SR1 Activity</h3>
-                    <mat-card appearance="outlined">
+                    <mat-card>
                         <div class="activity-row">
                             <ng-template [ngxPermissionsOnly]="['RECRUITER_LEAD']">
                                 <div class="item state header"></div>
@@ -248,10 +248,10 @@
             <div class="stats-container" *ngIf="activity != null && yourStats != null && sr1Stats != null">
                 <div class="stats-item statistics">
                     <h3>SR1 Statistics</h3>
-                    <mat-card appearance="outlined" class="statistics-container">
+                    <mat-card class="statistics-container">
                         <mat-tab-group>
                             <mat-tab label="Your Statistics" style="width: 100%">
-                                <mat-card appearance="outlined">
+                                <mat-card>
                                     <h4>Last Month</h4>
                                     <p *ngFor="let stats of yourStats.lastMonth">{{ stats.fieldName }} - {{ stats.fieldValue }}</p>
                                     <br />
@@ -260,7 +260,7 @@
                                 </mat-card>
                             </mat-tab>
                             <mat-tab label="All Statistics" style="width: 100%">
-                                <mat-card appearance="outlined">
+                                <mat-card>
                                     <h4>Last Month</h4>
                                     <p *ngFor="let stats of sr1Stats.lastMonth">{{ stats.fieldName }} - {{ stats.fieldValue }}</p>
                                     <br />
