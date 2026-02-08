@@ -1,5 +1,4 @@
-@use '../../../../../node_modules/@angular/material/index' as mat;
-@import '../../../../../node_modules/@angular/material/theming';
+@use '@angular/material' as mat;
 
 @mixin modpack-builds-steps-component-theme($theme) {
     $foreground: map-get($theme, foreground);

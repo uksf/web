@@ -1,7 +1,7 @@
 @use '@angular/material' as mat;
 @use 'app/features/command/components/command-ranks/ranks-list-item-layout' as ranks-layout;
 @use 'app/features/operations/components/operations-servers/servers-list-item-layout' as servers-layout;
-@import '~@ali-hm/angular-tree-component/css/angular-tree-component.css';
+@import '@ali-hm/angular-tree-component/css/angular-tree-component.css';
 
 // Core — default typography styles for all components + hierarchy classes
 @include mat.all-component-typographies();

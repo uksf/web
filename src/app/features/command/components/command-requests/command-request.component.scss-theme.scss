@@ -1,5 +1,4 @@
 @use '@angular/material' as mat;
-@import "@angular/material/theming";
 @mixin command-request-component-theme($theme) {
     $background: map-get($theme, background);
     $primary: map-get($theme, primary);
