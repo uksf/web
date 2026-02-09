@@ -103,6 +103,16 @@ export class OperationsServersComponent extends DestroyableComponent implements 
         if (this.uptimeInterval) {
             clearInterval(this.uptimeInterval);
         }
+        if (this.updateRequest) {
+            this.updateRequest.unsubscribe();
+        }
+        if (this.servers) {
+            this.servers.forEach((server) => {
+                if (server.request) {
+                    server.request.unsubscribe();
+                }
+            });
+        }
         this.hubConnection.connection.off('ReceiveDisabledState', this.onReceiveDisabledState);
         this.hubConnection.connection.off('ReceiveAnyUpdateIfNotCaller', this.onReceiveAnyUpdate);
         this.hubConnection.connection.off('ReceiveServerUpdateIfNotCaller', this.onReceiveServerUpdate);

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, Subject, tap } from 'rxjs';
+import { Observable, Subject, tap, first } from 'rxjs';
 import { UrlService } from './url.service';
 import { ConnectTeamspeakModalComponent } from '@app/features/profile/modals/connect-teamspeak-modal/connect-teamspeak-modal.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -97,7 +97,7 @@ export class AccountService {
             .afterClosed()
             .subscribe({
                 next: () => {
-                    this.getAccount()?.subscribe();
+                    this.getAccount()?.pipe(first()).subscribe();
                 }
             });
     }

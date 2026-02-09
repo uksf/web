@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { first } from 'rxjs/operators';
 import { ConnectionContainer, SignalRService } from './signalr.service';
 import { AccountService } from './account.service';
 
@@ -42,7 +43,7 @@ export class SignalRHubsService {
                 return;
             }
 
-            this.accountService.getAccount()?.subscribe({
+            this.accountService.getAccount()?.pipe(first()).subscribe({
                 next: (account) => {
                     this.accountGroupedHubConnection = this.signalrService.connect(`accountGrouped?userId=${account.id}`);
                     resolve(this.accountGroupedHubConnection);
