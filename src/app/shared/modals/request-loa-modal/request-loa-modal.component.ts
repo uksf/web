@@ -67,7 +67,7 @@ export class RequestLoaModalComponent implements OnInit, OnDestroy {
     validateDates() {
         this.setTimeValues();
         const nowUk = this.getUkNow();
-        const nowNoTime = nowUk.hours(0).minutes(0).seconds(0).milliseconds(0);
+        const nowNoTime = nowUk.clone().hours(0).minutes(0).seconds(0).milliseconds(0);
 
         if (this.start) {
             const startNoTime = this.start.clone().hours(0).minutes(0).seconds(0).milliseconds(0);

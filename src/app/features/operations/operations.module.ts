@@ -14,6 +14,7 @@ import { OperationsAarComponent } from './components/operations-aar/operations-a
 import { AddServerModalComponent } from './modals/add-server-modal/add-server-modal.component';
 import { EditServerModsModalComponent } from './modals/edit-server-mods-modal/edit-server-mods-modal.component';
 import { GameServersService } from './services/game-servers.service';
+import { DisplayName } from '@app/shared/pipes/displayName.pipe';
 
 @NgModule({
     declarations: [
@@ -33,6 +34,7 @@ import { GameServersService } from './services/game-servers.service';
         DragDropModule,
         MatExpansionModule,
         MatTabsModule,
+        DisplayName,
     ],
     providers: [GameServersService],
 })

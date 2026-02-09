@@ -108,6 +108,7 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
     disconnect() {
         if (this.hubConnection !== undefined) {
             this.hubConnection.connection.off('ReceiveBuildStep', this.onReceiveBuildStep);
+            this.hubConnection.dispose();
             this.hubConnection.connection.stop();
         }
     }

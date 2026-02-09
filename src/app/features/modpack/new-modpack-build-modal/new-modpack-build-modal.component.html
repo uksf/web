@@ -26,7 +26,7 @@
                     <mat-error class="error-message" *ngIf="form.get('referenceGroup.commitId').hasError(validation.type)">{{ validation.message }}</mat-error>
                 </mat-error>
             </mat-form-field>
-            <mat-error *ngIf="form.hasError('both')">
+            <mat-error *ngIf="form.get('referenceGroup').hasError('both')">
                 <mat-error class="error-message">Cannot select both a branch and a commit ID</mat-error>
             </mat-error>
         </div>

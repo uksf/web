@@ -36,6 +36,7 @@ export class ModpackReleaseService implements OnDestroy {
 
     disconnect() {
         if (this.hubConnection !== undefined) {
+            this.hubConnection.dispose();
             this.hubConnection.connection.stop();
         }
     }

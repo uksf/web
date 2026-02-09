@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MarkdownService } from 'ngx-markdown';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { Permissions } from '@app/core/services/permissions';
@@ -11,7 +11,7 @@ import { ModpackRelease } from '../models/modpack-release';
     templateUrl: './modpack-releases.component.html',
     styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-releases.component.scss', './modpack-releases.component.scss-theme.scss']
 })
-export class ModpackReleasesComponent implements OnInit {
+export class ModpackReleasesComponent implements OnInit, OnDestroy {
     selectedReleaseVersion: string = '';
     selectIncomingRelease: boolean = false;
     editing: boolean = false;
@@ -44,6 +44,10 @@ export class ModpackReleasesComponent implements OnInit {
 
     get latestReleaseIsDraft() {
         return this.releases.length > 0 && this.releases[0].isDraft;
+    }
+
+    ngOnDestroy(): void {
+        this.modpackReleaseService.disconnect();
     }
 
     ngOnInit() {
