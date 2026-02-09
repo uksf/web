@@ -18,272 +18,177 @@ app-side-content-area {
     display: flex;
     flex-direction: column;
     margin-left: 0;
-    padding-left: 16px;
-    padding-right: 16px;
-    padding-bottom: 16px;
+    padding: 0 16px 16px;
+}
 
-    .applications {
-        .applications-container {
-            .application-card {
-                display: flex;
-                flex-direction: row;
-                width: 100%;
-                margin-bottom: 5px;
-                padding: 5px;
-                cursor: pointer;
+// Application cards (active + others)
+.application-card {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin-bottom: 5px;
+    padding: 5px;
+    cursor: pointer;
 
-                &.others {
-                    opacity: 0.9;
-                }
+    &.others { opacity: 0.9; }
 
-                .name {
-                    flex-grow: 1;
-                    flex-basis: 20%;
-                    padding: 10px;
-                    margin: auto 0;
-                }
+    .name {
+        flex-grow: 1;
+        flex-basis: 20%;
+        padding: 10px;
+        margin: auto 0;
+    }
 
-                .details {
-                    display: flex;
-                    flex-direction: column;
-                    flex-grow: 1;
-                    flex-basis: 80%;
+    .details {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        flex-basis: 80%;
 
-                    .row {
-                        display: flex;
-                        flex-direction: row;
-                        margin: auto 0;
-                    }
-
-                    .item {
-                        flex-grow: 1;
-                        padding: 5px 10px;
-
-                        &.recruiter {
-                            flex-basis: 40%;
-                        }
-
-                        &.teamspeak {
-                            flex-basis: 30%;
-                        }
-
-                        &.applied {
-                            flex-basis: 30%;
-                        }
-
-                        &.email {
-                            cursor: default;
-                            flex-basis: 40%;
-                        }
-
-                        &.steam {
-                            flex-basis: 30%;
-                        }
-
-                        &.processing {
-                            flex-basis: 30%;
-                        }
-                    }
-                }
-            }
+        .row {
+            display: flex;
+            flex-direction: row;
+            margin: auto 0;
         }
     }
 
-    .history {
-        .history-header {
-            display: flex;
-            flex-direction: row;
-            margin-top: 10px;
-            margin-bottom: 5px;
+    .item {
+        flex-grow: 1;
+        padding: 5px 10px;
 
-            .history-header-part-container {
-                display: flex;
-                flex-direction: row;
+        &.recruiter { flex-basis: 40%; }
+        &.teamspeak { flex-basis: 30%; }
+        &.applied { flex-basis: 30%; }
+        &.email { cursor: default; flex-basis: 40%; }
+        &.steam { flex-basis: 30%; }
+        &.processing { flex-basis: 30%; }
+    }
+}
 
-                h3 {
-                    margin: auto 15px auto 0;
-                }
+// History section header
+.history-header {
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
 
-                &.actions {
-                    flex-grow: 1;
-                }
+.history-header-part-container {
+    display: flex;
+    flex-direction: row;
 
-                &.buttons {
-                    flex-grow: 1;
-                }
+    h3 { margin: auto 15px auto 0; }
+    &.actions { flex-grow: 1; }
+    &.buttons { flex-grow: 1; }
 
-                .history-header-part {
-                    align-self: center;
-                    display: flex;
-                    flex-direction: row;
+    app-paginator {
+        margin: auto 0;
+        padding-left: 4px;
+    }
+}
 
-                    .icon-right {
-                        vertical-align: middle;
-                    }
+.history-header-part {
+    align-self: center;
+    display: flex;
+    flex-direction: row;
 
-                    &.search {
-                        flex-grow: 1;
+    .icon-right { vertical-align: middle; }
 
-                        .mat-mdc-form-field {
-                            width: 100%;
+    &.search {
+        flex-grow: 1;
 
-                            .mat-mdc-icon-button {
-                                background-color: transparent;
-                                margin-left: -21px;
-
-                                .mat-icon {
-                                    margin: 0;
-                                    height: 21px;
-                                    line-height: 21px;
-                                }
-                            }
-                        }
-                    }
-
-                    &.sort {
-                        button {
-                            margin-left: 10px;
-                        }
-                    }
-                }
-
-                app-paginator {
-                    margin: auto 0;
-                    padding-left: 4px;
-                }
-            }
-        }
-
-        .history-application {
-            display: flex;
-            flex-direction: row;
+        .mat-mdc-form-field {
             width: 100%;
-            margin-bottom: 3px;
-            padding: 5px;
-            cursor: pointer;
 
-            &:first-of-type {
-                margin-top: 3px;
-            }
+            .mat-mdc-icon-button {
+                background-color: transparent;
+                margin-left: -21px;
 
-            .name {
-                flex-grow: 1;
-                flex-basis: 15%;
-                margin: auto 0;
-                padding: 2px 5px;
-            }
-
-            .details {
-                display: flex;
-                flex-direction: row;
-                flex-grow: 1;
-                flex-basis: 75%;
-
-                .item {
-                    flex-grow: 1;
-                    padding: 2px 5px;
-
-                    &.recruiter {
-                        flex-basis: 25%;
-                    }
-
-                    &.applied {
-                        flex-basis: 25%;
-                    }
-
-                    &.accepted {
-                        flex-basis: 25%;
-                    }
-
-                    &.processed {
-                        flex-basis: 25%;
-                    }
+                .mat-icon {
+                    margin: 0;
+                    height: 21px;
+                    line-height: 21px;
                 }
             }
         }
     }
 
-    .state-container {
+    &.sort button { margin-left: 10px; }
+}
+
+// History application cards
+.history-application {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin-bottom: 3px;
+    padding: 5px;
+    cursor: pointer;
+
+    &:first-of-type { margin-top: 3px; }
+
+    .name {
+        flex-grow: 1;
+        flex-basis: 15%;
+        margin: auto 0;
+        padding: 2px 5px;
+    }
+
+    .details {
         display: flex;
         flex-direction: row;
-        align-items: center;
-
-        .enabled {
-            color: green;
-            margin: 0;
-            flex: 1;
-        }
-
-        .disabled {
-            color: red;
-            margin: 0;
-            flex: 1;
-        }
+        flex-grow: 1;
+        flex-basis: 75%;
     }
 
-    &.stats {
-        .stats-container {
-            display: flex;
-            flex-direction: column;
+    .item {
+        flex-grow: 1;
+        padding: 2px 5px;
 
-            .stats-item {
-                &.activity {
-                    .activity-row {
-                        display: flex;
-                        flex-direction: row;
-                        padding: 6px 0;
-
-                        .item {
-                            text-align: center;
-                            flex-grow: 1;
-                            flex-basis: 20%;
-                            margin: auto;
-
-                            &.state {
-                                text-align: left;
-                                max-width: 20px;
-                                min-width: 16px;
-                                height: 24px;
-                                margin: auto 5px auto 0;
-                            }
-
-                            &.recruiter {
-                                text-align: left;
-                                min-width: 100px;
-                            }
-
-                            &.active {
-                                flex-basis: 15%;
-                            }
-
-                            &.total {
-                                flex-basis: 10%;
-                            }
-                        }
-                    }
-                }
-
-                &.statistics {
-                    .statistics-container {
-                        padding: 2px;
-                    }
-                }
-            }
-        }
+        &.recruiter { flex-basis: 25%; }
+        &.applied { flex-basis: 25%; }
+        &.accepted { flex-basis: 25%; }
+        &.processed { flex-basis: 25%; }
     }
 }
 
-.green {
-    color: green;
+// SR1 state toggle
+.state-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    .enabled { color: green; margin: 0; flex: 1; }
+    .disabled { color: red; margin: 0; flex: 1; }
 }
 
-.goldenrod {
-    color: goldenrod;
+// SR1 activity table
+.activity-row {
+    display: flex;
+    flex-direction: row;
+    padding: 6px 0;
+
+    .item {
+        text-align: center;
+        flex-grow: 1;
+        flex-basis: 20%;
+        margin: auto;
+
+        &.state { text-align: left; max-width: 20px; min-width: 16px; height: 24px; margin: auto 5px auto 0; }
+        &.recruiter { text-align: left; min-width: 100px; }
+        &.active { flex-basis: 15%; }
+        &.total { flex-basis: 10%; }
+    }
 }
 
-.red {
-    color: red;
-}
+.statistics-container { padding: 2px; }
+
+// Color utilities
+.green { color: green; }
+.goldenrod { color: goldenrod; }
+.red { color: red; }
+
+// --- Responsive breakpoints ---
 
 @media screen and (max-width: 1450px) {
     app-default-content-areas {
@@ -292,328 +197,92 @@ app-side-content-area {
         grid-template-rows: auto auto;
     }
 
-    .flex-container {
-        &.stats {
-            flex-direction: row;
-
-            .stats-container {
-                width: 50%;
-
-                &:last-of-type {
-                    margin-left: 16px;
-                }
-            }
-        }
+    .flex-container.stats {
+        flex-direction: row;
+        .stats-container { width: 50%; &:last-of-type { margin-left: 16px; } }
     }
 }
 
 @media screen and (max-width: 850px) {
-    .flex-container {
-        .applications {
-            .applications-container {
-                .application-card {
-                    .name {
-                        flex-basis: 25%;
-                    }
-
-                    .details {
-                        flex-basis: 75%;
-
-                        .item {
-                            &.teamspeak {
-                                flex-basis: 20%;
-                            }
-
-                            &.applied {
-                                flex-basis: 20%;
-                            }
-
-                            &.steam {
-                                flex-basis: 20%;
-                            }
-
-                            &.processing {
-                                flex-basis: 20%;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        .history {
-            .history-header {
-                flex-direction: column;
-            }
-
-            .history-application {
-                .details {
-                    .item {
-                        &.processed {
-                            display: none;
-                        }
-                    }
-                }
-            }
-        }
+    .application-card .name { flex-basis: 25%; }
+    .application-card .item {
+        &.teamspeak, &.applied, &.steam, &.processing { flex-basis: 20%; }
     }
+    .history-header { flex-direction: column; }
+    .history-application .item.processed { display: none; }
 }
 
 @media screen and (max-width: 768px) {
-    app-default-content-areas {
-        grid-template-columns: 1fr;
+    app-default-content-areas { grid-template-columns: 1fr; }
+
+    .application-card {
+        .name { flex-basis: 35%; }
+        .item {
+            &.recruiter { flex-basis: 50%; }
+            &.teamspeak, &.steam { display: none; }
+            &.applied, &.processing { flex-basis: 30%; }
+            &.email { flex-basis: 50%; }
+        }
     }
 
-    .flex-container {
-        .applications {
-            .applications-container {
-                .application-card {
-                    .name {
-                        flex-basis: 35%;
-                    }
-
-                    .details {
-                        .item {
-                            &.recruiter {
-                                flex-basis: 50%;
-                            }
-
-                            &.teamspeak {
-                                display: none;
-                            }
-
-                            &.applied {
-                                flex-basis: 30%;
-                            }
-
-                            &.email {
-                                flex-basis: 50%;
-                            }
-
-                            &.steam {
-                                display: none;
-                            }
-
-                            &.processing {
-                                flex-basis: 30%;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        &.stats {
-            flex-direction: column;
-
-            .stats-container {
-                width: 100%;
-
-                &:last-of-type {
-                    margin-left: 0;
-                }
-            }
-        }
+    .flex-container.stats {
+        flex-direction: column;
+        .stats-container { width: 100%; &:last-of-type { margin-left: 0; } }
     }
 }
 
 @media screen and (max-width: 600px) {
-    .flex-container {
-        .applications {
-            .applications-container {
-                .application-card {
-                    padding: 8px;
+    .application-card {
+        padding: 8px;
+        .name { flex-basis: 50%; padding: 5px; }
+        .details { flex-basis: 20%; }
+        .item { padding: 2px 5px; &.applied, &.email { display: none; } }
+    }
 
-                    .name {
-                        flex-basis: 50%;
-                        padding: 5px;
-                    }
+    .history-header-part-container.actions { flex-direction: column; }
+    .history-header-part.search { align-self: unset; }
+    .history-header-part.sort button { margin-left: 0; margin-right: 10px; }
 
-                    .details {
-                        flex-basis: 20%;
-
-                        .item {
-                            padding: 2px 5px;
-
-                            &.applied {
-                                display: none;
-                            }
-
-                            &.email {
-                                display: none;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        .history {
-            .history-header {
-                .history-header-part-container {
-                    &.actions {
-                        flex-direction: column;
-                    }
-
-                    .history-header-part {
-                        &.search {
-                            align-self: unset;
-                        }
-
-                        &.sort {
-                            button {
-                                margin-left: 0;
-                                margin-right: 10px;
-                            }
-                        }
-                    }
-                }
-            }
-
-            .history-application {
-                .name {
-                    flex-basis: 25%;
-                }
-
-                .details {
-                    flex-basis: 60%;
-
-                    .item {
-                        &.accepted {
-                            display: none;
-                        }
-                    }
-                }
-            }
-        }
+    .history-application {
+        .name { flex-basis: 25%; }
+        .details { flex-basis: 60%; }
+        .item.accepted { display: none; }
     }
 }
 
 @media screen and (max-width: 450px) {
-    app-side-content-area {
-        .enabled {
-            font-size: 16px;
-        }
+    app-side-content-area .enabled,
+    app-side-content-area .disabled { font-size: 16px; }
 
-        .disabled {
-            font-size: 16px;
-        }
+    .application-card {
+        .name { flex-basis: 30%; padding: 0; h4 { font-size: 16px; } }
+        .details { flex-basis: 20%; }
+        .item { padding: 0; }
     }
 
-    .flex-container {
-        .applications {
-            .applications-container {
-                .application-card {
-                    .name {
-                        flex-basis: 30%;
-                        padding: 0;
+    .history-header-part { margin: 5px; flex: 1; }
 
-                        h4 {
-                            font-size: 16px;
-                        }
-                    }
-
-                    .details {
-                        flex-basis: 20%;
-
-                        .item {
-                            padding: 0;
-                        }
-                    }
-                }
-            }
-        }
-
-        .history {
-            .history-header {
-                .history-header-part-container {
-                    .history-header-part {
-                        margin: 5px;
-                        flex: 1;
-                    }
-                }
-            }
-
-            .history-applications {
-                .history-application {
-                    .name {
-                        flex-basis: 0;
-                    }
-
-                    .details {
-                        flex-basis: 0;
-
-                        .item {
-                            &.applied {
-                                display: none;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        &.stats {
-            .stats-container {
-                .stats-item {
-                    &.statistics {
-                        .mat-mdc-card {
-                            padding: 8px;
-                        }
-                    }
-                }
-            }
-        }
+    .history-application {
+        .name { flex-basis: 0; }
+        .details { flex-basis: 0; }
+        .item.applied { display: none; }
     }
+
+    .stats-item.statistics .mat-mdc-card { padding: 8px; }
 }
 
 @media screen and (max-width: 425px) {
-    .flex-container {
-        .history {
-            .history-header {
-                .history-header-part-container {
-                    &.buttons {
-                        flex-direction: column;
-
-                        app-flex-filler {
-                            display: none;
-                        }
-
-                        .history-header-part {
-                            align-self: flex-start;
-                        }
-                    }
-                }
-            }
-        }
-
-        &.stats {
-            .stats-container {
-                .stats-item {
-                    &.activity {
-                        .mat-mdc-card {
-                            padding: 8px;
-                        }
-
-                        .activity-row {
-                            .item {
-                                font-size: 11px;
-
-                                &.recruiter {
-                                    min-width: 80px;
-                                }
-                            }
-                        }
-                    }
-
-                    &.statistics {
-                        /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
-                        ::ng-deep .mat-tab-label {
-                            padding: 0 12px !important;
-                        }
-                    }
-                }
-            }
-        }
+    .history-header-part-container.buttons {
+        flex-direction: column;
+        app-flex-filler { display: none; }
+        .history-header-part { align-self: flex-start; }
     }
+
+    .stats-item.activity {
+        .mat-mdc-card { padding: 8px; }
+        .activity-row .item { font-size: 11px; &.recruiter { min-width: 80px; } }
+    }
+
+    /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
+    .stats-item.statistics ::ng-deep .mat-tab-label { padding: 0 12px !important; }
 }
