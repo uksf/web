@@ -41,20 +41,20 @@
                         <span *ngIf="updateAvailable(mod)">Update available</span>
                         <ng-template [ngxPermissionsOnly]="['ADMIN']">
                             <div class="mod-card-buttons">
-                                <button mat-button class="icon delete" *ngIf="hasError(mod)" (click)="showError(mod)">
-                                    <mat-icon matTooltip="View error">error_outline</mat-icon>
+                                <button mat-button class="icon delete" *ngIf="hasError(mod)" (click)="showError(mod)" matTooltip="View error">
+                                    <mat-icon>error_outline</mat-icon>
                                 </button>
-                                <button mat-button class="icon" *ngIf="interventionRequired(mod)" (click)="resolveIntervention(mod)">
-                                    <mat-icon matTooltip="Resolve Intervention">construction</mat-icon>
+                                <button mat-button class="icon" *ngIf="interventionRequired(mod)" (click)="resolveIntervention(mod)" matTooltip="Resolve Intervention">
+                                    <mat-icon>construction</mat-icon>
                                 </button>
-                                <button mat-button class="icon" *ngIf="updateAvailable(mod)" (click)="update(mod)">
-                                    <mat-icon matTooltip="Update">download</mat-icon>
+                                <button mat-button class="icon" *ngIf="updateAvailable(mod)" (click)="update(mod)" matTooltip="Update">
+                                    <mat-icon>download</mat-icon>
                                 </button>
-                                <button mat-button class="icon" *ngIf="canUninstall(mod)" (click)="uninstall(mod)">
-                                    <mat-icon matTooltip="Uninstall">eject</mat-icon>
+                                <button mat-button class="icon" *ngIf="canUninstall(mod)" (click)="uninstall(mod)" matTooltip="Uninstall">
+                                    <mat-icon>eject</mat-icon>
                                 </button>
-                                <button mat-button class="icon delete" *ngIf="canDelete(mod)" (click)="delete(mod)">
-                                    <mat-icon matTooltip="Delete">delete</mat-icon>
+                                <button mat-button class="icon delete" *ngIf="canDelete(mod)" (click)="delete(mod)" matTooltip="Delete">
+                                    <mat-icon>delete</mat-icon>
                                 </button>
                             </div>
                         </ng-template>

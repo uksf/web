@@ -18,16 +18,16 @@
                 <mat-icon (menuClosed)="menuClosed()" (menuOpened)="menuOpened()" [matMenuTriggerFor]="folderMenu"> more_horiz </mat-icon>
             </div>
             <mat-menu #folderMenu="matMenu" class="folder-header-menu">
-                <button (click)="addFolder()" mat-menu-item>
-                    <mat-icon matTooltip="Create new folder">add</mat-icon>
+                <button (click)="addFolder()" mat-menu-item matTooltip="Create new folder">
+                    <mat-icon>add</mat-icon>
                     <span>Add folder</span>
                 </button>
-                <button (click)="editFolder()" mat-menu-item>
-                    <mat-icon matTooltip="Edit folder">mode_edit</mat-icon>
+                <button (click)="editFolder()" mat-menu-item matTooltip="Edit folder">
+                    <mat-icon>mode_edit</mat-icon>
                     <span>Edit folder</span>
                 </button>
-                <button (click)="deleteFolder()" mat-menu-item>
-                    <mat-icon matTooltip="Delete folder">highlight_off</mat-icon>
+                <button (click)="deleteFolder()" mat-menu-item matTooltip="Delete folder">
+                    <mat-icon>highlight_off</mat-icon>
                     <span>Delete folder</span>
                 </button>
             </mat-menu>

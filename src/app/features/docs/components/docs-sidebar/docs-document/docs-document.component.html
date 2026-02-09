@@ -7,12 +7,12 @@
             <mat-icon (click)="$event.stopPropagation()" (menuClosed)="menuClosed()" (menuOpened)="menuOpened()" [matMenuTriggerFor]="documentMenu">more_horiz </mat-icon>
         </div>
         <mat-menu #documentMenu="matMenu" class="document-menu">
-            <button (click)="editDocument()" mat-menu-item>
-                <mat-icon matTooltip="Edit document">mode_edit</mat-icon>
+            <button (click)="editDocument()" mat-menu-item matTooltip="Edit document">
+                <mat-icon>mode_edit</mat-icon>
                 <span>Edit document</span>
             </button>
-            <button (click)="deleteDocument()" mat-menu-item>
-                <mat-icon matTooltip="Delete document">highlight_off</mat-icon>
+            <button (click)="deleteDocument()" mat-menu-item matTooltip="Delete document">
+                <mat-icon>highlight_off</mat-icon>
                 <span>Delete document</span>
             </button>
         </mat-menu>
