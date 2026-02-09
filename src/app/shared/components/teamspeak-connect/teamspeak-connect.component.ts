@@ -1,6 +1,6 @@
 import { Component, Output, EventEmitter, Input, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { first, takeUntil } from 'rxjs/operators';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { TeamspeakConnectService } from '@app/shared/services/teamspeak-connect.service';
@@ -74,7 +74,7 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
     }
 
     findTeamspeakClients() {
-        this.teamspeakConnectService.getOnlineClients().subscribe({
+        this.teamspeakConnectService.getOnlineClients().pipe(first()).subscribe({
             next: (clients) => {
                 this.updateClients(clients);
             }
@@ -106,7 +106,7 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
     }
 
     requestCode() {
-        this.teamspeakConnectService.requestCode(this.teamspeakForm.value.teamspeakId).subscribe({
+        this.teamspeakConnectService.requestCode(this.teamspeakForm.value.teamspeakId).pipe(first()).subscribe({
             next: () => {
                 this.state = 1;
             }
@@ -134,6 +134,7 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
         this.pending = true;
         this.teamspeakConnectService
             .connectTeamspeak(this.accountService.account.id, this.teamspeakForm.value.teamspeakId, sanitisedCode)
+            .pipe(first())
             .subscribe({
                 next: () => {
                     this.pending = false;
