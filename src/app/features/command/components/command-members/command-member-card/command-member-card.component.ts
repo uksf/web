@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Account } from '@app/shared/models/account';
 import { expansionAnimations } from '@app/shared/services/animations.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -18,15 +18,12 @@ import { first } from 'rxjs/operators';
     styleUrls: ['./command-member-card.component.scss'],
     animations: [expansionAnimations.indicatorRotate, expansionAnimations.bodyExpansion]
 })
-export class CommandMemberCardComponent implements OnInit {
+export class CommandMemberCardComponent {
     @Input('member') member: Account;
     expanded: boolean = false;
-    hover: boolean = false;
     qualificationsPending: boolean = false;
 
     constructor(private dialog: MatDialog, private membersService: MembersService) {}
-
-    ngOnInit(): void {}
 
     editRank() {
         const data: RequestModalData = {
@@ -85,14 +82,6 @@ export class CommandMemberCardComponent implements OnInit {
         event.stopPropagation();
     }
 
-    onMouseOver() {
-        this.hover = true;
-    }
-
-    onMouseLeave() {
-        this.hover = false;
-    }
-
     get toggleState(): string {
         return this.expanded ? 'expanded' : 'collapsed';
     }
@@ -106,6 +95,6 @@ export class CommandMemberCardComponent implements OnInit {
     }
 
     get displayName(): string {
-        return `${this.member.lastname}`;
+        return `${this.member.lastname}.${this.member.firstname[0]}`;
     }
 }

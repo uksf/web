@@ -5,10 +5,6 @@
 
     app-command-member-card {
         .member-panel {
-            &.hover {
-                background-color: mat.get-color-from-palette($background, hover);
-            }
-
             .header-panel {
                 .header-title-container {
                     .header-title {

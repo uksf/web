@@ -481,6 +481,27 @@ mat-tab-nav-panel,
 }
 
 // ---------------------------------------------------------------------------
+// Spotlight hover effect (Fluent Design Reveal Highlight)
+// ---------------------------------------------------------------------------
+.spotlight-active {
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+            circle var(--spotlight-size, 200px) at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+            var(--spotlight-color, rgba(255, 255, 255, 0.06)),
+            transparent
+        );
+        pointer-events: none;
+        z-index: 1;
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Page layout utilities
 // ---------------------------------------------------------------------------
 .page-container {

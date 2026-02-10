@@ -4,8 +4,8 @@
         <span>United Kingdom Special Forces</span>
     </div>
     <app-flex-filler></app-flex-filler>
-    <div class="name-wrapper" *ngIf="getName" routerLink="/profile">
-        <span>{{ getName }}</span>
+    <div class="name-wrapper" *ngIf="getName">
+        <span routerLink="/profile">{{ getName }}</span>
     </div>
     <div class="button-wrapper" *ngIf="!mobile && !mobileSmall">
         <ng-template [ngxPermissionsExcept]="['UNLOGGED']">

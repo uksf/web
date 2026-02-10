@@ -67,6 +67,7 @@ import { AnsiToHtmlPipe } from './pipes/ansi-to-html.pipe';
 import { MustSelectFromDropdownValidatorDirective } from './directives/dropdown-validator.directive';
 import { CharacterBlockDirective } from './directives/character-block.directive';
 import { MustMatchDirective } from './directives/must-match.directive';
+import { SpotlightDirective } from './directives/spotlight.directive';
 
 /**
  * SharedModule contains reusable components, pipes, and directives
@@ -158,6 +159,7 @@ const SHARED_DIRECTIVES = [
     MustSelectFromDropdownValidatorDirective,
     CharacterBlockDirective,
     MustMatchDirective,
+    SpotlightDirective,
 ];
 
 @NgModule({

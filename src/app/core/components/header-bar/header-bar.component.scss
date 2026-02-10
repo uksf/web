@@ -11,13 +11,13 @@
     height: v.$header-height;
     line-height: v.$header-height;
     text-align: center;
-    cursor: pointer;
 
     span {
         display: inline-block;
         vertical-align: middle;
         line-height: normal;
         margin-right: v.$spacing-20px;
+        cursor: pointer;
     }
 }
 

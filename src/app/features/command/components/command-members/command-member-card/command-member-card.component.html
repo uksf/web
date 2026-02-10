@@ -1,10 +1,10 @@
-<mat-card class="member-panel" [ngClass]="{ hover: hover }">
-    <div class="header-panel">
+<mat-card class="member-panel">
+    <div class="header-panel" appSpotlight>
         <div class="header-title-container">
-            <div class="toggle" [@indicatorRotate]="toggleState" (click)="toggle($event)" (mouseenter)="onMouseOver()" (mouseleave)="onMouseLeave()">
+            <div class="toggle" [@indicatorRotate]="toggleState" (click)="toggle($event)">
                 <mat-icon color="primary">expand_more</mat-icon>
             </div>
-            <div class="header-title hover" (click)="toggle($event)" (mouseenter)="onMouseOver()" (mouseleave)="onMouseLeave()">
+            <div class="header-title hover" (click)="toggle($event)">
                 <span>{{ displayName }}</span>
             </div>
             <div class="header-title edit" (click)="editRank(); $event.stopPropagation()" matTooltip="Click to edit rank">
@@ -53,7 +53,7 @@
                         [(ngModel)]="member.qualifications.medic"
                         (change)="updateQualifications()"
                         [disabled]="qualificationsPending"
-                        matTooltip="When enabled, {{ displayName }} will be assigned as a medic in-game"
+                        matTooltip="When enabled, {{ member.lastname }} will be assigned as a medic in-game"
                     >
                         Medic
                     </mat-checkbox>
@@ -64,7 +64,7 @@
                         [(ngModel)]="member.qualifications.engineer"
                         (change)="updateQualifications()"
                         [disabled]="qualificationsPending"
-                        matTooltip="When enabled, {{ displayName }} will be assigned as an engineer in-game"
+                        matTooltip="When enabled, {{ member.lastname }} will be assigned as an engineer in-game"
                     >
                         Engineer
                     </mat-checkbox>

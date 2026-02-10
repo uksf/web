@@ -8,7 +8,7 @@
                     <h4>You have no active applications</h4>
                 </div>
                 <div *ngIf="userActiveApplications.length > 0" class="applications-container">
-                    <mat-card (click)="openApplication(application)" *ngFor="let application of userActiveApplications" class="application-card mine">
+                    <mat-card (click)="openApplication(application)" *ngFor="let application of userActiveApplications" class="application-card mine" appSpotlight>
                         <div class="name">
                             <h4 [ngStyle]="{ color: getApplicationColour(application) }">{{ application.account.firstname }} {{ application.account.lastname }}</h4>
                         </div>
@@ -65,7 +65,7 @@
                 </div>
                 <div *ngIf="allOtherActiveApplications.length > 0" class="applications-container">
                     <h4>Other Applications</h4>
-                    <mat-card (click)="openApplication(application)" *ngFor="let application of allOtherActiveApplications" class="application-card others">
+                    <mat-card (click)="openApplication(application)" *ngFor="let application of allOtherActiveApplications" class="application-card others" appSpotlight>
                         <div class="name">
                             <h4 [ngStyle]="{ color: getApplicationColour(application) }">{{ application.account.firstname }} {{ application.account.lastname }}</h4>
                         </div>
@@ -165,7 +165,7 @@
                     </div>
                 </span>
                 <div class="history-applications" *ngIf="loaded">
-                    <mat-card (click)="openApplication(application)" *ngFor="let application of completedApplications; trackBy: trackByApplication" class="history-application">
+                    <mat-card (click)="openApplication(application)" *ngFor="let application of completedApplications; trackBy: trackByApplication" class="history-application" appSpotlight>
                         <div class="name">
                             <b [ngClass]="getHistoryColour(application)">{{ application.displayName }}</b>
                         </div>
