@@ -12,7 +12,7 @@ import { LogsService } from '../../services/logs.service';
 @Component({
     selector: 'app-admin-audit-logs',
     templateUrl: './admin-audit-logs.component.html',
-    styleUrls: ['../admin-page/admin-page.component.scss', './admin-audit-logs.component.scss'],
+    styleUrls: ['./admin-audit-logs.component.scss'],
 })
 export class AdminAuditLogsComponent extends AdminLogsComponent implements OnInit, AfterViewInit, OnDestroy {
     auditLogDisplayedColumns = ['timestamp', 'who', 'message'];

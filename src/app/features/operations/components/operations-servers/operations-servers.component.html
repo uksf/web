@@ -20,8 +20,8 @@
                         <app-flex-filler></app-flex-filler>
                         <div class="admin-container">
                             <div *ngIf="disabled" class="control-disabled">Server control has been disabled by an admin</div>
-                            <button mat-button class="refresh-button icon" (click)="getServers()">
-                                <mat-icon [ngClass]="{ 'server-updating': updating }" matTooltip="Refresh all">refresh </mat-icon>
+                            <button mat-button class="refresh-button icon" (click)="getServers()" matTooltip="Refresh all">
+                                <mat-icon [ngClass]="{ 'server-updating': updating }">refresh</mat-icon>
                             </button>
                         </div>
                     </div>
@@ -37,7 +37,7 @@
                             cdkDropList
                             class="servers-list"
                         >
-                            <div (cdkDragStarted)="onDragStarted($event)" *ngFor="let server of servers" cdkDrag>
+                            <div *ngFor="let server of servers" cdkDrag>
                                 <mat-card [ngClass]="{ 'server-running': server.status.running }" class="servers-list-item">
                                     <div class="server-header">
                                         <ng-template [ngxPermissionsOnly]="['ADMIN']">
@@ -55,8 +55,8 @@
                                             - {{ getServerStatus(server) }}
                                         </h3>
                                         <app-flex-filler></app-flex-filler>
-                                        <button mat-button class="icon" (click)="refreshServerStatus(server)">
-                                            <mat-icon [ngClass]="{ 'server-updating': server.updating }" matTooltip="Refresh server status">refresh </mat-icon>
+                                        <button mat-button class="icon" (click)="refreshServerStatus(server)" matTooltip="Refresh server status">
+                                            <mat-icon [ngClass]="{ 'server-updating': server.updating }">refresh </mat-icon>
                                         </button>
                                     </div>
                                     <div class="server-container">
@@ -77,16 +77,18 @@
                                                         [disabled]="server.updating || server.status.running || server.status.started || server.status.stopping"
                                                         class="icon delete"
                                                         mat-button
+                                                        matTooltip="Delete game server"
                                                     >
-                                                        <mat-icon matTooltip="Delete game server">highlight_off </mat-icon>
+                                                        <mat-icon>highlight_off </mat-icon>
                                                     </button>
                                                     <button
                                                         (click)="editServer($event, server)"
                                                         [disabled]="server.updating || server.status.running || server.status.started || server.status.stopping"
                                                         class="icon"
                                                         mat-button
+                                                        matTooltip="Edit game server"
                                                     >
-                                                        <mat-icon matTooltip="Edit game server">edit</mat-icon>
+                                                        <mat-icon>edit</mat-icon>
                                                     </button>
                                                 </ng-template>
                                                 <ng-template [ngxPermissionsOnly]="['SR5']">
@@ -95,8 +97,9 @@
                                                         [disabled]="server.updating || server.status.running || server.status.started || server.status.stopping"
                                                         class="icon"
                                                         mat-button
+                                                        matTooltip="Edit game server mods"
                                                     >
-                                                        <mat-icon matTooltip="Edit game server mods">extension </mat-icon>
+                                                        <mat-icon>extension </mat-icon>
                                                     </button>
                                                 </ng-template>
                                             </div>
@@ -118,34 +121,36 @@
                                             >
                                                 <ng-template #element let-element>{{ getMissionName(element) }}</ng-template>
                                             </app-dropdown>
-                                            <button
-                                                (click)="launch(server)"
-                                                *ngIf="!server.status.started && !server.status.running && !server.status.stopping"
-                                                [disabled]="server.updating || !server.missionSelection || isDisabled"
-                                                [ngClass]="{ 'control-button': !server.status.started && !server.status.running && !server.status.stopping }"
-                                                color="primary"
-                                                mat-raised-button
-                                            >
-                                                Launch
-                                            </button>
-                                            <!-- <button mat-raised-button color="primary" *ngIf="server.status.running && !server.status.stopping && server.status.parsedUptime !== '00:00:00'"
-                                                [ngClass]="{'control-button-running': server.status.running && !server.status.stopping && server.status.parsedUptime !== '00:00:00'}" [disabled]="server.updating || isDisabled" (click)="stop(server)">Stop</button>
-                                            <button mat-raised-button color="primary" *ngIf="server.status.running && !server.status.stopping && server.status.parsedUptime === '00:00:00'"
-                                                [ngClass]="{'control-button-running': server.status.running && !server.status.stopping && server.status.parsedUptime === '00:00:00'}" [disabled]="server.updating || isDisabled" (click)="stop(server, true)">Stop</button>
-                                            <button mat-raised-button color="primary" *ngIf="server.status.started || server.status.stopping" [ngClass]="{'control-button-running': server.status.started || server.status.stopping || server.status.parsedUptime === '00:00:00'}"
-                                                [disabled]="server.updating || isDisabled" (click)="kill(server)">Kill</button> -->
-                                            <span *ngIf="server.launchedBy && (server.status.started || server.status.running)" class="launched-by"
-                                                ><b>Launched by:</b> {{ server.launchedBy | displayName | async }}</span
-                                            >
-                                            <button
-                                                (click)="kill(server, true)"
-                                                *ngIf="server.status.started || server.status.running"
-                                                [disabled]="server.updating || isDisabled"
-                                                color="primary"
-                                                mat-raised-button
-                                            >
-                                                Stop
-                                            </button>
+                                            <div class="control-buttons">
+                                                <button
+                                                    (click)="launch(server)"
+                                                    *ngIf="!server.status.started && !server.status.running && !server.status.stopping"
+                                                    [disabled]="server.updating || !server.missionSelection || isDisabled"
+                                                    [ngClass]="{ 'control-button': !server.status.started && !server.status.running && !server.status.stopping }"
+                                                    color="primary"
+                                                    mat-raised-button
+                                                >
+                                                    Launch
+                                                </button>
+                                                <!-- <button mat-raised-button color="primary" *ngIf="server.status.running && !server.status.stopping && server.status.parsedUptime !== '00:00:00'"
+                                                    [ngClass]="{'control-button-running': server.status.running && !server.status.stopping && server.status.parsedUptime !== '00:00:00'}" [disabled]="server.updating || isDisabled" (click)="stop(server)">Stop</button>
+                                                <button mat-raised-button color="primary" *ngIf="server.status.running && !server.status.stopping && server.status.parsedUptime === '00:00:00'"
+                                                    [ngClass]="{'control-button-running': server.status.running && !server.status.stopping && server.status.parsedUptime === '00:00:00'}" [disabled]="server.updating || isDisabled" (click)="stop(server, true)">Stop</button>
+                                                <button mat-raised-button color="primary" *ngIf="server.status.started || server.status.stopping" [ngClass]="{'control-button-running': server.status.started || server.status.stopping || server.status.parsedUptime === '00:00:00'}"
+                                                    [disabled]="server.updating || isDisabled" (click)="kill(server)">Kill</button> -->
+                                                <span *ngIf="server.launchedBy && (server.status.started || server.status.running)" class="launched-by"
+                                                    ><b>Launched by:</b> {{ server.launchedBy | displayName | async }}</span
+                                                >
+                                                <button
+                                                    (click)="kill(server, true)"
+                                                    *ngIf="server.status.started || server.status.running"
+                                                    [disabled]="server.updating || isDisabled"
+                                                    color="primary"
+                                                    mat-raised-button
+                                                >
+                                                    Stop
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </mat-card>

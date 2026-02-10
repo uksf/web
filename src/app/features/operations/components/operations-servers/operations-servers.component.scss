@@ -70,64 +70,10 @@
     @include layout.servers-list-item-layout;
     margin: 10px 10px 0 0;
 
-    .server-header {
-        display: flex;
-        flex-direction: row;
-
-        .handle {
-            cursor: pointer;
-            font-size: 30px;
-            margin-left: 10px;
-            width: 30px;
-        }
-
-        h3 {
-            margin-top: 8px;
-            margin-left: 10px;
-
-            &.title-started {
-                color: lightseagreen;
-            }
-
-            &.title-running {
-                color: green;
-            }
-
-            &.title-stopping {
-                color: red;
-            }
-        }
-    }
-
-    .server-container {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-
-        .server-details {
-            display: flex;
-            flex-direction: row;
-            flex: 1;
-            margin-left: 51px;
-
-            span {
-                margin-right: 15px;
-            }
-        }
-
-        .server-buttons {
-            display: flex;
-            flex-direction: row;
-
-            .admin {
-                display: flex;
-                flex-direction: row;
-            }
-
-            .launched-by {
-                margin: auto 15px;
-            }
-        }
+    .server-header h3 {
+        &.title-started { color: lightseagreen; }
+        &.title-running { color: green; }
+        &.title-stopping { color: red; }
     }
 }
 

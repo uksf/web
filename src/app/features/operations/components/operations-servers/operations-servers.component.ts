@@ -575,11 +575,6 @@ export class OperationsServersComponent extends DestroyableComponent implements 
             });
     }
 
-    onDragStarted(event) {
-        event.source._dragRef._preview.classList.add('dark-theme');
-        event.source.element.nativeElement.classList.add('dark-theme');
-    }
-
     displayWithMission = (element: IDropdownElement): string => {
         if (!element) {
             return '';

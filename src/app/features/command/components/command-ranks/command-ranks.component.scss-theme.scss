@@ -7,9 +7,9 @@
     app-command-ranks {
     }
 
-    &.cdk-drag-preview {
-        &.ranks-list-item {
-            background-color: mat.get-color-from-palette($background, card);
-        }
+    @at-root .cdk-drag-preview .ranks-list-item {
+        $foreground: map-get($theme, foreground);
+        background-color: mat.get-color-from-palette($background, card);
+        color: mat.get-color-from-palette($foreground, text);
     }
 }

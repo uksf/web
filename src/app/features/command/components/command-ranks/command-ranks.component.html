@@ -4,12 +4,11 @@
             <div class="spinner-container" *ngIf="!ranks">
                 <mat-spinner></mat-spinner>
             </div>
-            <div *ngIf="ranks">
+            <div *ngIf="ranks" class="ranks-container">
                 <ng-template [ngxPermissionsOnly]="['ADMIN']">
                     <div>
                         <button mat-raised-button color="primary" (click)="addRank()">Add Rank</button>
                     </div>
-                    <br />
                     <div class="ranks-list" cdkDropList (cdkDropListDropped)="onMove($event)" [cdkDropListDisabled]="updatingOrder" [class.disabled]="updatingOrder">
                         <mat-card class="ranks-list-item header">
                             <span class="filler"></span>
@@ -18,7 +17,7 @@
                             <span class="teamspeakGroup" style="flex-basis: 14%">TS Group ID</span>
                             <span class="discordRoleId" style="flex-basis: 27%">Discord Role ID</span>
                         </mat-card>
-                        <div (cdkDragStarted)="onDragStarted($event)" *ngFor="let rank of ranks; trackBy: trackByRankId" cdkDrag>
+                        <div *ngFor="let rank of ranks; trackBy: trackByRankId" cdkDrag>
                             <mat-card class="ranks-list-item">
                                 <span class="handle" cdkDragHandle>=</span>
                                 <app-inline-edit
@@ -40,13 +39,12 @@
                                 ></app-inline-edit>
                                 <app-inline-edit class="discordRoleId" [(ngModel)]="rank.discordRoleId" type="text" (finishedEvent)="editRank($event)"></app-inline-edit>
                                 <app-flex-filler></app-flex-filler>
-                                <mat-icon (click)="deleteRank($event, rank)" class="delete-icon">highlight_off </mat-icon>
+                                <mat-icon (click)="deleteRank($event, rank)" class="delete-icon" matTooltip="Delete rank">highlight_off</mat-icon>
                             </mat-card>
                         </div>
                     </div>
                 </ng-template>
                 <ng-template [ngxPermissionsExcept]="['ADMIN']">
-                    <br />
                     <div class="ranks-list">
                         <div *ngFor="let rank of ranks; trackBy: trackByRankId">
                             <mat-card class="ranks-list-item">

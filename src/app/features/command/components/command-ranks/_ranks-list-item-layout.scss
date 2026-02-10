@@ -2,7 +2,7 @@
 // Keep in sync: any layout changes here affect the drag preview appearance.
 
 @mixin ranks-list-item-layout {
-    .mat-mdc-card {
+    &.mat-mdc-card {
         display: flex;
         flex-direction: row;
         padding: 0 10px;

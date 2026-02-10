@@ -106,6 +106,6 @@ export class CommandMemberCardComponent implements OnInit {
     }
 
     get displayName(): string {
-        return `${this.member.lastname}.${this.member.firstname[0]}`;
+        return `${this.member.lastname}`;
     }
 }

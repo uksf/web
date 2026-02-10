@@ -6,7 +6,6 @@
         <div *ngIf="roles">
             <div class="flex-container">
                 <div class="column-container">
-                    <h3>Roles</h3>
                     <ng-template [ngxPermissionsOnly]="['ADMIN']">
                         <div>
                             <form [formGroup]="roleForm" class="flex-container-input">
@@ -33,7 +32,7 @@
                                         type="text"
                                     ></app-inline-edit>
                                     <app-flex-filler></app-flex-filler>
-                                    <mat-icon (click)="deleteRole($event, role)" class="delete-icon">highlight_off </mat-icon>
+                                    <mat-icon (click)="deleteRole($event, role)" class="delete-icon" matTooltip="Delete role">highlight_off</mat-icon>
                                 </mat-card>
                             </div>
                         </div>

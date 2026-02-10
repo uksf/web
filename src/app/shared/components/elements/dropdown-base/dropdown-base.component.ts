@@ -3,7 +3,7 @@ import { NgModel } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { nextFrame } from '@app/shared/services/helper.service';
 import { map, startWith, takeUntil } from 'rxjs/operators';
-import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { DestroyableComponent } from '@app/shared/components';
 
 @Component({
@@ -12,6 +12,7 @@ import { DestroyableComponent } from '@app/shared/components';
 export class DropdownBaseComponent extends DestroyableComponent implements OnInit {
     @ViewChild('textInput') textInput: NgModel;
     @ViewChild('textInput', { read: ElementRef }) textInputElement: ElementRef;
+    @ViewChild('textInput', { read: MatAutocompleteTrigger }) autocompleteTrigger: MatAutocompleteTrigger;
     @ContentChild('element', { static: false }) elementTemplateRef: TemplateRef<IDropdownElement>;
     @Input('placeholder') placeholder: string;
     @Input('isRequired') required: boolean = false;
@@ -137,6 +138,16 @@ export class DropdownBaseComponent extends DestroyableComponent implements OnIni
 
         const element = this.allElements.find((element: IDropdownElement) => this.elementMatcher(element, filterValueLower));
         this.model = element ? element : null;
+    }
+
+    clear() {
+        this.textModel = '';
+        this.onTextModelChange('');
+        this.autocompleteTrigger?.autocomplete?.options?.forEach(option => {
+            if (option.selected) {
+                option.deselect(false);
+            }
+        });
     }
 
     onSelect(event: MatAutocompleteSelectedEvent) {

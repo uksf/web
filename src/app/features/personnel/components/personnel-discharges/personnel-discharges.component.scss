@@ -3,6 +3,7 @@
     flex-direction: column;
     margin-left: 0;
     padding: 0 16px 16px;
+    gap: 8px;
 
     .list-header {
         display: flex;
@@ -159,6 +160,11 @@
     overflow: unset;
 }
 
+.mdc-data-table__cell, .mdc-data-table__header-cell {
+    padding-left: 0;
+    padding-right: 0;
+}
+
 .mat-column-timestamp {
     flex: 0 0 125px;
     padding-left: 0;
@@ -182,6 +188,7 @@
 
 .mat-column-reason {
     flex: 1 0 300px;
+    padding-right: 0;
     cursor: pointer;
     text-overflow: ellipsis;
     white-space: nowrap;

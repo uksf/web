@@ -79,7 +79,13 @@ app-side-content-area {
 
     h3 { margin: auto 15px auto 0; }
     &.actions { flex-grow: 1; }
-    &.buttons { flex-grow: 1; }
+    &.buttons {
+        flex-grow: 1;
+
+        .icon-right {
+            margin-right: 6px;
+        }
+    }
 
     app-paginator {
         margin: auto 0;
@@ -174,14 +180,28 @@ app-side-content-area {
         flex-basis: 20%;
         margin: auto;
 
-        &.state { text-align: left; max-width: 20px; min-width: 16px; height: 24px; margin: auto 5px auto 0; }
+        &.state {
+            text-align: left;
+            margin: auto 5px auto 0;
+            flex-basis: 0;
+        }
         &.recruiter { text-align: left; min-width: 100px; }
         &.active { flex-basis: 15%; }
         &.total { flex-basis: 10%; }
     }
 }
 
-.statistics-container { padding: 2px; }
+.statistics-container {
+    padding: 0px;
+
+    .statistics-content {
+        padding: 0 16px;
+    }
+}
+
+:host ::ng-deep .mat-mdc-tab {
+    flex-grow: 1 !important;
+}
 
 // Color utilities
 .green { color: green; }

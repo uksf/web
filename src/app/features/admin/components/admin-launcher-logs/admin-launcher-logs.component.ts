@@ -12,7 +12,7 @@ import { LogsService } from '../../services/logs.service';
 @Component({
     selector: 'app-admin-launcher-logs',
     templateUrl: './admin-launcher-logs.component.html',
-    styleUrls: ['../admin-page/admin-page.component.scss', './admin-launcher-logs.component.scss'],
+    styleUrls: ['./admin-launcher-logs.component.scss'],
 })
 export class AdminLauncherLogsComponent extends AdminLogsComponent implements OnInit, OnDestroy {
     launcherLogDisplayedColumns = ['timestamp', 'userId', 'name', 'version', 'message'];

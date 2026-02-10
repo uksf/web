@@ -5,35 +5,42 @@
     flex-direction: row;
     margin-left: 0;
     padding: 0 16px 16px;
-}
 
-.ranks-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    width: fit-content;
-}
-
-.ranks-list-item {
-    font-size: 16px;
-    width: fit-content;
-
-    &.header {
+    .ranks-container {
         display: flex;
-        background-color: transparent;
+        flex-direction: column;
+        gap: 8px;
 
-        span {
-            font-weight: bold;
+        .ranks-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            width: fit-content;
+            gap: 4px;
+
+            &.disabled {
+                opacity: 0.5;
+                cursor: default;
+                pointer-events: none;
+            }
+
+            .ranks-list-item {
+                font-size: 16px;
+                width: fit-content;
+
+                &.header {
+                    display: flex;
+                    background-color: transparent;
+
+                    span {
+                        font-weight: bold;
+                    }
+                }
+
+                @include layout.ranks-list-item-layout;
+            }
         }
     }
-
-    @include layout.ranks-list-item-layout;
-}
-
-.disabled {
-    opacity: 0.5;
-    cursor: default;
-    pointer-events: none;
 }
 
 .cdk-drag-placeholder {

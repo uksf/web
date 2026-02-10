@@ -9,7 +9,7 @@ import { InfrastructureService } from '../../services/infrastructure.service';
 @Component({
     selector: 'app-admin-servers',
     templateUrl: './admin-servers.component.html',
-    styleUrls: ['../admin-page/admin-page.component.scss', './admin-servers.component.scss']
+    styleUrls: ['./admin-servers.component.scss']
 })
 export class AdminServersComponent implements OnInit {
     latest: ServerInfrastructureLatest;

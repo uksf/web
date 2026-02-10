@@ -2,13 +2,13 @@
     <app-main-content-area style="grid-column: span 3">
         <div class="flex-container">
             <div class="list-header">
-                <button mat-button class="refresh-button" (click)="refresh()">
-                    <mat-icon [ngClass]="{ updating: updating }" matTooltip="Refresh">refresh</mat-icon>
+                <button mat-button class="refresh-button" (click)="refresh()" matTooltip="Refresh">
+                    <mat-icon [ngClass]="{ updating: updating }">refresh</mat-icon>
                 </button>
                 <mat-form-field style="width: 30%">
                     <mat-label>Filter</mat-label>
                     <input (keyup)="filter()" [(ngModel)]="filterString" matInput />
-                    <button mat-button *ngIf="filterString" matSuffix mat-icon-button aria-label="Clear" (click)="filterString = ''; filter(); $event.stopPropagation()">
+                    <button *ngIf="filterString" matSuffix mat-icon-button aria-label="Clear" (click)="filterString = ''; filter(); $event.stopPropagation()">
                         <mat-icon>close</mat-icon>
                     </button>
                 </mat-form-field>
@@ -39,12 +39,12 @@
                         </mat-panel-title>
                         <app-flex-filler></app-flex-filler>
                         <div class="description-container" *ngIf="dischargeCollection.requestExists">
-                            <mat-panel-description class="discharge-count discharge-2"> Reinstate request created </mat-panel-description>
+                            <mat-panel-description class="discharge-count discharge-2">Reinstate request created</mat-panel-description>
                         </div>
                         <div class="description-container" *ngIf="!dischargeCollection.reinstated && !dischargeCollection.requestExists">
-                            <mat-panel-description *ngIf="dischargeCollection.discharges.length == 1" class="discharge-count discharge-1"> Can rejoin 2 more times </mat-panel-description>
-                            <mat-panel-description *ngIf="dischargeCollection.discharges.length == 2" class="discharge-count discharge-2"> Can rejoin 1 more time </mat-panel-description>
-                            <mat-panel-description *ngIf="dischargeCollection.discharges.length >= 3" class="discharge-count discharge-limit"> Cannot rejoin </mat-panel-description>
+                            <mat-panel-description *ngIf="dischargeCollection.discharges.length == 1" class="discharge-count discharge-1">Can rejoin 2 more times</mat-panel-description>
+                            <mat-panel-description *ngIf="dischargeCollection.discharges.length == 2" class="discharge-count discharge-2">Can rejoin 1 more time</mat-panel-description>
+                            <mat-panel-description *ngIf="dischargeCollection.discharges.length >= 3" class="discharge-count discharge-limit">Cannot rejoin</mat-panel-description>
                         </div>
                         <div class="description-container" *ngIf="dischargeCollection.reinstated && !dischargeCollection.requestExists">
                             <mat-panel-description *ngIf="dischargeCollection.discharges.length == 1" class="discharge-count discharge-2">
@@ -61,27 +61,27 @@
                             <div class="table-container">
                                 <mat-table [dataSource]="dischargeCollection.discharges">
                                     <ng-container matColumnDef="timestamp">
-                                        <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
+                                        <mat-header-cell *matHeaderCellDef>Date</mat-header-cell>
                                         <mat-cell *matCellDef="let discharge">{{ discharge.timestamp | date: 'dd/MM/yy' }}</mat-cell>
                                     </ng-container>
                                     <ng-container matColumnDef="rank">
-                                        <mat-header-cell *matHeaderCellDef style="cursor: auto"> Rank</mat-header-cell>
+                                        <mat-header-cell *matHeaderCellDef style="cursor: auto">Rank</mat-header-cell>
                                         <mat-cell *matCellDef="let discharge">{{ discharge.rank }}</mat-cell>
                                     </ng-container>
                                     <ng-container matColumnDef="unit">
-                                        <mat-header-cell *matHeaderCellDef style="cursor: auto"> Unit</mat-header-cell>
+                                        <mat-header-cell *matHeaderCellDef style="cursor: auto">Unit</mat-header-cell>
                                         <mat-cell *matCellDef="let discharge">{{ discharge.unit }}</mat-cell>
                                     </ng-container>
                                     <ng-container matColumnDef="role">
-                                        <mat-header-cell *matHeaderCellDef style="cursor: auto"> Role</mat-header-cell>
+                                        <mat-header-cell *matHeaderCellDef style="cursor: auto">Role</mat-header-cell>
                                         <mat-cell *matCellDef="let discharge">{{ discharge.role }}</mat-cell>
                                     </ng-container>
                                     <ng-container matColumnDef="dischargedBy">
-                                        <mat-header-cell *matHeaderCellDef style="cursor: auto"> Discharge Requester </mat-header-cell>
+                                        <mat-header-cell *matHeaderCellDef style="cursor: auto">Discharge Requester </mat-header-cell>
                                         <mat-cell *matCellDef="let discharge">{{ discharge.dischargedBy }}</mat-cell>
                                     </ng-container>
                                     <ng-container matColumnDef="reason">
-                                        <mat-header-cell *matHeaderCellDef style="cursor: auto"> Reason </mat-header-cell>
+                                        <mat-header-cell *matHeaderCellDef style="cursor: auto">Reason </mat-header-cell>
                                         <mat-cell *matCellDef="let discharge" (click)="openMessageDialog($event.target.textContent)">
                                             <div class="mat-column-reason">{{ discharge.reason }}</div>
                                         </mat-cell>

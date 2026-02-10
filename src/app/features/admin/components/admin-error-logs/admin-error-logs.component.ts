@@ -12,7 +12,7 @@ import { LogsService } from '../../services/logs.service';
 @Component({
     selector: 'app-admin-error-logs',
     templateUrl: './admin-error-logs.component.html',
-    styleUrls: ['../admin-page/admin-page.component.scss', './admin-error-logs.component.scss'],
+    styleUrls: ['./admin-error-logs.component.scss'],
 })
 export class AdminErrorLogsComponent extends AdminLogsComponent implements OnInit, OnDestroy {
     errorLogDisplayedColumns = ['timestamp', 'statusCode', 'method', 'url', 'endpointName', 'userId', 'name', 'message', 'exception'];

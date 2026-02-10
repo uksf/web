@@ -17,7 +17,7 @@ import { AdminToolsService } from '../../services/admin-tools.service';
 @Component({
     selector: 'app-admin-tools',
     templateUrl: './admin-tools.component.html',
-    styleUrls: ['../admin-page/admin-page.component.scss', './admin-tools.component.scss']
+    styleUrls: ['./admin-tools.component.scss']
 })
 export class AdminToolsComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;

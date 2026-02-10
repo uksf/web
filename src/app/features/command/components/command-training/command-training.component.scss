@@ -3,57 +3,59 @@
     flex-direction: row;
     margin-left: 0;
     padding: 0 16px 16px;
-}
 
-.trainings-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    width: fit-content;
-}
-
-.trainings-list-item {
-    font-size: 16px;
-    width: fit-content;
-
-    &.header {
+    .trainings-container {
         display: flex;
-        background-color: transparent;
+        flex-direction: column;
+        gap: 8px;
 
-        span {
-            font-weight: bold;
+        .trainings-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            width: fit-content;
+
+            .trainings-list-item {
+                display: flex;
+                flex-direction: row;
+                padding: 0 10px;
+                align-items: center;
+                width: 800px;
+                margin-bottom: 1px;
+                height: 36px;
+                font-size: 16px;
+
+                &.header {
+                    display: flex;
+                    background-color: transparent;
+
+                    span {
+                        font-weight: bold;
+                    }
+                }
+
+                .name {
+                    flex: 1;
+                    flex-basis: 40%;
+                }
+
+                .shortName {
+                    flex: 1;
+                    flex-basis: 20%;
+                }
+
+                .teamspeakGroup {
+                    flex: 1;
+                    flex-basis: 15%;
+                }
+
+                .delete-icon {
+                    color: red;
+                    cursor: pointer;
+                }
+            }
         }
     }
-}
-
-.mat-mdc-card {
-    display: flex;
-    flex-direction: row;
-    padding: 0 10px;
-    align-items: center;
-    width: 800px;
-    margin-bottom: 1px;
-    height: 36px;
-}
-
-.name {
-    flex: 1;
-    flex-basis: 40%;
-}
-
-.shortName {
-    flex: 1;
-    flex-basis: 20%;
-}
-
-.teamspeakGroup {
-    flex: 1;
-    flex-basis: 15%;
-}
-
-.delete-icon {
-    color: red;
-    cursor: pointer;
 }
 
 .filler {

@@ -56,7 +56,7 @@
                     position: relative;
                     width: 100%;
                     pointer-events: none;
-                    transform: scale3d(1, 1.0001, 1);
+                    transform: scale3d(1, 1, 1);
                 }
             }
         }
@@ -125,6 +125,33 @@
 
                     &.training {
                         margin-right: 2px;
+                    }
+
+                    &.qualification {
+                        ::ng-deep .mdc-checkbox {
+                            padding: 0;
+
+                            .mdc-checkbox__native-control {
+                                height: 18px;
+                                width: 18px;
+                                margin-top: 0;
+                            }
+
+                            .mdc-checkbox__background {
+                                top: 0;
+                                left: 0;
+                            }
+
+                            .mat-mdc-checkbox-touch-target {
+                                width: 32px;
+                                height: 32px;
+                            }
+
+                            label {
+                                margin: 0;
+                                padding-left: 16px;
+                            }
+                        }
                     }
                 }
 

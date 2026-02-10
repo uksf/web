@@ -127,7 +127,7 @@
                             <mat-form-field>
                                 <mat-label>Filter</mat-label>
                                 <input (keyup)="filter()" [(ngModel)]="filterString" matInput matTooltip="Use operators 'AND' or 'OR' to combine filters" />
-                                <button (click)="filterString = ''; filter(); $event.stopPropagation()" *ngIf="filterString" aria-label="Clear" mat-button mat-icon-button matSuffix matTooltip="Clear">
+                                <button (click)="filterString = ''; filter(); $event.stopPropagation()" *ngIf="filterString" aria-label="Clear" mat-icon-button matSuffix matTooltip="Clear">
                                     <mat-icon>close</mat-icon>
                                 </button>
                             </mat-form-field>
@@ -136,7 +136,7 @@
                             <div class="history-header-part sort">
                                 <button mat-raised-button [matMenuTriggerFor]="sortMenu">
                                     <mat-icon class="icon-right">sort</mat-icon>
-                                    Sort
+                                    <span>Sort</span>
                                 </button>
                                 <mat-menu #sortMenu="matMenu">
                                     <button
@@ -150,7 +150,7 @@
                                 </mat-menu>
                                 <button mat-raised-button [matMenuTriggerFor]="filterMenu">
                                     <mat-icon class="icon-right">filter_list</mat-icon>
-                                    Filter SR1
+                                    <span>Filter SR1</span>
                                 </button>
                                 <mat-menu #filterMenu="matMenu">
                                     <button (click)="filterByRecruiter('')" mat-menu-item>All</button>
@@ -222,7 +222,7 @@
                     <mat-card>
                         <div class="activity-row">
                             <ng-template [ngxPermissionsOnly]="['RECRUITER_LEAD']">
-                                <div class="item state header"></div>
+                                <div class="item state"><b>On/Off</b></div>
                             </ng-template>
                             <div class="item recruiter"><b>Recruiter</b></div>
                             <div class="item active"><b>Active</b></div>
@@ -232,7 +232,7 @@
                         </div>
                         <div class="activity-row" *ngFor="let item of activity">
                             <ng-template [ngxPermissionsOnly]="['RECRUITER_LEAD']">
-                                <div class="item state">
+                                <div class="item state row">
                                     <mat-checkbox color="primary" matTooltip="Recruiter enabled/disabled" [(ngModel)]="item.account.settings.sr1Enabled" (change)="setSr1Enabled(item)"></mat-checkbox>
                                 </div>
                             </ng-template>
@@ -251,7 +251,7 @@
                     <mat-card class="statistics-container">
                         <mat-tab-group>
                             <mat-tab label="Your Statistics" style="width: 100%">
-                                <mat-card>
+                                <mat-card class="statistics-content">
                                     <h4>Last Month</h4>
                                     <p *ngFor="let stats of yourStats.lastMonth">{{ stats.fieldName }} - {{ stats.fieldValue }}</p>
                                     <br />
@@ -260,7 +260,7 @@
                                 </mat-card>
                             </mat-tab>
                             <mat-tab label="All Statistics" style="width: 100%">
-                                <mat-card>
+                                <mat-card class="statistics-content">
                                     <h4>Last Month</h4>
                                     <p *ngFor="let stats of sr1Stats.lastMonth">{{ stats.fieldName }} - {{ stats.fieldValue }}</p>
                                     <br />

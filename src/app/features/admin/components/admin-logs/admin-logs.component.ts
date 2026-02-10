@@ -18,7 +18,7 @@ import { LogsService } from '../../services/logs.service';
 @Component({
     selector: 'app-admin-logs',
     templateUrl: './admin-logs.component.html',
-    styleUrls: ['../admin-page/admin-page.component.scss', './admin-logs.component.scss'],
+    styleUrls: ['./admin-logs.component.scss'],
 })
 export class AdminLogsComponent extends DestroyableComponent implements OnInit, AfterViewInit {
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;

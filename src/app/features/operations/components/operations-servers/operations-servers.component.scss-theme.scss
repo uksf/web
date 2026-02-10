@@ -40,8 +40,10 @@
         }
 
         .server-buttons {
-            button {
-                background-color: transparent;
+            .admin {
+                button {
+                    background-color: transparent;
+                }
             }
         }
 
@@ -54,8 +56,9 @@
         }
     }
 
-    &.cdk-drag-preview {
+    @at-root .cdk-drag-preview {
         .servers-list-item {
+            color: mat.get-color-from-palette($foreground, text);
             background-color: mat.get-color-from-palette($background, server);
 
             &.server-running {

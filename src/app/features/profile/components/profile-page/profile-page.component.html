@@ -55,8 +55,7 @@
                         </div>
                     </div>
                 </mat-card>
-
-                <div *ngIf="account.application != null && (isRecruiter || (isMyProfile && !isRecruiter))">
+                <div *ngIf="account.application != null && (isRecruiter || (isMyProfile && !isRecruiter))" class="application-container">
                     <br />
                     <mat-card style="text-align: center; vertical-align: middle">
                         <h2 *ngIf="isRecruiter">
