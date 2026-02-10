@@ -1,18 +1,8 @@
-.flex-container {
-    display: flex;
-    flex-direction: column;
-    margin-left: 0;
-    padding-left: 16px;
-    padding-right: 16px;
-}
+@use '../../admin-shared' as admin;
 
-.mat-column-userId {
-    flex: 0 0 175px;
-}
-
-.mat-column-name {
-    flex: 0 0 125px;
-}
+@include admin.admin-table-base;
+@include admin.column-user-id;
+@include admin.column-name;
 
 .mat-column-version {
     flex: 0 0 85px;

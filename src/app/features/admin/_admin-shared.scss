@@ -1,0 +1,152 @@
+// Shared styles for admin sub-page components.
+// Import: @use '../../admin-shared' as admin;
+
+// Base table styles shared by all admin data table views.
+@mixin admin-table-base {
+    .spinner-container {
+        height: 416px;
+        position: absolute;
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin-left: 50%;
+        transform: translate(-170px, 0);
+    }
+
+    .table-container {
+        display: flex;
+        flex-direction: column;
+        min-width: 300px;
+        max-width: 100vw;
+    }
+
+    .table-header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .refresh-button {
+        margin-right: 10px;
+        line-height: 36px;
+        height: 36px;
+        padding: 0px;
+        min-width: 36px;
+        align-self: center;
+    }
+
+    .expand-hint {
+        display: inline-block;
+        vertical-align: bottom;
+        text-align: right;
+        font-size: 11px;
+    }
+
+    .mat-mdc-form-field {
+        font-size: 14px;
+        width: 100%;
+    }
+
+    .mat-mdc-table {
+        overflow: auto;
+        min-height: 360px;
+    }
+
+    .mat-mdc-row {
+        min-height: 30px;
+        padding: 0 10px;
+    }
+
+    .mat-mdc-header-row {
+        padding: 0 10px;
+    }
+
+    .mdc-data-table__cell, .mdc-data-table__header-cell {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .mat-mdc-cell {
+        overflow: hidden;
+        max-height: 75px;
+        padding: 2px;
+        font-size: 11px;
+        font-weight: 300;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+
+        span {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+    }
+
+    .mat-mdc-header-cell {
+        overflow: unset;
+        font-size: 12px;
+        font-weight: 500;
+
+        &:first-of-type {
+            padding: 0;
+        }
+    }
+
+    .mat-column-id {
+        flex: 0 0 175px;
+    }
+
+    .mat-column-timestamp {
+        flex: 0 0 125px;
+    }
+
+    .mat-column-message {
+        flex: 1 0 200px;
+        cursor: pointer;
+    }
+
+    .updating {
+        animation: rotation 2s infinite linear;
+        -webkit-animation: rotation 2s infinite linear;
+    }
+
+    @keyframes rotation {
+        from {
+            -webkit-transform: rotate(0deg);
+        }
+        to {
+            -webkit-transform: rotate(359deg);
+        }
+    }
+
+    @-webkit-keyframes rotation {
+        from {
+            -webkit-transform: rotate(0deg);
+        }
+        to {
+            -webkit-transform: rotate(359deg);
+        }
+    }
+}
+
+// Common column: userId (175px fixed width)
+@mixin column-user-id {
+    .mat-column-userId {
+        flex: 0 0 175px;
+    }
+}
+
+// Common column: name (125px fixed width)
+@mixin column-name {
+    .mat-column-name {
+        flex: 0 0 125px;
+    }
+}
+
+// Sizing for app-button elements in admin pages
+@mixin admin-button {
+    app-button {
+        width: fit-content;
+        height: min-content;
+    }
+}

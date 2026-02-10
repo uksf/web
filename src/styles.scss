@@ -222,6 +222,7 @@
 
     .mat-mdc-tab-nav-bar {
         overflow: auto;
+        border-bottom: 1px solid rgba(255, 255, 255, .12);
     }
 
     // Restore underline-only appearance for MDC form fields (matches legacy "standard" look)
@@ -242,23 +243,18 @@
         }
     }
 
-    // Reduce MDC form field height to match legacy standard appearance
-    .mat-mdc-text-field-wrapper:not(.mdc-text-field--outlined) .mat-mdc-form-field-infix {
-        padding-top: 18px !important;
-        padding-bottom: 4px !important;
-    }
-
     .mat-mdc-form-field-infix {
-        min-height: 48px;
+        min-height: 40px;
+        padding-bottom: 2px;
+        padding-top: 14px;
     }
 
-    // MDC floating label: keep labels as placeholders (don't float above)
-    .mat-mdc-form-field .mdc-floating-label {
-        top: 50% !important;
+    .mat-mdc-form-field:not(.mat-form-field-disabled) .mat-mdc-floating-label.mdc-floating-label {
+        top: 20px
     }
 
-    .mat-mdc-form-field .mdc-floating-label--float-above {
-        display: none;
+    .mat-mdc-button-touch-target {
+        display: none !important;
     }
 }
 
@@ -325,19 +321,23 @@
 }
 
 // MDC tab nav bar: don't stretch tabs to fill width
-.mat-mdc-tab-nav-bar .mat-mdc-tab-links,
-.mat-mdc-tab-header .mat-mdc-tab-labels {
-    flex-grow: 0;
-}
+// .mat-mdc-tab-nav-bar .mat-mdc-tab-links,
+// .mat-mdc-tab-header .mat-mdc-tab-labels {
+//     flex-grow: 0;
+// }
 
 .mat-mdc-tab-link,
 .mat-mdc-tab {
     flex-grow: 0 !important;
+    min-width: 160px !important;
 }
 
-// MDC form field: collapse subscript wrapper (error labels sit just below the underline)
+// MDC form field subscript: reserve just enough space for one line of error text
+// below the underline, preventing layout shift when validation errors appear.
+// The default Material ::before spacer (16px + line-height = 22px) is too tall,
+// so we hide it and use a smaller min-height on the wrapper instead.
 .mat-mdc-form-field-subscript-wrapper {
-    min-height: 0 !important;
+    min-height: 20px !important;
     padding: 0 !important;
 
     .mat-mdc-form-field-error-wrapper,
@@ -349,7 +349,6 @@
 
 .mat-mdc-form-field-bottom-align::before {
     display: none !important;
-    height: 0 !important;
 }
 
 // MDC tab nav panel: flex to fill available space (for AAR iframe etc.)
@@ -362,19 +361,135 @@ mat-tab-nav-panel,
 }
 
 
-// CDK drag preview: global styles for overlay-rendered drag previews.
-// Component-scoped styles can't reach the CDK overlay, so these use shared
-// mixins to stay in sync with the component layout rules.
+// ---------------------------------------------------------------------------
+// CDK drag preview
+// ---------------------------------------------------------------------------
+// CDK drag previews are cloned DOM nodes appended to <body>, outside the
+// .dark-theme wrapper. This means:
+//   1. Material CSS custom properties (set by mat.all-component-themes inside
+//      .dark-theme) are not inherited — cards, form fields lose their shape/color.
+//   2. Dark-theme overrides (form field underline appearance, input colors) don't
+//      reach the preview.
+//   3. Component styles loaded from JS chunks (ViewEncapsulation.None) that use
+//      var(--mdc-*) resolve against missing variables.
+//
+// We fix this by:
+//   - Including only the Material component themes actually used in drag previews
+//     (card shape, form field sizing) so their CSS custom properties are set.
+//   - Replicating dark-theme appearance overrides using palette functions.
+//   - Setting explicit button colors (the button component's var()-based styles
+//     in JS chunks don't cascade reliably to cloned elements).
+//   - Using shared layout mixins for ranks/servers list items.
+//
+// Themed colors (background, text) are handled by each component's scss-theme
+// file via @at-root .cdk-drag-preview (see command-ranks and operations-servers
+// theme files).
+// ---------------------------------------------------------------------------
 .cdk-drag-preview {
+    $foreground: map-get($dark-theme, foreground);
+    $background: map-get($dark-theme, background);
+    $primary: map-get($dark-theme, primary);
+
+    // Material CSS custom properties for card border-radius and form field sizing
+    @include mat.card-theme($dark-theme);
+    @include mat.form-field-theme($dark-theme);
+
     box-sizing: border-box;
+    overflow: hidden;
 
-    &.ranks-list-item {
+    // --- Form field: underline-only appearance (mirrors .dark-theme overrides) ---
+    .mat-mdc-form-field.mat-form-field-appearance-fill {
+        .mdc-text-field--filled {
+            background-color: transparent;
+            border-radius: 0;
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .mat-mdc-form-field-focus-overlay {
+            background-color: transparent;
+        }
+
+        .mdc-line-ripple::before {
+            border-bottom-color: mat.get-color-from-palette($foreground, divider);
+        }
+    }
+
+    input {
+        color: mat.get-color-from-palette($foreground, base) !important;
+        background-color: transparent !important;
+    }
+
+    // --- Button: explicit styles (JS chunk component styles don't cascade) ---
+    .mat-mdc-raised-button {
+        border-radius: 4px;
+        height: 36px;
+    }
+
+    .mat-mdc-raised-button.mat-primary:not(:disabled) {
+        background-color: mat.get-color-from-palette($primary);
+        color: mat.get-color-from-palette($primary, default-contrast);
+    }
+
+    .mat-mdc-raised-button:disabled {
+        background-color: mat.get-color-from-palette($foreground, divider);
+        color: mat.get-color-from-palette($foreground, disabled-text);
+    }
+
+    // --- Ranks list item layout ---
+    .ranks-list-item {
         @include ranks-layout.ranks-list-item-layout;
+        font-size: 16px;
     }
 
-    &.servers-list-item {
+    // --- Servers list item layout ---
+    // margin: 0 prevents bottom clipping (CDK sizes the preview from
+    // getBoundingClientRect which excludes margin)
+    .servers-list-item {
         @include servers-layout.servers-list-item-layout;
+        margin: 0 !important;
+
+        .icon {
+            line-height: 36px;
+            height: 36px;
+            padding: 0;
+            min-width: 36px;
+            align-self: center;
+        }
+
+        .mat-mdc-raised-button {
+            margin-right: 5px;
+            flex-shrink: 0;
+        }
+
+        .mission-select {
+            width: 450px !important;
+            margin: 0 10px;
+            align-self: center;
+
+            .mat-mdc-form-field-infix {
+                min-height: unset;
+                padding-top: 8px !important;
+                padding-bottom: 8px !important;
+            }
+
+            .mat-mdc-form-field-subscript-wrapper {
+                display: none;
+            }
+        }
     }
+}
+
+// ---------------------------------------------------------------------------
+// Page layout utilities
+// ---------------------------------------------------------------------------
+.page-container {
+    padding: 0 16px 16px;
+}
+
+// MDC dialog: white supporting text (Material 17 defaults to rgba)
+.mat-mdc-dialog-container {
+    --mdc-dialog-supporting-text-color: white;
 }
 
 // MDC checkbox: allow label text to wrap
@@ -404,16 +519,15 @@ mat-tab-nav-panel,
     }
 }
 
-.member-panel-content-element {
-    .mat-mdc-checkbox {
-        margin: 0;
+.mat-mdc-checkbox {
+    margin: 0;
 
-        label {
-            color: white;
-            font-size: 14px;
-            font-weight: 300;
-            line-height: 20px;
-        }
+    label {
+        margin: 0;
+        color: white;
+        font-size: 14px;
+        line-height: 20px;
+        padding-left: 8px !important;
     }
 }
 

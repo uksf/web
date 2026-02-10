@@ -1,10 +1,8 @@
-.flex-container {
-    display: flex;
-    flex-direction: column;
-    margin-left: 0;
-    padding-left: 16px;
-    padding-right: 16px;
-}
+@use '../../admin-shared' as admin;
+
+@include admin.admin-table-base;
+@include admin.column-user-id;
+@include admin.column-name;
 
 .mat-column-id {
     flex: 0 0 75px;
@@ -36,14 +34,6 @@
 .mat-column-endpointName {
     flex: 0 0 200px;
     cursor: pointer;
-}
-
-.mat-column-userId {
-    flex: 0 0 175px;
-}
-
-.mat-column-name {
-    flex: 0 0 125px;
 }
 
 .mat-column-exception {

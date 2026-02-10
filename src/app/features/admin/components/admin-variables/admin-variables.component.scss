@@ -1,97 +1,92 @@
-.flex-container {
-    display: flex;
-    flex-direction: row;
-    margin-left: 0;
-    padding-left: 16px;
-    padding-right: 16px;
+@use '../../admin-shared' as admin;
 
-    .variables-container {
-        width: 100%;
-        padding-bottom: 16px;
+@include admin.admin-table-base;
 
-        .variables-header {
-            position: sticky;
-            top: 0;
-            z-index: 1;
+.variables-container {
+    width: 100%;
 
-            .variables-form-container {
-                display: flex;
-                flex-direction: row;
-                margin-left: 0;
+    .variables-header {
+        position: sticky;
+        top: 0;
+        z-index: 1;
 
-                .key-field {
-                    margin-right: 10px;
-                    width: 275px;
-                }
+        .variables-form-container {
+            display: flex;
+            flex-direction: row;
+            margin-left: 0;
 
-                .item-field {
-                    margin-right: 10px;
-                    flex: 1;
-                }
+            .key-field {
+                margin-right: 10px;
+                width: 275px;
+            }
 
-                .mat-mdc-raised-button {
-                    width: fit-content;
-                    align-self: center;
-                }
+            .item-field {
+                margin-right: 10px;
+                flex: 1;
+            }
 
-                .mat-mdc-icon-button {
-                    margin: auto;
-                }
+            .mat-mdc-raised-button {
+                width: fit-content;
+                align-self: center;
+            }
+
+            .mat-mdc-icon-button {
+                margin: auto;
             }
         }
+    }
 
-        .variables-list-container {
-            .variables-list {
-                .variables-list-item {
-                    background: transparent;
-                    box-shadow: unset;
-                    border-radius: 0;
+    .variables-list-container {
+        .variables-list {
+            .variables-list-item {
+                background: transparent;
+                box-shadow: unset;
+                border-radius: 0;
 
-                    &.mat-expansion-panel-spacing {
-                        margin: 0;
+                &.mat-expansion-panel-spacing {
+                    margin: 0;
+                }
+
+                .mat-expansion-panel-header {
+                    padding: 0 0 0 8px;
+                    width: fit-content;
+
+                    &:hover {
+                        background: transparent;
                     }
+                }
 
-                    .mat-expansion-panel-header {
-                        padding: 0 0 0 8px;
-                        width: fit-content;
+                .variable-item {
+                    display: flex;
+                    flex-direction: row;
+                    padding: 0;
+                    align-items: center;
+                    margin-bottom: 3px;
+                    height: 36px;
+                    padding-right: 10px;
+                    padding-left: 10px;
 
-                        &:hover {
-                            background: transparent;
+                    .delete-icon {
+                        color: red;
+                        cursor: pointer;
+
+                        &.disabled {
+                            opacity: 0.5;
+                            cursor: default;
+                            pointer-events: none;
                         }
                     }
 
-                    .variable-item {
-                        display: flex;
-                        flex-direction: row;
-                        padding: 0;
-                        align-items: center;
-                        margin-bottom: 3px;
-                        height: 36px;
-                        padding-right: 10px;
+                    .key {
                         padding-left: 10px;
+                        font-weight: bold;
+                        width: 250px;
+                    }
 
-                        .delete-icon {
-                            color: red;
-                            cursor: pointer;
-
-                            &.disabled {
-                                opacity: 0.5;
-                                cursor: default;
-                                pointer-events: none;
-                            }
-                        }
-
-                        .key {
-                            padding-left: 10px;
-                            font-weight: bold;
-                            width: 250px;
-                        }
-
-                        .item {
-                            flex: 1;
-                            padding-left: 10px;
-                            overflow: hidden;
-                        }
+                    .item {
+                        flex: 1;
+                        padding-left: 10px;
+                        overflow: hidden;
                     }
                 }
             }

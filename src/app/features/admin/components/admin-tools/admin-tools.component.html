@@ -1,21 +1,21 @@
 <app-default-content-areas>
     <app-main-content-area style="grid-column: span 3">
         <app-admin-page></app-admin-page>
-        <h4>Current user ID: {{ accountId }}</h4>
-        <h4>Tools</h4>
-        <div class="flex-container flex-row flex-wrap">
-            <app-button (clicked)="runFunction(tool)" *ngFor="let tool of tools" [pending]="tool.pending">{{ tool.title }}</app-button>
-        </div>
-        <div class="flex-container no-padding-left" *ngIf="debug">
-            <h4>Debug Tools</h4>
-            <div class="flex-container flex-row flex-wrap">
-                <app-button (clicked)="runFunction(tool)" *ngFor="let tool of debugTools" [disabled]="true" [pending]="tool.pending">{{ tool.title }}</app-button>
+        <div class="page-container">
+            <h4>Current user ID: {{ accountId }}</h4>
+            <h4>Tools</h4>
+            <div class="tools-row">
+                <app-button (clicked)="runFunction(tool)" *ngFor="let tool of tools" [pending]="tool.pending">{{ tool.title }}</app-button>
             </div>
-        </div>
-        <ng-template [ngxPermissionsOnly]="['SUPERADMIN']">
-            <div class="flex-container no-padding-left">
+            <div *ngIf="debug">
+                <h4>Debug Tools</h4>
+                <div class="tools-row">
+                    <app-button (clicked)="runFunction(tool)" *ngFor="let tool of debugTools" [disabled]="true" [pending]="tool.pending">{{ tool.title }}</app-button>
+                </div>
+            </div>
+            <ng-template [ngxPermissionsOnly]="['SUPERADMIN']">
                 <h4>SuperAdmin Tools</h4>
-                <form #form="ngForm" class="flex-container flex-row min-width">
+                <form #form="ngForm" class="impersonate-form">
                     <app-autofocus-stop></app-autofocus-stop>
                     <app-dropdown
                         #accountId="ngModel"
@@ -36,7 +36,7 @@
                         <app-button (clicked)="impersonate()" [disabled]="!form.valid" [pending]="impersonationPending"> Impersonate </app-button>
                     </div>
                 </form>
-            </div>
-        </ng-template>
+            </ng-template>
+        </div>
     </app-main-content-area>
 </app-default-content-areas>

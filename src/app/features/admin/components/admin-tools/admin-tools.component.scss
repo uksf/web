@@ -1,21 +1,17 @@
-.flex-container {
+@use '../../admin-shared' as admin;
+
+@include admin.admin-table-base;
+@include admin.admin-button;
+
+.tools-row {
     display: flex;
-    flex-direction: column;
-    margin-left: 0;
-    padding-left: 16px;
-    padding-right: 16px;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
 
-    &.flex-row {
-        flex-direction: row;
-    }
-
-    &.no-padding-left {
-        padding-left: 0;
-    }
-
-    &.flex-wrap {
-        flex-wrap: wrap;
-    }
+.impersonate-form {
+    display: flex;
+    flex-direction: row;
 }
 
 .mat-mdc-form-field {
@@ -32,13 +28,7 @@
     padding-left: 16px;
 }
 
-h4 {
-    margin: 16px;
-}
-
 app-button {
-    width: fit-content;
-    height: min-content;
     align-self: center;
     margin: 5px 5px 0 0;
 }

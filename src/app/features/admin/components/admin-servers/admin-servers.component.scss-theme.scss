@@ -5,7 +5,7 @@
     $background: map-get($theme, background);
 
     app-admin-servers {
-        .update-container {
+        .page-container {
             .update-info-container {
                 span {
                     color: mat.get-color-from-palette($primary);

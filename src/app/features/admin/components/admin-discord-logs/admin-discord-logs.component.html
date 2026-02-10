@@ -1,12 +1,12 @@
 <app-default-content-areas>
     <app-main-content-area style="grid-column: span 3">
         <app-admin-page></app-admin-page>
-        <div class="flex-container">
+        <div class="page-container">
             <div class="table-header">
                 <mat-form-field style="width: 30%">
                     <mat-label>Filter</mat-label>
                     <input matInput (keyup)="applyFilter($event.target.value)" [(ngModel)]="filter" />
-                    <button mat-button *ngIf="filter" matSuffix mat-icon-button aria-label="Clear" (click)="applyFilter(''); $event.stopPropagation()">
+                    <button *ngIf="filter" matSuffix mat-icon-button aria-label="Clear" (click)="applyFilter(''); $event.stopPropagation()">
                         <mat-icon>close</mat-icon>
                     </button>
                 </mat-form-field>

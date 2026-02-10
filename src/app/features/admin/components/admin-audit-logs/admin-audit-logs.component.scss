@@ -1,10 +1,6 @@
-.flex-container {
-    display: flex;
-    flex-direction: column;
-    margin-left: 0;
-    padding-left: 16px;
-    padding-right: 16px;
-}
+@use '../../admin-shared' as admin;
+
+@include admin.admin-table-base;
 
 .mat-column-who {
     flex: 0 0 150px;

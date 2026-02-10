@@ -1,48 +1,32 @@
-.update-container {
+@use '../../admin-shared' as admin;
+
+@include admin.admin-table-base;
+@include admin.admin-button;
+
+.update-info-container {
     display: flex;
-    flex-direction: column;
-    padding-left: 16px;
-    padding-right: 16px;
+    flex-direction: row;
+    height: 25px;
+    margin: 8px 8px 8px 0;
+    font-size: 18px;
 
-    &.flex-row {
-        flex-direction: row;
+    app-loading-placeholder {
+        margin-left: 8px;
     }
 
-    &.no-padding-left {
-        padding-left: 0;
+    .mat-icon {
+        margin-left: 8px;
     }
 
-    &.no-padding-right {
-        padding-right: 0;
-    }
-
-    .update-info-container {
-        display: flex;
-        flex-direction: row;
-        height: 25px;
-        margin: 8px 8px 8px 0;
-        font-size: 18px;
-
-        app-loading-placeholder {
-            margin-left: 8px;
-        }
-
-        .mat-icon {
-            margin-left: 8px;
-        }
-
-        .update-info {
-            margin-left: 8px;
-        }
-    }
-
-    .updating-title {
-        margin-top: 16px;
+    .update-info {
+        margin-left: 8px;
     }
 }
 
+.updating-title {
+    margin-top: 16px;
+}
+
 app-button {
-    width: fit-content;
-    height: min-content;
     margin-top: 6px;
 }
