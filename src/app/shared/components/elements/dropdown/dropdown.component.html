@@ -36,8 +36,6 @@
                 </mat-option>
             </cdk-virtual-scroll-viewport>
         </mat-autocomplete>
-        <mat-error *ngFor="let validation of validationMessages; trackBy: trackByIndex">
-            <mat-error *ngIf="showErrors && textInput.hasError(validation.type)" class="error-message">{{ validation.message() }}</mat-error>
-        </mat-error>
+        <mat-error *ngIf="showErrors">{{ getValidationError(textInput.control, validationMessages) }}</mat-error>
     </mat-form-field>
 </form>

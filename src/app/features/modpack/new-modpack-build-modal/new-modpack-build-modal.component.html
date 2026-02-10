@@ -22,13 +22,9 @@
             <mat-form-field class="normal">
                 <mat-label>Commit ID</mat-label>
                 <input matInput formControlName="commitId" [errorStateMatcher]="instantErrorStateMatcher" />
-                <mat-error *ngFor="let validation of validationMessages.commitId">
-                    <mat-error class="error-message" *ngIf="form.get('referenceGroup.commitId').hasError(validation.type)">{{ validation.message }}</mat-error>
-                </mat-error>
+                <mat-error>{{ getValidationError(form.get('referenceGroup.commitId'), validationMessages.commitId) }}</mat-error>
             </mat-form-field>
-            <mat-error *ngIf="form.get('referenceGroup').hasError('both')">
-                <mat-error class="error-message">Cannot select both a branch and a commit ID</mat-error>
-            </mat-error>
+            <mat-error *ngIf="form.get('referenceGroup').hasError('both')">Cannot select both a branch and a commit ID</mat-error>
         </div>
         <div class="force-container">
             <mat-checkbox color="primary" formControlName="ace">Force ACE build</mat-checkbox>

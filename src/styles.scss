@@ -225,34 +225,6 @@
         border-bottom: 1px solid rgba(255, 255, 255, .12);
     }
 
-    // Restore underline-only appearance for MDC form fields (matches legacy "standard" look)
-    .mat-mdc-form-field.mat-form-field-appearance-fill {
-        .mdc-text-field--filled {
-            background-color: transparent;
-            border-radius: 0;
-            padding-left: 0;
-            padding-right: 0;
-        }
-
-        .mat-mdc-form-field-focus-overlay {
-            background-color: transparent;
-        }
-
-        .mdc-line-ripple::before {
-            border-bottom-color: mat.get-color-from-palette($foreground, divider);
-        }
-    }
-
-    .mat-mdc-form-field-infix {
-        min-height: 40px;
-        padding-bottom: 2px;
-        padding-top: 14px;
-    }
-
-    .mat-mdc-form-field:not(.mat-form-field-disabled) .mat-mdc-floating-label.mdc-floating-label {
-        top: 20px
-    }
-
     .mat-mdc-button-touch-target {
         display: none !important;
     }
@@ -332,24 +304,6 @@
     min-width: 160px !important;
 }
 
-// MDC form field subscript: reserve just enough space for one line of error text
-// below the underline, preventing layout shift when validation errors appear.
-// The default Material ::before spacer (16px + line-height = 22px) is too tall,
-// so we hide it and use a smaller min-height on the wrapper instead.
-.mat-mdc-form-field-subscript-wrapper {
-    min-height: 20px !important;
-    padding: 0 !important;
-
-    .mat-mdc-form-field-error-wrapper,
-    .mat-mdc-form-field-hint-wrapper {
-        padding: 0;
-        position: relative;
-    }
-}
-
-.mat-mdc-form-field-bottom-align::before {
-    display: none !important;
-}
 
 // MDC tab nav panel: flex to fill available space (for AAR iframe etc.)
 mat-tab-nav-panel,
@@ -487,7 +441,7 @@ mat-tab-nav-panel,
     position: relative;
     overflow: hidden;
 
-    &::before {
+    &::after {
         content: '';
         position: absolute;
         inset: 0;
@@ -511,6 +465,14 @@ mat-tab-nav-panel,
 // MDC dialog: white supporting text (Material 17 defaults to rgba)
 .mat-mdc-dialog-container {
     --mdc-dialog-supporting-text-color: white;
+}
+
+// Dialog form layout: flex column so fields stack with consistent spacing.
+// The subscript wrapper (20px min-height inside forms) handles inter-field
+// spacing, so only a small gap is needed for non-field elements like buttons.
+mat-dialog-content form {
+    display: flex;
+    flex-direction: column;
 }
 
 // MDC checkbox: allow label text to wrap

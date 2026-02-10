@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NgForm } from '@angular/forms';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
+import { getValidationError, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
@@ -21,6 +21,7 @@ import { CommandRequestsService } from '../../services/command-requests.service'
 })
 export class RequestChainOfCommandPositionModalComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;
+    getValidationError = getValidationError;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     pending = false;
     model: FormModel = {

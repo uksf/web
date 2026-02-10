@@ -6,7 +6,7 @@ import { first, map, switchMap } from 'rxjs/operators';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { CountryPickerService, ICountry } from '@app/shared/services/country-picker/country-picker.service';
 import { CountryImage } from '@app/shared/pipes/country.pipe';
-import { ConfirmValidParentMatcher, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
+import { ConfirmValidParentMatcher, getValidationError, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { UksfError } from '@app/shared/models/response';
 import { nameCase, titleCase } from '@app/shared/services/helper.service';
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
@@ -76,6 +76,7 @@ export class ApplicationIdentityComponent implements OnInit {
     @ViewChild('day') dobDay: ElementRef;
     @ViewChild('month') dobMonth: ElementRef;
     @ViewChild('year') dobYear: ElementRef;
+    getValidationError = getValidationError;
     formGroup: UntypedFormGroup;
     pending = false;
     confirmValidParentMatcher = new ConfirmValidParentMatcher();

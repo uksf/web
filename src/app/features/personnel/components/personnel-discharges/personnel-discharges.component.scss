@@ -78,6 +78,10 @@
         margin-bottom: 5px;
         border-radius: 4px;
 
+        .mat-expansion-panel-header:hover {
+            background: none !important;
+        }
+
         &:last-of-type {
             margin-bottom: 0;
         }

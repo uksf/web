@@ -4,7 +4,7 @@ import { MatAccordion } from '@angular/material/expansion';
 import { Observable, timer, of } from 'rxjs';
 import { switchMap, map, first } from 'rxjs/operators';
 import { FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
+import { getValidationError, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { VariableItem } from '@app/features/admin/models/variable-item';
 import { VariablesService } from '../../services/variables.service';
@@ -21,6 +21,7 @@ export class AdminVariablesComponent implements OnInit {
         key: ['', Validators.required, this.validateVariable.bind(this)],
         item: ['', Validators.required]
     });
+    getValidationError = getValidationError;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     updating: boolean;
     variables: VariableItem[];

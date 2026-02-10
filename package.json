@@ -13,9 +13,9 @@
     "lint": "ng lint",
     "test": "vitest run",
     "test:watch": "vitest --watch",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
-    "test:e2e:update-snapshots": "playwright test visual-baseline --update-snapshots"
+    "test:e2e": "node node_modules/@playwright/test/cli.js test",
+    "test:e2e:ui": "node node_modules/@playwright/test/cli.js test --ui",
+    "test:e2e:update-snapshots": "node node_modules/@playwright/test/cli.js test visual-baseline --update-snapshots"
   },
   "private": true,
   "packageManager": "bun@1.3.6",

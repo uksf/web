@@ -14,6 +14,7 @@ import {
     ValidatorFn
 } from '@angular/forms';
 import { MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { getValidationError } from '@app/shared/services/form-helper.service';
 import { DropdownBaseComponent, IDropdownElement } from '../dropdown-base/dropdown-base.component';
 import { any, nextFrame } from '@app/shared/services/helper.service';
 import { ErrorStateMatcher } from '@angular/material/core';
@@ -58,6 +59,7 @@ export function SelectionListValidator(required: boolean): ValidatorFn {
     viewProviders: [{ provide: ControlContainer, useExisting: UntypedFormGroup }]
 })
 export class SelectionListComponent extends DropdownBaseComponent implements OnInit, OnChanges, ControlValueAccessor, Validator {
+    getValidationError = getValidationError;
     @Input('listDisabledTooltip') listDisabledTooltip: (element: IDropdownElement) => string = () => '';
     @Input('listPosition') listPosition: string ='top';
     @Input('inputTooltip') inputTooltip: string = '';

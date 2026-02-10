@@ -12,9 +12,7 @@
                                 <mat-form-field class="normal">
                                     <mat-label>Role</mat-label>
                                     <input #input (blur)="unfocus()" [errorStateMatcher]="instantErrorStateMatcher" formControlName="name" matInput required />
-                                    <mat-error *ngFor="let validation of validationMessages; trackBy: trackByIndex">
-                                        <mat-error *ngIf="roleForm.get('name').hasError(validation.type)" class="error-message">{{ validation.message }}</mat-error>
-                                    </mat-error>
+                                    <mat-error>{{ getValidationError(roleForm.get('name'), validationMessages) }}</mat-error>
                                 </mat-form-field>
                                 <button (click)="addRole(0)" [disabled]="!roleForm.valid" color="primary" mat-raised-button>Add Role</button>
                             </form>

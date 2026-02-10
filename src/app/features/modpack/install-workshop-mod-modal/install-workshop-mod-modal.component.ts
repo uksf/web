@@ -1,7 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, Validators } from '@angular/forms';
-import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
+import { getValidationError, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { InstallWorkshopModData } from '../models/workshop-mod';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -18,6 +18,7 @@ export class InstallWorkshopModModalComponent implements OnDestroy {
         rootMod: [false],
         folderName: [{ value: '', disabled: true }]
     });
+    getValidationError = getValidationError;
     instantErrorStateMatcher: InstantErrorStateMatcher = new InstantErrorStateMatcher();
     validationMessages: { steamId: { type: string; message: string }[] } = {
         steamId: [{ type: 'required', message: 'Steam ID is required' }]

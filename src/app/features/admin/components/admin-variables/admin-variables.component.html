@@ -11,16 +11,12 @@
                         <mat-form-field class="key-field">
                             <mat-label>Key</mat-label>
                             <input #input matInput formControlName="key" required [errorStateMatcher]="instantErrorStateMatcher" />
-                            <mat-error *ngFor="let validation of validationMessages.key">
-                                <mat-error class="error-message" *ngIf="form.get('key').hasError(validation.type)">{{ validation.message }}</mat-error>
-                            </mat-error>
+                            <mat-error>{{ getValidationError(form.get('key'), validationMessages.key) }}</mat-error>
                         </mat-form-field>
                         <mat-form-field class="item-field">
                             <mat-label>Item</mat-label>
                             <input #input matInput formControlName="item" required [errorStateMatcher]="instantErrorStateMatcher" />
-                            <mat-error *ngFor="let validation of validationMessages.item">
-                                <mat-error class="error-message" *ngIf="form.get('item').hasError(validation.type)">{{ validation.message }}</mat-error>
-                            </mat-error>
+                            <mat-error>{{ getValidationError(form.get('item'), validationMessages.item) }}</mat-error>
                         </mat-form-field>
                         <button mat-raised-button color="primary" (click)="addVariable()" [disabled]="!form.valid || updating">Add Variable</button>
                         <button mat-icon-button (click)="accordion.openAll(); expanded = true" matTooltip="Expand all" [disabled]="expanded">

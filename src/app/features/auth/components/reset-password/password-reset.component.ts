@@ -5,7 +5,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { first } from 'rxjs/operators';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
-import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
+import { getValidationError, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 
 @Component({
     selector: 'app-password-reset',
@@ -15,6 +15,7 @@ import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.servi
 export class PasswordResetComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;
     @Input() resetPasswordCode: string;
+    getValidationError = getValidationError;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     pending = false;
     stayLogged = true;

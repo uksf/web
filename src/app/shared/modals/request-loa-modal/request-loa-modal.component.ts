@@ -1,7 +1,7 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FormBuilder, Validators } from '@angular/forms';
-import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
+import { getValidationError, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { CommandRequestsService } from '@app/features/command/services/command-requests.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import moment, { Moment } from 'moment';
@@ -22,6 +22,7 @@ export class RequestLoaModalComponent implements OnInit, OnDestroy {
         emergency: [false],
         late: [false]
     });
+    getValidationError = getValidationError;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     validationMessages = {
         reason: [{ type: 'required', message: 'Reason is required' }]

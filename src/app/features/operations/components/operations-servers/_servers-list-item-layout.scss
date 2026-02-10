@@ -45,15 +45,18 @@
         .server-buttons {
             display: flex;
             flex-direction: row;
+            align-items: center;
 
             .admin {
                 display: flex;
                 flex-direction: row;
+                align-items: center;
             }
 
             .control-buttons {
                 display: flex;
                 flex-direction: row;
+                align-items: center;
             }
 
             .launched-by {

@@ -8,8 +8,8 @@
     </div>
     <p *ngIf="loaded && totalLoas == 0">No {{ selectionMode }} LOAs</p>
     <mat-accordion *ngIf="loaded && totalLoas > 0">
-        <mat-card *ngFor="let loa of loas; trackBy: trackByLoa; let loaIndex = index" (click)="activate(loaIndex)" [ngClass]="{ disable: !canViewReason(loa) }">
-            <div class="header-container" appSpotlight>
+        <mat-card *ngFor="let loa of loas; trackBy: trackByLoa; let loaIndex = index" [ngClass]="{ disable: !canViewReason(loa) }">
+            <div class="header-container" appSpotlight (click)="activate(loaIndex)">
                 <div class="toggle" [@indicatorRotate]="getExpandedState(loaIndex)" [ngClass]="{ disable: !canViewReason(loa) }"></div>
                 <div class="title-container">
                     <div class="date-container">

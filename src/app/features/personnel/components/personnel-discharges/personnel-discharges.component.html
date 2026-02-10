@@ -33,7 +33,7 @@
             </div>
             <mat-accordion *ngIf="completeDischargeCollections">
                 <mat-expansion-panel *ngFor="let dischargeCollection of dischargeCollections; trackBy: trackByDischargeCollection">
-                    <mat-expansion-panel-header [expandedHeight]="'48px'">
+                    <mat-expansion-panel-header [expandedHeight]="'48px'" appSpotlight>
                         <mat-panel-title>
                             {{ dischargeCollection.name }}
                         </mat-panel-title>

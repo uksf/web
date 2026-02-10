@@ -4,23 +4,17 @@
         <mat-form-field class="normal">
             <mat-label>Training Name</mat-label>
             <input #input [errorStateMatcher]="instantErrorStateMatcher" formControlName="name" matInput required />
-            <mat-error *ngFor="let validation of validationMessages.name">
-                <mat-error *ngIf="form.get('name').hasError(validation.type)" class="error-message">{{ validation.message }} </mat-error>
-            </mat-error>
+            <mat-error>{{ getValidationError(form.get('name'), validationMessages.name) }}</mat-error>
         </mat-form-field>
         <mat-form-field class="normal">
             <mat-label>Short Name</mat-label>
             <input #input [errorStateMatcher]="instantErrorStateMatcher" formControlName="shortName" matInput />
-            <mat-error *ngFor="let validation of validationMessages.shortName">
-                <mat-error *ngIf="form.get('shortName').hasError(validation.type)" class="error-message">{{ validation.message }} </mat-error>
-            </mat-error>
+            <mat-error>{{ getValidationError(form.get('shortName'), validationMessages.shortName) }}</mat-error>
         </mat-form-field>
         <mat-form-field class="normal">
             <mat-label>TeamSpeak Group ID</mat-label>
             <input #input [errorStateMatcher]="instantErrorStateMatcher" formControlName="teamspeakGroup" matInput />
-            <mat-error *ngFor="let validation of validationMessages.teamspeakGroup">
-                <mat-error *ngIf="form.get('teamspeakGroup').hasError(validation.type)" class="error-message">{{ validation.message }} </mat-error>
-            </mat-error>
+            <mat-error>{{ getValidationError(form.get('teamspeakGroup'), validationMessages.teamspeakGroup) }}</mat-error>
         </mat-form-field>
         <div class="button-container">
             <app-flex-filler></app-flex-filler>

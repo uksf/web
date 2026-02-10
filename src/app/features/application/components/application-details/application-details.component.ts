@@ -1,6 +1,7 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, UntypedFormControl, FormGroupDirective, NgForm, AbstractControl } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
+import { getValidationError } from '@app/shared/services/form-helper.service';
 import { MatDialog } from '@angular/material/dialog';
 
 export class InstantErrorStateMatcher implements ErrorStateMatcher {
@@ -16,6 +17,7 @@ export class InstantErrorStateMatcher implements ErrorStateMatcher {
 })
 export class ApplicationDetailsComponent {
     @Output() nextEvent = new EventEmitter();
+    getValidationError = getValidationError;
     formGroup: UntypedFormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     referenceOptions = [

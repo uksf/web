@@ -65,9 +65,7 @@
                             #armaText
                         ></textarea>
                         <mat-hint *ngIf="armaText.value.length > 200">{{ armaText.value.length }} / 500</mat-hint>
-                        <mat-error *ngFor="let validation of validation_messages.armaExperience">
-                            <mat-error class="error-message" *ngIf="formGroup.get('armaExperience').hasError(validation.type)">{{ validation.message }}</mat-error>
-                        </mat-error>
+                        <mat-error>{{ getValidationError(formGroup.get('armaExperience'), validation_messages.armaExperience) }}</mat-error>
                     </mat-form-field>
                     <br />
                     <mat-form-field class="large-input">
@@ -82,9 +80,7 @@
                             #unitsText
                         ></textarea>
                         <mat-hint *ngIf="unitsText.value.length > 200">{{ unitsText.value.length }} / 250</mat-hint>
-                        <mat-error *ngFor="let validation of validation_messages.unitsExperience">
-                            <mat-error class="error-message" *ngIf="formGroup.get('unitsExperience').hasError(validation.type)">{{ validation.message }}</mat-error>
-                        </mat-error>
+                        <mat-error>{{ getValidationError(formGroup.get('unitsExperience'), validation_messages.unitsExperience) }}</mat-error>
                     </mat-form-field>
                     <br />
                     <mat-form-field class="large-input">
@@ -99,9 +95,7 @@
                             #backgroundText
                         ></textarea>
                         <mat-hint *ngIf="backgroundText.value.length > 400">{{ backgroundText.value.length }} / 500</mat-hint>
-                        <mat-error *ngFor="let validation of validation_messages.background">
-                            <mat-error class="error-message" *ngIf="formGroup.get('background').hasError(validation.type)">{{ validation.message }}</mat-error>
-                        </mat-error>
+                        <mat-error>{{ getValidationError(formGroup.get('background'), validation_messages.background) }}</mat-error>
                     </mat-form-field>
                 </div>
                 <mat-checkbox color="primary" formControlName="militaryExperience">Are you or have you ever been a member of the military?</mat-checkbox>

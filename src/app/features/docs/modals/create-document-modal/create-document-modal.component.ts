@@ -4,7 +4,7 @@ import { CreateDocumentRequest, DocumentPermissions, FolderMetadata } from '@app
 import { DocsService } from '../../services/docs.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { NgForm } from '@angular/forms';
-import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
+import { getValidationError, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { Unit } from '@app/features/units/models/units';
 import { Rank } from '@app/shared/models/rank';
@@ -21,6 +21,7 @@ import { MembersService } from '@app/shared/services/members.service';
 })
 export class CreateDocumentModalComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;
+    getValidationError = getValidationError;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     model: FormModel = {
         name: '',

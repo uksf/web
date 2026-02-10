@@ -1,6 +1,6 @@
 import { Component, Inject, OnDestroy } from '@angular/core';
 import { AbstractControl, FormBuilder, ValidationErrors, Validators } from '@angular/forms';
-import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
+import { getValidationError, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { Observable, of, Subject, timer } from 'rxjs';
 import { first, map, switchMap, takeUntil } from 'rxjs/operators';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -25,6 +25,7 @@ export class AddServerModalComponent implements OnDestroy {
         environment: [0, Validators.required],
         serverOption: [0, Validators.required],
     });
+    getValidationError = getValidationError;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
     environments = [
         { value: 0, viewValue: 'Release' },

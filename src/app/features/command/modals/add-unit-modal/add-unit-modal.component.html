@@ -8,16 +8,12 @@
                 <mat-form-field class="normal">
                     <mat-label>Unit Name</mat-label>
                     <input [errorStateMatcher]="instantErrorStateMatcher" formControlName="name" matInput required />
-                    <mat-error *ngFor="let validation of validationMessages.name; trackBy: trackByIndex">
-                        <mat-error *ngIf="form.get('name').hasError(validation.type)" class="error-message">{{ validation.message }}</mat-error>
-                    </mat-error>
+                    <mat-error>{{ getValidationError(form.get('name'), validationMessages.name) }}</mat-error>
                 </mat-form-field>
                 <mat-form-field class="normal">
                     <mat-label>Short Name</mat-label>
                     <input matInput formControlName="shortname" required [errorStateMatcher]="instantErrorStateMatcher" />
-                    <mat-error *ngFor="let validation of validationMessages.shortname; trackBy: trackByIndex">
-                        <mat-error class="error-message" *ngIf="form.get('shortname').hasError(validation.type)">{{ validation.message }}</mat-error>
-                    </mat-error>
+                    <mat-error>{{ getValidationError(form.get('shortname'), validationMessages.shortname) }}</mat-error>
                 </mat-form-field>
                 <mat-checkbox color="primary" formControlName="preferShortname">Prefer displaying short name</mat-checkbox>
                 <mat-form-field class="normal">
@@ -35,9 +31,7 @@
                             {{ unit.name }}
                         </mat-option>
                     </mat-select>
-                    <mat-error *ngFor="let validation of validationMessages.parent; trackBy: trackByIndex">
-                        <mat-error class="error-message" *ngIf="form.get('parent').hasError(validation.type)">{{ validation.message }}</mat-error>
-                    </mat-error>
+                    <mat-error>{{ getValidationError(form.get('parent'), validationMessages.parent) }}</mat-error>
                 </mat-form-field>
             </div>
             <br />
@@ -46,23 +40,17 @@
                 <mat-form-field class="normal">
                     <mat-label>TeamSpeak Group ID</mat-label>
                     <input matInput formControlName="teamspeakGroup" type="number" [errorStateMatcher]="instantErrorStateMatcher" />
-                    <mat-error *ngFor="let validation of validationMessages.teamspeakGroup; trackBy: trackByIndex">
-                        <mat-error class="error-message" *ngIf="form.get('teamspeakGroup').hasError(validation.type)">{{ validation.message }}</mat-error>
-                    </mat-error>
+                    <mat-error>{{ getValidationError(form.get('teamspeakGroup'), validationMessages.teamspeakGroup) }}</mat-error>
                 </mat-form-field>
                 <mat-form-field class="normal">
                     <mat-label>Discord Role ID</mat-label>
                     <input matInput formControlName="discordRoleId" [errorStateMatcher]="instantErrorStateMatcher" />
-                    <mat-error *ngFor="let validation of validationMessages.discordRoleId; trackBy: trackByIndex">
-                        <mat-error class="error-message" *ngIf="form.get('discordRoleId').hasError(validation.type)">{{ validation.message }}</mat-error>
-                    </mat-error>
+                    <mat-error>{{ getValidationError(form.get('discordRoleId'), validationMessages.discordRoleId) }}</mat-error>
                 </mat-form-field>
                 <mat-form-field class="normal">
                     <mat-label>Callsign</mat-label>
                     <input matInput formControlName="callsign" [errorStateMatcher]="instantErrorStateMatcher" />
-                    <mat-error *ngFor="let validation of validationMessages.callsign">
-                        <mat-error class="error-message" *ngIf="form.get('callsign').hasError(validation.type)">{{ validation.message }}</mat-error>
-                    </mat-error>
+                    <mat-error>{{ getValidationError(form.get('callsign'), validationMessages.callsign) }}</mat-error>
                 </mat-form-field>
                 <mat-form-field class="normal">
                     <mat-label>Unit Icon</mat-label>

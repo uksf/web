@@ -4,23 +4,17 @@
         <mat-form-field class="normal">
             <mat-label>Rank Name</mat-label>
             <input #input [errorStateMatcher]="instantErrorStateMatcher" formControlName="name" matInput required />
-            <mat-error *ngFor="let validation of validationMessages.name; trackBy: trackByIndex">
-                <mat-error *ngIf="form.get('name').hasError(validation.type)" class="error-message">{{ validation.message }}</mat-error>
-            </mat-error>
+            <mat-error>{{ getValidationError(form.get('name'), validationMessages.name) }}</mat-error>
         </mat-form-field>
         <mat-form-field class="normal">
             <mat-label>Abbreviation</mat-label>
             <input #input [errorStateMatcher]="instantErrorStateMatcher" formControlName="abbreviation" matInput required />
-            <mat-error *ngFor="let validation of validationMessages.abbreviation; trackBy: trackByIndex">
-                <mat-error *ngIf="form.get('abbreviation').hasError(validation.type)" class="error-message">{{ validation.message }}</mat-error>
-            </mat-error>
+            <mat-error>{{ getValidationError(form.get('abbreviation'), validationMessages.abbreviation) }}</mat-error>
         </mat-form-field>
         <mat-form-field class="normal">
             <mat-label>TeamSpeak Group ID</mat-label>
             <input #input [errorStateMatcher]="instantErrorStateMatcher" formControlName="teamspeakGroup" matInput />
-            <mat-error *ngFor="let validation of validationMessages.teamspeakGroup; trackBy: trackByIndex">
-                <mat-error *ngIf="form.get('teamspeakGroup').hasError(validation.type)" class="error-message">{{ validation.message }}</mat-error>
-            </mat-error>
+            <mat-error>{{ getValidationError(form.get('teamspeakGroup'), validationMessages.teamspeakGroup) }}</mat-error>
         </mat-form-field>
         <mat-form-field class="normal">
             <mat-label>Discord Role ID</mat-label>

@@ -6,9 +6,7 @@
             <mat-form-field>
                 <mat-label>Folder name</mat-label>
                 <input #name="ngModel" [(ngModel)]="model.name" [errorStateMatcher]="instantErrorStateMatcher" id="name" matInput name="formName" required type="text" />
-                <mat-error *ngFor="let validation of validationMessages.name">
-                    <mat-error *ngIf="name.hasError(validation.type)" class="error-message">{{ validation.message }}</mat-error>
-                </mat-error>
+                <mat-error>{{ getValidationError(name.control, validationMessages.name) }}</mat-error>
             </mat-form-field>
             <app-dropdown
                 #owner="ngModel"

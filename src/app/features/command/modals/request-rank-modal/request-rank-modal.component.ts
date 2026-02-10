@@ -5,6 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { BasicAccount } from '@app/shared/models/account';
+import { getValidationError } from '@app/shared/services/form-helper.service';
 import { Rank } from '@app/shared/models/rank';
 import { SelectionListComponent } from '@app/shared/components/elements/selection-list/selection-list.component';
 import { RequestModalData } from '@app/shared/models/shared';
@@ -22,6 +23,7 @@ import { CommandRequestsService } from '../../services/command-requests.service'
 export class RequestRankModalComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;
     @ViewChild('accountList', { read: SelectionListComponent }) accountList: SelectionListComponent;
+    getValidationError = getValidationError;
     pending: boolean = false;
     preSelection: string[] = [];
     model: FormModel = {

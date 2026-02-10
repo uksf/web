@@ -1,5 +1,6 @@
 import { Component, forwardRef } from '@angular/core';
 import { AbstractControl, ControlContainer, ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgForm, Validator } from '@angular/forms';
+import { getValidationError } from '@app/shared/services/form-helper.service';
 import { DropdownBaseComponent, IDropdownElement } from '../dropdown-base/dropdown-base.component';
 
 @Component({
@@ -21,6 +22,8 @@ import { DropdownBaseComponent, IDropdownElement } from '../dropdown-base/dropdo
     viewProviders: [{ provide: ControlContainer, useExisting: NgForm }]
 })
 export class DropdownComponent extends DropdownBaseComponent implements ControlValueAccessor, Validator {
+    getValidationError = getValidationError;
+
     constructor() {
         super();
     }

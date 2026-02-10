@@ -4,7 +4,7 @@ import { AuthenticationService } from '@app/core/services/authentication/authent
 import { Router } from '@angular/router';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { RedirectService } from '@app/core/services/authentication/redirect.service';
-import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
+import { getValidationError, InstantErrorStateMatcher, ValidationMessage } from '@app/shared/services/form-helper.service';
 import { UksfError } from '@app/shared/models/response';
 import { first } from 'rxjs/operators';
 
@@ -39,6 +39,8 @@ export class LoginComponent {
         private permissionsService: PermissionsService,
         private redirectService: RedirectService
     ) {}
+
+    getValidationError = getValidationError;
 
     submit() {
         // Honeypot field must be empty

@@ -4,9 +4,7 @@
         <mat-form-field class="normal">
             <mat-label>Steam ID or Workshop Link</mat-label>
             <input matInput formControlName="steamId" [errorStateMatcher]="instantErrorStateMatcher" />
-            <mat-error *ngFor="let validation of validationMessages.steamId">
-                <mat-error class="error-message" *ngIf="form.get('steamId').hasError(validation.type)">{{ validation.message }}</mat-error>
-            </mat-error>
+            <mat-error>{{ getValidationError(form.get('steamId'), validationMessages.steamId) }}</mat-error>
         </mat-form-field>
         <div class="root-mod">
             <mat-checkbox color="primary" formControlName="rootMod" matTooltip="Root mods are copied as entire folders to the repo root (e.g. @CBA_A3), including addons, signatures, and keys">Install as root mod</mat-checkbox>

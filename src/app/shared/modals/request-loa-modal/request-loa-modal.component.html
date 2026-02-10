@@ -6,9 +6,7 @@
             <mat-form-field>
                 <mat-label>Reason</mat-label>
                 <input matInput formControlName="reason" />
-                <mat-error *ngFor="let validation of validationMessages.reason; trackBy: trackByIndex">
-                    <mat-error class="error-message" *ngIf="form.get('reason').hasError(validation.type)">{{ validation.message }}</mat-error>
-                </mat-error>
+                <mat-error>{{ getValidationError(form.get('reason'), validationMessages.reason) }}</mat-error>
             </mat-form-field>
             <mat-form-field>
                 <mat-label>Start date</mat-label>

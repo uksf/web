@@ -8,30 +8,20 @@
         <mat-form-field class="normal">
             <mat-label>Email</mat-label>
             <input matInput formControlName="email" required autocomplete="username" [errorStateMatcher]="instantErrorStateMatcher" />
-            <mat-error *ngFor="let validation of validation_messages.email">
-                <mat-error class="error-message" *ngIf="formGroup.get('email').hasError(validation.type)">{{ validation.message }}</mat-error>
-            </mat-error>
+            <mat-error>{{ getValidationError(formGroup.get('email'), validation_messages.email) }}</mat-error>
         </mat-form-field>
         <br />
         <div formGroupName="passwordGroup">
             <mat-form-field class="normal">
                 <mat-label>Password (min 12 chars)</mat-label>
                 <input matInput formControlName="password" type="password" required autocomplete="new-password" [errorStateMatcher]="instantErrorStateMatcher" />
-                <mat-error *ngFor="let validation of validation_messages.password">
-                    <mat-error class="error-message" *ngIf="formGroup.get('passwordGroup').hasError(validation.type) || formGroup.get('passwordGroup.password').hasError(validation.type)">{{
-                        validation.message
-                    }}</mat-error>
-                </mat-error>
+                <mat-error>{{ getValidationError(formGroup.get('passwordGroup.password'), validation_messages.password) || getValidationError(formGroup.get('passwordGroup'), validation_messages.password) }}</mat-error>
             </mat-form-field>
             <br />
             <mat-form-field class="normal">
                 <mat-label>Confirm Password</mat-label>
                 <input matInput formControlName="confirmPassword" type="password" required autocomplete="new-password" [errorStateMatcher]="confirmValidParentMatcher" />
-                <mat-error *ngFor="let validation of validation_messages.confirmPassword">
-                    <mat-error class="error-message" *ngIf="formGroup.get('passwordGroup').hasError(validation.type) || formGroup.get('passwordGroup.confirmPassword').hasError(validation.type)">{{
-                        validation.message
-                    }}</mat-error>
-                </mat-error>
+                <mat-error>{{ getValidationError(formGroup.get('passwordGroup.confirmPassword'), validation_messages.confirmPassword) || getValidationError(formGroup.get('passwordGroup'), validation_messages.confirmPassword) }}</mat-error>
             </mat-form-field>
         </div>
         <br />
@@ -69,9 +59,7 @@
                 <mat-label>yyyy</mat-label>
                 <input #year (keyup)="numberOnly($event, 'year', 1, 2030)" autocomplete="bday-year" formControlName="year" matInput maxlength="4" required type="number" />
             </mat-form-field>
-            <mat-error *ngFor="let validation of validation_messages.dob">
-                <mat-error *ngIf="formGroup.get('dobGroup').hasError(validation.type)" class="error-message">{{ validation.message }}</mat-error>
-            </mat-error>
+            <mat-error>{{ getValidationError(formGroup.get('dobGroup'), validation_messages.dob) }}</mat-error>
         </div>
         <br />
         <app-dropdown [elementName]="'Nation of Residence'" [elements]="countries" [formFieldClass]="'nation'" [isRequired]="true" [placeholder]="'Nation of Residence'" formControlName="nation">

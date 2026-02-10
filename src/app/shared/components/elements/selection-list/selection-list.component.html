@@ -21,9 +21,7 @@
                 </mat-option>
             </cdk-virtual-scroll-viewport>
         </mat-autocomplete>
-        <mat-error *ngFor="let validation of validationMessages; trackBy: trackByIndex">
-            <mat-error *ngIf="showErrors && form.get('list').hasError(validation.type)" class="error-message">{{ validation.message() }}</mat-error>
-        </mat-error>
+        <mat-error *ngIf="showErrors">{{ getValidationError(form.get('list'), validationMessages) }}</mat-error>
     </mat-form-field>
     <div *ngIf="listPosition === 'bottom'" class="selection-list-container" [ngClass]="{ empty: listModel.length === 0, disabled: disabled }">
         <div class="selection-element" *ngFor="let element of listModel; trackBy: trackByDefault">

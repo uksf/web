@@ -22,7 +22,6 @@
                     {{ getAccountName(element) }}
                 </ng-template>
             </app-dropdown>
-            <br />
             <mat-form-field>
                 <mat-label>Reason</mat-label>
                 <textarea
@@ -38,12 +37,9 @@
                     required
                     type="text"
                 ></textarea>
-                <mat-error *ngFor="let validation of validationMessages.reason">
-                    <mat-error *ngIf="reason.hasError(validation.type)" class="error-message">{{ validation.message() }}</mat-error>
-                </mat-error>
+                <mat-error>{{ getValidationError(reason.control, validationMessages.reason) }}</mat-error>
             </mat-form-field>
         </div>
-        <br />
         <app-form-value-debug-template></app-form-value-debug-template>
         <div class="button-container">
             <app-flex-filler></app-flex-filler>

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, UntypedFormControl, FormGroupDirective, NgForm, AbstractControl } from '@angular/forms';
 import { first, takeUntil } from 'rxjs/operators';
 import { ErrorStateMatcher } from '@angular/material/core';
+import { getValidationError } from '@app/shared/services/form-helper.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AccountService } from '@app/core/services/account.service';
 import { Router } from '@angular/router';
@@ -24,6 +25,7 @@ export class InstantErrorStateMatcher implements ErrorStateMatcher {
     styleUrls: ['../application-page/application-page.component.scss', './application-edit.component.scss']
 })
 export class ApplicationEditComponent extends DestroyableComponent {
+    getValidationError = getValidationError;
     formGroup: UntypedFormGroup;
     pending: boolean = false;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
