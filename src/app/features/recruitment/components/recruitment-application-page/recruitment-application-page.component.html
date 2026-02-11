@@ -64,9 +64,9 @@
         <ng-template [ngxPermissionsOnly]="['RECRUITER_LEAD']">
             <div class="flex-container flex-row no-padding recruiter">
                 <div>
-                    <mat-form-field [floatLabel]="'never'" class="select-thin">
-                        <mat-label>{{ application.recruiter }}</mat-label>
+                    <mat-form-field class="select-thin">
                         <mat-select
+                            [placeholder]="application.recruiter"
                             [(ngModel)]="selected"
                             (selectionChange)="setNewRecruiter($event.value)"
                             [disableOptionCentering]="true"

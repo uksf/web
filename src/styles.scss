@@ -225,6 +225,37 @@
         border-bottom: 1px solid rgba(255, 255, 255, .12);
     }
 
+    // Form field: remove filled background and focus overlay for underline-only appearance
+    .mat-mdc-form-field.mat-form-field-appearance-fill {
+        .mdc-text-field--filled {
+            background-color: transparent;
+            border-radius: 0;
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .mat-mdc-form-field-focus-overlay {
+            background-color: transparent;
+        }
+
+        .mdc-line-ripple::before {
+            border-bottom-color: mat.get-color-from-palette($foreground, divider);
+        }
+
+        .mat-mdc-form-field-subscript-wrapper {
+            padding: 0;
+        }
+
+        .mat-mdc-form-field-error-wrapper {
+            padding: 0;
+        }
+    }
+
+    // Hide MDC checkmark on single-select mat-option (MDC adds it by default, legacy did not)
+    .mat-mdc-option .mat-pseudo-checkbox {
+        display: none;
+    }
+
     .mat-mdc-button-touch-target {
         display: none !important;
     }
