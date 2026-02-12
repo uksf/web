@@ -6,7 +6,7 @@
 
 .loa-buttons-container {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
 
     .new-loa-button {
         margin-right: 5px;
@@ -24,10 +24,12 @@
         }
     }
 
-    .mat-mdc-form-field {
+    .loa-filter {
         width: 30%;
         margin-right: 10px;
+    }
 
+    .mat-mdc-form-field {
         &.select-date-picker {
             min-width: 100px;
             width: 10%;
@@ -55,7 +57,7 @@
             margin-bottom: 5px;
         }
 
-        .mat-mdc-form-field {
+        .loa-filter {
             width: 95%;
         }
     }

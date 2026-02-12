@@ -13,7 +13,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
-    exclude: ['node_modules', 'dist', 'e2e'],
+    exclude: ['node_modules', 'dist', 'e2e', 'src/**/*.stories.spec.ts'],
     setupFiles: ['./vitest.setup.ts'],
     reporters: ['default', 'junit'],
     outputFile: {

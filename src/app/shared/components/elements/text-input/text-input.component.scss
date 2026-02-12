@@ -1,0 +1,121 @@
+@use 'styles/variables' as v;
+
+app-text-input {
+    display: inline-block;
+    min-width: 120px;
+
+    .text-input-wrapper {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .text-input-field {
+        position: relative;
+        height: 36px;
+        display: flex;
+        align-items: flex-end;
+
+        input,
+        textarea {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid transparent;
+            outline: none;
+            background: transparent;
+            font-size: 16px;
+            line-height: 20px;
+            padding: 0 0 4px 0;
+            transition: border-color v.$transition-fast v.$ease-standard;
+            resize: none;
+            font-family: inherit;
+        }
+    }
+
+    // Clear button
+    .text-input-clear {
+        position: absolute;
+        right: 0;
+        bottom: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        opacity: 0.5;
+        transition: opacity v.$transition-fast v.$ease-standard;
+
+        &:hover {
+            opacity: 1;
+        }
+
+        .mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+            line-height: 18px;
+        }
+    }
+
+    // Floating label
+    .text-input-label {
+        position: absolute;
+        left: 0;
+        bottom: 5px; // aligns with input text (4px padding + 1px border)
+        margin-bottom: 0; // override bootstrap label margin
+        font-size: 16px;
+        line-height: 20px;
+        pointer-events: none;
+        user-select: none;
+        transition: transform v.$transition-fast v.$ease-standard,
+                    font-size v.$transition-fast v.$ease-standard,
+                    color v.$transition-fast v.$ease-standard;
+        transform-origin: left bottom;
+
+        &.floating {
+            transform: translateY(-20px);
+            font-size: 12px;
+            line-height: 16px;
+        }
+
+        &.required::after {
+            content: ' *';
+        }
+    }
+
+    // Multiline
+    .multiline .text-input-field {
+        height: auto;
+        min-height: 36px;
+    }
+
+    // Error
+    .text-input-error {
+        font-size: 11px;
+        line-height: 16px;
+        margin-top: v.$spacing-4px;
+        visibility: hidden;
+
+        &.visible {
+            visibility: visible;
+        }
+
+        &.reserve-space {
+            min-height: 16px;
+        }
+
+        &:not(.reserve-space) {
+            height: 0;
+            overflow: hidden;
+            margin-top: 0;
+
+            &.visible {
+                height: auto;
+                margin-top: v.$spacing-4px;
+            }
+        }
+    }
+}

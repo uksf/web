@@ -8,13 +8,11 @@
                             <button mat-raised-button class="new-loa-button" color="primary" (click)="createLoa()">New LOA</button>
                         </div>
                         <app-flex-filler></app-flex-filler>
-                        <mat-form-field>
-                            <mat-label>Filter</mat-label>
-                            <input (keyup)="filter()" [(ngModel)]="filterString" matInput matTooltip="Use operators 'AND' or 'OR' to combine filters" />
-                            <button *ngIf="filterString" matSuffix mat-icon-button aria-label="Clear" (click)="filterString = ''; filter(); $event.stopPropagation()">
-                                <mat-icon>close</mat-icon>
-                            </button>
-                        </mat-form-field>
+                        <app-text-input class="loa-filter" label="Filter" [(ngModel)]="filterString"
+                            [clearable]="true" [reserveErrorSpace]="false"
+                            tooltip="Use operators 'AND' or 'OR' to combine filters"
+                            (input)="filter()" (cleared)="filter()">
+                        </app-text-input>
                         <div class="loa-filter-buttons-container">
                             <button [matMenuTriggerFor]="viewModeMenu" mat-raised-button matTooltip="Change view mode to see LOAs for the selected group">
                                 <mat-icon class="icon-right">{{ viewMode.icon }}</mat-icon>

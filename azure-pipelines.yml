@@ -40,6 +40,14 @@ stages:
             condition: succeededOrFailed()
 
           - script: |
+              bun run build-storybook
+            displayName: 'Build Storybook'
+
+          - script: |
+              bun run test:storybook
+            displayName: 'Storybook Tests'
+
+          - script: |
               bun x ng build -c production --aot --build-optimizer --optimization
             displayName: 'ng build'
 

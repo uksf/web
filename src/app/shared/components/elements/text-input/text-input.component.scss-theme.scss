@@ -1,0 +1,74 @@
+@use '@angular/material' as mat;
+
+@mixin text-input-component-theme($theme) {
+    $foreground: map-get($theme, foreground);
+    $primary: map-get($theme, primary);
+    $warn: map-get($theme, warn);
+
+    app-text-input {
+        .text-input-label {
+            color: mat.get-color-from-palette($foreground, secondary-text);
+
+            &.required::after {
+                color: mat.get-color-from-palette($warn);
+            }
+        }
+
+        .text-input-field {
+            input,
+            textarea {
+                color: mat.get-color-from-palette($foreground, base);
+                border-bottom-color: mat.get-color-from-palette($foreground, divider);
+
+                &::placeholder {
+                    color: mat.get-color-from-palette($foreground, hint-text);
+                }
+            }
+        }
+
+        .text-input-wrapper:hover:not(.disabled):not(.focused) .text-input-field {
+            input,
+            textarea {
+                border-bottom-color: mat.get-color-from-palette($foreground, base);
+            }
+        }
+
+        .focused .text-input-label {
+            color: mat.get-color-from-palette($primary);
+        }
+
+        .focused .text-input-field {
+            input,
+            textarea {
+                border-bottom-color: mat.get-color-from-palette($primary);
+            }
+        }
+
+        .has-error .text-input-label {
+            color: mat.get-color-from-palette($warn);
+        }
+
+        .has-error .text-input-field {
+            input,
+            textarea {
+                border-bottom-color: mat.get-color-from-palette($warn);
+            }
+        }
+
+        .text-input-error {
+            color: mat.get-color-from-palette($warn);
+        }
+
+        .text-input-clear {
+            color: mat.get-color-from-palette($foreground, secondary-text);
+        }
+
+        .disabled .text-input-field {
+            input,
+            textarea {
+                color: mat.get-color-from-palette($foreground, disabled-text);
+                border-bottom-style: dashed;
+            }
+        }
+    }
+}

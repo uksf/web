@@ -1,13 +1,11 @@
 <h2 mat-dialog-title>LOA Request</h2>
-<h6>Dates should be considered as GMT</h6>
+<p class="gmt-note">Dates should be considered as GMT</p>
 <mat-dialog-content>
     <form [formGroup]="form" class="container">
         <div class="container-body">
-            <mat-form-field>
-                <mat-label>Reason</mat-label>
-                <input matInput formControlName="reason" />
-                <mat-error>{{ getValidationError(form.get('reason'), validationMessages.reason) }}</mat-error>
-            </mat-form-field>
+            <app-text-input class="reason-field" label="Reason" [required]="true" formControlName="reason"
+                [validationMessages]="validationMessages.reason" [reserveErrorSpace]="true">
+            </app-text-input>
             <mat-form-field>
                 <mat-label>Start date</mat-label>
                 <input

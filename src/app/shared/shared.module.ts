@@ -21,6 +21,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 // CDK modules
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { TextFieldModule } from '@angular/cdk/text-field';
 
 // Shared Components - Elements
 import { FlexFillerComponent } from './components/elements/flex-filler/flex-filler.component';
@@ -38,6 +39,7 @@ import { MaintenanceComponent } from './components/elements/maintenance/maintena
 import { FileDropComponent } from './components/elements/file-drop/file-drop.component';
 import { AutofocusStopComponent } from './components/elements/autofocus-stop/autofocus-stop.component';
 import { ModelValueDebugComponent, ReactiveFormValueDebugComponent, TemplateFormValueDebugComponent } from './components/elements/form-value-debug/form-value-debug.component';
+import { TextInputComponent } from './components/elements/text-input/text-input.component';
 import { ThemeEmitterComponent } from './components/elements/theme-emitter/theme-emitter.component';
 
 // Shared Components - Content Areas
@@ -102,6 +104,7 @@ const MATERIAL_MODULES = [
     MatSelectModule,
     MatTooltipModule,
     ScrollingModule,
+    TextFieldModule,
 ];
 
 // Shared components
@@ -124,6 +127,7 @@ const SHARED_COMPONENTS = [
     ModelValueDebugComponent,
     ReactiveFormValueDebugComponent,
     TemplateFormValueDebugComponent,
+    TextInputComponent,
     ThemeEmitterComponent,
     // Content Areas
     MainContentAreaComponent,

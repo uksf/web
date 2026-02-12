@@ -49,6 +49,7 @@
 @import 'app/shared/components/elements/inline-dropdown/inline-dropdown.component.scss-theme.scss';
 @import 'app/shared/components/elements/loading-placeholder/loading-placeholder.component.scss-theme.scss';
 @import 'app/shared/components/elements/selection-list/selection-list.component.scss-theme';
+@import 'app/shared/components/elements/text-input/text-input.component.scss-theme.scss';
 @import 'app/shared/components/elements/theme-emitter/theme-emitter.component.scss-theme.scss';
 @import 'app/features/command/components/command-requests/command-request.component.scss-theme.scss';
 @import 'app/features/command/components/command-members/command-members.component.scss-theme.scss';
@@ -122,6 +123,7 @@
     @include inline-dropdown-component-theme($theme);
     @include loading-placeholder-component-theme($theme);
     @include selection-list-component-theme($theme);
+    @include text-input-component-theme($theme);
     @include theme-emitter-component-theme($theme);
     @include command-request-component-theme($theme);
     @include command-members-component-theme($theme);
