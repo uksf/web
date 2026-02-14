@@ -45,7 +45,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MAT_DATE_LOCALE, MatNativeDateModule, MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MAT_DIALOG_DEFAULT_OPTIONS, MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
@@ -121,6 +121,7 @@ export function tokenGetter() {
         },
         { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
         { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
+        { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { autoFocus: false } },
         { provide: UrlSerializer, useClass: LowerCaseUrlSerializer },
         {
             provide: HTTP_INTERCEPTORS,

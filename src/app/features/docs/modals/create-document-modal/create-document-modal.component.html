@@ -3,11 +3,9 @@
 <mat-dialog-content>
     <form #form="ngForm" (ngSubmit)="submit()" class="form-container">
         <div class="basics-container">
-            <mat-form-field class="full-width">
-                <mat-label>Document name</mat-label>
-                <input #name="ngModel" [(ngModel)]="model.name" [errorStateMatcher]="instantErrorStateMatcher" id="name" matInput name="formName" required type="text" />
-                <mat-error>{{ getValidationError(name.control, validationMessages.name) }}</mat-error>
-            </mat-form-field>
+            <app-text-input label="Document name" [(ngModel)]="model.name" id="name" name="formName" [required]="true"
+                [validationMessages]="validationMessages.name">
+            </app-text-input>
             <app-dropdown #owner="ngModel" [(ngModel)]="model.owner" [elementName]="'Owner'" [elements]="accounts" [isRequired]="true" [placeholder]="'Select owner'" id="owner" name="formOwner">
                 <ng-template #element let-element>
                     {{ getAccountName(element) }}
@@ -30,10 +28,10 @@
                 name="formCollaboratorPermissions"
             ></app-docs-permissions>
         </mat-accordion>
-        <div class="button-container">
-            <app-flex-filler></app-flex-filler>
-            <app-button (clicked)="submit()" *ngIf="!initialData" [disabled]="!form.valid" [pending]="pending">Create </app-button>
-            <app-button (clicked)="submit()" *ngIf="initialData" [disabled]="!form.valid" [pending]="pending">Save </app-button>
-        </div>
     </form>
 </mat-dialog-content>
+<mat-dialog-actions>
+    <app-flex-filler></app-flex-filler>
+    <app-button (clicked)="submit()" *ngIf="!initialData" [disabled]="!form.valid" [pending]="pending">Create</app-button>
+    <app-button (clicked)="submit()" *ngIf="initialData" [disabled]="!form.valid" [pending]="pending">Save</app-button>
+</mat-dialog-actions>

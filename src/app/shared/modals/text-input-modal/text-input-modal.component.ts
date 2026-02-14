@@ -4,6 +4,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 
 export interface TextInputModalData {
     message: string;
+    title?: string;
 }
 
 @Component({
@@ -12,6 +13,7 @@ export interface TextInputModalData {
     styleUrls: ['./text-input-modal.component.scss']
 })
 export class TextInputModalComponent {
+    title: string;
     message: string;
     input: string;
     form = this.formBuilder.group({
@@ -19,6 +21,7 @@ export class TextInputModalComponent {
     });
 
     constructor(private formBuilder: FormBuilder, public dialogRef: MatDialogRef<TextInputModalComponent>, @Inject(MAT_DIALOG_DATA) public data: TextInputModalData) {
+        this.title = data.title || 'Input';
         this.message = data.message;
     }
 

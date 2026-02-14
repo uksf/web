@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>New Build</h2>
 <mat-dialog-content>
     <p class="hint-text">Select a branch or enter a commit id to run a new build from</p>
-    <form [formGroup]="form" class="container">
+    <form [formGroup]="form" class="modal-form">
         <mat-form-field class="normal">
             <mat-label>Configuration</mat-label>
             <mat-select formControlName="configuration" [errorStateMatcher]="instantErrorStateMatcher">
@@ -19,11 +19,9 @@
                     </mat-option>
                 </mat-select>
             </mat-form-field>
-            <mat-form-field class="normal">
-                <mat-label>Commit ID</mat-label>
-                <input matInput formControlName="commitId" [errorStateMatcher]="instantErrorStateMatcher" />
-                <mat-error>{{ getValidationError(form.get('referenceGroup.commitId'), validationMessages.commitId) }}</mat-error>
-            </mat-form-field>
+            <app-text-input class="normal" label="Commit ID" formControlName="commitId"
+                [validationMessages]="validationMessages.commitId">
+            </app-text-input>
             <mat-error *ngIf="form.get('referenceGroup').hasError('both')">Cannot select both a branch and a commit ID</mat-error>
         </div>
         <div class="force-container">
@@ -31,18 +29,17 @@
             <mat-checkbox color="primary" formControlName="acre">Force ACRE build</mat-checkbox>
             <mat-checkbox color="primary" formControlName="air">Force Air build</mat-checkbox>
         </div>
-        <app-flex-filler></app-flex-filler>
-        <div class="button-container">
-            <button
-                mat-raised-button
-                color="primary"
-                type="button"
-                #runButton
-                (click)="run(); runButton.disabled = true"
-                [disabled]="submitting || !form.valid || !form.value.referenceGroup.branch || (form.value.referenceGroup.branch === 'No branch' && !form.value.referenceGroup.commitId)"
-            >
-                Run
-            </button>
-        </div>
     </form>
 </mat-dialog-content>
+<mat-dialog-actions>
+    <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        #runButton
+        (click)="run(); runButton.disabled = true"
+        [disabled]="submitting || !form.valid || !form.value.referenceGroup.branch || (form.value.referenceGroup.branch === 'No branch' && !form.value.referenceGroup.commitId)"
+    >
+        Run
+    </button>
+</mat-dialog-actions>

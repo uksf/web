@@ -8,15 +8,16 @@
 .flex-container-input {
     display: flex;
     flex-direction: row;
+    align-items: flex-end;
     margin-left: 0;
 }
 
 .normal {
+    display: block;
     width: 292px;
 }
 
 .mat-mdc-raised-button {
-    align-self: center;
     margin-left: 20px;
 }
 

@@ -70,26 +70,24 @@ app-side-content-area {
     display: flex;
     flex-direction: row;
     margin-top: 10px;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
 }
 
 .history-header-part-container {
     display: flex;
     flex-direction: row;
+    align-items: center;
 
     h3 { margin: auto 15px auto 0; }
-    &.actions { flex-grow: 1; }
-    &.buttons {
-        flex-grow: 1;
-
-        .icon-right {
-            margin-right: 6px;
-        }
-    }
+    &.actions { flex-grow: 1; gap: 8px; }
 
     app-paginator {
         margin: auto 0;
-        padding-left: 4px;
+        flex-shrink: 0;
+    }
+
+    .icon-right {
+        margin-right: 6px;
     }
 }
 
@@ -103,23 +101,16 @@ app-side-content-area {
     &.search {
         flex-grow: 1;
 
-        .mat-mdc-form-field {
+        app-text-input {
+            max-width: 300px;
             width: 100%;
-
-            .mat-mdc-icon-button {
-                background-color: transparent;
-                margin-left: -21px;
-
-                .mat-icon {
-                    margin: 0;
-                    height: 21px;
-                    line-height: 21px;
-                }
-            }
         }
     }
 
-    &.sort button { margin-left: 10px; }
+    &.sort {
+        flex-shrink: 0;
+        button { margin-right: 8px; }
+    }
 }
 
 // History application cards
@@ -259,9 +250,9 @@ app-side-content-area {
         .item { padding: 2px 5px; &.applied, &.email { display: none; } }
     }
 
-    .history-header-part-container.actions { flex-direction: column; }
-    .history-header-part.search { align-self: unset; }
-    .history-header-part.sort button { margin-left: 0; margin-right: 10px; }
+    .history-header-part-container.actions { flex-wrap: wrap; }
+    .history-header-part.search { flex-basis: 100%; }
+    .history-header-part.sort button { margin-right: 8px; }
 
     .history-application {
         .name { flex-basis: 25%; }
@@ -292,11 +283,6 @@ app-side-content-area {
 }
 
 @media screen and (max-width: 425px) {
-    .history-header-part-container.buttons {
-        flex-direction: column;
-        app-flex-filler { display: none; }
-        .history-header-part { align-self: flex-start; }
-    }
 
     .stats-item.activity {
         .mat-mdc-card { padding: 8px; }

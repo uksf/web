@@ -1,11 +1,4 @@
-h3 {
-    margin-top: 0px;
-    margin-bottom: 30px;
-}
-
 .flex-container {
-    display: flex;
-    flex-direction: column;
     width: 100%;
     min-width: 600px;
     min-height: 200px;
@@ -39,9 +32,4 @@ p {
 
 a {
     text-decoration: none;
-}
-
-.flex-container-row {
-    display: flex;
-    flex-direction: row;
 }

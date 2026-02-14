@@ -5,13 +5,10 @@
                 <button mat-button class="refresh-button" (click)="refresh()" matTooltip="Refresh">
                     <mat-icon [ngClass]="{ updating: updating }">refresh</mat-icon>
                 </button>
-                <mat-form-field style="width: 30%">
-                    <mat-label>Filter</mat-label>
-                    <input (keyup)="filter()" [(ngModel)]="filterString" matInput />
-                    <button *ngIf="filterString" matSuffix mat-icon-button aria-label="Clear" (click)="filterString = ''; filter(); $event.stopPropagation()">
-                        <mat-icon>close</mat-icon>
-                    </button>
-                </mat-form-field>
+                <app-text-input class="filter-input" label="Filter" [(ngModel)]="filterString"
+                    [clearable]="true" [reserveErrorSpace]="false"
+                    (input)="filter()" (cleared)="filter()">
+                </app-text-input>
                 <app-flex-filler></app-flex-filler>
                 <div class="pagination-container">
                     <span>{{ index + 1 }} - {{ min(index + length, filtered.length) }} of {{ filtered.length }}</span>

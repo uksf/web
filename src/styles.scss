@@ -165,6 +165,15 @@
     $background: map-get($dark-theme, background);
     $primary: map-get($dark-theme, primary);
 
+    // Global scrollbar theming
+    ::-webkit-scrollbar-track {
+        background-color: mat.get-color-from-palette($background, side-bar);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: mat.get-color-from-palette($background, scroll-thumb);
+    }
+
     .mat-impersonated {
         color: #eee !important;
         background-color: #09c900 !important;
@@ -489,23 +498,64 @@ mat-tab-nav-panel,
 }
 
 // ---------------------------------------------------------------------------
+// Global scrollbar sizing
+// ---------------------------------------------------------------------------
+// Uniform 9px scrollbar across the site. Theme colors applied in .dark-theme.
+::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+}
+
+::-webkit-scrollbar-track {
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+}
+
+// ---------------------------------------------------------------------------
 // Page layout utilities
 // ---------------------------------------------------------------------------
 .page-container {
     padding: 0 16px 16px;
 }
 
-// MDC dialog: white supporting text (Material 17 defaults to rgba)
+// ---------------------------------------------------------------------------
+// Unified modal layout
+// ---------------------------------------------------------------------------
+// All modals use: <h2 mat-dialog-title>, <mat-dialog-content>, <mat-dialog-actions>
+// These global rules handle spacing, scrolling, and button layout.
+
 .mat-mdc-dialog-container {
     --mdc-dialog-supporting-text-color: white;
 }
 
-// Dialog form layout: flex column so fields stack with consistent spacing.
-// The subscript wrapper (20px min-height inside forms) handles inter-field
-// spacing, so only a small gap is needed for non-field elements like buttons.
-mat-dialog-content form {
-    display: flex;
-    flex-direction: column;
+.mat-mdc-dialog-title {
+    margin: 0 !important;
+    padding: 16px 24px 12px !important;
+}
+
+mat-dialog-content, .mat-mdc-dialog-content {
+    padding: 0 24px !important;
+    max-height: 70vh;
+    overflow-y: auto;
+
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+mat-dialog-actions, .mat-mdc-dialog-actions {
+    padding: 12px 24px 16px !important;
+    margin: 0 !important;
+    min-height: unset !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-end !important;
+    gap: 8px;
+    color: white;
 }
 
 // MDC checkbox: allow label text to wrap

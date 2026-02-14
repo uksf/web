@@ -245,7 +245,7 @@
                     <h4>Application Chat</h4>
                     <mat-card>
                         <ng-template [ngxPermissionsOnly]="['RECRUITER']">
-                            <sup>Visible to candidate</sup>
+                            <small class="comment-hint">Visible to candidate</small>
                         </ng-template>
                         <app-comment-display #applicationCommentsDisplay [threadId]="application.account.application.applicationCommentThread"></app-comment-display>
                     </mat-card>
@@ -254,7 +254,7 @@
                     <div class="flex-container flex-grow no-padding padding-left fit-content">
                         <h4>Recruiter Chat</h4>
                         <mat-card>
-                            <sup>Only visible to SR1</sup>
+                            <small class="comment-hint">Only visible to SR1</small>
                             <app-comment-display #recruiterCommentsDisplay [threadId]="application.account.application.recruiterCommentThread"></app-comment-display>
                         </mat-card>
                     </div>

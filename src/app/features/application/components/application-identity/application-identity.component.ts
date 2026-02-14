@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject, Observable, of, timer } from 'rxjs';
@@ -6,7 +6,8 @@ import { first, map, switchMap } from 'rxjs/operators';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { CountryPickerService, ICountry } from '@app/shared/services/country-picker/country-picker.service';
 import { CountryImage } from '@app/shared/pipes/country.pipe';
-import { ConfirmValidParentMatcher, getValidationError, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
+import { getValidationError } from '@app/shared/services/form-helper.service';
+import { TextInputComponent } from '@app/shared/components/elements/text-input/text-input.component';
 import { UksfError } from '@app/shared/models/response';
 import { nameCase, titleCase } from '@app/shared/services/helper.service';
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
@@ -20,15 +21,21 @@ function matchingPasswords(passwordKey: string, confirmPasswordKey: string) {
         const password = group.controls[passwordKey];
         const confirmPassword = group.controls[confirmPasswordKey];
         if (password.value !== confirmPassword.value) {
+            confirmPassword.setErrors({ ...confirmPassword.errors, mismatchedPasswords: true });
             return { mismatchedPasswords: true };
         }
+        if (confirmPassword.hasError('mismatchedPasswords')) {
+            const { mismatchedPasswords, ...rest } = confirmPassword.errors;
+            confirmPassword.setErrors(Object.keys(rest).length ? rest : null);
+        }
+        return null;
     };
 }
 
 function validDob(dayKey: string, monthKey: string, yearKey: string) {
     return (group: UntypedFormGroup): ValidationErrors | null => {
         if (group.controls[dayKey].value === '' || group.controls[monthKey].value === '' || group.controls[yearKey].value === '') {
-            return;
+            return null;
         }
 
         const day = parseInt(group.controls[dayKey].value, 10);
@@ -73,14 +80,12 @@ function validDob(dayKey: string, monthKey: string, yearKey: string) {
 export class ApplicationIdentityComponent implements OnInit {
     @Output() nextEvent = new EventEmitter();
     @Output() previousEvent = new EventEmitter();
-    @ViewChild('day') dobDay: ElementRef;
-    @ViewChild('month') dobMonth: ElementRef;
-    @ViewChild('year') dobYear: ElementRef;
+    @ViewChild('day') dobDay: TextInputComponent;
+    @ViewChild('month') dobMonth: TextInputComponent;
+    @ViewChild('year') dobYear: TextInputComponent;
     getValidationError = getValidationError;
     formGroup: UntypedFormGroup;
     pending = false;
-    confirmValidParentMatcher = new ConfirmValidParentMatcher();
-    instantErrorStateMatcher = new InstantErrorStateMatcher();
     countries: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
     validating = false;
 
@@ -180,15 +185,15 @@ export class ApplicationIdentityComponent implements OnInit {
     numberOnly(event: KeyboardEvent, fieldName: string, min: number, max: number) {
         if (event.key === 'ArrowRight') {
             if (fieldName === 'day') {
-                this.dobMonth.nativeElement.focus();
+                this.dobMonth.focus();
             } else if (fieldName === 'month') {
-                this.dobYear.nativeElement.focus();
+                this.dobYear.focus();
             }
         } else if (event.key === 'ArrowLeft') {
             if (fieldName === 'month') {
-                this.dobDay.nativeElement.focus();
+                this.dobDay.focus();
             } else if (fieldName === 'year') {
-                this.dobMonth.nativeElement.focus();
+                this.dobMonth.focus();
             }
         }
 

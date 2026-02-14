@@ -8,10 +8,6 @@
     app-text-input {
         .text-input-label {
             color: mat.get-color-from-palette($foreground, secondary-text);
-
-            &.required::after {
-                color: mat.get-color-from-palette($warn);
-            }
         }
 
         .text-input-field {

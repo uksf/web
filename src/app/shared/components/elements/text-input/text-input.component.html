@@ -19,8 +19,11 @@
             <mat-icon>close</mat-icon>
         </button>
     </div>
-    <div [id]="inputId + '-error'" class="text-input-error" [class.visible]="hasError" [class.reserve-space]="reserveErrorSpace"
+    <div [id]="inputId + '-error'" class="text-input-error" [class.visible]="hasError" [class.reserve-space]="reserveErrorSpace && !hint"
          role="alert">
         {{ errorMessage }}
+    </div>
+    <div *ngIf="hint && !hasError" class="text-input-hint" [class.reserve-space]="reserveErrorSpace">
+        {{ hint }}
     </div>
 </div>

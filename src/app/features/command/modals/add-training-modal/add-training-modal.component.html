@@ -1,24 +1,17 @@
 <h2 mat-dialog-title>Add Training</h2>
 <mat-dialog-content>
-    <form [formGroup]="form" class="container">
-        <mat-form-field class="normal">
-            <mat-label>Training Name</mat-label>
-            <input #input [errorStateMatcher]="instantErrorStateMatcher" formControlName="name" matInput required />
-            <mat-error>{{ getValidationError(form.get('name'), validationMessages.name) }}</mat-error>
-        </mat-form-field>
-        <mat-form-field class="normal">
-            <mat-label>Short Name</mat-label>
-            <input #input [errorStateMatcher]="instantErrorStateMatcher" formControlName="shortName" matInput />
-            <mat-error>{{ getValidationError(form.get('shortName'), validationMessages.shortName) }}</mat-error>
-        </mat-form-field>
-        <mat-form-field class="normal">
-            <mat-label>TeamSpeak Group ID</mat-label>
-            <input #input [errorStateMatcher]="instantErrorStateMatcher" formControlName="teamspeakGroup" matInput />
-            <mat-error>{{ getValidationError(form.get('teamspeakGroup'), validationMessages.teamspeakGroup) }}</mat-error>
-        </mat-form-field>
-        <div class="button-container">
-            <app-flex-filler></app-flex-filler>
-            <app-button (clicked)="submit()" [disabled]="!form.valid" [pending]="pending">Submit</app-button>
-        </div>
+    <form [formGroup]="form" class="modal-form">
+        <app-text-input class="normal" label="Training Name" formControlName="name" [required]="true"
+            [validationMessages]="validationMessages.name">
+        </app-text-input>
+        <app-text-input class="normal" label="Short Name" formControlName="shortName"
+            [validationMessages]="validationMessages.shortName">
+        </app-text-input>
+        <app-text-input class="normal" label="TeamSpeak Group ID" formControlName="teamspeakGroup"
+            [validationMessages]="validationMessages.teamspeakGroup">
+        </app-text-input>
     </form>
 </mat-dialog-content>
+<mat-dialog-actions>
+    <app-button (clicked)="submit()" [disabled]="!form.valid" [pending]="pending">Submit</app-button>
+</mat-dialog-actions>

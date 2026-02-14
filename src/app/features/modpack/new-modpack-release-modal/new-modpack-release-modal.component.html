@@ -15,9 +15,8 @@
                 ><span [ngClass]="{ selected: patchSelection.checked }" class="version-label">{{ patch }}</span>
             </mat-radio-button>
         </mat-radio-group>
-        <app-flex-filler></app-flex-filler>
-        <div class="button-container">
-            <app-button (click)="create()" [disabled]="!form.valid" [pending]="submitting">Create</app-button>
-        </div>
     </form>
 </mat-dialog-content>
+<mat-dialog-actions>
+    <app-button (click)="create()" [disabled]="!form.valid" [pending]="submitting">Create</app-button>
+</mat-dialog-actions>

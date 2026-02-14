@@ -118,52 +118,47 @@
                 </div>
             </div>
             <div class="history">
-                <span class="history-header" *ngIf="loaded">
+                <div class="history-header" *ngIf="loaded">
                     <div class="history-header-part-container title">
                         <h3>Application History</h3>
                     </div>
                     <div class="history-header-part-container actions">
+                        <div class="history-header-part sort">
+                            <button mat-raised-button [matMenuTriggerFor]="sortMenu">
+                                <mat-icon class="icon-right">sort</mat-icon>
+                                <span>Sort</span>
+                            </button>
+                            <mat-menu #sortMenu="matMenu">
+                                <button
+                                    (click)="sort(sortDefinition.mode, sortDefinition.direction)"
+                                    *ngFor="let sortDefinition of sortDefinitions"
+                                    [disabled]="sortMode === sortDefinition.mode && sortDirection === sortDefinition.direction"
+                                    mat-menu-item
+                                >
+                                    {{ sortDefinition.name }}
+                                </button>
+                            </mat-menu>
+                            <button mat-raised-button [matMenuTriggerFor]="filterMenu">
+                                <mat-icon class="icon-right">filter_list</mat-icon>
+                                <span>Filter SR1</span>
+                            </button>
+                            <mat-menu #filterMenu="matMenu">
+                                <button (click)="filterByRecruiter('')" mat-menu-item>All</button>
+                                <div *ngFor="let recruiter of recruiters">
+                                    <button (click)="filterByRecruiter(recruiter.id)" mat-menu-item>{{ recruiter.name }}</button>
+                                </div>
+                            </mat-menu>
+                        </div>
                         <div class="history-header-part search">
-                            <mat-form-field>
-                                <mat-label>Filter</mat-label>
-                                <input (keyup)="filter()" [(ngModel)]="filterString" matInput matTooltip="Use operators 'AND' or 'OR' to combine filters" />
-                                <button (click)="filterString = ''; filter(); $event.stopPropagation()" *ngIf="filterString" aria-label="Clear" mat-icon-button matSuffix matTooltip="Clear">
-                                    <mat-icon>close</mat-icon>
-                                </button>
-                            </mat-form-field>
+                            <app-text-input label="Filter" [(ngModel)]="filterString"
+                                tooltip="Use operators 'AND' or 'OR' to combine filters"
+                                [clearable]="true" [reserveErrorSpace]="false"
+                                (input)="filter()" (cleared)="filter()">
+                            </app-text-input>
                         </div>
-                        <div class="history-header-part-container buttons">
-                            <div class="history-header-part sort">
-                                <button mat-raised-button [matMenuTriggerFor]="sortMenu">
-                                    <mat-icon class="icon-right">sort</mat-icon>
-                                    <span>Sort</span>
-                                </button>
-                                <mat-menu #sortMenu="matMenu">
-                                    <button
-                                        (click)="sort(sortDefinition.mode, sortDefinition.direction)"
-                                        *ngFor="let sortDefinition of sortDefinitions"
-                                        [disabled]="sortMode === sortDefinition.mode && sortDirection === sortDefinition.direction"
-                                        mat-menu-item
-                                    >
-                                        {{ sortDefinition.name }}
-                                    </button>
-                                </mat-menu>
-                                <button mat-raised-button [matMenuTriggerFor]="filterMenu">
-                                    <mat-icon class="icon-right">filter_list</mat-icon>
-                                    <span>Filter SR1</span>
-                                </button>
-                                <mat-menu #filterMenu="matMenu">
-                                    <button (click)="filterByRecruiter('')" mat-menu-item>All</button>
-                                    <div *ngFor="let recruiter of recruiters">
-                                        <button (click)="filterByRecruiter(recruiter.id)" mat-menu-item>{{ recruiter.name }}</button>
-                                    </div>
-                                </mat-menu>
-                            </div>
-                            <app-flex-filler></app-flex-filler>
-                            <app-paginator (page)="page($event)" [total]="totalCompletedApplications"></app-paginator>
-                        </div>
+                        <app-paginator (page)="page($event)" [total]="totalCompletedApplications"></app-paginator>
                     </div>
-                </span>
+                </div>
                 <div class="history-applications" *ngIf="loaded">
                     <mat-card (click)="openApplication(application)" *ngFor="let application of completedApplications; trackBy: trackByApplication" class="history-application" appSpotlight>
                         <div class="name">

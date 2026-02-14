@@ -26,6 +26,7 @@ export class TextInputComponent implements ControlValueAccessor {
     @Input() reserveErrorSpace = true;
     @Input() clearable = false;
     @Input() tooltip = '';
+    @Input() hint = '';
     @Output() cleared = new EventEmitter<void>();
 
     readonly inputId = `text-input-${nextId++}`;
@@ -67,6 +68,10 @@ export class TextInputComponent implements ControlValueAccessor {
         return this.errorMessage.length > 0;
     }
 
+    focus(): void {
+        this.inputElement?.nativeElement?.focus();
+    }
+
     onInput(event: Event): void {
         const target = event.target as HTMLInputElement | HTMLTextAreaElement;
         this.value = target.value;
@@ -92,8 +97,8 @@ export class TextInputComponent implements ControlValueAccessor {
         this.onTouched();
     }
 
-    writeValue(value: string): void {
-        this.value = value ?? '';
+    writeValue(value: string | number): void {
+        this.value = value != null ? String(value) : '';
     }
 
     registerOnChange(fn: (value: string) => void): void {

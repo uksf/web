@@ -13,21 +13,23 @@
         .variables-form-container {
             display: flex;
             flex-direction: row;
+            align-items: flex-end;
             margin-left: 0;
 
             .key-field {
+                display: block;
                 margin-right: 10px;
                 width: 275px;
             }
 
             .item-field {
+                display: block;
                 margin-right: 10px;
                 flex: 1;
             }
 
             .mat-mdc-raised-button {
                 width: fit-content;
-                align-self: center;
             }
 
             .mat-mdc-icon-button {

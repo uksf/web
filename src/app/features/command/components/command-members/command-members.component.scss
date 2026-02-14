@@ -26,6 +26,11 @@
         .members-list-header {
             display: flex;
             flex-direction: row;
+            align-items: flex-end;
+
+            .filter-input {
+                width: 30%;
+            }
 
             .mat-mdc-icon-button {
                 background-color: transparent;
@@ -70,11 +75,11 @@
 }
 
 ::ng-deep .mat-mdc-menu-item {
-    ::ng-deep .icon-right {
+    .icon-right {
         margin-right: 6px;
     }
 
-    ::ng-deep .item-text {
+    .item-text {
         vertical-align: middle;
     }
 }

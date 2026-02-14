@@ -1,67 +1,46 @@
 <h2 *ngIf="!edit" mat-dialog-title>Add Unit</h2>
 <h2 *ngIf="edit" mat-dialog-title>Edit Unit</h2>
 <mat-dialog-content>
-    <form [formGroup]="form" class="container">
-        <div style="text-align: center">
-            <div class="container">
-                <h4>Required Fields</h4>
-                <mat-form-field class="normal">
-                    <mat-label>Unit Name</mat-label>
-                    <input [errorStateMatcher]="instantErrorStateMatcher" formControlName="name" matInput required />
-                    <mat-error>{{ getValidationError(form.get('name'), validationMessages.name) }}</mat-error>
-                </mat-form-field>
-                <mat-form-field class="normal">
-                    <mat-label>Short Name</mat-label>
-                    <input matInput formControlName="shortname" required [errorStateMatcher]="instantErrorStateMatcher" />
-                    <mat-error>{{ getValidationError(form.get('shortname'), validationMessages.shortname) }}</mat-error>
-                </mat-form-field>
-                <mat-checkbox color="primary" formControlName="preferShortname">Prefer displaying short name</mat-checkbox>
-                <mat-form-field class="normal">
-                    <mat-label>Branch Type</mat-label>
-                    <mat-select formControlName="branch" required (selectionChange)="resolveAvailableParentUnits()">
-                        <mat-option *ngFor="let type of branchTypes; trackBy: trackByIndex" [value]="type.value">
-                            {{ type.viewValue }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <mat-form-field class="normal" *ngIf="!this.edit || this.unit.parent !== '000000000000000000000000'">
-                    <mat-label>Parent Unit</mat-label>
-                    <mat-select formControlName="parent" required>
-                        <mat-option *ngFor="let unit of availableParentUnits; trackBy: trackByUnitId" [value]="unit.id">
-                            {{ unit.name }}
-                        </mat-option>
-                    </mat-select>
-                    <mat-error>{{ getValidationError(form.get('parent'), validationMessages.parent) }}</mat-error>
-                </mat-form-field>
-            </div>
-            <br />
-            <div class="container">
-                <h4>Optional Fields</h4>
-                <mat-form-field class="normal">
-                    <mat-label>TeamSpeak Group ID</mat-label>
-                    <input matInput formControlName="teamspeakGroup" type="number" [errorStateMatcher]="instantErrorStateMatcher" />
-                    <mat-error>{{ getValidationError(form.get('teamspeakGroup'), validationMessages.teamspeakGroup) }}</mat-error>
-                </mat-form-field>
-                <mat-form-field class="normal">
-                    <mat-label>Discord Role ID</mat-label>
-                    <input matInput formControlName="discordRoleId" [errorStateMatcher]="instantErrorStateMatcher" />
-                    <mat-error>{{ getValidationError(form.get('discordRoleId'), validationMessages.discordRoleId) }}</mat-error>
-                </mat-form-field>
-                <mat-form-field class="normal">
-                    <mat-label>Callsign</mat-label>
-                    <input matInput formControlName="callsign" [errorStateMatcher]="instantErrorStateMatcher" />
-                    <mat-error>{{ getValidationError(form.get('callsign'), validationMessages.callsign) }}</mat-error>
-                </mat-form-field>
-                <mat-form-field class="normal">
-                    <mat-label>Unit Icon</mat-label>
-                    <input matInput formControlName="icon" />
-                </mat-form-field>
-            </div>
-            <div class="button-container">
-                <button (click)="delete()" *ngIf="edit" [disabled]="pending" class="button-delete" mat-raised-button type="button">Delete</button>
-                <app-flex-filler *ngIf="edit"></app-flex-filler>
-                <app-button (clicked)="submit()" [disabled]="!form.valid || !changesMade" [pending]="pending"> Submit </app-button>
-            </div>
-        </div>
+    <form [formGroup]="form" class="modal-form">
+        <app-text-input class="normal" label="Unit Name" formControlName="name" [required]="true"
+            [validationMessages]="validationMessages.name">
+        </app-text-input>
+        <app-text-input class="normal" label="Short Name" formControlName="shortname" [required]="true"
+            [validationMessages]="validationMessages.shortname">
+        </app-text-input>
+        <mat-form-field class="normal">
+            <mat-label>Branch Type</mat-label>
+            <mat-select formControlName="branch" required (selectionChange)="resolveAvailableParentUnits()">
+                <mat-option *ngFor="let type of branchTypes; trackBy: trackByIndex" [value]="type.value">
+                    {{ type.viewValue }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="normal" *ngIf="!this.edit || this.unit.parent !== '000000000000000000000000'">
+            <mat-label>Parent Unit</mat-label>
+            <mat-select formControlName="parent" required>
+                <mat-option *ngFor="let unit of availableParentUnits; trackBy: trackByUnitId" [value]="unit.id">
+                    {{ unit.name }}
+                </mat-option>
+            </mat-select>
+            <mat-error>{{ getValidationError(form.get('parent'), validationMessages.parent) }}</mat-error>
+        </mat-form-field>
+        <app-text-input class="normal" label="TeamSpeak Group ID" formControlName="teamspeakGroup" type="number"
+            [validationMessages]="validationMessages.teamspeakGroup">
+        </app-text-input>
+        <app-text-input class="normal" label="Discord Role ID" formControlName="discordRoleId"
+            [validationMessages]="validationMessages.discordRoleId">
+        </app-text-input>
+        <app-text-input class="normal" label="Callsign" formControlName="callsign"
+            [validationMessages]="validationMessages.callsign">
+        </app-text-input>
+        <app-text-input class="normal" label="Unit Icon" formControlName="icon">
+        </app-text-input>
+        <mat-checkbox color="primary" formControlName="preferShortname">Prefer displaying short name</mat-checkbox>
     </form>
 </mat-dialog-content>
+<mat-dialog-actions>
+    <button *ngIf="edit" mat-raised-button type="button" class="button-delete" [disabled]="pending" (click)="delete()">Delete</button>
+    <app-flex-filler></app-flex-filler>
+    <app-button (clicked)="submit()" [disabled]="!form.valid || !changesMade" [pending]="pending">Submit</app-button>
+</mat-dialog-actions>

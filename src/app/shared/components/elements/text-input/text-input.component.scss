@@ -11,7 +11,7 @@ app-text-input {
 
     .text-input-field {
         position: relative;
-        height: 36px;
+        height: 40px;
         display: flex;
         align-items: flex-end;
 
@@ -27,6 +27,7 @@ app-text-input {
             padding: 0 0 4px 0;
             transition: border-color v.$transition-fast v.$ease-standard;
             resize: none;
+            overflow: hidden;
             font-family: inherit;
         }
     }
@@ -89,7 +90,29 @@ app-text-input {
     // Multiline
     .multiline .text-input-field {
         height: auto;
-        min-height: 36px;
+        min-height: 40px;
+        padding-top: 18px;
+    }
+
+    .multiline .text-input-label {
+        bottom: auto;
+        top: 18px;
+
+        &.floating {
+            transform: translateY(-18px);
+        }
+    }
+
+    // Hint
+    .text-input-hint {
+        font-size: 11px;
+        line-height: 16px;
+        margin-top: v.$spacing-4px;
+        opacity: 0.7;
+
+        &.reserve-space {
+            min-height: 16px;
+        }
     }
 
     // Error

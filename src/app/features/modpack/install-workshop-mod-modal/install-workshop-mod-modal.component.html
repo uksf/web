@@ -1,22 +1,17 @@
 <h2 mat-dialog-title>Install Workshop Mod</h2>
 <mat-dialog-content>
     <form [formGroup]="form" class="form-container">
-        <mat-form-field class="normal">
-            <mat-label>Steam ID or Workshop Link</mat-label>
-            <input matInput formControlName="steamId" [errorStateMatcher]="instantErrorStateMatcher" />
-            <mat-error>{{ getValidationError(form.get('steamId'), validationMessages.steamId) }}</mat-error>
-        </mat-form-field>
+        <app-text-input class="normal" label="Steam ID or Workshop Link" formControlName="steamId"
+            [validationMessages]="validationMessages.steamId">
+        </app-text-input>
         <div class="root-mod">
             <mat-checkbox color="primary" formControlName="rootMod" matTooltip="Root mods are copied as entire folders to the repo root (e.g. @CBA_A3), including addons, signatures, and keys">Install as root mod</mat-checkbox>
         </div>
-        <mat-form-field class="normal">
-            <mat-label>Custom root folder name (optional, e.g. &#64;CBA_A3)</mat-label>
-            <input matInput formControlName="folderName" />
-            <mat-hint>Leave blank to use the mod name with &#64; prefix</mat-hint>
-        </mat-form-field>
-        <app-flex-filler></app-flex-filler>
-        <div class="button-container">
-            <app-button (click)="install()" [disabled]="!form.valid" [pending]="submitting">Install</app-button>
-        </div>
+        <app-text-input class="normal" label="Custom root folder name (optional, e.g. @CBA_A3)" formControlName="folderName"
+            hint="Leave blank to use the mod name with @ prefix">
+        </app-text-input>
     </form>
 </mat-dialog-content>
+<mat-dialog-actions>
+    <app-button (click)="install()" [disabled]="!form.valid" [pending]="submitting">Install</app-button>
+</mat-dialog-actions>

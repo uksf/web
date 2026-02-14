@@ -10,9 +10,8 @@
                 <mat-checkbox [(ngModel)]="training.selected" color="primary"></mat-checkbox>
             </div>
         </div>
-        <div class="button-container">
-            <app-flex-filler></app-flex-filler>
-            <button (click)="save()" [disabled]="!changes" color="primary" mat-raised-button>Save</button>
-        </div>
     </div>
 </mat-dialog-content>
+<mat-dialog-actions>
+    <button (click)="save()" [disabled]="!changes" color="primary" mat-raised-button>Save</button>
+</mat-dialog-actions>

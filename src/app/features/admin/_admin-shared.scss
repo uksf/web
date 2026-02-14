@@ -23,7 +23,12 @@
     .table-header {
         display: flex;
         flex-direction: row;
-        align-items: center;
+        align-items: flex-end;
+        margin-bottom: 8px;
+
+        .filter-input {
+            width: 30%;
+        }
     }
 
     .refresh-button {
@@ -40,11 +45,6 @@
         vertical-align: bottom;
         text-align: right;
         font-size: 11px;
-    }
-
-    .mat-mdc-form-field {
-        font-size: 14px;
-        width: 100%;
     }
 
     .mat-mdc-table {

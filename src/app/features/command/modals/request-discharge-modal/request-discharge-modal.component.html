@@ -7,7 +7,6 @@
             <app-flex-filler></app-flex-filler>
         </div>
         <div *ngIf="accounts">
-            <app-autofocus-stop></app-autofocus-stop>
             <app-dropdown
                 #accountName="ngModel"
                 [(ngModel)]="model.account"
@@ -22,28 +21,13 @@
                     {{ getAccountName(element) }}
                 </ng-template>
             </app-dropdown>
-            <mat-form-field>
-                <mat-label>Reason</mat-label>
-                <textarea
-                    #reason="ngModel"
-                    [(ngModel)]="model.reason"
-                    id="reason"
-                    matAutosizeMaxRows="5"
-                    matAutosizeMinRows="2"
-                    matInput
-                    matTextareaAutosize
-                    name="formReason"
-                   
-                    required
-                    type="text"
-                ></textarea>
-                <mat-error>{{ getValidationError(reason.control, validationMessages.reason) }}</mat-error>
-            </mat-form-field>
-        </div>
-        <app-form-value-debug-template></app-form-value-debug-template>
-        <div class="button-container">
-            <app-flex-filler></app-flex-filler>
-            <app-button (clicked)="submit()" [disabled]="!form.valid" [pending]="pending">Submit</app-button>
+            <app-text-input label="Reason" [(ngModel)]="model.reason" name="formReason" id="reason"
+                [multiline]="true" [minRows]="1" [maxRows]="5" [required]="true"
+                [validationMessages]="validationMessages.reason">
+            </app-text-input>
         </div>
     </form>
 </mat-dialog-content>
+<mat-dialog-actions>
+    <app-button (clicked)="submit()" [disabled]="!form.valid" [pending]="pending">Submit</app-button>
+</mat-dialog-actions>

@@ -1,24 +1,15 @@
-.mat-mdc-dialog-content {
-    overflow: unset;
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
 
-    .container {
-        display: flex;
-        flex-direction: column;
+    .normal {
+        display: block;
         width: 100%;
-
-        .normal {
-            width: 100%;
-        }
-
-        .force-container {
-            display: flex;
-            flex-direction: column;
-        }
     }
 
-    .button-container {
+    .force-container {
         display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
+        flex-direction: column;
     }
 }

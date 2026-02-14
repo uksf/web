@@ -5,38 +5,30 @@
             <label for="name">If you see this, keep this field blank</label>
             <input type="text" id="name" formControlName="name" tabindex="-1" autocomplete="off" />
         </div>
-        <mat-form-field class="normal">
-            <mat-label>Email</mat-label>
-            <input matInput formControlName="email" required autocomplete="username" [errorStateMatcher]="instantErrorStateMatcher" />
-            <mat-error>{{ getValidationError(formGroup.get('email'), validation_messages.email) }}</mat-error>
-        </mat-form-field>
+        <app-text-input class="normal" label="Email" formControlName="email" [required]="true" autocomplete="username"
+            [validationMessages]="validation_messages.email">
+        </app-text-input>
         <br />
         <div formGroupName="passwordGroup">
-            <mat-form-field class="normal">
-                <mat-label>Password (min 12 chars)</mat-label>
-                <input matInput formControlName="password" type="password" required autocomplete="new-password" [errorStateMatcher]="instantErrorStateMatcher" />
-                <mat-error>{{ getValidationError(formGroup.get('passwordGroup.password'), validation_messages.password) || getValidationError(formGroup.get('passwordGroup'), validation_messages.password) }}</mat-error>
-            </mat-form-field>
+            <app-text-input class="normal" label="Password (min 12 chars)" formControlName="password" type="password" [required]="true"
+                autocomplete="new-password" [validationMessages]="validation_messages.password">
+            </app-text-input>
             <br />
-            <mat-form-field class="normal">
-                <mat-label>Confirm Password</mat-label>
-                <input matInput formControlName="confirmPassword" type="password" required autocomplete="new-password" [errorStateMatcher]="confirmValidParentMatcher" />
-                <mat-error>{{ getValidationError(formGroup.get('passwordGroup.confirmPassword'), validation_messages.confirmPassword) || getValidationError(formGroup.get('passwordGroup'), validation_messages.confirmPassword) }}</mat-error>
-            </mat-form-field>
+            <app-text-input class="normal" label="Confirm Password" formControlName="confirmPassword" type="password"
+                autocomplete="new-password" [validationMessages]="validation_messages.confirmPassword">
+            </app-text-input>
         </div>
         <br />
         <div class="name-container">
             <p>This name will be used in-game, on TeamSpeak, and on Discord.</p>
             <p>If you do not wish to use your real name, you may use a realistic fake name (for example, Barry Miller)</p>
             <div class="names-container">
-                <mat-form-field class="name">
-                    <mat-label>First name</mat-label>
-                    <input matInput formControlName="firstName" required autocomplete="given-name" appCharacterBlock />
-                </mat-form-field>
-                <mat-form-field class="name">
-                    <mat-label>Last name</mat-label>
-                    <input matInput formControlName="lastName" required autocomplete="family-name" appCharacterBlock />
-                </mat-form-field>
+                <app-text-input class="name" label="First name" formControlName="firstName" [required]="true"
+                    autocomplete="given-name" appCharacterBlock>
+                </app-text-input>
+                <app-text-input class="name" label="Last name" formControlName="lastName" [required]="true"
+                    autocomplete="family-name" appCharacterBlock>
+                </app-text-input>
             </div>
             <span *ngIf="formGroup.value.firstName && formGroup.value.lastName">
                 Your name will be displayed as:
@@ -47,19 +39,18 @@
         <div formGroupName="dobGroup">
             <p>Date of Birth</p>
             <p>For example: 15/02/1989</p>
-            <mat-form-field class="dob">
-                <input matInput type="number" formControlName="day" #day placeholder="dd" maxlength="2" required autocomplete="bday-day" (keyup)="numberOnly($event, 'day', 0, 31)" /> </mat-form-field
-            >/
-            <mat-form-field class="dob">
-                <mat-label>mm</mat-label>
-                <input #month (keyup)="numberOnly($event, 'month', 0, 12)" autocomplete="bday-month" formControlName="month" matInput maxlength="2" required type="number"
-            /></mat-form-field>
-            /
-            <mat-form-field class="dob year">
-                <mat-label>yyyy</mat-label>
-                <input #year (keyup)="numberOnly($event, 'year', 1, 2030)" autocomplete="bday-year" formControlName="year" matInput maxlength="4" required type="number" />
-            </mat-form-field>
-            <mat-error>{{ getValidationError(formGroup.get('dobGroup'), validation_messages.dob) }}</mat-error>
+            <app-text-input class="dob" #day placeholder="dd" type="number" formControlName="day" [required]="true"
+                autocomplete="bday-day" [reserveErrorSpace]="false" (keyup)="numberOnly($event, 'day', 0, 31)">
+            </app-text-input>/
+            <app-text-input class="dob" #month placeholder="mm" type="number" formControlName="month" [required]="true"
+                autocomplete="bday-month" [reserveErrorSpace]="false" (keyup)="numberOnly($event, 'month', 0, 12)">
+            </app-text-input>/
+            <app-text-input class="dob year" #year placeholder="yyyy" type="number" formControlName="year" [required]="true"
+                autocomplete="bday-year" [reserveErrorSpace]="false" (keyup)="numberOnly($event, 'year', 1, 2030)">
+            </app-text-input>
+            <div class="dob-error" *ngIf="formGroup.get('dobGroup').invalid && (formGroup.get('dobGroup').dirty || formGroup.get('dobGroup').touched)">
+                {{ getValidationError(formGroup.get('dobGroup'), validation_messages.dob) }}
+            </div>
         </div>
         <br />
         <app-dropdown [elementName]="'Nation of Residence'" [elements]="countries" [formFieldClass]="'nation'" [isRequired]="true" [placeholder]="'Nation of Residence'" formControlName="nation">

@@ -18,6 +18,7 @@ import { DebouncedCallback } from '@app/shared/utils/debounce-callback';
 })
 export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
     @Input() showCancel = false;
+    @Input() showButtons = true;
     @Output() connectedEvent = new EventEmitter();
     @Output() confirmedEvent = new EventEmitter();
     @Output() cancelEvent = new EventEmitter();

@@ -1,24 +1,15 @@
+<h2 mat-dialog-title>Change Name</h2>
 <mat-dialog-content>
     <div *ngIf="!changed">
-        <h2 mat-dialog-title>Change Name</h2>
         <form [formGroup]="form">
             <div class="names-container">
-                <mat-form-field class="name">
-                    <input matInput formControlName="firstName" required appCharacterBlock />
-                </mat-form-field>
-                <mat-form-field class="name">
-                    <input matInput formControlName="lastName" required appCharacterBlock />
-                </mat-form-field>
-                <br />
+                <app-text-input class="name" formControlName="firstName" [required]="true" appCharacterBlock
+                    [reserveErrorSpace]="false">
+                </app-text-input>
+                <app-text-input class="name" formControlName="lastName" [required]="true" appCharacterBlock
+                    [reserveErrorSpace]="false">
+                </app-text-input>
                 <mat-error *ngIf="form.errors != null">{{ formErrors }}</mat-error>
-            </div>
-            <div class="button-container">
-                <span>
-                    Your new name will be
-                    <b>{{ displayName }}</b>
-                </span>
-                <app-flex-filler></app-flex-filler>
-                <button mat-raised-button color="primary" type="button" (click)="changeName()" [disabled]="!form.valid || !changesMade">Submit</button>
             </div>
         </form>
     </div>
@@ -28,3 +19,11 @@
         </span>
     </div>
 </mat-dialog-content>
+<mat-dialog-actions *ngIf="!changed">
+    <span>
+        Your new name will be
+        <b>{{ displayName }}</b>
+    </span>
+    <app-flex-filler></app-flex-filler>
+    <button mat-raised-button color="primary" type="button" (click)="changeName()" [disabled]="!form.valid || !changesMade">Submit</button>
+</mat-dialog-actions>

@@ -1,6 +1,5 @@
 import { Component, Output, ViewChild, EventEmitter } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { getValidationError, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
 import { first } from 'rxjs/operators';
 
@@ -12,8 +11,6 @@ import { first } from 'rxjs/operators';
 export class RequestPasswordResetComponent {
     @ViewChild(NgForm) form!: NgForm;
     @Output() onReturnToLogin = new EventEmitter();
-    getValidationError = getValidationError;
-    instantErrorStateMatcher = new InstantErrorStateMatcher();
     pending = false;
     sent = false;
     model: FormModel = {

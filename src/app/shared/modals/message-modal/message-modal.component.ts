@@ -3,6 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 export interface MessageModalData {
     message: string;
+    title?: string;
     button?: string;
 }
 
@@ -12,10 +13,12 @@ export interface MessageModalData {
     styleUrls: ['./message-modal.component.scss']
 })
 export class MessageModalComponent {
+    title: string = 'Message';
     message: string = 'There should be a different message shown here. Please report this mistake to an admin';
     button: string = 'Close';
 
     constructor(public dialogRef: MatDialogRef<MessageModalComponent>, @Inject(MAT_DIALOG_DATA) public data: MessageModalData) {
+        this.title = data.title || 'Message';
         this.message = data.message;
         if (data.button) {
             this.button = data.button;

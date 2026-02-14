@@ -1,47 +1,28 @@
-.mat-mdc-dialog-title {
-    margin: 0 0 5px;
-}
-
 .gmt-note {
     margin: 0 0 10px;
     font-size: 12px;
     color: inherit;
 }
 
-.mat-mdc-dialog-content {
-    .container {
-        display: flex;
-        flex-direction: column;
+.modal-form {
+    width: 100%;
+    min-width: 400px;
+
+    .reason-field {
+        width: 100%;
+    }
+
+    .mat-mdc-form-field {
         width: 100%;
 
-        .container-body {
-            width: 100%;
-
-            .reason-field {
-                width: 100%;
-                margin: 5px 0;
-            }
-
-            .mat-mdc-form-field {
-                width: 100%;
-                margin: 5px 0;
-
-                input {
-                    cursor: pointer;
-                }
-            }
-        }
-
-        .invalid-message {
-            text-align: center;
-            width: 100%;
-            margin: 10px 0;
-        }
-
-        .button-container {
-            display: flex;
-            flex-direction: row;
-            justify-content: flex-end;
+        input {
+            cursor: pointer;
         }
     }
+}
+
+.invalid-message {
+    text-align: center;
+    width: 100%;
+    margin: 10px 0;
 }

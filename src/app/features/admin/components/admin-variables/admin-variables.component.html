@@ -8,16 +8,12 @@
             <div *ngIf="variables" class="variables-container">
                 <div class="variables-header">
                     <form [formGroup]="form" class="variables-form-container">
-                        <mat-form-field class="key-field">
-                            <mat-label>Key</mat-label>
-                            <input #input matInput formControlName="key" required [errorStateMatcher]="instantErrorStateMatcher" />
-                            <mat-error>{{ getValidationError(form.get('key'), validationMessages.key) }}</mat-error>
-                        </mat-form-field>
-                        <mat-form-field class="item-field">
-                            <mat-label>Item</mat-label>
-                            <input #input matInput formControlName="item" required [errorStateMatcher]="instantErrorStateMatcher" />
-                            <mat-error>{{ getValidationError(form.get('item'), validationMessages.item) }}</mat-error>
-                        </mat-form-field>
+                        <app-text-input class="key-field" label="Key" formControlName="key" [required]="true"
+                            [validationMessages]="validationMessages.key">
+                        </app-text-input>
+                        <app-text-input class="item-field" label="Item" formControlName="item" [required]="true"
+                            [validationMessages]="validationMessages.item">
+                        </app-text-input>
                         <button mat-raised-button color="primary" (click)="addVariable()" [disabled]="!form.valid || updating">Add Variable</button>
                         <button mat-icon-button (click)="accordion.openAll(); expanded = true" matTooltip="Expand all" [disabled]="expanded">
                             <mat-icon>unfold_more</mat-icon>

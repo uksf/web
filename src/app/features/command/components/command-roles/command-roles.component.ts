@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormBuilder, ValidationErrors, Validators } from '@angular/forms';
 import { Observable, of, timer } from 'rxjs';
 import { first, map, switchMap } from 'rxjs/operators';
-import { getValidationError, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Role } from '@app/shared/models/role';
@@ -14,8 +13,6 @@ import { RolesService } from '../../services/roles.service';
     styleUrls: ['../command-page/command-page.component.scss', './command-roles.component.scss']
 })
 export class CommandRolesComponent implements OnInit {
-    getValidationError = getValidationError;
-    instantErrorStateMatcher = new InstantErrorStateMatcher();
     roleForm = this.formBuilder.group({
         name: ['', Validators.required, this.validateRole()]
     });
@@ -47,7 +44,7 @@ export class CommandRolesComponent implements OnInit {
         );
     }
 
-    addRole(type) {
+    addRole() {
         let formString = JSON.stringify(this.roleForm.getRawValue()).replace(/[\n\r]/g, '');
         this.rolesService.addRole(formString).pipe(first()).subscribe({
             next: (response) => {
@@ -97,10 +94,6 @@ export class CommandRolesComponent implements OnInit {
                 })
             );
         };
-    }
-
-    trackByIndex(index: number): number {
-        return index;
     }
 
     trackByRoleName(index: number, role: Role): string {

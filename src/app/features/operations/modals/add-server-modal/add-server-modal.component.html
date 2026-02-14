@@ -1,48 +1,32 @@
 <h2 mat-dialog-title *ngIf="!edit">Add Server</h2>
 <h2 mat-dialog-title *ngIf="edit">Edit Server</h2>
 <mat-dialog-content>
-    <form [formGroup]="form" class="container">
+    <form [formGroup]="form">
         <div class="overflow-container">
-            <mat-form-field class="normal">
-                <mat-label>Server Name</mat-label>
-                <input #input matInput formControlName="name" required [errorStateMatcher]="instantErrorStateMatcher">
-                <mat-error>{{ getValidationError(form.get('name'), validationMessages.name) }}</mat-error>
-            </mat-form-field>
-            <mat-form-field class="normal">
-                <mat-label>Port</mat-label>
-                <input #input matInput formControlName="port" required type="number" [errorStateMatcher]="instantErrorStateMatcher">
-                <mat-error>{{ getValidationError(form.get('port'), validationMessages.port) }}</mat-error>
-            </mat-form-field>
-            <mat-form-field class="normal">
-                <mat-label>Api Port</mat-label>
-                <input #input matInput formControlName="apiPort" required type="number" [errorStateMatcher]="instantErrorStateMatcher">
-                <mat-error>{{ getValidationError(form.get('apiPort'), validationMessages.apiPort) }}</mat-error>
-            </mat-form-field>
-            <mat-form-field class="normal">
-                <mat-label>Headless clients required</mat-label>
-                <input #input matInput formControlName="numberHeadlessClients" type="number" [errorStateMatcher]="instantErrorStateMatcher">
-                <mat-error>{{ getValidationError(form.get('numberHeadlessClients'), validationMessages.numberHeadlessClients) }}</mat-error>
-            </mat-form-field>
-            <mat-form-field class="normal">
-                <mat-label>Server Profile Name</mat-label>
-                <input #input matInput formControlName="profileName" required [errorStateMatcher]="instantErrorStateMatcher">
-                <mat-error>{{ getValidationError(form.get('profileName'), validationMessages.profileName) }}</mat-error>
-            </mat-form-field>
-            <mat-form-field class="normal">
-                <mat-label>Server Display Name</mat-label>
-                <input #input matInput formControlName="hostName" required [errorStateMatcher]="instantErrorStateMatcher">
-                <mat-error>{{ getValidationError(form.get('hostName'), validationMessages.hostName) }}</mat-error>
-            </mat-form-field>
-            <mat-form-field class="normal">
-                <mat-label>Server Password</mat-label>
-                <input #input matInput formControlName="password" required [errorStateMatcher]="instantErrorStateMatcher">
-                <mat-error>{{ getValidationError(form.get('password'), validationMessages.password) }}</mat-error>
-            </mat-form-field>
-            <mat-form-field class="normal">
-                <mat-label>Admin Password</mat-label>
-                <input #input matInput formControlName="adminPassword" required [errorStateMatcher]="instantErrorStateMatcher">
-                <mat-error>{{ getValidationError(form.get('adminPassword'), validationMessages.adminPassword) }}</mat-error>
-            </mat-form-field>
+            <app-text-input class="normal" label="Server Name" formControlName="name" [required]="true"
+                [validationMessages]="validationMessages.name">
+            </app-text-input>
+            <app-text-input class="normal" label="Port" formControlName="port" [required]="true" type="number"
+                [validationMessages]="validationMessages.port">
+            </app-text-input>
+            <app-text-input class="normal" label="Api Port" formControlName="apiPort" [required]="true" type="number"
+                [validationMessages]="validationMessages.apiPort">
+            </app-text-input>
+            <app-text-input class="normal" label="Headless clients required" formControlName="numberHeadlessClients" type="number"
+                [validationMessages]="validationMessages.numberHeadlessClients">
+            </app-text-input>
+            <app-text-input class="normal" label="Server Profile Name" formControlName="profileName" [required]="true"
+                [validationMessages]="validationMessages.profileName">
+            </app-text-input>
+            <app-text-input class="normal" label="Server Display Name" formControlName="hostName" [required]="true"
+                [validationMessages]="validationMessages.hostName">
+            </app-text-input>
+            <app-text-input class="normal" label="Server Password" formControlName="password" [required]="true"
+                [validationMessages]="validationMessages.password">
+            </app-text-input>
+            <app-text-input class="normal" label="Admin Password" formControlName="adminPassword" [required]="true"
+                [validationMessages]="validationMessages.adminPassword">
+            </app-text-input>
             <mat-form-field class="normal">
                 <mat-label>Environment</mat-label>
                 <mat-select formControlName="environment" required>
@@ -62,8 +46,8 @@
                 <mat-error>{{ getValidationError(form.get('serverOption'), validationMessages.serverOption) }}</mat-error>
             </mat-form-field>
         </div>
-        <div class="button-container">
-            <button mat-raised-button color="primary" type="button" #button (click)="submit(); button.disabled = true" [disabled]="!form.valid || changes.size === 0 || submitting">Submit</button>
-        </div>
     </form>
 </mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-raised-button color="primary" type="button" #button (click)="submit(); button.disabled = true" [disabled]="!form.valid || changes.size === 0 || submitting">Submit</button>
+</mat-dialog-actions>

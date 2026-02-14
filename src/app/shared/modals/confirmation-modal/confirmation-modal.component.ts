@@ -7,10 +7,12 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
     styleUrls: ['./confirmation-modal.component.scss']
 })
 export class ConfirmationModalComponent {
+    title: string;
     text: string;
     button = 'Confirm';
 
     constructor(public dialogRef: MatDialogRef<ConfirmationModalComponent>, @Inject(MAT_DIALOG_DATA) public data: ConfirmationModalData) {
+        this.title = data.title || 'Confirm';
         this.text = data.message;
         if (data.button) {
             this.button = data.button;
@@ -28,5 +30,6 @@ export class ConfirmationModalComponent {
 
 export class ConfirmationModalData {
     message: string;
+    title?: string;
     button?: string;
 }

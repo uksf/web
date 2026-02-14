@@ -5,20 +5,11 @@
     margin-bottom: 15px;
 
     .name {
+        display: block;
         width: 100%;
 
         &:first-of-type {
             margin-right: 5px;
         }
-    }
-}
-
-.button-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-
-    .mat-mdc-raised-button {
-        left: 15px;
     }
 }

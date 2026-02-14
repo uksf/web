@@ -1,47 +1,33 @@
-.mat-mdc-dialog-content {
-    display: flex;
+.form-container {
+    flex: 1;
 
-    .form-container {
-        flex: 1;
+    app-text-input {
+        display: block;
+    }
 
-        .mat-mdc-form-field {
-            width: 100%;
-        }
+    .basics-container {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
 
-        .basics-container {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-
-            app-dropdown {
-                flex: 1;
-            }
-        }
-
-        .permissions-container {
+        app-dropdown {
             flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 8px 0;
-            gap: 8px;
-
-            app-docs-permissions {
-                flex: 1;
-            }
-        }
-
-        .button-container {
-            display: flex;
-            flex-direction: row;
-        }
-
-        .hint {
-            font-style: italic;
         }
     }
-}
 
-::-webkit-scrollbar {
-    width: 7px;
-    height: 5px;
+    .permissions-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 8px 0;
+        gap: 8px;
+
+        app-docs-permissions {
+            flex: 1;
+        }
+    }
+
+    .hint {
+        font-style: italic;
+    }
 }

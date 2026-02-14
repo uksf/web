@@ -4,7 +4,6 @@ import { AuthenticationService } from '@app/core/services/authentication/authent
 import { Router } from '@angular/router';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { RedirectService } from '@app/core/services/authentication/redirect.service';
-import { getValidationError, InstantErrorStateMatcher, ValidationMessage } from '@app/shared/services/form-helper.service';
 import { UksfError } from '@app/shared/models/response';
 import { first } from 'rxjs/operators';
 
@@ -16,7 +15,6 @@ import { first } from 'rxjs/operators';
 export class LoginComponent {
     @ViewChild(NgForm) form!: NgForm;
     @Output() onRequestPasswordReset = new EventEmitter();
-    instantErrorStateMatcher = new InstantErrorStateMatcher();
     pending = false;
     stayLogged = true;
     loginError = '';
@@ -39,8 +37,6 @@ export class LoginComponent {
         private permissionsService: PermissionsService,
         private redirectService: RedirectService
     ) {}
-
-    getValidationError = getValidationError;
 
     submit() {
         // Honeypot field must be empty

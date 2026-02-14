@@ -269,10 +269,8 @@ export class ProfilePageComponent extends DestroyableComponent implements OnInit
                 data: {
                     message:
                         "By pressing 'Continue' you will be redirected to <b>steamcommunity.com</b> where you will be asked to log in." +
-                        '\nBy doing so, we are able to read only your Steam User ID, which we store in our database for the purpose of verifying you have a valid Steam account and for recruitment communication.' +
-                        '\nWe can read no more information about your account than this.' +
-                        '\n\nPlease note this is done on the official Steam website, meaning we have zero interaction with your login process.' +
-                        '\nIf you have any concerns about this process, please contact UKSF Staff for assistance.',
+                        '\n\nWe can only see your Steam User ID.' +
+                        '\nWe can read no more information about your account than this.',
                     button: 'Continue'
                 }
             })
@@ -293,10 +291,9 @@ export class ProfilePageComponent extends DestroyableComponent implements OnInit
                 data: {
                     message:
                         "By pressing 'Continue' you will be redirected to <b>discord.com</b> where you will be asked to log in." +
-                        '\nBy doing so, we are able to read only your Discord User ID, which we store in our database for the purpose of connectivity between this website and our Discord server.' +
+                        '\n\nWe can only see your Discord User ID.' +
                         '\nWe can read no more information about your account than this.' +
-                        '\n\nPlease note this is done on the official Discord website, meaning we have zero interaction with your login process.' +
-                        '\nIf you have any concerns about this process, please contact UKSF Staff for assistance.',
+                        '\nWe will automatically add you to our Discord server.',
                     button: 'Continue'
                 }
             })

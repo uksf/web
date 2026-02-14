@@ -1,12 +1,9 @@
+<h2 mat-dialog-title>{{ title }}</h2>
 <mat-dialog-content>
-    <div class="flex-container">
-        <div class="message-container">
-            <p>{{ message }}</p>
-        </div>
-        <app-flex-filler></app-flex-filler>
-        <div class="button-container">
-            <app-flex-filler></app-flex-filler>
-            <button mat-raised-button color="primary" (click)="buttonClick()">{{ button }}</button>
-        </div>
+    <div class="message-container">
+        <p>{{ message }}</p>
     </div>
 </mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="buttonClick()">{{ button }}</button>
+</mat-dialog-actions>

@@ -1,50 +1,47 @@
 <h2 mat-dialog-title>LOA Request</h2>
-<p class="gmt-note">Dates should be considered as GMT</p>
 <mat-dialog-content>
-    <form [formGroup]="form" class="container">
-        <div class="container-body">
-            <app-text-input class="reason-field" label="Reason" [required]="true" formControlName="reason"
-                [validationMessages]="validationMessages.reason" [reserveErrorSpace]="true">
-            </app-text-input>
-            <mat-form-field>
-                <mat-label>Start date</mat-label>
-                <input
-                    (click)="pickerStart.open()"
-                    [matDatepicker]="pickerStart"
-                    [max]="maxStartDate"
-                    [min]="minStartDate"
-                    formControlName="start"
-                    matInput
-                    ng-model-options="{timezone: 'utc'}"
-                   
-                    readonly
-                />
-                <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
-                <mat-datepicker #pickerStart [touchUi]="mobile"></mat-datepicker>
-            </mat-form-field>
-            <br />
-            <mat-form-field>
-                <mat-label>End date (inclusive)</mat-label>
-                <input
-                    (click)="pickerEnd.open()"
-                    [matDatepicker]="pickerEnd"
-                    [min]="minEndDate"
-                    formControlName="end"
-                    matInput
-                    ng-model-options="{timezone: 'utc'}"
-                   
-                    readonly
-                />
-                <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
-                <mat-datepicker #pickerEnd [touchUi]="mobile"></mat-datepicker>
-            </mat-form-field>
-            <mat-checkbox color="primary" formControlName="emergency" *ngIf="late" matTooltip="If this is an emergency, tick this box">Emergency</mat-checkbox>
-        </div>
+    <p class="gmt-note">Dates should be considered as GMT</p>
+    <form [formGroup]="form" class="modal-form">
+        <app-text-input class="reason-field" label="Reason" [required]="true" formControlName="reason"
+            [validationMessages]="validationMessages.reason" [reserveErrorSpace]="true">
+        </app-text-input>
+        <mat-form-field>
+            <mat-label>Start date</mat-label>
+            <input
+                (click)="pickerStart.open()"
+                [matDatepicker]="pickerStart"
+                [max]="maxStartDate"
+                [min]="minStartDate"
+                formControlName="start"
+                matInput
+                ng-model-options="{timezone: 'utc'}"
+
+                readonly
+            />
+            <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
+            <mat-datepicker #pickerStart [touchUi]="mobile"></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>End date (inclusive)</mat-label>
+            <input
+                (click)="pickerEnd.open()"
+                [matDatepicker]="pickerEnd"
+                [min]="minEndDate"
+                formControlName="end"
+                matInput
+                ng-model-options="{timezone: 'utc'}"
+
+                readonly
+            />
+            <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+            <mat-datepicker #pickerEnd [touchUi]="mobile"></mat-datepicker>
+        </mat-form-field>
+        <mat-checkbox color="primary" formControlName="emergency" *ngIf="late" matTooltip="If this is an emergency, tick this box">Emergency</mat-checkbox>
         <div class="invalid-message" *ngIf="invalidMessage">
             <span>{{ invalidMessage }}</span>
         </div>
-        <div class="button-container">
-            <button mat-raised-button color="primary" type="button" #button (click)="submit()" [disabled]="!form.valid || !datesValid || submitting">Submit</button>
-        </div>
     </form>
 </mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-raised-button color="primary" type="button" #button (click)="submit()" [disabled]="!form.valid || !datesValid || submitting">Submit</button>
+</mat-dialog-actions>

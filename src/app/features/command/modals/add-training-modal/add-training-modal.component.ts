@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, ValidationErrors, Validators } from '@angular/forms';
-import { getValidationError, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { Observable, of, timer } from 'rxjs';
 import { first, map, switchMap } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
@@ -17,8 +16,6 @@ export class AddTrainingModalComponent {
         shortName: ['', null, this.validateTraining.bind(this)],
         teamspeakGroup: ['', null, this.validateTraining.bind(this)]
     });
-    getValidationError = getValidationError;
-    instantErrorStateMatcher = new InstantErrorStateMatcher();
     pending = false;
 
     validationMessages = {

@@ -3,13 +3,10 @@
         <app-admin-page></app-admin-page>
         <div class="page-container">
             <div class="table-header">
-                <mat-form-field style="width: 30%">
-                    <mat-label>Filter</mat-label>
-                    <input matInput (keyup)="applyFilter($event.target.value)" [(ngModel)]="filter" />
-                    <button *ngIf="filter" matSuffix mat-icon-button aria-label="Clear" (click)="applyFilter(''); $event.stopPropagation()">
-                        <mat-icon>close</mat-icon>
-                    </button>
-                </mat-form-field>
+                <app-text-input class="filter-input" label="Filter" [(ngModel)]="filter"
+                    [clearable]="true" [reserveErrorSpace]="false"
+                    (input)="applyFilter(filter)" (cleared)="applyFilter('')">
+                </app-text-input>
                 <app-flex-filler></app-flex-filler>
                 <span class="expand-hint">Some columns can be expanding by clicking on the data cell</span>
             </div>

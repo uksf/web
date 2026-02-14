@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, ValidationErrors, Validators } from '@angular/forms';
-import { getValidationError, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { Observable, of, timer } from 'rxjs';
 import { first, map, switchMap } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
@@ -11,15 +10,13 @@ import { RanksService } from '../../services/ranks.service';
     templateUrl: './add-rank-modal.component.html',
     styleUrls: ['./add-rank-modal.component.scss']
 })
-export class AddRankModalComponent implements OnInit {
+export class AddRankModalComponent {
     form = this.formBuilder.group({
         name: ['', Validators.required, this.validateRank.bind(this)],
         abbreviation: ['', Validators.required],
         teamspeakGroup: ['', null, this.validateRank.bind(this)],
         discordRoleId: ['']
     });
-    getValidationError = getValidationError;
-    instantErrorStateMatcher = new InstantErrorStateMatcher();
     pending = false;
 
     validationMessages = {
@@ -32,12 +29,6 @@ export class AddRankModalComponent implements OnInit {
     };
 
     constructor(private formBuilder: FormBuilder, private ranksService: RanksService, private dialog: MatDialog) {}
-
-    trackByIndex(index: number): number {
-        return index;
-    }
-
-    ngOnInit() {}
 
     submit() {
         if (!this.form.valid || this.pending) {

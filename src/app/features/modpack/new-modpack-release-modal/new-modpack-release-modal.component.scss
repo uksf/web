@@ -1,41 +1,34 @@
-.mat-mdc-dialog-content {
-    overflow: unset;
+:host {
+    display: block;
+}
+
+span {
+    display: block;
+    font-size: 16px;
+
+    &.previous-version {
+        padding-bottom: 12px;
+    }
+}
+
+.form-container {
     display: flex;
     flex-direction: column;
+    width: 100%;
     min-width: 300px;
+    padding-top: 8px;
 
-    span {
-        font-size: 16px;
-
-        &.previous-version {
-            padding-bottom: 12px;
-        }
-    }
-
-    .form-container {
+    .versions-container {
         display: flex;
         flex-direction: column;
-        width: 100%;
-        padding-top: 8px;
 
-        .versions-container {
-            display: flex;
-            flex-direction: column;
+        .mat-mdc-radio-button {
+            padding-bottom: 8px;
 
-            .mat-mdc-radio-button {
-                padding-bottom: 8px;
-
-                .version-label {
-                    line-height: 25px;
-                    padding-left: 4px;
-                }
+            .version-label {
+                line-height: 25px;
+                padding-left: 4px;
             }
         }
-    }
-
-    .button-container {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
     }
 }

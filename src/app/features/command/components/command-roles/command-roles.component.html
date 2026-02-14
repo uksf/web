@@ -9,12 +9,10 @@
                     <ng-template [ngxPermissionsOnly]="['ADMIN']">
                         <div>
                             <form [formGroup]="roleForm" class="flex-container-input">
-                                <mat-form-field class="normal">
-                                    <mat-label>Role</mat-label>
-                                    <input #input (blur)="unfocus()" [errorStateMatcher]="instantErrorStateMatcher" formControlName="name" matInput required />
-                                    <mat-error>{{ getValidationError(roleForm.get('name'), validationMessages) }}</mat-error>
-                                </mat-form-field>
-                                <button (click)="addRole(0)" [disabled]="!roleForm.valid" color="primary" mat-raised-button>Add Role</button>
+                                <app-text-input class="normal" label="Role" formControlName="name" [required]="true"
+                                    [reserveErrorSpace]="false" [validationMessages]="validationMessages" (blur)="unfocus()">
+                                </app-text-input>
+                                <button (click)="addRole()" [disabled]="!roleForm.valid" color="primary" mat-raised-button>Add Role</button>
                             </form>
                         </div>
                         <br />

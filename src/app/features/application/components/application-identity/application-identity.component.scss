@@ -1,3 +1,7 @@
+.normal {
+    display: block;
+}
+
 .name-container {
     display: flex;
     flex-direction: column;
@@ -8,6 +12,7 @@
         align-items: center;
 
         .name {
+            display: block;
             width: 100%;
 
             &:first-of-type {
@@ -18,12 +23,19 @@
 }
 
 .dob {
+    display: inline-block;
     width: 35px;
     margin-right: 5px;
 }
 
 .year {
     width: 40px;
+}
+
+.dob-error {
+    font-size: 11px;
+    line-height: 16px;
+    color: var(--mdc-theme-error, #f44336);
 }
 
 input[type='number'] {

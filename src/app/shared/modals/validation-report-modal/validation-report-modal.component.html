@@ -1,5 +1,5 @@
+<h2 mat-dialog-title>{{ title }}</h2>
 <mat-dialog-content>
-    <h3>{{title}}</h3>
     <div class="flex-container">
         <div class="title-container" [ngClass]="{'error': message.error}">
             <button mat-mini-fab color="accent" (click)="previous()" matTooltip="Previous" *ngIf="messages.length > 1">
@@ -15,10 +15,8 @@
         <div #messageBox class="message-container">
             <p [innerHtml]="message.detail"></p>
         </div>
-        <app-flex-filler></app-flex-filler>
-        <div class="flex-container-row">
-            <app-flex-filler></app-flex-filler>
-            <button mat-raised-button color="primary" (click)="dialog.close()">Close</button>
-        </div>
     </div>
 </mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="dialog.close()">Close</button>
+</mat-dialog-actions>

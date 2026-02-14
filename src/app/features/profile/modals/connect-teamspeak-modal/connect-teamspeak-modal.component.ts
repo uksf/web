@@ -1,16 +1,22 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
+import { ConnectTeamspeakComponent } from '@app/shared/components/teamspeak-connect/teamspeak-connect.component';
 
 @Component({
     selector: 'app-connect-teamspeak-modal',
     templateUrl: './connect-teamspeak-modal.component.html',
     styleUrls: ['./connect-teamspeak-modal.component.scss'],
 })
-export class ConnectTeamspeakModalComponent {
-    constructor(public dialogRef: MatDialogRef<ConnectTeamspeakModalComponent>) {}
+export class ConnectTeamspeakModalComponent implements AfterViewInit {
+    @ViewChild(ConnectTeamspeakComponent) teamspeakConnect: ConnectTeamspeakComponent;
 
-    connected() {
-        // Called when TeamSpeak connection succeeds - no action needed
+    constructor(
+        public dialogRef: MatDialogRef<ConnectTeamspeakModalComponent>,
+        private cdr: ChangeDetectorRef
+    ) {}
+
+    ngAfterViewInit() {
+        this.cdr.detectChanges();
     }
 
     confirmed() {

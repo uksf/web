@@ -15,10 +15,10 @@
                 <mat-checkbox color="primary" [(ngModel)]="pbo.selected"></mat-checkbox>
             </div>
         </div>
-        <div class="button-container">
-            <button mat-raised-button color="primary" (click)="selectAll()">Select All</button>
-            <app-flex-filler></app-flex-filler>
-            <button mat-raised-button color="primary" (click)="submit()" [disabled]="!valid">Submit</button>
-        </div>
     </div>
 </mat-dialog-content>
+<mat-dialog-actions *ngIf="availablePbos">
+    <button mat-raised-button color="primary" (click)="selectAll()">Select All</button>
+    <app-flex-filler></app-flex-filler>
+    <button mat-raised-button color="primary" (click)="submit()" [disabled]="!valid">Submit</button>
+</mat-dialog-actions>

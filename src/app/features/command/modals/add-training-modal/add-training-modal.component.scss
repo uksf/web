@@ -1,15 +1,10 @@
-.container {
+.modal-form {
     display: flex;
     flex-direction: column;
     width: fit-content;
 }
 
-.button-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-}
-
 .normal {
+    display: block;
     width: 400px;
 }

@@ -525,4 +525,184 @@ test.describe('TextInput', () => {
         await page.locator('app-text-input input').click();
         await expect(page.locator('app-text-input')).toHaveScreenshot('text-input-focused.png');
     });
+
+    // --- Password Type ---
+
+    test('Password field masks input', async ({ page }) => {
+        await page.goto('/iframe.html?id=shared-textinput--password&viewMode=story');
+        await page.waitForSelector('app-text-input input');
+        const type = await page.locator('app-text-input input').getAttribute('type');
+        expect(type).toBe('password');
+    });
+
+    test('Password visual regression', async ({ page }) => {
+        await page.goto('/iframe.html?id=shared-textinput--password&viewMode=story');
+        await page.waitForSelector('app-text-input input');
+        await page.locator('app-text-input input').click();
+        await page.locator('app-text-input input').fill('secret123');
+        await expect(page.locator('app-text-input')).toHaveScreenshot('text-input-password.png');
+    });
+
+    // --- Email Type ---
+
+    test('Email field has type=email', async ({ page }) => {
+        await page.goto('/iframe.html?id=shared-textinput--email-type&viewMode=story');
+        await page.waitForSelector('app-text-input input');
+        const type = await page.locator('app-text-input input').getAttribute('type');
+        expect(type).toBe('email');
+    });
+
+    test('Email field shows validation error for invalid email', async ({ page }) => {
+        await page.goto('/iframe.html?id=shared-textinput--email-type&viewMode=story');
+        await page.waitForSelector('app-text-input .text-input-error.visible');
+        const errorText = await page.locator('app-text-input .text-input-error').textContent();
+        expect(errorText.trim()).toBe('Must be a valid email address');
+    });
+
+    test('Email type visual regression', async ({ page }) => {
+        await page.goto('/iframe.html?id=shared-textinput--email-type&viewMode=story');
+        await page.waitForSelector('app-text-input .text-input-error.visible');
+        await expect(page.locator('app-text-input')).toHaveScreenshot('text-input-email-error.png');
+    });
+
+    // --- Number Type ---
+
+    test('Number field has type=number', async ({ page }) => {
+        await page.goto('/iframe.html?id=shared-textinput--number-type&viewMode=story');
+        await page.waitForSelector('app-text-input input');
+        const type = await page.locator('app-text-input input').getAttribute('type');
+        expect(type).toBe('number');
+    });
+
+    test('Number type visual regression', async ({ page }) => {
+        await page.goto('/iframe.html?id=shared-textinput--number-type&viewMode=story');
+        await page.waitForSelector('app-text-input input');
+        await expect(page.locator('app-text-input')).toHaveScreenshot('text-input-number.png');
+    });
+
+    // --- Full Width ---
+
+    test('Full-width inputs span their container', async ({ page }) => {
+        await page.goto('/iframe.html?id=shared-textinput--full-width&viewMode=story');
+        await page.waitForSelector('app-text-input');
+        const inputs = page.locator('app-text-input');
+        const count = await inputs.count();
+        expect(count).toBe(2);
+
+        for (let i = 0; i < count; i++) {
+            const inputBox = await inputs.nth(i).boundingBox();
+            // Container is 400px, inputs should be close to that
+            expect(inputBox.width).toBeGreaterThanOrEqual(395);
+        }
+    });
+
+    test('Full-width visual regression', async ({ page }) => {
+        await page.goto('/iframe.html?id=shared-textinput--full-width&viewMode=story');
+        await page.waitForSelector('app-text-input');
+        await expect(page.locator('form')).toHaveScreenshot('text-input-full-width.png');
+    });
+
+    // --- Inline Multiple Inputs With Button ---
+
+    test('Multiple inline inputs bottom-align with button', async ({ page }) => {
+        await page.goto('/iframe.html?id=shared-textinput--inline-multiple-inputs-with-button&viewMode=story');
+        await page.waitForSelector('app-text-input');
+        await page.waitForSelector('button.mat-mdc-raised-button');
+
+        const inputs = page.locator('app-text-input .text-input-field');
+        const button = page.locator('button.mat-mdc-raised-button');
+        const buttonBox = await button.boundingBox();
+        const buttonBottom = buttonBox.y + buttonBox.height;
+
+        const count = await inputs.count();
+        expect(count).toBe(2);
+
+        for (let i = 0; i < count; i++) {
+            const inputBox = await inputs.nth(i).boundingBox();
+            const inputBottom = inputBox.y + inputBox.height;
+            expect(Math.abs(inputBottom - buttonBottom)).toBeLessThanOrEqual(2);
+        }
+    });
+
+    test('Inline multiple inputs visual regression', async ({ page }) => {
+        await page.goto('/iframe.html?id=shared-textinput--inline-multiple-inputs-with-button&viewMode=story');
+        await page.waitForSelector('app-text-input');
+        await expect(page.locator('.dark-theme')).toHaveScreenshot('text-input-inline-multi.png');
+    });
+
+    // --- Tooltip ---
+
+    test('Tooltip is applied to the input element not the host', async ({ page }) => {
+        await page.goto('/iframe.html?id=shared-textinput--with-tooltip&viewMode=story');
+        await page.waitForSelector('app-text-input input');
+        // matTooltip adds aria-describedby or mat-mdc-tooltip-trigger class
+        const hasTooltipAttr = await page.locator('app-text-input input').evaluate(
+            (el) => el.hasAttribute('ng-reflect-message') || el.classList.contains('mat-mdc-tooltip-trigger')
+        );
+        expect(hasTooltipAttr).toBe(true);
+    });
+
+    // --- Hint ---
+
+    test('Hint text is displayed below input', async ({ page }) => {
+        await page.goto('/iframe.html?id=shared-textinput--with-hint&viewMode=story');
+        await page.waitForSelector('app-text-input .text-input-hint');
+        const hintText = await page.locator('app-text-input .text-input-hint').textContent();
+        expect(hintText.trim()).toBe('Leave blank to use the mod name with @ prefix');
+    });
+
+    test('Hint text is 11px font-size', async ({ page }) => {
+        await page.goto('/iframe.html?id=shared-textinput--with-hint&viewMode=story');
+        await page.waitForSelector('app-text-input .text-input-hint');
+        const fontSize = await page.locator('app-text-input .text-input-hint').evaluate(
+            (el) => getComputedStyle(el).fontSize
+        );
+        expect(fontSize).toBe('11px');
+    });
+
+    test('Hint is hidden when error is showing', async ({ page }) => {
+        await page.goto('/iframe.html?id=shared-textinput--with-hint-and-error&viewMode=story');
+        await page.waitForSelector('app-text-input .text-input-error.visible');
+        const hintCount = await page.locator('app-text-input .text-input-hint').count();
+        expect(hintCount).toBe(0);
+    });
+
+    test('Hint visual regression', async ({ page }) => {
+        await page.goto('/iframe.html?id=shared-textinput--with-hint&viewMode=story');
+        await page.waitForSelector('app-text-input .text-input-hint');
+        await expect(page.locator('app-text-input')).toHaveScreenshot('text-input-hint.png');
+    });
+
+    // --- Error Clears on Valid Input ---
+
+    test('Error disappears when valid value is entered in required field', async ({ page }) => {
+        await page.goto('/iframe.html?id=shared-textinput--required-empty&viewMode=story');
+        await page.waitForSelector('app-text-input input');
+        const input = page.locator('app-text-input input');
+
+        // Touch the field to trigger error
+        await input.click();
+        await page.locator('body').click();
+        await page.waitForSelector('app-text-input .text-input-error.visible');
+        const errorBefore = await page.locator('app-text-input .text-input-error').textContent();
+        expect(errorBefore.trim()).toBe('Name is required');
+
+        // Type a value - error should clear
+        await input.click();
+        await input.fill('John');
+        const visibility = await page.locator('app-text-input .text-input-error').evaluate(
+            (el) => getComputedStyle(el).visibility
+        );
+        expect(visibility).toBe('hidden');
+    });
+
+    test('Required empty visual regression', async ({ page }) => {
+        await page.goto('/iframe.html?id=shared-textinput--required-empty&viewMode=story');
+        await page.waitForSelector('app-text-input input');
+        // Touch to show error
+        await page.locator('app-text-input input').click();
+        await page.locator('body').click();
+        await page.waitForSelector('app-text-input .text-input-error.visible');
+        await expect(page.locator('app-text-input')).toHaveScreenshot('text-input-required-empty.png');
+    });
 });

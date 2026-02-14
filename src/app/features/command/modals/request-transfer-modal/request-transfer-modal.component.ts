@@ -6,7 +6,6 @@ import { BehaviorSubject, forkJoin } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { BasicAccount } from '@app/shared/models/account';
-import { getValidationError } from '@app/shared/services/form-helper.service';
 import { CommandRequest } from '@app/features/command/models/command-request';
 import { Unit, UnitBranch } from '@app/features/units/models/units';
 import { SelectionListComponent } from '@app/shared/components/elements/selection-list/selection-list.component';
@@ -24,7 +23,6 @@ import { CommandRequestsService } from '../../services/command-requests.service'
 export class RequestTransferModalComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;
     @ViewChild('accountList', { read: SelectionListComponent }) accountList: SelectionListComponent;
-    getValidationError = getValidationError;
     pending: boolean = false;
     allowedBranches: UnitBranch[] = [UnitBranch.COMBAT];
     preSelection: string[] = [];
