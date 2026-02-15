@@ -21,7 +21,10 @@ export interface CommandRequest {
 }
 
 export interface CommandRequestItem {
+    canOverride: boolean;
     data: CommandRequest;
+    displayReason: string;
+    displayType: string;
     reviews: CommandRequestReview[];
     // Frontend-only properties
     updating?: boolean;

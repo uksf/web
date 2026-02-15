@@ -22,7 +22,7 @@
                 <mat-card *ngFor="let request of myRequests; trackBy: trackByRequestId">
                     <div class="request-wrapper">
                         <div class="request-type">
-                            <span class="request-type-text">{{ request.data.type }}</span>
+                            <span class="request-type-text">{{ request.displayType }}</span>
                         </div>
                         <div class="request-content">
                             <div class="request-info">
@@ -46,7 +46,7 @@
                                         <ng-template #nonDateTo> {{ request.data.displayValue }}</ng-template>
                                     </span>
                                     <div class="request-spacer"></div>
-                                    <span class="request-detail"> <b>Reason:</b> {{ request.data.reason }} </span>
+                                    <span class="request-detail"> <b>Reason:</b> {{ request.displayReason }} </span>
                                 </div>
                             </div>
                             <div class="request-review">
@@ -125,7 +125,7 @@
                 <mat-card *ngFor="let request of otherRequests; trackBy: trackByRequestId">
                     <div class="request-wrapper">
                         <div class="request-type">
-                            <span class="request-type-text">{{ request.data.type }}</span>
+                            <span class="request-type-text">{{ request.displayType }}</span>
                         </div>
                         <div class="request-content">
                             <div class="request-info">
@@ -149,7 +149,7 @@
                                         <ng-template #nonDateToOther> {{ request.data.displayValue }}</ng-template>
                                     </span>
                                     <div class="request-spacer"></div>
-                                    <span class="request-detail"> <b>Reason:</b> {{ request.data.reason }} </span>
+                                    <span class="request-detail"> <b>Reason:</b> {{ request.displayReason }} </span>
                                 </div>
                             </div>
                             <div class="request-review">
