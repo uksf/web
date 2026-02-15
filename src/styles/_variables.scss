@@ -87,22 +87,3 @@ $ease-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
 $ease-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1);
 $ease-accelerate: cubic-bezier(0.4, 0.0, 1, 1);
 
-// ============================================
-// SCROLLBAR MIXIN
-// ============================================
-// Uniform scrollbar styling across the site.
-// Usage: @include v.scrollbar;
-
-@mixin scrollbar {
-    &::-webkit-scrollbar {
-        width: 9px;
-    }
-
-    &::-webkit-scrollbar-track {
-        border-radius: 4px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        border-radius: 4px;
-    }
-}

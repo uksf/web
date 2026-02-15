@@ -1,9 +1,10 @@
+<app-autofocus-stop></app-autofocus-stop>
 <h2 mat-dialog-title>{{ title }}</h2>
 <mat-dialog-content>
     <span>{{ message }}</span>
     <form [formGroup]="form" class="textarea-container">
         <mat-form-field class="textarea">
-            <textarea matInput formControlName="input" required [(ngModel)]="input" matTextareaAutosize matAutosizeMinRows="5" matAutosizeMaxRows="5" maxlength="200"></textarea>
+            <textarea matInput formControlName="input" required matTextareaAutosize matAutosizeMinRows="5" matAutosizeMaxRows="5" maxlength="200"></textarea>
         </mat-form-field>
     </form>
 </mat-dialog-content>

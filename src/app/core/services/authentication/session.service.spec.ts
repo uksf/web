@@ -37,6 +37,31 @@ describe('SessionService', () => {
         });
     });
 
+    describe('hasToken', () => {
+        it('returns true when only sessionStorage has token', () => {
+            mockSessionStorage['access_token'] = 'session-token';
+
+            expect(service.hasToken()).toBe(true);
+        });
+
+        it('returns true when only localStorage has token', () => {
+            mockLocalStorage['access_token'] = 'storage-token';
+
+            expect(service.hasToken()).toBe(true);
+        });
+
+        it('returns true when both storages have token', () => {
+            mockSessionStorage['access_token'] = 'session-token';
+            mockLocalStorage['access_token'] = 'storage-token';
+
+            expect(service.hasToken()).toBe(true);
+        });
+
+        it('returns false when neither storage has token', () => {
+            expect(service.hasToken()).toBe(false);
+        });
+    });
+
     describe('setStorageToken', () => {
         it('copies session token to localStorage', () => {
             mockSessionStorage['access_token'] = 'session-token';
@@ -62,10 +87,10 @@ describe('SessionService', () => {
             expect(sessionStorage.setItem).toHaveBeenCalledWith('access_token', 'stored-token');
         });
 
-        it('sets undefined when no token provided and no storage token', () => {
+        it('does not set sessionStorage when no token provided and no storage token', () => {
             service.setSessionToken();
 
-            expect(sessionStorage.setItem).toHaveBeenCalledWith('access_token', undefined);
+            expect(sessionStorage.setItem).not.toHaveBeenCalled();
         });
     });
 

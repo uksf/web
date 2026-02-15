@@ -84,6 +84,22 @@ describe('LoginComponent', () => {
             expect(mockRouter.navigateByUrl).toHaveBeenCalledWith('/home');
         });
 
+        it('clears pending and shows error when refresh rejects', async () => {
+            mockAuth.login.mockReturnValue(of({ token: 'test' }));
+            mockPermissionsService.refresh.mockRejectedValue(new Error('refresh failed'));
+            component.model.email = 'test@test.com';
+            component.model.password = 'password';
+
+            component.submit();
+
+            await vi.waitFor(() => {
+                expect(component.pending).toBe(false);
+            });
+
+            expect(component.loginError).toBe('Login failed');
+            expect(mockRouter.navigateByUrl).not.toHaveBeenCalled();
+        });
+
         it('shows login error on failure', () => {
             mockAuth.login.mockReturnValue(throwError(() => ({ error: 'Invalid credentials' })));
             component.model.email = 'test@test.com';

@@ -25,6 +25,7 @@ describe('AuthenticationService', () => {
         mockSessionService = {
             setSessionToken: vi.fn(),
             setStorageToken: vi.fn(),
+            hasStorageToken: vi.fn().mockReturnValue(true),
             removeTokens: vi.fn(),
             getSessionToken: vi.fn().mockReturnValue('mock-token')
         };
@@ -92,8 +93,9 @@ describe('AuthenticationService', () => {
     });
 
     describe('refresh', () => {
-        it('returns an observable that refreshes the token', () => {
+        it('refreshes the token and persists to localStorage when storage token exists', () => {
             mockHttpClient.get.mockReturnValue(of(mockTokenResponse));
+            mockSessionService.hasStorageToken.mockReturnValue(true);
 
             let completed = false;
             service.refresh().subscribe({
@@ -103,6 +105,20 @@ describe('AuthenticationService', () => {
             expect(completed).toBe(true);
             expect(mockSessionService.setSessionToken).toHaveBeenCalledWith('mock-jwt-token');
             expect(mockSessionService.setStorageToken).toHaveBeenCalled();
+        });
+
+        it('refreshes the token without persisting to localStorage when no storage token', () => {
+            mockHttpClient.get.mockReturnValue(of(mockTokenResponse));
+            mockSessionService.hasStorageToken.mockReturnValue(false);
+
+            let completed = false;
+            service.refresh().subscribe({
+                next: () => { completed = true; }
+            });
+
+            expect(completed).toBe(true);
+            expect(mockSessionService.setSessionToken).toHaveBeenCalledWith('mock-jwt-token');
+            expect(mockSessionService.setStorageToken).not.toHaveBeenCalled();
         });
 
         it('propagates errors', () => {

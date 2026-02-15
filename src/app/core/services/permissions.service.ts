@@ -17,7 +17,7 @@ import { DebouncedCallback } from '@app/shared/utils/debounce-callback';
 export class PermissionsService {
     private jwtRolesKey = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
     private accountHubConnection: ConnectionContainer;
-    private refreshing = false;
+    private refreshPromise: Promise<void> | null = null;
     private debouncedUpdate = new DebouncedCallback();
     public accountUpdateEvent = new Subject<void>();
 
@@ -56,6 +56,15 @@ export class PermissionsService {
         });
     }
 
+    disconnect() {
+        this.debouncedUpdate.cancel();
+        if (this.accountHubConnection !== undefined) {
+            this.accountHubConnection.dispose();
+            this.accountHubConnection.connection.stop().then();
+            this.accountHubConnection = undefined;
+        }
+    }
+
     hasPermission(permission: string) {
         return this.ngxPermissionsService.getPermissions()[permission] !== undefined;
     }
@@ -78,55 +87,16 @@ export class PermissionsService {
         return this.ngxPermissionsService.getPermissions();
     }
 
-    public async refresh(): Promise<void> {
-        if (this.refreshing) {
-            return;
+    public refresh(): Promise<void> {
+        if (this.refreshPromise) {
+            return this.refreshPromise;
         }
 
-        this.refreshing = true;
-        try {
-            if (!this.sessionService.hasStorageToken()) {
-                this.setUnlogged();
-                return;
-            }
+        this.refreshPromise = this.doRefresh().finally(() => {
+            this.refreshPromise = null;
+        });
 
-            this.sessionService.setSessionToken();
-
-            try {
-                await firstValueFrom(this.authenticationService.refresh());
-            } catch (refreshError: unknown) {
-                if (this.isAuthError(refreshError)) {
-                    this.sessionService.removeTokens();
-                    this.setUnlogged();
-                    this.router.navigate(['/login']);
-                    return;
-                }
-                this.logger.warn('PermissionsService', 'Token refresh failed (transient)', refreshError);
-            }
-
-            const account$ = this.accountService.getAccount();
-            if (!account$) {
-                this.setUnlogged();
-                return;
-            }
-
-            try {
-                const account = await firstValueFrom(account$);
-                this.setPermissions(account);
-                this.connect();
-                this.accountUpdateEvent.next();
-            } catch (accountError: unknown) {
-                if (this.isAuthError(accountError)) {
-                    this.sessionService.removeTokens();
-                    this.setUnlogged();
-                    this.router.navigate(['/login']);
-                    return;
-                }
-                this.logger.warn('PermissionsService', 'Account fetch failed (transient)', accountError);
-            }
-        } finally {
-            this.refreshing = false;
-        }
+        return this.refreshPromise;
     }
 
     public revoke(): void {
@@ -134,27 +104,57 @@ export class PermissionsService {
             return;
         }
 
+        this.disconnect();
         this.authenticationService.logout();
         this.setUnlogged();
     }
 
-    private isAuthError(error: unknown): boolean {
-        if (error && typeof error === 'object') {
-            const status = (error as Record<string, unknown>).status;
-            return status === 401 || status === 403;
+    private async doRefresh(): Promise<void> {
+        if (!this.sessionService.hasToken()) {
+            this.setUnlogged();
+            return;
         }
-        return false;
+
+        this.sessionService.setSessionToken();
+
+        try {
+            await firstValueFrom(this.authenticationService.refresh());
+        } catch (refreshError: unknown) {
+            this.logger.warn('PermissionsService', 'Token refresh failed', refreshError);
+            if (!this.sessionService.hasToken()) {
+                this.setUnlogged();
+                this.router.navigate(['/login']);
+                return;
+            }
+        }
+
+        const account$ = this.accountService.getAccount();
+        if (!account$) {
+            this.setUnlogged();
+            return;
+        }
+
+        try {
+            const account = await firstValueFrom(account$);
+            this.setPermissions(account);
+            this.connect();
+            this.accountUpdateEvent.next();
+        } catch (accountError: unknown) {
+            this.logger.warn('PermissionsService', 'Account fetch failed', accountError);
+            this.sessionService.removeTokens();
+            this.setUnlogged();
+            this.router.navigate(['/login']);
+        }
     }
 
     private setPermissions(account: Account) {
         this.ngxPermissionsService.flushPermissions();
         if (account.membershipState === MembershipState.MEMBER) {
-            // member
             this.ngxPermissionsService.addPermission(Permissions.MEMBER);
 
-            let jwtData = this.jwtHelperService.decodeToken(this.sessionService.getSessionToken());
-            let tokenPermissions: string[] = jwtData[this.jwtRolesKey];
-            let lookup = Permissions.LookUp();
+            const jwtData = this.jwtHelperService.decodeToken(this.sessionService.getSessionToken());
+            const tokenPermissions: string[] = jwtData[this.jwtRolesKey];
+            const lookup = Permissions.LookUp();
 
             Object.entries(lookup).forEach(([role, permissions]) => {
                 if (tokenPermissions.includes(role)) {
@@ -162,10 +162,8 @@ export class PermissionsService {
                 }
             });
         } else if (account.membershipState === MembershipState.CONFIRMED) {
-            // guest
             this.ngxPermissionsService.addPermission(Permissions.CONFIRMED);
         } else {
-            // unconfirmed, any else
             this.ngxPermissionsService.addPermission(Permissions.UNCONFIRMED);
         }
 
@@ -195,5 +193,4 @@ export class PermissionsService {
             });
         });
     }
-
 }

@@ -64,7 +64,9 @@ export class AuthenticationService {
         return this.httpClient.get<TokenResponse>(`${this.urls.apiUrl}/auth/refresh`).pipe(
             tap((response) => {
                 this.sessionService.setSessionToken(response.token);
-                this.sessionService.setStorageToken();
+                if (this.sessionService.hasStorageToken()) {
+                    this.sessionService.setStorageToken();
+                }
             })
         );
     }

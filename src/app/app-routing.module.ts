@@ -9,7 +9,17 @@ import { RedirectService } from '@app/core/services/authentication/redirect.serv
 const appRoutes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
     { path: 'home', component: HomePageComponent },
-    { path: 'login', component: LoginPageComponent },
+    {
+        path: 'login',
+        component: LoginPageComponent,
+        canActivate: [NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: Permissions.UNLOGGED,
+                redirectTo: '/home'
+            }
+        }
+    },
     { path: 'application', loadChildren: () => import('./features/application/application.module').then(m => m.ApplicationModule) },
     {
         path: 'profile',
@@ -152,7 +162,7 @@ const appRoutes: Routes = [
     },
     { path: 'policy', redirectTo: 'information/policy' },
     { path: 'rules', redirectTo: 'information/rules' },
-    { path: '**', redirectTo: 'login' }
+    { path: '**', redirectTo: 'home' }
 ];
 
 @NgModule({

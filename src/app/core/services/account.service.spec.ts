@@ -26,7 +26,8 @@ describe('AccountService', () => {
         };
         mockUrls = { apiUrl: 'http://localhost:5500' };
         mockSessionService = {
-            hasStorageToken: vi.fn().mockReturnValue(true)
+            hasStorageToken: vi.fn().mockReturnValue(true),
+            hasToken: vi.fn().mockReturnValue(true)
         };
         mockDialog = {
             open: vi.fn(),
@@ -76,8 +77,8 @@ describe('AccountService', () => {
             expect(emitted).toEqual(mockAccount);
         });
 
-        it('does not call API when no storage token exists', () => {
-            mockSessionService.hasStorageToken.mockReturnValue(false);
+        it('does not call API when no token exists in either storage', () => {
+            mockSessionService.hasToken.mockReturnValue(false);
 
             const result = service.getAccount();
 

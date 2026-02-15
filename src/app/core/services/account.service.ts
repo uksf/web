@@ -17,7 +17,7 @@ export class AccountService {
     constructor(private httpClient: HttpClient, private urls: UrlService, private sessionService: SessionService, public dialog: MatDialog) {}
 
     public getAccount(): Observable<Account> | undefined {
-        if (this.sessionService.hasStorageToken()) {
+        if (this.sessionService.hasToken()) {
             return this.httpClient.get<Account>(this.urls.apiUrl + '/accounts').pipe(
                 tap({
                     next: (account) => {

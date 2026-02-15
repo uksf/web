@@ -121,7 +121,7 @@ export function tokenGetter() {
         },
         { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
         { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
-        { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { autoFocus: false } },
+        { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { autoFocus: 'first-tabbable' } },
         { provide: UrlSerializer, useClass: LowerCaseUrlSerializer },
         {
             provide: HTTP_INTERCEPTORS,

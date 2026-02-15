@@ -15,7 +15,6 @@ export interface TextInputModalData {
 export class TextInputModalComponent {
     title: string;
     message: string;
-    input: string;
     form = this.formBuilder.group({
         input: ['', Validators.required]
     });
@@ -26,7 +25,7 @@ export class TextInputModalComponent {
     }
 
     confirm() {
-        this.dialogRef.close(this.input);
+        this.dialogRef.close(this.form.get('input').value);
     }
 
     cancel() {

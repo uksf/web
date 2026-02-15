@@ -51,6 +51,9 @@ export class LoginComponent {
                 this.permissionsService.refresh().then(() => {
                     const redirect = this.redirectService.getAndClearRedirectUrl() ?? '/home';
                     this.router.navigateByUrl(redirect);
+                }).catch(() => {
+                    this.pending = false;
+                    this.loginError = 'Login failed';
                 });
             },
             error: (error: UksfError) => {

@@ -4,26 +4,34 @@ import { Injectable } from '@angular/core';
 export class SessionService {
     constructor() {}
 
-    hasStorageToken() {
+    hasStorageToken(): boolean {
         return !!localStorage.getItem('access_token');
     }
 
-    setStorageToken() {
+    hasToken(): boolean {
+        return !!sessionStorage.getItem('access_token') || !!localStorage.getItem('access_token');
+    }
+
+    setStorageToken(): void {
         localStorage.setItem('access_token', sessionStorage.getItem('access_token'));
     }
 
-    setSessionToken(token?) {
-        if (!token && this.hasStorageToken()) {
-            token = localStorage.getItem('access_token');
+    setSessionToken(token?: string): void {
+        if (!token) {
+            if (this.hasStorageToken()) {
+                token = localStorage.getItem('access_token');
+            } else {
+                return;
+            }
         }
         sessionStorage.setItem('access_token', token);
     }
 
-    getSessionToken() {
+    getSessionToken(): string | null {
         return sessionStorage.getItem('access_token');
     }
 
-    removeTokens() {
+    removeTokens(): void {
         sessionStorage.removeItem('access_token');
         localStorage.removeItem('access_token');
     }

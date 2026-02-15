@@ -1,10 +1,10 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpErrorResponse } from '@angular/common/http';
 import { first } from 'rxjs/operators';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
+import { UksfError } from '@app/shared/models/response';
 
 @Component({
     selector: 'app-password-reset',
@@ -54,11 +54,14 @@ export class PasswordResetComponent implements OnInit {
             next: () => {
                 this.permissionsService.refresh().then(() => {
                     this.router.navigate(['/home']).then();
+                }).catch(() => {
+                    this.pending = false;
+                    this.loginError = 'Password reset failed';
                 });
             },
-            error: (error: HttpErrorResponse) => {
+            error: (error: UksfError) => {
                 this.pending = false;
-                this.loginError = error?.message || 'Login failed';
+                this.loginError = error?.error || 'Password reset failed';
             }
         });
     }
