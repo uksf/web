@@ -8,6 +8,7 @@ test.describe('TextInput', () => {
         await page.waitForSelector('app-text-input .text-input-field');
         const field = page.locator('app-text-input .text-input-field');
         const box = await field.boundingBox();
+        expect(box).not.toBeNull();
         expect(box.height).toBe(36);
     });
 
@@ -79,7 +80,9 @@ test.describe('TextInput', () => {
 
         // Label and input should overlap vertically (label sits at input position)
         const labelBox = await label.boundingBox();
+        expect(labelBox).not.toBeNull();
         const inputBox = await input.boundingBox();
+        expect(inputBox).not.toBeNull();
         // Label bottom should be near input text area (within the field)
         expect(labelBox.y + labelBox.height).toBeGreaterThan(inputBox.y);
         expect(labelBox.y).toBeLessThan(inputBox.y + inputBox.height);
@@ -131,7 +134,9 @@ test.describe('TextInput', () => {
         const input = page.locator('app-text-input input');
 
         const labelBox = await label.boundingBox();
+        expect(labelBox).not.toBeNull();
         const inputBox = await input.boundingBox();
+        expect(inputBox).not.toBeNull();
 
         // Label bottom should be above or near the input top
         expect(labelBox.y + labelBox.height).toBeLessThanOrEqual(inputBox.y + 4);
@@ -204,7 +209,7 @@ test.describe('TextInput', () => {
         const unfocusedColor = await input.evaluate((el) => getComputedStyle(el).borderBottomColor);
         await input.click();
         // Wait for Angular change detection to add .focused class and CSS transition to complete
-        await page.waitForSelector('app-text-input .text-input-wrapper.focused');
+        await page.waitForSelector('app-text-input .text-input-wrapper.text-input-focused');
         await page.waitForTimeout(200);
         const focusedColor = await input.evaluate((el) => getComputedStyle(el).borderBottomColor);
 
@@ -306,6 +311,7 @@ test.describe('TextInput', () => {
         await page.goto('/iframe.html?id=shared-textinput--error-without-reserved-space&viewMode=story');
         await page.waitForSelector('app-text-input .text-input-error', { state: 'attached' });
         const box = await page.locator('app-text-input .text-input-error').boundingBox();
+        expect(box).not.toBeNull();
         expect(box.height).toBe(0);
     });
 
@@ -340,6 +346,7 @@ test.describe('TextInput', () => {
         await page.waitForSelector('app-text-input textarea');
         const field = page.locator('app-text-input .text-input-field');
         const box = await field.boundingBox();
+        expect(box).not.toBeNull();
         // With 3 lines of content, should be taller than 36px
         expect(box.height).toBeGreaterThan(36);
     });
@@ -385,7 +392,9 @@ test.describe('TextInput', () => {
         const button = page.locator('button.mat-mdc-raised-button');
 
         const inputBox = await inputField.boundingBox();
+        expect(inputBox).not.toBeNull();
         const buttonBox = await button.boundingBox();
+        expect(buttonBox).not.toBeNull();
 
         expect(inputBox.height).toBe(36);
         expect(buttonBox.height).toBe(36);
@@ -464,7 +473,9 @@ test.describe('TextInput', () => {
         const field = page.locator('app-text-input .text-input-field');
 
         const btnBox = await clearBtn.boundingBox();
+        expect(btnBox).not.toBeNull();
         const fieldBox = await field.boundingBox();
+        expect(fieldBox).not.toBeNull();
 
         expect(btnBox.width).toBe(24);
         expect(btnBox.height).toBe(24);
@@ -591,6 +602,7 @@ test.describe('TextInput', () => {
 
         for (let i = 0; i < count; i++) {
             const inputBox = await inputs.nth(i).boundingBox();
+            expect(inputBox).not.toBeNull();
             // Container is 400px, inputs should be close to that
             expect(inputBox.width).toBeGreaterThanOrEqual(395);
         }
@@ -612,6 +624,7 @@ test.describe('TextInput', () => {
         const inputs = page.locator('app-text-input .text-input-field');
         const button = page.locator('button.mat-mdc-raised-button');
         const buttonBox = await button.boundingBox();
+        expect(buttonBox).not.toBeNull();
         const buttonBottom = buttonBox.y + buttonBox.height;
 
         const count = await inputs.count();
@@ -619,6 +632,7 @@ test.describe('TextInput', () => {
 
         for (let i = 0; i < count; i++) {
             const inputBox = await inputs.nth(i).boundingBox();
+            expect(inputBox).not.toBeNull();
             const inputBottom = inputBox.y + inputBox.height;
             expect(Math.abs(inputBottom - buttonBottom)).toBeLessThanOrEqual(2);
         }

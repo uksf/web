@@ -3,11 +3,11 @@
     <div *ngIf="!changed">
         <form [formGroup]="form">
             <div class="names-container">
-                <app-text-input class="name" formControlName="firstName" [required]="true" appCharacterBlock
-                    [reserveErrorSpace]="false">
+                <app-text-input class="name" formControlName="firstName" [required]="true"
+                    [keypressFilter]="characterBlockPattern" [reserveErrorSpace]="false">
                 </app-text-input>
-                <app-text-input class="name" formControlName="lastName" [required]="true" appCharacterBlock
-                    [reserveErrorSpace]="false">
+                <app-text-input class="name" formControlName="lastName" [required]="true"
+                    [keypressFilter]="characterBlockPattern" [reserveErrorSpace]="false">
                 </app-text-input>
                 <mat-error *ngIf="form.errors != null">{{ formErrors }}</mat-error>
             </div>

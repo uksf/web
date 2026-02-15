@@ -15,7 +15,8 @@
             </app-text-input>
             <br />
             <app-text-input class="normal" label="Confirm Password" formControlName="confirmPassword" type="password"
-                autocomplete="new-password" [validationMessages]="validation_messages.confirmPassword">
+                autocomplete="new-password" [validationMessages]="validation_messages.confirmPassword"
+                [errorSource]="formGroup.get('passwordGroup')">
             </app-text-input>
         </div>
         <br />
@@ -24,10 +25,10 @@
             <p>If you do not wish to use your real name, you may use a realistic fake name (for example, Barry Miller)</p>
             <div class="names-container">
                 <app-text-input class="name" label="First name" formControlName="firstName" [required]="true"
-                    autocomplete="given-name" appCharacterBlock>
+                    autocomplete="given-name" [keypressFilter]="characterBlockPattern">
                 </app-text-input>
                 <app-text-input class="name" label="Last name" formControlName="lastName" [required]="true"
-                    autocomplete="family-name" appCharacterBlock>
+                    autocomplete="family-name" [keypressFilter]="characterBlockPattern">
                 </app-text-input>
             </div>
             <span *ngIf="formGroup.value.firstName && formGroup.value.lastName">

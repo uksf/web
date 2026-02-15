@@ -64,6 +64,17 @@ describe('SpotlightDirective', () => {
         expect(element.style.getPropertyValue('--spotlight-color')).toBe('rgba(255, 200, 0, 0.1)');
     });
 
+    it('should clean up styles on destroy', () => {
+        directive.onMouseEnter();
+        expect(element.classList.contains('spotlight-active')).toBe(true);
+
+        directive.ngOnDestroy();
+
+        expect(element.classList.contains('spotlight-active')).toBe(false);
+        expect(element.style.getPropertyValue('--spotlight-size')).toBe('');
+        expect(element.style.getPropertyValue('--spotlight-color')).toBe('');
+    });
+
     it('should clear CSS variables on mouseleave', () => {
         directive.onMouseEnter();
         expect(element.style.getPropertyValue('--spotlight-size')).toBe('200px');

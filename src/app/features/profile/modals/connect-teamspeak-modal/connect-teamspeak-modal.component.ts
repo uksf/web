@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { ConnectTeamspeakComponent } from '@app/shared/components/teamspeak-connect/teamspeak-connect.component';
+import { ConnectTeamspeakComponent, TeamspeakConnectState } from '@app/shared/components/teamspeak-connect/teamspeak-connect.component';
 
 @Component({
     selector: 'app-connect-teamspeak-modal',
@@ -9,6 +9,7 @@ import { ConnectTeamspeakComponent } from '@app/shared/components/teamspeak-conn
 })
 export class ConnectTeamspeakModalComponent implements AfterViewInit {
     @ViewChild(ConnectTeamspeakComponent) teamspeakConnect: ConnectTeamspeakComponent;
+    readonly TeamspeakConnectState = TeamspeakConnectState;
 
     constructor(
         public dialogRef: MatDialogRef<ConnectTeamspeakModalComponent>,

@@ -1,4 +1,4 @@
-<div *ngIf="state === 0">
+<div *ngIf="state === TeamspeakConnectState.SELECT_USER">
     <p>Connect to our <a href="ts3server://uk-sf.co.uk">TeamSpeak (uk-sf.co.uk)</a></p>
     <p>Once connected, select your TeamSpeak name from the list below and press 'Request Code'</p>
     <p>If you don't select your own name, you will not receive a code!</p>
@@ -14,12 +14,12 @@
             </mat-form-field>
             <div class="button-row" *ngIf="showButtons">
                 <button mat-raised-button color="warn" *ngIf="showCancel" (click)="cancel()">Cancel</button>
-                <button mat-raised-button color="primary" [disabled]="!teamspeakForm.value.teamspeakId || clients.length === 0" (click)="requestCode()">Request Code</button>
+                <button mat-raised-button color="primary" [disabled]="!canRequestCode" (click)="requestCode()">Request Code</button>
             </div>
         </div>
     </form>
 </div>
-<div *ngIf="state === 1">
+<div *ngIf="state === TeamspeakConnectState.ENTER_CODE">
     <p>Paste the confirmation code from the message sent to you in TeamSpeak into the box below</p>
     <p>If you did not receive a message with a code, please try again and ensure you select your own TeamSpeak name from the list</p>
     <form [formGroup]="formGroup">
@@ -33,13 +33,13 @@
         </div>
     </form>
 </div>
-<div *ngIf="state === 2">
+<div *ngIf="state === TeamspeakConnectState.SUCCESS">
     <p>TeamSpeak was successfully connected</p>
     <div class="button-row" *ngIf="showButtons">
         <button mat-raised-button color="warn" (click)="confirmed()">Close</button>
     </div>
 </div>
-<div *ngIf="state === 3">
+<div *ngIf="state === TeamspeakConnectState.FAILURE">
     <p>TeamSpeak failed to connect</p>
     <p>{{ errorMessage }}</p>
     <div class="button-row" *ngIf="showButtons">

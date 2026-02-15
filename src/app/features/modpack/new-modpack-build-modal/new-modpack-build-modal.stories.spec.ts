@@ -6,6 +6,7 @@ test.describe('NewModpackBuildModal', () => {
         await page.waitForSelector('app-text-input');
         const input = page.locator('app-text-input');
         const box = await input.boundingBox();
+        expect(box).not.toBeNull();
         expect(box.width).toBeGreaterThanOrEqual(200);
     });
 
@@ -14,6 +15,7 @@ test.describe('NewModpackBuildModal', () => {
         await page.waitForSelector('button.mat-mdc-raised-button');
         await expect(page.locator('button.mat-mdc-raised-button')).toBeVisible();
         const box = await page.locator('button.mat-mdc-raised-button').boundingBox();
+        expect(box).not.toBeNull();
         const viewport = page.viewportSize();
         expect(box.y + box.height).toBeLessThanOrEqual(viewport.height);
     });

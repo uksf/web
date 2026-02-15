@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MarkdownService } from 'ngx-markdown';
+import { parseMarkdownSync } from '../markdown-utils';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { ThemeEmitterComponent } from '@app/shared/components/elements/theme-emitter/theme-emitter.component';
@@ -100,7 +101,7 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
                     this.builderName = 'UKSF Bot';
                 }
             );
-            this.changesMarkdown = this.markdownService.parse(this.selectedBuild.commit.message) as string;
+            this.changesMarkdown = parseMarkdownSync(this.markdownService, this.selectedBuild.commit.message);
             if (this.logOpen) {
                 this.openLog();
             }

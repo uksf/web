@@ -9,6 +9,7 @@ test.describe('AddRankModal', () => {
         expect(count).toBe(4);
         for (let i = 0; i < count; i++) {
             const box = await inputs.nth(i).boundingBox();
+            expect(box).not.toBeNull();
             expect(box.width).toBeGreaterThanOrEqual(395);
             expect(box.width).toBeLessThanOrEqual(405);
         }
@@ -19,6 +20,7 @@ test.describe('AddRankModal', () => {
         await page.waitForSelector('app-button');
         await expect(page.locator('app-button')).toBeVisible();
         const box = await page.locator('app-button').boundingBox();
+        expect(box).not.toBeNull();
         const viewport = page.viewportSize();
         expect(box.y + box.height).toBeLessThanOrEqual(viewport.height);
     });

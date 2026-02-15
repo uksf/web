@@ -8,6 +8,7 @@ import { CountryPickerService, ICountry } from '@app/shared/services/country-pic
 import { CountryImage } from '@app/shared/pipes/country.pipe';
 import { getValidationError } from '@app/shared/services/form-helper.service';
 import { TextInputComponent } from '@app/shared/components/elements/text-input/text-input.component';
+import { CHARACTER_BLOCK_PATTERN } from '@app/shared/directives/character-block.directive';
 import { UksfError } from '@app/shared/models/response';
 import { nameCase, titleCase } from '@app/shared/services/helper.service';
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
@@ -21,12 +22,7 @@ function matchingPasswords(passwordKey: string, confirmPasswordKey: string) {
         const password = group.controls[passwordKey];
         const confirmPassword = group.controls[confirmPasswordKey];
         if (password.value !== confirmPassword.value) {
-            confirmPassword.setErrors({ ...confirmPassword.errors, mismatchedPasswords: true });
             return { mismatchedPasswords: true };
-        }
-        if (confirmPassword.hasError('mismatchedPasswords')) {
-            const { mismatchedPasswords, ...rest } = confirmPassword.errors;
-            confirmPassword.setErrors(Object.keys(rest).length ? rest : null);
         }
         return null;
     };
@@ -84,6 +80,7 @@ export class ApplicationIdentityComponent implements OnInit {
     @ViewChild('month') dobMonth: TextInputComponent;
     @ViewChild('year') dobYear: TextInputComponent;
     getValidationError = getValidationError;
+    characterBlockPattern = CHARACTER_BLOCK_PATTERN;
     formGroup: UntypedFormGroup;
     pending = false;
     countries: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);

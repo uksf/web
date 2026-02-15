@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators, UntypedFormControl, FormGroupDirective, NgForm, AbstractControl } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, UntypedFormControl, AbstractControl } from '@angular/forms';
 import { first, takeUntil } from 'rxjs/operators';
-import { ErrorStateMatcher } from '@angular/material/core';
-import { getValidationError } from '@app/shared/services/form-helper.service';
+import { getValidationError, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AccountService } from '@app/core/services/account.service';
 import { Router } from '@angular/router';
@@ -12,12 +11,6 @@ import { Permissions } from '@app/core/services/permissions';
 import { ApplicationState } from '@app/features/application/models/application';
 import { ApplicationService } from '../../services/application.service';
 import { DestroyableComponent } from '@app/shared/components';
-
-export class InstantErrorStateMatcher implements ErrorStateMatcher {
-    isErrorState(control: UntypedFormControl | null, form: FormGroupDirective | NgForm | null): boolean {
-        return !!(control && !control.valid && (control.dirty || control.touched));
-    }
-}
 
 @Component({
     selector: 'app-application-edit',

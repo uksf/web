@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MarkdownService } from 'ngx-markdown';
+import { parseMarkdownSync } from '../markdown-utils';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ThemeEmitterComponent } from '@app/shared/components/elements/theme-emitter/theme-emitter.component';
 import { ModpackBuildResult } from '../models/modpack-build-result';
@@ -129,7 +130,7 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
 
     compilePreviousChanges() {
         if (this.selectedBuild.commit) {
-            this.changesMarkdown = this.markdownService.parse(this.selectedBuild.commit.message) as string;
+            this.changesMarkdown = parseMarkdownSync(this.markdownService, this.selectedBuild.commit.message);
 
             let changesSincePreviousRelease = '';
             const index = this.selectedRc.builds.indexOf(this.selectedBuild) + 1;
@@ -143,7 +144,7 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
                 }
             }
 
-            this.additionalChangesMarkdown = this.markdownService.parse(changesSincePreviousRelease) as string;
+            this.additionalChangesMarkdown = parseMarkdownSync(this.markdownService, changesSincePreviousRelease);
         }
     }
 

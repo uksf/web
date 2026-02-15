@@ -1,7 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, Validators } from '@angular/forms';
-import { InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { ModpackRelease } from '../models/modpack-release';
 import { ModpackReleaseService } from '../modpackRelease.service';
 
@@ -11,7 +10,6 @@ import { ModpackReleaseService } from '../modpackRelease.service';
     styleUrls: ['./new-modpack-release-modal.component.scss']
 })
 export class NewModpackReleaseModalComponent {
-    instantErrorStateMatcher: InstantErrorStateMatcher = new InstantErrorStateMatcher();
     previousVersion: string;
     major: string;
     minor: string;

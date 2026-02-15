@@ -1,8 +1,8 @@
 import { Component, ElementRef, EventEmitter, Input, Optional, Output, Self, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AbstractControl, ControlValueAccessor, NgControl } from '@angular/forms';
+import { getValidationError, ValidationMessage } from '@app/shared/services/form-helper.service';
 
 let nextId = 0;
-import { ControlValueAccessor, NgControl } from '@angular/forms';
-import { getValidationError, ValidationMessage } from '@app/shared/services/form-helper.service';
 
 @Component({
     selector: 'app-text-input',
@@ -27,6 +27,10 @@ export class TextInputComponent implements ControlValueAccessor {
     @Input() clearable = false;
     @Input() tooltip = '';
     @Input() hint = '';
+    /** RegExp tested against each keypress — returning false blocks the character. */
+    @Input() keypressFilter: RegExp | null = null;
+    /** Additional control to check for validation errors (e.g. parent FormGroup for cross-field validators). */
+    @Input() errorSource: AbstractControl | null = null;
     @Output() cleared = new EventEmitter<void>();
 
     readonly inputId = `text-input-${nextId++}`;
@@ -35,7 +39,7 @@ export class TextInputComponent implements ControlValueAccessor {
     touched = false;
     dirty = false;
 
-    private onChange: (value: string) => void = () => {};
+    private onChange: (value: string | number) => void = () => {};
     private onTouched: () => void = () => {};
 
     constructor(@Optional() @Self() public ngControl: NgControl) {
@@ -61,7 +65,14 @@ export class TextInputComponent implements ControlValueAccessor {
         if (!isTouched && !isDirty) {
             return '';
         }
-        return getValidationError(this.ngControl.control, this.validationMessages);
+        const ownError = getValidationError(this.ngControl.control, this.validationMessages);
+        if (ownError) {
+            return ownError;
+        }
+        if (this.errorSource) {
+            return getValidationError(this.errorSource, this.validationMessages);
+        }
+        return '';
     }
 
     get hasError(): boolean {
@@ -76,15 +87,22 @@ export class TextInputComponent implements ControlValueAccessor {
         const target = event.target as HTMLInputElement | HTMLTextAreaElement;
         this.value = target.value;
         this.dirty = true;
-        this.onChange(this.value);
+        this.onChange(this.coerceValue(this.value));
     }
 
     clear(): void {
         this.value = '';
         this.dirty = true;
-        this.onChange(this.value);
+        this.onChange(this.coerceValue(this.value));
         this.cleared.emit();
         this.inputElement?.nativeElement?.focus();
+    }
+
+    onKeyPress(event: KeyboardEvent): boolean {
+        if (this.keypressFilter) {
+            return this.keypressFilter.test(event.key);
+        }
+        return true;
     }
 
     onFocus(): void {
@@ -101,7 +119,7 @@ export class TextInputComponent implements ControlValueAccessor {
         this.value = value != null ? String(value) : '';
     }
 
-    registerOnChange(fn: (value: string) => void): void {
+    registerOnChange(fn: (value: string | number) => void): void {
         this.onChange = fn;
     }
 
@@ -111,5 +129,13 @@ export class TextInputComponent implements ControlValueAccessor {
 
     setDisabledState(isDisabled: boolean): void {
         this.disabled = isDisabled;
+    }
+
+    private coerceValue(value: string): string | number {
+        if (this.type === 'number' && value !== '') {
+            const num = Number(value);
+            return isNaN(num) ? value : num;
+        }
+        return value;
     }
 }

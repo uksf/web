@@ -1,13 +1,17 @@
-import { Directive, ElementRef, HostListener, Input } from '@angular/core';
+import { Directive, ElementRef, HostListener, Input, OnDestroy } from '@angular/core';
 
 @Directive({
     selector: '[appSpotlight]',
 })
-export class SpotlightDirective {
+export class SpotlightDirective implements OnDestroy {
     @Input() spotlightSize = 200;
     @Input() spotlightColor = 'rgba(255, 255, 255, 0.06)';
 
     constructor(private el: ElementRef<HTMLElement>) {}
+
+    ngOnDestroy(): void {
+        this.onMouseLeave();
+    }
 
     @HostListener('mousemove', ['$event'])
     onMouseMove(event: MouseEvent): void {

@@ -190,9 +190,6 @@ app-side-content-area {
     }
 }
 
-:host ::ng-deep .mat-mdc-tab {
-    flex-grow: 1 !important;
-}
 
 // Color utilities
 .green { color: green; }

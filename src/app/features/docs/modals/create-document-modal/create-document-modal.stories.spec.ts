@@ -6,6 +6,7 @@ test.describe('CreateDocumentModal', () => {
         await page.waitForSelector('app-text-input');
         const input = page.locator('app-text-input');
         const box = await input.boundingBox();
+        expect(box).not.toBeNull();
         expect(box.width).toBeGreaterThanOrEqual(200);
     });
 

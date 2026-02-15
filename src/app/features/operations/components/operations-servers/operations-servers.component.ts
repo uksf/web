@@ -117,6 +117,7 @@ export class OperationsServersComponent extends DestroyableComponent implements 
         this.hubConnection.connection.off('ReceiveAnyUpdateIfNotCaller', this.onReceiveAnyUpdate);
         this.hubConnection.connection.off('ReceiveServerUpdateIfNotCaller', this.onReceiveServerUpdate);
         this.hubConnection.connection.off('ReceiveMissionsUpdateIfNotCaller', this.onReceiveMissionsUpdate);
+        this.hubConnection.dispose();
         this.hubConnection.connection.stop().then();
     }
 
@@ -459,7 +460,8 @@ export class OperationsServersComponent extends DestroyableComponent implements 
             .open(EditServerModsModalComponent, {
                 data: {
                     server: server
-                }
+                },
+                panelClass: 'overflow-hidden-dialog'
             })
             .afterClosed()
             .pipe(first())

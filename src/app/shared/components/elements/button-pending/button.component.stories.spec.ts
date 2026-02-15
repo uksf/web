@@ -6,6 +6,7 @@ test.describe('ButtonPending', () => {
         await page.waitForSelector('app-button button');
         const button = page.locator('app-button button');
         const box = await button.boundingBox();
+        expect(box).not.toBeNull();
         expect(box.height).toBe(36);
     });
 

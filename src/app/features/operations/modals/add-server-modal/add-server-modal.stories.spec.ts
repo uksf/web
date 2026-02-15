@@ -9,6 +9,7 @@ test.describe('AddServerModal', () => {
         expect(count).toBe(8);
         for (let i = 0; i < count; i++) {
             const box = await inputs.nth(i).boundingBox();
+            expect(box).not.toBeNull();
             expect(box.width).toBeGreaterThanOrEqual(395);
             expect(box.width).toBeLessThanOrEqual(405);
         }

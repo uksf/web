@@ -11,12 +11,20 @@ import { UksfError } from '@app/shared/models/response';
 import { TeamspeakConnectClient } from '@app/shared/models/teamspeak-connect-client';
 import { DebouncedCallback } from '@app/shared/utils/debounce-callback';
 
+export enum TeamspeakConnectState {
+    SELECT_USER = 0,
+    ENTER_CODE = 1,
+    SUCCESS = 2,
+    FAILURE = 3,
+}
+
 @Component({
     selector: 'app-teamspeak-connect',
     templateUrl: './teamspeak-connect.component.html',
     styleUrls: ['./teamspeak-connect.component.scss']
 })
 export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
+    readonly TeamspeakConnectState = TeamspeakConnectState;
     @Input() showCancel = false;
     @Input() showButtons = true;
     @Output() connectedEvent = new EventEmitter();
@@ -29,7 +37,7 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
         teamspeakId: ['', Validators.required]
     });
     pending = false;
-    state = 0;
+    state = TeamspeakConnectState.SELECT_USER;
     clients: TeamspeakConnectClient[] = [];
     errorMessage: string = 'Unknown error. Please try again';
     private previousResponse = '-1';
@@ -98,6 +106,10 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
         }
     }
 
+    get canRequestCode(): boolean {
+        return !!this.teamspeakForm.value.teamspeakId && this.clients.length > 0;
+    }
+
     cancel() {
         this.cancelEvent.emit();
     }
@@ -109,7 +121,7 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
     requestCode() {
         this.teamspeakConnectService.requestCode(this.teamspeakForm.value.teamspeakId).pipe(first()).subscribe({
             next: () => {
-                this.state = 1;
+                this.state = TeamspeakConnectState.ENTER_CODE;
             }
         });
     }
@@ -140,11 +152,11 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
                 next: () => {
                     this.pending = false;
                     this.connectedEvent.emit();
-                    this.state = 2;
+                    this.state = TeamspeakConnectState.SUCCESS;
                 },
                 error: (error: UksfError) => {
                     this.errorMessage = error.error;
-                    this.state = 3;
+                    this.state = TeamspeakConnectState.FAILURE;
                     this.formGroup.controls.code.setValue('');
                     this.pending = false;
                 }

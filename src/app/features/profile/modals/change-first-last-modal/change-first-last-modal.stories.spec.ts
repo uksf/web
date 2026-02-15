@@ -9,6 +9,7 @@ test.describe('ChangeFirstLastModal', () => {
         expect(count).toBe(2);
         for (let i = 0; i < count; i++) {
             const box = await inputs.nth(i).boundingBox();
+            expect(box).not.toBeNull();
             expect(box.width).toBeGreaterThanOrEqual(100);
         }
     });
@@ -18,7 +19,9 @@ test.describe('ChangeFirstLastModal', () => {
         await page.waitForSelector('app-text-input');
         const inputs = page.locator('app-text-input');
         const firstBox = await inputs.nth(0).boundingBox();
+        expect(firstBox).not.toBeNull();
         const secondBox = await inputs.nth(1).boundingBox();
+        expect(secondBox).not.toBeNull();
         expect(Math.abs(firstBox.y - secondBox.y)).toBeLessThanOrEqual(5);
         expect(secondBox.x).toBeGreaterThan(firstBox.x + firstBox.width - 10);
     });

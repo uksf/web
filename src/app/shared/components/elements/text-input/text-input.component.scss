@@ -88,13 +88,13 @@ app-text-input {
     }
 
     // Multiline
-    .multiline .text-input-field {
+    .text-input-multiline .text-input-field {
         height: auto;
         min-height: 40px;
         padding-top: 18px;
     }
 
-    .multiline .text-input-label {
+    .text-input-multiline .text-input-label {
         bottom: auto;
         top: 18px;
 

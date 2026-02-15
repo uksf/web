@@ -335,11 +335,6 @@
 }
 
 // MDC tab nav bar: don't stretch tabs to fill width
-// .mat-mdc-tab-nav-bar .mat-mdc-tab-links,
-// .mat-mdc-tab-header .mat-mdc-tab-labels {
-//     flex-grow: 0;
-// }
-
 .mat-mdc-tab-link,
 .mat-mdc-tab {
     flex-grow: 0 !important;
@@ -547,6 +542,10 @@ mat-dialog-content, .mat-mdc-dialog-content {
     }
 }
 
+.overflow-hidden-dialog .mat-mdc-dialog-content {
+    overflow: hidden;
+}
+
 mat-dialog-actions, .mat-mdc-dialog-actions {
     padding: 12px 24px 16px !important;
     margin: 0 !important;
@@ -555,7 +554,7 @@ mat-dialog-actions, .mat-mdc-dialog-actions {
     flex-direction: row !important;
     justify-content: flex-end !important;
     gap: 8px;
-    color: white;
+    color: white; // CDK overlay renders outside .dark-theme — no theme cascade
 }
 
 // MDC checkbox: allow label text to wrap
@@ -590,7 +589,7 @@ mat-dialog-actions, .mat-mdc-dialog-actions {
 
     label {
         margin: 0;
-        color: white;
+        color: white; // CDK overlay renders outside .dark-theme — no theme cascade
         font-size: 14px;
         line-height: 20px;
         padding-left: 8px !important;

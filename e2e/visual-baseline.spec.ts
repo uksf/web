@@ -19,16 +19,16 @@ async function waitForPageReady(page: Page, selector: string) {
   await page.waitForTimeout(500);
 }
 
-// Helper: navigate to page, handling permission redirects
-async function navigateIfPermitted(page: Page, path: string, selector: string): Promise<boolean> {
+// Helper: navigate to a permission-gated page and assert it loaded.
+// Uses test.skip() so the skip is visible in CI output (not a silent green pass).
+async function navigateWithPermission(page: Page, path: string, selector: string): Promise<void> {
   await page.goto(path);
   await page.waitForLoadState('networkidle');
-  const url = page.url();
-  if (!url.includes(path.replace(/^\//, ''))) {
-    return false;
+  const actualPath = new URL(page.url()).pathname;
+  if (actualPath !== path) {
+    test.skip(true, `Redirected to ${actualPath} — test account lacks permission for ${path}`);
   }
   await waitForPageReady(page, selector);
-  return true;
 }
 
 // Shared screenshot options
@@ -123,15 +123,13 @@ test.describe('Visual - Member Pages', () => {
   });
 
   test('modpack releases page', async ({ page }) => {
-    if (await navigateIfPermitted(page, '/modpack/releases', 'app-modpack-releases')) {
-      await expect(page).toHaveScreenshot('modpack-releases-page.png', fullPageOpts);
-    }
+    await navigateWithPermission(page, '/modpack/releases', 'app-modpack-releases');
+    await expect(page).toHaveScreenshot('modpack-releases-page.png', fullPageOpts);
   });
 
   test('modpack workshop page', async ({ page }) => {
-    if (await navigateIfPermitted(page, '/modpack/workshop', 'app-modpack-workshop')) {
-      await expect(page).toHaveScreenshot('modpack-workshop-page.png', fullPageOpts);
-    }
+    await navigateWithPermission(page, '/modpack/workshop', 'app-modpack-workshop');
+    await expect(page).toHaveScreenshot('modpack-workshop-page.png', fullPageOpts);
   });
 });
 
@@ -173,25 +171,22 @@ test.describe('Visual - Personnel Pages', () => {
 // ---------------------------------------------------------------------------
 test.describe('Visual - Operations Pages', () => {
   test('operations servers', async ({ page }) => {
-    if (await navigateIfPermitted(page, '/operations/servers', 'app-operations-servers')) {
-      // Wait for server list to load
-      await page.waitForTimeout(3000);
-      await expect(page).toHaveScreenshot('operations-servers-page.png', fullPageOpts);
-    }
+    await navigateWithPermission(page, '/operations/servers', 'app-operations-servers');
+    // Wait for server list to load
+    await page.waitForTimeout(3000);
+    await expect(page).toHaveScreenshot('operations-servers-page.png', fullPageOpts);
   });
 
   test('server card - buttons and dropdown alignment', async ({ page }) => {
-    if (await navigateIfPermitted(page, '/operations/servers', 'app-operations-servers')) {
-      await page.waitForTimeout(3000);
-      const firstServer = page.locator('.servers-list-item').first();
-      await expect(firstServer).toHaveScreenshot('server-card.png', { timeout: 30000 });
-    }
+    await navigateWithPermission(page, '/operations/servers', 'app-operations-servers');
+    await page.waitForTimeout(3000);
+    const firstServer = page.locator('.servers-list-item').first();
+    await expect(firstServer).toHaveScreenshot('server-card.png', { timeout: 30000 });
   });
 
   test('operations AAR', async ({ page }) => {
-    if (await navigateIfPermitted(page, '/operations/aar', 'app-operations-aar')) {
-      await expect(page).toHaveScreenshot('operations-aar-page.png', fullPageOpts);
-    }
+    await navigateWithPermission(page, '/operations/aar', 'app-operations-aar');
+    await expect(page).toHaveScreenshot('operations-aar-page.png', fullPageOpts);
   });
 });
 
@@ -200,50 +195,43 @@ test.describe('Visual - Operations Pages', () => {
 // ---------------------------------------------------------------------------
 test.describe('Visual - Command Pages', () => {
   test('command requests', async ({ page }) => {
-    if (await navigateIfPermitted(page, '/command/requests', 'app-command-requests')) {
-      await expect(page).toHaveScreenshot('command-requests-page.png', fullPageOpts);
-    }
+    await navigateWithPermission(page, '/command/requests', 'app-command-requests');
+    await expect(page).toHaveScreenshot('command-requests-page.png', fullPageOpts);
   });
 
   test('command members', async ({ page }) => {
-    if (await navigateIfPermitted(page, '/command/members', 'app-command-members')) {
-      await page.waitForTimeout(2000);
-      await expect(page).toHaveScreenshot('command-members-page.png', fullPageOpts);
-    }
+    await navigateWithPermission(page, '/command/members', 'app-command-members');
+    await page.waitForTimeout(2000);
+    await expect(page).toHaveScreenshot('command-members-page.png', fullPageOpts);
   });
 
   test('command members - expanded card', async ({ page }) => {
-    if (await navigateIfPermitted(page, '/command/members', 'app-command-members')) {
-      await page.waitForTimeout(2000);
-      const firstCard = page.locator('app-command-member-card').first();
-      await firstCard.locator('.header-panel').click();
-      await page.waitForTimeout(500);
-      await expect(firstCard).toHaveScreenshot('member-card-expanded.png', { timeout: 30000 });
-    }
+    await navigateWithPermission(page, '/command/members', 'app-command-members');
+    await page.waitForTimeout(2000);
+    const firstCard = page.locator('app-command-member-card').first();
+    await firstCard.locator('.header-panel').click();
+    await page.waitForTimeout(500);
+    await expect(firstCard).toHaveScreenshot('member-card-expanded.png', { timeout: 30000 });
   });
 
   test('command ranks', async ({ page }) => {
-    if (await navigateIfPermitted(page, '/command/ranks', 'app-command-ranks')) {
-      await expect(page).toHaveScreenshot('command-ranks-page.png', fullPageOpts);
-    }
+    await navigateWithPermission(page, '/command/ranks', 'app-command-ranks');
+    await expect(page).toHaveScreenshot('command-ranks-page.png', fullPageOpts);
   });
 
   test('command roles', async ({ page }) => {
-    if (await navigateIfPermitted(page, '/command/roles', 'app-command-roles')) {
-      await expect(page).toHaveScreenshot('command-roles-page.png', fullPageOpts);
-    }
+    await navigateWithPermission(page, '/command/roles', 'app-command-roles');
+    await expect(page).toHaveScreenshot('command-roles-page.png', fullPageOpts);
   });
 
   test('command units', async ({ page }) => {
-    if (await navigateIfPermitted(page, '/command/units', 'app-command-units')) {
-      await expect(page).toHaveScreenshot('command-units-page.png', fullPageOpts);
-    }
+    await navigateWithPermission(page, '/command/units', 'app-command-units');
+    await expect(page).toHaveScreenshot('command-units-page.png', fullPageOpts);
   });
 
   test('command training', async ({ page }) => {
-    if (await navigateIfPermitted(page, '/command/training', 'app-command-training')) {
-      await expect(page).toHaveScreenshot('command-training-page.png', fullPageOpts);
-    }
+    await navigateWithPermission(page, '/command/training', 'app-command-training');
+    await expect(page).toHaveScreenshot('command-training-page.png', fullPageOpts);
   });
 });
 
@@ -252,9 +240,8 @@ test.describe('Visual - Command Pages', () => {
 // ---------------------------------------------------------------------------
 test.describe('Visual - Recruitment Pages', () => {
   test('recruitment page', async ({ page }) => {
-    if (await navigateIfPermitted(page, '/recruitment', 'app-recruitment-page')) {
-      await expect(page).toHaveScreenshot('recruitment-page.png', fullPageOpts);
-    }
+    await navigateWithPermission(page, '/recruitment', 'app-recruitment-page');
+    await expect(page).toHaveScreenshot('recruitment-page.png', fullPageOpts);
   });
 });
 
@@ -263,28 +250,24 @@ test.describe('Visual - Recruitment Pages', () => {
 // ---------------------------------------------------------------------------
 test.describe('Visual - Admin Pages', () => {
   test('admin variables', async ({ page }) => {
-    if (await navigateIfPermitted(page, '/admin/variables', 'app-admin-variables')) {
-      await expect(page).toHaveScreenshot('admin-variables-page.png', fullPageOpts);
-    }
+    await navigateWithPermission(page, '/admin/variables', 'app-admin-variables');
+    await expect(page).toHaveScreenshot('admin-variables-page.png', fullPageOpts);
   });
 
   test('admin logs', async ({ page }) => {
-    if (await navigateIfPermitted(page, '/admin/audit', 'app-admin-audit-logs')) {
-      await page.waitForTimeout(2000);
-      await expect(page).toHaveScreenshot('admin-logs-page.png', fullPageOpts);
-    }
+    await navigateWithPermission(page, '/admin/audit', 'app-admin-audit-logs');
+    await page.waitForTimeout(2000);
+    await expect(page).toHaveScreenshot('admin-logs-page.png', fullPageOpts);
   });
 
   test('admin servers', async ({ page }) => {
-    if (await navigateIfPermitted(page, '/admin/servers', 'app-admin-servers')) {
-      await expect(page).toHaveScreenshot('admin-servers-page.png', fullPageOpts);
-    }
+    await navigateWithPermission(page, '/admin/servers', 'app-admin-servers');
+    await expect(page).toHaveScreenshot('admin-servers-page.png', fullPageOpts);
   });
 
   test('admin tools', async ({ page }) => {
-    if (await navigateIfPermitted(page, '/admin/tools', 'app-admin-tools')) {
-      await expect(page).toHaveScreenshot('admin-tools-page.png', fullPageOpts);
-    }
+    await navigateWithPermission(page, '/admin/tools', 'app-admin-tools');
+    await expect(page).toHaveScreenshot('admin-tools-page.png', fullPageOpts);
   });
 });
 
@@ -404,12 +387,11 @@ test.describe('Visual - Card Components', () => {
   });
 
   test('member cards - collapsed', async ({ page }) => {
-    if (await navigateIfPermitted(page, '/command/members', 'app-command-members')) {
-      await page.waitForTimeout(2000);
-      const firstCard = page.locator('app-command-member-card').first();
-      if (await firstCard.isVisible()) {
-        await expect(firstCard).toHaveScreenshot('member-card-collapsed.png', { timeout: 30000 });
-      }
+    await navigateWithPermission(page, '/command/members', 'app-command-members');
+    await page.waitForTimeout(2000);
+    const firstCard = page.locator('app-command-member-card').first();
+    if (await firstCard.isVisible()) {
+      await expect(firstCard).toHaveScreenshot('member-card-collapsed.png', { timeout: 30000 });
     }
   });
 });
@@ -419,8 +401,7 @@ test.describe('Visual - Card Components', () => {
 // ---------------------------------------------------------------------------
 test.describe('Visual - Docs Pages', () => {
   test('docs page', async ({ page }) => {
-    if (await navigateIfPermitted(page, '/docs', 'app-docs-page')) {
-      await expect(page).toHaveScreenshot('docs-page.png', fullPageOpts);
-    }
+    await navigateWithPermission(page, '/docs', 'app-docs-page');
+    await expect(page).toHaveScreenshot('docs-page.png', fullPageOpts);
   });
 });

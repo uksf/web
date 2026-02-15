@@ -54,6 +54,7 @@ describe('OperationsServersComponent', () => {
                     stop: vi.fn().mockReturnValue(Promise.resolve()),
                 },
                 reconnectEvent: of(),
+                dispose: vi.fn(),
             }),
         };
         mockPermissions = {
@@ -351,6 +352,7 @@ describe('OperationsServersComponent', () => {
 
             component.ngOnDestroy();
 
+            expect(hubConnection.dispose).toHaveBeenCalled();
             expect(hubConnection.connection.off).toHaveBeenCalledTimes(4);
             expect(hubConnection.connection.stop).toHaveBeenCalled();
         });

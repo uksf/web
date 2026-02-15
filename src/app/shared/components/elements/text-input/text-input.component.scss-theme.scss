@@ -22,29 +22,29 @@
             }
         }
 
-        .text-input-wrapper:hover:not(.disabled):not(.focused) .text-input-field {
+        .text-input-wrapper:hover:not(.text-input-disabled):not(.text-input-focused) .text-input-field {
             input,
             textarea {
                 border-bottom-color: mat.get-color-from-palette($foreground, base);
             }
         }
 
-        .focused .text-input-label {
+        .text-input-focused .text-input-label {
             color: mat.get-color-from-palette($primary);
         }
 
-        .focused .text-input-field {
+        .text-input-focused .text-input-field {
             input,
             textarea {
                 border-bottom-color: mat.get-color-from-palette($primary);
             }
         }
 
-        .has-error .text-input-label {
+        .text-input-has-error .text-input-label {
             color: mat.get-color-from-palette($warn);
         }
 
-        .has-error .text-input-field {
+        .text-input-has-error .text-input-field {
             input,
             textarea {
                 border-bottom-color: mat.get-color-from-palette($warn);
@@ -59,7 +59,7 @@
             color: mat.get-color-from-palette($foreground, secondary-text);
         }
 
-        .disabled .text-input-field {
+        .text-input-disabled .text-input-field {
             input,
             textarea {
                 color: mat.get-color-from-palette($foreground, disabled-text);

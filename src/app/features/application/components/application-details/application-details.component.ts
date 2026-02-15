@@ -1,14 +1,7 @@
 import { Component, Output, EventEmitter } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators, UntypedFormControl, FormGroupDirective, NgForm, AbstractControl } from '@angular/forms';
-import { ErrorStateMatcher } from '@angular/material/core';
-import { getValidationError } from '@app/shared/services/form-helper.service';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, UntypedFormControl, AbstractControl } from '@angular/forms';
+import { getValidationError, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { MatDialog } from '@angular/material/dialog';
-
-export class InstantErrorStateMatcher implements ErrorStateMatcher {
-    isErrorState(control: UntypedFormControl | null, form: FormGroupDirective | NgForm | null): boolean {
-        return !!(control && !control.valid && (control.dirty || control.touched));
-    }
-}
 
 @Component({
     selector: 'app-application-details',

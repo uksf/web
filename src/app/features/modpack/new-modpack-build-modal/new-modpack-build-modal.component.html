@@ -4,7 +4,7 @@
     <form [formGroup]="form" class="modal-form">
         <mat-form-field class="normal">
             <mat-label>Configuration</mat-label>
-            <mat-select formControlName="configuration" [errorStateMatcher]="instantErrorStateMatcher">
+            <mat-select formControlName="configuration">
                 <mat-option *ngFor="let configuration of configurations" [value]="configuration">
                     {{ configuration }}
                 </mat-option>
@@ -13,7 +13,7 @@
         <div formGroupName="referenceGroup">
             <mat-form-field class="normal">
                 <mat-label>{{ branches.length === 0 ? 'Loading branches...' : 'Select branch' }}</mat-label>
-                <mat-select formControlName="branch" [errorStateMatcher]="instantErrorStateMatcher">
+                <mat-select formControlName="branch">
                     <mat-option *ngFor="let branch of branches" [value]="branch">
                         {{ branch }}
                     </mat-option>

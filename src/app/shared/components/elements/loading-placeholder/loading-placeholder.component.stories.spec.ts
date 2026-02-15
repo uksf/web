@@ -7,6 +7,7 @@ test.describe('LoadingPlaceholder', () => {
         const shimmer = page.locator('.loading-shimmer');
         await expect(shimmer).toBeVisible();
         const box = await shimmer.boundingBox();
+        expect(box).not.toBeNull();
         expect(box.width).toBe(120);
         expect(box.height).toBe(16);
     });

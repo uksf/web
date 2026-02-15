@@ -9,6 +9,7 @@ test.describe('ChangePasswordModal', () => {
         expect(count).toBe(2);
         for (let i = 0; i < count; i++) {
             const box = await inputs.nth(i).boundingBox();
+            expect(box).not.toBeNull();
             expect(box.width).toBeGreaterThanOrEqual(295);
         }
     });
