@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators, UntypedFormControl, AbstractControl } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { first, takeUntil } from 'rxjs/operators';
 import { getValidationError, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -9,6 +9,10 @@ import { MessageModalComponent } from '@app/shared/modals/message-modal/message-
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { Permissions } from '@app/core/services/permissions';
 import { ApplicationState } from '@app/features/application/models/application';
+import {
+    REFERENCE_OPTIONS, ROLE_PREFERENCE_OPTIONS, DETAILS_VALIDATION_MESSAGES,
+    buildDetailsFormGroup, extractRolePreferences
+} from '../../models/application-form.constants';
 import { ApplicationService } from '../../services/application.service';
 import { DestroyableComponent } from '@app/shared/components';
 
@@ -22,24 +26,10 @@ export class ApplicationEditComponent extends DestroyableComponent {
     formGroup: UntypedFormGroup;
     pending: boolean = false;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
-    referenceOptions = [
-        { value: 'Recruiter', viewValue: 'Recruiter' },
-        { value: 'Steam', viewValue: 'Steam' },
-        { value: 'Reddit', viewValue: 'Reddit' },
-        { value: 'YouTube', viewValue: 'YouTube' },
-        { value: 'Instagram', viewValue: 'Instagram' },
-        { value: 'Google', viewValue: 'Google' },
-        { value: 'Friend', viewValue: 'Friend' },
-        { value: 'Other', viewValue: 'Other' }
-    ];
-    rolePreferenceOptions = ['NCO', 'Officer', 'Aviation', 'Medic'];
+    referenceOptions = REFERENCE_OPTIONS;
+    rolePreferenceOptions = [...ROLE_PREFERENCE_OPTIONS];
     original: string;
-
-    validation_messages = {
-        armaExperience: [{ type: 'required', message: 'Details about your Arma experience are required' }],
-        unitsExperience: [{ type: 'required', message: 'Details about your past Arma unit experience is required' }],
-        background: [{ type: 'required', message: 'Some background info about yourself is required' }]
-    };
+    validation_messages = DETAILS_VALIDATION_MESSAGES;
 
     constructor(
         public formBuilder: UntypedFormBuilder,
@@ -54,22 +44,7 @@ export class ApplicationEditComponent extends DestroyableComponent {
             this.router.navigate(['/recruitment/' + this.accountService.account.id]);
             return;
         }
-        this.formGroup = formBuilder.group({
-            name: ['', Validators.maxLength(0)],
-            armaExperience: ['', Validators.required],
-            unitsExperience: ['', Validators.required],
-            background: ['', Validators.required],
-            militaryExperience: [false],
-            officer: [''],
-            nco: [''],
-            aviation: [''],
-            reference: ['', Validators.required]
-        });
-        const rolePreferenceControls: { [key: string]: AbstractControl } = {};
-        this.rolePreferenceOptions.forEach((x) => {
-            rolePreferenceControls[x] = new UntypedFormControl(false);
-        });
-        this.formGroup.addControl('rolePreferences', new UntypedFormGroup(rolePreferenceControls));
+        this.formGroup = buildDetailsFormGroup(formBuilder);
 
         this.updateOriginal();
         this.permissions.accountUpdateEvent.pipe(takeUntil(this.destroy$)).subscribe({
@@ -110,7 +85,7 @@ export class ApplicationEditComponent extends DestroyableComponent {
         }
 
         this.pending = true;
-        const formObj = this.convertRolePreferencesFromGroup();
+        const formObj = extractRolePreferences(this.formGroup);
         const formString = JSON.stringify(formObj).replace(/[\n\r]/g, '');
         this.applicationService.updateApplication(this.accountService.account.id, formString)
             .pipe(first())
@@ -137,41 +112,24 @@ export class ApplicationEditComponent extends DestroyableComponent {
 
     updateOriginal() {
         this.formGroup.patchValue(this.accountService.account);
-        this.convertRolePreferencesToGroup();
+        this.applyRolePreferencesToGroup();
 
-        const formObj = this.convertRolePreferencesFromGroup();
+        const formObj = extractRolePreferences(this.formGroup);
         this.original = JSON.stringify(formObj);
     }
 
     get changesMade() {
-        const formObj = this.convertRolePreferencesFromGroup();
+        const formObj = extractRolePreferences(this.formGroup);
         return this.original !== JSON.stringify(formObj);
     }
 
-    convertRolePreferencesFromGroup(): Record<string, unknown> {
-        const formObj = this.formGroup.getRawValue();
-        const rolePreferences = [];
-        const rolePreferencesGroup: UntypedFormGroup = this.formGroup.controls['rolePreferences'] as UntypedFormGroup;
-
-        for (const key in rolePreferencesGroup.controls) {
-            if (rolePreferencesGroup.controls.hasOwnProperty(key)) {
-                const control = rolePreferencesGroup.controls[key];
-                if (control.value) {
-                    rolePreferences.push(key);
-                }
-            }
-        }
-        formObj.rolePreferences = rolePreferences;
-        return formObj;
-    }
-
-    convertRolePreferencesToGroup() {
+    private applyRolePreferencesToGroup() {
         const rolePreferences = this.accountService.account.rolePreferences;
-        const rolePreferencesGroup: UntypedFormGroup = this.formGroup.controls['rolePreferences'] as UntypedFormGroup;
+        const rolePreferencesGroup = this.formGroup.controls['rolePreferences'] as UntypedFormGroup;
 
-        this.rolePreferenceOptions.forEach((rolePreferenceOption) => {
-            if (rolePreferences.includes(rolePreferenceOption)) {
-                rolePreferencesGroup.controls[rolePreferenceOption].setValue(true);
+        ROLE_PREFERENCE_OPTIONS.forEach((option) => {
+            if (rolePreferences.includes(option)) {
+                rolePreferencesGroup.controls[option].setValue(true);
             }
         });
     }

@@ -8,10 +8,6 @@
         margin-bottom: 10px;
     }
 
-    .mat-mdc-select {
-        width: 300px;
-    }
-
     .mat-mdc-card:first-child {
         flex-basis: 40%;
         margin-right: 10px;
@@ -23,5 +19,17 @@
 
     .mat-mdc-card {
         flex: 1;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    .application-container {
+        flex-direction: column;
+
+        .mat-mdc-card:first-child {
+            flex-basis: unset;
+            margin-right: 0;
+            margin-bottom: 10px;
+        }
     }
 }

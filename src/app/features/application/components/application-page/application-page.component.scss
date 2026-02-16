@@ -60,6 +60,10 @@ app-default-content-areas {
 .mat-mdc-form-field {
     width: 100%;
     max-width: 300px;
+
+    &.large-input {
+        max-width: 750px;
+    }
 }
 
 .button-next {
