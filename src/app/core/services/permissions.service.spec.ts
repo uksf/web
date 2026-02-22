@@ -196,7 +196,7 @@ describe('PermissionsService', () => {
             expect(mockAuthenticationService.logout).not.toHaveBeenCalled();
         });
 
-        it('disconnects SignalR, logs out, and sets unlogged when logged in', async () => {
+        it('disconnects SignalR, sets unlogged, logs out, and navigates to login', async () => {
             mockNgxPermissionsService.getPermissions.mockReturnValue({ MEMBER: { name: 'MEMBER' } });
             mockAccountService.account = { id: 'test-id' } as Account;
 
@@ -207,9 +207,10 @@ describe('PermissionsService', () => {
 
             expect(mockConnectionContainer.dispose).toHaveBeenCalled();
             expect(mockConnection.stop).toHaveBeenCalled();
-            expect(mockAuthenticationService.logout).toHaveBeenCalled();
             expect(mockNgxPermissionsService.flushPermissions).toHaveBeenCalled();
             expect(mockNgxPermissionsService.addPermission).toHaveBeenCalledWith('UNLOGGED');
+            expect(mockAuthenticationService.logout).toHaveBeenCalled();
+            expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
         });
     });
 
@@ -291,28 +292,41 @@ describe('PermissionsService', () => {
             expect(mockNgxPermissionsService.addPermission).toHaveBeenCalledWith('MEMBER');
         });
 
-        it('redirects to login when account fetch fails with transient error', async () => {
+        it('preserves session when account fetch fails with transient error and token exists', async () => {
             mockSessionService.hasToken.mockReturnValue(true);
             mockAuthenticationService.refresh.mockReturnValue(of({ token: 'new-token' }));
             mockAccountService.getAccount.mockReturnValue(throwError(() => ({ statusCode: 0 })));
 
             await service.refresh();
 
-            expect(mockSessionService.removeTokens).toHaveBeenCalled();
+            expect(mockSessionService.removeTokens).not.toHaveBeenCalled();
+            expect(mockRouter.navigate).not.toHaveBeenCalled();
+        });
+
+        it('redirects to login when account fetch fails and interceptor revoked tokens', async () => {
+            mockSessionService.hasToken.mockReturnValue(true);
+            mockAuthenticationService.refresh.mockReturnValue(of({ token: 'new-token' }));
+            mockAccountService.getAccount.mockReturnValue(throwError(() => ({ statusCode: 401 })));
+            // After interceptor handles 401, token is gone
+            mockSessionService.hasToken
+                .mockReturnValueOnce(true) // initial check
+                .mockReturnValueOnce(false); // after account fetch failure — interceptor revoked
+
+            await service.refresh();
+
             expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
             expect(mockNgxPermissionsService.addPermission).toHaveBeenCalledWith('UNLOGGED');
         });
 
-        it('redirects to login when API is unreachable during refresh', async () => {
+        it('preserves session when API is unreachable but token still exists', async () => {
             mockSessionService.hasToken.mockReturnValue(true);
             mockAuthenticationService.refresh.mockReturnValue(throwError(() => ({ statusCode: 0 })));
             mockAccountService.getAccount.mockReturnValue(throwError(() => ({ statusCode: 0 })));
 
             await service.refresh();
 
-            expect(mockSessionService.removeTokens).toHaveBeenCalled();
-            expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
-            expect(mockNgxPermissionsService.addPermission).toHaveBeenCalledWith('UNLOGGED');
+            expect(mockSessionService.removeTokens).not.toHaveBeenCalled();
+            expect(mockRouter.navigate).not.toHaveBeenCalled();
         });
 
         it('sets unlogged when getAccount returns null', async () => {

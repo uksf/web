@@ -3,17 +3,19 @@ import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { getValidationError, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import {
     REFERENCE_ELEMENTS, ROLE_PREFERENCE_OPTIONS, DETAILS_VALIDATION_MESSAGES,
     buildDetailsFormGroup, extractRolePreferences
 } from '../../models/application-form.constants';
+import { DestroyableComponent } from '@app/shared/components';
 
 @Component({
     selector: 'app-application-details',
     templateUrl: './application-details.component.html',
     styleUrls: ['../application-page/application-page.component.scss', './application-details.component.scss']
 })
-export class ApplicationDetailsComponent {
+export class ApplicationDetailsComponent extends DestroyableComponent {
     @Output() submitEvent = new EventEmitter<string>();
     formGroup: UntypedFormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
@@ -23,8 +25,9 @@ export class ApplicationDetailsComponent {
     cachedErrors = { armaExperience: '', unitsExperience: '', background: '' };
 
     constructor(public formBuilder: UntypedFormBuilder, public dialog: MatDialog) {
+        super();
         this.formGroup = buildDetailsFormGroup(formBuilder);
-        this.formGroup.statusChanges.subscribe({ next: () => this.updateCachedErrors() });
+        this.formGroup.statusChanges.pipe(takeUntil(this.destroy$)).subscribe({ next: () => this.updateCachedErrors() });
     }
 
     updateCachedErrors() {

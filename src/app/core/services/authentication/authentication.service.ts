@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { UrlService } from '../url.service';
 import { SessionService } from './session.service';
@@ -18,7 +17,6 @@ export class AuthenticationService {
 
     constructor(
         private httpClient: HttpClient,
-        private router: Router,
         private urls: UrlService,
         private sessionService: SessionService,
         private accountService: AccountService,
@@ -40,7 +38,6 @@ export class AuthenticationService {
     public logout(): void {
         this.sessionService.removeTokens();
         this.accountService.clear();
-        this.router.navigate(['/login']);
     }
 
     public requestPasswordReset(email: string): Observable<void> {

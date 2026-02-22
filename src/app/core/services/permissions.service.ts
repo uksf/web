@@ -18,6 +18,7 @@ export class PermissionsService {
     private jwtRolesKey = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
     private accountHubConnection: ConnectionContainer;
     private refreshPromise: Promise<void> | null = null;
+    private revoked = false;
     private debouncedUpdate = new DebouncedCallback();
     public accountUpdateEvent = new Subject<void>();
 
@@ -104,12 +105,16 @@ export class PermissionsService {
             return;
         }
 
+        this.revoked = true;
         this.disconnect();
-        this.authenticationService.logout();
         this.setUnlogged();
+        this.authenticationService.logout();
+        this.router.navigate(['/login']);
     }
 
     private async doRefresh(): Promise<void> {
+        this.revoked = false;
+
         if (!this.sessionService.hasToken()) {
             this.setUnlogged();
             return;
@@ -136,14 +141,18 @@ export class PermissionsService {
 
         try {
             const account = await firstValueFrom(account$);
+            if (this.revoked) {
+                return;
+            }
             this.setPermissions(account);
             this.connect();
             this.accountUpdateEvent.next();
         } catch (accountError: unknown) {
             this.logger.warn('PermissionsService', 'Account fetch failed', accountError);
-            this.sessionService.removeTokens();
-            this.setUnlogged();
-            this.router.navigate(['/login']);
+            if (!this.sessionService.hasToken()) {
+                this.setUnlogged();
+                this.router.navigate(['/login']);
+            }
         }
     }
 

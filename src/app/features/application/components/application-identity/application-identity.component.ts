@@ -2,7 +2,7 @@ import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/cor
 import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject, Observable, of, timer } from 'rxjs';
-import { first, map, switchMap } from 'rxjs/operators';
+import { first, map, switchMap, takeUntil } from 'rxjs/operators';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { CountryPickerService, ICountry } from '@app/shared/services/country-picker/country-picker.service';
 import { CountryImage } from '@app/shared/pipes/country.pipe';
@@ -16,6 +16,7 @@ import { CreateAccount } from '@app/shared/models/account';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { ApplicationService } from '../../services/application.service';
+import { DestroyableComponent } from '@app/shared/components';
 
 function matchingPasswords(passwordKey: string, confirmPasswordKey: string) {
     return (group: UntypedFormGroup): ValidationErrors | null => {
@@ -73,7 +74,7 @@ function validDob(dayKey: string, monthKey: string, yearKey: string) {
     templateUrl: './application-identity.component.html',
     styleUrls: ['../application-page/application-page.component.scss', './application-identity.component.scss']
 })
-export class ApplicationIdentityComponent implements OnInit {
+export class ApplicationIdentityComponent extends DestroyableComponent implements OnInit {
     @Output() nextEvent = new EventEmitter();
     @Output() previousEvent = new EventEmitter();
     @ViewChild('day') dobDay: TextInputComponent;
@@ -120,6 +121,7 @@ export class ApplicationIdentityComponent implements OnInit {
         private authenticationService: AuthenticationService,
         private permissionsService: PermissionsService
     ) {
+        super();
         this.formGroup = formBuilder.group({
             name: ['', Validators.maxLength(0)],
             email: ['', [Validators.required, Validators.email], this.validateEmail.bind(this)],
@@ -149,7 +151,7 @@ export class ApplicationIdentityComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.formGroup.get('dobGroup').statusChanges.subscribe({ next: () => this.updateCachedDobError() });
+        this.formGroup.get('dobGroup').statusChanges.pipe(takeUntil(this.destroy$)).subscribe({ next: () => this.updateCachedDobError() });
         this.applicationService.getNations().pipe(first()).subscribe({
             next: (orderedCountries: string[]) => {
                 const countries = CountryPickerService.countries;
@@ -180,7 +182,7 @@ export class ApplicationIdentityComponent implements OnInit {
                 return this.applicationService.checkEmailExists(control.value).pipe(
                     map((exists: boolean) => {
                         this.validating = false;
-                        return exists ? { email: true } : null;
+                        return exists ? { emailTaken: true } : null;
                     })
                 );
             })

@@ -13,7 +13,7 @@ bun run test:e2e      # Run E2E tests (Playwright)
 
 ## Architecture
 
-- **Framework:** Angular 14 with Angular Material and PrimeNG
+- **Framework:** Angular 17 with Angular Material and PrimeNG
 - **Structure:** Feature-based folder organization (transitioning from centralized)
 - **State:** Services with RxJS observables
 - **Auth:** JWT tokens via `@auth0/angular-jwt`

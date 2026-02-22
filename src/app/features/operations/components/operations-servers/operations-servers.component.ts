@@ -278,6 +278,7 @@ export class OperationsServersComponent extends DestroyableComponent implements 
                         this.gameServersService.deleteServer(server.id, this.connectionId).pipe(first()).subscribe({
                             next: (response) => {
                                 this.servers = response;
+                                this.updateServerStatusTexts();
                             }
                         });
                     }
@@ -297,6 +298,7 @@ export class OperationsServersComponent extends DestroyableComponent implements 
         this.gameServersService.updateServerOrder(body, this.connectionId).pipe(first()).subscribe({
             next: (response) => {
                 this.servers = response;
+                this.updateServerStatusTexts();
                 this.updatingOrder = false;
             }
         });

@@ -5,7 +5,6 @@ import { AuthenticationService, TokenResponse } from './authentication.service';
 describe('AuthenticationService', () => {
     let service: AuthenticationService;
     let mockHttpClient: any;
-    let mockRouter: any;
     let mockUrls: any;
     let mockSessionService: any;
     let mockAccountService: any;
@@ -17,9 +16,6 @@ describe('AuthenticationService', () => {
         mockHttpClient = {
             post: vi.fn(),
             get: vi.fn()
-        };
-        mockRouter = {
-            navigate: vi.fn().mockResolvedValue(true)
         };
         mockUrls = { apiUrl: 'http://localhost:5500' };
         mockSessionService = {
@@ -38,7 +34,6 @@ describe('AuthenticationService', () => {
 
         service = new AuthenticationService(
             mockHttpClient,
-            mockRouter,
             mockUrls,
             mockSessionService,
             mockAccountService,
@@ -196,12 +191,11 @@ describe('AuthenticationService', () => {
     });
 
     describe('logout', () => {
-        it('removes tokens, clears account, and navigates to login', () => {
+        it('removes tokens and clears account', () => {
             service.logout();
 
             expect(mockSessionService.removeTokens).toHaveBeenCalled();
             expect(mockAccountService.clear).toHaveBeenCalled();
-            expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
         });
     });
 
