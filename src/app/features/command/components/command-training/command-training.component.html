@@ -21,7 +21,7 @@
                                 (finishedEvent)="editTraining($event)"
                                 [(ngModel)]="training.name"
                                 [required]="true"
-                                [validator]="validateInlineTraining(training.name)"
+                                [validator]="getInlineValidator(training.name)"
                                 class="name"
                                 type="text"
                             ></app-inline-edit>
@@ -29,7 +29,7 @@
                                 (finishedEvent)="editTraining($event)"
                                 [(ngModel)]="training.shortName"
                                 [required]="true"
-                                [validator]="validateInlineTraining(training.shortName)"
+                                [validator]="getInlineValidator(training.shortName)"
                                 class="shortName"
                                 type="text"
                             ></app-inline-edit>
@@ -37,7 +37,7 @@
                                 (finishedEvent)="editTraining($event)"
                                 [(ngModel)]="training.teamspeakGroup"
                                 [required]="true"
-                                [validator]="validateInlineTraining(training.teamspeakGroup)"
+                                [validator]="getInlineValidator(training.teamspeakGroup)"
                                 class="teamspeakGroup"
                                 type="text"
                             ></app-inline-edit>

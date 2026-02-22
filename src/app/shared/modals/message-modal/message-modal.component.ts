@@ -13,12 +13,12 @@ export interface MessageModalData {
     styleUrls: ['./message-modal.component.scss']
 })
 export class MessageModalComponent {
-    title: string = 'Message';
+    title: string = '';
     message: string = 'There should be a different message shown here. Please report this mistake to an admin';
     button: string = 'Close';
 
     constructor(public dialogRef: MatDialogRef<MessageModalComponent>, @Inject(MAT_DIALOG_DATA) public data: MessageModalData) {
-        this.title = data.title || 'Message';
+        this.title = data.title || '';
         this.message = data.message;
         if (data.button) {
             this.button = data.button;

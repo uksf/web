@@ -87,7 +87,9 @@
         }
 
         .board {
-            padding-top: 127px;
+            // margin-top (not padding-top) so the scrollbar starts below
+            // the fixed sideboard instead of extending behind it.
+            margin-top: 127px;
             padding-bottom: 30px;
         }
 
@@ -112,7 +114,7 @@
         }
 
         .board {
-            padding-top: 90px;
+            margin-top: 90px;
         }
     }
 }
@@ -126,7 +128,7 @@
         }
 
         .board {
-            padding-top: 76px;
+            margin-top: 76px;
         }
     }
 }

@@ -3,14 +3,15 @@
 .comment-form {
     display: flex;
     flex-direction: column;
+    margin-bottom: v.$spacing-16px;
 
-    mat-form-field {
+    app-text-input {
         width: 100%;
     }
 
-    button {
+    app-button {
         align-self: flex-end;
-        width: fit-content;
+        margin-top: v.$spacing-8px;
     }
 }
 
@@ -50,10 +51,16 @@
             }
 
             .delete-button {
-                margin: 0px;
-                padding: 0px;
-                min-width: 0px;
-                line-height: 0px;
+                width: 36px;
+                height: 36px;
+                padding: 6px;
+                line-height: 1;
+                border-radius: 4px;
+
+                ::ng-deep .mat-mdc-button-persistent-ripple,
+                ::ng-deep .mat-mdc-focus-indicator {
+                    border-radius: 4px;
+                }
             }
         }
     }

@@ -431,6 +431,28 @@ describe('OperationsServersComponent', () => {
         });
     });
 
+    describe('trackByServerId', () => {
+        it('returns server id', () => {
+            const server = makeServer({ id: 'abc-123' });
+
+            expect(component.trackByServerId(0, server)).toBe('abc-123');
+        });
+    });
+
+    describe('updateServerStatusTexts', () => {
+        it('should set statusText on each server', () => {
+            component.servers = [
+                makeServer({ id: 's1', updating: true }),
+                makeServer({ id: 's2', status: { ...makeServer().status, running: false } })
+            ];
+
+            component.updateServerStatusTexts();
+
+            expect(component.servers[0].statusText).toBe('Updating Status');
+            expect(component.servers[1].statusText).toBe('Offline');
+        });
+    });
+
     describe('onMove', () => {
         it('does nothing when indices are the same', () => {
             component.onMove({ previousIndex: 1, currentIndex: 1 } as any);

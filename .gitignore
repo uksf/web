@@ -60,3 +60,7 @@ Thumbs.db
 *storybook.log
 /storybook-static/
 /playwright-report-storybook/
+
+# Plan documents
+docs/plans/
+tmp-*.txt

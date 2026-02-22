@@ -63,22 +63,12 @@
         </div>
         <ng-template [ngxPermissionsOnly]="['RECRUITER_LEAD']">
             <div class="flex-container flex-row no-padding recruiter">
-                <div>
-                    <mat-form-field class="select-thin">
-                        <mat-select
-                            [placeholder]="application.recruiter"
-                            [(ngModel)]="selected"
-                            (selectionChange)="setNewRecruiter($event.value)"
-                            [disableOptionCentering]="true"
-                            [panelClass]="'select-small'"
-                            [disabled]="updating"
-                        >
-                            <mat-option *ngFor="let recruiter of recruiters" [value]="recruiter.id">
-                                {{ recruiter.name }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
+                <app-dropdown class="recruiter-dropdown" placeholder="Recruiter"
+                    [autocomplete]="false" [elements]="recruiterElements$" [(ngModel)]="selected"
+                    (selectionChanged)="setNewRecruiter($event)" [disabled]="updating"
+                    elementName="recruiter" [reserveErrorSpace]="false">
+                    <ng-template #element let-element>{{ element.displayValue }}</ng-template>
+                </app-dropdown>
             </div>
         </ng-template>
     </div>

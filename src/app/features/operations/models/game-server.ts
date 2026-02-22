@@ -17,6 +17,7 @@ export interface GameServer {
     // Frontend-only properties set during runtime
     updating?: boolean;
     request?: { unsubscribe: () => void };
+    statusText?: string;
 }
 
 export interface GameServersResponse {

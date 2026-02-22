@@ -12,8 +12,8 @@ type Story = StoryObj;
 const styles = [
     `.mat-mdc-card { h2 { margin-top: 0; } }
     .button-next { text-align: right; }
-    h4 { color: #7b1fa2; }
-    a { color: #7b1fa2; }`
+    h4 { color: #fec400; }
+    a { color: #fec400; }`
 ];
 
 export const Default: Story = {

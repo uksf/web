@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { of } from 'rxjs';
 import { first, takeUntil } from 'rxjs/operators';
 import { getValidationError, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -10,8 +11,8 @@ import { PermissionsService } from '@app/core/services/permissions.service';
 import { Permissions } from '@app/core/services/permissions';
 import { ApplicationState } from '@app/features/application/models/application';
 import {
-    REFERENCE_OPTIONS, ROLE_PREFERENCE_OPTIONS, DETAILS_VALIDATION_MESSAGES,
-    buildDetailsFormGroup, extractRolePreferences
+    REFERENCE_ELEMENTS, ROLE_PREFERENCE_OPTIONS, DETAILS_VALIDATION_MESSAGES,
+    buildDetailsFormGroup, extractRolePreferences, findReferenceElement
 } from '../../models/application-form.constants';
 import { ApplicationService } from '../../services/application.service';
 import { DestroyableComponent } from '@app/shared/components';
@@ -22,14 +23,15 @@ import { DestroyableComponent } from '@app/shared/components';
     styleUrls: ['../application-page/application-page.component.scss', './application-edit.component.scss']
 })
 export class ApplicationEditComponent extends DestroyableComponent {
-    getValidationError = getValidationError;
     formGroup: UntypedFormGroup;
     pending: boolean = false;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
-    referenceOptions = REFERENCE_OPTIONS;
+    referenceElements = REFERENCE_ELEMENTS;
+    referenceElements$ = of(REFERENCE_ELEMENTS);
     rolePreferenceOptions = [...ROLE_PREFERENCE_OPTIONS];
     original: string;
     validation_messages = DETAILS_VALIDATION_MESSAGES;
+    cachedErrors = { armaExperience: '', unitsExperience: '', background: '' };
 
     constructor(
         public formBuilder: UntypedFormBuilder,
@@ -51,6 +53,14 @@ export class ApplicationEditComponent extends DestroyableComponent {
             next: () => {
                 this.updateOriginal();
             }
+        });
+        this.formGroup.valueChanges.pipe(takeUntil(this.destroy$)).subscribe({
+            next: () => {
+                this.changesMade = this.computeChangesMade();
+            }
+        });
+        this.formGroup.statusChanges.pipe(takeUntil(this.destroy$)).subscribe({
+            next: () => this.updateCachedErrors()
         });
     }
 
@@ -112,13 +122,24 @@ export class ApplicationEditComponent extends DestroyableComponent {
 
     updateOriginal() {
         this.formGroup.patchValue(this.accountService.account);
+        this.formGroup.controls['reference'].setValue(findReferenceElement(this.accountService.account.reference));
         this.applyRolePreferencesToGroup();
 
         const formObj = extractRolePreferences(this.formGroup);
         this.original = JSON.stringify(formObj);
     }
 
-    get changesMade() {
+    updateCachedErrors() {
+        this.cachedErrors = {
+            armaExperience: getValidationError(this.formGroup.get('armaExperience'), this.validation_messages.armaExperience),
+            unitsExperience: getValidationError(this.formGroup.get('unitsExperience'), this.validation_messages.unitsExperience),
+            background: getValidationError(this.formGroup.get('background'), this.validation_messages.background)
+        };
+    }
+
+    changesMade = false;
+
+    private computeChangesMade(): boolean {
         const formObj = extractRolePreferences(this.formGroup);
         return this.original !== JSON.stringify(formObj);
     }

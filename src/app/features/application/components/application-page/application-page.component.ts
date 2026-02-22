@@ -14,7 +14,6 @@ import { ApplicationService } from '../../services/application.service';
 })
 export class ApplicationPageComponent implements OnInit {
     step = 1;
-    details: string;
 
     constructor(private applicationService: ApplicationService, public dialog: MatDialog, private accountService: AccountService) {}
 
@@ -24,24 +23,16 @@ export class ApplicationPageComponent implements OnInit {
 
     checkStep() {
         if (this.accountService.account) {
-            // Application completed
             if (this.accountService.account.application && this.accountService.account.application.state !== ApplicationState.WAITING) {
-                this.step = 7;
+                this.step = 6;
             } else if (this.accountService.account.membershipState === MembershipState.UNCONFIRMED) {
-                // Needs to confirm email
                 this.step = 3;
             } else if (this.accountService.account.membershipState === MembershipState.CONFIRMED && !this.connected()) {
-                // Needs to connect communications
                 this.step = 4;
-            } else if (this.connected() && !this.submitted() && !this.details) {
-                // Needs to fill details
+            } else if (this.connected() && !this.submitted()) {
                 this.step = 5;
-            } else if (this.connected() && !this.submitted() && this.details) {
-                // Needs to agree and submit
-                this.step = 6;
             } else {
-                // Submitted
-                this.step = 7;
+                this.step = 6;
             }
         }
     }
@@ -72,28 +63,19 @@ export class ApplicationPageComponent implements OnInit {
 
     next(event) {
         setTimeout(() => {
-            if (this.step === 5) {
-                this.details = event;
-            }
             this.step++;
             this.checkStep();
         }, 1);
     }
 
-    check() {
-        setTimeout(() => {
-            this.checkStep();
-        }, 1);
-    }
-
-    submit() {
-        this.applicationService.submitApplication(this.accountService.account.id, this.details)
+    submit(details: string) {
+        this.applicationService.submitApplication(this.accountService.account.id, details)
             .pipe(first())
             .subscribe({
                 next: () => {
                     this.accountService.getAccount()?.pipe(first()).subscribe({
                         next: () => {
-                            this.next(null);
+                            this.step = 6;
                         }
                     });
                 },

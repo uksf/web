@@ -3,8 +3,8 @@ import { test, expect } from '@playwright/test';
 test.describe('SelectionList', () => {
     test('Default renders search input', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-selectionlist--default&viewMode=story');
-        await page.waitForSelector('app-selection-list input[matinput]');
-        await expect(page.locator('app-selection-list input[matinput]')).toBeVisible();
+        await page.waitForSelector('app-selection-list .form-field input');
+        await expect(page.locator('app-selection-list .form-field input')).toBeVisible();
     });
 
     test('Default visual regression', async ({ page }) => {

@@ -37,7 +37,7 @@
                             cdkDropList
                             class="servers-list"
                         >
-                            <div *ngFor="let server of servers" cdkDrag>
+                            <div *ngFor="let server of servers; trackBy: trackByServerId" cdkDrag>
                                 <mat-card [ngClass]="{ 'server-running': server.status.running }" class="servers-list-item">
                                     <div class="server-header">
                                         <ng-template [ngxPermissionsOnly]="['ADMIN']">
@@ -52,7 +52,7 @@
                                             }"
                                         >
                                             {{ server.name }}
-                                            - {{ getServerStatus(server) }}
+                                            - {{ server.statusText }}
                                         </h3>
                                         <app-flex-filler></app-flex-filler>
                                         <button mat-button class="icon" (click)="refreshServerStatus(server)" matTooltip="Refresh server status">
@@ -117,6 +117,7 @@
                                                 [optionClass]="'mission-option'"
                                                 [placeholder]="'Select mission'"
                                                 [showErrors]="false"
+                                                [reserveErrorSpace]="false"
                                                 [tooltip]="getMissionTooltip"
                                             >
                                                 <ng-template #element let-element>{{ getMissionName(element) }}</ng-template>

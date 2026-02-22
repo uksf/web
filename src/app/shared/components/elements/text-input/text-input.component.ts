@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, Optional, Output, Self, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, DoCheck, ElementRef, EventEmitter, Input, Optional, Output, Self, ViewChild } from '@angular/core';
 import { AbstractControl, ControlValueAccessor, NgControl } from '@angular/forms';
 import { getValidationError, ValidationMessage } from '@app/shared/services/form-helper.service';
 
@@ -7,19 +7,19 @@ let nextId = 0;
 @Component({
     selector: 'app-text-input',
     templateUrl: './text-input.component.html',
-    styleUrls: ['./text-input.component.scss'],
-    encapsulation: ViewEncapsulation.None
+    styleUrls: ['./text-input.component.scss']
 })
-export class TextInputComponent implements ControlValueAccessor {
+export class TextInputComponent implements ControlValueAccessor, DoCheck {
     @ViewChild('inputElement') inputElement!: ElementRef<HTMLInputElement | HTMLTextAreaElement>;
 
     @Input() label = '';
     @Input() type: 'text' | 'email' | 'password' | 'number' = 'text';
+    @Input() inputmode: string | null = null;
     @Input() placeholder = '';
     @Input() disabled = false;
     @Input() required = false;
     @Input() multiline = false;
-    @Input() minRows = 2;
+    @Input() minRows = 1;
     @Input() maxRows = 10;
     @Input() autocomplete = 'off';
     @Input() validationMessages: ValidationMessage[] = [];
@@ -27,6 +27,7 @@ export class TextInputComponent implements ControlValueAccessor {
     @Input() clearable = false;
     @Input() tooltip = '';
     @Input() hint = '';
+    @Input() maxlength: number | null = null;
     /** RegExp tested against each keypress — returning false blocks the character. */
     @Input() keypressFilter: RegExp | null = null;
     /** Additional control to check for validation errors (e.g. parent FormGroup for cross-field validators). */
@@ -38,6 +39,7 @@ export class TextInputComponent implements ControlValueAccessor {
     focused = false;
     touched = false;
     dirty = false;
+    cachedErrorMessage = '';
 
     private onChange: (value: string | number) => void = () => {};
     private onTouched: () => void = () => {};
@@ -46,6 +48,10 @@ export class TextInputComponent implements ControlValueAccessor {
         if (ngControl) {
             ngControl.valueAccessor = this;
         }
+    }
+
+    ngDoCheck(): void {
+        this.cachedErrorMessage = this.computeErrorMessage();
     }
 
     get labelFloating(): boolean {
@@ -57,6 +63,14 @@ export class TextInputComponent implements ControlValueAccessor {
     }
 
     get errorMessage(): string {
+        return this.cachedErrorMessage;
+    }
+
+    get hasError(): boolean {
+        return this.cachedErrorMessage.length > 0;
+    }
+
+    private computeErrorMessage(): string {
         if (!this.ngControl?.control) {
             return '';
         }
@@ -73,10 +87,6 @@ export class TextInputComponent implements ControlValueAccessor {
             return getValidationError(this.errorSource, this.validationMessages);
         }
         return '';
-    }
-
-    get hasError(): boolean {
-        return this.errorMessage.length > 0;
     }
 
     focus(): void {

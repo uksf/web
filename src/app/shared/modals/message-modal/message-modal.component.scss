@@ -3,6 +3,10 @@
     max-height: 600px;
     font-size: 18px;
 
+    &.no-title {
+        padding-top: 24px !important;
+    }
+
     .message-container {
         p {
             white-space: pre-wrap;

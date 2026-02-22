@@ -21,6 +21,7 @@
               "src/favicon.ico"
             ],
             "styles": [
+              "src/storybook-fonts.css",
               {
                 "input": "src/styles-app-loading.scss",
                 "inject": true
@@ -42,7 +43,7 @@
               "quill",
               "moment",
               "moment-timezone",
-              "mobx"
+              "chart.js"
             ],
             "vendorChunk": true,
             "extractLicenses": false,
@@ -119,7 +120,7 @@
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",
-      "style": "css"
+      "style": "scss"
     },
     "@schematics/angular:directive": {
       "prefix": "app"

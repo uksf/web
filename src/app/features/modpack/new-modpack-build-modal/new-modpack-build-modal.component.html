@@ -3,23 +3,18 @@
 <mat-dialog-content>
     <p class="hint-text">Select a branch or enter a commit id to run a new build from</p>
     <form [formGroup]="form" class="modal-form">
-        <mat-form-field class="normal">
-            <mat-label>Configuration</mat-label>
-            <mat-select formControlName="configuration">
-                <mat-option *ngFor="let configuration of configurations" [value]="configuration">
-                    {{ configuration }}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
+        <app-dropdown class="normal" placeholder="Configuration" [autocomplete]="false"
+            [elements]="configurationElements$" formControlName="configuration" [isRequired]="true"
+            elementName="configuration">
+            <ng-template #element let-element>{{ element.displayValue }}</ng-template>
+        </app-dropdown>
         <div formGroupName="referenceGroup">
-            <mat-form-field class="normal">
-                <mat-label>{{ branches.length === 0 ? 'Loading branches...' : 'Select branch' }}</mat-label>
-                <mat-select formControlName="branch">
-                    <mat-option *ngFor="let branch of branches" [value]="branch">
-                        {{ branch }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
+            <app-dropdown class="normal"
+                [placeholder]="branchElements.length === 0 ? 'Loading branches...' : 'Select branch'"
+                [autocomplete]="false" [elements]="branchElements$" formControlName="branch"
+                elementName="branch">
+                <ng-template #element let-element>{{ element.displayValue }}</ng-template>
+            </app-dropdown>
             <app-text-input class="normal" label="Commit ID" formControlName="commitId"
                 [validationMessages]="validationMessages.commitId">
             </app-text-input>
@@ -39,7 +34,7 @@
         type="button"
         #runButton
         (click)="run(); runButton.disabled = true"
-        [disabled]="submitting || !form.valid || !form.value.referenceGroup.branch || (form.value.referenceGroup.branch === 'No branch' && !form.value.referenceGroup.commitId)"
+        [disabled]="submitting || !form.valid || !selectedBranchValue || (selectedBranchValue === 'No branch' && !form.value.referenceGroup.commitId)"
     >
         Run
     </button>

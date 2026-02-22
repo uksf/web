@@ -3,13 +3,13 @@ import { test, expect } from '@playwright/test';
 test.describe('TextInput', () => {
     // --- Layout & Dimensions ---
 
-    test('Input field container is 36px tall', async ({ page }) => {
+    test('Input field container is 40px tall', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--default&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-field');
-        const field = page.locator('app-text-input .text-input-field');
+        await page.waitForSelector('app-text-input .form-field');
+        const field = page.locator('app-text-input .form-field');
         const box = await field.boundingBox();
         expect(box).not.toBeNull();
-        expect(box.height).toBe(36);
+        expect(box.height).toBe(40);
     });
 
     test('Input text is 16px font-size', async ({ page }) => {
@@ -70,8 +70,8 @@ test.describe('TextInput', () => {
 
     test('Label rests at input text position when empty and unfocused', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--default&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-label');
-        const label = page.locator('app-text-input .text-input-label');
+        await page.waitForSelector('app-text-input .form-field-label');
+        const label = page.locator('app-text-input .form-field-label');
         const input = page.locator('app-text-input input');
 
         // Label should not have floating class
@@ -90,8 +90,8 @@ test.describe('TextInput', () => {
 
     test('Resting label is 16px font-size', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--default&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-label');
-        const fontSize = await page.locator('app-text-input .text-input-label').evaluate(
+        await page.waitForSelector('app-text-input .form-field-label');
+        const fontSize = await page.locator('app-text-input .form-field-label').evaluate(
             (el) => getComputedStyle(el).fontSize
         );
         expect(fontSize).toBe('16px');
@@ -104,24 +104,24 @@ test.describe('TextInput', () => {
         await page.waitForSelector('app-text-input input');
         await page.locator('app-text-input input').click();
 
-        const label = page.locator('app-text-input .text-input-label');
+        const label = page.locator('app-text-input .form-field-label');
         const isFloating = await label.evaluate((el) => el.classList.contains('floating'));
         expect(isFloating).toBe(true);
     });
 
     test('Label floats when field has a value (unfocused)', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--filled&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-label');
+        await page.waitForSelector('app-text-input .form-field-label');
 
-        const label = page.locator('app-text-input .text-input-label');
+        const label = page.locator('app-text-input .form-field-label');
         const isFloating = await label.evaluate((el) => el.classList.contains('floating'));
         expect(isFloating).toBe(true);
     });
 
     test('Floating label is 12px font-size', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--filled&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-label');
-        const fontSize = await page.locator('app-text-input .text-input-label').evaluate(
+        await page.waitForSelector('app-text-input .form-field-label');
+        const fontSize = await page.locator('app-text-input .form-field-label').evaluate(
             (el) => getComputedStyle(el).fontSize
         );
         expect(fontSize).toBe('12px');
@@ -129,8 +129,8 @@ test.describe('TextInput', () => {
 
     test('Floating label sits above the input text', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--filled&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-label');
-        const label = page.locator('app-text-input .text-input-label');
+        await page.waitForSelector('app-text-input .form-field-label');
+        const label = page.locator('app-text-input .form-field-label');
         const input = page.locator('app-text-input input');
 
         const labelBox = await label.boundingBox();
@@ -148,7 +148,7 @@ test.describe('TextInput', () => {
         await page.goto('/iframe.html?id=shared-textinput--default&viewMode=story');
         await page.waitForSelector('app-text-input input');
         const input = page.locator('app-text-input input');
-        const label = page.locator('app-text-input .text-input-label');
+        const label = page.locator('app-text-input .form-field-label');
 
         // Focus - label floats
         await input.click();
@@ -163,7 +163,7 @@ test.describe('TextInput', () => {
         await page.goto('/iframe.html?id=shared-textinput--default&viewMode=story');
         await page.waitForSelector('app-text-input input');
         const input = page.locator('app-text-input input');
-        const label = page.locator('app-text-input .text-input-label');
+        const label = page.locator('app-text-input .form-field-label');
 
         // Focus, type, blur
         await input.click();
@@ -177,14 +177,14 @@ test.describe('TextInput', () => {
 
     test('Required label shows asterisk suffix', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--error-state&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-label.required');
-        const hasRequired = await page.locator('app-text-input .text-input-label').evaluate(
+        await page.waitForSelector('app-text-input .form-field-label.required');
+        const hasRequired = await page.locator('app-text-input .form-field-label').evaluate(
             (el) => el.classList.contains('required')
         );
         expect(hasRequired).toBe(true);
 
         // Check the ::after content via computed style
-        const content = await page.locator('app-text-input .text-input-label').evaluate(
+        const content = await page.locator('app-text-input .form-field-label').evaluate(
             (el) => getComputedStyle(el, '::after').content
         );
         expect(content).toContain('*');
@@ -195,7 +195,7 @@ test.describe('TextInput', () => {
     test('No label renders when label input is empty', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--with-placeholder&viewMode=story');
         await page.waitForSelector('app-text-input');
-        const labelCount = await page.locator('app-text-input .text-input-label').count();
+        const labelCount = await page.locator('app-text-input .form-field-label').count();
         expect(labelCount).toBe(0);
     });
 
@@ -209,7 +209,7 @@ test.describe('TextInput', () => {
         const unfocusedColor = await input.evaluate((el) => getComputedStyle(el).borderBottomColor);
         await input.click();
         // Wait for Angular change detection to add .focused class and CSS transition to complete
-        await page.waitForSelector('app-text-input .text-input-wrapper.text-input-focused');
+        await page.waitForSelector('app-text-input .form-field-wrapper.form-field-focused');
         await page.waitForTimeout(200);
         const focusedColor = await input.evaluate((el) => getComputedStyle(el).borderBottomColor);
 
@@ -260,8 +260,8 @@ test.describe('TextInput', () => {
 
     test('Disabled label stays floating when field has value', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--disabled&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-label');
-        const isFloating = await page.locator('app-text-input .text-input-label').evaluate(
+        await page.waitForSelector('app-text-input .form-field-label');
+        const isFloating = await page.locator('app-text-input .form-field-label').evaluate(
             (el) => el.classList.contains('floating')
         );
         expect(isFloating).toBe(true);
@@ -271,8 +271,8 @@ test.describe('TextInput', () => {
 
     test('Error text is 11px', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--error-state&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-error.visible');
-        const fontSize = await page.locator('app-text-input .text-input-error').evaluate(
+        await page.waitForSelector('app-text-input .form-field-error.visible');
+        const fontSize = await page.locator('app-text-input .form-field-error').evaluate(
             (el) => getComputedStyle(el).fontSize
         );
         expect(fontSize).toBe('11px');
@@ -280,8 +280,8 @@ test.describe('TextInput', () => {
 
     test('Error text sits 4px below underline', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--error-state&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-error.visible');
-        const marginTop = await page.locator('app-text-input .text-input-error').evaluate(
+        await page.waitForSelector('app-text-input .form-field-error.visible');
+        const marginTop = await page.locator('app-text-input .form-field-error').evaluate(
             (el) => getComputedStyle(el).marginTop
         );
         expect(marginTop).toBe('4px');
@@ -289,8 +289,8 @@ test.describe('TextInput', () => {
 
     test('Error text is hidden when no error', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--default&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-error', { state: 'attached' });
-        const visibility = await page.locator('app-text-input .text-input-error').evaluate(
+        await page.waitForSelector('app-text-input .form-field-error', { state: 'attached' });
+        const visibility = await page.locator('app-text-input .form-field-error').evaluate(
             (el) => getComputedStyle(el).visibility
         );
         expect(visibility).toBe('hidden');
@@ -300,8 +300,8 @@ test.describe('TextInput', () => {
 
     test('Reserved error space has min-height 16px when no error', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--error-with-reserved-space&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-error', { state: 'attached' });
-        const minHeight = await page.locator('app-text-input .text-input-error').evaluate(
+        await page.waitForSelector('app-text-input .form-field-error', { state: 'attached' });
+        const minHeight = await page.locator('app-text-input .form-field-error').evaluate(
             (el) => getComputedStyle(el).minHeight
         );
         expect(minHeight).toBe('16px');
@@ -309,8 +309,8 @@ test.describe('TextInput', () => {
 
     test('No reserved space: error area has 0 height when no error', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--error-without-reserved-space&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-error', { state: 'attached' });
-        const box = await page.locator('app-text-input .text-input-error').boundingBox();
+        await page.waitForSelector('app-text-input .form-field-error', { state: 'attached' });
+        const box = await page.locator('app-text-input .form-field-error').boundingBox();
         expect(box).not.toBeNull();
         expect(box.height).toBe(0);
     });
@@ -333,7 +333,7 @@ test.describe('TextInput', () => {
 
         // Error should not show because this story has no required validator
         // (it has valid input and reserveErrorSpace). This confirms no false positive.
-        const visibility = await page.locator('app-text-input .text-input-error').evaluate(
+        const visibility = await page.locator('app-text-input .form-field-error').evaluate(
             (el) => getComputedStyle(el).visibility
         );
         expect(visibility).toBe('hidden');
@@ -344,7 +344,7 @@ test.describe('TextInput', () => {
     test('Textarea container has auto height', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--textarea&viewMode=story');
         await page.waitForSelector('app-text-input textarea');
-        const field = page.locator('app-text-input .text-input-field');
+        const field = page.locator('app-text-input .form-field');
         const box = await field.boundingBox();
         expect(box).not.toBeNull();
         // With 3 lines of content, should be taller than 36px
@@ -373,9 +373,9 @@ test.describe('TextInput', () => {
 
     test('Textarea floating label works the same as input', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--textarea&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-label');
+        await page.waitForSelector('app-text-input .form-field-label');
         // Has value, so label should be floating
-        const isFloating = await page.locator('app-text-input .text-input-label').evaluate(
+        const isFloating = await page.locator('app-text-input .form-field-label').evaluate(
             (el) => el.classList.contains('floating')
         );
         expect(isFloating).toBe(true);
@@ -388,7 +388,7 @@ test.describe('TextInput', () => {
         await page.waitForSelector('app-text-input');
         await page.waitForSelector('button.mat-mdc-raised-button');
 
-        const inputField = page.locator('app-text-input .text-input-field');
+        const inputField = page.locator('app-text-input .form-field');
         const button = page.locator('button.mat-mdc-raised-button');
 
         const inputBox = await inputField.boundingBox();
@@ -396,7 +396,7 @@ test.describe('TextInput', () => {
         const buttonBox = await button.boundingBox();
         expect(buttonBox).not.toBeNull();
 
-        expect(inputBox.height).toBe(36);
+        expect(inputBox.height).toBe(40);
         expect(buttonBox.height).toBe(36);
 
         const inputBottom = inputBox.y + inputBox.height;
@@ -408,29 +408,29 @@ test.describe('TextInput', () => {
 
     test('Clear button is visible when clearable and has value', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--clearable&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-clear');
-        const clearBtn = page.locator('app-text-input .text-input-clear');
+        await page.waitForSelector('app-text-input .form-field-clear');
+        const clearBtn = page.locator('app-text-input .form-field-clear');
         await expect(clearBtn).toBeVisible();
     });
 
     test('Clear button is hidden when clearable but empty', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--clearable-empty&viewMode=story');
         await page.waitForSelector('app-text-input', { state: 'attached' });
-        const clearBtnCount = await page.locator('app-text-input .text-input-clear').count();
+        const clearBtnCount = await page.locator('app-text-input .form-field-clear').count();
         expect(clearBtnCount).toBe(0);
     });
 
     test('Clear button is hidden when clearable and disabled with value', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--clearable-disabled&viewMode=story');
         await page.waitForSelector('app-text-input', { state: 'attached' });
-        const clearBtnCount = await page.locator('app-text-input .text-input-clear').count();
+        const clearBtnCount = await page.locator('app-text-input .form-field-clear').count();
         expect(clearBtnCount).toBe(0);
     });
 
     test('Clear button clears the input and hides itself', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--clearable&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-clear');
-        const clearBtn = page.locator('app-text-input .text-input-clear');
+        await page.waitForSelector('app-text-input .form-field-clear');
+        const clearBtn = page.locator('app-text-input .form-field-clear');
         const input = page.locator('app-text-input input');
 
         // Verify input has value
@@ -445,7 +445,7 @@ test.describe('TextInput', () => {
         expect(valueAfter).toBe('');
 
         // Clear button should disappear
-        const clearBtnCountAfter = await page.locator('app-text-input .text-input-clear').count();
+        const clearBtnCountAfter = await page.locator('app-text-input .form-field-clear').count();
         expect(clearBtnCountAfter).toBe(0);
     });
 
@@ -455,22 +455,22 @@ test.describe('TextInput', () => {
         const input = page.locator('app-text-input input');
 
         // No clear button initially
-        expect(await page.locator('app-text-input .text-input-clear').count()).toBe(0);
+        expect(await page.locator('app-text-input .form-field-clear').count()).toBe(0);
 
         // Type something
         await input.click();
         await input.fill('hello');
 
         // Clear button should appear
-        await page.waitForSelector('app-text-input .text-input-clear');
-        await expect(page.locator('app-text-input .text-input-clear')).toBeVisible();
+        await page.waitForSelector('app-text-input .form-field-clear');
+        await expect(page.locator('app-text-input .form-field-clear')).toBeVisible();
     });
 
     test('Clear button is 24px square and positioned at right edge', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--clearable&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-clear');
-        const clearBtn = page.locator('app-text-input .text-input-clear');
-        const field = page.locator('app-text-input .text-input-field');
+        await page.waitForSelector('app-text-input .form-field-clear');
+        const clearBtn = page.locator('app-text-input .form-field-clear');
+        const field = page.locator('app-text-input .form-field');
 
         const btnBox = await clearBtn.boundingBox();
         expect(btnBox).not.toBeNull();
@@ -488,7 +488,7 @@ test.describe('TextInput', () => {
 
     test('Clearable visual regression', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--clearable&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-clear');
+        await page.waitForSelector('app-text-input .form-field-clear');
         await expect(page.locator('app-text-input')).toHaveScreenshot('text-input-clearable.png');
     });
 
@@ -565,14 +565,14 @@ test.describe('TextInput', () => {
 
     test('Email field shows validation error for invalid email', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--email-type&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-error.visible');
-        const errorText = await page.locator('app-text-input .text-input-error').textContent();
+        await page.waitForSelector('app-text-input .form-field-error.visible');
+        const errorText = await page.locator('app-text-input .form-field-error').textContent();
         expect(errorText.trim()).toBe('Must be a valid email address');
     });
 
     test('Email type visual regression', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--email-type&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-error.visible');
+        await page.waitForSelector('app-text-input .form-field-error.visible');
         await expect(page.locator('app-text-input')).toHaveScreenshot('text-input-email-error.png');
     });
 
@@ -621,7 +621,7 @@ test.describe('TextInput', () => {
         await page.waitForSelector('app-text-input');
         await page.waitForSelector('button.mat-mdc-raised-button');
 
-        const inputs = page.locator('app-text-input .text-input-field');
+        const inputs = page.locator('app-text-input .form-field');
         const button = page.locator('button.mat-mdc-raised-button');
         const buttonBox = await button.boundingBox();
         expect(buttonBox).not.toBeNull();
@@ -660,15 +660,15 @@ test.describe('TextInput', () => {
 
     test('Hint text is displayed below input', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--with-hint&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-hint');
-        const hintText = await page.locator('app-text-input .text-input-hint').textContent();
+        await page.waitForSelector('app-text-input .form-field-hint');
+        const hintText = await page.locator('app-text-input .form-field-hint').textContent();
         expect(hintText.trim()).toBe('Leave blank to use the mod name with @ prefix');
     });
 
     test('Hint text is 11px font-size', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--with-hint&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-hint');
-        const fontSize = await page.locator('app-text-input .text-input-hint').evaluate(
+        await page.waitForSelector('app-text-input .form-field-hint');
+        const fontSize = await page.locator('app-text-input .form-field-hint').evaluate(
             (el) => getComputedStyle(el).fontSize
         );
         expect(fontSize).toBe('11px');
@@ -676,14 +676,14 @@ test.describe('TextInput', () => {
 
     test('Hint is hidden when error is showing', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--with-hint-and-error&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-error.visible');
-        const hintCount = await page.locator('app-text-input .text-input-hint').count();
+        await page.waitForSelector('app-text-input .form-field-error.visible');
+        const hintCount = await page.locator('app-text-input .form-field-hint').count();
         expect(hintCount).toBe(0);
     });
 
     test('Hint visual regression', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--with-hint&viewMode=story');
-        await page.waitForSelector('app-text-input .text-input-hint');
+        await page.waitForSelector('app-text-input .form-field-hint');
         await expect(page.locator('app-text-input')).toHaveScreenshot('text-input-hint.png');
     });
 
@@ -697,14 +697,14 @@ test.describe('TextInput', () => {
         // Touch the field to trigger error
         await input.click();
         await page.locator('body').click();
-        await page.waitForSelector('app-text-input .text-input-error.visible');
-        const errorBefore = await page.locator('app-text-input .text-input-error').textContent();
+        await page.waitForSelector('app-text-input .form-field-error.visible');
+        const errorBefore = await page.locator('app-text-input .form-field-error').textContent();
         expect(errorBefore.trim()).toBe('Name is required');
 
         // Type a value - error should clear
         await input.click();
         await input.fill('John');
-        const visibility = await page.locator('app-text-input .text-input-error').evaluate(
+        const visibility = await page.locator('app-text-input .form-field-error').evaluate(
             (el) => getComputedStyle(el).visibility
         );
         expect(visibility).toBe('hidden');
@@ -716,7 +716,7 @@ test.describe('TextInput', () => {
         // Touch to show error
         await page.locator('app-text-input input').click();
         await page.locator('body').click();
-        await page.waitForSelector('app-text-input .text-input-error.visible');
+        await page.waitForSelector('app-text-input .form-field-error.visible');
         await expect(page.locator('app-text-input')).toHaveScreenshot('text-input-required-empty.png');
     });
 });

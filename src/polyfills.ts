@@ -35,7 +35,7 @@
 
 
 /** Evergreen browsers require these. **/
-import 'core-js/es/reflect';
+// core-js/es/reflect removed — Angular 17 with ES2022 target does not need it
 
 
 

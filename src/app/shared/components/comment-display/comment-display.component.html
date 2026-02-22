@@ -1,30 +1,19 @@
 <div class="comment-form" *ngIf="canPost">
     <form [formGroup]="commentForm">
-        <mat-form-field>
-            <mat-label>Enter comment</mat-label>
-            <textarea
-                matInput
-               
-                formControlName="commentContent"
-                matTextareaAutosize
-                matAutosizeMinRows="1"
-                matAutosizeMaxRows="10"
-                maxlength="1000"
-                #message
-                (keydown.enter)="postComment()"
-            ></textarea>
-            <mat-hint *ngIf="message.value.length > 900">{{ message.value.length }} / 1000</mat-hint>
-        </mat-form-field>
+        <app-text-input label="Enter comment" formControlName="commentContent"
+            [multiline]="true" [maxRows]="10" [maxlength]="1000" [reserveErrorSpace]="false"
+            [hint]="commentForm.controls.commentContent.value?.length > 900 ? commentForm.controls.commentContent.value.length + ' / 1000' : ''"
+            (keydown.enter)="postComment()">
+        </app-text-input>
     </form>
-    <button mat-button (click)="postComment()" [disabled]="!hasText()" type="submit">Submit</button>
+    <app-button (clicked)="postComment()" [disabled]="!hasText()">Submit</app-button>
 </div>
-<br />
 <div class="comments-container">
     <div class="comment-wrapper" *ngFor="let comment of comments; trackBy: trackById">
         <div class="author">
             <span class="author-string">{{ getAuthorDisplayName(comment.displayName) }}</span>
             <span class="date-string">{{ comment.timestamp | timeAgo }}</span>
-            <button class="delete-button" mat-button *ngIf="canDelete(comment)" (click)="deleteComment(comment)">
+            <button class="delete-button" mat-icon-button *ngIf="canDelete(comment)" (click)="deleteComment(comment)" matTooltip="Delete comment">
                 <mat-icon>delete</mat-icon>
             </button>
         </div>

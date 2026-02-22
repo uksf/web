@@ -8,9 +8,9 @@
     </div>
     <p *ngIf="loaded && totalLoas == 0">No {{ selectionMode }} LOAs</p>
     <mat-accordion *ngIf="loaded && totalLoas > 0">
-        <mat-card *ngFor="let loa of loas; trackBy: trackByLoa; let loaIndex = index" [ngClass]="{ disable: !canViewReason(loa) }">
+        <mat-card *ngFor="let loa of loas; trackBy: trackByLoa; let loaIndex = index" [ngClass]="{ disable: !loa._canViewReason }">
             <div class="header-container" appSpotlight (click)="activate(loaIndex)">
-                <div class="toggle" [@indicatorRotate]="getExpandedState(loaIndex)" [ngClass]="{ disable: !canViewReason(loa) }"></div>
+                <div class="toggle" [@indicatorRotate]="getExpandedState(loaIndex)" [ngClass]="{ disable: !loa._canViewReason }"></div>
                 <div class="title-container">
                     <div class="date-container">
                         <div class="title start">
@@ -37,7 +37,7 @@
                 </div>
             </div>
 
-            <div class="content-container" *ngIf="loaIndex === selectedIndex && canViewReason(loa)" [@bodyExpansion]>
+            <div class="content-container" *ngIf="loaIndex === selectedIndex && loa._canViewReason" [@bodyExpansion]>
                 <div class="content-body">
                     <div class="requested">
                         <span><b>Requested</b></span>
@@ -48,7 +48,7 @@
                             <span><b>Reason</b></span>
                             <span>{{ loa.reason }}</span>
                         </div>
-                        <button mat-raised-button *ngIf="canDelete(loa)" color="primary" (click)="$event.stopPropagation(); delete(loa)">Delete</button>
+                        <button mat-raised-button *ngIf="loa._canDelete" color="primary" (click)="$event.stopPropagation(); delete(loa)">Delete</button>
                     </div>
                 </div>
             </div>

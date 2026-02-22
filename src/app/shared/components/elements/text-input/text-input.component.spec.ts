@@ -17,8 +17,8 @@ describe('TextInputComponent', () => {
             expect(component.multiline).toBe(false);
         });
 
-        it('should have minRows 2 and maxRows 10', () => {
-            expect(component.minRows).toBe(2);
+        it('should have minRows 1 and maxRows 10', () => {
+            expect(component.minRows).toBe(1);
             expect(component.maxRows).toBe(10);
         });
 
@@ -169,6 +169,7 @@ describe('TextInputComponent', () => {
 
     describe('errorMessage', () => {
         it('should return empty when no ngControl', () => {
+            component.ngDoCheck();
             expect(component.errorMessage).toBe('');
         });
 
@@ -177,6 +178,7 @@ describe('TextInputComponent', () => {
             const mockNgControl = { control: mockControl, valueAccessor: null as unknown } as any;
             const comp = new TextInputComponent(mockNgControl);
             comp.validationMessages = [{ type: 'required', message: 'Required' }];
+            comp.ngDoCheck();
 
             expect(comp.errorMessage).toBe('');
         });
@@ -252,6 +254,56 @@ describe('TextInputComponent', () => {
         });
     });
 
+    describe('ngDoCheck caching', () => {
+        it('should update cachedErrorMessage on ngDoCheck', () => {
+            const mockControl = {
+                hasError: (type: string) => type === 'required',
+                touched: true, dirty: false
+            };
+            const mockNgControl = { control: mockControl, valueAccessor: null as unknown } as any;
+            const comp = new TextInputComponent(mockNgControl);
+            comp.validationMessages = [{ type: 'required', message: 'Required' }];
+
+            comp.ngDoCheck();
+
+            expect(comp.cachedErrorMessage).toBe('Required');
+        });
+
+        it('should return cachedErrorMessage from errorMessage getter', () => {
+            const mockControl = {
+                hasError: (type: string) => type === 'required',
+                touched: true, dirty: false
+            };
+            const mockNgControl = { control: mockControl, valueAccessor: null as unknown } as any;
+            const comp = new TextInputComponent(mockNgControl);
+            comp.validationMessages = [{ type: 'required', message: 'Required' }];
+
+            comp.ngDoCheck();
+
+            expect(comp.errorMessage).toBe('Required');
+            expect(comp.hasError).toBe(true);
+        });
+
+        it('should clear cachedErrorMessage when error resolves', () => {
+            let hasRequiredError = true;
+            const mockControl = {
+                hasError: (type: string) => type === 'required' && hasRequiredError,
+                touched: true, dirty: false
+            };
+            const mockNgControl = { control: mockControl, valueAccessor: null as unknown } as any;
+            const comp = new TextInputComponent(mockNgControl);
+            comp.validationMessages = [{ type: 'required', message: 'Required' }];
+
+            comp.ngDoCheck();
+            expect(comp.cachedErrorMessage).toBe('Required');
+
+            hasRequiredError = false;
+            comp.ngDoCheck();
+            expect(comp.cachedErrorMessage).toBe('');
+            expect(comp.hasError).toBe(false);
+        });
+    });
+
     describe('with NgControl', () => {
         it('should return error message when component is touched', () => {
             const mockControl = {
@@ -262,6 +314,7 @@ describe('TextInputComponent', () => {
             const comp = new TextInputComponent(mockNgControl);
             comp.validationMessages = [{ type: 'required', message: 'This field is required' }];
             comp.touched = true;
+            comp.ngDoCheck();
 
             expect(comp.errorMessage).toBe('This field is required');
             expect(comp.hasError).toBe(true);
@@ -276,6 +329,7 @@ describe('TextInputComponent', () => {
             const comp = new TextInputComponent(mockNgControl);
             comp.validationMessages = [{ type: 'required', message: 'This field is required' }];
             comp.dirty = true;
+            comp.ngDoCheck();
 
             expect(comp.errorMessage).toBe('This field is required');
         });
@@ -288,6 +342,7 @@ describe('TextInputComponent', () => {
             const mockNgControl = { control: mockControl, valueAccessor: null as unknown } as any;
             const comp = new TextInputComponent(mockNgControl);
             comp.validationMessages = [{ type: 'required', message: 'This field is required' }];
+            comp.ngDoCheck();
 
             expect(comp.errorMessage).toBe('This field is required');
             expect(comp.hasError).toBe(true);
@@ -301,6 +356,7 @@ describe('TextInputComponent', () => {
             const mockNgControl = { control: mockControl, valueAccessor: null as unknown } as any;
             const comp = new TextInputComponent(mockNgControl);
             comp.validationMessages = [{ type: 'required', message: 'This field is required' }];
+            comp.ngDoCheck();
 
             expect(comp.errorMessage).toBe('This field is required');
         });
@@ -314,6 +370,7 @@ describe('TextInputComponent', () => {
             const comp = new TextInputComponent(mockNgControl);
             comp.validationMessages = [{ type: 'required', message: 'Required' }];
             comp.touched = true;
+            comp.ngDoCheck();
 
             expect(comp.errorMessage).toBe('');
             expect(comp.hasError).toBe(false);
@@ -328,6 +385,7 @@ describe('TextInputComponent', () => {
             const comp = new TextInputComponent(mockNgControl);
             comp.validationMessages = [{ type: 'minlength', message: () => 'Too short' }];
             comp.touched = true;
+            comp.ngDoCheck();
 
             expect(comp.errorMessage).toBe('Too short');
         });

@@ -38,22 +38,22 @@
                             </span>
                         </div>
                         <app-flex-filler></app-flex-filler>
-                        <span *ngIf="updateAvailable(mod)">Update available</span>
+                        <span *ngIf="mod._updateAvailable">Update available</span>
                         <ng-template [ngxPermissionsOnly]="['ADMIN']">
                             <div class="mod-card-buttons">
-                                <button mat-button class="icon delete" *ngIf="hasError(mod)" (click)="showError(mod)" matTooltip="View error">
+                                <button mat-button class="icon delete" *ngIf="mod._hasError" (click)="showError(mod)" matTooltip="View error">
                                     <mat-icon>error_outline</mat-icon>
                                 </button>
-                                <button mat-button class="icon" *ngIf="interventionRequired(mod)" (click)="resolveIntervention(mod)" matTooltip="Resolve Intervention">
+                                <button mat-button class="icon" *ngIf="mod._interventionRequired" (click)="resolveIntervention(mod)" matTooltip="Resolve Intervention">
                                     <mat-icon>construction</mat-icon>
                                 </button>
-                                <button mat-button class="icon" *ngIf="updateAvailable(mod)" (click)="update(mod)" matTooltip="Update">
+                                <button mat-button class="icon" *ngIf="mod._updateAvailable" (click)="update(mod)" matTooltip="Update">
                                     <mat-icon>download</mat-icon>
                                 </button>
-                                <button mat-button class="icon" *ngIf="canUninstall(mod)" (click)="uninstall(mod)" matTooltip="Uninstall">
+                                <button mat-button class="icon" *ngIf="mod._canUninstall" (click)="uninstall(mod)" matTooltip="Uninstall">
                                     <mat-icon>eject</mat-icon>
                                 </button>
-                                <button mat-button class="icon delete" *ngIf="canDelete(mod)" (click)="delete(mod)" matTooltip="Delete">
+                                <button mat-button class="icon delete" *ngIf="mod._canDelete" (click)="delete(mod)" matTooltip="Delete">
                                     <mat-icon>delete</mat-icon>
                                 </button>
                             </div>

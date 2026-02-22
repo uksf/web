@@ -1,4 +1,4 @@
-import { Component, ContentChild, ElementRef, HostListener, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ContentChild, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { NgModel } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { nextFrame } from '@app/shared/services/helper.service';
@@ -6,10 +6,13 @@ import { map, startWith, takeUntil } from 'rxjs/operators';
 import { MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { DestroyableComponent } from '@app/shared/components';
 
+let nextDropdownId = 0;
+
 @Component({
     template: ``
 })
 export class DropdownBaseComponent extends DestroyableComponent implements OnInit {
+    readonly inputId = `dropdown-${nextDropdownId++}`;
     @ViewChild('textInput') textInput: NgModel;
     @ViewChild('textInput', { read: ElementRef }) textInputElement: ElementRef;
     @ViewChild('textInput', { read: MatAutocompleteTrigger }) autocompleteTrigger: MatAutocompleteTrigger;
@@ -28,11 +31,26 @@ export class DropdownBaseComponent extends DestroyableComponent implements OnIni
     @Input('elementName') elementName: string;
     @Input('formFieldClass') formFieldClass: string;
     @Input('optionClass') optionClass: string;
+    @Input('autocomplete') autocomplete: boolean = true;
     @Input('clearOnSelect') clearOnSelect: boolean = false;
+    @Input('reserveErrorSpace') reserveErrorSpace: boolean = true;
     @Input('textModel') textModel: string = '';
+
+    /** Wrapper for mat-autocomplete's displayWith that handles both IDropdownElement (autocomplete mode) and string (simple mode) */
+    autoDisplayWith = (value: IDropdownElement | string): string => {
+        if (!value) {
+            return '';
+        }
+        if (typeof value === 'string') {
+            return value;
+        }
+        return this.displayWith(value);
+    };
+    @Output('selectionChanged') selectionChanged = new EventEmitter<IDropdownElement>();
     _model: IDropdownElement = null;
     allElements: IDropdownElement[];
     filteredElements: Observable<IDropdownElement[]>;
+    focused = false;
     validationMessages = [
         { type: 'required', message: () => `${this.elementName} is required` },
         { type: 'invalid', message: () => `Invalid ${this.elementName}, please select one from the list` }
@@ -51,6 +69,21 @@ export class DropdownBaseComponent extends DestroyableComponent implements OnIni
 
     set model(value: IDropdownElement) {
         this._model = value;
+    }
+
+    get labelFloating(): boolean {
+        if (!this.autocomplete) {
+            return this.focused || !!this._model;
+        }
+        return this.focused || !!this.textModel;
+    }
+
+    onInputFocus(): void {
+        this.focused = true;
+    }
+
+    onInputBlur(): void {
+        this.focused = false;
     }
 
     ngOnInit(): void {
@@ -128,6 +161,10 @@ export class DropdownBaseComponent extends DestroyableComponent implements OnIni
     }
 
     onTextModelChange(textModel) {
+        if (!this.autocomplete) {
+            return;
+        }
+
         let filterValue = typeof textModel === 'string' ? textModel : (<IDropdownElement>textModel).displayValue;
         let filterValueLower = filterValue.toLowerCase();
 
@@ -142,7 +179,13 @@ export class DropdownBaseComponent extends DestroyableComponent implements OnIni
 
     clear() {
         this.textModel = '';
-        this.onTextModelChange('');
+        if (this.autocomplete) {
+            this.onTextModelChange('');
+        } else {
+            this.model = null;
+            this.filteredElements = of(this.allElements);
+            this.cachedFilteredElements = this.allElements;
+        }
         this.autocompleteTrigger?.autocomplete?.options?.forEach(option => {
             if (option.selected) {
                 option.deselect(false);
@@ -150,8 +193,40 @@ export class DropdownBaseComponent extends DestroyableComponent implements OnIni
         });
     }
 
+    openPanel(): void {
+        if (!this.disabled && this.autocompleteTrigger) {
+            this.filteredElements = of(this.allElements);
+            this.cachedFilteredElements = this.allElements;
+            nextFrame(() => {
+                this.setScrollPanelHeight();
+                this.autocompleteTrigger.openPanel();
+                if (!this.autocomplete && this._model) {
+                    this.highlightSelectedOption();
+                }
+            });
+        }
+    }
+
+    /** In simple mode, highlight the currently selected option in the panel */
+    private highlightSelectedOption(): void {
+        nextFrame(() => {
+            this.autocompleteTrigger?.autocomplete?.options?.forEach(option => {
+                if (option.value?.value === this._model?.value) {
+                    option.select(false);
+                } else if (option.selected) {
+                    option.deselect(false);
+                }
+            });
+        });
+    }
+
     onSelect(event: MatAutocompleteSelectedEvent) {
         this.model = event.option.value;
+        this.selectionChanged.emit(event.option.value);
+
+        if (!this.autocomplete) {
+            this.textModel = this.displayWith(event.option.value);
+        }
 
         if (this.clearOnSelect) {
             nextFrame(() => {

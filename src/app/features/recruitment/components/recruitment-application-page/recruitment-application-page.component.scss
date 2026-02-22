@@ -148,8 +148,8 @@ img {
     margin: auto;
     margin-left: 16px;
 
-    .select-thin {
-        margin-bottom: -4px;
+    .recruiter-dropdown {
+        min-width: 180px;
     }
 }
 
@@ -163,10 +163,6 @@ img {
 
 .red {
     color: red;
-}
-
-::ng-deep .select-small {
-    margin: 0 0 0 -16px;
 }
 
 @media screen and (max-width: 768px) {

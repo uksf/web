@@ -1,15 +1,22 @@
-.mat-mdc-form-field {
-    width: 100%;
+@use 'styles/form-field' as ff;
 
-    .mat-mdc-icon-button {
-        background-color: transparent;
-        margin-left: -21px;
+:host {
+    display: block;
+    min-width: 120px;
+}
 
-        .mat-icon {
-            margin: 0;
-            height: 21px;
-            line-height: 21px;
-        }
+.form-field-wrapper { @include ff.wrapper(); }
+.form-field { @include ff.field(); }
+.form-field-label { @include ff.label(); }
+.form-field-clear { @include ff.clear-button(); }
+.form-field-arrow { @include ff.arrow-button(); }
+.form-field-error { @include ff.error(); }
+
+.form-field-simple {
+    cursor: pointer;
+
+    input[readonly] {
+        cursor: pointer;
     }
 }
 

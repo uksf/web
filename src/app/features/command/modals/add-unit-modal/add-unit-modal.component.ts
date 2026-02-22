@@ -1,12 +1,13 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, ValidationErrors, Validators } from '@angular/forms';
 import { getValidationError } from '@app/shared/services/form-helper.service';
-import { Observable, of, timer } from 'rxjs';
+import { BehaviorSubject, Observable, of, timer } from 'rxjs';
 import { first, map, switchMap } from 'rxjs/operators';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { ResponseUnit, UnitBranch } from '@app/features/units/models/units';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { UnitsService } from '../../services/units.service';
+import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 
 @Component({
     selector: 'app-add-unit-modal',
@@ -17,8 +18,8 @@ export class AddUnitModalComponent implements OnInit {
     form = this.formBuilder.group({
         name: ['', Validators.required, this.validateUnit.bind(this)],
         shortname: ['', Validators.required, this.validateUnit.bind(this)],
-        parent: ['', Validators.required],
-        branch: [UnitBranch.COMBAT, Validators.required],
+        parent: new FormControl<IDropdownElement | null>(null, Validators.required),
+        branch: new FormControl<IDropdownElement | null>(null, Validators.required),
         teamspeakGroup: ['', null, this.validateUnit.bind(this)],
         discordRoleId: ['', null, this.validateUnit.bind(this)],
         callsign: ['', null, this.validateUnit.bind(this)],
@@ -27,11 +28,13 @@ export class AddUnitModalComponent implements OnInit {
     });
     getValidationError = getValidationError;
     pending = false;
-    branchTypes = [
-        { value: UnitBranch.COMBAT, viewValue: 'Combat' },
-        { value: UnitBranch.AUXILIARY, viewValue: 'Auxiliary' },
-        { value: UnitBranch.SECONDARY, viewValue: 'Secondary' }
+    branchElements: IDropdownElement[] = [
+        { value: String(UnitBranch.COMBAT), displayValue: 'Combat' },
+        { value: String(UnitBranch.AUXILIARY), displayValue: 'Auxiliary' },
+        { value: String(UnitBranch.SECONDARY), displayValue: 'Secondary' }
     ];
+    branchElements$ = of(this.branchElements);
+    parentElements$ = new BehaviorSubject<IDropdownElement[]>([]);
     validationMessages = {
         name: [
             { type: 'required', message: 'Name is required' },
@@ -56,12 +59,23 @@ export class AddUnitModalComponent implements OnInit {
         if (data) {
             this.edit = true;
             this.unit = data.unit;
-            this.form.patchValue(this.unit);
+            this.form.patchValue({
+                name: this.unit.name,
+                shortname: this.unit.shortname,
+                teamspeakGroup: this.unit.teamspeakGroup,
+                discordRoleId: this.unit.discordRoleId,
+                callsign: this.unit.callsign,
+                icon: this.unit.icon,
+                preferShortname: this.unit.preferShortname
+            });
+            this.form.controls.branch.setValue(this.branchElements.find(e => e.value === String(this.unit.branch)));
+        } else {
+            this.form.controls.branch.setValue(this.branchElements[0]);
         }
     }
 
     ngOnInit() {
-        this.original = JSON.stringify(this.form.getRawValue());
+        this.original = JSON.stringify(this.getFormRawValues());
         this.unitsService.getAllUnits().pipe(first()).subscribe({
             next: (units: ResponseUnit[]) => {
                 this.units = units;
@@ -71,24 +85,29 @@ export class AddUnitModalComponent implements OnInit {
     }
 
     get changesMade() {
-        return this.original !== JSON.stringify(this.form.getRawValue());
+        return this.original !== JSON.stringify(this.getFormRawValues());
     }
 
     resolveAvailableParentUnits() {
-        this.availableParentUnits = this.units.filter((x) => x.branch === this.form.controls.branch.value);
+        const selectedBranch = Number(this.form.controls.branch.value?.value);
+        this.availableParentUnits = this.units.filter((x) => x.branch === selectedBranch);
+        const parentElements = this.availableParentUnits.map(u => ({ value: u.id, displayValue: u.name }));
+
         if (!this.edit) {
-            this.form.controls.parent.setValue(this.availableParentUnits[0].id);
+            this.parentElements$.next(parentElements);
+            this.form.controls.parent.setValue(parentElements[0] ?? null);
         } else {
             if (this.unit.parent === '000000000000000000000000') {
+                this.parentElements$.next(parentElements);
                 return;
             }
 
             this.availableParentUnits = this.availableParentUnits.filter((x) => x.id !== this.unit.id);
-            if (this.availableParentUnits.find((x) => x.id === this.unit.parent)) {
-                this.form.controls.parent.setValue(this.unit.parent);
-            } else {
-                this.form.controls.parent.setValue(this.availableParentUnits[0].id);
-            }
+            const filteredParentElements = this.availableParentUnits.map(u => ({ value: u.id, displayValue: u.name }));
+            this.parentElements$.next(filteredParentElements);
+
+            const matchingParent = filteredParentElements.find(e => e.value === this.unit.parent);
+            this.form.controls.parent.setValue(matchingParent ?? filteredParentElements[0] ?? null);
         }
     }
 
@@ -114,8 +133,8 @@ export class AddUnitModalComponent implements OnInit {
         if (this.edit) {
             this.unit.name = this.form.controls.name.value;
             this.unit.shortname = this.form.controls.shortname.value;
-            this.unit.parent = this.form.controls.parent.value;
-            this.unit.branch = this.form.controls.branch.value;
+            this.unit.parent = this.form.controls.parent.value?.value;
+            this.unit.branch = Number(this.form.controls.branch.value?.value);
             this.unit.teamspeakGroup = this.form.controls.teamspeakGroup.value;
             this.unit.discordRoleId = this.form.controls.discordRoleId.value;
             this.unit.callsign = this.form.controls.callsign.value;
@@ -128,7 +147,8 @@ export class AddUnitModalComponent implements OnInit {
                 }
             });
         } else {
-            const formString = JSON.stringify(this.form.getRawValue()).replace(/[\n\r]/g, '');
+            const payload = this.getFormRawValues();
+            const formString = JSON.stringify(payload).replace(/[\n\r]/g, '');
             this.unitsService.createUnit(formString).pipe(first()).subscribe({
                 next: () => {
                     this.dialog.closeAll();
@@ -136,14 +156,6 @@ export class AddUnitModalComponent implements OnInit {
                 }
             });
         }
-    }
-
-    trackByIndex(index: number): number {
-        return index;
-    }
-
-    trackByUnitId(index: number, unit: ResponseUnit): string {
-        return unit.id;
     }
 
     delete() {
@@ -165,5 +177,14 @@ export class AddUnitModalComponent implements OnInit {
                 }
             }
         });
+    }
+
+    private getFormRawValues() {
+        const raw = this.form.getRawValue();
+        return {
+            ...raw,
+            branch: Number(raw.branch?.value ?? 0),
+            parent: raw.parent?.value ?? ''
+        };
     }
 }

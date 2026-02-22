@@ -134,6 +134,7 @@ export class OperationsServersComponent extends DestroyableComponent implements 
 
                 if (skip) {
                     this.updating = false;
+                    this.updateServerStatusTexts();
                     return;
                 }
                 this.servers.forEach((server) => {
@@ -156,6 +157,15 @@ export class OperationsServersComponent extends DestroyableComponent implements 
                     const hours = time[0] === '59' && minutes === 0 && seconds === 0 ? 0 : minutes === 0 && seconds === 0 ? parseInt(time[0], 10) + 1 : parseInt(time[0], 10);
                     server.status.parsedUptime = `${hours < 10 ? `0${hours}` : hours}:${minutes < 10 ? `0${minutes}` : minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
                 }
+            });
+            this.updateServerStatusTexts();
+        }
+    }
+
+    updateServerStatusTexts() {
+        if (this.servers) {
+            this.servers.forEach((server) => {
+                server.statusText = this.getServerStatus(server);
             });
         }
     }
@@ -202,10 +212,12 @@ export class OperationsServersComponent extends DestroyableComponent implements 
                 this.servers[serverIndex] = response.gameServer;
                 this.instanceCount = response.instanceCount;
                 this.updating = false;
+                this.updateServerStatusTexts();
             },
             error: () => {
                 server.updating = false;
                 this.updating = false;
+                this.updateServerStatusTexts();
             }
         });
     }
@@ -619,6 +631,10 @@ export class OperationsServersComponent extends DestroyableComponent implements 
     getMissionName(element: IDropdownElement): string {
         const mission = this.mapMission(element);
         return `${mission.map}, ${mission.name}`;
+    }
+
+    trackByServerId(index: number, server: GameServer): string {
+        return server.id;
     }
 
     getMissionTooltip = (element: IDropdownElement): string => {

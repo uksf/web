@@ -5,25 +5,16 @@ import {
     ControlValueAccessor,
     UntypedFormControl,
     UntypedFormGroup,
-    FormGroupDirective,
     NG_VALIDATORS,
     NG_VALUE_ACCESSOR,
-    NgForm,
     ValidationErrors,
     Validator,
     ValidatorFn
 } from '@angular/forms';
-import { MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { MatAutocompleteTrigger, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { getValidationError } from '@app/shared/services/form-helper.service';
 import { DropdownBaseComponent, IDropdownElement } from '../dropdown-base/dropdown-base.component';
 import { any, nextFrame } from '@app/shared/services/helper.service';
-import { ErrorStateMatcher } from '@angular/material/core';
-
-export class SelectionListErrorStateMatcher implements ErrorStateMatcher {
-    isErrorState(control: UntypedFormControl | null, form: FormGroupDirective | NgForm | null): boolean {
-        return !!(control && (control.dirty || control.touched) && control.parent.get('list').errors !== null);
-    }
-}
 
 export function SelectionListValidator(required: boolean): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -59,16 +50,14 @@ export function SelectionListValidator(required: boolean): ValidatorFn {
     viewProviders: [{ provide: ControlContainer, useExisting: UntypedFormGroup }]
 })
 export class SelectionListComponent extends DropdownBaseComponent implements OnInit, OnChanges, ControlValueAccessor, Validator {
-    getValidationError = getValidationError;
     @Input('listDisabledTooltip') listDisabledTooltip: (element: IDropdownElement) => string = () => '';
     @Input('listPosition') listPosition: string ='top';
     @Input('inputTooltip') inputTooltip: string = '';
-    @ViewChild(MatAutocompleteTrigger) autocomplete: MatAutocompleteTrigger;
+    @ViewChild(MatAutocompleteTrigger) autocompleteTriggerRef: MatAutocompleteTrigger;
     form: UntypedFormGroup = new UntypedFormGroup({
         textInput: new UntypedFormControl({ value: '', disabled: this.disabled }),
         list: new UntypedFormControl([], SelectionListValidator(this.required))
     });
-    listErrorStateMatcher = new SelectionListErrorStateMatcher();
     validationMessages = [
         {
             type: 'noneSelected',
@@ -97,6 +86,19 @@ export class SelectionListComponent extends DropdownBaseComponent implements OnI
         this.revalidate();
     }
 
+    get hasListError(): boolean {
+        return this.listErrorMessage.length > 0;
+    }
+
+    get listErrorMessage(): string {
+        const listControl = this.form.get('list');
+        const textInputControl = this.form.get('textInput');
+        if (!textInputControl || (!textInputControl.dirty && !textInputControl.touched)) {
+            return '';
+        }
+        return getValidationError(listControl, this.validationMessages);
+    }
+
     constructor() {
         super();
     }
@@ -108,12 +110,16 @@ export class SelectionListComponent extends DropdownBaseComponent implements OnI
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.disabled && this.form) {
-            if (this.disabled) {                
+            if (this.disabled) {
                 this.form.get('textInput').disable();
                 this.form.get('textInput').setValue('');
             } else {
                 this.form.get('textInput').enable();
             }
+        }
+        if (changes.required && this.form) {
+            this.form.get('list').setValidators(SelectionListValidator(this.required));
+            this.revalidate();
         }
     }
 
@@ -123,7 +129,7 @@ export class SelectionListComponent extends DropdownBaseComponent implements OnI
         if (this.clearOnSelect) {
             nextFrame(() => {
                 this.form.get('textInput').setValue('');
-                this.autocomplete.closePanel();
+                this.autocompleteTriggerRef.closePanel();
                 this.textInputElement.nativeElement.blur();
             });
         }
@@ -143,6 +149,7 @@ export class SelectionListComponent extends DropdownBaseComponent implements OnI
         const index = this.listModel.indexOf(element);
         this.listModel.splice(index, 1);
         this.listModel = [...this.listModel];
+        this.form.get('textInput').markAsTouched();
     }
 
     getDisabled = (element: IDropdownElement): boolean => {

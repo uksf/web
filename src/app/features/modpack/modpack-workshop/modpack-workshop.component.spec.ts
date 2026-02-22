@@ -270,6 +270,28 @@ describe('ModpackWorkshopComponent', () => {
         });
     });
 
+    describe('updateModComputedProperties', () => {
+        it('should set computed properties on each mod', () => {
+            component.mods = [
+                makeMod({ status: 'Error', updatedDate: '2026-02-01T00:00:00Z', lastUpdatedLocally: '2026-01-01T00:00:00Z' }),
+                makeMod({ status: 'Uninstalled' })
+            ];
+
+            component.updateModComputedProperties();
+
+            expect(component.mods[0]._hasError).toBe(true);
+            expect(component.mods[0]._canUninstall).toBe(true);
+            expect(component.mods[0]._canDelete).toBe(false);
+            expect(component.mods[0]._updateAvailable).toBe(true);
+            expect(component.mods[0]._interventionRequired).toBe(false);
+
+            expect(component.mods[1]._hasError).toBe(false);
+            expect(component.mods[1]._canUninstall).toBe(false);
+            expect(component.mods[1]._canDelete).toBe(true);
+            expect(component.mods[1]._updateAvailable).toBe(false);
+        });
+    });
+
     describe('showError', () => {
         it('opens message dialog with error message', () => {
             const mod = makeMod({ errorMessage: 'Something failed' });

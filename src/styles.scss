@@ -1,4 +1,6 @@
 @use '@angular/material' as mat;
+@use 'styles/form-field-theme' as fft;
+@use 'styles/mat-form-field-overrides' as mffo;
 @use 'app/features/command/components/command-ranks/ranks-list-item-layout' as ranks-layout;
 @use 'app/features/operations/components/operations-servers/servers-list-item-layout' as servers-layout;
 @import '@ali-hm/angular-tree-component/css/angular-tree-component.css';
@@ -49,7 +51,6 @@
 @import 'app/shared/components/elements/inline-dropdown/inline-dropdown.component.scss-theme.scss';
 @import 'app/shared/components/elements/loading-placeholder/loading-placeholder.component.scss-theme.scss';
 @import 'app/shared/components/elements/selection-list/selection-list.component.scss-theme';
-@import 'app/shared/components/elements/text-input/text-input.component.scss-theme.scss';
 @import 'app/shared/components/elements/theme-emitter/theme-emitter.component.scss-theme.scss';
 @import 'app/features/command/components/command-requests/command-request.component.scss-theme.scss';
 @import 'app/features/command/components/command-members/command-members.component.scss-theme.scss';
@@ -123,7 +124,9 @@
     @include inline-dropdown-component-theme($theme);
     @include loading-placeholder-component-theme($theme);
     @include selection-list-component-theme($theme);
-    @include text-input-component-theme($theme);
+    @include fft.form-field-theme($theme, 'app-text-input');
+    @include fft.form-field-theme($theme, 'app-dropdown');
+    @include fft.form-field-theme($theme, 'app-selection-list');
     @include theme-emitter-component-theme($theme);
     @include command-request-component-theme($theme);
     @include command-members-component-theme($theme);
@@ -237,20 +240,13 @@
     }
 
     // Form field: remove filled background and focus overlay for underline-only appearance
+    @include mffo.form-field-underline($foreground);
+
     .mat-mdc-form-field.mat-form-field-appearance-fill {
-        .mdc-text-field--filled {
-            background-color: transparent;
-            border-radius: 0;
-            padding-left: 0;
-            padding-right: 0;
-        }
-
-        .mat-mdc-form-field-focus-overlay {
-            background-color: transparent;
-        }
-
-        .mdc-line-ripple::before {
-            border-bottom-color: mat.get-color-from-palette($foreground, divider);
+        .mat-mdc-form-field-infix {
+            min-height: 40px;
+            padding-top: 20px;
+            padding-bottom: 0;
         }
 
         .mat-mdc-form-field-subscript-wrapper {
@@ -389,22 +385,12 @@ mat-tab-nav-panel,
     overflow: hidden;
 
     // --- Form field: underline-only appearance (mirrors .dark-theme overrides) ---
-    .mat-mdc-form-field.mat-form-field-appearance-fill {
-        .mdc-text-field--filled {
-            background-color: transparent;
-            border-radius: 0;
-            padding-left: 0;
-            padding-right: 0;
-        }
+    @include mffo.form-field-underline($foreground);
 
-        .mat-mdc-form-field-focus-overlay {
-            background-color: transparent;
-        }
-
-        .mdc-line-ripple::before {
-            border-bottom-color: mat.get-color-from-palette($foreground, divider);
-        }
-    }
+    // Custom form field (app-text-input, app-dropdown): set theme CSS variables
+    // that are normally scoped to .dark-theme selectors
+    @include fft.form-field-theme($dark-theme, 'app-text-input');
+    @include fft.form-field-theme($dark-theme, 'app-dropdown');
 
     input {
         color: mat.get-color-from-palette($foreground, base) !important;
@@ -516,6 +502,13 @@ mat-tab-nav-panel,
     padding: 0 16px 16px;
 }
 
+// Mat-paginator: remove outlined border from the "items per page" select
+mat-paginator .mdc-notched-outline__leading,
+mat-paginator .mdc-notched-outline__notch,
+mat-paginator .mdc-notched-outline__trailing {
+    border: none !important;
+}
+
 // ---------------------------------------------------------------------------
 // Unified modal layout
 // ---------------------------------------------------------------------------
@@ -528,6 +521,10 @@ mat-tab-nav-panel,
 
 .mat-mdc-dialog-title {
     margin: 0 !important;
+    padding: 16px 0 12px !important;
+}
+
+.mat-mdc-dialog-container .mat-mdc-dialog-title {
     padding: 16px 24px 12px !important;
 }
 

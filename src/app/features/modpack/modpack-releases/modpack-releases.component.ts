@@ -22,6 +22,10 @@ export class ModpackReleasesComponent implements OnInit, OnDestroy {
     changelogEditing: string;
     changelogStaging: string;
     changelogMarkdown: string;
+    publicReleases: ModpackRelease[] = [];
+    selectedRelease: ModpackRelease | undefined;
+    latestReleaseIsDraft: boolean = false;
+    private originalLinkRenderer: typeof this.markdownService.renderer.link;
 
     constructor(
         private markdownService: MarkdownService,
@@ -35,23 +39,19 @@ export class ModpackReleasesComponent implements OnInit, OnDestroy {
         return this.modpackReleaseService.releases;
     }
 
-    get publicReleases() {
-        return this.releases.filter((x: ModpackRelease) => !x.isDraft || this.permissionsService.hasPermission(Permissions.TESTER));
-    }
-
-    get selectedRelease() {
-        return this.releases.find((x: ModpackRelease) => x.version === this.selectedReleaseVersion);
-    }
-
-    get latestReleaseIsDraft() {
-        return this.releases.length > 0 && this.releases[0].isDraft;
+    updateCachedState() {
+        this.publicReleases = this.releases.filter((x: ModpackRelease) => !x.isDraft || this.permissionsService.hasPermission(Permissions.TESTER));
+        this.selectedRelease = this.releases.find((x: ModpackRelease) => x.version === this.selectedReleaseVersion);
+        this.latestReleaseIsDraft = this.releases.length > 0 && this.releases[0].isDraft;
     }
 
     ngOnDestroy(): void {
+        this.markdownService.renderer.link = this.originalLinkRenderer;
         this.modpackReleaseService.disconnect();
     }
 
     ngOnInit() {
+        this.originalLinkRenderer = this.markdownService.renderer.link;
         const linkRenderer = this.markdownService.renderer.link;
         this.markdownService.renderer.link = (href: string, title: string, text: string) => {
             const html: string = linkRenderer.call(this.markdownService.renderer, href, title, text);
@@ -60,6 +60,7 @@ export class ModpackReleasesComponent implements OnInit, OnDestroy {
 
         this.modpackReleaseService.connect(
             () => {
+                this.updateCachedState();
                 if (this.releases.length > 0) {
                     this.checkRoute();
                 } else {
@@ -67,6 +68,7 @@ export class ModpackReleasesComponent implements OnInit, OnDestroy {
                 }
             },
             (version: string) => {
+                this.updateCachedState();
                 if (this.selectIncomingRelease) {
                     this.selectIncomingRelease = false;
                     this.selectRelease(version);
@@ -88,6 +90,7 @@ export class ModpackReleasesComponent implements OnInit, OnDestroy {
     selectRelease(version: string) {
         this.editing = false;
         this.selectedReleaseVersion = version;
+        this.updateCachedState();
         if (!this.selectedRelease) {
             this.changelogMarkdown = '';
             this.router.navigate([], {

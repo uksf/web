@@ -8,59 +8,55 @@
         <app-text-input class="normal" label="Email" formControlName="email" [required]="true" autocomplete="username"
             [validationMessages]="validation_messages.email">
         </app-text-input>
-        <br />
         <div formGroupName="passwordGroup">
             <app-text-input class="normal" label="Password (min 12 chars)" formControlName="password" type="password" [required]="true"
                 autocomplete="new-password" [validationMessages]="validation_messages.password">
             </app-text-input>
-            <br />
             <app-text-input class="normal" label="Confirm Password" formControlName="confirmPassword" type="password"
                 autocomplete="new-password" [validationMessages]="validation_messages.confirmPassword"
                 [errorSource]="formGroup.get('passwordGroup')">
             </app-text-input>
         </div>
-        <br />
         <div class="name-container">
             <p>This name will be used in-game, on TeamSpeak, and on Discord.</p>
             <p>If you do not wish to use your real name, you may use a realistic fake name (for example, Barry Miller)</p>
             <div class="names-container">
                 <app-text-input class="name" label="First name" formControlName="firstName" [required]="true"
-                    autocomplete="given-name" [keypressFilter]="characterBlockPattern">
+                    autocomplete="given-name" [keypressFilter]="characterBlockPattern"
+                    [validationMessages]="validation_messages.firstName">
                 </app-text-input>
                 <app-text-input class="name" label="Last name" formControlName="lastName" [required]="true"
-                    autocomplete="family-name" [keypressFilter]="characterBlockPattern">
+                    autocomplete="family-name" [keypressFilter]="characterBlockPattern"
+                    [validationMessages]="validation_messages.lastName">
                 </app-text-input>
             </div>
-            <span *ngIf="formGroup.value.firstName && formGroup.value.lastName">
+            <span class="display-name" [class.visible]="formGroup.value.firstName && formGroup.value.lastName">
                 Your name will be displayed as:
                 <b>{{ displayName }}</b>
             </span>
         </div>
-        <br />
         <div formGroupName="dobGroup">
             <p>Date of Birth</p>
             <p>For example: 15/02/1989</p>
-            <app-text-input class="dob" #day placeholder="dd" type="number" formControlName="day" [required]="true"
-                autocomplete="bday-day" [reserveErrorSpace]="false" (keyup)="numberOnly($event, 'day', 0, 31)">
+            <app-text-input class="dob" #day placeholder="dd" inputmode="numeric" formControlName="day" [required]="true"
+                autocomplete="bday-day" [reserveErrorSpace]="false" [keypressFilter]="digitsOnly" (keyup)="numberOnly($event, 'day', 0, 31)">
             </app-text-input>/
-            <app-text-input class="dob" #month placeholder="mm" type="number" formControlName="month" [required]="true"
-                autocomplete="bday-month" [reserveErrorSpace]="false" (keyup)="numberOnly($event, 'month', 0, 12)">
+            <app-text-input class="dob" #month placeholder="mm" inputmode="numeric" formControlName="month" [required]="true"
+                autocomplete="bday-month" [reserveErrorSpace]="false" [keypressFilter]="digitsOnly" (keyup)="numberOnly($event, 'month', 0, 12)">
             </app-text-input>/
-            <app-text-input class="dob year" #year placeholder="yyyy" type="number" formControlName="year" [required]="true"
-                autocomplete="bday-year" [reserveErrorSpace]="false" (keyup)="numberOnly($event, 'year', 1, 2030)">
+            <app-text-input class="dob year" #year placeholder="yyyy" inputmode="numeric" formControlName="year" [required]="true"
+                autocomplete="bday-year" [reserveErrorSpace]="false" [keypressFilter]="digitsOnly" (keyup)="numberOnly($event, 'year', 1, 2030)">
             </app-text-input>
             <div class="dob-error" *ngIf="formGroup.get('dobGroup').invalid && (formGroup.get('dobGroup').dirty || formGroup.get('dobGroup').touched)">
-                {{ getValidationError(formGroup.get('dobGroup'), validation_messages.dob) }}
+                {{ cachedDobError }}
             </div>
         </div>
-        <br />
         <app-dropdown [elementName]="'Nation of Residence'" [elements]="countries" [formFieldClass]="'nation'" [isRequired]="true" [placeholder]="'Nation of Residence'" formControlName="nation">
             <ng-template #element let-element>
                 <img alt="{{ mapCountry(element).name }}" src="{{ mapCountry(element).image }}" width="35" />
                 <span class="nation-name">{{ mapCountry(element).name }}</span>
             </ng-template>
         </app-dropdown>
-        <br />
         <app-form-value-debug-reactive [form]="formGroup"></app-form-value-debug-reactive>
         <div class="button-next button-container">
             <app-button (clicked)="previous()" [disabled]="pending">Previous</app-button>

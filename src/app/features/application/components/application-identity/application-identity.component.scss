@@ -1,7 +1,3 @@
-.normal {
-    display: block;
-}
-
 .name-container {
     display: flex;
     flex-direction: column;
@@ -22,14 +18,20 @@
     }
 }
 
-.dob {
-    display: inline-block;
-    width: 35px;
-    margin-right: 5px;
+.display-name {
+    visibility: hidden;
+    display: block;
+
+    &.visible {
+        visibility: visible;
+    }
 }
 
-.year {
-    width: 40px;
+.dob {
+    display: inline-block;
+    width: 75px;
+    min-width: 0;
+    margin-right: 5px;
 }
 
 .dob-error {
@@ -38,18 +40,8 @@
     color: var(--mdc-theme-error, #f44336);
 }
 
-input[type='number'] {
-    -moz-appearance: textfield;
-}
-
-input[type='number']::-webkit-inner-spin-button,
-input[type='number']::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
 :host ::ng-deep .nation {
-    max-width: 605px; // Width of both name boxes with margin
+    max-width: 50%;
 }
 
 .nation-name {
@@ -76,6 +68,6 @@ input[type='number']::-webkit-outer-spin-button {
     }
 
     :host ::ng-deep .nation {
-        max-width: 300px;
+        max-width: 100%;
     }
 }

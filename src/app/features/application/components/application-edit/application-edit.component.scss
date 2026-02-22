@@ -3,9 +3,13 @@
     flex-direction: row;
     margin-top: 10px;
 
-    .large-input {
-        width: 100%;
-        margin-bottom: 10px;
+    mat-checkbox {
+        margin-top: 0;
+    }
+
+    .military-checkbox {
+        display: block;
+        margin-bottom: 12px;
     }
 
     .mat-mdc-card:first-child {

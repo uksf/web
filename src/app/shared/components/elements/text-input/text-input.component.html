@@ -1,29 +1,31 @@
-<div class="text-input-wrapper" [class.text-input-focused]="focused" [class.text-input-has-error]="hasError"
-     [class.text-input-disabled]="disabled" [class.text-input-multiline]="multiline" [class.text-input-label-floating]="labelFloating">
-    <div class="text-input-field">
-        <label *ngIf="label" class="text-input-label" [class.required]="required"
+<div class="form-field-wrapper" [class.form-field-focused]="focused" [class.form-field-has-error]="hasError"
+     [class.form-field-disabled]="disabled" [class.form-field-multiline]="multiline">
+    <div class="form-field">
+        <label *ngIf="label" class="form-field-label" [class.required]="required"
                [class.floating]="labelFloating" [attr.for]="inputId">{{ label }}</label>
         <input *ngIf="!multiline" #inputElement [id]="inputId" [type]="type" [value]="value"
                [placeholder]="labelFloating ? placeholder : ''" [disabled]="disabled" [autocomplete]="autocomplete"
-               [attr.required]="required || null" [attr.aria-describedby]="hasError ? inputId + '-error' : null"
+               [attr.inputmode]="inputmode" [attr.maxlength]="maxlength" [attr.required]="required || null"
+               [attr.aria-describedby]="hasError ? inputId + '-error' : null"
                [matTooltip]="tooltip"
                (keypress)="onKeyPress($event)" (input)="onInput($event)" (focus)="onFocus()" (blur)="onBlur()" />
-        <textarea *ngIf="multiline" #inputElement [id]="inputId" cdkTextareaAutosize
+        <textarea *ngIf="multiline" #inputElement [id]="inputId" cdkTextareaAutosize rows="1"
                   [cdkAutosizeMinRows]="minRows" [cdkAutosizeMaxRows]="maxRows"
                   [value]="value" [placeholder]="labelFloating ? placeholder : ''" [disabled]="disabled"
-                  [attr.required]="required || null" [attr.aria-describedby]="hasError ? inputId + '-error' : null"
+                  [attr.maxlength]="maxlength" [attr.required]="required || null"
+                  [attr.aria-describedby]="hasError ? inputId + '-error' : null"
                   [matTooltip]="tooltip"
                   (keypress)="onKeyPress($event)" (input)="onInput($event)" (focus)="onFocus()" (blur)="onBlur()"></textarea>
-        <button *ngIf="showClearButton" type="button" class="text-input-clear"
+        <button *ngIf="showClearButton" type="button" class="form-field-clear"
                 aria-label="Clear" (click)="clear(); $event.stopPropagation()">
             <mat-icon>close</mat-icon>
         </button>
     </div>
-    <div [id]="inputId + '-error'" class="text-input-error" [class.visible]="hasError" [class.reserve-space]="reserveErrorSpace && !hint"
+    <div [id]="inputId + '-error'" class="form-field-error" [class.visible]="hasError" [class.reserve-space]="reserveErrorSpace && !hint"
          role="alert">
         {{ errorMessage }}
     </div>
-    <div *ngIf="hint && !hasError" class="text-input-hint" [class.reserve-space]="reserveErrorSpace">
+    <div *ngIf="hint && !hasError" class="form-field-hint" [class.reserve-space]="reserveErrorSpace">
         {{ hint }}
     </div>
 </div>

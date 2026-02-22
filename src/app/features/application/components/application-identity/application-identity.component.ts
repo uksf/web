@@ -79,8 +79,9 @@ export class ApplicationIdentityComponent implements OnInit {
     @ViewChild('day') dobDay: TextInputComponent;
     @ViewChild('month') dobMonth: TextInputComponent;
     @ViewChild('year') dobYear: TextInputComponent;
-    getValidationError = getValidationError;
     characterBlockPattern = CHARACTER_BLOCK_PATTERN;
+    digitsOnly = /^[0-9]$/;
+    cachedDobError = '';
     formGroup: UntypedFormGroup;
     pending = false;
     countries: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
@@ -97,11 +98,13 @@ export class ApplicationIdentityComponent implements OnInit {
             { type: 'minlength', message: 'Password must be 12 characters or more' }
         ],
         confirmPassword: [{ type: 'mismatchedPasswords', message: 'Passwords must match' }],
+        firstName: [{ type: 'required', message: 'First name is required' }],
+        lastName: [{ type: 'required', message: 'Last name is required' }],
         dob: [
             { type: 'required', message: 'Date of Birth is required' },
             { type: 'nan', message: 'Invalid date: Not a number' },
-            { type: 'dead', message: 'Invalid date: Statistically you should be dead.' },
-            { type: 'born', message: "Invalid date: You can't be born yet" },
+            { type: 'dead', message: 'The undead are not welcome here' },
+            { type: 'born', message: "Surely a time traveller has better things to do?" },
             { type: 'day', message: 'Invalid date: Day should be between 1 and 31' },
             { type: 'month', message: 'Invalid date: Month should be between 1 and 12' },
             { type: 'monthday', message: "Invalid date: There aren't that many days in that month" },
@@ -141,7 +144,12 @@ export class ApplicationIdentityComponent implements OnInit {
         });
     }
 
+    updateCachedDobError() {
+        this.cachedDobError = getValidationError(this.formGroup.get('dobGroup'), this.validation_messages.dob);
+    }
+
     ngOnInit(): void {
+        this.formGroup.get('dobGroup').statusChanges.subscribe({ next: () => this.updateCachedDobError() });
         this.applicationService.getNations().pipe(first()).subscribe({
             next: (orderedCountries: string[]) => {
                 const countries = CountryPickerService.countries;
@@ -172,7 +180,7 @@ export class ApplicationIdentityComponent implements OnInit {
                 return this.applicationService.checkEmailExists(control.value).pipe(
                     map((exists: boolean) => {
                         this.validating = false;
-                        return exists ? { emailTaken: true } : null;
+                        return exists ? { email: true } : null;
                     })
                 );
             })

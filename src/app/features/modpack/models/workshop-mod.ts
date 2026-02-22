@@ -13,6 +13,13 @@ export interface WorkshopMod {
     pbos: string[];
 
     updatedDate?: string;
+
+    // Computed properties for template binding (avoid per-CD method calls)
+    _hasError?: boolean;
+    _canUninstall?: boolean;
+    _canDelete?: boolean;
+    _updateAvailable?: boolean;
+    _interventionRequired?: boolean;
 }
 
 export interface InstallWorkshopModData {

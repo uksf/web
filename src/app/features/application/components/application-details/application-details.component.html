@@ -6,48 +6,36 @@
             <input type="text" id="name" formControlName="name" tabindex="-1" autocomplete="off" />
         </div>
         <div>
-            <mat-form-field class="large-input">
-                <textarea matInput matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="5" formControlName="armaExperience" maxlength="500" #armaText></textarea>
-                <mat-label>How much experience do you have playing Arma?</mat-label>
-                <mat-hint *ngIf="armaText.value.length > 200">{{ armaText.value.length }} / 500</mat-hint>
-                <mat-error>{{ getValidationError(formGroup.get('armaExperience'), validation_messages.armaExperience) }}</mat-error>
-            </mat-form-field>
-            <br />
-            <mat-form-field class="large-input">
-                <textarea matInput matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="4" formControlName="unitsExperience" maxlength="250" #unitsText></textarea>
-                <mat-label>Other Units - have you ever been in an Arma unit? Which?</mat-label>
-                <mat-hint *ngIf="unitsText.value.length > 200">{{ unitsText.value.length }} / 250</mat-hint>
-                <mat-error>{{ getValidationError(formGroup.get('unitsExperience'), validation_messages.unitsExperience) }}</mat-error>
-            </mat-form-field>
-            <br />
-            <mat-form-field class="large-input">
-                <textarea matInput matTextareaAutosize matAutosizeMinRows="5" matAutosizeMaxRows="10" formControlName="background" maxlength="500" #backgroundText></textarea>
-                <mat-label>Personal background - tell us a little about yourself</mat-label>
-                <mat-hint *ngIf="backgroundText.value.length > 400">{{ backgroundText.value.length }} / 500</mat-hint>
-                <mat-error>{{ getValidationError(formGroup.get('background'), validation_messages.background) }}</mat-error>
-            </mat-form-field>
+            <app-text-input class="large-input" label="How much experience do you have playing Arma?"
+                formControlName="armaExperience" [multiline]="true" [maxRows]="5" [maxlength]="500" [required]="true"
+                [validationMessages]="validation_messages.armaExperience"
+                [hint]="formGroup.get('armaExperience').value?.length > 200 ? formGroup.get('armaExperience').value.length + ' / 500' : ''">
+            </app-text-input>
+            <app-text-input class="large-input" label="Other units - have you ever been in an Arma unit? Which?"
+                formControlName="unitsExperience" [multiline]="true" [maxRows]="4" [maxlength]="250" [required]="true"
+                [validationMessages]="validation_messages.unitsExperience"
+                [hint]="formGroup.get('unitsExperience').value?.length > 200 ? formGroup.get('unitsExperience').value.length + ' / 250' : ''">
+            </app-text-input>
+            <app-text-input class="large-input" label="Personal background - tell us a little about yourself"
+                formControlName="background" [multiline]="true" [maxRows]="10" [maxlength]="500" [required]="true"
+                [validationMessages]="validation_messages.background"
+                [hint]="formGroup.get('background').value?.length > 400 ? formGroup.get('background').value.length + ' / 500' : ''">
+            </app-text-input>
         </div>
-        <mat-checkbox color="primary" formControlName="militaryExperience">Are you or have you ever been a member of the military?</mat-checkbox>
-        <br />
-        <br />
+        <mat-checkbox class="military-checkbox" color="primary" formControlName="militaryExperience">Are you or have you ever been a member of the military?</mat-checkbox>
         <div formGroupName="rolePreferences">
             <p>These options exist to give us an idea of what kind of role you are interested in. There is no guarantee you will be admitted to any of these programmes.</p>
             <div *ngFor="let rolePreferenceOption of rolePreferenceOptions">
                 <mat-checkbox color="primary" formControlName="{{ rolePreferenceOption }}">{{ rolePreferenceOption }}</mat-checkbox>
             </div>
         </div>
-        <br />
-        <mat-form-field>
-            <mat-select formControlName="reference">
-                <mat-option *ngFor="let referenceOption of referenceOptions" [value]="referenceOption.value">
-                    {{ referenceOption.viewValue }}
-                </mat-option>
-            </mat-select>
-            <mat-label>Where did you hear about UKSF?</mat-label>
-        </mat-form-field>
-        <br />
+        <app-dropdown class="large-input" placeholder="Where did you hear about UKSF?" [autocomplete]="false"
+            [elements]="referenceElements$" formControlName="reference" elementName="reference"
+            [reserveErrorSpace]="false">
+            <ng-template #element let-element>{{ element.displayValue }}</ng-template>
+        </app-dropdown>
         <div class="button-next">
-            <app-button (clicked)="next()" [disabled]="!formGroup.valid">Next</app-button>
+            <app-button (clicked)="submit()" [disabled]="!formGroup.valid">Submit</app-button>
         </div>
     </form>
 </mat-card>

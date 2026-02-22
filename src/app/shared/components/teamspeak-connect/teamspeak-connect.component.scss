@@ -1,6 +1,6 @@
 .normal {
     display: block;
-    width: 400px;
+    max-width: 50%;
 }
 
 .row-container {
@@ -8,8 +8,8 @@
     flex-direction: column;
     margin: 16px 0 0;
 
-    .mat-mdc-form-field {
-        width: 400px;
+    app-dropdown {
+        max-width: 50%;
     }
 
     .button-row {
@@ -21,7 +21,7 @@
     }
 
     button {
-        height: fit-content;
+        height: 36px;
     }
 }
 

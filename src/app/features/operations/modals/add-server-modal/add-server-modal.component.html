@@ -28,24 +28,16 @@
             <app-text-input class="normal" label="Admin Password" formControlName="adminPassword" [required]="true"
                 [validationMessages]="validationMessages.adminPassword">
             </app-text-input>
-            <mat-form-field class="normal">
-                <mat-label>Environment</mat-label>
-                <mat-select formControlName="environment" required>
-                    <mat-option *ngFor="let option of environments" [value]="option.value">
-                        {{ option.viewValue }}
-                    </mat-option>
-                </mat-select>
-                <mat-error>{{ getValidationError(form.get('environment'), validationMessages.environment) }}</mat-error>
-            </mat-form-field>
-            <mat-form-field class="normal">
-                <mat-label>Server options</mat-label>
-                <mat-select formControlName="serverOption" required>
-                    <mat-option *ngFor="let option of serverOptions" [value]="option.value">
-                        {{ option.viewValue }}
-                    </mat-option>
-                </mat-select>
-                <mat-error>{{ getValidationError(form.get('serverOption'), validationMessages.serverOption) }}</mat-error>
-            </mat-form-field>
+            <app-dropdown class="normal" placeholder="Environment" [autocomplete]="false"
+                [elements]="environmentElements$" formControlName="environment" [isRequired]="true"
+                elementName="environment">
+                <ng-template #element let-element>{{ element.displayValue }}</ng-template>
+            </app-dropdown>
+            <app-dropdown class="normal" placeholder="Server options" [autocomplete]="false"
+                [elements]="serverOptionElements$" formControlName="serverOption" [isRequired]="true"
+                elementName="server option">
+                <ng-template #element let-element>{{ element.displayValue }}</ng-template>
+            </app-dropdown>
         </div>
     </form>
 </mat-dialog-content>

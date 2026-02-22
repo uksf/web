@@ -2,6 +2,10 @@
     min-width: 300px;
     font-size: 18px;
 
+    &.no-title {
+        padding-top: 24px !important;
+    }
+
     span {
         white-space: pre-wrap;
     }

@@ -6,9 +6,10 @@ import { CommentDisplayComponent } from '@app/shared/components/comment-display/
 import { AccountService } from '@app/core/services/account.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MembershipState } from '@app/shared/models/account';
-import { AsyncSubject } from 'rxjs';
+import { AsyncSubject, BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { ApplicationState, DetailedApplication, Recruiter } from '@app/features/application/models/application';
+import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { OnlineState } from '@app/shared/models/online-state';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { CountryPickerService, ICountry } from '@app/shared/services/country-picker/country-picker.service';
@@ -32,7 +33,8 @@ export class RecruitmentApplicationPageComponent {
     application: DetailedApplication;
     otherRolePreferenceOptions: string[];
     recruiters: Recruiter[];
-    selected: string;
+    recruiterElements$ = new BehaviorSubject<IDropdownElement[]>([]);
+    selected: IDropdownElement | null = null;
     updating: boolean;
     teamspeakState: AsyncSubject<OnlineState> = new AsyncSubject<OnlineState>();
     discordState: AsyncSubject<OnlineState> = new AsyncSubject<OnlineState>();
@@ -87,7 +89,10 @@ export class RecruitmentApplicationPageComponent {
                         this.recruitmentService.getRecruiters().pipe(first()).subscribe({
                             next: (recruiters) => {
                                 this.recruiters = recruiters.filter((x: Recruiter) => x.active);
-                                this.selected = this.application.recruiterId;
+                                const elements = this.recruiters.map(r => ({ value: r.id, displayValue: r.name }));
+                                this.recruiterElements$.next(elements);
+                                const match = elements.find(e => e.value === this.application.recruiterId);
+                                this.selected = match ?? { value: this.application.recruiterId, displayValue: this.application.recruiter };
                             }
                         });
                     }
@@ -117,9 +122,9 @@ export class RecruitmentApplicationPageComponent {
         });
     }
 
-    setNewRecruiter(newRecruiter: string) {
+    setNewRecruiter(element: IDropdownElement) {
         this.updating = true;
-        this.recruitmentService.setRecruiter(this.accountId, newRecruiter).pipe(first()).subscribe({
+        this.recruitmentService.setRecruiter(this.accountId, element.value).pipe(first()).subscribe({
             next: () => {
                 this.getApplication();
                 this.recruiterCommentDisplay.getCanPostComment();

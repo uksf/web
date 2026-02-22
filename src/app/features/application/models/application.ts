@@ -41,6 +41,9 @@ export interface ActiveApplication {
     daysProcessing: number;
     processingDifference: number;
     recruiter: string;
+
+    // Computed property for template binding
+    _colour?: string;
 }
 
 export interface CompletedApplication {

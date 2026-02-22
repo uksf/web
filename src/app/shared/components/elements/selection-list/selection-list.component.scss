@@ -1,6 +1,6 @@
-.selection-list-form {
-    margin-bottom: 8px;
+@use 'styles/form-field' as ff;
 
+.selection-list-form {
     .selection-list-container {
         flex: 1;
         display: flex;
@@ -30,22 +30,13 @@
             }
         }
     }
-
-    .mat-mdc-form-field {
-        width: 100%;
-        
-        .mat-mdc-icon-button {
-            background-color: transparent;
-            margin-left: -21px;
-
-            .mat-icon {
-                margin: 0;
-                height: 21px;
-                line-height: 21px;
-            }
-        }
-    }
 }
+
+.form-field-wrapper { @include ff.wrapper(); }
+.form-field { @include ff.field(); }
+.form-field-label { @include ff.label(); }
+.form-field-clear { @include ff.clear-button(); }
+.form-field-error { @include ff.error(); }
 
 ::ng-deep .cdk-virtual-scroll-orientation-vertical .cdk-virtual-scroll-content-wrapper {
     width: 100%;

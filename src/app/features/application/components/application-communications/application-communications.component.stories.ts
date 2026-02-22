@@ -17,7 +17,7 @@ type Story = StoryObj;
 const styles = [
     `.mat-mdc-card { h2 { margin-top: 0; } }
     .flex-container.row { display: flex; flex-direction: row; }
-    h4 { color: #7b1fa2; }`
+    h4 { color: #fec400; }`
 ];
 
 export const Pending: Story = {
@@ -48,8 +48,7 @@ export const SteamConnect: Story = {
                 <br />
                 <div>
                     <p>You must connect this account to your Steam account. We only store your steam64 ID in our database to allow our recruitment staff to contact you easily.</p>
-                    <p>This button will redirect this page where you will need to login through Steam. Once logged in, you will be automatically redirected to this application page.</p>
-                    <p>If you are not redirected correctly at any stage, please contact an admin.</p>
+                    <p>You will be redirected to login through Steam and then returned to this page automatically.</p>
                     <app-button>Connect Steam</app-button>
                 </div>
             </mat-card>
@@ -67,8 +66,7 @@ export const DiscordConnect: Story = {
                 <br />
                 <div>
                     <p>You must connect this account to your Discord account. We only store your Discord ID in our database.</p>
-                    <p>This button will redirect this page where you will need to login through Discord. Once logged in, you will be automatically redirected to this application page.</p>
-                    <p>If you are not redirected correctly at any stage, please contact an admin.</p>
+                    <p>You will be redirected to login through Discord and then returned to this page automatically.</p>
                     <app-button>Connect Discord</app-button>
                 </div>
             </mat-card>

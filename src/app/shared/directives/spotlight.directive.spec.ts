@@ -48,6 +48,7 @@ describe('SpotlightDirective', () => {
     });
 
     it('should set --spotlight-x and --spotlight-y on mousemove', () => {
+        directive.onMouseEnter();
         directive.onMouseMove({ clientX: 150, clientY: 80 } as MouseEvent);
 
         expect(element.style.getPropertyValue('--spotlight-x')).toBe('50px');
@@ -85,5 +86,47 @@ describe('SpotlightDirective', () => {
         expect(element.style.getPropertyValue('--spotlight-y')).toBe('');
         expect(element.style.getPropertyValue('--spotlight-size')).toBe('');
         expect(element.style.getPropertyValue('--spotlight-color')).toBe('');
+    });
+
+    it('should cache bounding rect on mouseenter and reuse on mousemove', () => {
+        let callCount = 0;
+        const originalGetBoundingClientRect = element.getBoundingClientRect;
+        element.getBoundingClientRect = () => {
+            callCount++;
+            return originalGetBoundingClientRect.call(element);
+        };
+
+        directive.onMouseEnter();
+        expect(callCount).toBe(1);
+
+        directive.onMouseMove({ clientX: 150, clientY: 80 } as MouseEvent);
+        directive.onMouseMove({ clientX: 160, clientY: 90 } as MouseEvent);
+        directive.onMouseMove({ clientX: 170, clientY: 100 } as MouseEvent);
+
+        expect(callCount).toBe(1);
+    });
+
+    it('should still compute correct position after caching rect', () => {
+        directive.onMouseEnter();
+        directive.onMouseMove({ clientX: 200, clientY: 100 } as MouseEvent);
+
+        expect(element.style.getPropertyValue('--spotlight-x')).toBe('100px');
+        expect(element.style.getPropertyValue('--spotlight-y')).toBe('50px');
+    });
+
+    it('should invalidate cached rect on mouseleave', () => {
+        let callCount = 0;
+        const originalGetBoundingClientRect = element.getBoundingClientRect;
+        element.getBoundingClientRect = () => {
+            callCount++;
+            return originalGetBoundingClientRect.call(element);
+        };
+
+        directive.onMouseEnter();
+        expect(callCount).toBe(1);
+
+        directive.onMouseLeave();
+        directive.onMouseEnter();
+        expect(callCount).toBe(2);
     });
 });

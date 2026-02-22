@@ -10,7 +10,6 @@ import { ApplicationIdentityComponent } from './components/application-identity/
 import { ApplicationEmailConfirmationComponent } from './components/application-email-confirmation/application-email-confirmation.component';
 import { ApplicationCommunicationsComponent } from './components/application-communications/application-communications.component';
 import { ApplicationDetailsComponent } from './components/application-details/application-details.component';
-import { ApplicationSubmitComponent } from './components/application-submit/application-submit.component';
 import { ApplicationEditComponent } from './components/application-edit/application-edit.component';
 
 @NgModule({
@@ -25,7 +24,6 @@ import { ApplicationEditComponent } from './components/application-edit/applicat
         ApplicationEmailConfirmationComponent,
         ApplicationCommunicationsComponent,
         ApplicationDetailsComponent,
-        ApplicationSubmitComponent,
         ApplicationEditComponent,
     ],
     providers: [ApplicationService],

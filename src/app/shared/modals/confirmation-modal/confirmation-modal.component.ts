@@ -12,7 +12,7 @@ export class ConfirmationModalComponent {
     button = 'Confirm';
 
     constructor(public dialogRef: MatDialogRef<ConfirmationModalComponent>, @Inject(MAT_DIALOG_DATA) public data: ConfirmationModalData) {
-        this.title = data.title || 'Confirm';
+        this.title = data.title || '';
         this.text = data.message;
         if (data.button) {
             this.button = data.button;

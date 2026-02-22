@@ -142,6 +142,35 @@ describe('CommandTrainingComponent', () => {
         });
     });
 
+    describe('getInlineValidator', () => {
+        it('returns the same function reference for the same training name', () => {
+            const validator1 = component.getInlineValidator('Basic Training');
+            const validator2 = component.getInlineValidator('Basic Training');
+
+            expect(validator1).toBe(validator2);
+        });
+
+        it('returns different function references for different training names', () => {
+            const validator1 = component.getInlineValidator('Basic Training');
+            const validator2 = component.getInlineValidator('Advanced Training');
+
+            expect(validator1).not.toBe(validator2);
+        });
+
+        it('returned function produces an Observable that calls checkUnique', () => {
+            vi.useFakeTimers();
+            const validator = component.getInlineValidator('Basic Training');
+            let result: boolean | undefined;
+
+            validator('test-value').subscribe({ next: (v) => (result = v) });
+            vi.advanceTimersByTime(200);
+
+            expect(mockTrainingsService.checkUnique).toHaveBeenCalledWith('test-value');
+            expect(result).toBe(true);
+            vi.useRealTimers();
+        });
+    });
+
     describe('trackByTrainingId', () => {
         it('returns training id', () => {
             const training = makeTraining({ id: 'test-id' });

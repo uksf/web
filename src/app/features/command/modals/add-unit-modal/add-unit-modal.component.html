@@ -9,23 +9,17 @@
         <app-text-input class="normal" label="Short Name" formControlName="shortname" [required]="true"
             [validationMessages]="validationMessages.shortname">
         </app-text-input>
-        <mat-form-field class="normal">
-            <mat-label>Branch Type</mat-label>
-            <mat-select formControlName="branch" required (selectionChange)="resolveAvailableParentUnits()">
-                <mat-option *ngFor="let type of branchTypes; trackBy: trackByIndex" [value]="type.value">
-                    {{ type.viewValue }}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-        <mat-form-field class="normal" *ngIf="!this.edit || this.unit.parent !== '000000000000000000000000'">
-            <mat-label>Parent Unit</mat-label>
-            <mat-select formControlName="parent" required>
-                <mat-option *ngFor="let unit of availableParentUnits; trackBy: trackByUnitId" [value]="unit.id">
-                    {{ unit.name }}
-                </mat-option>
-            </mat-select>
-            <mat-error>{{ getValidationError(form.get('parent'), validationMessages.parent) }}</mat-error>
-        </mat-form-field>
+        <app-dropdown class="normal" placeholder="Branch Type" [autocomplete]="false"
+            [elements]="branchElements$" formControlName="branch" [isRequired]="true"
+            elementName="branch" (selectionChanged)="resolveAvailableParentUnits()">
+            <ng-template #element let-element>{{ element.displayValue }}</ng-template>
+        </app-dropdown>
+        <app-dropdown class="normal" placeholder="Parent Unit" [autocomplete]="false"
+            *ngIf="!this.edit || this.unit.parent !== '000000000000000000000000'"
+            [elements]="parentElements$" formControlName="parent" [isRequired]="true"
+            elementName="parent">
+            <ng-template #element let-element>{{ element.displayValue }}</ng-template>
+        </app-dropdown>
         <app-text-input class="normal" label="TeamSpeak Group ID" formControlName="teamspeakGroup" type="number"
             [validationMessages]="validationMessages.teamspeakGroup">
         </app-text-input>

@@ -59,6 +59,7 @@ export class RecruitmentPageComponent extends DestroyableComponent implements On
             next: (applications) => {
                 this.userActiveApplications = applications.filter((x: ActiveApplication) => x.account.application.recruiter === this.accountService.account.id);
                 this.allOtherActiveApplications = applications.filter((x: ActiveApplication) => !this.userActiveApplications.includes(x));
+                this.updateApplicationColours();
                 this.getTeamspeakOnlineStates();
             }
         });
@@ -83,16 +84,19 @@ export class RecruitmentPageComponent extends DestroyableComponent implements On
         return this.accountService.account;
     }
 
-    getApplicationColour(application: ActiveApplication) {
-        return application.processingDifference < 0
-            ? 'green'
-            : application.processingDifference > 10
-            ? 'red'
-            : application.processingDifference > 7
-            ? 'orange'
-            : application.processingDifference > 5
-            ? 'goldenrod'
-            : this.theme.foregroundColor;
+    updateApplicationColours() {
+        const foreground = this.theme?.foregroundColor ?? '';
+        [...this.userActiveApplications, ...this.allOtherActiveApplications].forEach((app) => {
+            app._colour = app.processingDifference < 0
+                ? 'green'
+                : app.processingDifference > 10
+                ? 'red'
+                : app.processingDifference > 7
+                ? 'orange'
+                : app.processingDifference > 5
+                ? 'goldenrod'
+                : foreground;
+        });
     }
 
     setSr1Enabled(recruiter) {
@@ -150,6 +154,10 @@ export class RecruitmentPageComponent extends DestroyableComponent implements On
             : application.account.application.state === this.applicationState.ACCEPTED
             ? 'green'
             : 'red';
+    }
+
+    trackByActiveApplication(_: number, application: ActiveApplication) {
+        return application.account.id;
     }
 
     trackByApplication(_: number, application: CompletedApplication) {

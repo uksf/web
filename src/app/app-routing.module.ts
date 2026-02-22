@@ -151,10 +151,10 @@ const appRoutes: Routes = [
         canActivate: [NgxPermissionsGuard],
         data: {
             permissions: {
-                only: Permissions.MEMBER,
-                except: Permissions.UNLOGGED,
+                except: [Permissions.UNLOGGED, Permissions.UNCONFIRMED],
                 redirectTo: {
                     UNLOGGED: loginRedirect,
+                    UNCONFIRMED: '/home',
                     default: '/home'
                 }
             }

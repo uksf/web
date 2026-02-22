@@ -36,6 +36,12 @@
         overflow-x: auto;
         justify-content: center;
 
+        // Thin scrollbar for horizontal nav — the global 9px scrollbar is too
+        // heavy for this compact bar. 4px keeps it unobtrusive.
+        &::-webkit-scrollbar {
+            height: 4px;
+        }
+
         .sideNavItem {
             padding: 5px v.$spacing-8px;
             font-size: small;

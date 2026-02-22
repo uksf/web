@@ -79,6 +79,7 @@ export class PersonnelLoasListComponent implements OnInit {
                     this.selectedIndex = -1;
                     this.loas = pagedLoas.data;
                     this.totalLoas = pagedLoas.totalCount;
+                    this.updateComputedProperties();
                 },
                 error: (error: UksfError) => {
                     this.dialog.open(MessageModalComponent, {
@@ -110,6 +111,13 @@ export class PersonnelLoasListComponent implements OnInit {
 
     activate(loaIndex) {
         this.selectedIndex = this.selectedIndex === loaIndex ? -1 : loaIndex;
+    }
+
+    updateComputedProperties() {
+        this.loas.forEach((loa) => {
+            loa._canViewReason = this.canViewReason(loa);
+            loa._canDelete = this.canDelete(loa);
+        });
     }
 
     canViewReason(loa: Loa) {

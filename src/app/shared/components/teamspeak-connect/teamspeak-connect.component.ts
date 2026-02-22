@@ -1,7 +1,7 @@
 import { Component, Output, EventEmitter, Input, OnInit, OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { first, takeUntil } from 'rxjs/operators';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { TeamspeakConnectService } from '@app/shared/services/teamspeak-connect.service';
 import { AccountService } from '@app/core/services/account.service';
@@ -10,6 +10,7 @@ import { nextFrame } from '@app/shared/services/helper.service';
 import { UksfError } from '@app/shared/models/response';
 import { TeamspeakConnectClient } from '@app/shared/models/teamspeak-connect-client';
 import { DebouncedCallback } from '@app/shared/utils/debounce-callback';
+import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 
 export enum TeamspeakConnectState {
     SELECT_USER = 0,
@@ -34,8 +35,9 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
         code: ['', Validators.required]
     });
     teamspeakForm = this.formBuilder.group({
-        teamspeakId: ['', Validators.required]
+        teamspeakId: new FormControl<IDropdownElement | null>(null, Validators.required)
     });
+    clientElements$ = new BehaviorSubject<IDropdownElement[]>([]);
     pending = false;
     state = TeamspeakConnectState.SELECT_USER;
     clients: TeamspeakConnectClient[] = [];
@@ -103,11 +105,20 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
                 });
             }
             this.previousResponse = JSON.stringify(this.clients);
+            this.clientElements$.next(this.clients.map(c => ({
+                value: String(c.clientDbId),
+                displayValue: c.clientName,
+                data: c
+            })));
         }
     }
 
+    get selectedTeamspeakId(): string {
+        return this.teamspeakForm.controls.teamspeakId.value?.value ?? '';
+    }
+
     get canRequestCode(): boolean {
-        return !!this.teamspeakForm.value.teamspeakId && this.clients.length > 0;
+        return !!this.selectedTeamspeakId && this.clients.length > 0;
     }
 
     cancel() {
@@ -119,7 +130,7 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
     }
 
     requestCode() {
-        this.teamspeakConnectService.requestCode(this.teamspeakForm.value.teamspeakId).pipe(first()).subscribe({
+        this.teamspeakConnectService.requestCode(this.selectedTeamspeakId).pipe(first()).subscribe({
             next: () => {
                 this.state = TeamspeakConnectState.ENTER_CODE;
             }
@@ -146,7 +157,7 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
 
         this.pending = true;
         this.teamspeakConnectService
-            .connectTeamspeak(this.accountService.account.id, this.teamspeakForm.value.teamspeakId, sanitisedCode)
+            .connectTeamspeak(this.accountService.account.id, this.selectedTeamspeakId, sanitisedCode)
             .pipe(first())
             .subscribe({
                 next: () => {
@@ -171,11 +182,8 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
         return client.connected && !this.isConnectedToAccount(client);
     }
 
-    trackByClientDbId(index: number, client: TeamspeakConnectClient): number {
-        return client.clientDbId;
-    }
-
-    getTooltip(client: TeamspeakConnectClient): string {
+    getElementTooltip = (element: IDropdownElement): string => {
+        const client = element.data as TeamspeakConnectClient;
         if (this.isConnectedToAccount(client)) {
             return 'This user is already connected to your account';
         }
@@ -185,6 +193,5 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
         }
 
         return 'This user is not connected to any account';
-    }
-
+    };
 }

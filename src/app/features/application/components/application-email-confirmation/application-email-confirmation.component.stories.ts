@@ -17,7 +17,7 @@ type Story = StoryObj;
 const styles = [
     `.mat-mdc-card { h2 { margin-top: 0; } }
     .button-next { text-align: right; }
-    .normal { display: block; }`
+    .normal { display: block; max-width: 50%; }`
 ];
 
 const template = `

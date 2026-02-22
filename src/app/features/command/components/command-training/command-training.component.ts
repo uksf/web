@@ -14,6 +14,7 @@ import { TrainingsService } from '../../services/trainings.service';
 })
 export class CommandTrainingComponent implements OnInit {
     trainings: Training[];
+    private validatorCache = new Map<string, (value: string) => Observable<boolean>>();
 
     constructor(private trainingsService: TrainingsService, private dialog: MatDialog) {}
 
@@ -21,12 +22,17 @@ export class CommandTrainingComponent implements OnInit {
         this.getTrainings();
     }
 
-    validateInlineTraining(value): Observable<boolean> {
-        return timer(200).pipe(
-            switchMap((): Observable<boolean> => {
-                return this.trainingsService.checkUnique(value);
-            })
-        );
+    getInlineValidator(name: string): (value: string) => Observable<boolean> {
+        if (!this.validatorCache.has(name)) {
+            this.validatorCache.set(name, (value: string) => {
+                return timer(200).pipe(
+                    switchMap((): Observable<boolean> => {
+                        return this.trainingsService.checkUnique(value);
+                    })
+                );
+            });
+        }
+        return this.validatorCache.get(name);
     }
 
     getTrainings() {

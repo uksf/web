@@ -9,7 +9,6 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { MarkdownModule } from 'ngx-markdown';
 import { TreeModule } from '@ali-hm/angular-tree-component';
 import { ClipboardModule } from '@angular/cdk/clipboard';
-import 'chart.js/dist/Chart.min.js';
 import { EditorModule } from 'primeng/editor';
 import { ChartModule } from 'primeng/chart';
 import { RatingModule } from 'primeng/rating';
@@ -46,6 +45,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MAT_DATE_LOCALE, MatNativeDateModule, MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DIALOG_DEFAULT_OPTIONS, MatDialogModule } from '@angular/material/dialog';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
@@ -122,6 +122,7 @@ export function tokenGetter() {
         { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
         { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
         { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { autoFocus: 'first-tabbable' } },
+        { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { subscriptSizing: 'dynamic' } },
         { provide: UrlSerializer, useClass: LowerCaseUrlSerializer },
         {
             provide: HTTP_INTERCEPTORS,

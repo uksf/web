@@ -1,10 +1,11 @@
 import { Component, Inject, OnDestroy } from '@angular/core';
-import { AbstractControl, FormBuilder, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, ValidationErrors, Validators } from '@angular/forms';
 import { getValidationError } from '@app/shared/services/form-helper.service';
 import { Observable, of, Subject, timer } from 'rxjs';
 import { first, map, switchMap, takeUntil } from 'rxjs/operators';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { GameServersService } from '../../services/game-servers.service';
+import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 
 @Component({
     selector: 'app-add-server-modal',
@@ -13,6 +14,18 @@ import { GameServersService } from '../../services/game-servers.service';
 })
 export class AddServerModalComponent implements OnDestroy {
     private destroy$ = new Subject<void>();
+    environmentElements: IDropdownElement[] = [
+        { value: '0', displayValue: 'Release' },
+        { value: '1', displayValue: 'Rc' },
+        { value: '2', displayValue: 'Dev' },
+    ];
+    serverOptionElements: IDropdownElement[] = [
+        { value: '0', displayValue: 'None' },
+        { value: '1', displayValue: 'Run alone' },
+        { value: '2', displayValue: 'DCG' },
+    ];
+    environmentElements$ = of(this.environmentElements);
+    serverOptionElements$ = of(this.serverOptionElements);
     form = this.formBuilder.group({
         name: ['', Validators.required, this.validateServer.bind(this)],
         port: ['', Validators.required],
@@ -22,20 +35,10 @@ export class AddServerModalComponent implements OnDestroy {
         hostName: ['', Validators.required],
         password: ['', Validators.required],
         adminPassword: ['', Validators.required],
-        environment: [0, Validators.required],
-        serverOption: [0, Validators.required],
+        environment: new FormControl<IDropdownElement | null>(null, Validators.required),
+        serverOption: new FormControl<IDropdownElement | null>(null, Validators.required),
     });
     getValidationError = getValidationError;
-    environments = [
-        { value: 0, viewValue: 'Release' },
-        { value: 1, viewValue: 'Rc' },
-        { value: 2, viewValue: 'Dev' },
-    ];
-    serverOptions = [
-        { value: 0, viewValue: 'None' },
-        { value: 1, viewValue: 'Run alone' },
-        { value: 2, viewValue: 'DCG' },
-    ];
     validationMessages = {
         name: [
             { type: 'required', message: 'Name is required' },
@@ -71,11 +74,25 @@ export class AddServerModalComponent implements OnDestroy {
             this.edit = true;
             this.server = data.server;
             this.connectionId = data.connectionId;
-            this.form.patchValue(this.server);
+            this.form.patchValue({
+                name: this.server.name,
+                port: this.server.port,
+                apiPort: this.server.apiPort,
+                numberHeadlessClients: this.server.numberHeadlessClients,
+                profileName: this.server.profileName,
+                hostName: this.server.hostName,
+                password: this.server.password,
+                adminPassword: this.server.adminPassword,
+            });
+            this.form.controls.environment.setValue(this.environmentElements.find(e => e.value === String(this.server.environment)));
+            this.form.controls.serverOption.setValue(this.serverOptionElements.find(e => e.value === String(this.server.serverOption)));
             Object.keys(this.form.controls).forEach((key) => {
                 this.form.get(key).valueChanges.pipe(takeUntil(this.destroy$)).subscribe({
                     next: (change) => {
-                        if (change !== this.server[key]) {
+                        const compareValue = key === 'environment' || key === 'serverOption'
+                            ? Number((change as IDropdownElement)?.value)
+                            : change;
+                        if (compareValue !== this.server[key]) {
                             this.changes.add(key);
                         } else {
                             this.changes.delete(key);
@@ -84,6 +101,8 @@ export class AddServerModalComponent implements OnDestroy {
                 });
             });
         } else {
+            this.form.controls.environment.setValue(this.environmentElements[0]);
+            this.form.controls.serverOption.setValue(this.serverOptionElements[0]);
             this.changes.add('dummy');
         }
     }
@@ -104,8 +123,8 @@ export class AddServerModalComponent implements OnDestroy {
             this.server.hostName = this.form.controls.hostName.value;
             this.server.password = this.form.controls.password.value;
             this.server.adminPassword = this.form.controls.adminPassword.value;
-            this.server.environment = this.form.controls.environment.value;
-            this.server.serverOption = this.form.controls.serverOption.value;
+            this.server.environment = Number(this.form.controls.environment.value?.value);
+            this.server.serverOption = Number(this.form.controls.serverOption.value?.value);
             this.gameServersService.editServer(this.server, this.connectionId)
                 .pipe(first())
                 .subscribe({
@@ -117,7 +136,8 @@ export class AddServerModalComponent implements OnDestroy {
                     },
                 });
         } else {
-            this.gameServersService.addServer(JSON.stringify(this.form.getRawValue()), this.connectionId)
+            const payload = this.getFormRawValues();
+            this.gameServersService.addServer(JSON.stringify(payload), this.connectionId)
                 .pipe(first())
                 .subscribe({
                     next: () => {
@@ -141,6 +161,15 @@ export class AddServerModalComponent implements OnDestroy {
                     .pipe(map((response) => (response ? { serverTaken: true } : null)));
             })
         );
+    }
+
+    private getFormRawValues() {
+        const raw = this.form.getRawValue();
+        return {
+            ...raw,
+            environment: Number(this.form.controls.environment.value?.value ?? 0),
+            serverOption: Number(this.form.controls.serverOption.value?.value ?? 0),
+        };
     }
 }
 

@@ -2,16 +2,15 @@ import type { Meta, StoryObj } from '@storybook/angular';
 import { moduleMetadata } from '@storybook/angular';
 import { ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { BehaviorSubject } from 'rxjs';
+import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 
 const meta: Meta = {
     title: 'Application/Edit',
     decorators: [
         moduleMetadata({
-            imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatCheckboxModule]
+            imports: [ReactiveFormsModule, MatCardModule, MatCheckboxModule]
         })
     ]
 };
@@ -22,15 +21,15 @@ const styles = [
     `.mat-mdc-card { h2 { margin-top: 0; } }
     .button-next { text-align: right; }
     .application-container { display: flex; flex-direction: row; margin-top: 10px; }
-    .application-container .large-input { width: 100%; margin-bottom: 10px; }
+    .application-container .large-input { display: block; max-width: 50%; }
     .application-container .mat-mdc-card:first-child { flex-basis: 40%; margin-right: 10px; }
     .application-container .mat-mdc-card:first-child.no-margin-right { margin-right: 0; }
     .application-container .mat-mdc-card { flex: 1; }
-    .mat-mdc-form-field { width: 100%; max-width: 300px; }
-    .mat-mdc-form-field.large-input { max-width: 750px; }
     .special-field-form-container { display: none; }
-    h4 { color: #7b1fa2; }
-    a { color: #7b1fa2; }
+    mat-checkbox { margin-top: 0; }
+    .military-checkbox { display: block; margin-bottom: 12px; }
+    h4 { color: #fec400; }
+    a { color: #fec400; }
     .comment-placeholder { padding: 20px; text-align: center; color: #888; border: 1px dashed #555; border-radius: 4px; }
     @media screen and (max-width: 800px) {
         .application-container { flex-direction: column; }
@@ -38,19 +37,25 @@ const styles = [
     }`
 ];
 
-const referenceOptions = [
-    { value: 'Recruiter', viewValue: 'Recruiter' },
-    { value: 'Steam', viewValue: 'Steam' },
-    { value: 'Reddit', viewValue: 'Reddit' },
-    { value: 'YouTube', viewValue: 'YouTube' },
-    { value: 'Instagram', viewValue: 'Instagram' },
-    { value: 'Google', viewValue: 'Google' },
-    { value: 'Arma 3 Discord', viewValue: 'Arma 3 Discord' },
-    { value: 'Friend', viewValue: 'Friend' },
-    { value: 'Other', viewValue: 'Other' }
+const referenceElements: IDropdownElement[] = [
+    { value: 'Recruiter', displayValue: 'Recruiter' },
+    { value: 'Steam', displayValue: 'Steam' },
+    { value: 'Reddit', displayValue: 'Reddit' },
+    { value: 'YouTube', displayValue: 'YouTube' },
+    { value: 'Instagram', displayValue: 'Instagram' },
+    { value: 'Google', displayValue: 'Google' },
+    { value: 'Arma 3 Discord', displayValue: 'Arma 3 Discord' },
+    { value: 'Friend', displayValue: 'Friend' },
+    { value: 'Other', displayValue: 'Other' }
 ];
 
 const rolePreferenceOptions = ['NCO', 'Officer', 'Aviation', 'Medic'];
+
+const validation_messages = {
+    armaExperience: [{ type: 'required', message: 'Details about your Arma experience are required' }],
+    unitsExperience: [{ type: 'required', message: 'Details about your past Arma unit experience is required' }],
+    background: [{ type: 'required', message: 'Some background info about yourself is required' }]
+};
 
 function buildForm(values: Record<string, unknown> = {}) {
     const fb = new UntypedFormBuilder();
@@ -80,8 +85,9 @@ export const Waiting: Story = {
                 reference: 'Steam',
                 rolePreferences: ['Aviation']
             }),
-            referenceOptions,
+            referenceElements$: new BehaviorSubject(referenceElements),
             rolePreferenceOptions,
+            validation_messages,
             applicationState: 'Application Submitted',
             name: 'Cdt.Miller.B',
             pending: false,
@@ -94,17 +100,14 @@ export const Waiting: Story = {
                 <p>Your application has been successfully submitted. Please wait for your SR1 recruitment officer to contact you.</p>
                 <p>They will take you through some information and answer any questions you have. Your SR1 is your point of contact during the application process.</p>
                 <p>You may edit certain parts of the application below, as well as communicate directly with your SR1 Recruitment Officer</p>
-                <br />
                 <h3>Please read the following information</h3>
                 <h4>Next steps</h4>
                 <p>We require all applicants to play a candidate op with us to complete the process. This is an opportunity for you to see what kind of missions we play and how we play them, as well as the kind of people you will be playing with. Please note that some ops we do are not representative of the missions we play normally. Your SR1 will inform you if this is the case.</p>
-                <br />
                 <h4>TeamSpeak</h4>
                 <p>Feel free to join our TeamSpeak <a href="#">(uk-sf.co.uk)</a> at any time</p>
                 <p>Members with a red <span style="color: red">R</span> tag are SR1 Recruitment Officers and are available should you have any questions.</p>
                 <p>The 'General Discussion Lobby' is a public lobby that you may join at any time.</p>
                 <p>'Private Discussion' lobbies are private, thus you should ask the people inside if you may join them before joining.</p>
-                <br />
                 <h4>Game Setup</h4>
                 <p>You should visit the <a href="#">Modpack Setup Guide</a> whilst you wait for your SR1 to contact you.</p>
                 <p>Your Arma profile name and your TeamSpeak name both need to be changed to <b>{{ name }}</b></p>
@@ -114,41 +117,34 @@ export const Waiting: Story = {
                     <h3>Edit Application</h3>
                     <form [formGroup]="formGroup">
                         <div>
-                            <mat-form-field class="large-input">
-                                <mat-label>How much experience do you have playing Arma?</mat-label>
-                                <textarea matInput matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="5" formControlName="armaExperience" maxlength="500"></textarea>
-                            </mat-form-field>
-                            <br />
-                            <mat-form-field class="large-input">
-                                <mat-label>Other Units - have you ever been in an Arma unit? Which?</mat-label>
-                                <textarea matInput matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="4" formControlName="unitsExperience" maxlength="250"></textarea>
-                            </mat-form-field>
-                            <br />
-                            <mat-form-field class="large-input">
-                                <mat-label>Personal background - tell us a little about yourself</mat-label>
-                                <textarea matInput matTextareaAutosize matAutosizeMinRows="5" matAutosizeMaxRows="10" formControlName="background" maxlength="500"></textarea>
-                            </mat-form-field>
+                            <app-text-input class="large-input" label="How much experience do you have playing Arma?"
+                                formControlName="armaExperience" [multiline]="true" [maxRows]="5" [maxlength]="500" [required]="true"
+                                [validationMessages]="validation_messages.armaExperience"
+                                [hint]="formGroup.get('armaExperience').value?.length > 200 ? formGroup.get('armaExperience').value.length + ' / 500' : ''">
+                            </app-text-input>
+                            <app-text-input class="large-input" label="Other Units - have you ever been in an Arma unit? Which?"
+                                formControlName="unitsExperience" [multiline]="true" [maxRows]="4" [maxlength]="250" [required]="true"
+                                [validationMessages]="validation_messages.unitsExperience"
+                                [hint]="formGroup.get('unitsExperience').value?.length > 200 ? formGroup.get('unitsExperience').value.length + ' / 250' : ''">
+                            </app-text-input>
+                            <app-text-input class="large-input" label="Personal background - tell us a little about yourself"
+                                formControlName="background" [multiline]="true" [maxRows]="10" [maxlength]="500" [required]="true"
+                                [validationMessages]="validation_messages.background"
+                                [hint]="formGroup.get('background').value?.length > 400 ? formGroup.get('background').value.length + ' / 500' : ''">
+                            </app-text-input>
                         </div>
-                        <mat-checkbox color="primary" formControlName="militaryExperience">Are you or have you ever been a member of the military?</mat-checkbox>
-                        <br />
-                        <br />
+                        <mat-checkbox class="military-checkbox" color="primary" formControlName="militaryExperience">Are you or have you ever been a member of the military?</mat-checkbox>
                         <div formGroupName="rolePreferences">
                             <p>These options exist to give us an idea of what kind of role you are interested in. There is no guarantee you will be admitted to any of these programmes.</p>
                             <div *ngFor="let rolePreferenceOption of rolePreferenceOptions">
                                 <mat-checkbox color="primary" formControlName="{{ rolePreferenceOption }}">{{ rolePreferenceOption }}</mat-checkbox>
                             </div>
                         </div>
-                        <br />
-                        <mat-form-field>
-                            <mat-label>Where did you hear about UKSF?</mat-label>
-                            <mat-select formControlName="reference">
-                                <mat-option *ngFor="let referenceOption of referenceOptions" [value]="referenceOption.value">
-                                    {{ referenceOption.viewValue }}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                        <br />
-                        <br />
+                        <app-dropdown class="large-input" placeholder="Where did you hear about UKSF?" [autocomplete]="false"
+                            [elements]="referenceElements$" formControlName="reference" elementName="reference"
+                            [reserveErrorSpace]="false">
+                            <ng-template #element let-element>{{ element.displayValue }}</ng-template>
+                        </app-dropdown>
                         <div class="button-next">
                             <app-button [disabled]="!formGroup.valid || !changesMade" [pending]="pending">Update</app-button>
                         </div>

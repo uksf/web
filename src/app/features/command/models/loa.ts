@@ -10,6 +10,10 @@ export interface Loa {
     name: string;
     inChainOfCommand: boolean;
     longTerm: boolean;
+
+    // Computed properties for template binding
+    _canViewReason?: boolean;
+    _canDelete?: boolean;
 }
 
 export enum LoaReviewState {

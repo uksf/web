@@ -1,4 +1,5 @@
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 
 export interface ReferenceOption {
     value: string;
@@ -16,6 +17,12 @@ export const REFERENCE_OPTIONS: ReferenceOption[] = [
     { value: 'Friend', viewValue: 'Friend' },
     { value: 'Other', viewValue: 'Other' }
 ];
+
+export const REFERENCE_ELEMENTS: IDropdownElement[] = REFERENCE_OPTIONS.map(o => ({ value: o.value, displayValue: o.viewValue }));
+
+export function findReferenceElement(value: string): IDropdownElement | null {
+    return REFERENCE_ELEMENTS.find(e => e.value === value) ?? null;
+}
 
 export const ROLE_PREFERENCE_OPTIONS = ['NCO', 'Officer', 'Aviation', 'Medic'] as const;
 
@@ -59,5 +66,9 @@ export function extractRolePreferences(formGroup: UntypedFormGroup): Record<stri
         }
     }
     formObj.rolePreferences = rolePreferences;
+    // Extract raw value from IDropdownElement if reference is an object
+    if (formObj.reference && typeof formObj.reference === 'object') {
+        formObj.reference = (formObj.reference as IDropdownElement).value;
+    }
     return formObj;
 }

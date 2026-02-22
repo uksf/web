@@ -52,6 +52,7 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
         this.workshopService.getMods().pipe(first()).subscribe({
             next: (mods: WorkshopMod[]) => {
                 this.mods = mods;
+                this.updateModComputedProperties();
                 if (callback) {
                     callback();
                 }
@@ -67,6 +68,7 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
                     this.getData();
                 } else {
                     this.mods.splice(index, 1, mod);
+                    this.updateModComputedProperties();
                 }
             }
         });
@@ -76,7 +78,18 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
         this.workshopService.getModUpdatedDate(mod.steamId).pipe(first()).subscribe({
             next: (updatedDateResponse) => {
                 mod.updatedDate = updatedDateResponse.updatedDate;
+                mod._updateAvailable = this.updateAvailable(mod);
             }
+        });
+    }
+
+    updateModComputedProperties() {
+        this.mods.forEach((mod) => {
+            mod._hasError = this.hasError(mod);
+            mod._canUninstall = this.canUninstall(mod);
+            mod._canDelete = this.canDelete(mod);
+            mod._updateAvailable = this.updateAvailable(mod);
+            mod._interventionRequired = this.interventionRequired(mod);
         });
     }
 

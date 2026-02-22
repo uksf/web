@@ -65,3 +65,61 @@ export const Required: Story = {
         `
     })
 };
+
+export const SimpleDefault: Story = {
+    render: (args) => ({
+        props: { ...args, elements$: of(mockElements), selectedValue: null },
+        template: `
+            <form ngForm>
+                <app-dropdown
+                    placeholder="Select a unit"
+                    [autocomplete]="false"
+                    [elements]="elements$"
+                    elementName="unit"
+                    [(ngModel)]="selectedValue"
+                    name="unit"
+                >
+                </app-dropdown>
+            </form>
+        `
+    })
+};
+
+export const SimpleWithSelection: Story = {
+    render: (args) => ({
+        props: { ...args, elements$: of(mockElements), selectedValue: mockElements[1] },
+        template: `
+            <form ngForm>
+                <app-dropdown
+                    placeholder="Select a unit"
+                    [autocomplete]="false"
+                    [elements]="elements$"
+                    elementName="unit"
+                    [(ngModel)]="selectedValue"
+                    name="unit"
+                >
+                </app-dropdown>
+            </form>
+        `
+    })
+};
+
+export const SimpleDisabled: Story = {
+    render: (args) => ({
+        props: { ...args, elements$: of(mockElements), selectedValue: mockElements[2] },
+        template: `
+            <form ngForm>
+                <app-dropdown
+                    placeholder="Select a unit"
+                    [autocomplete]="false"
+                    [elements]="elements$"
+                    elementName="unit"
+                    [disabled]="true"
+                    [(ngModel)]="selectedValue"
+                    name="unit"
+                >
+                </app-dropdown>
+            </form>
+        `
+    })
+};

@@ -1,17 +1,22 @@
+<app-autofocus-stop></app-autofocus-stop>
 <div *ngIf="state === TeamspeakConnectState.SELECT_USER">
     <p>Connect to our <a href="ts3server://uk-sf.co.uk">TeamSpeak (uk-sf.co.uk)</a></p>
     <p>Once connected, select your TeamSpeak name from the list below and press 'Request Code'</p>
     <p>If you don't select your own name, you will not receive a code!</p>
     <form [formGroup]="teamspeakForm">
         <div class="row-container">
-            <mat-form-field>
-                <mat-label>{{ clients.length === 0 ? 'TeamSpeak service not connected' : 'Select your TeamSpeak name' }}</mat-label>
-                <mat-select formControlName="teamspeakId">
-                    <mat-option *ngFor="let client of clients; trackBy: trackByClientDbId" [value]="client.clientDbId" [matTooltip]="getTooltip(client)">
-                        <span [ngClass]="{ 'account-connected': isConnectedToAccount(client), connected: isConnected(client) }">{{ client.clientName }}</span>
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
+            <app-dropdown
+                [placeholder]="clients.length === 0 ? 'TeamSpeak service not connected' : 'Select your TeamSpeak name'"
+                [autocomplete]="false"
+                [elements]="clientElements$"
+                formControlName="teamspeakId"
+                elementName="TeamSpeak name"
+                [tooltip]="getElementTooltip"
+                [reserveErrorSpace]="false">
+                <ng-template #element let-element>
+                    <span [ngClass]="{ 'account-connected': isConnectedToAccount(element.data), connected: isConnected(element.data) }">{{ element.displayValue }}</span>
+                </ng-template>
+            </app-dropdown>
             <div class="button-row" *ngIf="showButtons">
                 <button mat-raised-button color="warn" *ngIf="showCancel" (click)="cancel()">Cancel</button>
                 <button mat-raised-button color="primary" [disabled]="!canRequestCode" (click)="requestCode()">Request Code</button>
