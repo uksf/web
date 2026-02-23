@@ -29,8 +29,10 @@
       ],
       "lib": [
         "ES2022",
-        "dom"
+        "dom",
+        "esnext.disposable"
       ],
+      "skipLibCheck": true,
       "useDefineForClassFields": false,
       "allowSyntheticDefaultImports": true,
       "esModuleInterop": true
