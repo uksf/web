@@ -22,14 +22,8 @@
             ],
             "styles": [
               "src/storybook-fonts.css",
-              {
-                "input": "src/styles-app-loading.scss",
-                "inject": true
-              },
-              {
-                "input": "src/styles.scss",
-                "inject": true
-              },
+              "src/styles-app-loading.scss",
+              "src/styles.scss",
               "./node_modules/quill/dist/quill.core.css",
               "./node_modules/quill/dist/quill.snow.css"
             ],
@@ -104,14 +98,7 @@
             "configDir": ".storybook",
             "browserTarget": "uksf:build",
             "compodoc": false,
-            "port": 6006,
-            "styles": [
-              "src/storybook-fonts.css",
-              "src/styles-app-loading.scss",
-              "src/styles.scss",
-              "./node_modules/quill/dist/quill.core.css",
-              "./node_modules/quill/dist/quill.snow.css"
-            ]
+            "port": 6006
           }
         },
         "build-storybook": {
@@ -120,14 +107,7 @@
             "configDir": ".storybook",
             "browserTarget": "uksf:build",
             "compodoc": false,
-            "outputDir": "storybook-static",
-            "styles": [
-              "src/storybook-fonts.css",
-              "src/styles-app-loading.scss",
-              "src/styles.scss",
-              "./node_modules/quill/dist/quill.core.css",
-              "./node_modules/quill/dist/quill.snow.css"
-            ]
+            "outputDir": "storybook-static"
           }
         }
       }
