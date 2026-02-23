@@ -26,7 +26,7 @@ const styles = [
     .display-name { visibility: hidden; display: block; }
     .display-name.visible { visibility: visible; }
     .dob { display: inline-block; width: 75px; min-width: 0; margin-right: 5px; }
-    .dob-error { font-size: 11px; line-height: 16px; color: var(--mdc-theme-error, #f44336); }
+    .dob-error { font-size: 11px; line-height: 16px; color: var(--mat-theme-error, #f44336); }
     .button-container { display: flex; flex-direction: row; }
     h4 { color: #fec400; }`
 ];

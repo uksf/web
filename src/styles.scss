@@ -385,7 +385,7 @@ mat-tab-nav-panel,
 //   2. Dark-theme overrides (form field underline appearance, input colors) don't
 //      reach the preview.
 //   3. Component styles loaded from JS chunks (ViewEncapsulation.None) that use
-//      var(--mdc-*) resolve against missing variables.
+//      var(--mat-*) resolve against missing variables.
 //
 // We fix this by:
 //   - Including only the Material component themes actually used in drag previews
@@ -548,7 +548,7 @@ mat-paginator .mdc-notched-outline__trailing {
 // These global rules handle spacing, scrolling, and button layout.
 
 .mat-mdc-dialog-container {
-    --mdc-dialog-supporting-text-color: white;
+    --mat-dialog-supporting-text-color: white;
 }
 
 .mat-mdc-dialog-title {
