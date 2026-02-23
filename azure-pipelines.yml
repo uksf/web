@@ -25,9 +25,8 @@ stages:
             displayName: 'Install Node.js'
 
           - script: |
-              if exist node_modules rmdir /s /q node_modules
               bun install
-            displayName: 'bun install (clean)'
+            displayName: 'bun install'
 
           - script: |
               bun run test
