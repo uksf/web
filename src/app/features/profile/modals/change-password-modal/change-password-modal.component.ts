@@ -15,7 +15,8 @@ export function passwordMatcher(form: AbstractControl) {
 @Component({
     selector: 'app-change-password-modal',
     templateUrl: './change-password-modal.component.html',
-    styleUrls: ['./change-password-modal.component.scss']
+    styleUrls: ['./change-password-modal.component.scss'],
+    standalone: false
 })
 export class ChangePasswordModalComponent {
     form = this.formBuilder.group(

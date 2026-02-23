@@ -7,7 +7,8 @@
 
 // Core — default typography styles for all components + hierarchy classes
 @include mat.all-component-typographies();
-@include mat.core();
+@include mat.elevation-classes();
+@include mat.app-background();
 
 // Themes
 @import 'darkTheme.scss';
@@ -170,11 +171,11 @@
 
     // Global scrollbar theming
     ::-webkit-scrollbar-track {
-        background-color: mat.get-color-from-palette($background, side-bar);
+        background-color: mat.m2-get-color-from-palette($background, side-bar);
     }
 
     ::-webkit-scrollbar-thumb {
-        background-color: mat.get-color-from-palette($background, scroll-thumb);
+        background-color: mat.m2-get-color-from-palette($background, scroll-thumb);
     }
 
     .mat-impersonated {
@@ -190,12 +191,12 @@
         padding: 0 0 12px 0;
 
         .mat-mdc-tab-link {
-            color: mat.get-color-from-palette($foreground, base);
-            background-color: mat.get-color-from-palette($background, background);
+            color: mat.m2-get-color-from-palette($foreground, base);
+            background-color: mat.m2-get-color-from-palette($background, background);
 
             // Yellow underline on active tab (legacy behavior)
             .mdc-tab-indicator .mdc-tab-indicator__content--underline {
-                border-color: mat.get-color-from-palette($primary, default);
+                border-color: mat.m2-get-color-from-palette($primary, default);
             }
 
             // Remove focus ring/outline on click
@@ -212,7 +213,7 @@
             }
 
             &:hover {
-                background-color: mat.get-color-from-palette($background, hover);
+                background-color: mat.m2-get-color-from-palette($background, hover);
             }
         }
     }
@@ -222,11 +223,11 @@
     }
 
     .mat-mdc-button {
-        background-color: mat.get-color-from-palette($background, selected);
+        background-color: mat.m2-get-color-from-palette($background, selected);
     }
 
     input {
-        color: mat.get-color-from-palette($foreground, base) !important;
+        color: mat.m2-get-color-from-palette($foreground, base) !important;
         background-color: transparent !important;
     }
 
@@ -423,7 +424,7 @@ mat.$theme-ignore-duplication-warnings: true;
     @include fft.form-field-theme($dark-theme, 'app-dropdown');
 
     input {
-        color: mat.get-color-from-palette($foreground, base) !important;
+        color: mat.m2-get-color-from-palette($foreground, base) !important;
         background-color: transparent !important;
     }
 
@@ -434,13 +435,13 @@ mat.$theme-ignore-duplication-warnings: true;
     }
 
     .mat-mdc-raised-button.mat-primary:not(:disabled) {
-        background-color: mat.get-color-from-palette($primary);
-        color: mat.get-color-from-palette($primary, default-contrast);
+        background-color: mat.m2-get-color-from-palette($primary);
+        color: mat.m2-get-color-from-palette($primary, default-contrast);
     }
 
     .mat-mdc-raised-button:disabled {
-        background-color: mat.get-color-from-palette($foreground, divider);
-        color: mat.get-color-from-palette($foreground, disabled-text);
+        background-color: mat.m2-get-color-from-palette($foreground, divider);
+        color: mat.m2-get-color-from-palette($foreground, disabled-text);
     }
 
     // --- Ranks list item layout ---

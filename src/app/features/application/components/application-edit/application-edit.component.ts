@@ -20,7 +20,8 @@ import { DestroyableComponent } from '@app/shared/components';
 @Component({
     selector: 'app-application-edit',
     templateUrl: './application-edit.component.html',
-    styleUrls: ['../application-page/application-page.component.scss', './application-edit.component.scss']
+    styleUrls: ['../application-page/application-page.component.scss', './application-edit.component.scss'],
+    standalone: false
 })
 export class ApplicationEditComponent extends DestroyableComponent {
     formGroup: UntypedFormGroup;

@@ -7,8 +7,8 @@
 
     app-operations-servers {
         .uploading {
-            color: mat.get-color-from-palette($accent, default-contrast) !important;
-            background-color: mat.get-color-from-palette($accent) !important;
+            color: mat.m2-get-color-from-palette($accent, default-contrast) !important;
+            background-color: mat.m2-get-color-from-palette($accent) !important;
         }
 
         .admin-container {
@@ -22,10 +22,10 @@
         }
 
         .servers-list-item {
-            background-color: mat.get-color-from-palette($background, server);
+            background-color: mat.m2-get-color-from-palette($background, server);
 
             &.server-running {
-                background-color: mat.get-color-from-palette($background, server-running);
+                background-color: mat.m2-get-color-from-palette($background, server-running);
             }
 
             .server-header {
@@ -34,7 +34,7 @@
                 }
 
                 .title-updating {
-                    color: mat.get-color-from-palette($primary);
+                    color: mat.m2-get-color-from-palette($primary);
                 }
 
                 h3 {
@@ -54,7 +54,7 @@
         }
 
         .dropZone {
-            border-color: mat.get-color-from-palette($primary);
+            border-color: mat.m2-get-color-from-palette($primary);
         }
 
         h3 {
@@ -64,11 +64,11 @@
 
     @at-root .cdk-drag-preview {
         .servers-list-item {
-            color: mat.get-color-from-palette($foreground, text);
-            background-color: mat.get-color-from-palette($background, server);
+            color: mat.m2-get-color-from-palette($foreground, text);
+            background-color: mat.m2-get-color-from-palette($background, server);
 
             &.server-running {
-                background-color: mat.get-color-from-palette($background, server-running);
+                background-color: mat.m2-get-color-from-palette($background, server-running);
             }
 
             .server-header {

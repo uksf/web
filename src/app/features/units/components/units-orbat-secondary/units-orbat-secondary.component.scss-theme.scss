@@ -7,56 +7,56 @@
 
     app-units-orbat-secondary {
         ::-webkit-scrollbar-track {
-            background-color: mat.get-color-from-palette($background, card);
+            background-color: mat.m2-get-color-from-palette($background, card);
         }
 
         ::-webkit-scrollbar-thumb {
-            background-color: mat.get-color-from-palette($background, hover);
+            background-color: mat.m2-get-color-from-palette($background, hover);
         }
 
         .p-organizationchart {
             .p-organizationchart-line-down {
-                background-color: mat.get-color-from-palette($background, org-line);
+                background-color: mat.m2-get-color-from-palette($background, org-line);
             }
 
             .p-organizationchart-line-left {
-                border-right: 1px solid mat.get-color-from-palette($background, org-line);
+                border-right: 1px solid mat.m2-get-color-from-palette($background, org-line);
             }
 
             .p-organizationchart-line-top {
-                border-top: 1px solid mat.get-color-from-palette($background, org-line);
+                border-top: 1px solid mat.m2-get-color-from-palette($background, org-line);
             }
 
             .p-organizationchart-node-content {
-                border-color: mat.get-color-from-palette($background, org-line);
+                border-color: mat.m2-get-color-from-palette($background, org-line);
 
                 .p-node-toggler {
-                    color: mat.get-color-from-palette($background, org-line);
+                    color: mat.m2-get-color-from-palette($background, org-line);
                 }
 
                 &.p-organizationchart-selectable-node {
                     &:hover {
-                        border-color: mat.get-color-from-palette($background, org-line);
-                        background-color: mat.get-color-from-palette($background, org-hover);
-                        color: mat.get-color-from-palette($foreground, base);
+                        border-color: mat.m2-get-color-from-palette($background, org-line);
+                        background-color: mat.m2-get-color-from-palette($background, org-hover);
+                        color: mat.m2-get-color-from-palette($foreground, base);
 
                         h4 {
-                            color: mat.get-color-from-palette($primary);
+                            color: mat.m2-get-color-from-palette($primary);
                         }
 
                         a {
-                            color: mat.get-color-from-palette($primary);
+                            color: mat.m2-get-color-from-palette($primary);
                         }
                     }
                 }
             }
 
             .p-widget-content {
-                color: mat.get-color-from-palette($foreground, base);
-                background-color: mat.get-color-from-palette($background, org-content);
+                color: mat.m2-get-color-from-palette($foreground, base);
+                background-color: mat.m2-get-color-from-palette($background, org-content);
 
                 h4 {
-                    color: mat.get-color-from-palette($foreground, base);
+                    color: mat.m2-get-color-from-palette($foreground, base);
                     background-color: transparent;
                 }
             }

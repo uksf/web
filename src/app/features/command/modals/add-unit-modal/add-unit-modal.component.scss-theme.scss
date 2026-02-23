@@ -6,7 +6,7 @@
 
     app-add-unit-modal {
         .button-delete {
-          background-color: mat.get-color-from-palette($background, selected);
+          background-color: mat.m2-get-color-from-palette($background, selected);
         }
     }
 }

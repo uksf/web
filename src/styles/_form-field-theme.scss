@@ -10,58 +10,58 @@
     $warn: map-get($theme, warn);
 
     #{$host-selector} {
-        --ff-border-color: #{mat.get-color-from-palette($foreground, divider)};
+        --ff-border-color: #{mat.m2-get-color-from-palette($foreground, divider)};
 
         .form-field-label {
-            color: mat.get-color-from-palette($foreground, secondary-text);
+            color: mat.m2-get-color-from-palette($foreground, secondary-text);
         }
 
         .form-field input,
         .form-field textarea {
-            color: mat.get-color-from-palette($foreground, base);
+            color: mat.m2-get-color-from-palette($foreground, base);
 
             &::placeholder {
-                color: mat.get-color-from-palette($foreground, hint-text);
+                color: mat.m2-get-color-from-palette($foreground, hint-text);
             }
         }
 
         .form-field-wrapper:hover:not(.form-field-disabled):not(.form-field-focused) {
-            --ff-border-color: #{mat.get-color-from-palette($foreground, base)};
+            --ff-border-color: #{mat.m2-get-color-from-palette($foreground, base)};
         }
 
         .form-field-focused {
-            --ff-border-color: #{mat.get-color-from-palette($primary)};
+            --ff-border-color: #{mat.m2-get-color-from-palette($primary)};
         }
 
         .form-field-focused .form-field-label {
-            color: mat.get-color-from-palette($primary);
+            color: mat.m2-get-color-from-palette($primary);
         }
 
         // Must come after .form-field-focused so error color wins when both classes apply
         .form-field-has-error {
-            --ff-border-color: #{mat.get-color-from-palette($warn)};
+            --ff-border-color: #{mat.m2-get-color-from-palette($warn)};
         }
 
         .form-field-has-error .form-field-label {
-            color: mat.get-color-from-palette($warn);
+            color: mat.m2-get-color-from-palette($warn);
         }
 
         .form-field-error {
-            color: mat.get-color-from-palette($warn);
+            color: mat.m2-get-color-from-palette($warn);
         }
 
         .form-field-clear {
-            color: mat.get-color-from-palette($foreground, secondary-text);
+            color: mat.m2-get-color-from-palette($foreground, secondary-text);
         }
 
         .form-field-disabled {
-            --ff-border-color: #{mat.get-color-from-palette($foreground, divider)};
+            --ff-border-color: #{mat.m2-get-color-from-palette($foreground, divider)};
             --ff-border-style: dashed;
         }
 
         .form-field-disabled .form-field input,
         .form-field-disabled .form-field textarea {
-            color: mat.get-color-from-palette($foreground, disabled-text);
+            color: mat.m2-get-color-from-palette($foreground, disabled-text);
         }
     }
 }

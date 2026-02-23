@@ -10,6 +10,7 @@ import { UksfError } from '@app/shared/models/response';
     selector: 'app-password-reset',
     templateUrl: './password-reset.component.html',
     styleUrls: ['./password-reset.component.scss', '../login-page/login-page.component.scss'],
+    standalone: false
 })
 export class PasswordResetComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;

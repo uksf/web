@@ -8,7 +8,8 @@ import { RanksService } from '../../services/ranks.service';
 @Component({
     selector: 'app-add-rank-modal',
     templateUrl: './add-rank-modal.component.html',
-    styleUrls: ['./add-rank-modal.component.scss']
+    styleUrls: ['./add-rank-modal.component.scss'],
+    standalone: false
 })
 export class AddRankModalComponent {
     form = this.formBuilder.group({

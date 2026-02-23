@@ -10,7 +10,8 @@ import { ModpackRelease } from '../models/modpack-release';
 @Component({
     selector: 'app-modpack-releases',
     templateUrl: './modpack-releases.component.html',
-    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-releases.component.scss', './modpack-releases.component.scss-theme.scss']
+    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-releases.component.scss', './modpack-releases.component.scss-theme.scss'],
+    standalone: false
 })
 export class ModpackReleasesComponent implements OnInit, OnDestroy {
     selectedReleaseVersion: string = '';
@@ -53,8 +54,8 @@ export class ModpackReleasesComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.originalLinkRenderer = this.markdownService.renderer.link;
         const linkRenderer = this.markdownService.renderer.link;
-        this.markdownService.renderer.link = (href: string, title: string, text: string) => {
-            const html: string = linkRenderer.call(this.markdownService.renderer, href, title, text);
+        this.markdownService.renderer.link = (args: { href: string; title?: string | null | undefined; tokens: unknown[] }) => {
+            const html: string = linkRenderer.call(this.markdownService.renderer, args);
             return html.replace(/^<a /, '<a target="_blank" rel="nofollow" ');
         };
 

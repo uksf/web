@@ -10,7 +10,7 @@
                 }
 
                 .selection-element {
-                    background-color: mat.get-color-from-palette($background, selected);
+                    background-color: mat.m2-get-color-from-palette($background, selected);
 
                     .disabled {
                         color: rgba(255, 255, 255, 0.3);

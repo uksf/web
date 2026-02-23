@@ -11,6 +11,7 @@ import { DestroyableComponent } from '@app/shared/components';
     selector: 'app-unit-page',
     templateUrl: './unit-page.component.html',
     styleUrls: ['./unit-page.component.scss'],
+    standalone: false
 })
 export class UnitPageComponent extends DestroyableComponent {
     unit: ResponseUnit;

@@ -7,7 +7,8 @@ import { TrainingsService } from '../../services/trainings.service';
 @Component({
     selector: 'app-edit-member-training-modal',
     templateUrl: './edit-member-training-modal.component.html',
-    styleUrls: ['./edit-member-training-modal.component.scss']
+    styleUrls: ['./edit-member-training-modal.component.scss'],
+    standalone: false
 })
 export class EditMemberTrainingModalComponent implements OnInit {
     accountId: string;

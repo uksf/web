@@ -7,7 +7,8 @@ let nextId = 0;
 @Component({
     selector: 'app-text-input',
     templateUrl: './text-input.component.html',
-    styleUrls: ['./text-input.component.scss']
+    styleUrls: ['./text-input.component.scss'],
+    standalone: false
 })
 export class TextInputComponent implements ControlValueAccessor, DoCheck {
     @ViewChild('inputElement') inputElement!: ElementRef<HTMLInputElement | HTMLTextAreaElement>;

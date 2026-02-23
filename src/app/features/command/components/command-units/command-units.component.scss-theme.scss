@@ -8,15 +8,15 @@
     app-command-units {
         .node-content-wrapper {
             &:hover {
-              background-color: mat.get-color-from-palette($background, hover);
+              background-color: mat.m2-get-color-from-palette($background, hover);
             }
             &.is-dragging-over {
-              background-color: mat.get-color-from-palette($background, hover);
+              background-color: mat.m2-get-color-from-palette($background, hover);
             }
         }
         .node-drop-slot {
             &.is-dragging-over {
-              background-color: mat.get-color-from-palette($background, hover);
+              background-color: mat.m2-get-color-from-palette($background, hover);
             }
         }
     }

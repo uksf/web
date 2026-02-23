@@ -3,11 +3,11 @@
 @mixin modpack-workshop-component-theme($theme) {
     $primary: map-get($theme, primary);
     $background: map-get($theme, background);
-    $inset-colour: mat.get-color-from-palette($primary, default);
+    $inset-colour: mat.m2-get-color-from-palette($primary, default);
 
     app-modpack-workshop {
         a {
-            color: mat.get-color-from-palette($primary);
+            color: mat.m2-get-color-from-palette($primary);
         }
 
         .flex-container {
@@ -31,11 +31,11 @@
         }
 
         ::-webkit-scrollbar-track {
-            background-color: mat.get-color-from-palette($background, side-bar);
+            background-color: mat.m2-get-color-from-palette($background, side-bar);
         }
 
         ::-webkit-scrollbar-thumb {
-            background-color: mat.get-color-from-palette($background, scroll-thumb);
+            background-color: mat.m2-get-color-from-palette($background, scroll-thumb);
         }
 
         //@media only screen and (max-width: 600px) {

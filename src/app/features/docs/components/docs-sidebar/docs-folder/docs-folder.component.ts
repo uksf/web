@@ -14,7 +14,8 @@ import { first } from 'rxjs/operators';
     selector: 'app-docs-folder',
     templateUrl: './docs-folder.component.html',
     styleUrls: ['./docs-folder.component.scss'],
-    animations: [folderAnimations.indicatorRotate, folderAnimations.folderExpansion]
+    animations: [folderAnimations.indicatorRotate, folderAnimations.folderExpansion],
+    standalone: false
 })
 export class DocsFolderComponent {
     @Input('allDocumentMetadata') allFolderMetadata: FolderMetadata[];

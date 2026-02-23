@@ -19,7 +19,8 @@ import { DestroyableComponent } from '@app/shared/components';
 @Component({
     selector: 'app-command-requests',
     templateUrl: './command-requests.component.html',
-    styleUrls: ['../command-page/command-page.component.scss', './command-requests.component.scss']
+    styleUrls: ['../command-page/command-page.component.scss', './command-requests.component.scss'],
+    standalone: false
 })
 export class CommandRequestsComponent extends DestroyableComponent implements OnInit, OnDestroy {
     reviewState = ReviewState;

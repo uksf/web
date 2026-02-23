@@ -10,7 +10,8 @@ export interface MessageModalData {
 @Component({
     selector: 'app-message-modal',
     templateUrl: './message-modal.component.html',
-    styleUrls: ['./message-modal.component.scss']
+    styleUrls: ['./message-modal.component.scss'],
+    standalone: false
 })
 export class MessageModalComponent {
     title: string = '';

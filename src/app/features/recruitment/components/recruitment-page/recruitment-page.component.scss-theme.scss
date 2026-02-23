@@ -7,11 +7,11 @@
 
     app-recruitment-page {
         a {
-            color: mat.get-color-from-palette($primary);
+            color: mat.m2-get-color-from-palette($primary);
         }
         .applications-container {
             .applicationCardOthers {
-                background-color: mat.get-color-from-palette($background, dark-card);
+                background-color: mat.m2-get-color-from-palette($background, dark-card);
             }
         }
     }

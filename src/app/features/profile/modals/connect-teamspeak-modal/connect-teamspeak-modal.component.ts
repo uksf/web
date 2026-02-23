@@ -6,6 +6,7 @@ import { ConnectTeamspeakComponent, TeamspeakConnectState } from '@app/shared/co
     selector: 'app-connect-teamspeak-modal',
     templateUrl: './connect-teamspeak-modal.component.html',
     styleUrls: ['./connect-teamspeak-modal.component.scss'],
+    standalone: false
 })
 export class ConnectTeamspeakModalComponent implements AfterViewInit {
     @ViewChild(ConnectTeamspeakComponent) teamspeakConnect: ConnectTeamspeakComponent;

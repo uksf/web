@@ -8,22 +8,22 @@
 
     app-theme-emitter {
         .foreground {
-            color: mat.get-color-from-palette($foreground, base);
+            color: mat.m2-get-color-from-palette($foreground, base);
         }
         .primary {
-            color: mat.get-color-from-palette($primary);
+            color: mat.m2-get-color-from-palette($primary);
         }
         .primary-contrast {
-            color: mat.get-color-from-palette($primary, default-contrast);
+            color: mat.m2-get-color-from-palette($primary, default-contrast);
         }
         .accent {
-            color: mat.get-color-from-palette($accent);
+            color: mat.m2-get-color-from-palette($accent);
         }
         .warn {
-            color: mat.get-color-from-palette($warn);
+            color: mat.m2-get-color-from-palette($warn);
         }
         .warn-contrast {
-            color: mat.get-color-from-palette($warn, default-contrast);
+            color: mat.m2-get-color-from-palette($warn, default-contrast);
         }
     }
 }

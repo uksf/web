@@ -7,7 +7,7 @@
 
     app-request-loa-modal {
         .invalid-message {
-          color: mat.get-color-from-palette($warn);
+          color: mat.m2-get-color-from-palette($warn);
         }
     }
 }

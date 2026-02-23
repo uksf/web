@@ -37,7 +37,7 @@ $dark: (
         A700: $dark-primary-text
     )
 );
-$dark-pallette: mat.define-palette($dark, 700, 500, 900);
+$dark-pallette: mat.m2-define-palette($dark, 700, 500, 900);
 
 $gold-primary-text: black;
 $gold: (
@@ -72,4 +72,4 @@ $gold: (
         A700: $gold-primary-text
     )
 );
-$gold-pallette: mat.define-palette($gold, 500, 300, 700);
+$gold-pallette: mat.m2-define-palette($gold, 500, 300, 700);

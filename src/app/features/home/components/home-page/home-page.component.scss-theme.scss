@@ -8,24 +8,24 @@
 
     app-home-page {
         .issues-container {
-          color: mat.get-color-from-palette($primary, default-contrast);
+          color: mat.m2-get-color-from-palette($primary, default-contrast);
         }
 
         .teamspeak-container {
-          background-color: mat.get-color-from-palette($primary);
+          background-color: mat.m2-get-color-from-palette($primary);
 
           .teamspeak-header {
             .teamspeak-text {
-              color: mat.get-color-from-palette($primary, default-contrast);
+              color: mat.m2-get-color-from-palette($primary, default-contrast);
             }
 
             a {
-              color: mat.get-color-from-palette($primary, default-contrast);
+              color: mat.m2-get-color-from-palette($primary, default-contrast);
             }
           }
 
             .teamspeak-content-container {
-              background-color: mat.get-color-from-palette($background, card);
+              background-color: mat.m2-get-color-from-palette($background, card);
             }
         }
     }

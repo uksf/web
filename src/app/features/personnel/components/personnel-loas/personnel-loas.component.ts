@@ -29,7 +29,8 @@ export interface DateModeItem {
 @Component({
     selector: 'app-personnel-loas',
     templateUrl: './personnel-loas.component.html',
-    styleUrls: ['../personnel-page/personnel-page.component.scss', './personnel-loas.component.scss']
+    styleUrls: ['../personnel-page/personnel-page.component.scss', './personnel-loas.component.scss'],
+    standalone: false
 })
 export class PersonnelLoasComponent extends DestroyableComponent implements OnInit {
     @ViewChildren(PersonnelLoasListComponent) loaLists: QueryList<PersonnelLoasListComponent>;

@@ -4,8 +4,8 @@
 
     app-loading-placeholder {
         .loading-shimmer {
-            background-color: mat.get-color-from-palette($background, 550);
-            background-image: linear-gradient(60deg, mat.get-color-from-palette($background, 550), mat.get-color-from-palette($background, 600), mat.get-color-from-palette($background, 550));
+            background-color: mat.m2-get-color-from-palette($background, 550);
+            background-image: linear-gradient(60deg, mat.m2-get-color-from-palette($background, 550), mat.m2-get-color-from-palette($background, 600), mat.m2-get-color-from-palette($background, 550));
         }
     }
 }

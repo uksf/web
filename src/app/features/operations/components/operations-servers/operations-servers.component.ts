@@ -21,7 +21,8 @@ import { DestroyableComponent } from '@app/shared/components';
 @Component({
     selector: 'app-operations-servers',
     templateUrl: './operations-servers.component.html',
-    styleUrls: ['../operations-page/operations-page.component.scss', './operations-servers.component.scss']
+    styleUrls: ['../operations-page/operations-page.component.scss', './operations-servers.component.scss'],
+    standalone: false
 })
 export class OperationsServersComponent extends DestroyableComponent implements OnInit, OnDestroy {
     @ViewChild('uploader') uploader: ElementRef;

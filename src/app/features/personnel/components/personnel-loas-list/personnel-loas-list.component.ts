@@ -21,7 +21,8 @@ export type SelectionMode = 'current' | 'future' | 'past';
     selector: 'app-personnel-loas-list',
     templateUrl: './personnel-loas-list.component.html',
     styleUrls: ['../personnel-page/personnel-page.component.scss', '../personnel-loas/personnel-loas.component.scss', './personnel-loas-list.component.scss'],
-    animations: [expansionAnimations.indicatorRotate, expansionAnimations.bodyExpansion]
+    animations: [expansionAnimations.indicatorRotate, expansionAnimations.bodyExpansion],
+    standalone: false
 })
 export class PersonnelLoasListComponent implements OnInit {
     @ViewChild(PaginatorComponent) paginator: PaginatorComponent;

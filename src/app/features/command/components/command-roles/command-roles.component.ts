@@ -10,7 +10,8 @@ import { RolesService } from '../../services/roles.service';
 @Component({
     selector: 'app-command-roles',
     templateUrl: './command-roles.component.html',
-    styleUrls: ['../command-page/command-page.component.scss', './command-roles.component.scss']
+    styleUrls: ['../command-page/command-page.component.scss', './command-roles.component.scss'],
+    standalone: false
 })
 export class CommandRolesComponent implements OnInit {
     roleForm = this.formBuilder.group({

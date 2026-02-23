@@ -2,7 +2,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import Convert from 'ansi-to-html';
 
-@Pipe({ name: 'ansiToHtml' })
+@Pipe({
+    name: 'ansiToHtml',
+    standalone: false
+})
 export class AnsiToHtmlPipe implements PipeTransform {
     private convert: Convert = new Convert({
         colors: {

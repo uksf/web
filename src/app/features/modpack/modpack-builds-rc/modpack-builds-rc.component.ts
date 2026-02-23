@@ -13,7 +13,8 @@ import { ModpackBuild } from '../models/modpack-build';
 @Component({
     selector: 'app-modpack-builds-rc',
     templateUrl: './modpack-builds-rc.component.html',
-    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-builds-rc.component.scss', './modpack-builds-rc.component.scss-theme.scss']
+    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-builds-rc.component.scss', './modpack-builds-rc.component.scss-theme.scss'],
+    standalone: false
 })
 export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
     @ViewChild(ThemeEmitterComponent) theme: ThemeEmitterComponent;

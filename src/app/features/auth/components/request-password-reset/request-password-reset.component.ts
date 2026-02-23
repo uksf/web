@@ -6,7 +6,8 @@ import { first } from 'rxjs/operators';
 @Component({
     selector: 'app-request-password-reset',
     templateUrl: './request-password-reset.component.html',
-    styleUrls: ['./request-password-reset.component.scss', '../login-page/login-page.component.scss']
+    styleUrls: ['./request-password-reset.component.scss', '../login-page/login-page.component.scss'],
+    standalone: false
 })
 export class RequestPasswordResetComponent {
     @ViewChild(NgForm) form!: NgForm;

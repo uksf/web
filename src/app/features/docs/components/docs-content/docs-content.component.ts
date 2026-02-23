@@ -9,7 +9,8 @@ import { UksfError } from '@app/shared/models/response';
 @Component({
     selector: 'app-docs-content',
     templateUrl: './docs-content.component.html',
-    styleUrls: ['./docs-content.component.scss', './docs-content.quill.scss']
+    styleUrls: ['./docs-content.component.scss', './docs-content.quill.scss'],
+    standalone: false
 })
 export class DocsContentComponent implements OnChanges {
     @Input('documentMetadata') documentMetadata: DocumentMetadata;

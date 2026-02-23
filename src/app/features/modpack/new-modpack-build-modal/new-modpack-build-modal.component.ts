@@ -16,7 +16,8 @@ function onlyOne(group: AbstractControl): ValidationErrors | null {
 @Component({
     selector: 'app-new-modpack-build-modal',
     templateUrl: './new-modpack-build-modal.component.html',
-    styleUrls: ['./new-modpack-build-modal.component.scss']
+    styleUrls: ['./new-modpack-build-modal.component.scss'],
+    standalone: false
 })
 export class NewModpackBuildModalComponent {
     configurationElements: IDropdownElement[] = [

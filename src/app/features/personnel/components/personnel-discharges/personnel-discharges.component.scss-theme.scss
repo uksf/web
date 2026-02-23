@@ -16,8 +16,8 @@
             color: red;
         }
         .request-override {
-          background-color: mat.get-color-from-palette($warn);
-          color: mat.get-color-from-palette($warn, default-contrast);
+          background-color: mat.m2-get-color-from-palette($warn);
+          color: mat.m2-get-color-from-palette($warn, default-contrast);
         }
     }
 }

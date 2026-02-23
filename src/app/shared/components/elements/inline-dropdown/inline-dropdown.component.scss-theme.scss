@@ -7,13 +7,13 @@
 
     app-inline-dropdown {
         input {
-            border-color: mat.get-color-from-palette($foreground, divider);
-            color: mat.get-color-from-palette($foreground, text);
-            background-color: mat.get-color-from-palette($background, card);
+            border-color: mat.m2-get-color-from-palette($foreground, divider);
+            color: mat.m2-get-color-from-palette($foreground, text);
+            background-color: mat.m2-get-color-from-palette($background, card);
         }
 
         .invalid {
-            border-color: mat.get-color-from-palette($warn);
+            border-color: mat.m2-get-color-from-palette($warn);
         }
     }
 }

@@ -3,7 +3,8 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from
 @Component({
     selector: 'app-paginator',
     templateUrl: './paginator.component.html',
-    styleUrls: ['./paginator.component.scss']
+    styleUrls: ['./paginator.component.scss'],
+    standalone: false
 })
 export class PaginatorComponent implements OnChanges {
     @Output() page = new EventEmitter<PagedEvent>();

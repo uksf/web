@@ -8,7 +8,8 @@ import { MembersService } from '@app/shared/services/members.service';
 @Component({
     selector: 'app-personnel-roster',
     templateUrl: './personnel-roster.component.html',
-    styleUrls: ['../../../units/components/units-page/units-page.component.scss', './personnel-roster.component.scss']
+    styleUrls: ['../../../units/components/units-page/units-page.component.scss', './personnel-roster.component.scss'],
+    standalone: false
 })
 export class PersonnelRosterComponent {
     public countries: ICountry[];

@@ -12,7 +12,8 @@ import { CommandRequestsService, CommandRequestExistsBody } from '@app/features/
 @Component({
     selector: 'app-personnel-discharges',
     templateUrl: './personnel-discharges.component.html',
-    styleUrls: ['../personnel-page/personnel-page.component.scss', './personnel-discharges.component.scss']
+    styleUrls: ['../personnel-page/personnel-page.component.scss', './personnel-discharges.component.scss'],
+    standalone: false
 })
 export class PersonnelDischargesComponent implements OnInit, OnDestroy {
     @ViewChild(MatExpansionPanel) panel: MatExpansionPanel;

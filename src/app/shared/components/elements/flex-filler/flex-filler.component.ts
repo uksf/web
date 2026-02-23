@@ -6,6 +6,7 @@ import { Component } from '@angular/core';
     host: {
         '[style.flex]': '1',
     },
+    standalone: false
 })
 export class FlexFillerComponent {
     constructor() {}

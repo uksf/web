@@ -7,7 +7,8 @@ import { takeUntil } from 'rxjs/operators';
 @Component({
     selector: 'app-install-workshop-mod-modal',
     templateUrl: './install-workshop-mod-modal.component.html',
-    styleUrls: ['./install-workshop-mod-modal.component.scss']
+    styleUrls: ['./install-workshop-mod-modal.component.scss'],
+    standalone: false
 })
 export class InstallWorkshopModModalComponent implements OnDestroy {
     private destroy$ = new Subject<void>();

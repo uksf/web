@@ -1,7 +1,10 @@
 import { ChangeDetectorRef, NgZone, OnDestroy, Pipe, PipeTransform } from '@angular/core';
 import moment from 'moment-timezone';
 
-@Pipe({ name: 'zonedTime' })
+@Pipe({
+    name: 'zonedTime',
+    standalone: false
+})
 export class ZonedTime implements PipeTransform {
     transform(time: Date, zone: string, short = false): string {
         let zonedTime = zone === 'Local' ? moment(time) : moment(time).tz(zone);
@@ -9,7 +12,10 @@ export class ZonedTime implements PipeTransform {
     }
 }
 
-@Pipe({ name: 'timeAgo' })
+@Pipe({
+    name: 'timeAgo',
+    standalone: false
+})
 export class TimeAgoPipe implements PipeTransform, OnDestroy {
     private timer: number;
 

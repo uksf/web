@@ -16,7 +16,7 @@
         }
 
         .mdc-line-ripple::before {
-            border-bottom-color: mat.get-color-from-palette($foreground, divider);
+            border-bottom-color: mat.m2-get-color-from-palette($foreground, divider);
         }
     }
 }

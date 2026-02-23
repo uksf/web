@@ -7,16 +7,16 @@
     app-docs-content {
         .content-container {
             .content-header {
-                background-color: mat.get-color-from-palette($background, 600);
+                background-color: mat.m2-get-color-from-palette($background, 600);
             }
         }
     }
 
     ::-webkit-scrollbar-track {
-        background-color: mat.get-color-from-palette($background, side-bar);
+        background-color: mat.m2-get-color-from-palette($background, side-bar);
     }
 
     ::-webkit-scrollbar-thumb {
-        background-color: mat.get-color-from-palette($background, scroll-thumb);
+        background-color: mat.m2-get-color-from-palette($background, scroll-thumb);
     }
 }

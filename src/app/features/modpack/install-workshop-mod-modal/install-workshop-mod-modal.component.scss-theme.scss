@@ -6,7 +6,7 @@
     app-new-modpack-release-modal {
         .mat-mdc-dialog-content {
             .previous-version {
-                color: mat.get-color-from-palette($primary);
+                color: mat.m2-get-color-from-palette($primary);
             }
 
             .form-container {
@@ -16,7 +16,7 @@
                             color: white;
 
                             &.selected {
-                                color: mat.get-color-from-palette($primary);
+                                color: mat.m2-get-color-from-palette($primary);
                             }
                         }
                     }

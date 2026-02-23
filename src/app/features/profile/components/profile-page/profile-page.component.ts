@@ -21,7 +21,8 @@ import { DestroyableComponent } from '@app/shared/components';
 @Component({
     selector: 'app-profile-page',
     templateUrl: './profile-page.component.html',
-    styleUrls: ['./profile-page.component.scss']
+    styleUrls: ['./profile-page.component.scss'],
+    standalone: false
 })
 export class ProfilePageComponent extends DestroyableComponent implements OnInit {
     countries: ICountry[];

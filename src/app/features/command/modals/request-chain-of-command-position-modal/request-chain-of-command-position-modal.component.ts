@@ -16,7 +16,8 @@ import { CommandRequestsService } from '../../services/command-requests.service'
 @Component({
     selector: 'app-request-chain-of-command-position-modal',
     templateUrl: './request-chain-of-command-position-modal.component.html',
-    styleUrls: ['./request-chain-of-command-position-modal.component.scss', '../../components/command-page/command-page.component.scss']
+    styleUrls: ['./request-chain-of-command-position-modal.component.scss', '../../components/command-page/command-page.component.scss'],
+    standalone: false
 })
 export class RequestChainOfCommandPositionModalComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;

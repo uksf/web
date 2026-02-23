@@ -5,7 +5,7 @@
 
     app-about-page {
         a {
-            color: mat.get-color-from-palette($primary);
+            color: mat.m2-get-color-from-palette($primary);
         }
 
         .text-container {

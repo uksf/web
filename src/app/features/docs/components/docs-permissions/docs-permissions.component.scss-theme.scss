@@ -7,11 +7,11 @@
 
     app-docs-permissions {
         .mat-expansion-panel {
-            background-color: mat.get-color-from-palette($background, 450);
+            background-color: mat.m2-get-color-from-palette($background, 450);
 
             .permissions-header {        
                 span {
-                    color: mat.get-color-from-palette($primary);
+                    color: mat.m2-get-color-from-palette($primary);
                 }
             }
         }

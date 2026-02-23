@@ -7,7 +7,8 @@ import { Account } from '@app/shared/models/account';
 @Component({
     selector: 'app-command-unit-group-card',
     templateUrl: './command-unit-group-card.component.html',
-    styleUrls: ['./command-unit-group-card.component.scss']
+    styleUrls: ['./command-unit-group-card.component.scss'],
+    standalone: false
 })
 export class CommandUnitGroupCardComponent implements OnInit {
     @ViewChild(MatAccordion) accordion: MatAccordion;

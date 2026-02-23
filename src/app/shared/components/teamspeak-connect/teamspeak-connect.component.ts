@@ -22,7 +22,8 @@ export enum TeamspeakConnectState {
 @Component({
     selector: 'app-teamspeak-connect',
     templateUrl: './teamspeak-connect.component.html',
-    styleUrls: ['./teamspeak-connect.component.scss']
+    styleUrls: ['./teamspeak-connect.component.scss'],
+    standalone: false
 })
 export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
     readonly TeamspeakConnectState = TeamspeakConnectState;

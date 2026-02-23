@@ -5,13 +5,13 @@
     $primary: map-get($theme, primary);
 
     app-footer-bar {
-      background-color: mat.get-color-from-palette($background, side-bar);
+      background-color: mat.m2-get-color-from-palette($background, side-bar);
 
       .flex-container {
         .buttons-container {
           a {
             i {
-              color: mat.get-color-from-palette($primary);
+              color: mat.m2-get-color-from-palette($primary);
             }
           }
         }
@@ -19,7 +19,7 @@
         .copyright {
           background-color: transparent;
                 p {
-                  color: mat.get-color-from-palette($foreground, base);
+                  color: mat.m2-get-color-from-palette($foreground, base);
                 }
             }
         }

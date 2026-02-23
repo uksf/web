@@ -9,7 +9,8 @@ import { DestroyableComponent } from '@app/shared/components';
 let nextDropdownId = 0;
 
 @Component({
-    template: ``
+    template: ``,
+    standalone: false
 })
 export class DropdownBaseComponent extends DestroyableComponent implements OnInit {
     readonly inputId = `dropdown-${nextDropdownId++}`;

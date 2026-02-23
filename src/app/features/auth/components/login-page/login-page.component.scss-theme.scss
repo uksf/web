@@ -8,10 +8,10 @@
 
     app-login-page {
         a {
-          color: mat.get-color-from-palette($primary);
+          color: mat.m2-get-color-from-palette($primary);
         }
         .invalid-message {
-          color: mat.get-color-from-palette($warn);
+          color: mat.m2-get-color-from-palette($warn);
         }
     }
 }

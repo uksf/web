@@ -47,7 +47,8 @@ export function SelectionListValidator(required: boolean): ValidatorFn {
             multi: true
         }
     ],
-    viewProviders: [{ provide: ControlContainer, useExisting: UntypedFormGroup }]
+    viewProviders: [{ provide: ControlContainer, useExisting: UntypedFormGroup }],
+    standalone: false
 })
 export class SelectionListComponent extends DropdownBaseComponent implements OnInit, OnChanges, ControlValueAccessor, Validator {
     @Input('listDisabledTooltip') listDisabledTooltip: (element: IDropdownElement) => string = () => '';

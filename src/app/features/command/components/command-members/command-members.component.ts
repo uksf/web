@@ -17,7 +17,8 @@ import { DestroyableComponent } from '@app/shared/components';
 @Component({
     selector: 'app-command-members',
     templateUrl: './command-members.component.html',
-    styleUrls: ['./command-members.component.scss']
+    styleUrls: ['./command-members.component.scss'],
+    standalone: false
 })
 export class CommandMembersComponent extends DestroyableComponent implements OnInit, OnDestroy {
     @ViewChild(PaginatorComponent) paginator: PaginatorComponent;

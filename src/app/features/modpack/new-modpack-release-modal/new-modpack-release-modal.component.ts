@@ -7,7 +7,8 @@ import { ModpackReleaseService } from '../modpackRelease.service';
 @Component({
     selector: 'app-new-modpack-release-modal',
     templateUrl: './new-modpack-release-modal.component.html',
-    styleUrls: ['./new-modpack-release-modal.component.scss']
+    styleUrls: ['./new-modpack-release-modal.component.scss'],
+    standalone: false
 })
 export class NewModpackReleaseModalComponent {
     previousVersion: string;

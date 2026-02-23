@@ -9,6 +9,7 @@ import { first } from 'rxjs/operators';
     selector: 'app-units-orbat-secondary',
     templateUrl: './units-orbat-secondary.component.html',
     styleUrls: ['../units-page/units-page.component.scss', './units-orbat-secondary.component.scss'],
+    standalone: false
 })
 export class UnitsOrbatSecondaryComponent {
     rootNodes: TreeNode[];

@@ -10,10 +10,10 @@
                     .header-title {
                         &.edit {
                             &:hover {
-                                border-color: mat.get-color-from-palette($primary) !important;
+                                border-color: mat.m2-get-color-from-palette($primary) !important;
 
                                 .underline {
-                                    background-color: mat.get-color-from-palette($background, underline);
+                                    background-color: mat.m2-get-color-from-palette($background, underline);
                                 }
                             }
                         }
@@ -25,14 +25,14 @@
                 .member-panel-content {
                     .member-panel-content-item {
                         .member-panel-content-element {
-                            background-color: mat.get-color-from-palette($background, selected);
+                            background-color: mat.m2-get-color-from-palette($background, selected);
 
                             &.edit {
-                                border-color: mat.get-color-from-palette($background, selected);
+                                border-color: mat.m2-get-color-from-palette($background, selected);
 
                                 &:hover {
-                                    color: mat.get-color-from-palette($primary) !important;
-                                    border-color: mat.get-color-from-palette($background, hover);
+                                    color: mat.m2-get-color-from-palette($primary) !important;
+                                    border-color: mat.m2-get-color-from-palette($background, hover);
                                 }
                             }
                         }
@@ -42,11 +42,11 @@
         }
 
         ::-webkit-scrollbar-track {
-            background-color: mat.get-color-from-palette($background, side-bar);
+            background-color: mat.m2-get-color-from-palette($background, side-bar);
         }
 
         ::-webkit-scrollbar-thumb {
-            background-color: mat.get-color-from-palette($background, scroll-thumb);
+            background-color: mat.m2-get-color-from-palette($background, scroll-thumb);
         }
     }
 }

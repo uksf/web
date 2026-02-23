@@ -16,7 +16,8 @@ import { MembersService } from '@app/shared/services/members.service';
 @Component({
     selector: 'app-create-folder-modal',
     templateUrl: './create-folder-modal.component.html',
-    styleUrls: ['./create-folder-modal.component.scss']
+    styleUrls: ['./create-folder-modal.component.scss'],
+    standalone: false
 })
 export class CreateFolderModalComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;

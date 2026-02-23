@@ -21,7 +21,8 @@ import { Permissions } from '@app/core/services/permissions';
     selector: 'app-recruitment-application-page',
     templateUrl: './recruitment-application-page.component.html',
     styleUrls: ['./recruitment-application-page.component.scss'],
-    providers: [DatePipe]
+    providers: [DatePipe],
+    standalone: false
 })
 export class RecruitmentApplicationPageComponent {
     @ViewChild('recruiterCommentsDisplay') recruiterCommentDisplay: CommentDisplayComponent;

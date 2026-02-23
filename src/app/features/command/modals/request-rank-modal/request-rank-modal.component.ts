@@ -17,7 +17,8 @@ import { CommandRequestsService } from '../../services/command-requests.service'
 @Component({
     selector: 'app-request-rank-modal',
     templateUrl: './request-rank-modal.component.html',
-    styleUrls: ['./request-rank-modal.component.scss', '../../components/command-page/command-page.component.scss']
+    styleUrls: ['./request-rank-modal.component.scss', '../../components/command-page/command-page.component.scss'],
+    standalone: false
 })
 export class RequestRankModalComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;

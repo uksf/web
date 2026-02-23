@@ -8,11 +8,11 @@
         .flex-container {
             .mat-mdc-card {
                 &:hover {
-                  background-color: mat.get-color-from-palette($background, hover);
+                  background-color: mat.m2-get-color-from-palette($background, hover);
                 }
 
                 h3 {
-                  color: mat.get-color-from-palette($primary);
+                  color: mat.m2-get-color-from-palette($primary);
                 }
             }
         }

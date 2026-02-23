@@ -9,7 +9,7 @@
 
     @at-root .cdk-drag-preview .ranks-list-item {
         $foreground: map-get($theme, foreground);
-        background-color: mat.get-color-from-palette($background, card);
-        color: mat.get-color-from-palette($foreground, text);
+        background-color: mat.m2-get-color-from-palette($background, card);
+        color: mat.m2-get-color-from-palette($foreground, text);
     }
 }

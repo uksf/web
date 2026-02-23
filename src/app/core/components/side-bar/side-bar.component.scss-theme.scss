@@ -5,29 +5,29 @@
   $foreground: map-get($theme, foreground);
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
-  $inset-colour: mat.get-color-from-palette($primary, default);
+  $inset-colour: mat.m2-get-color-from-palette($primary, default);
 
   .sideNav {
     .sideNavItem {
-      color: mat.get-color-from-palette($foreground, base);
+      color: mat.m2-get-color-from-palette($foreground, base);
 
       &.selected {
-        color: mat.get-color-from-palette($primary, default);
-        background-color: mat.get-color-from-palette($background, selected);
+        color: mat.m2-get-color-from-palette($primary, default);
+        background-color: mat.m2-get-color-from-palette($background, selected);
         box-shadow: inset 3px 0 0 0 $inset-colour;
       }
 
       &:hover {
-        background-color: mat.get-color-from-palette($background, hover);
+        background-color: mat.m2-get-color-from-palette($background, hover);
       }
         }
 
         .newVersionNavItem {
-          background-color: mat.get-color-from-palette($primary);
-          color: mat.get-color-from-palette($primary, default-contrast);
+          background-color: mat.m2-get-color-from-palette($primary);
+          color: mat.m2-get-color-from-palette($primary, default-contrast);
 
           &:hover {
-            background-color: mat.get-color-from-palette($primary);
+            background-color: mat.m2-get-color-from-palette($primary);
           }
         }
     }

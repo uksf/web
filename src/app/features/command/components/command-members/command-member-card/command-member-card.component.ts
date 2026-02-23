@@ -16,7 +16,8 @@ import { first } from 'rxjs/operators';
     selector: 'app-command-member-card',
     templateUrl: './command-member-card.component.html',
     styleUrls: ['./command-member-card.component.scss'],
-    animations: [expansionAnimations.indicatorRotate, expansionAnimations.bodyExpansion]
+    animations: [expansionAnimations.indicatorRotate, expansionAnimations.bodyExpansion],
+    standalone: false
 })
 export class CommandMemberCardComponent {
     @Input('member') member: Account;

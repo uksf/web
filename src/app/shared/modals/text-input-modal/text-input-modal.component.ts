@@ -10,7 +10,8 @@ export interface TextInputModalData {
 @Component({
     selector: 'app-text-input-modal',
     templateUrl: './text-input-modal.component.html',
-    styleUrls: ['./text-input-modal.component.scss']
+    styleUrls: ['./text-input-modal.component.scss'],
+    standalone: false
 })
 export class TextInputModalComponent {
     title: string;

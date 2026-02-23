@@ -7,23 +7,23 @@
 
     app-header-bar {
         .logo-wrapper {
-            color: mat.get-color-from-palette($foreground, base);
+            color: mat.m2-get-color-from-palette($foreground, base);
         }
 
         .name-wrapper span:hover {
-            color: mat.get-color-from-palette($primary);
+            color: mat.m2-get-color-from-palette($primary);
         }
 
         a {
-            color: mat.get-color-from-palette($foreground, base);
+            color: mat.m2-get-color-from-palette($foreground, base);
         }
         .mat-mdc-menu-panel {
-            background-color: mat.get-color-from-palette($background, card);
+            background-color: mat.m2-get-color-from-palette($background, card);
         }
 
         @media only screen and (max-width: 768px) {
             .development {
-                background-color: mat.get-color-from-palette($warn);
+                background-color: mat.m2-get-color-from-palette($warn);
             }
         }
     }

@@ -8,7 +8,7 @@
     app-workshop-mod-intervention-modal {
         .pbos-list-item {
             span {
-                color: mat.get-color-from-palette($foreground, base);
+                color: mat.m2-get-color-from-palette($foreground, base);
 
                 &.conflict {
                     color: red;
@@ -17,11 +17,11 @@
         }
 
         ::-webkit-scrollbar-track {
-            background-color: mat.get-color-from-palette($background, side-bar);
+            background-color: mat.m2-get-color-from-palette($background, side-bar);
         }
 
         ::-webkit-scrollbar-thumb {
-            background-color: mat.get-color-from-palette($background, scroll-thumb);
+            background-color: mat.m2-get-color-from-palette($background, scroll-thumb);
         }
     }
 }

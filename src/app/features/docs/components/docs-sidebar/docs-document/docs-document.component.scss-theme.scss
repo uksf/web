@@ -6,22 +6,22 @@
 
     app-docs-document {
         .document-container-line {
-            border-top-color: mat.get-color-from-palette($background, 200);
+            border-top-color: mat.m2-get-color-from-palette($background, 200);
         }
 
         .document-title {
             &.hover {
-                background-color: mat.get-color-from-palette($background, app-bar-hover);
+                background-color: mat.m2-get-color-from-palette($background, app-bar-hover);
             }
 
             &.selected {
-                background-color: mat.get-color-from-palette($background, selected);
+                background-color: mat.m2-get-color-from-palette($background, selected);
             }
 
             .document-title-button-container {
                 .icon-container {
                     &:hover {
-                        background-color: mat.get-color-from-palette($background, hover);
+                        background-color: mat.m2-get-color-from-palette($background, hover);
                     }
 
                     .mat-icon {

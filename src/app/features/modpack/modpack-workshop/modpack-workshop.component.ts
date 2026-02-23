@@ -13,7 +13,8 @@ import { DestroyableComponent } from '@app/shared/components';
 @Component({
     selector: 'app-modpack-workshop',
     templateUrl: './modpack-workshop.component.html',
-    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-workshop.component.scss', './modpack-workshop.component.scss-theme.scss']
+    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-workshop.component.scss', './modpack-workshop.component.scss-theme.scss'],
+    standalone: false
 })
 export class ModpackWorkshopComponent extends DestroyableComponent implements OnInit, OnDestroy {
     private hubConnection: ConnectionContainer;

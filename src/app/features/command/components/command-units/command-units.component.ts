@@ -11,7 +11,8 @@ import { UnitsService } from '../../services/units.service';
 @Component({
     selector: 'app-command-units',
     templateUrl: './command-units.component.html',
-    styleUrls: ['../command-page/command-page.component.scss', './command-units.component.scss']
+    styleUrls: ['../command-page/command-page.component.scss', './command-units.component.scss'],
+    standalone: false
 })
 export class CommandUnitsComponent implements OnInit {
     @ViewChild('combatUnitsTree') combatUnitsTree: TreeNode;

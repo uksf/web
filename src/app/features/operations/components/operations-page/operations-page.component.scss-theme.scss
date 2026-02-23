@@ -6,11 +6,11 @@
     $primary: map-get($theme, primary);
 
     .report {
-      background-color: mat.get-color-from-palette($background, card);
-      color: mat.get-color-from-palette($foreground, base);
+      background-color: mat.m2-get-color-from-palette($background, card);
+      color: mat.m2-get-color-from-palette($foreground, base);
 
       &:hover {
-        background-color: mat.get-color-from-palette($background, hover);
+        background-color: mat.m2-get-color-from-palette($background, hover);
       }
     }
 }

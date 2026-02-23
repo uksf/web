@@ -16,7 +16,8 @@ import { CommandRequestsService } from '../../services/command-requests.service'
 @Component({
     selector: 'app-request-unit-removal-modal',
     templateUrl: './request-unit-removal-modal.component.html',
-    styleUrls: ['./request-unit-removal-modal.component.scss', '../../components/command-page/command-page.component.scss']
+    styleUrls: ['./request-unit-removal-modal.component.scss', '../../components/command-page/command-page.component.scss'],
+    standalone: false
 })
 export class RequestUnitRemovalModalComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;

@@ -3,7 +3,8 @@ import { Component, OnInit } from '@angular/core';
 @Component({
     selector: 'app-default-content-areas',
     templateUrl: './default-content-areas.component.html',
-    styleUrls: ['./default-content-areas.component.scss']
+    styleUrls: ['./default-content-areas.component.scss'],
+    standalone: false
 })
 export class DefaultContentAreasComponent implements OnInit {
     constructor() { }

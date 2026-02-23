@@ -10,18 +10,18 @@
             .comment-wrapper {
                 .author {
                     .author-string {
-                      color: mat.get-color-from-palette($primary);
+                      color: mat.m2-get-color-from-palette($primary);
                     }
 
                     .date-string {
-                      color: mat.get-color-from-palette($background, hover);
+                      color: mat.m2-get-color-from-palette($background, hover);
                     }
 
                     .delete-button {
                         background-color: transparent;
 
                         &:hover {
-                          color: mat.get-color-from-palette($primary);
+                          color: mat.m2-get-color-from-palette($primary);
                         }
                     }
                 }

@@ -3,25 +3,25 @@
 @mixin app-component-theme($theme) {
     $foreground: map-get($theme, foreground);
     $background: map-get($theme, background);
-    $color: mat.get-color-from-palette($foreground, base);
+    $color: mat.m2-get-color-from-palette($foreground, base);
 
     .wrapper {
         color: $color;
-        background-color: mat.get-color-from-palette($background, background);
+        background-color: mat.m2-get-color-from-palette($background, background);
 
         .header {
             color: $color;
-            background-color: mat.get-color-from-palette($background, app-bar);
+            background-color: mat.m2-get-color-from-palette($background, app-bar);
         }
 
         .sideboard {
             color: $color;
-            background-color: mat.get-color-from-palette($background, side-bar);
+            background-color: mat.m2-get-color-from-palette($background, side-bar);
         }
 
         .board {
             color: $color;
-            background-color: mat.get-color-from-palette($background, background);
+            background-color: mat.m2-get-color-from-palette($background, background);
         }
     }
 
