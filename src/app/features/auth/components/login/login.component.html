@@ -10,7 +10,6 @@
             [required]="true" email
             [validationMessages]="validationMessages.email">
         </app-text-input>
-        <br />
         <app-text-input class="full-width" label="Password" type="password"
             name="formPassword" [(ngModel)]="model.password" autocomplete="current-password"
             [required]="true"
@@ -23,13 +22,9 @@
         <app-flex-filler></app-flex-filler>
         <a class="option-link" (click)="requestPasswordReset()">Reset Password</a>
     </div>
-    <div *ngIf="loginError != ''">
-        <br />
-        <div class="invalid-message">
-            <span>{{ loginError }}</span>
-        </div>
+    <div *ngIf="loginError != ''" class="invalid-message">
+        <span>{{ loginError }}</span>
     </div>
-    <br />
     <form>
         <div class="button-container">
             <app-button (clicked)="submit()" [disabled]="!form.valid" [pending]="pending">Login</app-button>

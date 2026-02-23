@@ -256,6 +256,32 @@
         .mat-mdc-form-field-error-wrapper {
             padding: 0;
         }
+
+        // Datepicker fields: match custom form field height
+        // (40px input + 4px gap + 16px error = 60px total)
+        &.datepicker-field {
+            .mat-mdc-form-field-infix {
+                min-height: 40px;
+                max-height: 40px;
+            }
+
+            .mat-mdc-form-field-subscript-wrapper {
+                padding: 0;
+                margin-top: 4px;
+                min-height: 16px;
+                overflow: hidden;
+            }
+
+            .mat-mdc-form-field-error-wrapper {
+                padding: 0;
+            }
+
+            mat-error {
+                font-size: 11px;
+                line-height: 16px;
+                height: 16px;
+            }
+        }
     }
 
     // Hide MDC checkmark on single-select mat-option (MDC adds it by default, legacy did not)
@@ -372,6 +398,10 @@ mat-tab-nav-panel,
 // file via @at-root .cdk-drag-preview (see command-ranks and operations-servers
 // theme files).
 // ---------------------------------------------------------------------------
+// Suppress duplicate-theme warnings for .cdk-drag-preview: CDK drag previews
+// render outside .dark-theme, so they genuinely need their own theme includes.
+mat.$theme-ignore-duplication-warnings: true;
+
 .cdk-drag-preview {
     $foreground: map-get($dark-theme, foreground);
     $background: map-get($dark-theme, background);
@@ -470,8 +500,9 @@ mat-tab-nav-panel,
         inset: 0;
         background: radial-gradient(
             circle var(--spotlight-size, 200px) at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
-            var(--spotlight-color, rgba(255, 255, 255, 0.06)),
-            transparent
+            var(--spotlight-color, rgba(255, 255, 255, 0.08)),
+            var(--spotlight-color, rgba(255, 255, 255, 0.08)) 30%,
+            transparent 100%
         );
         pointer-events: none;
         z-index: 1;

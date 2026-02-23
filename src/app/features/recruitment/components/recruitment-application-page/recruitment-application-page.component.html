@@ -1,7 +1,7 @@
 <div *ngIf="application != null" class="flex-container flex-row padding-bottom-thin collapse">
     <div class="flex-container flex-grow flex-row no-padding collapse-tiny">
+        <button mat-icon-button class="back-button" (click)="back()"><mat-icon>arrow_back</mat-icon></button>
         <h3 class="small-centred">
-            <button mat-icon-button class="back-button" (click)="back()"><mat-icon>arrow_back</mat-icon></button>
             {{ application.account.firstname }} {{ application.account.lastname }}'s Application
             {{ application.account.application.state == applicationState.ACCEPTED ? ' - ' : application.account.application.state == applicationState.REJECTED ? ' - ' : '' }}
             <span [ngClass]="{ green: application.account.application.state == applicationState.ACCEPTED, red: application.account.application.state == applicationState.REJECTED }">

@@ -6,11 +6,13 @@
         margin: 0px;
     }
 
-    .mat-expansion-panel-header.mat-expanded {
-        height: 48px;
-
+    .mat-expansion-panel-header {
         &:hover {
-            border-radius: 0px;
+            background: none !important;
+        }
+
+        &.mat-expanded {
+            height: 48px;
         }
     }
 

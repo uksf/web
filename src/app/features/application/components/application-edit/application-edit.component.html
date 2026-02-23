@@ -67,7 +67,6 @@
                         <mat-hint *ngIf="armaText.value.length > 200">{{ armaText.value.length }} / 500</mat-hint>
                         <mat-error>{{ cachedErrors.armaExperience }}</mat-error>
                     </mat-form-field>
-                    <br />
                     <mat-form-field class="large-input">
                         <mat-label>Other Units - have you ever been in an Arma unit? Which?</mat-label>
                         <textarea
@@ -82,7 +81,6 @@
                         <mat-hint *ngIf="unitsText.value.length > 200">{{ unitsText.value.length }} / 250</mat-hint>
                         <mat-error>{{ cachedErrors.unitsExperience }}</mat-error>
                     </mat-form-field>
-                    <br />
                     <mat-form-field class="large-input">
                         <mat-label>Personal background - tell us a little about yourself</mat-label>
                         <textarea
@@ -99,22 +97,17 @@
                     </mat-form-field>
                 </div>
                 <mat-checkbox color="primary" formControlName="militaryExperience">Are you or have you ever been a member of the military?</mat-checkbox>
-                <br />
-                <br />
                 <div formGroupName="rolePreferences">
                     <p>These options exist to give us an idea of what kind of role you are interested in. There is no guarantee you will be admitted to any of these programmes.</p>
                     <div *ngFor="let rolePreferenceOption of rolePreferenceOptions">
                         <mat-checkbox color="primary" formControlName="{{ rolePreferenceOption }}">{{ rolePreferenceOption }}</mat-checkbox>
                     </div>
                 </div>
-                <br />
                 <app-dropdown class="large-input" placeholder="Where did you hear about UKSF?" [autocomplete]="false"
                     [elements]="referenceElements$" formControlName="reference" elementName="reference"
                     [reserveErrorSpace]="false">
                     <ng-template #element let-element>{{ element.displayValue }}</ng-template>
                 </app-dropdown>
-                <br />
-                <br />
                 <div class="button-next">
                     <app-button (clicked)="update()" [disabled]="!formGroup.valid || !changesMade" [pending]="pending"> Update </app-button>
                 </div>

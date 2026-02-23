@@ -6,7 +6,7 @@
         <app-text-input class="reason-field" label="Reason" [required]="true" formControlName="reason"
             [validationMessages]="validationMessages.reason" [reserveErrorSpace]="true">
         </app-text-input>
-        <mat-form-field>
+        <mat-form-field class="datepicker-field">
             <mat-label>Start date</mat-label>
             <input
                 (click)="pickerStart.open()"
@@ -21,8 +21,9 @@
             />
             <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
             <mat-datepicker #pickerStart [touchUi]="mobile"></mat-datepicker>
+            <mat-error>Start date is required</mat-error>
         </mat-form-field>
-        <mat-form-field>
+        <mat-form-field class="datepicker-field">
             <mat-label>End date (inclusive)</mat-label>
             <input
                 (click)="pickerEnd.open()"
@@ -36,6 +37,7 @@
             />
             <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
             <mat-datepicker #pickerEnd [touchUi]="mobile"></mat-datepicker>
+            <mat-error>End date is required</mat-error>
         </mat-form-field>
         <mat-checkbox color="primary" formControlName="emergency" *ngIf="late" matTooltip="If this is an emergency, tick this box">Emergency</mat-checkbox>
         <div class="invalid-message" *ngIf="invalidMessage">

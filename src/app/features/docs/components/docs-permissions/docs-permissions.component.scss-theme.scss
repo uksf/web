@@ -9,10 +9,6 @@
         .mat-expansion-panel {
             background-color: mat.get-color-from-palette($background, 450);
 
-            .mat-expansion-panel-header.mat-expanded:hover {
-                background-color: mat.get-color-from-palette($background, hover);
-            }
-    
             .permissions-header {        
                 span {
                     color: mat.get-color-from-palette($primary);

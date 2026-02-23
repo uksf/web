@@ -43,7 +43,9 @@
               "quill",
               "moment",
               "moment-timezone",
-              "chart.js"
+              "chart.js",
+              "mobx",
+              "ansi-to-html"
             ],
             "vendorChunk": true,
             "extractLicenses": false,

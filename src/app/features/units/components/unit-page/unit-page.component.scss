@@ -5,6 +5,15 @@
     padding-left: 16px;
     padding-right: 16px;
 
+    .unit-header {
+        display: flex;
+        align-items: baseline;
+    }
+
+    .back-button {
+        margin-right: 4px;
+    }
+
     a {
         text-decoration: none;
     }

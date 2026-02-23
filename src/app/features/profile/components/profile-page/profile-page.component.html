@@ -56,7 +56,6 @@
                     </div>
                 </mat-card>
                 <div *ngIf="account.application != null && (isRecruiter || (isMyProfile && !isRecruiter))" class="application-container">
-                    <br />
                     <mat-card style="text-align: center; vertical-align: middle">
                         <h2 *ngIf="isRecruiter">
                             <a routerLink="/recruitment/{{ account.id }}">View application</a>
@@ -66,7 +65,6 @@
                         </h2>
                     </mat-card>
                 </div>
-                <br />
                 <h3 class="service-record-title">Service History</h3>
                 <mat-card *ngFor="let serviceItem of account.serviceRecord; trackBy: trackByIndex" class="service-record">
                     <span>{{ serviceItem.occurence }}</span>
@@ -80,16 +78,14 @@
         <div class="flex-container settings">
             <mat-card *ngIf="!accountId || isAdmin">
                 <h3>Settings</h3>
-                <form [formGroup]="settingsFormGroup">
+                <form [formGroup]="settingsFormGroup" class="settings-form">
                     <div>
                         <mat-checkbox color="primary" formControlName="notificationsEmail" matTooltip="Receive email notifications" (change)="changeSetting()"> Email notifications </mat-checkbox>
-                        <br />
                     </div>
                     <div>
                         <mat-checkbox color="primary" formControlName="notificationsTeamspeak" matTooltip="Receive TeamSpeak notifications" (change)="changeSetting()">
                             TeamSpeak notifications
                         </mat-checkbox>
-                        <br />
                     </div>
                     <ng-template [ngxPermissionsOnly]="['RECRUITER']">
                         <div>

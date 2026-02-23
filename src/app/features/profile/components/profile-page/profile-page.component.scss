@@ -77,12 +77,15 @@
     }
 
     .application-container {
+        margin-top: 16px;
+
         h2 {
             margin: 0;
         }
     }
 
     .service-record-title {
+        margin-top: 16px;
         margin-bottom: 15px;
     }
 
@@ -105,6 +108,12 @@
 
     &.settings {
         padding-left: 0;
+    }
+
+    .settings-form {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
     }
 }
 

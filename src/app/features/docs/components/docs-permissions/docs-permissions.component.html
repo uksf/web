@@ -1,5 +1,5 @@
 <mat-expansion-panel [(expanded)]="expanded">
-    <mat-expansion-panel-header>
+    <mat-expansion-panel-header appSpotlight>
         <div class="permissions-header">
             <h4 class="permissions-title">{{ title }}</h4>
             <span *ngIf="model.inherit && !expanded">

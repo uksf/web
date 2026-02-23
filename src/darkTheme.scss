@@ -46,10 +46,15 @@ $dark-theme-background: (
 $dark-theme-primary: $gold-pallette;
 $dark-theme-accent: mat.define-palette(mat.$blue-palette, 900);
 $dark-theme-warn: mat.define-palette(mat.$red-palette, 800);
-// Uses deprecated 3-arg form intentionally: the map-based API nests background/foreground
-// under a `color` key, which breaks the custom palette merge below. Safe until Angular 18+.
-$dark-theme: mat.define-dark-theme($dark-theme-primary, $dark-theme-accent, $dark-theme-warn);
+$dark-theme: mat.define-dark-theme((
+    color: (
+        primary: $dark-theme-primary,
+        accent: $dark-theme-accent,
+        warn: $dark-theme-warn,
+    )
+));
 
+// Merge custom background palette keys into both top-level and nested color map
 $background: map-get($dark-theme, background);
 $background: map_merge($background, $dark-theme-background);
 $dark-theme: map_merge(
@@ -58,3 +63,9 @@ $dark-theme: map_merge(
         background: $background
     )
 );
+// Also patch the nested color.background so palette lookups work from either path
+$color-map: map-get($dark-theme, color);
+@if $color-map {
+    $color-map: map_merge($color-map, (background: $background));
+    $dark-theme: map_merge($dark-theme, (color: $color-map));
+}
