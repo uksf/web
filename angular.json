@@ -102,7 +102,7 @@
           "builder": "@storybook/angular:start-storybook",
           "options": {
             "configDir": ".storybook",
-            "buildTarget": "uksf:build",
+            "browserTarget": "uksf:build",
             "compodoc": false,
             "port": 6006
           }
@@ -111,7 +111,7 @@
           "builder": "@storybook/angular:build-storybook",
           "options": {
             "configDir": ".storybook",
-            "buildTarget": "uksf:build",
+            "browserTarget": "uksf:build",
             "compodoc": false,
             "outputDir": "storybook-static"
           }
