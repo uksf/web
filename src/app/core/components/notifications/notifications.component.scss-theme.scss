@@ -1,8 +1,9 @@
 @use '@angular/material' as mat;
+@use 'sass:map';
 @mixin notifications-component-theme($theme) {
-    $foreground: map-get($theme, foreground);
-    $background: map-get($theme, background);
-    $primary: map-get($theme, primary);
+    $foreground: map.get($theme, foreground);
+    $background: map.get($theme, background);
+    $primary: map.get($theme, primary);
 
     app-notifications {
         .mat-icon.clear {

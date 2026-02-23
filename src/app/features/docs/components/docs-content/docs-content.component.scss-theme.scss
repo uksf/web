@@ -1,8 +1,9 @@
 @use '@angular/material' as mat;
+@use 'sass:map';
 
 @mixin docs-content-component-theme($theme) {
-    $background: map-get($theme, background);
-    $primary: map-get($theme, primary);
+    $background: map.get($theme, background);
+    $primary: map.get($theme, primary);
 
     app-docs-content {
         .content-container {

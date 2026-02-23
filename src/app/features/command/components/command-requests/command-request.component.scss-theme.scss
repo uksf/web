@@ -1,7 +1,8 @@
 @use '@angular/material' as mat;
+@use 'sass:map';
 @mixin command-request-component-theme($theme) {
-    $background: map-get($theme, background);
-    $primary: map-get($theme, primary);
+    $background: map.get($theme, background);
+    $primary: map.get($theme, primary);
 
     app-command-requests {
         .request-type {

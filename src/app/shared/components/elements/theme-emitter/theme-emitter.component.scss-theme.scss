@@ -1,10 +1,11 @@
 @use '@angular/material' as mat;
+@use 'sass:map';
 
 @mixin theme-emitter-component-theme($theme) {
-    $foreground: map-get($theme, foreground);
-    $primary: map-get($theme, primary);
-    $accent: map-get($theme, accent);
-    $warn: map-get($theme, warn);
+    $foreground: map.get($theme, foreground);
+    $primary: map.get($theme, primary);
+    $accent: map.get($theme, accent);
+    $warn: map.get($theme, warn);
 
     app-theme-emitter {
         .foreground {

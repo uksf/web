@@ -1,7 +1,8 @@
 @use '@angular/material' as mat;
+@use 'sass:map';
 
 @mixin message-modal-component-theme($theme) {
-    $background: map-get($theme, background);
+    $background: map.get($theme, background);
 
     app-message-modal {
         ::-webkit-scrollbar-track {

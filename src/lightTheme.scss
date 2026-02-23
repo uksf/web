@@ -1,5 +1,6 @@
 @use '@angular/material' as mat;
-@import 'palettes.scss';
+@use 'sass:map';
+@use 'palettes' as *;
 
 $light-theme-background: (
     status-bar: mat.m2-get-color-from-palette($light-pallette, 300),
@@ -39,9 +40,9 @@ $light-theme-warn: mat.m2-define-palette(mat.$m2-red-palette, 800);
 // under a `color` key, which breaks the custom palette merge below. Safe until Angular 18+.
 $light-theme: mat.m2-define-light-theme($light-theme-primary, $light-theme-accent, $light-theme-warn);
 
-$background: map-get($light-theme, background);
-$background: map_merge($background, $light-theme-background);
-$light-theme: map_merge(
+$background: map.get($light-theme, background);
+$background: map.merge($background, $light-theme-background);
+$light-theme: map.merge(
     $light-theme,
     (
         background: $background

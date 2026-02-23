@@ -1,5 +1,6 @@
+@use 'sass:map';
 @use '@angular/material' as mat;
-@import 'palettes.scss';
+@use 'palettes' as *;
 
 $dark-theme-background: (
     status-bar: black,
@@ -55,17 +56,17 @@ $dark-theme: mat.m2-define-dark-theme((
 ));
 
 // Merge custom background palette keys into both top-level and nested color map
-$background: map-get($dark-theme, background);
-$background: map_merge($background, $dark-theme-background);
-$dark-theme: map_merge(
+$background: map.get($dark-theme, background);
+$background: map.merge($background, $dark-theme-background);
+$dark-theme: map.merge(
     $dark-theme,
     (
         background: $background
     )
 );
 // Also patch the nested color.background so palette lookups work from either path
-$color-map: map-get($dark-theme, color);
+$color-map: map.get($dark-theme, color);
 @if $color-map {
-    $color-map: map_merge($color-map, (background: $background));
-    $dark-theme: map_merge($dark-theme, (color: $color-map));
+    $color-map: map.merge($color-map, (background: $background));
+    $dark-theme: map.merge($dark-theme, (color: $color-map));
 }

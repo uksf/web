@@ -1,7 +1,8 @@
 @use '@angular/material' as mat;
+@use 'sass:map';
 
 @mixin modpack-guide-component-theme($theme) {
-    $primary: map-get($theme, primary);
+    $primary: map.get($theme, primary);
 
     app-modpack-guide {
         a {

@@ -1,27 +1,6 @@
 @use '@angular/material' as mat;
+@use 'sass:map';
 
-@mixin new-modpack-release-modal-component-theme($theme) {
-    $primary: map-get($theme, primary);
-
-    app-new-modpack-release-modal {
-        .mat-mdc-dialog-content {
-            .previous-version {
-                color: mat.m2-get-color-from-palette($primary);
-            }
-
-            .form-container {
-                .versions-container {
-                    .mat-mdc-radio-button {
-                        .version-label {
-                            color: white;
-
-                            &.selected {
-                                color: mat.m2-get-color-from-palette($primary);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+@mixin install-workshop-mod-modal-component-theme($theme) {
+    // No theme-dependent styles needed for this component
 }

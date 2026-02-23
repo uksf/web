@@ -1,7 +1,8 @@
 @use '@angular/material' as mat;
+@use 'sass:map';
 
 @mixin new-modpack-release-modal-component-theme($theme) {
-    $primary: map-get($theme, primary);
+    $primary: map.get($theme, primary);
 
     app-new-modpack-release-modal {
         .mat-mdc-dialog-content {

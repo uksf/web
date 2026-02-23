@@ -1,13 +1,14 @@
 @use '@angular/material' as mat;
+@use 'sass:map';
 
 // Theme mixin for shared form-field components.
 // $host-selector should match the component's element selector (e.g., 'app-text-input').
 // Border color and style use CSS custom properties (--ff-border-color, --ff-border-style)
 // to avoid specificity conflicts with Angular's emulated encapsulation.
 @mixin form-field-theme($theme, $host-selector) {
-    $foreground: map-get($theme, foreground);
-    $primary: map-get($theme, primary);
-    $warn: map-get($theme, warn);
+    $foreground: map.get($theme, foreground);
+    $primary: map.get($theme, primary);
+    $warn: map.get($theme, warn);
 
     #{$host-selector} {
         --ff-border-color: #{mat.m2-get-color-from-palette($foreground, divider)};

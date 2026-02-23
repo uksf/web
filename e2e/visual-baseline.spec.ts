@@ -38,11 +38,15 @@ const fullPageOpts = { fullPage: true, timeout: 30000 };
 // 1. PUBLIC PAGES (unauthenticated-accessible)
 // ---------------------------------------------------------------------------
 test.describe('Visual - Public Pages', () => {
-  test('login page', async ({ page }) => {
-    await page.goto('/login');
-    await page.waitForSelector('#email');
-    await page.waitForTimeout(500);
-    await expect(page).toHaveScreenshot('login-page.png', fullPageOpts);
+  test.describe('login (unauthenticated)', () => {
+    test.use({ storageState: { cookies: [], origins: [] } });
+
+    test('login page', async ({ page }) => {
+      await page.goto('/login');
+      await page.waitForSelector('input[autocomplete="username"]');
+      await page.waitForTimeout(500);
+      await expect(page).toHaveScreenshot('login-page.png', fullPageOpts);
+    });
   });
 
   test('information page', async ({ page }) => {
@@ -275,39 +279,42 @@ test.describe('Visual - Admin Pages', () => {
 // 9. FORM FIELD STYLING (critical regression target)
 // ---------------------------------------------------------------------------
 test.describe('Visual - Form Fields', () => {
-  test('login form - empty fields (label as placeholder)', async ({ page }) => {
-    await page.goto('/login');
-    await page.waitForSelector('#email');
-    await page.waitForTimeout(500);
-    const form = page.locator('form').first();
-    await expect(form).toHaveScreenshot('form-login-empty.png', { timeout: 30000 });
-  });
+  test.describe('login form (unauthenticated)', () => {
+    test.use({ storageState: { cookies: [], origins: [] } });
 
-  test('login form - filled fields (floating labels)', async ({ page }) => {
-    await page.goto('/login');
-    await page.waitForSelector('#email');
-    await page.fill('#email', 'test@example.com');
-    await page.fill('#password', 'testpassword');
-    // Click outside to unfocus
-    await page.locator('h2').click();
-    await page.waitForTimeout(300);
-    const form = page.locator('form').first();
-    await expect(form).toHaveScreenshot('form-login-filled.png', { timeout: 30000 });
-  });
+    test('login form - empty fields (label as placeholder)', async ({ page }) => {
+      await page.goto('/login');
+      await page.waitForSelector('input[autocomplete="username"]');
+      await page.waitForTimeout(500);
+      const form = page.locator('app-login form').first();
+      await expect(form).toHaveScreenshot('form-login-empty.png', { timeout: 30000 });
+    });
 
-  test('login form - focused field', async ({ page }) => {
-    await page.goto('/login');
-    await page.waitForSelector('#email');
-    await page.click('#email');
-    await page.waitForTimeout(300);
-    const emailField = page.locator('mat-form-field').first();
-    await expect(emailField).toHaveScreenshot('form-field-focused.png', { timeout: 30000 });
+    test('login form - filled fields (floating labels)', async ({ page }) => {
+      await page.goto('/login');
+      await page.waitForSelector('input[autocomplete="username"]');
+      await page.fill('input[autocomplete="username"]', 'test@example.com');
+      await page.fill('input[autocomplete="current-password"]', 'testpassword');
+      // Click outside to unfocus
+      await page.locator('h2').click();
+      await page.waitForTimeout(300);
+      const form = page.locator('app-login form').first();
+      await expect(form).toHaveScreenshot('form-login-filled.png', { timeout: 30000 });
+    });
+
+    test('login form - focused field', async ({ page }) => {
+      await page.goto('/login');
+      await page.waitForSelector('input[autocomplete="username"]');
+      await page.click('input[autocomplete="username"]');
+      await page.waitForTimeout(300);
+      const emailField = page.locator('app-text-input').first();
+      await expect(emailField).toHaveScreenshot('form-field-focused.png', { timeout: 30000 });
+    });
   });
 
   test('filter field - standalone (no error space)', async ({ page }) => {
-    await page.goto('/personnel/discharges');
-    await waitForPageReady(page, 'app-personnel-discharges');
-    const filterField = page.locator('mat-form-field').first();
+    await navigateWithPermission(page, '/personnel/discharges', 'app-personnel-discharges');
+    const filterField = page.locator('app-text-input.filter-input').first();
     await expect(filterField).toHaveScreenshot('form-field-filter.png', { timeout: 30000 });
   });
 
@@ -401,7 +408,7 @@ test.describe('Visual - Card Components', () => {
 // ---------------------------------------------------------------------------
 test.describe('Visual - Docs Pages', () => {
   test('docs page', async ({ page }) => {
-    await navigateWithPermission(page, '/docs', 'app-docs-page');
+    await navigateWithPermission(page, '/information/docs', 'app-docs-page');
     await expect(page).toHaveScreenshot('docs-page.png', fullPageOpts);
   });
 });

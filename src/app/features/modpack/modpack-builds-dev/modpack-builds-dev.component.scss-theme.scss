@@ -1,10 +1,11 @@
 @use '@angular/material' as mat;
+@use 'sass:map';
 
 @mixin modpack-builds-dev-component-theme($theme) {
-    $foreground: map-get($theme, foreground);
-    $primary: map-get($theme, primary);
-    $accent: map-get($theme, accent);
-    $background: map-get($theme, background);
+    $foreground: map.get($theme, foreground);
+    $primary: map.get($theme, primary);
+    $accent: map.get($theme, accent);
+    $background: map.get($theme, background);
 
     app-modpack-builds-dev {
         a {

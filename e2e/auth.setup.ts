@@ -23,11 +23,11 @@ setup('authenticate', async ({ page }) => {
   await page.goto('/login');
 
   // Wait for the login form to be visible
-  await page.waitForSelector('#email');
+  await page.waitForSelector('input[autocomplete="username"]');
 
   // Fill in credentials
-  await page.fill('#email', process.env.TEST_EMAIL!);
-  await page.fill('#password', process.env.TEST_PASSWORD!);
+  await page.fill('input[autocomplete="username"]', process.env.TEST_EMAIL!);
+  await page.fill('input[autocomplete="current-password"]', process.env.TEST_PASSWORD!);
 
   // Click the login button (app-button component containing "Login" text)
   await page.click('app-button:has-text("Login")');

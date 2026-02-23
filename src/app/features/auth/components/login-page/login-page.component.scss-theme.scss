@@ -1,10 +1,11 @@
 @use '@angular/material' as mat;
+@use 'sass:map';
 
 @mixin login-page-component-theme($theme) {
-    $background: map-get($theme, background);
-    $foreground: map-get($theme, foreground);
-    $primary: map-get($theme, primary);
-    $warn: map-get($theme, warn);
+    $background: map.get($theme, background);
+    $foreground: map.get($theme, foreground);
+    $primary: map.get($theme, primary);
+    $warn: map.get($theme, warn);
 
     app-login-page {
         a {

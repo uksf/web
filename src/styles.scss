@@ -1,89 +1,86 @@
+@use 'sass:map';
 @use '@angular/material' as mat;
 @use 'styles/form-field-theme' as fft;
 @use 'styles/mat-form-field-overrides' as mffo;
 @use 'app/features/command/components/command-ranks/ranks-list-item-layout' as ranks-layout;
 @use 'app/features/operations/components/operations-servers/servers-list-item-layout' as servers-layout;
-@import '@ali-hm/angular-tree-component/css/angular-tree-component.css';
-
-// Core — default typography styles for all components + hierarchy classes
-@include mat.all-component-typographies();
-@include mat.elevation-classes();
-@include mat.app-background();
 
 // Themes
-@import 'darkTheme.scss';
-//@import 'lightTheme.scss';
+@use 'darkTheme' as *;
+//@use 'lightTheme' as *;
 
 // Base
-@import 'app/app.component.scss-theme.scss';
-@import 'app/shared/components/teamspeak-connect/teamspeak-connect.component.scss-theme.scss';
-@import 'app/core/components/footer-bar/footer-bar.component.scss-theme.scss';
-@import 'app/core/components/header-bar/header-bar.component.scss-theme.scss';
-@import 'app/core/components/notifications/notifications.component.scss-theme.scss';
-@import 'app/core/components/side-bar/side-bar.component.scss-theme.scss';
+@use 'app/app.component.scss-theme' as *;
+@use 'app/shared/components/teamspeak-connect/teamspeak-connect.component.scss-theme' as *;
+@use 'app/core/components/footer-bar/footer-bar.component.scss-theme' as *;
+@use 'app/core/components/header-bar/header-bar.component.scss-theme' as *;
+@use 'app/core/components/notifications/notifications.component.scss-theme' as *;
+@use 'app/core/components/side-bar/side-bar.component.scss-theme' as *;
 
 // Pages
-@import 'app/features/information/components/about-page/about-page.component.scss-theme.scss';
-@import 'app/features/home/components/home-page/home-page.component.scss-theme.scss';
-@import 'app/features/information/components/information-page/information-page.component.scss-theme.scss';
-@import 'app/features/auth/components/login-page/login-page.component.scss-theme.scss';
-@import 'app/features/modpack/modpack-page/modpack-page.component.scss-theme.scss';
-@import 'app/features/application/components/application-page/application-page.component.scss-theme.scss';
-@import 'app/features/operations/components/operations-page/operations-page.component.scss-theme.scss';
-@import 'app/features/personnel/components/personnel-page/personnel-page.component.scss-theme.scss';
-@import 'app/features/profile/components/profile-page/profile-page.component.scss-theme.scss';
-@import 'app/features/recruitment/components/recruitment-application-page/recruitment-application-page.component.scss-theme.scss';
-@import 'app/features/recruitment/components/recruitment-page/recruitment-page.component.scss-theme.scss';
-@import 'app/features/units/components/unit-page/unit-page.component.scss-theme.scss';
-@import 'app/features/units/components/units-page/units-page.component.scss-theme.scss';
+@use 'app/features/information/components/about-page/about-page.component.scss-theme' as *;
+@use 'app/features/home/components/home-page/home-page.component.scss-theme' as *;
+@use 'app/features/information/components/information-page/information-page.component.scss-theme' as *;
+@use 'app/features/auth/components/login-page/login-page.component.scss-theme' as *;
+@use 'app/features/modpack/modpack-page/modpack-page.component.scss-theme' as *;
+@use 'app/features/application/components/application-page/application-page.component.scss-theme' as *;
+@use 'app/features/operations/components/operations-page/operations-page.component.scss-theme' as *;
+@use 'app/features/personnel/components/personnel-page/personnel-page.component.scss-theme' as *;
+@use 'app/features/profile/components/profile-page/profile-page.component.scss-theme' as *;
+@use 'app/features/recruitment/components/recruitment-application-page/recruitment-application-page.component.scss-theme' as *;
+@use 'app/features/recruitment/components/recruitment-page/recruitment-page.component.scss-theme' as *;
+@use 'app/features/units/components/unit-page/unit-page.component.scss-theme' as *;
+@use 'app/features/units/components/units-page/units-page.component.scss-theme' as *;
 
 // Components
-@import 'app/features/admin/components/admin-servers/admin-servers.component.scss-theme';
-@import 'app/features/admin/components/admin-variables/admin-variables.component.scss-theme';
-@import 'app/shared/components/comment-display/comment-display.component.scss-theme.scss';
-@import 'app/features/docs/components/docs-content/docs-content.component.scss-theme';
-@import 'app/features/docs/components/docs-content/docs-content.quill.scss-theme';
-@import 'app/features/docs/components/docs-permissions/docs-permissions.component.scss-theme';
-@import 'app/features/docs/components/docs-sidebar/docs-sidebar.component.scss-theme';
-@import 'app/features/docs/components/docs-sidebar/docs-folder/docs-folder.component.scss-theme';
-@import 'app/features/docs/components/docs-sidebar/docs-document/docs-document.component.scss-theme';
-@import 'app/shared/components/elements/file-drop/file-drop.component.scss-theme.scss';
-@import 'app/shared/components/elements/inline-edit/inline-edit.component.scss-theme.scss';
-@import 'app/shared/components/elements/inline-dropdown/inline-dropdown.component.scss-theme.scss';
-@import 'app/shared/components/elements/loading-placeholder/loading-placeholder.component.scss-theme.scss';
-@import 'app/shared/components/elements/selection-list/selection-list.component.scss-theme';
-@import 'app/shared/components/elements/theme-emitter/theme-emitter.component.scss-theme.scss';
-@import 'app/features/command/components/command-requests/command-request.component.scss-theme.scss';
-@import 'app/features/command/components/command-members/command-members.component.scss-theme.scss';
-@import 'app/features/command/components/command-members/command-member-card/command-member-card.component.scss-theme.scss';
-@import 'app/features/command/components/command-ranks/command-ranks.component.scss-theme.scss';
-@import 'app/features/command/components/command-roles/command-roles.component.scss-theme.scss';
-@import 'app/features/command/components/command-units/command-units.component.scss-theme.scss';
-@import 'app/features/operations/components/operations-servers/operations-servers.component.scss-theme.scss';
-@import 'app/features/personnel/components/personnel-discharges/personnel-discharges.component.scss-theme.scss';
-@import 'app/features/personnel/components/personnel-loas-list/personnel-loas-list.component.scss-theme.scss';
-@import 'app/features/personnel/components/personnel-roster/personnel-roster.component.scss-theme';
-@import 'app/features/units/components/units-orbat/units-orbat.component.scss-theme.scss';
-@import 'app/features/units/components/units-orbat-aux/units-orbat-aux.component.scss-theme.scss';
-@import 'app/features/units/components/units-orbat-secondary/units-orbat-secondary.component.scss-theme.scss';
+@use 'app/features/admin/components/admin-servers/admin-servers.component.scss-theme' as *;
+@use 'app/features/admin/components/admin-variables/admin-variables.component.scss-theme' as *;
+@use 'app/shared/components/comment-display/comment-display.component.scss-theme' as *;
+@use 'app/features/docs/components/docs-content/docs-content.component.scss-theme' as *;
+@use 'app/features/docs/components/docs-content/docs-content.quill.scss-theme' as *;
+@use 'app/features/docs/components/docs-permissions/docs-permissions.component.scss-theme' as *;
+@use 'app/features/docs/components/docs-sidebar/docs-sidebar.component.scss-theme' as *;
+@use 'app/features/docs/components/docs-sidebar/docs-folder/docs-folder.component.scss-theme' as *;
+@use 'app/features/docs/components/docs-sidebar/docs-document/docs-document.component.scss-theme' as *;
+@use 'app/shared/components/elements/file-drop/file-drop.component.scss-theme' as *;
+@use 'app/shared/components/elements/inline-edit/inline-edit.component.scss-theme' as *;
+@use 'app/shared/components/elements/inline-dropdown/inline-dropdown.component.scss-theme' as *;
+@use 'app/shared/components/elements/loading-placeholder/loading-placeholder.component.scss-theme' as *;
+@use 'app/shared/components/elements/selection-list/selection-list.component.scss-theme' as *;
+@use 'app/shared/components/elements/theme-emitter/theme-emitter.component.scss-theme' as *;
+@use 'app/features/command/components/command-requests/command-request.component.scss-theme' as *;
+@use 'app/features/command/components/command-members/command-members.component.scss-theme' as *;
+@use 'app/features/command/components/command-members/command-member-card/command-member-card.component.scss-theme' as *;
+@use 'app/features/command/components/command-ranks/command-ranks.component.scss-theme' as *;
+@use 'app/features/command/components/command-roles/command-roles.component.scss-theme' as *;
+@use 'app/features/command/components/command-units/command-units.component.scss-theme' as *;
+@use 'app/features/operations/components/operations-servers/operations-servers.component.scss-theme' as *;
+@use 'app/features/personnel/components/personnel-discharges/personnel-discharges.component.scss-theme' as *;
+@use 'app/features/personnel/components/personnel-loas-list/personnel-loas-list.component.scss-theme' as *;
+@use 'app/features/personnel/components/personnel-roster/personnel-roster.component.scss-theme' as *;
+@use 'app/features/units/components/units-orbat/units-orbat.component.scss-theme' as *;
+@use 'app/features/units/components/units-orbat-aux/units-orbat-aux.component.scss-theme' as *;
+@use 'app/features/units/components/units-orbat-secondary/units-orbat-secondary.component.scss-theme' as *;
 
 // Modals
-@import 'app/features/command/modals/add-unit-modal/add-unit-modal.component.scss-theme.scss';
-@import 'app/features/operations/modals/edit-server-mods-modal/edit-server-mods-modal.component.scss-theme.scss';
-@import 'app/shared/modals/request-loa-modal/request-loa-modal.component.scss-theme.scss';
-@import 'app/shared/modals/message-modal/message-model.component.scss-theme';
-@import 'app/shared/modals/validation-report-modal/validation-report-modal.scss-theme';
+@use 'app/features/command/modals/add-unit-modal/add-unit-modal.component.scss-theme' as *;
+@use 'app/features/operations/modals/edit-server-mods-modal/edit-server-mods-modal.component.scss-theme' as *;
+@use 'app/shared/modals/request-loa-modal/request-loa-modal.component.scss-theme' as *;
+@use 'app/shared/modals/message-modal/message-model.component.scss-theme' as *;
+@use 'app/shared/modals/validation-report-modal/validation-report-modal.scss-theme' as *;
 
 // Modpack
-@import 'app/features/modpack/modpack-builds-dev/modpack-builds-dev.component.scss-theme.scss';
-@import 'app/features/modpack/modpack-builds-rc/modpack-builds-rc.component.scss-theme.scss';
-@import 'app/features/modpack/modpack-builds-steps/modpack-builds-steps.component.scss-theme.scss';
-@import 'app/features/modpack/modpack-guide/modpack-guide.component.scss-theme.scss';
-@import 'app/features/modpack/modpack-releases/modpack-releases.component.scss-theme.scss';
-@import 'app/features/modpack/modpack-workshop/modpack-workshop.component.scss-theme.scss';
-@import 'app/features/modpack/new-modpack-release-modal/new-modpack-release-modal.component.scss-theme.scss';
-@import 'app/features/modpack/install-workshop-mod-modal/install-workshop-mod-modal.component.scss-theme';
-@import 'app/features/modpack/workshop-mod-intervention-modal/workshop-mod-intervention-modal.component.scss-theme';
+@use 'app/features/modpack/modpack-builds-dev/modpack-builds-dev.component.scss-theme' as *;
+@use 'app/features/modpack/modpack-builds-rc/modpack-builds-rc.component.scss-theme' as *;
+@use 'app/features/modpack/modpack-builds-steps/modpack-builds-steps.component.scss-theme' as *;
+@use 'app/features/modpack/modpack-guide/modpack-guide.component.scss-theme' as *;
+@use 'app/features/modpack/modpack-releases/modpack-releases.component.scss-theme' as *;
+@use 'app/features/modpack/modpack-workshop/modpack-workshop.component.scss-theme' as *;
+@use 'app/features/modpack/new-modpack-release-modal/new-modpack-release-modal.component.scss-theme' as *;
+@use 'app/features/modpack/install-workshop-mod-modal/install-workshop-mod-modal.component.scss-theme' as *;
+@use 'app/features/modpack/workshop-mod-intervention-modal/workshop-mod-intervention-modal.component.scss-theme' as *;
+
+@import '@ali-hm/angular-tree-component/css/angular-tree-component.css';
 
 // Add components themes
 @mixin custom-components-theme($theme) {
@@ -157,6 +154,7 @@
     @include modpack-guide-component-theme($theme);
     @include modpack-releases-component-theme($theme);
     @include modpack-workshop-component-theme($theme);
+    @include install-workshop-mod-modal-component-theme($theme);
     @include new-modpack-release-modal-component-theme($theme);
     @include workshop-mod-intervention-modal-component-theme($theme);
 }
@@ -165,9 +163,45 @@
     @include mat.all-component-themes($dark-theme);
     @include custom-components-theme($dark-theme);
 
-    $foreground: map-get($dark-theme, foreground);
-    $background: map-get($dark-theme, background);
-    $primary: map-get($dark-theme, primary);
+    $foreground: map.get($dark-theme, foreground);
+    $background: map.get($dark-theme, background);
+    $primary: map.get($dark-theme, primary);
+
+    // Material 20 sets CSS custom properties to M2 defaults (#424242/#303030)
+    // instead of reading the custom background palette keys. Override each to
+    // restore the values from $dark-theme-background in darkTheme.scss.
+    // Wrapped in & {} to satisfy Sass mixed-decls deprecation (declarations after nested rules).
+    & {
+        // Cards
+        --mat-card-elevated-container-color: #{mat.m2-get-color-from-palette($background, card)};
+        --mat-card-outlined-container-color: #{mat.m2-get-color-from-palette($background, card)};
+
+        // Dialog
+        --mat-dialog-container-color: #{mat.m2-get-color-from-palette($background, dialog)};
+
+        // Buttons
+        --mat-button-protected-container-color: #{mat.m2-get-color-from-palette($background, raised-button)};
+
+        // Menus and dropdowns
+        --mat-menu-container-color: #{mat.m2-get-color-from-palette($background, card)};
+        --mat-select-panel-background-color: #{mat.m2-get-color-from-palette($background, card)};
+        --mat-autocomplete-background-color: #{mat.m2-get-color-from-palette($background, card)};
+
+        // Tables and lists
+        --mat-table-background-color: #{mat.m2-get-color-from-palette($background, card)};
+        --mat-paginator-container-background-color: #{mat.m2-get-color-from-palette($background, card)};
+
+        // Expansion panels
+        --mat-expansion-container-background-color: #{mat.m2-get-color-from-palette($background, card)};
+
+        // Toolbar and app chrome
+        --mat-toolbar-container-background-color: #{mat.m2-get-color-from-palette($background, app-bar)};
+        --mat-sidenav-content-background-color: #{mat.m2-get-color-from-palette($background, background)};
+        --mat-app-background-color: #{mat.m2-get-color-from-palette($background, background)};
+
+        // Stepper
+        --mat-stepper-container-color: #{mat.m2-get-color-from-palette($background, card)};
+    }
 
     // Global scrollbar theming
     ::-webkit-scrollbar-track {
@@ -404,9 +438,9 @@ mat-tab-nav-panel,
 mat.$theme-ignore-duplication-warnings: true;
 
 .cdk-drag-preview {
-    $foreground: map-get($dark-theme, foreground);
-    $background: map-get($dark-theme, background);
-    $primary: map-get($dark-theme, primary);
+    $foreground: map.get($dark-theme, foreground);
+    $background: map.get($dark-theme, background);
+    $primary: map.get($dark-theme, primary);
 
     // Material CSS custom properties for card border-radius and form field sizing
     @include mat.card-theme($dark-theme);

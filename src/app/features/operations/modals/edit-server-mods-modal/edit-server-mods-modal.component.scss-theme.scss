@@ -1,8 +1,9 @@
 @use '@angular/material' as mat;
+@use 'sass:map';
 @mixin edit-server-mods-modal-component-theme($theme) {
-    $foreground: map-get($theme, foreground);
-    $background: map-get($theme, background);
-    $primary: map-get($theme, primary);
+    $foreground: map.get($theme, foreground);
+    $background: map.get($theme, background);
+    $primary: map.get($theme, primary);
 
     app-edit-server-mods-modal {
         .mods-list-item {

@@ -1,6 +1,7 @@
 @use '@angular/material' as mat;
+@use 'sass:map';
 @mixin file-drop-component-theme($theme) {
-    $background: map-get($theme, background);
+    $background: map.get($theme, background);
 
     app-file-drop {
         .drop-zone {

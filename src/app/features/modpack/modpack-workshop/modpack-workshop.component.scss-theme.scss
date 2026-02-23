@@ -1,8 +1,9 @@
 @use '@angular/material' as mat;
+@use 'sass:map';
 
 @mixin modpack-workshop-component-theme($theme) {
-    $primary: map-get($theme, primary);
-    $background: map-get($theme, background);
+    $primary: map.get($theme, primary);
+    $background: map.get($theme, background);
     $inset-colour: mat.m2-get-color-from-palette($primary, default);
 
     app-modpack-workshop {

@@ -1,10 +1,11 @@
 @use '@angular/material' as mat;
+@use 'sass:map';
 
 @mixin home-page-component-theme($theme) {
-    $background: map-get($theme, background);
-    $foreground: map-get($theme, foreground);
-    $primary: map-get($theme, primary);
-    $accent: map-get($theme, accent);
+    $background: map.get($theme, background);
+    $foreground: map.get($theme, foreground);
+    $primary: map.get($theme, primary);
+    $accent: map.get($theme, accent);
 
     app-home-page {
         .issues-container {

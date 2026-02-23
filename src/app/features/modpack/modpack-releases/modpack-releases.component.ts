@@ -26,8 +26,6 @@ export class ModpackReleasesComponent implements OnInit, OnDestroy {
     publicReleases: ModpackRelease[] = [];
     selectedRelease: ModpackRelease | undefined;
     latestReleaseIsDraft: boolean = false;
-    private originalLinkRenderer: typeof this.markdownService.renderer.link;
-
     constructor(
         private markdownService: MarkdownService,
         private permissionsService: PermissionsService,
@@ -47,18 +45,10 @@ export class ModpackReleasesComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.markdownService.renderer.link = this.originalLinkRenderer;
         this.modpackReleaseService.disconnect();
     }
 
     ngOnInit() {
-        this.originalLinkRenderer = this.markdownService.renderer.link;
-        const linkRenderer = this.markdownService.renderer.link;
-        this.markdownService.renderer.link = (args: { href: string; title?: string | null | undefined; tokens: unknown[] }) => {
-            const html: string = linkRenderer.call(this.markdownService.renderer, args);
-            return html.replace(/^<a /, '<a target="_blank" rel="nofollow" ');
-        };
-
         this.modpackReleaseService.connect(
             () => {
                 this.updateCachedState();
