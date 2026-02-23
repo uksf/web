@@ -104,7 +104,14 @@
             "configDir": ".storybook",
             "browserTarget": "uksf:build",
             "compodoc": false,
-            "port": 6006
+            "port": 6006,
+            "styles": [
+              "src/storybook-fonts.css",
+              "src/styles-app-loading.scss",
+              "src/styles.scss",
+              "./node_modules/quill/dist/quill.core.css",
+              "./node_modules/quill/dist/quill.snow.css"
+            ]
           }
         },
         "build-storybook": {
@@ -113,7 +120,14 @@
             "configDir": ".storybook",
             "browserTarget": "uksf:build",
             "compodoc": false,
-            "outputDir": "storybook-static"
+            "outputDir": "storybook-static",
+            "styles": [
+              "src/storybook-fonts.css",
+              "src/styles-app-loading.scss",
+              "src/styles.scss",
+              "./node_modules/quill/dist/quill.core.css",
+              "./node_modules/quill/dist/quill.snow.css"
+            ]
           }
         }
       }
