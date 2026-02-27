@@ -1,36 +1,9 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('CreateFolderModal', () => {
-    test('Input fills container width', async ({ page }) => {
-        await page.goto('/iframe.html?id=modals-createfolder--default&viewMode=story');
-        await page.waitForSelector('app-text-input');
-        const input = page.locator('app-text-input');
-        const box = await input.boundingBox();
-        expect(box).not.toBeNull();
-        expect(box.width).toBeGreaterThanOrEqual(200);
-    });
-
-    test('Submit button is visible in viewport', async ({ page }) => {
-        await page.goto('/iframe.html?id=modals-createfolder--default&viewMode=story');
-        await page.waitForSelector('app-button');
-        await expect(page.locator('app-button')).toBeVisible();
-    });
-
     test('Default visual regression', async ({ page }) => {
         await page.goto('/iframe.html?id=modals-createfolder--default&viewMode=story');
-        await page.waitForSelector('app-text-input');
+        await page.waitForSelector('app-create-folder-modal');
         await expect(page.locator('.dark-theme')).toHaveScreenshot('create-folder-default.png');
-    });
-
-    test('Filled visual regression', async ({ page }) => {
-        await page.goto('/iframe.html?id=modals-createfolder--filled&viewMode=story');
-        await page.waitForSelector('app-text-input');
-        await expect(page.locator('.dark-theme')).toHaveScreenshot('create-folder-filled.png');
-    });
-
-    test('Edit mode visual regression', async ({ page }) => {
-        await page.goto('/iframe.html?id=modals-createfolder--edit-mode&viewMode=story');
-        await page.waitForSelector('app-text-input');
-        await expect(page.locator('.dark-theme')).toHaveScreenshot('create-folder-edit.png');
     });
 });

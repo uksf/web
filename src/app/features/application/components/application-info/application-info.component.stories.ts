@@ -1,100 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/angular';
 import { moduleMetadata } from '@storybook/angular';
-import { MatCardModule } from '@angular/material/card';
+import { ApplicationInfoComponent } from './application-info.component';
+import { SharedModule } from '@shared/shared.module';
 
-const meta: Meta = {
+const meta: Meta<ApplicationInfoComponent> = {
     title: 'Application/Info',
-    decorators: [moduleMetadata({ imports: [MatCardModule] })]
+    component: ApplicationInfoComponent,
+    decorators: [
+        moduleMetadata({
+            imports: [SharedModule]
+        })
+    ]
 };
 export default meta;
-type Story = StoryObj;
+type Story = StoryObj<ApplicationInfoComponent>;
 
-const styles = [
-    `.mat-mdc-card { h2 { margin-top: 0; } }
-    .button-next { text-align: right; }
-    h4 { color: #fec400; }
-    a { color: #fec400; }`
-];
-
-export const Default: Story = {
-    render: () => ({
-        styles,
-        template: `
-            <mat-card>
-                <h2>Information</h2>
-                <h3>Please read the following information before creating your application. If you have any questions, don't hesitate to ask us</h3>
-                <br />
-                <div>
-                    <h4>Playstyle</h4>
-                    <p>Our operations are based on British Special Forces responsibilities</p>
-                    <p>We consider ourselves military simulation in-game, and emulate British Military procedures as best we can</p>
-                    <p>Debriefs are held after each operation, where performance is closely analysed and discussed</p>
-                    <p>Each individual's game experience, the unit's collective game experience, and fun are always our first priorities in UKSF. We cannot however provide the maximum expectation 100% of the time</p>
-                </div>
-                <br />
-                <div>
-                    <h4>Dedication</h4>
-                    <p>UKSF was founded 10 years ago, and our leading members have been with us for 5+ years. We therefore focus on individuals who can offer long term dedication to the unit</p>
-                </div>
-                <br />
-                <div>
-                    <h4>Days we play</h4>
-                    <p>Main operations are every Saturday at 7:45pm until late</p>
-                    <p>Training is every Wednesday at 7:45pm until ~10pm</p>
-                    <p>Side operations occur usually every Tuesday and Thursday from ~7:30pm. These may occur on other days of the week as well (These are not mandatory but are encouraged)</p>
-                </div>
-                <br />
-                <div>
-                    <h4>Absence</h4>
-                    <p>Your personal life should always come before UKSF, however we do require notification if you are unable to attend Main Ops on Saturdays, and Training on Wednesdays</p>
-                    <p>Our expectation is that you should be able to attend 3 Main Ops in a month</p>
-                    <p>If you are unable to attend a Main Op, or are on holiday, you should submit a LOA through the website system</p>
-                    <p>LOAs are only accepted before noon if submitted on the day you cannot attend. LOAs posted after noon will not be counted, unless in the case of an emergency</p>
-                    <p>If we do not receive a LOA before noon, you will be marked as absent for that Main Op. 3 absences in a row will result in a discharge, depending on the circumstances</p>
-                </div>
-                <br />
-                <div>
-                    <h4>Arma</h4>
-                    <p>You must own a legitimate copy of Arma 3</p>
-                    <p>It is required that you own APEX DLC as we occasionally run missions on Tanoa. No other DLCs are required</p>
-                    <p>Your system must be able to handle the game at more than vanilla performance, as our missions can be quite intensive</p>
-                </div>
-                <br />
-                <div>
-                    <h4>Unit Rules &amp; Attitude</h4>
-                    <p>UKSF does not allow dual-clanning. This is where you are actively a part of more than 1 milsim unit at a time</p>
-                    <p>UKSF encourages proactivity</p>
-                    <p>UKSF encourages being forward with your problems, ideas, suggestions, concerns, etc</p>
-                    <p>UKSF expects a degree of maturity and common sense</p>
-                </div>
-                <br />
-                <div>
-                    <h4>Training</h4>
-                    <p>Upon passing the application process, you will be moved to the Basic Training Unit</p>
-                    <p>Basic Training consists of 4 phases, each of which you must pass before continuing to the next</p>
-                    <p>Basic Training takes a minimum of 4 weeks. This depends on your attendance and instructor availability</p>
-                </div>
-                <br />
-                <div>
-                    <h4>Specialisation</h4>
-                    <p>Upon passing Basic Training, you will be moved to SFSG, where you can pursue any specialisation we have to offer</p>
-                    <p>Specialisations include basic section qualifications such as gunner, marksman, anti-tank, basic radio skills, advanced navigation, and infantry recce school</p>
-                    <p>Role specialisations require more training and the expectation of remaining in that role. These include NCO, Officer, and Team Medic</p>
-                    <p>Unit specialisations require the most training and result in a move to a different unit. The specialist units currently available include Medic, RTO/FAC, Sniper, and JSFAW</p>
-                    <p>Our approach to training involves ensuring the trainee is capable of the role in both ability and attitude. Therefore, long-term specialisations are conditional based on these factors, and can take a number of months to achieve</p>
-                </div>
-                <br />
-                <div>
-                    <h4>Any Questions?</h4>
-                    <p>Please don't hesitate to contact us if you have any further questions about UKSF</p>
-                    <p>The best place to reach us is on our <a target="_blank" href="#">Discord</a></p>
-                    <p>Feel free to join our <a href="#">TeamSpeak (uk-sf.co.uk)</a> if you'd prefer to talk to someone by voice</p>
-                </div>
-                <br />
-                <div class="button-next">
-                    <app-button>Next</app-button>
-                </div>
-            </mat-card>
-        `
-    })
-};
+export const Default: Story = {};

@@ -1,11 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/angular';
+import { moduleMetadata } from '@storybook/angular';
+import { DefaultContentAreasComponent } from './default-content-areas/default-content-areas.component';
+import { SharedModule } from '@shared/shared.module';
 
-const meta: Meta = {
-    title: 'Shared/ContentAreas'
+const meta: Meta<DefaultContentAreasComponent> = {
+    title: 'Shared/ContentAreas',
+    component: DefaultContentAreasComponent,
+    decorators: [
+        moduleMetadata({
+            imports: [SharedModule]
+        })
+    ]
 };
 export default meta;
-
-type Story = StoryObj;
+type Story = StoryObj<DefaultContentAreasComponent>;
 
 export const DefaultLayout: Story = {
     render: () => ({

@@ -1,112 +1,43 @@
 import type { Meta, StoryObj } from '@storybook/angular';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { moduleMetadata } from '@storybook/angular';
-import { MatDialogModule } from '@angular/material/dialog';
+import { CreateFolderModalComponent, FolderModalData } from './create-folder-modal.component';
+import { SharedModule } from '@shared/shared.module';
+import { modalProviders, modalImports } from '../../../../../../.storybook/utils/mock-providers';
+import { DocsService } from '../../services/docs.service';
+import { MembersService } from '@app/shared/services/members.service';
+import { AccountService } from '@app/core/services/account.service';
+import { MatDialog } from '@angular/material/dialog';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { DocsPermissionsComponent } from '../../components/docs-permissions/docs-permissions.component';
+import { HttpClient } from '@angular/common/http';
+import { UrlService } from '@app/core/services/url.service';
+import { of } from 'rxjs';
 
-const meta: Meta = {
+const dialogData: FolderModalData = {
+    parent: 'root',
+    inheritedPermissions: undefined
+};
+
+const meta: Meta<CreateFolderModalComponent> = {
     title: 'Modals/CreateFolder',
-    decorators: [moduleMetadata({ imports: [ReactiveFormsModule, FormsModule, MatDialogModule] })]
+    component: CreateFolderModalComponent,
+    decorators: [
+        moduleMetadata({
+            imports: [...modalImports, SharedModule, MatExpansionModule],
+            declarations: [DocsPermissionsComponent],
+            providers: [
+                ...modalProviders(dialogData),
+                { provide: DocsService, useValue: { createFolder: () => of({}), updateFolder: () => of({}) } },
+                { provide: MembersService, useValue: { getMembers: () => of([]) } },
+                { provide: AccountService, useValue: { account: { id: 'user-1' } } },
+                { provide: MatDialog, useValue: { closeAll: () => {}, open: () => ({ afterClosed: () => of(undefined) }) } },
+                { provide: HttpClient, useValue: {} },
+                { provide: UrlService, useValue: { apiUrl: '' } }
+            ]
+        })
+    ]
 };
 export default meta;
-type Story = StoryObj;
+type Story = StoryObj<CreateFolderModalComponent>;
 
-const styles = [`.form-container { flex: 1; }
-    .form-container app-text-input { display: block; }
-    .basics-container { display: flex; flex-direction: column; gap: 8px; }
-    .hint { font-style: italic; }`];
-
-export const Default: Story = {
-    render: () => {
-        const form = new FormGroup({
-            name: new FormControl('', Validators.required)
-        });
-        return {
-            props: {
-                form,
-                validationMessages: {
-                    name: [{ type: 'required', message: 'Folder name is required' }]
-                }
-            },
-            styles,
-            template: `
-                <h2 mat-dialog-title>Create new folder</h2>
-                <mat-dialog-content>
-                    <form [formGroup]="form" class="form-container">
-                        <div class="basics-container">
-                            <app-text-input label="Folder name" formControlName="name" [required]="true"
-                                [validationMessages]="validationMessages.name">
-                            </app-text-input>
-                        </div>
-                    </form>
-                </mat-dialog-content>
-                <mat-dialog-actions>
-                    <app-button [disabled]="!form.valid">Create</app-button>
-                </mat-dialog-actions>
-            `
-        };
-    }
-};
-
-export const Filled: Story = {
-    render: () => {
-        const form = new FormGroup({
-            name: new FormControl('Standard Operating Procedures', Validators.required)
-        });
-        return {
-            props: {
-                form,
-                validationMessages: {
-                    name: [{ type: 'required', message: 'Folder name is required' }]
-                }
-            },
-            styles,
-            template: `
-                <h2 mat-dialog-title>Create new folder</h2>
-                <mat-dialog-content>
-                    <form [formGroup]="form" class="form-container">
-                        <div class="basics-container">
-                            <app-text-input label="Folder name" formControlName="name" [required]="true"
-                                [validationMessages]="validationMessages.name">
-                            </app-text-input>
-                        </div>
-                    </form>
-                </mat-dialog-content>
-                <mat-dialog-actions>
-                    <app-button [disabled]="!form.valid">Create</app-button>
-                </mat-dialog-actions>
-            `
-        };
-    }
-};
-
-export const EditMode: Story = {
-    render: () => {
-        const form = new FormGroup({
-            name: new FormControl('Standard Operating Procedures', Validators.required)
-        });
-        return {
-            props: {
-                form,
-                validationMessages: {
-                    name: [{ type: 'required', message: 'Folder name is required' }]
-                }
-            },
-            styles,
-            template: `
-                <h2 mat-dialog-title>Edit folder</h2>
-                <mat-dialog-content>
-                    <form [formGroup]="form" class="form-container">
-                        <div class="basics-container">
-                            <app-text-input label="Folder name" formControlName="name" [required]="true"
-                                [validationMessages]="validationMessages.name">
-                            </app-text-input>
-                        </div>
-                    </form>
-                </mat-dialog-content>
-                <mat-dialog-actions>
-                    <app-button [disabled]="!form.valid">Save</app-button>
-                </mat-dialog-actions>
-            `
-        };
-    }
-};
+export const Default: Story = {};

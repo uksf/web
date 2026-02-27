@@ -1,66 +1,29 @@
 import type { Meta, StoryObj } from '@storybook/angular';
 import { moduleMetadata } from '@storybook/angular';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
+import { ApplicationEmailConfirmationComponent } from './application-email-confirmation.component';
+import { SharedModule } from '@shared/shared.module';
+import { MatDialog } from '@angular/material/dialog';
+import { AccountService } from '@app/core/services/account.service';
+import { PermissionsService } from '@app/core/services/permissions.service';
+import { ApplicationService } from '../../services/application.service';
+import { of } from 'rxjs';
 
-const meta: Meta = {
+const meta: Meta<ApplicationEmailConfirmationComponent> = {
     title: 'Application/EmailConfirmation',
+    component: ApplicationEmailConfirmationComponent,
     decorators: [
         moduleMetadata({
-            imports: [ReactiveFormsModule, MatCardModule]
+            imports: [SharedModule],
+            providers: [
+                { provide: ApplicationService, useValue: { validateEmailCode: () => of({}), resendEmailCode: () => of({}) } },
+                { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(undefined) }) } },
+                { provide: AccountService, useValue: { account: { email: 'applicant@example.com' } } },
+                { provide: PermissionsService, useValue: { refresh: () => Promise.resolve() } }
+            ]
         })
     ]
 };
 export default meta;
-type Story = StoryObj;
+type Story = StoryObj<ApplicationEmailConfirmationComponent>;
 
-const styles = [
-    `.mat-mdc-card { h2 { margin-top: 0; } }
-    .button-next { text-align: right; }
-    .normal { display: block; max-width: 50%; }`
-];
-
-const template = `
-    <mat-card>
-        <h2>Email Confirmation</h2>
-        <form [formGroup]="formGroup">
-            <p>
-                An email has been sent to <b>'{{ email }}'</b> containing a confirmation code. Please copy this code to your clipboard and return to this page to confirm the code.
-            </p>
-            <p>If the code does not work or you did not receive a code, press 'Resend Code' (This will invalidate the previous code)</p>
-            <br />
-            <app-text-input class="normal" label="Enter confirmation code" formControlName="code" [required]="true"
-                autocomplete="off">
-            </app-text-input>
-            <div class="button-next">
-                <app-button [disabled]="pending || resent" [pending]="pending">Resend Code</app-button>
-            </div>
-        </form>
-    </mat-card>
-`;
-
-export const Default: Story = {
-    render: () => ({
-        props: {
-            formGroup: new FormGroup({ code: new FormControl('', Validators.required) }),
-            email: 'applicant@example.com',
-            pending: false,
-            resent: false
-        },
-        styles,
-        template
-    })
-};
-
-export const CodeEntered: Story = {
-    render: () => ({
-        props: {
-            formGroup: new FormGroup({ code: new FormControl('ABC123DEF456GHI789JKL012', Validators.required) }),
-            email: 'applicant@example.com',
-            pending: false,
-            resent: false
-        },
-        styles,
-        template
-    })
-};
+export const Default: Story = {};
