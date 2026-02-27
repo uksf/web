@@ -3,163 +3,64 @@ import { moduleMetadata } from '@storybook/angular';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { ActivatedRoute, Router } from '@angular/router';
+import { of, EMPTY } from 'rxjs';
+import { LoginPageComponent } from './login-page.component';
+import { LoginComponent } from '../login/login.component';
+import { RequestPasswordResetComponent } from '../request-password-reset/request-password-reset.component';
+import { PasswordResetComponent } from '../reset-password/password-reset.component';
+import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
+import { PermissionsService } from '@app/core/services/permissions.service';
+import { RedirectService } from '@app/core/services/authentication/redirect.service';
 
-const meta: Meta = {
+const mockRouter = {
+    navigate: () => Promise.resolve(true),
+    navigateByUrl: () => Promise.resolve(true),
+    events: EMPTY
+};
+
+const baseProviders = [
+    { provide: AuthenticationService, useValue: {} },
+    { provide: Router, useValue: mockRouter },
+    { provide: PermissionsService, useValue: {} },
+    { provide: RedirectService, useValue: {} }
+];
+
+const meta: Meta<LoginPageComponent> = {
     title: 'Auth/LoginPage',
+    component: LoginPageComponent,
     decorators: [
         moduleMetadata({
-            imports: [FormsModule, MatCardModule, MatCheckboxModule]
+            imports: [FormsModule, MatCardModule, MatCheckboxModule],
+            declarations: [LoginPageComponent, LoginComponent, RequestPasswordResetComponent, PasswordResetComponent],
+            providers: [
+                ...baseProviders,
+                { provide: ActivatedRoute, useValue: { snapshot: { queryParams: {} }, queryParams: of({}) } }
+            ]
         })
     ]
 };
 export default meta;
-type Story = StoryObj;
+type Story = StoryObj<LoginPageComponent>;
 
-const styles = [
-    `h2 { margin: auto 0 8px; }
-    .centre-wrapper { display: flex; justify-content: center; align-items: center; min-height: 400px; }
-    .container { width: 90%; max-width: 500px; margin: 10px; padding: 15px; }
-    .options-container { display: flex; flex-direction: row; }
-    .options-container .option-link { display: block; margin: auto; line-height: 24px; cursor: pointer; }
-    .button-container { display: flex; flex-direction: row; justify-content: center; }
-    .full-width { display: block; width: 100%; }
-    .special-field-form-container { display: none; }`
-];
-
-const validationMessages = {
-    email: [
-        { type: 'required', message: 'Email address is required' },
-        { type: 'email', message: 'Email address is invalid' }
-    ],
-    password: [{ type: 'required', message: 'Password is required' }],
-    confirmPassword: [
-        { type: 'required', message: 'New password confirmation is required' },
-        { type: 'mustMatch', message: 'Passwords are not the same' }
-    ]
-};
-
-export const LoginMode: Story = {
-    render: () => ({
-        props: {
-            model: { name: null, email: null, password: null },
-            stayLogged: true,
-            pending: false,
-            validationMessages
-        },
-        styles,
-        template: `
-            <div class="centre-wrapper">
-                <mat-card class="container">
-                    <div>
-                        <h2 mat-dialog-title>Login</h2>
-                        <form>
-                            <app-text-input class="full-width" label="Email Address" type="email"
-                                name="formEmail" [(ngModel)]="model.email" autocomplete="username"
-                                [required]="true" email
-                                [validationMessages]="validationMessages.email">
-                            </app-text-input>
-                            <br />
-                            <app-text-input class="full-width" label="Password" type="password"
-                                name="formPassword" [(ngModel)]="model.password" autocomplete="current-password"
-                                [required]="true"
-                                [validationMessages]="validationMessages.password">
-                            </app-text-input>
-                        </form>
-                        <div class="options-container">
-                            <mat-checkbox color="primary" [(ngModel)]="stayLogged">Stay logged in</mat-checkbox>
-                            <app-flex-filler></app-flex-filler>
-                            <a class="option-link">Reset Password</a>
-                        </div>
-                        <br />
-                        <div class="button-container">
-                            <app-button [pending]="pending">Login</app-button>
-                        </div>
-                    </div>
-                </mat-card>
-            </div>
-        `
-    })
-};
+export const LoginMode: Story = {};
 
 export const RequestResetMode: Story = {
-    render: () => ({
+    render: (args) => ({
         props: {
-            model: { name: null, email: null },
-            pending: false,
-            validationMessages
-        },
-        styles,
-        template: `
-            <div class="centre-wrapper">
-                <mat-card class="container">
-                    <div>
-                        <h2 mat-dialog-title>Request Password Reset</h2>
-                        <form>
-                            <app-text-input class="full-width" label="Email Address" type="email"
-                                name="formEmail" [(ngModel)]="model.email" autocomplete="username"
-                                [required]="true" email
-                                [validationMessages]="validationMessages.email">
-                            </app-text-input>
-                        </form>
-                        <div class="options-container">
-                            <app-flex-filler></app-flex-filler>
-                            <a class="option-link">Return to Login</a>
-                        </div>
-                        <br />
-                        <div class="button-container">
-                            <app-button [pending]="pending">Request Reset</app-button>
-                        </div>
-                    </div>
-                </mat-card>
-            </div>
-        `
+            ...args,
+            mode: 1
+        }
     })
 };
 
 export const ResetMode: Story = {
-    render: () => ({
-        props: {
-            model: { name: null, email: null, password: null, confirmPassword: null },
-            stayLogged: true,
-            pending: false,
-            validationMessages
-        },
-        styles,
-        template: `
-            <div class="centre-wrapper">
-                <mat-card class="container">
-                    <div>
-                        <h2 mat-dialog-title>Reset Password</h2>
-                        <form>
-                            <app-text-input class="full-width" label="Email Address" type="email"
-                                name="formEmail" [(ngModel)]="model.email" autocomplete="username"
-                                [required]="true" email
-                                [validationMessages]="validationMessages.email">
-                            </app-text-input>
-                            <br />
-                            <app-text-input class="full-width" label="New Password" type="password"
-                                name="formPassword" [(ngModel)]="model.password" autocomplete="current-password"
-                                [required]="true"
-                                [validationMessages]="validationMessages.password">
-                            </app-text-input>
-                            <br />
-                            <app-text-input class="full-width" label="Confirm New Password" type="password"
-                                name="formConfirmPassword" [(ngModel)]="model.confirmPassword" autocomplete="new-password"
-                                [required]="true"
-                                [validationMessages]="validationMessages.confirmPassword">
-                            </app-text-input>
-                        </form>
-                        <div class="options-container">
-                            <mat-checkbox color="primary" [(ngModel)]="stayLogged">Stay logged in</mat-checkbox>
-                            <app-flex-filler></app-flex-filler>
-                        </div>
-                        <br />
-                        <div class="button-container">
-                            <app-button [pending]="pending">Reset Password</app-button>
-                        </div>
-                    </div>
-                </mat-card>
-            </div>
-        `
-    })
+    decorators: [
+        moduleMetadata({
+            providers: [
+                ...baseProviders,
+                { provide: ActivatedRoute, useValue: { snapshot: { queryParams: { reset: 'mock-code' } }, queryParams: of({}) } }
+            ]
+        })
+    ]
 };
