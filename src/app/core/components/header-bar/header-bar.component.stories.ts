@@ -1,104 +1,107 @@
 import type { Meta, StoryObj } from '@storybook/angular';
 import { moduleMetadata } from '@storybook/angular';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatMenuModule } from '@angular/material/menu';
+import { EMPTY, of, Subject } from 'rxjs';
+import { NgxPermissionsService } from 'ngx-permissions';
+import { HeaderBarComponent } from './header-bar.component';
+import { CoreModule } from '@app/core/core.module';
+import { PermissionsService } from '@app/core/services/permissions.service';
+import { AccountService } from '@app/core/services/account.service';
+import { AppSettingsService, Environments } from '@app/core/services/app-settings.service';
+import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
+import { SignalRService } from '@app/core/services/signalr.service';
+import { NotificationsService } from '@app/core/services/notifications.service';
+import { Account, MembershipState } from '@app/shared/models/account';
+import { Router } from '@angular/router';
 
-const meta: Meta = {
+const mockAccount: Account = {
+    id: '1',
+    displayName: 'Sgt.Miller.B',
+    membershipState: MembershipState.MEMBER,
+    email: 'test@test.com',
+    firstname: 'Bob',
+    lastname: 'Miller',
+    rank: 'Sergeant',
+    unitAssignment: 'UKSF',
+    roleAssignment: 'Trooper',
+} as Account;
+
+const mockRouter = {
+    url: '/home',
+    events: EMPTY,
+    navigate: () => Promise.resolve(true),
+    navigateByUrl: () => Promise.resolve(true),
+    createUrlTree: () => ({}),
+    serializeUrl: () => ''
+};
+
+const mockSignalRService = {
+    connect: () => ({
+        connection: { on: () => {}, off: () => {}, stop: () => Promise.resolve() },
+        reconnectEvent: new Subject<void>(),
+        dispose: () => {}
+    })
+};
+
+function commonProviders(account: Account | null, environment: string) {
+    return [
+        { provide: Router, useValue: mockRouter },
+        { provide: PermissionsService, useValue: { revoke: () => {}, getPermissions: () => ({}) } },
+        { provide: AccountService, useValue: { account, accountChange$: new Subject<Account>() } },
+        { provide: AppSettingsService, useValue: { appSetting: (key: string) => key === 'environment' ? environment : '' } },
+        { provide: AuthenticationService, useValue: { isImpersonated: () => false } },
+        { provide: SignalRService, useValue: mockSignalRService },
+        { provide: NotificationsService, useValue: { getNotifications: () => of([]) } }
+    ];
+}
+
+const meta: Meta<HeaderBarComponent> = {
     title: 'Layout/HeaderBar',
+    component: HeaderBarComponent,
     decorators: [
         moduleMetadata({
-            imports: [MatIconModule, MatButtonModule, MatMenuModule]
+            imports: [CoreModule],
+            providers: commonProviders(mockAccount, Environments.Production)
         })
     ]
 };
 export default meta;
-type Story = StoryObj;
-
-const styles = [
-    `.header-wrapper {
-        display: flex; flex-direction: row; align-items: center;
-        height: 70px; background-color: #1e1e1e; padding: 0 10px;
-    }
-    .header-wrapper.development { border-bottom: 2px solid #f44336; }
-    .logo-wrapper {
-        font-size: 28px; padding: 0; height: 100%;
-        align-items: center; display: flex; flex-direction: row; cursor: pointer;
-    }
-    .logo { width: 65px; margin-left: 10px; margin-top: 6px; margin-bottom: 4px; }
-    .name-wrapper { height: 70px; line-height: 70px; text-align: center; }
-    .name-wrapper span { display: inline-block; vertical-align: middle; line-height: normal; margin-right: 20px; cursor: pointer; }
-    .button-wrapper { display: flex; flex-direction: row; align-items: center; height: 100%; }
-    .button { flex: 1; padding: 0 10px 0 5px; margin-right: 10px; min-width: fit-content; }
-    .button div { display: flex; flex-direction: row; align-items: center; }
-    .button div span { text-align: center; width: 100%; }
-    .button div > .mat-icon { height: 30px; margin: 0 5px 0 0; }
-    .button.profile { padding: 5px; min-width: 25px; border-radius: 20px; height: 40px; }
-    .button.profile .mat-icon { width: 30px; height: 30px; margin: 0; font-size: 30px; line-height: 30px; }
-    a { text-decoration: none; }`
-];
+type Story = StoryObj<HeaderBarComponent>;
 
 export const LoggedIn: Story = {
-    render: () => ({
-        props: { name: 'Sgt.Miller.B' },
-        styles,
-        template: `
-            <div class="header-wrapper">
-                <div class="logo-wrapper">
-                    <span>United Kingdom Special Forces</span>
-                </div>
-                <app-flex-filler></app-flex-filler>
-                <div class="name-wrapper">
-                    <span>{{ name }}</span>
-                </div>
-                <div class="button-wrapper">
-                    <button mat-raised-button color="primary" class="button profile">
-                        <mat-icon>account_circle</mat-icon>
-                    </button>
-                </div>
-            </div>
-        `
-    })
+    decorators: [
+        moduleMetadata({
+            providers: commonProviders(mockAccount, Environments.Production)
+        }),
+        (story, context) => {
+            const ngxPermissions = context.injector?.get(NgxPermissionsService);
+            ngxPermissions?.loadPermissions(['MEMBER', 'CONFIRMED']);
+            return story();
+        }
+    ]
 };
 
 export const Development: Story = {
-    render: () => ({
-        props: { name: 'Sgt.Miller.B' },
-        styles,
-        template: `
-            <div class="header-wrapper development">
-                <div class="logo-wrapper">
-                    <span>United Kingdom Special Forces</span>
-                </div>
-                <app-flex-filler></app-flex-filler>
-                <div class="name-wrapper">
-                    <span>{{ name }}</span>
-                </div>
-                <div class="button-wrapper">
-                    <button mat-raised-button color="primary" class="button profile">
-                        <mat-icon>account_circle</mat-icon>
-                    </button>
-                </div>
-            </div>
-        `
-    })
+    decorators: [
+        moduleMetadata({
+            providers: commonProviders(mockAccount, Environments.Development)
+        }),
+        (story, context) => {
+            const ngxPermissions = context.injector?.get(NgxPermissionsService);
+            ngxPermissions?.loadPermissions(['MEMBER', 'CONFIRMED']);
+            return story();
+        }
+    ]
 };
 
 export const NotLoggedIn: Story = {
-    render: () => ({
-        styles,
-        template: `
-            <div class="header-wrapper">
-                <div class="logo-wrapper">
-                    <span>United Kingdom Special Forces</span>
-                </div>
-                <app-flex-filler></app-flex-filler>
-                <div class="button-wrapper">
-                    <button mat-raised-button color="primary" class="button">
-                        <div><mat-icon>person</mat-icon> Login</div>
-                    </button>
-                </div>
-            </div>
-        `
-    })
+    decorators: [
+        moduleMetadata({
+            providers: commonProviders(null, Environments.Production)
+        }),
+        (story, context) => {
+            const ngxPermissions = context.injector?.get(NgxPermissionsService);
+            ngxPermissions?.loadPermissions(['UNLOGGED']);
+            return story();
+        }
+    ]
 };
