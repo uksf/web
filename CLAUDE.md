@@ -214,6 +214,30 @@ bun run test:watch    # Watch mode
 
 Test pure functions in Services and Pipes.
 
+### Component Tests (Playwright CT)
+
+Location: `ct/` directory — `*.ct.ts` files
+
+```bash
+bun run test:ct          # Run component tests
+bun run test:ct:ui       # Playwright UI mode for CT
+```
+
+Uses `@sand4rt/experimental-ct-angular` to mount real Angular components in a browser. Only supports standalone components — use standalone wrapper components for NgModule-based components.
+
+### Storybook Visual Regression
+
+Location: `*.stories.spec.ts` alongside story files
+
+```bash
+bun run storybook                 # Dev server (port 6006)
+bun run build-storybook           # Build static
+bun run test:storybook            # Run visual regression tests
+bun run test:storybook -- --update-snapshots  # Regenerate baselines
+```
+
+Stories mount real components via `Meta.component` — no inline HTML replication. Shared mock utilities in `.storybook/utils/mock-providers.ts`. Spec files contain ONLY `toHaveScreenshot()` visual regression tests.
+
 ### E2E Tests (Playwright)
 
 Location: `e2e/` directory
