@@ -7,7 +7,10 @@ export default defineConfig({
     forbidOnly: !!process.env.CI,
     retries: process.env.CI ? 2 : 0,
     workers: process.env.CI ? 1 : undefined,
-    reporter: [['html', { outputFolder: 'playwright-report-storybook' }]],
+    reporter: [
+        ['html', { outputFolder: 'playwright-report-storybook' }],
+        ['junit', { outputFile: 'test-results/storybook-junit.xml' }]
+    ],
     use: {
         baseURL: 'http://localhost:6007',
         trace: 'on-first-retry',

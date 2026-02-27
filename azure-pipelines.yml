@@ -37,6 +37,8 @@ stages:
           - script: |
               bun run test
             displayName: 'Unit Tests'
+            env:
+              CI: 'true'
 
           - task: PublishTestResults@2
             displayName: 'Publish Test Results'
@@ -48,6 +50,8 @@ stages:
           - script: |
               bun run build-storybook
             displayName: 'Build Storybook'
+            env:
+              CI: 'true'
 
           - script: |
               npx playwright install chromium
@@ -56,6 +60,16 @@ stages:
           - script: |
               bun run test:storybook
             displayName: 'Storybook Tests'
+            env:
+              CI: 'true'
+
+          - task: PublishTestResults@2
+            displayName: 'Publish Storybook Test Results'
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: 'test-results/storybook-junit.xml'
+              testRunTitle: 'Storybook Tests'
+            condition: succeededOrFailed()
 
           - script: |
               bun x ng build -c production --aot --build-optimizer --optimization
