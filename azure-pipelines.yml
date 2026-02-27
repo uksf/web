@@ -24,12 +24,6 @@ stages:
               versionSpec: '22.x'
             displayName: 'Install Node.js'
 
-          - task: Cache@2
-            inputs:
-              key: 'bun | "$(Agent.OS)" | bun.lock'
-              path: 'node_modules'
-            displayName: 'Cache node_modules'
-
           - script: |
               bun install --frozen-lockfile
             displayName: 'bun install'
