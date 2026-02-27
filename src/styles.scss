@@ -756,8 +756,8 @@ mat-paginator .mdc-notched-outline__trailing {
 
 .mat-mdc-dialog-container {
     --mat-dialog-supporting-text-color: white;
-    // M3 line-height falls back to 1.5rem which resolves to 15px (root font-size is 10px).
-    // Use unitless 1.5 so it scales with each element's font-size.
+    // M3 line-height falls back to 1.5rem which resolves to 15px (root font-size is 10px
+    // from Bootstrap). Use unitless 1.5 so it scales with each element's font-size.
     --mat-dialog-supporting-text-line-height: 1.5;
 }
 
