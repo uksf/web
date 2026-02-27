@@ -5,9 +5,7 @@
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 @import url('https://fonts.googleapis.com/css?family=Raleway');
 
-/* Font-family from bootstrap-material-design.min.css.
-   We don't include the full file because its global resets (body background,
-   colors, etc.) conflict with Angular Material's dark theme. */
+/* Font-family previously from bootstrap-material-design.min.css (now removed). */
 body,
 .h1, .h2, .h3, .h4, h1, h2, h3, h4, h5, h6 {
     font-family: Roboto, Helvetica, Arial, sans-serif;
