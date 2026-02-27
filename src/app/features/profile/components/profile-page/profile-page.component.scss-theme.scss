@@ -1,14 +1,9 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
+@use 'styles/theme-helpers' as th;
 
 @mixin profile-page-component-theme($theme) {
-    $background: map.get($theme, background);
-    $foreground: map.get($theme, foreground);
-    $primary: map.get($theme, primary);
-
     app-profile-page {
         a {
-          color: mat.m2-get-color-from-palette($primary);
+          color: th.primary($theme);
         }
     }
 }

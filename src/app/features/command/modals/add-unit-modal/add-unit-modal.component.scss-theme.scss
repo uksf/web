@@ -1,13 +1,2 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
 @mixin add-unit-modal-component-theme($theme) {
-    $foreground: map.get($theme, foreground);
-    $background: map.get($theme, background);
-    $primary: map.get($theme, primary);
-
-    app-add-unit-modal {
-        .button-delete {
-          background-color: mat.m2-get-color-from-palette($background, selected);
-        }
-    }
 }

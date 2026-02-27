@@ -55,7 +55,7 @@
         </div>
     </div>
     <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelect($event)"
-                      [displayWith]="autoDisplayWith" [autoActiveFirstOption]="true">
+                      [displayWith]="autoDisplayWith" [autoActiveFirstOption]="autocomplete">
         <cdk-virtual-scroll-viewport [maxBufferPx]="1000" [minBufferPx]="600"
                                      [ngStyle]="{ height: scrollPanelHeight }" itemSize="48">
             <mat-option

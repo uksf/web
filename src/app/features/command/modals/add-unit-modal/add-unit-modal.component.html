@@ -35,7 +35,7 @@
     </form>
 </mat-dialog-content>
 <mat-dialog-actions>
-    <button *ngIf="edit" mat-raised-button type="button" class="button-delete" [disabled]="pending" (click)="delete()">Delete</button>
+    <button *ngIf="edit" mat-raised-button type="button" color="warn" [disabled]="pending" (click)="delete()">Delete</button>
     <app-flex-filler></app-flex-filler>
     <app-button (clicked)="submit()" [disabled]="!form.valid || !changesMade" [pending]="pending">Submit</app-button>
 </mat-dialog-actions>

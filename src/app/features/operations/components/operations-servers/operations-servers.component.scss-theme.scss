@@ -1,15 +1,21 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
-@mixin operations-servers-component-theme($theme) {
-    $foreground: map.get($theme, foreground);
-    $background: map.get($theme, background);
-    $primary: map.get($theme, primary);
-    $accent: map.get($theme, accent);
+@use 'styles/theme-helpers' as th;
 
+@mixin _white-icon-button {
+    background-color: transparent;
+
+    &:not(:disabled) {
+        color: white;
+    }
+
+    --mat-button-text-state-layer-color: white;
+    --mat-button-text-ripple-color: rgba(255, 255, 255, 0.12);
+}
+
+@mixin operations-servers-component-theme($theme) {
     app-operations-servers {
         .uploading {
-            color: mat.m2-get-color-from-palette($accent, default-contrast) !important;
-            background-color: mat.m2-get-color-from-palette($accent) !important;
+            color: var(--uksf-accent-contrast) !important;
+            background-color: var(--uksf-accent) !important;
         }
 
         .admin-container {
@@ -18,24 +24,24 @@
             }
 
             .refresh-button {
-                background-color: transparent;
+                @include _white-icon-button;
             }
         }
 
         .servers-list-item {
-            background-color: mat.m2-get-color-from-palette($background, server);
+            background-color: var(--uksf-server);
 
             &.server-running {
-                background-color: mat.m2-get-color-from-palette($background, server-running);
+                background-color: var(--uksf-server-running);
             }
 
             .server-header {
                 button {
-                    background-color: transparent;
+                    @include _white-icon-button;
                 }
 
                 .title-updating {
-                    color: mat.m2-get-color-from-palette($primary);
+                    color: th.primary($theme);
                 }
 
                 h3 {
@@ -49,13 +55,17 @@
         .server-buttons {
             .admin {
                 button {
-                    background-color: transparent;
+                    @include _white-icon-button;
+
+                    &.delete:not(:disabled) {
+                        color: red;
+                    }
                 }
             }
         }
 
         .dropZone {
-            border-color: mat.m2-get-color-from-palette($primary);
+            border-color: th.primary($theme);
         }
 
         h3 {
@@ -65,16 +75,16 @@
 
     @at-root .cdk-drag-preview {
         .servers-list-item {
-            color: mat.m2-get-color-from-palette($foreground, text);
-            background-color: mat.m2-get-color-from-palette($background, server);
+            color: th.fg-text($theme);
+            background-color: var(--uksf-server);
 
             &.server-running {
-                background-color: mat.m2-get-color-from-palette($background, server-running);
+                background-color: var(--uksf-server-running);
             }
 
             .server-header {
                 button {
-                    background-color: transparent;
+                    @include _white-icon-button;
                 }
 
                 h3 {
@@ -87,7 +97,11 @@
 
         .server-buttons {
             button {
-                background-color: transparent;
+                @include _white-icon-button;
+
+                &.delete:not(:disabled) {
+                    color: red;
+                }
             }
         }
     }

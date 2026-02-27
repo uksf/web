@@ -10,18 +10,16 @@
                 (input)="filter()" (cleared)="filter()">
             </app-text-input>
             <app-flex-filler></app-flex-filler>
-            <div class="members-list-header-buttons">
-                <button mat-raised-button [matMenuTriggerFor]="modeMenu">
-                    <mat-icon class="icon-right">sort</mat-icon>
-                    View Mode
+            <app-paginator [total]="totalMembers" (page)="page($event)" [hidden]="groupByUnit"></app-paginator>
+            <div class="unit-group-expand-container" *ngIf="groupByUnit">
+                <button mat-icon-button (click)="unitGroupsRoot.expandAll(); groupsExpanded = true" matTooltip="Expand all" [disabled]="groupsExpanded">
+                    <mat-icon>unfold_more</mat-icon>
                 </button>
-                <mat-menu #modeMenu="matMenu">
-                    <button mat-menu-item *ngFor="let mode of viewModes; trackBy: trackByMode" [disabled]="viewMode === mode.mode" (click)="changeViewMode(mode.mode)">
-                        <mat-icon class="icon-right">{{ mode.icon }}</mat-icon>
-                        <span class="item-text">{{ mode.name }}</span>
-                    </button>
-                </mat-menu>
-                <button mat-raised-button (click)="toggleGroupByUnit()"><mat-icon class="icon-right">group</mat-icon> {{ groupByUnit ? 'Ungroup by Unit' : 'Group by Unit' }}</button>
+                <button mat-icon-button (click)="unitGroupsRoot.collapseAll(); groupsExpanded = false" matTooltip="Collapse all" [disabled]="!groupsExpanded">
+                    <mat-icon>unfold_less</mat-icon>
+                </button>
+            </div>
+            <div class="members-list-header-buttons">
                 <button mat-raised-button [matMenuTriggerFor]="sortMenu">
                     <mat-icon class="icon-right">sort</mat-icon>
                     Sort
@@ -36,15 +34,17 @@
                         {{ sortDefinition.name }}
                     </button>
                 </mat-menu>
-            </div>
-            <app-paginator [total]="totalMembers" (page)="page($event)" [hidden]="groupByUnit"></app-paginator>
-            <div class="unit-group-expand-container" *ngIf="groupByUnit">
-                <button mat-icon-button (click)="unitGroupsRoot.expandAll(); groupsExpanded = true" matTooltip="Expand all" [disabled]="groupsExpanded">
-                    <mat-icon>unfold_more</mat-icon>
+                <button mat-raised-button [matMenuTriggerFor]="modeMenu">
+                    <mat-icon class="icon-right">sort</mat-icon>
+                    View Mode
                 </button>
-                <button mat-icon-button (click)="unitGroupsRoot.collapseAll(); groupsExpanded = false" matTooltip="Collapse all" [disabled]="!groupsExpanded">
-                    <mat-icon>unfold_less</mat-icon>
-                </button>
+                <mat-menu #modeMenu="matMenu">
+                    <button mat-menu-item *ngFor="let mode of viewModes; trackBy: trackByMode" [disabled]="viewMode === mode.mode" (click)="changeViewMode(mode.mode)">
+                        <mat-icon class="icon-right">{{ mode.icon }}</mat-icon>
+                        <span class="item-text">{{ mode.name }}</span>
+                    </button>
+                </mat-menu>
+                <button mat-raised-button class="group-by-button" (click)="toggleGroupByUnit()"><mat-icon class="icon-right">group</mat-icon> {{ groupByUnit ? 'Ungroup by Unit' : 'Group by Unit' }}</button>
             </div>
         </div>
 

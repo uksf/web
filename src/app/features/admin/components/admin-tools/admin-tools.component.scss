@@ -7,6 +7,7 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    gap: 5px;
 }
 
 .impersonate-form {
@@ -25,10 +26,6 @@
 .button-container {
     display: flex;
     flex-direction: row;
+    align-items: center;
     padding-left: 16px;
-}
-
-app-button {
-    align-self: center;
-    margin: 5px 5px 0 0;
 }

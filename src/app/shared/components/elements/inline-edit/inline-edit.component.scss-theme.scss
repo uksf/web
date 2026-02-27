@@ -1,15 +1,10 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
+@use 'styles/theme-helpers' as th;
 
 @mixin inline-edit-component-theme($theme) {
-    $background: map.get($theme, background);
-    $foreground: map.get($theme, foreground);
-    $primary: map.get($theme, primary);
-
     app-inline-edit {
         input {
-            color: mat.m2-get-color-from-palette($foreground, base);
-            background-color: mat.m2-get-color-from-palette($background, hover);
+            color: th.fg-base($theme);
+            background-color: var(--uksf-hover);
         }
     }
 }

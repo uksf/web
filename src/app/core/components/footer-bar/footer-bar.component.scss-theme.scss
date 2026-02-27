@@ -1,18 +1,14 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
-@mixin footer-bar-component-theme($theme) {
-    $foreground: map.get($theme, foreground);
-    $background: map.get($theme, background);
-    $primary: map.get($theme, primary);
+@use 'styles/theme-helpers' as th;
 
+@mixin footer-bar-component-theme($theme) {
     app-footer-bar {
-      background-color: mat.m2-get-color-from-palette($background, side-bar);
+      background-color: var(--uksf-side-bar);
 
       .flex-container {
         .buttons-container {
           a {
             i {
-              color: mat.m2-get-color-from-palette($primary);
+              color: th.primary($theme);
             }
           }
         }
@@ -20,7 +16,7 @@
         .copyright {
           background-color: transparent;
                 p {
-                  color: mat.m2-get-color-from-palette($foreground, base);
+                  color: th.fg-base($theme);
                 }
             }
         }

@@ -200,6 +200,7 @@ export class ProfilePageComponent extends DestroyableComponent implements OnInit
             this.membersService.getAccount(this.accountId).pipe(first()).subscribe({
                 next: (response) => {
                     this.account = response;
+                    this.account.serviceRecord?.reverse();
                     this.populateSettings();
                 }
             });
@@ -218,11 +219,13 @@ export class ProfilePageComponent extends DestroyableComponent implements OnInit
 
     private setAccount(account: Account) {
         this.account = account;
+        this.account.serviceRecord?.reverse();
         this.populateSettings();
 
         this.accountService.accountChange$.pipe(takeUntil(this.destroy$)).subscribe({
             next: (newAccount) => {
                 this.account = newAccount;
+                this.account.serviceRecord?.reverse();
                 this.populateSettings();
             }
         });

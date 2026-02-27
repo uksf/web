@@ -52,14 +52,15 @@
                         margin-right: 6px;
                     }
                 }
+
+                .group-by-button {
+                    width: 165px;
+                }
             }
 
-            app-paginator {
-                margin: auto 0 auto 16px;
-            }
-
+            app-paginator,
             .unit-group-expand-container {
-                margin: auto;
+                margin: auto 0 auto 16px;
             }
         }
 

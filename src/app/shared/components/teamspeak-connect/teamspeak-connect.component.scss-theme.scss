@@ -1,11 +1,9 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
-@mixin connect-teamspeak-component-theme($theme) {
-    $primary: map.get($theme, primary);
+@use 'styles/theme-helpers' as th;
 
+@mixin connect-teamspeak-component-theme($theme) {
     app-teamspeak-connect {
         a {
-          color: mat.m2-get-color-from-palette($primary);
+          color: th.primary($theme);
         }
     }
 }

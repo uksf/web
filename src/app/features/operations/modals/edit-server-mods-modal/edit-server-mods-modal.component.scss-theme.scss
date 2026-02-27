@@ -1,23 +1,19 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
-@mixin edit-server-mods-modal-component-theme($theme) {
-    $foreground: map.get($theme, foreground);
-    $background: map.get($theme, background);
-    $primary: map.get($theme, primary);
+@use 'styles/theme-helpers' as th;
 
+@mixin edit-server-mods-modal-component-theme($theme) {
     app-edit-server-mods-modal {
         .mods-list-item {
             span {
-                color: mat.m2-get-color-from-palette($foreground, base);
+                color: th.fg-base($theme);
             }
         }
 
         ::-webkit-scrollbar-track {
-            background-color: mat.m2-get-color-from-palette($background, side-bar);
+            background-color: var(--uksf-side-bar);
         }
 
         ::-webkit-scrollbar-thumb {
-            background-color: mat.m2-get-color-from-palette($background, scroll-thumb);
+            background-color: var(--uksf-scroll-thumb);
         }
     }
 }

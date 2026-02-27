@@ -1,13 +1,10 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
+@use 'styles/theme-helpers' as th;
 
 @mixin new-modpack-release-modal-component-theme($theme) {
-    $primary: map.get($theme, primary);
-
     app-new-modpack-release-modal {
         .mat-mdc-dialog-content {
             .previous-version {
-                color: mat.m2-get-color-from-palette($primary);
+                color: th.primary($theme);
             }
 
             .form-container {
@@ -17,7 +14,7 @@
                             color: white;
 
                             &.selected {
-                                color: mat.m2-get-color-from-palette($primary);
+                                color: th.primary($theme);
                             }
                         }
                     }

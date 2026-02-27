@@ -1,14 +1,9 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
-
 @mixin admin-variables-component-theme($theme) {
-    $background: map.get($theme, background);
-
     app-admin-variables {
         .page-container {
             .variables-container {
                 .variables-header {
-                  background-color: mat.m2-get-color-from-palette($background, background);
+                  background-color: var(--uksf-background);
                 }
             }
         }

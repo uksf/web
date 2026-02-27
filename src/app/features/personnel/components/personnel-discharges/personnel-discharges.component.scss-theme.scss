@@ -1,11 +1,6 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
+@use 'styles/theme-helpers' as th;
 
 @mixin personnel-discharges-component-theme($theme) {
-    $background: map.get($theme, background);
-    $primary: map.get($theme, primary);
-    $warn: map.get($theme, warn);
-
     app-personnel-discharges {
         .discharge-1 {
             color: green;
@@ -17,8 +12,13 @@
             color: red;
         }
         .request-override {
-          background-color: mat.m2-get-color-from-palette($warn);
-          color: mat.m2-get-color-from-palette($warn, default-contrast);
+          background-color: th.warn($theme);
+          color: th.warn-contrast($theme);
+        }
+        .refresh-button:not(:disabled) {
+            color: white;
+            --mat-button-text-state-layer-color: white;
+            --mat-button-text-ripple-color: rgba(255, 255, 255, 0.12);
         }
     }
 }

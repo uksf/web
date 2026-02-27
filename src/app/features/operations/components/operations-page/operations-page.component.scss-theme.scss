@@ -1,17 +1,12 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
+@use 'styles/theme-helpers' as th;
 
 @mixin operations-page-component-theme($theme) {
-    $background: map.get($theme, background);
-    $foreground: map.get($theme, foreground);
-    $primary: map.get($theme, primary);
-
     .report {
-      background-color: mat.m2-get-color-from-palette($background, card);
-      color: mat.m2-get-color-from-palette($foreground, base);
+      background-color: var(--uksf-card);
+      color: th.fg-base($theme);
 
       &:hover {
-        background-color: mat.m2-get-color-from-palette($background, hover);
+        background-color: var(--uksf-hover);
       }
     }
 }

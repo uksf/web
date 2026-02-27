@@ -1,18 +1,15 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
-@mixin command-request-component-theme($theme) {
-    $background: map.get($theme, background);
-    $primary: map.get($theme, primary);
+@use 'styles/theme-helpers' as th;
 
+@mixin command-request-component-theme($theme) {
     app-command-requests {
         .request-type {
-          color: mat.m2-get-color-from-palette($primary, default-contrast);
-          background-color: mat.m2-get-color-from-palette($primary);
+          color: th.primary-contrast($theme);
+          background-color: th.primary($theme);
         }
 
         .request-button-sub-container {
             .mat-mdc-button {
-              background-color: mat.m2-get-color-from-palette($background, card);
+              background-color: var(--uksf-card);
             }
         }
     }

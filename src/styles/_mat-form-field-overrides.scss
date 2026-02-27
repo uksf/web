@@ -1,8 +1,8 @@
-@use '@angular/material' as mat;
+@use 'styles/theme-helpers' as th;
 
 /// Shared Material form-field overrides for underline-only appearance.
 /// Used in both .dark-theme and .cdk-drag-preview contexts.
-@mixin form-field-underline($foreground) {
+@mixin form-field-underline($theme) {
     .mat-mdc-form-field.mat-form-field-appearance-fill {
         .mdc-text-field--filled {
             background-color: transparent;
@@ -16,7 +16,7 @@
         }
 
         .mdc-line-ripple::before {
-            border-bottom-color: mat.m2-get-color-from-palette($foreground, divider);
+            border-bottom-color: th.fg-divider($theme);
         }
     }
 }

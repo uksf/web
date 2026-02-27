@@ -1,25 +1,19 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
-
 @mixin docs-folder-component-theme($theme) {
-    $background: map.get($theme, background);
-    $primary: map.get($theme, primary);
-
     app-docs-folder {
         .folder-header-container {
             .folder-header-line,
             .folder-toggle-line {
-                border-top-color: mat.m2-get-color-from-palette($background, 200);
+                border-top-color: var(--uksf-gray-200);
             }
 
             .folder-header {
                 &.hover {
-                    background-color: mat.m2-get-color-from-palette($background, app-bar-hover);
+                    background-color: var(--uksf-app-bar-hover);
                 }
 
                 .folder-toggle {
                     &:hover {
-                        background-color: mat.m2-get-color-from-palette($background, hover);
+                        background-color: var(--uksf-hover);
                     }
 
                     &.blank {
@@ -30,7 +24,7 @@
                 .folder-header-button-container {
                     .icon-container {
                         &:hover {
-                            background-color: mat.m2-get-color-from-palette($background, hover);
+                            background-color: var(--uksf-hover);
                         }
 
                         .mat-icon {
@@ -43,19 +37,19 @@
         .folder-panel {
             .folder-panel-line-container {
                 .folder-panel-line {
-                    border-left-color: mat.m2-get-color-from-palette($background, 200);
+                    border-left-color: var(--uksf-gray-200);
                 }
             }
 
             .folder-panel-body {
                 .documents-container {
                     .documents-container-line {
-                        border-top-color: mat.m2-get-color-from-palette($background, 200);
+                        border-top-color: var(--uksf-gray-200);
                     }
 
                     .documents-container-title {
                         &:hover {
-                            background-color: mat.m2-get-color-from-palette($background, app-bar-hover);
+                            background-color: var(--uksf-app-bar-hover);
                         }
                     }
                 }

@@ -1,34 +1,28 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
+@use 'styles/theme-helpers' as th;
 
 @mixin modpack-builds-rc-component-theme($theme) {
-    $foreground: map.get($theme, foreground);
-    $primary: map.get($theme, primary);
-    $accent: map.get($theme, accent);
-    $background: map.get($theme, background);
-
     app-modpack-builds-rc {
         a {
-            color: mat.m2-get-color-from-palette($primary);
+            color: th.primary($theme);
         }
 
         .flex-container {
             .history-container {
-                background-color: mat.m2-get-color-from-palette($background, app-bar);
+                background-color: var(--uksf-app-bar);
 
                 .history-item {
-                    border-bottom: 1px solid mat.m2-get-color-from-palette($background, selected);
+                    border-bottom: 1px solid var(--uksf-selected);
 
                     &.selected {
-                        background-color: mat.m2-get-color-from-palette($background, selected);
+                        background-color: var(--uksf-selected);
 
                         &.release {
-                            color: mat.m2-get-color-from-palette($primary, default);
+                            color: th.primary($theme);
                         }
                     }
 
                     &:hover {
-                        background-color: mat.m2-get-color-from-palette($background, hover);
+                        background-color: var(--uksf-hover);
                     }
 
                     &.no-select {
@@ -43,11 +37,11 @@
 
             .release-container {
                 .build-footer {
-                    background-color: mat.m2-get-color-from-palette($background, dark-bar);
+                    background-color: var(--uksf-dark-bar);
 
                     .footer-item {
                         &:nth-child(2) {
-                            border-left: 1px solid mat.m2-get-color-from-palette($background, selected);
+                            border-left: 1px solid var(--uksf-selected);
                         }
                     }
                 }
@@ -55,11 +49,11 @@
         }
 
         ::-webkit-scrollbar-track {
-            background-color: mat.m2-get-color-from-palette($background, side-bar);
+            background-color: var(--uksf-side-bar);
         }
 
         ::-webkit-scrollbar-thumb {
-            background-color: mat.m2-get-color-from-palette($background, scroll-thumb);
+            background-color: var(--uksf-scroll-thumb);
         }
 
         @media only screen and (max-width: 1024px) {
@@ -67,7 +61,7 @@
                 .history-container {
                     .history-item {
                         border-bottom: unset;
-                        border-right: 1px solid mat.m2-get-color-from-palette($background, selected);
+                        border-right: 1px solid var(--uksf-selected);
                     }
                 }
             }

@@ -1,28 +1,22 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
-
 @mixin docs-document-component-theme($theme) {
-    $background: map.get($theme, background);
-    $primary: map.get($theme, primary);
-
     app-docs-document {
         .document-container-line {
-            border-top-color: mat.m2-get-color-from-palette($background, 200);
+            border-top-color: var(--uksf-gray-200);
         }
 
         .document-title {
             &.hover {
-                background-color: mat.m2-get-color-from-palette($background, app-bar-hover);
+                background-color: var(--uksf-app-bar-hover);
             }
 
             &.selected {
-                background-color: mat.m2-get-color-from-palette($background, selected);
+                background-color: var(--uksf-selected);
             }
 
             .document-title-button-container {
                 .icon-container {
                     &:hover {
-                        background-color: mat.m2-get-color-from-palette($background, hover);
+                        background-color: var(--uksf-hover);
                     }
 
                     .mat-icon {

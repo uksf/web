@@ -18,19 +18,19 @@
                     </div>
                     <div class="mod-card-section">
                         <div class="mod-links">
-                            <span>
+                            <span class="mod-link-steam">
                                 Steam ID:
                                 <a target="_blank" rel="nofollow" href="https://steamcommunity.com/sharedfiles/filedetails/?id={{ mod.steamId }}">
                                     {{ mod.steamId }}
                                 </a>
                             </span>
-                            <span *ngIf="mod.modpackVersionFirstAdded">
+                            <span class="mod-link-added" *ngIf="mod.modpackVersionFirstAdded">
                                 Added with:
                                 <a target="_blank" [href]="'/modpack/releases?version=' + mod.modpackVersionFirstAdded">
                                     {{ mod.modpackVersionFirstAdded }}
                                 </a>
                             </span>
-                            <span *ngIf="mod.modpackVersionLastUpdated">
+                            <span class="mod-link-updated" *ngIf="mod.modpackVersionLastUpdated">
                                 Last updated with:
                                 <a target="_blank" [href]="'/modpack/releases?version=' + mod.modpackVersionLastUpdated">
                                     {{ mod.modpackVersionLastUpdated }}

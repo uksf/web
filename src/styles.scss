@@ -1,7 +1,8 @@
-@use 'sass:map';
 @use '@angular/material' as mat;
+@use 'styles/theme-helpers' as th;
 @use 'styles/form-field-theme' as fft;
 @use 'styles/mat-form-field-overrides' as mffo;
+@use 'styles/custom-theme-vars' as custom-vars;
 @use 'app/features/command/components/command-ranks/ranks-list-item-layout' as ranks-layout;
 @use 'app/features/operations/components/operations-servers/servers-list-item-layout' as servers-layout;
 
@@ -160,56 +161,234 @@
 }
 
 .dark-theme {
-    @include mat.all-component-themes($dark-theme);
+    // Emit --mat-sys-* system-level CSS variables.
+    // We do NOT include mat.all-component-themes() because it hardcodes
+    // component-level tokens (colors, shapes, typography) from the M3 tonal
+    // palette, overriding our --mat-sys-* overrides. Without it, components
+    // read directly from --mat-sys-* which we control below.
+    @include mat.theme((
+        color: (theme-type: dark, primary: mat.$orange-palette),
+    ));
+
+    // Emit --uksf-* custom properties
+    @include custom-vars.dark-theme-custom-vars();
+
+    // Custom component themes
     @include custom-components-theme($dark-theme);
 
-    $foreground: map.get($dark-theme, foreground);
-    $background: map.get($dark-theme, background);
-    $primary: map.get($dark-theme, primary);
+    // -----------------------------------------------------------------------
+    // Override M3 system tokens to match M2 dark theme appearance.
+    // M3's tonal palette (from mat.$orange-palette) generates warm-tinted
+    // neutrals, large corner radii, and different typography. We override
+    // all system-level tokens to restore the original M2 look.
+    // -----------------------------------------------------------------------
 
-    // Material 20 sets CSS custom properties to M2 defaults (#424242/#303030)
-    // instead of reading the custom background palette keys. Override each to
-    // restore the values from $dark-theme-background in darkTheme.scss.
-    // Wrapped in & {} to satisfy Sass mixed-decls deprecation (declarations after nested rules).
+    // Primary color: exact gold instead of orange tonal value
     & {
-        // Cards
-        --mat-card-elevated-container-color: #{mat.m2-get-color-from-palette($background, card)};
-        --mat-card-outlined-container-color: #{mat.m2-get-color-from-palette($background, card)};
+        --mat-sys-primary: #fec400;
+        --mat-sys-on-primary: #000000;
+        --mat-sys-primary-container: #fec400;
+        --mat-sys-on-primary-container: #000000;
+    }
 
-        // Dialog
-        --mat-dialog-container-color: #{mat.m2-get-color-from-palette($background, dialog)};
+    // Neutral colors: pure white/gray instead of warm-tinted pinkish values
+    & {
+        --mat-sys-on-surface: #ffffff;
+        --mat-sys-on-surface-variant: rgba(255, 255, 255, 0.7);
+        --mat-sys-inverse-surface: #ffffff;
+        --mat-sys-inverse-on-surface: rgba(0, 0, 0, 0.87);
+        --mat-sys-outline: rgba(255, 255, 255, 0.3);
+        --mat-sys-outline-variant: rgba(255, 255, 255, 0.12);
+        --mat-sys-surface-variant: #303030;
+    }
 
-        // Buttons
-        --mat-button-protected-container-color: #{mat.m2-get-color-from-palette($background, raised-button)};
+    // Secondary: neutral instead of warm-tinted
+    & {
+        --mat-sys-secondary: rgba(255, 255, 255, 0.7);
+        --mat-sys-on-secondary: rgba(0, 0, 0, 0.87);
+        --mat-sys-secondary-container: #303030;
+        --mat-sys-on-secondary-container: #ffffff;
+    }
 
-        // Menus and dropdowns
-        --mat-menu-container-color: #{mat.m2-get-color-from-palette($background, card)};
-        --mat-select-panel-background-color: #{mat.m2-get-color-from-palette($background, card)};
-        --mat-autocomplete-background-color: #{mat.m2-get-color-from-palette($background, card)};
+    // Error/warn: standard red instead of M3 light pink
+    & {
+        --mat-sys-error: #c62828;
+        --mat-sys-on-error: #ffffff;
+        --mat-sys-error-container: #93000a;
+        --mat-sys-on-error-container: #ffdad6;
+    }
 
-        // Tables and lists
-        --mat-table-background-color: #{mat.m2-get-color-from-palette($background, card)};
-        --mat-paginator-container-background-color: #{mat.m2-get-color-from-palette($background, card)};
+    // Surface: custom dark palette values
+    & {
+        --mat-sys-surface: var(--uksf-background);
+        --mat-sys-surface-dim: var(--uksf-background);
+        --mat-sys-surface-bright: #3f3834;
+        --mat-sys-surface-container: var(--uksf-card);
+        --mat-sys-surface-container-low: var(--uksf-dark-card);
+        --mat-sys-surface-container-high: var(--uksf-hover);
+        --mat-sys-surface-container-highest: #545454;
+    }
 
-        // Expansion panels
-        --mat-expansion-container-background-color: #{mat.m2-get-color-from-palette($background, card)};
+    // Shape: 4px corners everywhere to match M2 (M3 defaults to 8-28px)
+    & {
+        --mat-sys-corner-extra-small: 4px;
+        --mat-sys-corner-small: 4px;
+        --mat-sys-corner-medium: 4px;
+        --mat-sys-corner-large: 4px;
+        --mat-sys-corner-extra-large: 4px;
+        --mat-sys-corner-full: 9999px; // keep full-round for chips/badges
+    }
 
-        // Toolbar and app chrome
-        --mat-toolbar-container-background-color: #{mat.m2-get-color-from-palette($background, app-bar)};
-        --mat-sidenav-content-background-color: #{mat.m2-get-color-from-palette($background, background)};
-        --mat-app-background-color: #{mat.m2-get-color-from-palette($background, background)};
+    // Typography: restore M2 sizes (M3 defaults are smaller for buttons/labels)
+    & {
+        --mat-sys-label-large-size: 14px;
+        --mat-sys-label-large-weight: 500;
+        --mat-sys-label-large-tracking: normal;
+        --mat-sys-label-medium-size: 12px;
+        --mat-sys-label-small-size: 11px;
+        --mat-sys-body-large-size: 14px;
+        --mat-sys-body-medium-size: 14px;
+        --mat-sys-body-small-size: 12px;
+        --mat-sys-title-large-size: 20px;
+        --mat-sys-title-medium-size: 16px;
+        --mat-sys-title-small-size: 14px;
+        --mat-sys-headline-large-size: 32px;
+        --mat-sys-headline-medium-size: 28px;
+        --mat-sys-headline-small-size: 24px;
+    }
 
-        // Stepper
-        --mat-stepper-container-color: #{mat.m2-get-color-from-palette($background, card)};
+    // Button: 4px corners, 36px height, 16px padding (M3 defaults: pill, 40px, 24px)
+    & {
+        --mat-button-protected-container-shape: 4px;
+        --mat-button-protected-container-height: 36px;
+        --mat-button-filled-container-shape: 4px;
+        --mat-button-filled-container-height: 36px;
+        --mat-button-outlined-container-shape: 4px;
+        --mat-button-outlined-container-height: 36px;
+        --mat-button-text-container-shape: 4px;
+        --mat-button-text-container-height: 36px;
+    }
+
+    // Button horizontal padding: 16px to match M2 (M3 defaults to 24px)
+    .mat-mdc-raised-button,
+    .mat-mdc-unelevated-button,
+    .mat-mdc-outlined-button {
+        padding: 0 16px;
+    }
+
+    // Card: 4px corners (M3 defaults to 12px)
+    & {
+        --mat-card-elevated-container-shape: 4px;
+        --mat-card-filled-container-shape: 4px;
+        --mat-card-outlined-container-shape: 4px;
+    }
+
+    // Dialog: restore M2 defaults (M3 changed max-width from 80vw to 560px,
+    // corner radius from 0 to 28px)
+    & {
+        --mat-dialog-container-shape: 4px;
+        --mat-dialog-container-max-width: 80vw;
+    }
+
+    // Component container color overrides
+    & {
+        --mat-card-elevated-container-color: var(--uksf-card);
+        --mat-card-outlined-container-color: var(--uksf-card);
+        --mat-dialog-container-color: var(--uksf-dialog);
+        --mat-menu-container-color: var(--uksf-card);
+        --mat-menu-container-shape: 4px;
+        --mat-select-panel-background-color: var(--uksf-card);
+        --mat-autocomplete-background-color: var(--uksf-card);
+        --mat-autocomplete-container-shape: 4px;
+        --mat-table-background-color: var(--uksf-card);
+        --mat-paginator-container-background-color: var(--uksf-card);
+        --mat-expansion-container-background-color: var(--uksf-card);
+        --mat-expansion-container-shape: 4px;
+        --mat-toolbar-container-background-color: var(--uksf-app-bar);
+        --mat-sidenav-content-background-color: var(--uksf-background);
+        --mat-app-background-color: var(--uksf-background);
+        --mat-stepper-container-color: var(--uksf-card);
+        --mat-stepper-container-shape: 4px;
+        --mat-select-container-shape: 4px;
+        --mat-datepicker-calendar-container-shape: 4px;
+        --mat-snack-bar-button-color: #fec400;
+    }
+
+    // Form field: label and input text sizing to match custom form fields
+    & {
+        --mat-form-field-filled-label-text-size: 16px;
+        --mat-form-field-outlined-label-text-size: 16px;
+        --mat-form-field-container-text-size: 16px;
+        --mat-form-field-container-text-weight: 400;
+        --mat-form-field-filled-label-text-color: rgba(255, 255, 255, 0.7);
+        --mat-form-field-outlined-label-text-color: rgba(255, 255, 255, 0.7);
+    }
+
+    // Raised button color variants (not emitted without mat.all-component-themes)
+    .mat-mdc-raised-button.mat-primary:not(:disabled) {
+        background-color: var(--mat-sys-primary);
+        color: var(--mat-sys-on-primary);
+
+        &:hover {
+            background-color: color-mix(in srgb, var(--mat-sys-primary) 85%, black);
+        }
+    }
+
+    .mat-mdc-raised-button.mat-warn:not(:disabled) {
+        background-color: var(--mat-sys-error);
+        color: var(--mat-sys-on-error);
+
+        &:hover {
+            background-color: color-mix(in srgb, var(--mat-sys-error) 85%, black);
+        }
+    }
+
+    // Default raised button (no color attribute) keeps dark background with white text/hover/ripple
+    .mat-mdc-raised-button:not(.mat-primary):not(.mat-warn):not(.mat-accent):not(:disabled) {
+        background-color: var(--uksf-raised-button);
+        color: white;
+        --mat-button-protected-state-layer-color: white;
+        --mat-button-protected-ripple-color: rgba(255, 255, 255, 0.12);
+    }
+
+    // Flat (unelevated) button color variants
+    .mat-mdc-unelevated-button.mat-primary:not(:disabled) {
+        background-color: var(--mat-sys-primary);
+        color: var(--mat-sys-on-primary);
+
+        &:hover {
+            background-color: color-mix(in srgb, var(--mat-sys-primary) 85%, black);
+        }
+    }
+
+    .mat-mdc-unelevated-button.mat-warn:not(:disabled) {
+        background-color: var(--mat-sys-error);
+        color: var(--mat-sys-on-error);
+    }
+
+    // Disabled raised/flat buttons
+    .mat-mdc-raised-button:disabled,
+    .mat-mdc-unelevated-button:disabled {
+        background-color: rgba(255, 255, 255, 0.12);
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    // Icon color variants (not emitted without mat.all-component-themes)
+    .mat-icon.mat-primary {
+        --mat-icon-color: var(--mat-sys-primary);
+    }
+
+    .mat-icon.mat-warn {
+        --mat-icon-color: var(--mat-sys-error);
     }
 
     // Global scrollbar theming
     ::-webkit-scrollbar-track {
-        background-color: mat.m2-get-color-from-palette($background, side-bar);
+        background-color: var(--uksf-side-bar);
     }
 
     ::-webkit-scrollbar-thumb {
-        background-color: mat.m2-get-color-from-palette($background, scroll-thumb);
+        background-color: var(--uksf-scroll-thumb);
     }
 
     .mat-impersonated {
@@ -220,18 +399,29 @@
         background-color: rgba(0, 0, 0, 0.12) !important;
     }
 
+    // Tab label colors via M3 tokens (applies to both mat-tab-nav-bar and mat-tab-group)
+    & {
+        --mat-tab-inactive-label-text-color: rgba(255, 255, 255, 0.6);
+        --mat-tab-inactive-hover-label-text-color: rgba(255, 255, 255, 0.6);
+        --mat-tab-inactive-focus-label-text-color: rgba(255, 255, 255, 0.6);
+        --mat-tab-active-label-text-color: #{th.primary($dark-theme)};
+        --mat-tab-active-hover-label-text-color: #{th.primary($dark-theme)};
+        --mat-tab-active-focus-label-text-color: #{th.primary($dark-theme)};
+        --mat-tab-active-indicator-color: #{th.primary($dark-theme)};
+        --mat-tab-label-text-weight: 500;
+    }
+
     .nav-bar {
         display: block;
         padding: 0 0 12px 0;
 
-        .mat-mdc-tab-link {
-            color: mat.m2-get-color-from-palette($foreground, base);
-            background-color: mat.m2-get-color-from-palette($background, background);
+        // Remove duplicate border — .mat-mdc-tab-nav-bar already has one
+        .mat-mdc-tab-link-container {
+            border-bottom: none;
+        }
 
-            // Yellow underline on active tab (legacy behavior)
-            .mdc-tab-indicator .mdc-tab-indicator__content--underline {
-                border-color: mat.m2-get-color-from-palette($primary, default);
-            }
+        .mat-mdc-tab-link {
+            background-color: var(--uksf-background);
 
             // Remove focus ring/outline on click
             .mdc-tab__ripple::before {
@@ -247,7 +437,7 @@
             }
 
             &:hover {
-                background-color: mat.m2-get-color-from-palette($background, hover);
+                background-color: var(--uksf-hover);
             }
         }
     }
@@ -257,11 +447,11 @@
     }
 
     .mat-mdc-button {
-        background-color: mat.m2-get-color-from-palette($background, selected);
+        background-color: var(--uksf-selected);
     }
 
     input {
-        color: mat.m2-get-color-from-palette($foreground, base) !important;
+        color: th.fg-base($dark-theme) !important;
         background-color: transparent !important;
     }
 
@@ -275,7 +465,7 @@
     }
 
     // Form field: remove filled background and focus overlay for underline-only appearance
-    @include mffo.form-field-underline($foreground);
+    @include mffo.form-field-underline($dark-theme);
 
     .mat-mdc-form-field.mat-form-field-appearance-fill {
         .mat-mdc-form-field-infix {
@@ -412,45 +602,26 @@ mat-tab-nav-panel,
 // ---------------------------------------------------------------------------
 // CDK drag preview
 // ---------------------------------------------------------------------------
-// CDK drag previews are cloned DOM nodes appended to <body>, outside the
-// .dark-theme wrapper. This means:
-//   1. Material CSS custom properties (set by mat.all-component-themes inside
-//      .dark-theme) are not inherited — cards, form fields lose their shape/color.
-//   2. Dark-theme overrides (form field underline appearance, input colors) don't
-//      reach the preview.
-//   3. Component styles loaded from JS chunks (ViewEncapsulation.None) that use
-//      var(--mat-*) resolve against missing variables.
-//
-// We fix this by:
-//   - Including only the Material component themes actually used in drag previews
-//     (card shape, form field sizing) so their CSS custom properties are set.
-//   - Replicating dark-theme appearance overrides using palette functions.
-//   - Setting explicit button colors (the button component's var()-based styles
-//     in JS chunks don't cascade reliably to cloned elements).
-//   - Using shared layout mixins for ranks/servers list items.
-//
-// Themed colors (background, text) are handled by each component's scss-theme
-// file via @at-root .cdk-drag-preview (see command-ranks and operations-servers
-// theme files).
-// ---------------------------------------------------------------------------
-// Suppress duplicate-theme warnings for .cdk-drag-preview: CDK drag previews
-// render outside .dark-theme, so they genuinely need their own theme includes.
-mat.$theme-ignore-duplication-warnings: true;
-
+// CDK drag previews are cloned DOM nodes appended to <body>, outside
+// .dark-theme. They don't inherit --mat-sys-* or --uksf-* variables.
+// We set explicit tokens, form field underline, button styles, and
+// layout mixins. Themed colors handled by component scss-theme files
+// via @at-root .cdk-drag-preview.
 .cdk-drag-preview {
-    $foreground: map.get($dark-theme, foreground);
-    $background: map.get($dark-theme, background);
-    $primary: map.get($dark-theme, primary);
+    // Emit --uksf-* custom properties (not inherited from .dark-theme)
+    @include custom-vars.dark-theme-custom-vars();
 
-    // Material CSS custom properties for card border-radius and form field sizing
-    @include mat.card-theme($dark-theme);
-    @include mat.form-field-theme($dark-theme);
+    // Card and form field tokens needed for drag previews.
+    // We set these explicitly instead of using mat.card-theme()/mat.form-field-theme()
+    // because those would emit M3 tonal palette values (warm-tinted colors).
+    --mat-card-elevated-container-shape: 4px;
+    --mat-card-elevated-container-color: var(--uksf-card);
 
     box-sizing: border-box;
     overflow: hidden;
 
     // --- Form field: underline-only appearance (mirrors .dark-theme overrides) ---
-    @include mffo.form-field-underline($foreground);
+    @include mffo.form-field-underline($dark-theme);
 
     // Custom form field (app-text-input, app-dropdown): set theme CSS variables
     // that are normally scoped to .dark-theme selectors
@@ -458,7 +629,7 @@ mat.$theme-ignore-duplication-warnings: true;
     @include fft.form-field-theme($dark-theme, 'app-dropdown');
 
     input {
-        color: mat.m2-get-color-from-palette($foreground, base) !important;
+        color: th.fg-base($dark-theme) !important;
         background-color: transparent !important;
     }
 
@@ -469,13 +640,13 @@ mat.$theme-ignore-duplication-warnings: true;
     }
 
     .mat-mdc-raised-button.mat-primary:not(:disabled) {
-        background-color: mat.m2-get-color-from-palette($primary);
-        color: mat.m2-get-color-from-palette($primary, default-contrast);
+        background-color: th.primary($dark-theme);
+        color: th.primary-contrast($dark-theme);
     }
 
     .mat-mdc-raised-button:disabled {
-        background-color: mat.m2-get-color-from-palette($foreground, divider);
-        color: mat.m2-get-color-from-palette($foreground, disabled-text);
+        background-color: th.fg-divider($dark-theme);
+        color: th.fg-disabled-text($dark-theme);
     }
 
     // --- Ranks list item layout ---
@@ -502,6 +673,7 @@ mat.$theme-ignore-duplication-warnings: true;
         .mat-mdc-raised-button {
             margin-right: 5px;
             flex-shrink: 0;
+            padding: 0 16px;
         }
 
         .mission-select {
@@ -533,6 +705,7 @@ mat.$theme-ignore-duplication-warnings: true;
         content: '';
         position: absolute;
         inset: 0;
+        border-radius: inherit;
         background: radial-gradient(
             circle var(--spotlight-size, 200px) at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
             var(--spotlight-color, rgba(255, 255, 255, 0.08)),
@@ -583,6 +756,9 @@ mat-paginator .mdc-notched-outline__trailing {
 
 .mat-mdc-dialog-container {
     --mat-dialog-supporting-text-color: white;
+    // M3 line-height falls back to 1.5rem which resolves to 15px (root font-size is 10px
+    // from Bootstrap). Use unitless 1.5 so it scales with each element's font-size.
+    --mat-dialog-supporting-text-line-height: 1.5;
 }
 
 .mat-mdc-dialog-title {
@@ -598,15 +774,22 @@ mat-dialog-content, .mat-mdc-dialog-content {
     padding: 0 24px !important;
     max-height: 70vh;
     overflow-y: auto;
-
     form {
         display: flex;
         flex-direction: column;
+        // M3 checkbox/radio touch targets (48px) are absolutely positioned and extend
+        // 4px beyond their 40px host element. This padding ensures the form has enough
+        // space so they don't inflate scrollHeight and cause a scrollbar.
+        padding-bottom: 4px;
     }
 }
 
 .overflow-hidden-dialog .mat-mdc-dialog-content {
     overflow: hidden;
+}
+
+.no-max-height-dialog .mat-mdc-dialog-content {
+    max-height: none;
 }
 
 mat-dialog-actions, .mat-mdc-dialog-actions {
@@ -667,7 +850,6 @@ mat-dialog-actions, .mat-mdc-dialog-actions {
 .mat-mdc-unelevated-button,
 .mat-mdc-fab,
 .mat-mdc-mini-fab {
-    font-weight: unset;
     letter-spacing: normal;
 
     .mdc-button__label {
@@ -677,7 +859,6 @@ mat-dialog-actions, .mat-mdc-dialog-actions {
 
 .mat-mdc-tab,
 .mat-mdc-tab-link {
-    font-weight: unset;
     letter-spacing: normal;
     min-width: 72px;
 

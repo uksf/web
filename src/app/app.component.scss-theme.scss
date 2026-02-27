@@ -1,28 +1,23 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
+@use 'styles/theme-helpers' as th;
 
 @mixin app-component-theme($theme) {
-    $foreground: map.get($theme, foreground);
-    $background: map.get($theme, background);
-    $color: mat.m2-get-color-from-palette($foreground, base);
-
     .wrapper {
-        color: $color;
-        background-color: mat.m2-get-color-from-palette($background, background);
+        color: th.fg-base($theme);
+        background-color: var(--uksf-background);
 
         .header {
-            color: $color;
-            background-color: mat.m2-get-color-from-palette($background, app-bar);
+            color: th.fg-base($theme);
+            background-color: var(--uksf-app-bar);
         }
 
         .sideboard {
-            color: $color;
-            background-color: mat.m2-get-color-from-palette($background, side-bar);
+            color: th.fg-base($theme);
+            background-color: var(--uksf-side-bar);
         }
 
         .board {
-            color: $color;
-            background-color: mat.m2-get-color-from-palette($background, background);
+            color: th.fg-base($theme);
+            background-color: var(--uksf-background);
         }
     }
 

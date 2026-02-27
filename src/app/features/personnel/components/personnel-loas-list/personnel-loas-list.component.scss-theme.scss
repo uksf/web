@@ -1,10 +1,4 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
-
 @mixin personnel-loas-list-component-theme($theme) {
-    $background: map.get($theme, background);
-    $primary: map.get($theme, primary);
-
     app-personnel-loas-list {
         .list-container {
             .mat-mdc-card {

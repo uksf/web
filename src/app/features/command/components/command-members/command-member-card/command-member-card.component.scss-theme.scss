@@ -1,9 +1,6 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
-@mixin command-member-card-component-theme($theme) {
-    $background: map.get($theme, background);
-    $primary: map.get($theme, primary);
+@use 'styles/theme-helpers' as th;
 
+@mixin command-member-card-component-theme($theme) {
     app-command-member-card {
         .member-panel {
             .header-panel {
@@ -11,10 +8,10 @@
                     .header-title {
                         &.edit {
                             &:hover {
-                                border-color: mat.m2-get-color-from-palette($primary) !important;
+                                border-color: th.primary($theme) !important;
 
                                 .underline {
-                                    background-color: mat.m2-get-color-from-palette($background, underline);
+                                    background-color: var(--uksf-underline);
                                 }
                             }
                         }
@@ -26,14 +23,14 @@
                 .member-panel-content {
                     .member-panel-content-item {
                         .member-panel-content-element {
-                            background-color: mat.m2-get-color-from-palette($background, selected);
+                            background-color: var(--uksf-selected);
 
                             &.edit {
-                                border-color: mat.m2-get-color-from-palette($background, selected);
+                                border-color: var(--uksf-selected);
 
                                 &:hover {
-                                    color: mat.m2-get-color-from-palette($primary) !important;
-                                    border-color: mat.m2-get-color-from-palette($background, hover);
+                                    color: th.primary($theme) !important;
+                                    border-color: var(--uksf-hover);
                                 }
                             }
                         }
@@ -43,11 +40,11 @@
         }
 
         ::-webkit-scrollbar-track {
-            background-color: mat.m2-get-color-from-palette($background, side-bar);
+            background-color: var(--uksf-side-bar);
         }
 
         ::-webkit-scrollbar-thumb {
-            background-color: mat.m2-get-color-from-palette($background, scroll-thumb);
+            background-color: var(--uksf-scroll-thumb);
         }
     }
 }

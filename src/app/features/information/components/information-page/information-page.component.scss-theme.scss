@@ -1,19 +1,15 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
+@use 'styles/theme-helpers' as th;
 
 @mixin information-page-component-theme($theme) {
-    $background: map.get($theme, background);
-    $primary: map.get($theme, primary);
-
     app-information-page {
         .flex-container {
             .mat-mdc-card {
                 &:hover {
-                  background-color: mat.m2-get-color-from-palette($background, hover);
+                  background-color: var(--uksf-hover);
                 }
 
                 h3 {
-                  color: mat.m2-get-color-from-palette($primary);
+                  color: th.primary($theme);
                 }
             }
         }

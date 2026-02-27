@@ -1,18 +1,13 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
+@use 'styles/theme-helpers' as th;
 
 @mixin recruitment-page-component-theme($theme) {
-    $background: map.get($theme, background);
-    $foreground: map.get($theme, foreground);
-    $primary: map.get($theme, primary);
-
     app-recruitment-page {
         a {
-            color: mat.m2-get-color-from-palette($primary);
+            color: th.primary($theme);
         }
         .applications-container {
             .applicationCardOthers {
-                background-color: mat.m2-get-color-from-palette($background, dark-card);
+                background-color: var(--uksf-dark-card);
             }
         }
     }

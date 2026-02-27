@@ -1,23 +1,16 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
-
 @mixin command-units-component-theme($theme) {
-    $background: map.get($theme, background);
-    $foreground: map.get($theme, foreground);
-    $primary: map.get($theme, primary);
-
     app-command-units {
         .node-content-wrapper {
             &:hover {
-              background-color: mat.m2-get-color-from-palette($background, hover);
+              background-color: var(--uksf-hover);
             }
             &.is-dragging-over {
-              background-color: mat.m2-get-color-from-palette($background, hover);
+              background-color: var(--uksf-hover);
             }
         }
         .node-drop-slot {
             &.is-dragging-over {
-              background-color: mat.m2-get-color-from-palette($background, hover);
+              background-color: var(--uksf-hover);
             }
         }
     }

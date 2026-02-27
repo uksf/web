@@ -1,16 +1,11 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
-
 @mixin message-modal-component-theme($theme) {
-    $background: map.get($theme, background);
-
     app-message-modal {
         ::-webkit-scrollbar-track {
-            background-color: mat.m2-get-color-from-palette($background, side-bar);
+            background-color: var(--uksf-side-bar);
         }
 
         ::-webkit-scrollbar-thumb {
-            background-color: mat.m2-get-color-from-palette($background, scroll-thumb);
+            background-color: var(--uksf-scroll-thumb);
         }
     }
 }

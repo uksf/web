@@ -3,42 +3,40 @@
 <h2 mat-dialog-title *ngIf="edit">Edit Server</h2>
 <mat-dialog-content>
     <form [formGroup]="form">
-        <div class="overflow-container">
-            <app-text-input class="normal" label="Server Name" formControlName="name" [required]="true"
-                [validationMessages]="validationMessages.name">
-            </app-text-input>
-            <app-text-input class="normal" label="Port" formControlName="port" [required]="true" type="number"
-                [validationMessages]="validationMessages.port">
-            </app-text-input>
-            <app-text-input class="normal" label="Api Port" formControlName="apiPort" [required]="true" type="number"
-                [validationMessages]="validationMessages.apiPort">
-            </app-text-input>
-            <app-text-input class="normal" label="Headless clients required" formControlName="numberHeadlessClients" type="number"
-                [validationMessages]="validationMessages.numberHeadlessClients">
-            </app-text-input>
-            <app-text-input class="normal" label="Server Profile Name" formControlName="profileName" [required]="true"
-                [validationMessages]="validationMessages.profileName">
-            </app-text-input>
-            <app-text-input class="normal" label="Server Display Name" formControlName="hostName" [required]="true"
-                [validationMessages]="validationMessages.hostName">
-            </app-text-input>
-            <app-text-input class="normal" label="Server Password" formControlName="password" [required]="true"
-                [validationMessages]="validationMessages.password">
-            </app-text-input>
-            <app-text-input class="normal" label="Admin Password" formControlName="adminPassword" [required]="true"
-                [validationMessages]="validationMessages.adminPassword">
-            </app-text-input>
-            <app-dropdown class="normal" placeholder="Environment" [autocomplete]="false"
-                [elements]="environmentElements$" formControlName="environment" [isRequired]="true"
-                elementName="environment">
-                <ng-template #element let-element>{{ element.displayValue }}</ng-template>
-            </app-dropdown>
-            <app-dropdown class="normal" placeholder="Server options" [autocomplete]="false"
-                [elements]="serverOptionElements$" formControlName="serverOption" [isRequired]="true"
-                elementName="server option">
-                <ng-template #element let-element>{{ element.displayValue }}</ng-template>
-            </app-dropdown>
-        </div>
+        <app-text-input class="normal" label="Server Name" formControlName="name" [required]="true"
+            [validationMessages]="validationMessages.name">
+        </app-text-input>
+        <app-text-input class="normal" label="Port" formControlName="port" [required]="true" type="number"
+            [validationMessages]="validationMessages.port">
+        </app-text-input>
+        <app-text-input class="normal" label="Api Port" formControlName="apiPort" [required]="true" type="number"
+            [validationMessages]="validationMessages.apiPort">
+        </app-text-input>
+        <app-text-input class="normal" label="Headless clients required" formControlName="numberHeadlessClients" type="number"
+            [validationMessages]="validationMessages.numberHeadlessClients">
+        </app-text-input>
+        <app-text-input class="normal" label="Server Profile Name" formControlName="profileName" [required]="true"
+            [validationMessages]="validationMessages.profileName">
+        </app-text-input>
+        <app-text-input class="normal" label="Server Display Name" formControlName="hostName" [required]="true"
+            [validationMessages]="validationMessages.hostName">
+        </app-text-input>
+        <app-text-input class="normal" label="Server Password" formControlName="password" [required]="true"
+            [validationMessages]="validationMessages.password">
+        </app-text-input>
+        <app-text-input class="normal" label="Admin Password" formControlName="adminPassword" [required]="true"
+            [validationMessages]="validationMessages.adminPassword">
+        </app-text-input>
+        <app-dropdown class="normal" placeholder="Environment" [autocomplete]="false"
+            [elements]="environmentElements$" formControlName="environment" [isRequired]="true"
+            elementName="environment">
+            <ng-template #element let-element>{{ element.displayValue }}</ng-template>
+        </app-dropdown>
+        <app-dropdown class="normal" placeholder="Server options" [autocomplete]="false"
+            [elements]="serverOptionElements$" formControlName="serverOption" [isRequired]="true"
+            elementName="server option">
+            <ng-template #element let-element>{{ element.displayValue }}</ng-template>
+        </app-dropdown>
     </form>
 </mat-dialog-content>
 <mat-dialog-actions>

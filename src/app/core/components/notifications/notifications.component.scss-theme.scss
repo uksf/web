@@ -1,58 +1,54 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
-@mixin notifications-component-theme($theme) {
-    $foreground: map.get($theme, foreground);
-    $background: map.get($theme, background);
-    $primary: map.get($theme, primary);
+@use 'styles/theme-helpers' as th;
 
+@mixin notifications-component-theme($theme) {
     app-notifications {
         .mat-icon.clear {
-          color: mat.m2-get-color-from-palette($primary, default-contrast);
+          color: th.primary-contrast($theme);
         }
 
         .mat-badge-content {
           background: red;
-          color: mat.m2-get-color-from-palette($foreground, base);
+          color: th.fg-base($theme);
         }
 
         .notification-panel-header {
-          background-color: mat.m2-get-color-from-palette($primary);
+          background-color: th.primary($theme);
         }
 
         .notification-card-container {
-          background-color: mat.m2-get-color-from-palette($background, card);
+          background-color: var(--uksf-card);
         }
 
         ::-webkit-scrollbar-track {
-          background-color: mat.m2-get-color-from-palette($background, background);
+          background-color: var(--uksf-background);
         }
 
         ::-webkit-scrollbar-thumb {
-          background-color: mat.m2-get-color-from-palette($background, hover);
+          background-color: var(--uksf-hover);
         }
 
         .notification-header-text {
-          color: mat.m2-get-color-from-palette($primary, default-contrast);
+          color: th.primary-contrast($theme);
         }
 
         .notification-card {
-          background-color: mat.m2-get-color-from-palette($background, card);
+          background-color: var(--uksf-card);
         }
 
         .notification-card:hover {
-          background-color: mat.m2-get-color-from-palette($background, hover);
+          background-color: var(--uksf-hover);
         }
 
         .notification-card-nohover {
-          background-color: mat.m2-get-color-from-palette($background, card);
+          background-color: var(--uksf-card);
         }
 
         .notification-text {
-          color: mat.m2-get-color-from-palette($foreground, base);
+          color: th.fg-base($theme);
         }
 
         .notification-text-timestamp {
-          color: mat.m2-get-color-from-palette($foreground, base);
+          color: th.fg-base($theme);
         }
     }
 }

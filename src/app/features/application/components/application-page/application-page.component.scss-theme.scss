@@ -1,34 +1,29 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
+@use 'styles/theme-helpers' as th;
 
 @mixin application-page-component-theme($theme) {
-    $background: map.get($theme, background);
-    $foreground: map.get($theme, foreground);
-    $primary: map.get($theme, primary);
-
     app-application-page {
         a {
-          color: mat.m2-get-color-from-palette($primary);
+          color: th.primary($theme);
         }
 
         .progress-container {
             .box {
-              background-color: mat.m2-get-color-from-palette($background, card);
-              color: mat.m2-get-color-from-palette($foreground, base);
+              background-color: var(--uksf-card);
+              color: th.fg-base($theme);
             }
 
             .enabled {
-              background-color: mat.m2-get-color-from-palette($primary);
-              color: mat.m2-get-color-from-palette($primary, default-contrast);
+              background-color: th.primary($theme);
+              color: th.primary-contrast($theme);
             }
 
             .complete {
-              background-color: mat.m2-get-color-from-palette($background, 550);
+              background-color: var(--uksf-gray-550);
             }
         }
-        
+
         h4 {
-          color: mat.m2-get-color-from-palette($primary);
+          color: th.primary($theme);
         }
     }
 }

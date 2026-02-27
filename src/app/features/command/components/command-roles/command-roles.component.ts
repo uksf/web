@@ -97,8 +97,8 @@ export class CommandRolesComponent implements OnInit {
         };
     }
 
-    trackByRoleName(index: number, role: Role): string {
-        return role.name;
+    trackByRoleId(index: number, role: Role): string {
+        return role.id;
     }
 
     unfocus() {

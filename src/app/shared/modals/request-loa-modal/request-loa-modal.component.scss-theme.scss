@@ -1,14 +1,9 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
-@mixin request-loa-modal-component-theme($theme) {
-    $foreground: map.get($theme, foreground);
-    $background: map.get($theme, background);
-    $primary: map.get($theme, primary);
-    $warn: map.get($theme, warn);
+@use 'styles/theme-helpers' as th;
 
+@mixin request-loa-modal-component-theme($theme) {
     app-request-loa-modal {
         .invalid-message {
-          color: mat.m2-get-color-from-palette($warn);
+          color: th.warn($theme);
         }
     }
 }

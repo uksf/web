@@ -1,35 +1,29 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
+@use 'styles/theme-helpers' as th;
 
 @mixin modpack-builds-steps-component-theme($theme) {
-    $foreground: map.get($theme, foreground);
-    $primary: map.get($theme, primary);
-    $accent: map.get($theme, accent);
-    $background: map.get($theme, background);
-
     app-modpack-builds-steps {
         a {
-            color: mat.m2-get-color-from-palette($primary);
+            color: th.primary($theme);
         }
 
         .log-container {
             .log-steps {
-                border-right: 1px solid mat.m2-get-color-from-palette($background, selected);
+                border-right: 1px solid var(--uksf-selected);
 
                 h3 {
-                    border-bottom: 1px solid mat.m2-get-color-from-palette($background, selected);
+                    border-bottom: 1px solid var(--uksf-selected);
                 }
 
                 .log-step-item {
-                    border-bottom: 1px solid mat.m2-get-color-from-palette($background, selected);
+                    border-bottom: 1px solid var(--uksf-selected);
 
                     &.selected {
-                        color: mat.m2-get-color-from-palette($primary, default);
-                        background-color: mat.m2-get-color-from-palette($background, selected);
+                        color: th.primary($theme);
+                        background-color: var(--uksf-selected);
                     }
 
                     &:hover {
-                        background-color: mat.m2-get-color-from-palette($background, hover);
+                        background-color: var(--uksf-hover);
                     }
                 }
             }
@@ -40,7 +34,7 @@
                         .mat-mdc-raised-button {
                             &.scroll {
                                 &.autoScroll {
-                                    background-color: mat.m2-get-color-from-palette($background, selected);
+                                    background-color: var(--uksf-selected);
                                 }
                             }
                         }
@@ -48,29 +42,29 @@
                 }
 
                 .build-log {
-                    color: mat.m2-get-color-from-palette($background, contrast);
+                    color: var(--uksf-contrast);
                     background-color: transparent;
 
                     .log-item {
-                        color: mat.m2-get-color-from-palette($foreground, base);
+                        color: th.fg-base($theme);
 
                         &.selected {
-                            background-color: mat.m2-get-color-from-palette($background, selected);
+                            background-color: var(--uksf-selected);
 
                             .link {
-                                color: mat.m2-get-color-from-palette($background, contrast);
+                                color: var(--uksf-contrast);
                             }
                         }
 
                         &:hover {
-                            background-color: mat.m2-get-color-from-palette($background, hover);
+                            background-color: var(--uksf-hover);
 
                             &.selected {
-                                background-color: mat.m2-get-color-from-palette($background, selected);
+                                background-color: var(--uksf-selected);
                             }
 
                             .link {
-                                color: mat.m2-get-color-from-palette($foreground, base);
+                                color: th.fg-base($theme);
                             }
                         }
 
@@ -78,7 +72,7 @@
                             color: transparent;
 
                             &:hover {
-                                color: mat.m2-get-color-from-palette($primary);
+                                color: th.primary($theme);
                             }
                         }
                     }
@@ -86,7 +80,7 @@
             }
 
             i {
-                color: mat.m2-get-color-from-palette($background, contrast);
+                color: var(--uksf-contrast);
             }
         }
     }
