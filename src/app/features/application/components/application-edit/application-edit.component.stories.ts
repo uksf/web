@@ -1,11 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/angular';
 import { moduleMetadata } from '@storybook/angular';
+import { RouterTestingModule } from '@angular/router/testing';
 import { ApplicationEditComponent } from './application-edit.component';
 import { SharedModule } from '@shared/shared.module';
 import { MatDialog } from '@angular/material/dialog';
 import { AccountService } from '@app/core/services/account.service';
 import { PermissionsService } from '@app/core/services/permissions.service';
-import { Router } from '@angular/router';
+import { SignalRService } from '@app/core/services/signalr.service';
+import { CommentThreadService } from '@app/shared/services/comment-thread.service';
 import { ApplicationService } from '../../services/application.service';
 import { of, Subject } from 'rxjs';
 import { ApplicationState } from '@app/features/application/models/application';
@@ -31,13 +33,25 @@ const meta: Meta<ApplicationEditComponent> = {
     component: ApplicationEditComponent,
     decorators: [
         moduleMetadata({
-            imports: [SharedModule],
+            imports: [SharedModule, RouterTestingModule],
             providers: [
                 { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(undefined) }), closeAll: () => {} } },
-                { provide: AccountService, useValue: { account: { ...mockAccount }, getAccount: () => of({}) } },
+                { provide: AccountService, useValue: { account: { ...mockAccount }, accountChange$: new Subject(), getAccount: () => of({}) } },
                 { provide: PermissionsService, useValue: { hasPermission: () => false, accountUpdateEvent: new Subject() } },
-                { provide: Router, useValue: { navigate: () => Promise.resolve(true) } },
-                { provide: ApplicationService, useValue: { updateApplication: () => of({}) } }
+                { provide: ApplicationService, useValue: { updateApplication: () => of({}) } },
+                { provide: SignalRService, useValue: {
+                    connect: () => ({
+                        connection: { on: () => {}, off: () => {}, stop: () => Promise.resolve() },
+                        reconnectEvent: new Subject<void>(),
+                        dispose: () => {}
+                    })
+                }},
+                { provide: CommentThreadService, useValue: {
+                    getComments: () => of({ comments: [] }),
+                    canPost: () => of(false),
+                    postComment: () => of({}),
+                    deleteComment: () => of({})
+                }}
             ]
         })
     ]

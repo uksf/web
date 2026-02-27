@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/angular';
 import { moduleMetadata } from '@storybook/angular';
-import { EMPTY, of, Subject } from 'rxjs';
-import { NgxPermissionsService } from 'ngx-permissions';
+import { of, Subject } from 'rxjs';
+import { NgxPermissionsModule, NgxPermissionsService } from 'ngx-permissions';
+import { RouterTestingModule } from '@angular/router/testing';
 import { HeaderBarComponent } from './header-bar.component';
 import { CoreModule } from '@app/core/core.module';
 import { PermissionsService } from '@app/core/services/permissions.service';
@@ -11,7 +12,6 @@ import { AuthenticationService } from '@app/core/services/authentication/authent
 import { SignalRService } from '@app/core/services/signalr.service';
 import { NotificationsService } from '@app/core/services/notifications.service';
 import { Account, MembershipState } from '@app/shared/models/account';
-import { Router } from '@angular/router';
 
 const mockAccount: Account = {
     id: '1',
@@ -25,15 +25,6 @@ const mockAccount: Account = {
     roleAssignment: 'Trooper',
 } as Account;
 
-const mockRouter = {
-    url: '/home',
-    events: EMPTY,
-    navigate: () => Promise.resolve(true),
-    navigateByUrl: () => Promise.resolve(true),
-    createUrlTree: () => ({}),
-    serializeUrl: () => ''
-};
-
 const mockSignalRService = {
     connect: () => ({
         connection: { on: () => {}, off: () => {}, stop: () => Promise.resolve() },
@@ -44,7 +35,6 @@ const mockSignalRService = {
 
 function commonProviders(account: Account | null, environment: string) {
     return [
-        { provide: Router, useValue: mockRouter },
         { provide: PermissionsService, useValue: { revoke: () => {}, getPermissions: () => ({}) } },
         { provide: AccountService, useValue: { account, accountChange$: new Subject<Account>() } },
         { provide: AppSettingsService, useValue: { appSetting: (key: string) => key === 'environment' ? environment : '' } },
@@ -59,7 +49,7 @@ const meta: Meta<HeaderBarComponent> = {
     component: HeaderBarComponent,
     decorators: [
         moduleMetadata({
-            imports: [CoreModule],
+            imports: [CoreModule, RouterTestingModule, NgxPermissionsModule.forRoot()],
             providers: commonProviders(mockAccount, Environments.Production)
         })
     ]

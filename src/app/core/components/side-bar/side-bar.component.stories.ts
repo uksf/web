@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/angular';
 import { moduleMetadata } from '@storybook/angular';
-import { EMPTY, of, Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
+import { RouterTestingModule } from '@angular/router/testing';
 import { SideBarComponent } from './side-bar.component';
 import { CoreModule } from '@app/core/core.module';
 import { PermissionsService } from '@app/core/services/permissions.service';
@@ -9,7 +10,6 @@ import { VersionService } from '@app/core/services/version.service';
 import { Permissions } from '@app/core/services/permissions';
 import { Account, MembershipState } from '@app/shared/models/account';
 import { AppComponent } from '@app/app.component';
-import { Router } from '@angular/router';
 
 // Mock the static AppComponent.utilityHubConnection used in SideBarComponent.ngOnInit
 (AppComponent as any).utilityHubConnection = {
@@ -27,24 +27,14 @@ const mockAccount: Account = {
     lastname: 'Miller',
 } as Account;
 
-const mockRouter = {
-    url: '/home',
-    events: EMPTY,
-    navigate: () => Promise.resolve(true),
-    navigateByUrl: () => Promise.resolve(true),
-    createUrlTree: () => ({}),
-    serializeUrl: () => ''
-};
-
 function buildPermissionsMap(...perms: string[]): Record<string, boolean> {
     const map: Record<string, boolean> = {};
     perms.forEach(p => map[p] = true);
     return map;
 }
 
-function sidebarProviders(permissions: Record<string, boolean>, account: Account | null, routerUrl = '/home') {
+function sidebarProviders(permissions: Record<string, boolean>, account: Account | null) {
     return [
-        { provide: Router, useValue: { ...mockRouter, url: routerUrl } },
         { provide: PermissionsService, useValue: { getPermissions: () => permissions } },
         { provide: AccountService, useValue: { account, accountChange$: new Subject<Account>() } },
         { provide: VersionService, useValue: { getVersion: () => of(1) } }
@@ -56,7 +46,7 @@ const meta: Meta<SideBarComponent> = {
     component: SideBarComponent,
     decorators: [
         moduleMetadata({
-            imports: [CoreModule],
+            imports: [CoreModule, RouterTestingModule],
             providers: sidebarProviders(buildPermissionsMap(Permissions.UNLOGGED), null)
         })
     ]
@@ -77,8 +67,7 @@ export const Member: Story = {
         moduleMetadata({
             providers: sidebarProviders(
                 buildPermissionsMap(Permissions.MEMBER, Permissions.RECRUITER, Permissions.COMMAND),
-                mockAccount,
-                '/command'
+                mockAccount
             )
         })
     ]
@@ -89,8 +78,7 @@ export const Admin: Story = {
         moduleMetadata({
             providers: sidebarProviders(
                 buildPermissionsMap(Permissions.MEMBER, Permissions.RECRUITER, Permissions.COMMAND, Permissions.ADMIN),
-                mockAccount,
-                '/admin'
+                mockAccount
             )
         })
     ]
