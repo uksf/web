@@ -1,10 +1,10 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, Validators } from '@angular/forms';
+import { ValidationMessage } from '@app/shared/services/form-helper.service';
 
 export interface TextInputModalData {
-    message: string;
-    title?: string;
+    title: string;
 }
 
 @Component({
@@ -15,17 +15,18 @@ export interface TextInputModalData {
 })
 export class TextInputModalComponent {
     title: string;
-    message: string;
     form = this.formBuilder.group({
         input: ['', Validators.required]
     });
+    validationMessages: ValidationMessage[] = [
+        { type: 'required', message: 'Reason is required' }
+    ];
 
     constructor(private formBuilder: FormBuilder, public dialogRef: MatDialogRef<TextInputModalComponent>, @Inject(MAT_DIALOG_DATA) public data: TextInputModalData) {
-        this.title = data.title || 'Input';
-        this.message = data.message;
+        this.title = data.title;
     }
 
-    confirm() {
+    submit() {
         this.dialogRef.close(this.form.get('input').value);
     }
 

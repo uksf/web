@@ -11,10 +11,6 @@
         .discharge-limit {
             color: red;
         }
-        .request-override {
-          background-color: th.warn($theme);
-          color: th.warn-contrast($theme);
-        }
         .refresh-button:not(:disabled) {
             color: white;
             --mat-button-text-state-layer-color: white;

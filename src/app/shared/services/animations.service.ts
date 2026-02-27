@@ -3,6 +3,7 @@ import { animate, AnimationTriggerMetadata, state, style, transition, trigger } 
 export const expansionAnimations: {
     readonly indicatorRotate: AnimationTriggerMetadata;
     readonly bodyExpansion: AnimationTriggerMetadata;
+    readonly bodyExpansionState: AnimationTriggerMetadata;
 } = {
     /** Animation that rotates the indicator arrow. */
     indicatorRotate: trigger('indicatorRotate', [
@@ -27,6 +28,13 @@ export const expansionAnimations: {
             }),
             animate('150ms cubic-bezier(0.4,0.0,0.2,1)', style({ height: '0', visibility: 'hidden' }))
         ])
+    ]),
+
+    /** State-based body expansion for content that must stay in the DOM (e.g. mat-table). */
+    bodyExpansionState: trigger('bodyExpansionState', [
+        state('collapsed', style({ height: '0', overflow: 'hidden', visibility: 'hidden' })),
+        state('expanded', style({ height: '*', overflow: 'hidden', visibility: 'visible' })),
+        transition('collapsed <=> expanded', animate('150ms cubic-bezier(0.4,0.0,0.2,1)'))
     ])
 };
 
