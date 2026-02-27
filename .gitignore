@@ -44,6 +44,8 @@ testem.log
 /playwright-report/
 /playwright/.cache/
 /test-results/
+/ct/.cache/
+/playwright-report-ct/
 
 # Test credentials - NEVER commit
 .env.test
