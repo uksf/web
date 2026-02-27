@@ -1,0 +1,44 @@
+/// Custom theme CSS variables for UKSF dark theme.
+/// These replace the M2 background palette keys and accent color that have no M3 equivalent.
+@mixin dark-theme-custom-vars() {
+    // Background surfaces
+    --uksf-background: #121212;
+    --uksf-app-bar: #242424;
+    --uksf-app-bar-hover: #363636;
+    --uksf-side-bar: #1c1c1c;
+    --uksf-dark-bar: #0e0e0e;
+    --uksf-card: #242424;
+    --uksf-dark-card: #181818;
+    --uksf-dialog: #242424;
+    --uksf-hover: #484848;
+    --uksf-selected: #303030;
+    --uksf-raised-button: #242424;
+
+    // Text / decoration
+    --uksf-contrast: white;
+    --uksf-underline: hsla(0, 0%, 100%, 0.7);
+
+    // Scrollbar
+    --uksf-scroll-track: #242424;
+    --uksf-scroll-thumb: #484848;
+
+    // Game servers
+    --uksf-server: #242424;
+    --uksf-server-running: #303030;
+
+    // Org chart
+    --uksf-org-line: #484848;
+    --uksf-org-content: #303030;
+    --uksf-org-hover: #424242;
+
+    // Gray scale (numeric keys from old palette)
+    --uksf-gray-200: #424242;
+    --uksf-gray-450: #2c2c2c;
+    --uksf-gray-550: #202020;
+    --uksf-gray-600: #181818;
+    --uksf-gray-800: #0e0e0e;
+
+    // Accent (Blue 900) — only used in operations-servers + theme-emitter
+    --uksf-accent: #0d47a1;
+    --uksf-accent-contrast: white;
+}

@@ -11,7 +11,8 @@ import { CHARACTER_BLOCK_PATTERN } from '@app/shared/directives/character-block.
 @Component({
     selector: 'app-change-first-last-modal',
     templateUrl: './change-first-last-modal.component.html',
-    styleUrls: ['./change-first-last-modal.component.scss']
+    styleUrls: ['./change-first-last-modal.component.scss'],
+    standalone: false
 })
 export class ChangeFirstLastModalComponent implements OnInit {
     characterBlockPattern = CHARACTER_BLOCK_PATTERN;

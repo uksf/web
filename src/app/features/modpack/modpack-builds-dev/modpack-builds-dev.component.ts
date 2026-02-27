@@ -12,7 +12,8 @@ import { ModpackBuild } from '../models/modpack-build';
 @Component({
     selector: 'app-modpack-builds-dev',
     templateUrl: './modpack-builds-dev.component.html',
-    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-builds-dev.component.scss', './modpack-builds-dev.component.scss-theme.scss']
+    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-builds-dev.component.scss', './modpack-builds-dev.component.scss-theme.scss'],
+    standalone: false
 })
 export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
     @ViewChild(ThemeEmitterComponent) theme: ThemeEmitterComponent;

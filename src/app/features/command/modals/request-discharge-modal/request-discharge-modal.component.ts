@@ -13,7 +13,8 @@ import { CommandRequestsService } from '../../services/command-requests.service'
 @Component({
     selector: 'app-request-discharge-modal',
     templateUrl: './request-discharge-modal.component.html',
-    styleUrls: ['./request-discharge-modal.component.scss', '../../components/command-page/command-page.component.scss']
+    styleUrls: ['./request-discharge-modal.component.scss', '../../components/command-page/command-page.component.scss'],
+    standalone: false
 })
 export class RequestDischargeModalComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;

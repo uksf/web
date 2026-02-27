@@ -1,11 +1,9 @@
-@use '@angular/material' as mat;
+@use 'styles/theme-helpers' as th;
 
 @mixin about-page-component-theme($theme) {
-    $primary: map-get($theme, primary);
-
     app-about-page {
         a {
-            color: mat.get-color-from-palette($primary);
+            color: th.primary($theme);
         }
 
         .text-container {

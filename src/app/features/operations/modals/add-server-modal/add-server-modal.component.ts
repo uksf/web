@@ -10,7 +10,8 @@ import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/
 @Component({
     selector: 'app-add-server-modal',
     templateUrl: './add-server-modal.component.html',
-    styleUrls: ['./add-server-modal.component.scss']
+    styleUrls: ['./add-server-modal.component.scss'],
+    standalone: false
 })
 export class AddServerModalComponent implements OnDestroy {
     private destroy$ = new Subject<void>();

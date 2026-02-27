@@ -1,34 +1,29 @@
-@use '@angular/material' as mat;
+@use 'styles/theme-helpers' as th;
 
 @mixin modpack-builds-dev-component-theme($theme) {
-    $foreground: map-get($theme, foreground);
-    $primary: map-get($theme, primary);
-    $accent: map-get($theme, accent);
-    $background: map-get($theme, background);
-
     app-modpack-builds-dev {
         a {
-            color: mat.get-color-from-palette($primary);
+            color: th.primary($theme);
         }
 
         .flex-container {
             .build-item-container {
-                background-color: mat.get-color-from-palette($background, app-bar);
+                background-color: var(--uksf-app-bar);
 
                 .build-history-container {
                     .history-item {
-                        border-bottom: 1px solid mat.get-color-from-palette($background, selected);
+                        border-bottom: 1px solid var(--uksf-selected);
 
                         &.selected {
-                            background-color: mat.get-color-from-palette($background, selected);
+                            background-color: var(--uksf-selected);
 
                             &.release {
-                                color: mat.get-color-from-palette($primary, default);
+                                color: th.primary($theme);
                             }
                         }
 
                         &:hover {
-                            background-color: mat.get-color-from-palette($background, hover);
+                            background-color: var(--uksf-hover);
                         }
 
                         &.no-select {
@@ -43,11 +38,11 @@
             }
 
             .build-footer {
-                background-color: mat.get-color-from-palette($background, dark-bar);
+                background-color: var(--uksf-dark-bar);
 
                 .footer-item {
                     &:nth-child(2) {
-                        border-left: 1px solid mat.get-color-from-palette($background, selected);
+                        border-left: 1px solid var(--uksf-selected);
                     }
                 }
             }
@@ -58,7 +53,7 @@
                 .build-history-container {
                     .history-item {
                         border-bottom: unset;
-                        border-right: 1px solid mat.get-color-from-palette($background, selected);
+                        border-right: 1px solid var(--uksf-selected);
                     }
                 }
             }

@@ -7,6 +7,7 @@ import { filter, takeUntil } from 'rxjs/operators';
     selector: 'app-login-page',
     templateUrl: './login-page.component.html',
     styleUrls: ['./login-page.component.scss'],
+    standalone: false
 })
 export class LoginPageComponent implements OnInit, OnDestroy {
     private destroyed = new Subject<void>();

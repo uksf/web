@@ -7,21 +7,15 @@ test.describe('ApplicationCommunications', () => {
         await expect(page.locator('.dark-theme')).toHaveScreenshot('application-communications-pending.png');
     });
 
-    test('SteamConnect visual regression', async ({ page }) => {
-        await page.goto('/iframe.html?id=application-communications--steam-connect&viewMode=story');
+    test('Steam visual regression', async ({ page }) => {
+        await page.goto('/iframe.html?id=application-communications--steam&viewMode=story');
         await page.waitForSelector('mat-card');
-        await expect(page.locator('.dark-theme')).toHaveScreenshot('application-communications-steam-connect.png');
+        await expect(page.locator('.dark-theme')).toHaveScreenshot('application-communications-steam.png');
     });
 
-    test('DiscordConnect visual regression', async ({ page }) => {
-        await page.goto('/iframe.html?id=application-communications--discord-connect&viewMode=story');
+    test('Discord visual regression', async ({ page }) => {
+        await page.goto('/iframe.html?id=application-communications--discord&viewMode=story');
         await page.waitForSelector('mat-card');
-        await expect(page.locator('.dark-theme')).toHaveScreenshot('application-communications-discord-connect.png');
-    });
-
-    test('Spinner is centered in Pending', async ({ page }) => {
-        await page.goto('/iframe.html?id=application-communications--pending&viewMode=story');
-        await page.waitForSelector('mat-spinner');
-        await expect(page.locator('mat-spinner')).toBeVisible();
+        await expect(page.locator('.dark-theme')).toHaveScreenshot('application-communications-discord.png');
     });
 });

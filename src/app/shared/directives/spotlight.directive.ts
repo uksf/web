@@ -2,6 +2,7 @@ import { Directive, ElementRef, HostListener, Input, OnDestroy } from '@angular/
 
 @Directive({
     selector: '[appSpotlight]',
+    standalone: false
 })
 export class SpotlightDirective implements OnDestroy {
     @Input() spotlightSize = 200;

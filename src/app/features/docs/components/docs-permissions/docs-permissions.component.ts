@@ -32,7 +32,8 @@ interface FormModel {
             multi: true
         }
     ],
-    viewProviders: [{ provide: ControlContainer, useExisting: UntypedFormGroup }, MatExpansionPanel]
+    viewProviders: [{ provide: ControlContainer, useExisting: UntypedFormGroup }, MatExpansionPanel],
+    standalone: false
 })
 export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
     @ViewChild(NgForm) form!: NgForm;

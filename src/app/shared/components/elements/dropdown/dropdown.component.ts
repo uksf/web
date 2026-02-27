@@ -19,7 +19,8 @@ import { DropdownBaseComponent, IDropdownElement } from '../dropdown-base/dropdo
             multi: true
         }
     ],
-    viewProviders: [{ provide: ControlContainer, useExisting: NgForm }]
+    viewProviders: [{ provide: ControlContainer, useExisting: NgForm }],
+    standalone: false
 })
 export class DropdownComponent extends DropdownBaseComponent implements ControlValueAccessor, Validator {
     constructor() {

@@ -19,8 +19,6 @@
                 [id]="inputId"
                 [attr.aria-describedby]="showErrors && hasListError ? inputId + '-error' : null"
                 formControlName="textInput"
-                [(ngModel)]="textModel"
-                (ngModelChange)="onTextModelChange($event)"
                 [matAutocomplete]="auto"
                 [required]="required"
                 spellcheck="false"
@@ -33,7 +31,7 @@
                 (blur)="onInputBlur()"
             />
             <button *ngIf="textModel && !disabled" type="button" class="form-field-clear"
-                    aria-label="Clear" (click)="textModel = ''; onTextModelChange(''); $event.stopPropagation()">
+                    aria-label="Clear" (click)="clearTextInput(); $event.stopPropagation()">
                 <mat-icon>close</mat-icon>
             </button>
         </div>
@@ -42,7 +40,7 @@
         </div>
     </div>
     <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelect($event)"
-                      [displayWith]="autoDisplayWith" [autoActiveFirstOption]="true">
+                      [displayWith]="autoDisplayWith" [autoActiveFirstOption]="false">
         <cdk-virtual-scroll-viewport [maxBufferPx]="1000" [minBufferPx]="600"
                                      [ngStyle]="{ height: scrollPanelHeight }" itemSize="48">
             <mat-option

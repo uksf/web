@@ -10,7 +10,8 @@ import { ApplicationService } from '../../services/application.service';
 @Component({
     selector: 'app-application-page',
     templateUrl: './application-page.component.html',
-    styleUrls: ['./application-page.component.scss']
+    styleUrls: ['./application-page.component.scss'],
+    standalone: false
 })
 export class ApplicationPageComponent implements OnInit {
     step = 1;

@@ -9,7 +9,8 @@ import { AuthenticationService } from '@app/core/services/authentication/authent
 @Component({
     selector: 'app-header-bar',
     templateUrl: './header-bar.component.html',
-    styleUrls: ['./header-bar.component.scss']
+    styleUrls: ['./header-bar.component.scss'],
+    standalone: false
 })
 export class HeaderBarComponent implements OnInit {
     environments = Environments;

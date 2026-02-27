@@ -15,7 +15,8 @@ import { first, takeUntil } from 'rxjs/operators';
     selector: 'app-docs-document',
     templateUrl: './docs-document.component.html',
     styleUrls: ['./docs-document.component.scss'],
-    animations: [folderAnimations.indicatorRotate, folderAnimations.folderExpansion]
+    animations: [folderAnimations.indicatorRotate, folderAnimations.folderExpansion],
+    standalone: false
 })
 export class DocsDocumentComponent implements OnChanges, OnDestroy {
     private destroy$ = new Subject<void>();

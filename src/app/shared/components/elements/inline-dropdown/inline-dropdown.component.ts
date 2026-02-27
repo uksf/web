@@ -13,7 +13,8 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
             useExisting: forwardRef(() => InlineDropdownComponent),
             multi: true
         }
-    ]
+    ],
+    standalone: false
 })
 export class InlineDropdownComponent implements ControlValueAccessor, OnInit, OnDestroy {
     @Input('placeholder') placeholder: string;

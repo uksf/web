@@ -51,8 +51,7 @@
                                                 'title-running': !server.updating && server.status.running
                                             }"
                                         >
-                                            {{ server.name }}
-                                            - {{ server.statusText }}
+                                            {{ server.name }}{{ server.statusText ? ' - ' + server.statusText : '' }}
                                         </h3>
                                         <app-flex-filler></app-flex-filler>
                                         <button mat-button class="icon" (click)="refreshServerStatus(server)" matTooltip="Refresh server status">
@@ -105,7 +104,7 @@
                                             </div>
                                             <app-flex-filler></app-flex-filler>
                                             <app-dropdown
-                                                *ngIf="!server.status.running && !server.status.started && !server.updating && !server.status.stopping"
+                                                *ngIf="!server.status.running && !server.status.started && !server.status.stopping"
                                                 [(ngModel)]="server.missionSelection"
                                                 [displayWith]="displayWithMission"
                                                 [elementFilter]="missionFilter"
@@ -113,7 +112,7 @@
                                                 [elementName]="'Mission'"
                                                 [elements]="missions"
                                                 [formFieldClass]="'mission-select'"
-                                                [hidden]="server.updating || isDisabled"
+                                                [style.visibility]="server.updating || isDisabled ? 'hidden' : 'visible'"
                                                 [optionClass]="'mission-option'"
                                                 [placeholder]="'Select mission'"
                                                 [showErrors]="false"

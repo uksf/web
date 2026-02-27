@@ -8,6 +8,7 @@ import { ServerMod } from '../../models/game-server';
     selector: 'app-edit-server-mods-modal',
     templateUrl: './edit-server-mods-modal.component.html',
     styleUrls: ['./edit-server-mods-modal.component.scss'],
+    standalone: false
 })
 export class EditServerModsModalComponent implements OnInit {
     server;

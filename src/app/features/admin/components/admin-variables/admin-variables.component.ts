@@ -11,7 +11,8 @@ import { VariablesService } from '../../services/variables.service';
 @Component({
     selector: 'app-admin-variables',
     templateUrl: './admin-variables.component.html',
-    styleUrls: ['./admin-variables.component.scss']
+    styleUrls: ['./admin-variables.component.scss'],
+    standalone: false
 })
 export class AdminVariablesComponent implements OnInit {
     @ViewChild(MatAccordion) accordion: MatAccordion;

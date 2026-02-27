@@ -1,19 +1,15 @@
-@use '@angular/material' as mat;
+@use 'styles/theme-helpers' as th;
 
 @mixin docs-permissions-component-theme($theme) {
-    $background: map-get($theme, background);
-    $foreground: map-get($theme, foreground);
-    $primary: map-get($theme, primary);
-
     app-docs-permissions {
         .mat-expansion-panel {
-            background-color: mat.get-color-from-palette($background, 450);
+            background-color: var(--uksf-gray-450);
 
-            .permissions-header {        
+            .permissions-header {
                 span {
-                    color: mat.get-color-from-palette($primary);
+                    color: th.primary($theme);
                 }
             }
         }
     }
-} 
+}

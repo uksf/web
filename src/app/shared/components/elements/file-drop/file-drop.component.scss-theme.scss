@@ -1,7 +1,4 @@
-@use '@angular/material' as mat;
 @mixin file-drop-component-theme($theme) {
-    $background: map-get($theme, background);
-
     app-file-drop {
         .drop-zone {
             background-color: darkgray;

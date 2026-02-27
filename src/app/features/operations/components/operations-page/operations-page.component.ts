@@ -5,7 +5,8 @@ import { PermissionsService } from '@app/core/services/permissions.service';
 @Component({
     selector: 'app-operations-page',
     templateUrl: './operations-page.component.html',
-    styleUrls: ['./operations-page.component.scss']
+    styleUrls: ['./operations-page.component.scss'],
+    standalone: false
 })
 export class OperationsPageComponent {
     tabLinks: { label: string; link: string }[] = [{ label: 'AAR', link: './aar' }];

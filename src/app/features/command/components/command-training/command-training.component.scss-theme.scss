@@ -1,15 +1,10 @@
-@use '@angular/material' as mat;
-
 @mixin command-training-component-theme($theme) {
-    $background: map-get($theme, background);
-    $primary: map-get($theme, primary);
-
     app-command-training {
     }
 
     &.cdk-drag-preview {
         &.trainings-list-item {
-            background-color: mat.get-color-from-palette($background, card);
+            background-color: var(--uksf-card);
         }
     }
 }

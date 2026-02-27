@@ -12,7 +12,8 @@ import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/
 @Component({
     selector: 'app-add-unit-modal',
     templateUrl: './add-unit-modal.component.html',
-    styleUrls: ['./add-unit-modal.component.scss']
+    styleUrls: ['./add-unit-modal.component.scss'],
+    standalone: false
 })
 export class AddUnitModalComponent implements OnInit {
     form = this.formBuilder.group({

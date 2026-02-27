@@ -10,7 +10,8 @@ import { TrainingsService } from '../../services/trainings.service';
 @Component({
     selector: 'app-command-training',
     templateUrl: './command-training.component.html',
-    styleUrls: ['../command-page/command-page.component.scss', './command-training.component.scss']
+    styleUrls: ['../command-page/command-page.component.scss', './command-training.component.scss'],
+    standalone: false
 })
 export class CommandTrainingComponent implements OnInit {
     trainings: Training[];

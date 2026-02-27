@@ -19,33 +19,26 @@ describe('TextInputModalComponent', () => {
 
     describe('constructor', () => {
         it('sets title and message from data', () => {
-            component = createComponent({ title: 'Test Title', message: 'Test message' });
+            component = createComponent({ title: 'Test Title' });
 
             expect(component.title).toBe('Test Title');
-            expect(component.message).toBe('Test message');
-        });
-
-        it('defaults title to Input when not provided', () => {
-            component = createComponent({ message: 'Test message' });
-
-            expect(component.title).toBe('Input');
         });
     });
 
-    describe('confirm', () => {
+    describe('submit', () => {
         it('closes dialog with the form input value', () => {
-            component = createComponent({ message: 'Enter text' });
+            component = createComponent({ title: 'Input' });
             component.form.get('input').setValue('user input text');
 
-            component.confirm();
+            component.submit();
 
             expect(mockDialogRef.close).toHaveBeenCalledWith('user input text');
         });
 
         it('closes dialog with empty string when input is empty', () => {
-            component = createComponent({ message: 'Enter text' });
+            component = createComponent({ title: 'Input' });
 
-            component.confirm();
+            component.submit();
 
             expect(mockDialogRef.close).toHaveBeenCalledWith('');
         });
@@ -53,7 +46,7 @@ describe('TextInputModalComponent', () => {
 
     describe('cancel', () => {
         it('closes dialog without a result', () => {
-            component = createComponent({ message: 'Enter text' });
+            component = createComponent({ title: 'Input' });
 
             component.cancel();
 
@@ -63,13 +56,13 @@ describe('TextInputModalComponent', () => {
 
     describe('form validation', () => {
         it('is invalid when input is empty', () => {
-            component = createComponent({ message: 'Enter text' });
+            component = createComponent({ title: 'Input' });
 
             expect(component.form.valid).toBe(false);
         });
 
         it('is valid when input has a value', () => {
-            component = createComponent({ message: 'Enter text' });
+            component = createComponent({ title: 'Input' });
             component.form.get('input').setValue('some text');
 
             expect(component.form.valid).toBe(true);

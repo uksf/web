@@ -18,7 +18,8 @@ import { CommandRequestsService } from '../../services/command-requests.service'
 @Component({
     selector: 'app-request-transfer-modal',
     templateUrl: './request-transfer-modal.component.html',
-    styleUrls: ['./request-transfer-modal.component.scss', '../../components/command-page/command-page.component.scss']
+    styleUrls: ['./request-transfer-modal.component.scss', '../../components/command-page/command-page.component.scss'],
+    standalone: false
 })
 export class RequestTransferModalComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;

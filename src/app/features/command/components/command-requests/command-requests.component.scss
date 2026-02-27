@@ -8,12 +8,9 @@
 .flex-container-slim {
     display: flex;
     flex-direction: row;
-    margin-left: 0;
-}
-
-.mat-mdc-raised-button {
-    margin-right: 5px;
-    margin-bottom: 4px;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding-bottom: 12px;
 }
 
 .requests-container {

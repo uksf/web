@@ -2,7 +2,7 @@
 import { APP_INITIALIZER, Injector, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule, LowerCaseUrlSerializer } from './app-routing.module';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { JwtModule } from '@auth0/angular-jwt';
 import { NgxPermissionsModule } from 'ngx-permissions';
@@ -97,39 +97,10 @@ export function tokenGetter() {
 }
 
 @NgModule({
-    providers: [
-        AppSettingsService,
-        SessionService,
-        AuthenticationService,
-        AccountService,
-        PermissionsService,
-        RedirectService,
-        UrlService,
-        CountryPickerService,
-        SignalRService,
-        SignalRHubsService,
-        ModpackBuildService,
-        ModpackRcService,
-        ModpackBuildProcessService,
-        ModpackReleaseService,
-        DisplayNameService,
-        {
-            provide: APP_INITIALIZER,
-            useFactory: initApp,
-            deps: [AppSettingsService, Injector, CountryPickerService],
-            multi: true
-        },
-        { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
-        { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
-        { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { autoFocus: 'first-tabbable' } },
-        { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { subscriptSizing: 'dynamic' } },
-        { provide: UrlSerializer, useClass: LowerCaseUrlSerializer },
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: AuthHttpInterceptor,
-            multi: true
-        }
+    declarations: [
+        AppComponent,
     ],
+    bootstrap: [AppComponent],
     imports: [
         BrowserModule,
         ClipboardModule,
@@ -178,7 +149,6 @@ export function tokenGetter() {
         RatingModule,
         EditorModule,
         DragDropModule,
-        HttpClientModule,
         JwtModule.forRoot({
             config: {
                 tokenGetter: tokenGetter,
@@ -195,10 +165,40 @@ export function tokenGetter() {
         HomeModule,
         AuthModule,
     ],
-    declarations: [
-        AppComponent,
+    providers: [
+        AppSettingsService,
+        SessionService,
+        AuthenticationService,
+        AccountService,
+        PermissionsService,
+        RedirectService,
+        UrlService,
+        CountryPickerService,
+        SignalRService,
+        SignalRHubsService,
+        ModpackBuildService,
+        ModpackRcService,
+        ModpackBuildProcessService,
+        ModpackReleaseService,
+        DisplayNameService,
+        {
+            provide: APP_INITIALIZER,
+            useFactory: initApp,
+            deps: [AppSettingsService, Injector, CountryPickerService],
+            multi: true
+        },
+        { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
+        { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
+        { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { autoFocus: 'first-tabbable' } },
+        { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { subscriptSizing: 'dynamic' } },
+        { provide: UrlSerializer, useClass: LowerCaseUrlSerializer },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: AuthHttpInterceptor,
+            multi: true
+        },
+        provideHttpClient(withInterceptorsFromDi()),
     ],
-    bootstrap: [AppComponent]
 })
 export class AppModule {
     constructor() {}

@@ -1,62 +1,58 @@
-@use '@angular/material' as mat;
+@use 'styles/theme-helpers' as th;
 
 @mixin units-orbat-component-theme($theme) {
-    $background: map-get($theme, background);
-    $foreground: map-get($theme, foreground);
-    $primary: map-get($theme, primary);
-
     app-units-orbat {
         ::-webkit-scrollbar-track {
-            background-color: mat.get-color-from-palette($background, scroll-track);
+            background-color: var(--uksf-scroll-track);
         }
 
         ::-webkit-scrollbar-thumb {
-            background-color: mat.get-color-from-palette($background, scroll-thumb);
+            background-color: var(--uksf-scroll-thumb);
         }
 
         .p-organizationchart {
             .p-organizationchart-line-down {
-                background-color: mat.get-color-from-palette($background, org-line);
+                background-color: var(--uksf-org-line);
             }
 
             .p-organizationchart-line-left {
-                border-right: 1px solid mat.get-color-from-palette($background, org-line);
+                border-right: 1px solid var(--uksf-org-line);
             }
 
             .p-organizationchart-line-top {
-                border-top: 1px solid mat.get-color-from-palette($background, org-line);
+                border-top: 1px solid var(--uksf-org-line);
             }
 
             .p-organizationchart-node-content {
-                border-color: mat.get-color-from-palette($background, org-line);
+                border-color: var(--uksf-org-line);
 
                 .p-node-toggler {
-                    color: mat.get-color-from-palette($background, org-line);
+                    color: var(--uksf-org-line);
                 }
 
                 &.p-organizationchart-selectable-node {
                     &:hover {
-                        border-color: mat.get-color-from-palette($background, org-line);
-                        background-color: mat.get-color-from-palette($background, org-hover);
-                        color: mat.get-color-from-palette($foreground, base);
+                        border-color: var(--uksf-org-line);
+                        background-color: var(--uksf-org-hover);
+                        color: th.fg-base($theme);
 
                         h4 {
-                            color: mat.get-color-from-palette($primary);
+                            color: th.primary($theme);
                         }
 
                         a {
-                            color: mat.get-color-from-palette($primary);
+                            color: th.primary($theme);
                         }
                     }
                 }
             }
 
             .p-widget-content {
-                color: mat.get-color-from-palette($foreground, base);
-                background-color: mat.get-color-from-palette($background, org-content);
+                color: th.fg-base($theme);
+                background-color: var(--uksf-org-content);
 
                 h4 {
-                    color: mat.get-color-from-palette($foreground, base);
+                    color: th.fg-base($theme);
                     background-color: transparent;
                 }
             }

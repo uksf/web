@@ -1,67 +1,30 @@
 import type { Meta, StoryObj } from '@storybook/angular';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { moduleMetadata } from '@storybook/angular';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { TextInputModalComponent, TextInputModalData } from './text-input-modal.component';
+import { SharedModule } from '@shared/shared.module';
+import { modalProviders, modalImports } from '../../../../../.storybook/utils/mock-providers';
 
-const meta: Meta = {
+const meta: Meta<TextInputModalComponent> = {
     title: 'Modals/TextInput',
-    decorators: [moduleMetadata({ imports: [ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule] })]
+    component: TextInputModalComponent,
+    decorators: [
+        moduleMetadata({
+            imports: [...modalImports, SharedModule],
+            providers: modalProviders({ title: 'Input' } as TextInputModalData)
+        })
+    ]
 };
 export default meta;
-type Story = StoryObj;
+type Story = StoryObj<TextInputModalComponent>;
 
-const styles = [`.textarea-container { margin-top: 8px; } .textarea { font-size: 14px; flex: 1; width: 100%; }`];
-
-export const Default: Story = {
-    render: () => {
-        const form = new FormGroup({ input: new FormControl('', Validators.required) });
-        return {
-            props: { form },
-            styles,
-            template: `
-                <h2 mat-dialog-title>Input</h2>
-                <mat-dialog-content>
-                    <span>Please provide a reason for this action.</span>
-                    <form [formGroup]="form" class="textarea-container">
-                        <mat-form-field class="textarea">
-                            <textarea matInput formControlName="input" required matTextareaAutosize matAutosizeMinRows="5" matAutosizeMaxRows="5" maxlength="200"></textarea>
-                        </mat-form-field>
-                    </form>
-                </mat-dialog-content>
-                <mat-dialog-actions>
-                    <button mat-raised-button color="warn">Cancel</button>
-                    <app-flex-filler></app-flex-filler>
-                    <button mat-raised-button color="primary" [disabled]="!form.valid">Confirm</button>
-                </mat-dialog-actions>
-            `
-        };
-    }
-};
+export const Default: Story = {};
 
 export const Filled: Story = {
-    render: () => {
-        const form = new FormGroup({ input: new FormControl('This is a reason for the requested action.', Validators.required) });
-        return {
-            props: { form },
-            styles,
-            template: `
-                <h2 mat-dialog-title>Rejection Reason</h2>
-                <mat-dialog-content>
-                    <span>Please explain why this application is being rejected.</span>
-                    <form [formGroup]="form" class="textarea-container">
-                        <mat-form-field class="textarea">
-                            <textarea matInput formControlName="input" required matTextareaAutosize matAutosizeMinRows="5" matAutosizeMaxRows="5" maxlength="200"></textarea>
-                        </mat-form-field>
-                    </form>
-                </mat-dialog-content>
-                <mat-dialog-actions>
-                    <button mat-raised-button color="warn">Cancel</button>
-                    <app-flex-filler></app-flex-filler>
-                    <button mat-raised-button color="primary" [disabled]="!form.valid">Confirm</button>
-                </mat-dialog-actions>
-            `
-        };
-    }
+    decorators: [
+        moduleMetadata({
+            providers: modalProviders({
+                title: 'Rejection Reason'
+            } as TextInputModalData)
+        })
+    ]
 };

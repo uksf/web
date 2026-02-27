@@ -5,6 +5,7 @@ export const CHARACTER_BLOCK_PATTERN = /^[^`±~!@#$%^&*§¡€¢¶•ªº«()_+=
 
 @Directive({
     selector: '[appCharacterBlock]',
+    standalone: false
 })
 export class CharacterBlockDirective {
     constructor() {}

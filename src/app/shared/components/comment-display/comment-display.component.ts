@@ -13,7 +13,8 @@ import { DestroyableComponent } from '@app/shared/components';
     selector: 'app-comment-display',
     templateUrl: './comment-display.component.html',
     styleUrls: ['./comment-display.component.scss'],
-    providers: [TimeAgoPipe]
+    providers: [TimeAgoPipe],
+    standalone: false
 })
 export class CommentDisplayComponent extends DestroyableComponent implements OnInit, OnDestroy {
     @Input() threadId: string;

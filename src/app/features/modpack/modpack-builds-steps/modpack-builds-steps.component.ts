@@ -17,7 +17,8 @@ import { takeUntil } from 'rxjs/operators';
 @Component({
     selector: 'app-modpack-builds-steps',
     templateUrl: './modpack-builds-steps.component.html',
-    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-builds-steps.component.scss', './modpack-builds-steps.component.scss-theme.scss']
+    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-builds-steps.component.scss', './modpack-builds-steps.component.scss-theme.scss'],
+    standalone: false
 })
 export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges {
     @ViewChild(ThemeEmitterComponent)

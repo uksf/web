@@ -1,21 +1,17 @@
-@use '@angular/material' as mat;
-@mixin validation-report-modal-component-theme($theme) {
-    $foreground: map-get($theme, foreground);
-    $background: map-get($theme, background);
-    $primary: map-get($theme, primary);
-    $warn: map-get($theme, warn);
+@use 'styles/theme-helpers' as th;
 
+@mixin validation-report-modal-component-theme($theme) {
     app-validation-report-modal {
         h3 {
-            color: mat.get-color-from-palette($primary);
+            color: th.primary($theme);
         }
 
         .error {
-            color: mat.get-color-from-palette($warn);
+            color: th.warn($theme);
         }
 
         a {
-            color: mat.get-color-from-palette($primary);
+            color: th.primary($theme);
         }
     }
 }

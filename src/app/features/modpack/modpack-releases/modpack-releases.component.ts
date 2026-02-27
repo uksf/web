@@ -10,7 +10,8 @@ import { ModpackRelease } from '../models/modpack-release';
 @Component({
     selector: 'app-modpack-releases',
     templateUrl: './modpack-releases.component.html',
-    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-releases.component.scss', './modpack-releases.component.scss-theme.scss']
+    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-releases.component.scss', './modpack-releases.component.scss-theme.scss'],
+    standalone: false
 })
 export class ModpackReleasesComponent implements OnInit, OnDestroy {
     selectedReleaseVersion: string = '';
@@ -25,8 +26,6 @@ export class ModpackReleasesComponent implements OnInit, OnDestroy {
     publicReleases: ModpackRelease[] = [];
     selectedRelease: ModpackRelease | undefined;
     latestReleaseIsDraft: boolean = false;
-    private originalLinkRenderer: typeof this.markdownService.renderer.link;
-
     constructor(
         private markdownService: MarkdownService,
         private permissionsService: PermissionsService,
@@ -46,18 +45,10 @@ export class ModpackReleasesComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.markdownService.renderer.link = this.originalLinkRenderer;
         this.modpackReleaseService.disconnect();
     }
 
     ngOnInit() {
-        this.originalLinkRenderer = this.markdownService.renderer.link;
-        const linkRenderer = this.markdownService.renderer.link;
-        this.markdownService.renderer.link = (href: string, title: string, text: string) => {
-            const html: string = linkRenderer.call(this.markdownService.renderer, href, title, text);
-            return html.replace(/^<a /, '<a target="_blank" rel="nofollow" ');
-        };
-
         this.modpackReleaseService.connect(
             () => {
                 this.updateCachedState();

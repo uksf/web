@@ -1,31 +1,26 @@
-@use '@angular/material' as mat;
+@use 'styles/theme-helpers' as th;
 
 @mixin home-page-component-theme($theme) {
-    $background: map-get($theme, background);
-    $foreground: map-get($theme, foreground);
-    $primary: map-get($theme, primary);
-    $accent: map-get($theme, accent);
-
     app-home-page {
         .issues-container {
-          color: mat.get-color-from-palette($primary, default-contrast);
+          color: th.primary-contrast($theme);
         }
 
         .teamspeak-container {
-          background-color: mat.get-color-from-palette($primary);
+          background-color: th.primary($theme);
 
           .teamspeak-header {
             .teamspeak-text {
-              color: mat.get-color-from-palette($primary, default-contrast);
+              color: th.primary-contrast($theme);
             }
 
             a {
-              color: mat.get-color-from-palette($primary, default-contrast);
+              color: th.primary-contrast($theme);
             }
           }
 
             .teamspeak-content-container {
-              background-color: mat.get-color-from-palette($background, card);
+              background-color: var(--uksf-card);
             }
         }
     }

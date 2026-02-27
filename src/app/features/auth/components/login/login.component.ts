@@ -11,6 +11,7 @@ import { first } from 'rxjs/operators';
     selector: 'app-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss', '../login-page/login-page.component.scss'],
+    standalone: false
 })
 export class LoginComponent {
     @ViewChild(NgForm) form!: NgForm;

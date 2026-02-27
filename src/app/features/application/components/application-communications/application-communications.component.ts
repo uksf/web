@@ -12,6 +12,7 @@ import { ProfileService } from '@app/features/profile/services/profile.service';
     selector: 'app-application-communications',
     templateUrl: './application-communications.component.html',
     styleUrls: ['./application-communications.component.scss', '../application-page/application-page.component.scss'],
+    standalone: false
 })
 export class ApplicationCommunicationsComponent implements OnInit {
     @Output() nextEvent = new EventEmitter();

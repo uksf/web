@@ -1,71 +1,8 @@
 @use '@angular/material' as mat;
-@import 'palettes.scss';
 
-$dark-theme-background: (
-    status-bar: black,
-    footer-bar: black,
-    side-bar: mat.get-color-from-palette($dark-pallette, A100),
-    app-bar: mat.get-color-from-palette($dark-pallette, 500),
-    app-bar-hover: mat.get-color-from-palette($dark-pallette, 300),
-    dark-bar: mat.get-color-from-palette($dark-pallette, 800),
-    background: mat.get-color-from-palette($dark-pallette, default),
-    hover: mat.get-color-from-palette($dark-pallette, 100),
-    150: mat.get-color-from-palette($dark-pallette, 150),
-    200: mat.get-color-from-palette($dark-pallette, 200),
-    300: mat.get-color-from-palette($dark-pallette, 300),
-    400: mat.get-color-from-palette($dark-pallette, 400),
-    450: mat.get-color-from-palette($dark-pallette, 450),
-    475: mat.get-color-from-palette($dark-pallette, 475),
-    500: mat.get-color-from-palette($dark-pallette, 500),
-    550: mat.get-color-from-palette($dark-pallette, 550),
-    600: mat.get-color-from-palette($dark-pallette, 600),
-    800: mat.get-color-from-palette($dark-pallette, 800),
-    selected: mat.get-color-from-palette($dark-pallette, 400),
-    card: mat.get-color-from-palette($dark-pallette, 500),
-    dark-card: mat.get-color-from-palette($dark-pallette, 600),
-    dialog: mat.get-color-from-palette($dark-pallette, 500),
-    disabled-button: mat.get-color-from-palette($dark-pallette, 100),
-    raised-button: mat.get-color-from-palette($dark-pallette, 500),
-    focused-button: mat.get-color-from-palette($dark-pallette, 100),
-    selected-button: mat.get-color-from-palette($dark-pallette, 900),
-    selected-disabled-button: mat.get-color-from-palette($dark-pallette, 800),
-    disabled-button-toggle: black,
-    unselected-chip: mat.get-color-from-palette($dark-pallette, 700),
-    disabled-list-option: black,
-    org-line: mat.get-color-from-palette($dark-pallette, 100),
-    org-content: mat.get-color-from-palette($dark-pallette, 400),
-    org-hover: mat.get-color-from-palette($dark-pallette, 200),
-    scroll-track: mat.get-color-from-palette($dark-pallette, 500),
-    scroll-thumb: mat.get-color-from-palette($dark-pallette, 100),
-    server: mat.get-color-from-palette($dark-pallette, 500),
-    server-running: mat.get-color-from-palette($dark-pallette, 400),
-    contrast: white,
-    underline: hsla(0, 0%, 100%, 0.7)
-);
-
-$dark-theme-primary: $gold-pallette;
-$dark-theme-accent: mat.define-palette(mat.$blue-palette, 900);
-$dark-theme-warn: mat.define-palette(mat.$red-palette, 800);
-$dark-theme: mat.define-dark-theme((
+$dark-theme: mat.define-theme((
     color: (
-        primary: $dark-theme-primary,
-        accent: $dark-theme-accent,
-        warn: $dark-theme-warn,
-    )
+        theme-type: dark,
+        primary: mat.$orange-palette,
+    ),
 ));
-
-// Merge custom background palette keys into both top-level and nested color map
-$background: map-get($dark-theme, background);
-$background: map_merge($background, $dark-theme-background);
-$dark-theme: map_merge(
-    $dark-theme,
-    (
-        background: $background
-    )
-);
-// Also patch the nested color.background so palette lookups work from either path
-$color-map: map-get($dark-theme, color);
-@if $color-map {
-    $color-map: map_merge($color-map, (background: $background));
-    $dark-theme: map_merge($dark-theme, (color: $color-map));
-}

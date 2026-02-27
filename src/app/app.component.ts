@@ -9,7 +9,8 @@ import { SignalRHubsService } from '@app/core/services/signalr-hubs.service';
 @Component({
     selector: 'app',
     templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss']
+    styleUrls: ['./app.component.scss'],
+    standalone: false
 })
 export class AppComponent implements OnInit, OnDestroy {
     static utilityHubConnection: ConnectionContainer;

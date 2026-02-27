@@ -9,7 +9,8 @@ import { DestroyableComponent } from '@app/shared/components';
 @Component({
     selector: 'app-notifications',
     templateUrl: './notifications.component.html',
-    styleUrls: ['./notifications.component.scss']
+    styleUrls: ['./notifications.component.scss'],
+    standalone: false
 })
 export class NotificationsComponent extends DestroyableComponent implements OnInit {
     panel = false;

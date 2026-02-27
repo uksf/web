@@ -1,7 +1,6 @@
 import { Component, forwardRef, Input, OnInit, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import {
     AbstractControl,
-    ControlContainer,
     ControlValueAccessor,
     UntypedFormControl,
     UntypedFormGroup,
@@ -15,6 +14,7 @@ import { MatAutocompleteTrigger, MatAutocompleteSelectedEvent } from '@angular/m
 import { getValidationError } from '@app/shared/services/form-helper.service';
 import { DropdownBaseComponent, IDropdownElement } from '../dropdown-base/dropdown-base.component';
 import { any, nextFrame } from '@app/shared/services/helper.service';
+import { takeUntil } from 'rxjs/operators';
 
 export function SelectionListValidator(required: boolean): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -47,7 +47,7 @@ export function SelectionListValidator(required: boolean): ValidatorFn {
             multi: true
         }
     ],
-    viewProviders: [{ provide: ControlContainer, useExisting: UntypedFormGroup }]
+    standalone: false
 })
 export class SelectionListComponent extends DropdownBaseComponent implements OnInit, OnChanges, ControlValueAccessor, Validator {
     @Input('listDisabledTooltip') listDisabledTooltip: (element: IDropdownElement) => string = () => '';
@@ -106,6 +106,13 @@ export class SelectionListComponent extends DropdownBaseComponent implements OnI
     ngOnInit(): void {
         this.elementDisabled = this.getDisabled;
         super.ngOnInit();
+
+        this.form.get('textInput').valueChanges.pipe(takeUntil(this.destroy$)).subscribe({
+            next: (value: string) => {
+                this.textModel = value ?? '';
+                this.onTextModelChange(value);
+            }
+        });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -171,6 +178,10 @@ export class SelectionListComponent extends DropdownBaseComponent implements OnI
     }
 
     onListChange = (_: IDropdownElement[]) => {};
+
+    clearTextInput(): void {
+        this.form.get('textInput').setValue('');
+    }
 
     revalidate() {
         this.form.get('textInput').updateValueAndValidity();

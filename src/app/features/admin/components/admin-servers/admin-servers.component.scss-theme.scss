@@ -1,14 +1,11 @@
-@use '@angular/material' as mat;
+@use 'styles/theme-helpers' as th;
 
 @mixin admin-servers-component-theme($theme) {
-    $primary: map-get($theme, primary);
-    $background: map-get($theme, background);
-
     app-admin-servers {
         .page-container {
             .update-info-container {
                 span {
-                    color: mat.get-color-from-palette($primary);
+                    color: th.primary($theme);
                 }
             }
         }

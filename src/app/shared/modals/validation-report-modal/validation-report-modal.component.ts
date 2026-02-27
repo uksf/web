@@ -11,6 +11,7 @@ export interface ValidationReportModalData {
     selector: 'app-validation-report-modal',
     templateUrl: './validation-report-modal.component.html',
     styleUrls: ['./validation-report-modal.component.scss'],
+    standalone: false
 })
 export class ValidationReportModalComponent {
     @ViewChild('messageBox') messageBox: ElementRef;

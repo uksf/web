@@ -47,14 +47,14 @@ test.describe('Units Feature', () => {
     await expect(page.locator('app-units-orbat')).toBeVisible();
   });
 
-  test('units page has tree component', async ({ page }) => {
+  test('units page has org chart nodes', async ({ page }) => {
     await page.goto('/units/orbat');
     await page.waitForSelector('app-units-orbat');
     await page.waitForLoadState('networkidle');
 
-    // Tree component should be present
-    const treeNodes = page.locator('tree-root, .tree-node, [class*="tree"]');
-    await expect(treeNodes.first()).toBeVisible({ timeout: 10000 });
+    // Org chart nodes should be present
+    const orgNodes = page.locator('.node-header');
+    await expect(orgNodes.first()).toBeVisible({ timeout: 10000 });
   });
 });
 

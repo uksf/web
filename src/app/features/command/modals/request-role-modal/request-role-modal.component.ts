@@ -17,7 +17,8 @@ import { CommandRequestsService } from '../../services/command-requests.service'
 @Component({
     selector: 'app-request-role-modal',
     templateUrl: './request-role-modal.component.html',
-    styleUrls: ['./request-role-modal.component.scss', '../../components/command-page/command-page.component.scss']
+    styleUrls: ['./request-role-modal.component.scss', '../../components/command-page/command-page.component.scss'],
+    standalone: false
 })
 export class RequestRoleModalComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;

@@ -1,15 +1,12 @@
 <app-autofocus-stop></app-autofocus-stop>
 <h2 mat-dialog-title>{{ title }}</h2>
 <mat-dialog-content>
-    <span>{{ message }}</span>
-    <form [formGroup]="form" class="textarea-container">
-        <mat-form-field class="textarea">
-            <textarea matInput formControlName="input" required matTextareaAutosize matAutosizeMinRows="5" matAutosizeMaxRows="5" maxlength="200"></textarea>
-        </mat-form-field>
+    <form [formGroup]="form" class="modal-form">
+        <app-text-input label="Reason" formControlName="input" [required]="true" [maxlength]="200"
+            [validationMessages]="validationMessages">
+        </app-text-input>
     </form>
 </mat-dialog-content>
 <mat-dialog-actions>
-    <button mat-raised-button (click)="cancel()" color="warn">Cancel</button>
-    <app-flex-filler></app-flex-filler>
-    <button mat-raised-button (click)="confirm()" color="primary" class="confirm" [disabled]="!form.valid">Confirm</button>
+    <button mat-raised-button color="primary" (click)="submit()" [disabled]="!form.valid">Submit</button>
 </mat-dialog-actions>

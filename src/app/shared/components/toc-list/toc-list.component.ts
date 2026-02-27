@@ -10,7 +10,8 @@ import { Component, OnInit, Input } from '@angular/core';
       <toc-list [listData]="node.children"></toc-list>
     </li>
   </ul>
-  `
+  `,
+    standalone: false
 })
 export class TocList {
     @Input() listData;

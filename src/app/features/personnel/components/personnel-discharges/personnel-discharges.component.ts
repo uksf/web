@@ -1,22 +1,23 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatExpansionPanel } from '@angular/material/expansion';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { ActivatedRoute } from '@angular/router';
 import { first } from 'rxjs/operators';
 import { TextInputModalComponent } from '@app/shared/modals/text-input-modal/text-input-modal.component';
-import { nextFrame } from '@app/shared/services/helper.service';
 import { DischargesService } from '../../services/discharges.service';
 import { CommandRequestsService, CommandRequestExistsBody } from '@app/features/command/services/command-requests.service';
+import { expansionAnimations } from '@app/shared/services/animations.service';
 
 @Component({
     selector: 'app-personnel-discharges',
     templateUrl: './personnel-discharges.component.html',
-    styleUrls: ['../personnel-page/personnel-page.component.scss', './personnel-discharges.component.scss']
+    styleUrls: ['../personnel-page/personnel-page.component.scss', './personnel-discharges.component.scss'],
+    animations: [expansionAnimations.indicatorRotate, expansionAnimations.bodyExpansionState],
+    standalone: false
 })
 export class PersonnelDischargesComponent implements OnInit, OnDestroy {
-    @ViewChild(MatExpansionPanel) panel: MatExpansionPanel;
     displayedColumns = ['timestamp', 'rank', 'unit', 'role', 'dischargedBy', 'reason'];
+    selectedIndex = -1;
     updating: boolean;
     completeDischargeCollections: DischargeCollection[];
     filtered: DischargeCollection[] = [];
@@ -29,6 +30,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
         { value: 30, name: '30' }
     ];
     filterString = '';
+    pendingActions = new Set<string>();
     private timeout: number;
 
     constructor(
@@ -85,6 +87,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
                 // Don't navigate
                 break;
         }
+        this.selectedIndex = -1;
         this.dischargeCollections = this.filtered.slice(this.index, this.index + this.length);
     }
 
@@ -101,9 +104,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
             this.index = 0;
             this.navigate(-1);
             if (openFirst) {
-                nextFrame(() => {
-                    this.panel.open();
-                });
+                this.selectedIndex = 0;
             }
         }, 150);
     }
@@ -116,11 +117,14 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
 
     reinstate(event: Event, dischargeCollection: DischargeCollection) {
         event.stopPropagation();
+        this.pendingActions.add(dischargeCollection.id);
         this.dischargesService.reinstateDischarge(dischargeCollection.id).pipe(first()).subscribe({
             next: (response: DischargeCollection[]) => {
+                this.pendingActions.delete(dischargeCollection.id);
                 this.dischargeCollections = response;
             },
             error: (_) => {
+                this.pendingActions.delete(dischargeCollection.id);
                 this.dialog.open(MessageModalComponent, {
                     data: { message: `Failed to reinstate ${dischargeCollection.name} as a member` }
                 });
@@ -130,15 +134,17 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
 
     requestReinstate(event: Event, dischargeCollection: DischargeCollection) {
         event.stopPropagation();
+        this.pendingActions.add(dischargeCollection.id);
         this.dialog
             .open(TextInputModalComponent, {
-                data: { message: 'Please provide a reason for the reinstate request' }
+                data: { title: 'Reinstate Request' }
             })
             .afterClosed()
             .pipe(first())
             .subscribe({
                 next: (reason: string) => {
                     if (!reason) {
+                        this.pendingActions.delete(dischargeCollection.id);
                         return;
                     }
                     this.commandRequestsService
@@ -146,6 +152,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
                         .pipe(first())
                         .subscribe({
                             next: (_) => {
+                                this.pendingActions.delete(dischargeCollection.id);
                                 const body: CommandRequestExistsBody = {
                                     recipient: dischargeCollection.accountId,
                                     type: 'Reinstate Member',
@@ -162,6 +169,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
                                     });
                             },
                             error: (_) => {
+                                this.pendingActions.delete(dischargeCollection.id);
                                 this.dialog.open(MessageModalComponent, {
                                     data: { message: `Failed to create request to reinstate ${dischargeCollection.name} as a member` }
                                 });
@@ -169,6 +177,14 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
                         });
                 }
             });
+    }
+
+    getExpandedState(index: number): string {
+        return index === this.selectedIndex ? 'expanded' : 'collapsed';
+    }
+
+    activate(index: number): void {
+        this.selectedIndex = this.selectedIndex === index ? -1 : index;
     }
 
     trackByDischargeCollection(_: number, dischargeCollection: DischargeCollection) {

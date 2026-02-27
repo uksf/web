@@ -18,7 +18,8 @@ import { DestroyableComponent } from '@app/shared/components';
 @Component({
     selector: 'app-recruitment-page',
     templateUrl: './recruitment-page.component.html',
-    styleUrls: ['./recruitment-page.component.scss']
+    styleUrls: ['./recruitment-page.component.scss'],
+    standalone: false
 })
 export class RecruitmentPageComponent extends DestroyableComponent implements OnInit {
     @ViewChild(ThemeEmitterComponent) theme: ThemeEmitterComponent;

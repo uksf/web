@@ -1,7 +1,4 @@
-@use '@angular/material' as mat;
 @mixin selection-list-component-theme($theme) {
-    $background: map-get($theme, background);
-
     app-selection-list {
         .selection-list-form {
             .selection-list-container {
@@ -10,7 +7,7 @@
                 }
 
                 .selection-element {
-                    background-color: mat.get-color-from-palette($background, selected);
+                    background-color: var(--uksf-selected);
 
                     .disabled {
                         color: rgba(255, 255, 255, 0.3);

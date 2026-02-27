@@ -1,112 +1,43 @@
 import type { Meta, StoryObj } from '@storybook/angular';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { moduleMetadata } from '@storybook/angular';
-import { MatDialogModule } from '@angular/material/dialog';
+import { CreateDocumentModalComponent, DocumentModalData } from './create-document-modal.component';
+import { SharedModule } from '@shared/shared.module';
+import { modalProviders, modalImports } from '../../../../../../.storybook/utils/mock-providers';
+import { DocsService } from '../../services/docs.service';
+import { MembersService } from '@app/shared/services/members.service';
+import { AccountService } from '@app/core/services/account.service';
+import { MatDialog } from '@angular/material/dialog';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { DocsPermissionsComponent } from '../../components/docs-permissions/docs-permissions.component';
+import { HttpClient } from '@angular/common/http';
+import { UrlService } from '@app/core/services/url.service';
+import { of } from 'rxjs';
 
-const meta: Meta = {
+const dialogData: DocumentModalData = {
+    folderMetadata: { id: 'folder-1', name: 'Test Folder', documents: [], folders: [] } as any,
+    inheritedPermissions: undefined
+};
+
+const meta: Meta<CreateDocumentModalComponent> = {
     title: 'Modals/CreateDocument',
-    decorators: [moduleMetadata({ imports: [ReactiveFormsModule, FormsModule, MatDialogModule] })]
+    component: CreateDocumentModalComponent,
+    decorators: [
+        moduleMetadata({
+            imports: [...modalImports, SharedModule, MatExpansionModule],
+            declarations: [DocsPermissionsComponent],
+            providers: [
+                ...modalProviders(dialogData),
+                { provide: DocsService, useValue: { createDocument: () => of({}), updateDocument: () => of({}) } },
+                { provide: MembersService, useValue: { getMembers: () => of([]) } },
+                { provide: AccountService, useValue: { account: { id: 'user-1' } } },
+                { provide: MatDialog, useValue: { closeAll: () => {}, open: () => ({ afterClosed: () => of(undefined) }) } },
+                { provide: HttpClient, useValue: {} },
+                { provide: UrlService, useValue: { apiUrl: '' } }
+            ]
+        })
+    ]
 };
 export default meta;
-type Story = StoryObj;
+type Story = StoryObj<CreateDocumentModalComponent>;
 
-const styles = [`.form-container { flex: 1; }
-    .form-container app-text-input { display: block; }
-    .basics-container { display: flex; flex-direction: column; gap: 8px; }
-    .hint { font-style: italic; }`];
-
-export const Default: Story = {
-    render: () => {
-        const form = new FormGroup({
-            name: new FormControl('', Validators.required)
-        });
-        return {
-            props: {
-                form,
-                validationMessages: {
-                    name: [{ type: 'required', message: 'Document name is required' }]
-                }
-            },
-            styles,
-            template: `
-                <h2 mat-dialog-title>Create new document</h2>
-                <mat-dialog-content>
-                    <form [formGroup]="form" class="form-container">
-                        <div class="basics-container">
-                            <app-text-input label="Document name" formControlName="name" [required]="true"
-                                [validationMessages]="validationMessages.name">
-                            </app-text-input>
-                        </div>
-                    </form>
-                </mat-dialog-content>
-                <mat-dialog-actions>
-                    <app-button [disabled]="!form.valid">Create</app-button>
-                </mat-dialog-actions>
-            `
-        };
-    }
-};
-
-export const Filled: Story = {
-    render: () => {
-        const form = new FormGroup({
-            name: new FormControl('Patrol Base Procedures', Validators.required)
-        });
-        return {
-            props: {
-                form,
-                validationMessages: {
-                    name: [{ type: 'required', message: 'Document name is required' }]
-                }
-            },
-            styles,
-            template: `
-                <h2 mat-dialog-title>Create new document</h2>
-                <mat-dialog-content>
-                    <form [formGroup]="form" class="form-container">
-                        <div class="basics-container">
-                            <app-text-input label="Document name" formControlName="name" [required]="true"
-                                [validationMessages]="validationMessages.name">
-                            </app-text-input>
-                        </div>
-                    </form>
-                </mat-dialog-content>
-                <mat-dialog-actions>
-                    <app-button [disabled]="!form.valid">Create</app-button>
-                </mat-dialog-actions>
-            `
-        };
-    }
-};
-
-export const EditMode: Story = {
-    render: () => {
-        const form = new FormGroup({
-            name: new FormControl('Patrol Base Procedures', Validators.required)
-        });
-        return {
-            props: {
-                form,
-                validationMessages: {
-                    name: [{ type: 'required', message: 'Document name is required' }]
-                }
-            },
-            styles,
-            template: `
-                <h2 mat-dialog-title>Edit document</h2>
-                <mat-dialog-content>
-                    <form [formGroup]="form" class="form-container">
-                        <div class="basics-container">
-                            <app-text-input label="Document name" formControlName="name" [required]="true"
-                                [validationMessages]="validationMessages.name">
-                            </app-text-input>
-                        </div>
-                    </form>
-                </mat-dialog-content>
-                <mat-dialog-actions>
-                    <app-button [disabled]="!form.valid">Create</app-button>
-                </mat-dialog-actions>
-            `
-        };
-    }
-};
+export const Default: Story = {};

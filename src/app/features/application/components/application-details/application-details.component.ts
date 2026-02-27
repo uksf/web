@@ -13,7 +13,8 @@ import { DestroyableComponent } from '@app/shared/components';
 @Component({
     selector: 'app-application-details',
     templateUrl: './application-details.component.html',
-    styleUrls: ['../application-page/application-page.component.scss', './application-details.component.scss']
+    styleUrls: ['../application-page/application-page.component.scss', './application-details.component.scss'],
+    standalone: false
 })
 export class ApplicationDetailsComponent extends DestroyableComponent {
     @Output() submitEvent = new EventEmitter<string>();

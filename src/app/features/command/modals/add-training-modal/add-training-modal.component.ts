@@ -8,7 +8,8 @@ import { TrainingsService } from '../../services/trainings.service';
 @Component({
     selector: 'app-add-training-modal',
     templateUrl: './add-training-modal.component.html',
-    styleUrls: ['./add-training-modal.component.scss']
+    styleUrls: ['./add-training-modal.component.scss'],
+    standalone: false
 })
 export class AddTrainingModalComponent {
     form = this.formBuilder.group({

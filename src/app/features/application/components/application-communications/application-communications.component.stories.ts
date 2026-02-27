@@ -1,75 +1,56 @@
 import type { Meta, StoryObj } from '@storybook/angular';
 import { moduleMetadata } from '@storybook/angular';
-import { MatCardModule } from '@angular/material/card';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ApplicationCommunicationsComponent } from './application-communications.component';
+import { SharedModule } from '@shared/shared.module';
+import { UrlService } from '@app/core/services/url.service';
+import { MatDialog } from '@angular/material/dialog';
+import { AccountService } from '@app/core/services/account.service';
+import { Router, ActivatedRoute } from '@angular/router';
+import { ProfileService } from '@app/features/profile/services/profile.service';
+import { of } from 'rxjs';
 
-const meta: Meta = {
+const mockAccount = {
+    teamspeakIdentities: [],
+    steamname: '',
+    discordId: ''
+};
+
+const meta: Meta<ApplicationCommunicationsComponent> = {
     title: 'Application/Communications',
+    component: ApplicationCommunicationsComponent,
     decorators: [
         moduleMetadata({
-            imports: [MatCardModule, MatProgressSpinnerModule]
+            imports: [SharedModule],
+            providers: [
+                { provide: ProfileService, useValue: {} },
+                { provide: UrlService, useValue: { apiUrl: '' } },
+                { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(undefined) }) } },
+                { provide: AccountService, useValue: { account: { ...mockAccount }, getAccount: () => of({}) } },
+                { provide: Router, useValue: { navigate: () => Promise.resolve(true) } },
+                { provide: ActivatedRoute, useValue: { snapshot: { queryParams: {} } } }
+            ]
         })
     ]
 };
 export default meta;
-type Story = StoryObj;
+type Story = StoryObj<ApplicationCommunicationsComponent>;
 
-const styles = [
-    `.mat-mdc-card { h2 { margin-top: 0; } }
-    .flex-container.row { display: flex; flex-direction: row; }
-    h4 { color: #fec400; }`
-];
+export const Pending: Story = {};
 
-export const Pending: Story = {
-    render: () => ({
-        styles,
-        template: `
-            <mat-card>
-                <h2>Communications</h2>
-                <p>We require a few different communications platforms to be connected before completing the application. Please follow the instructions for each platform below.</p>
-                <br />
-                <div class="flex-container row">
-                    <app-flex-filler></app-flex-filler>
-                    <mat-spinner></mat-spinner>
-                    <app-flex-filler></app-flex-filler>
-                </div>
-            </mat-card>
-        `
+export const Steam: Story = {
+    render: (args) => ({
+        props: {
+            ...args,
+            mode: 'steam'
+        }
     })
 };
 
-export const SteamConnect: Story = {
-    render: () => ({
-        styles,
-        template: `
-            <mat-card>
-                <h2>Communications</h2>
-                <p>We require a few different communications platforms to be connected before completing the application. Please follow the instructions for each platform below.</p>
-                <br />
-                <div>
-                    <p>You must connect this account to your Steam account. We only store your steam64 ID in our database to allow our recruitment staff to contact you easily.</p>
-                    <p>You will be redirected to login through Steam and then returned to this page automatically.</p>
-                    <app-button>Connect Steam</app-button>
-                </div>
-            </mat-card>
-        `
-    })
-};
-
-export const DiscordConnect: Story = {
-    render: () => ({
-        styles,
-        template: `
-            <mat-card>
-                <h2>Communications</h2>
-                <p>We require a few different communications platforms to be connected before completing the application. Please follow the instructions for each platform below.</p>
-                <br />
-                <div>
-                    <p>You must connect this account to your Discord account. We only store your Discord ID in our database.</p>
-                    <p>You will be redirected to login through Discord and then returned to this page automatically.</p>
-                    <app-button>Connect Discord</app-button>
-                </div>
-            </mat-card>
-        `
+export const Discord: Story = {
+    render: (args) => ({
+        props: {
+            ...args,
+            mode: 'discord'
+        }
     })
 };

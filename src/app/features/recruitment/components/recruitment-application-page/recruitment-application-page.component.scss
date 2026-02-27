@@ -70,16 +70,16 @@ h3 {
     justify-content: space-between;
 }
 
-.margin-bottom {
-    margin-bottom: 16px;
-
-    p {
-        margin-bottom: 0;
-    }
+.card-gap {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
-.margin-bottom-small {
-    margin-bottom: 8px;
+.card-gap-small {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .fit-content {
@@ -101,6 +101,7 @@ h3 {
 .scrollable {
     overflow: auto;
     max-height: 300px;
+    margin: 0;
 }
 
 img {

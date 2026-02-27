@@ -2,7 +2,8 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 
 @Component({
     selector: 'app-maintenance',
-    templateUrl: './maintenance.component.html'
+    templateUrl: './maintenance.component.html',
+    standalone: false
 })
 export class MaintenanceComponent {
     @ViewChild('maintenance', { read: ElementRef }) maintenance: ElementRef;

@@ -5,7 +5,8 @@ import { Permissions } from '@app/core/services/permissions';
 @Component({
     selector: 'app-modpack-page',
     templateUrl: './modpack-page.component.html',
-    styleUrls: ['./modpack-page.component.scss', './modpack-page.component.scss-theme.scss']
+    styleUrls: ['./modpack-page.component.scss', './modpack-page.component.scss-theme.scss'],
+    standalone: false
 })
 export class ModpackPageComponent {
     tabLinks = [{ label: 'Guide', link: '../guide' }];

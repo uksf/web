@@ -1,11 +1,8 @@
-@use '@angular/material' as mat;
 @mixin loading-placeholder-component-theme($theme) {
-    $background: map-get($theme, background);
-
     app-loading-placeholder {
         .loading-shimmer {
-            background-color: mat.get-color-from-palette($background, 550);
-            background-image: linear-gradient(60deg, mat.get-color-from-palette($background, 550), mat.get-color-from-palette($background, 600), mat.get-color-from-palette($background, 550));
+            background-color: var(--uksf-gray-550);
+            background-image: linear-gradient(60deg, var(--uksf-gray-550), var(--uksf-gray-600), var(--uksf-gray-550));
         }
     }
 }

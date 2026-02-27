@@ -5,7 +5,8 @@ import { PermissionsService } from '@app/core/services/permissions.service';
 @Component({
     selector: 'app-personnel-page',
     templateUrl: './personnel-page.component.html',
-    styleUrls: ['./personnel-page.component.scss']
+    styleUrls: ['./personnel-page.component.scss'],
+    standalone: false
 })
 export class PersonnelPageComponent {
     tabLinks = [

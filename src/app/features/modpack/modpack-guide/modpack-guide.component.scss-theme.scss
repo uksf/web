@@ -1,11 +1,9 @@
-@use '@angular/material' as mat;
+@use 'styles/theme-helpers' as th;
 
 @mixin modpack-guide-component-theme($theme) {
-    $primary: map-get($theme, primary);
-
     app-modpack-guide {
         a {
-          color: mat.get-color-from-palette($primary);
+          color: th.primary($theme);
         }
     }
 }

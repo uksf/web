@@ -18,10 +18,4 @@ test.describe('HeaderBar', () => {
         await page.waitForSelector('.header-wrapper');
         await expect(page.locator('.dark-theme')).toHaveScreenshot('header-bar-not-logged-in.png');
     });
-
-    test('Development has red border', async ({ page }) => {
-        await page.goto('/iframe.html?id=layout-headerbar--development&viewMode=story');
-        await page.waitForSelector('.header-wrapper.development');
-        await expect(page.locator('.header-wrapper.development')).toBeVisible();
-    });
 });

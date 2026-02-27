@@ -16,7 +16,8 @@ import { MembersService } from '@app/shared/services/members.service';
 @Component({
     selector: 'app-create-document-modal',
     templateUrl: './create-document-modal.component.html',
-    styleUrls: ['./create-document-modal.component.scss']
+    styleUrls: ['./create-document-modal.component.scss'],
+    standalone: false
 })
 export class CreateDocumentModalComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;

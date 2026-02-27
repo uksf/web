@@ -10,7 +10,8 @@ import { first } from 'rxjs/operators';
 @Component({
     selector: 'app-application-email-confirmation',
     templateUrl: './application-email-confirmation.component.html',
-    styleUrls: ['./application-email-confirmation.component.scss', '../application-page/application-page.component.scss']
+    styleUrls: ['./application-email-confirmation.component.scss', '../application-page/application-page.component.scss'],
+    standalone: false
 })
 export class ApplicationEmailConfirmationComponent {
     @Output() confirmedEvent = new EventEmitter();

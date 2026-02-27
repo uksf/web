@@ -72,7 +72,8 @@ function validDob(dayKey: string, monthKey: string, yearKey: string) {
 @Component({
     selector: 'app-application-identity',
     templateUrl: './application-identity.component.html',
-    styleUrls: ['../application-page/application-page.component.scss', './application-identity.component.scss']
+    styleUrls: ['../application-page/application-page.component.scss', './application-identity.component.scss'],
+    standalone: false
 })
 export class ApplicationIdentityComponent extends DestroyableComponent implements OnInit {
     @Output() nextEvent = new EventEmitter();

@@ -8,15 +8,10 @@ describe('ModpackReleasesComponent', () => {
     let mockRoute: any;
     let mockRouter: any;
     let mockModpackReleaseService: any;
-    let originalLinkRenderer: any;
 
     beforeEach(() => {
-        originalLinkRenderer = vi.fn().mockReturnValue('<a href="test">link</a>');
         mockMarkdownService = {
-            renderer: {
-                link: originalLinkRenderer
-            },
-            compile: vi.fn().mockReturnValue('')
+            parse: vi.fn().mockReturnValue('')
         };
         mockPermissionsService = {
             hasPermission: vi.fn().mockReturnValue(false)
@@ -42,25 +37,7 @@ describe('ModpackReleasesComponent', () => {
         );
     });
 
-    describe('ngOnInit', () => {
-        it('should override the markdown link renderer to add target=_blank', () => {
-            component.ngOnInit();
-
-            // The renderer should now be a different function
-            expect(mockMarkdownService.renderer.link).not.toBe(originalLinkRenderer);
-        });
-    });
-
     describe('ngOnDestroy', () => {
-        it('should restore the original markdown link renderer', () => {
-            component.ngOnInit();
-            expect(mockMarkdownService.renderer.link).not.toBe(originalLinkRenderer);
-
-            component.ngOnDestroy();
-
-            expect(mockMarkdownService.renderer.link).toBe(originalLinkRenderer);
-        });
-
         it('should disconnect from modpack release service', () => {
             component.ngOnDestroy();
 

@@ -21,7 +21,8 @@ import { DestroyableComponent } from '@app/shared/components';
 @Component({
     selector: 'app-operations-servers',
     templateUrl: './operations-servers.component.html',
-    styleUrls: ['../operations-page/operations-page.component.scss', './operations-servers.component.scss']
+    styleUrls: ['../operations-page/operations-page.component.scss', './operations-servers.component.scss'],
+    standalone: false
 })
 export class OperationsServersComponent extends DestroyableComponent implements OnInit, OnDestroy {
     @ViewChild('uploader') uploader: ElementRef;
@@ -131,10 +132,10 @@ export class OperationsServersComponent extends DestroyableComponent implements 
                 this.servers = response.servers;
                 this.instanceCount = response.instanceCount;
                 this.missions.next(response.missions.map(this.mapMissionElement));
+                this.updateServerStatusTexts();
 
                 if (skip) {
                     this.updating = false;
-                    this.updateServerStatusTexts();
                     return;
                 }
                 this.servers.forEach((server) => {
@@ -206,6 +207,7 @@ export class OperationsServersComponent extends DestroyableComponent implements 
         }
         this.updating = true;
         server.updating = true;
+        server.statusText = this.getServerStatus(server);
         server.request = this.gameServersService.getServerStatus(server.id).subscribe({
             next: (response) => {
                 const serverIndex = this.servers.findIndex((x) => x.id === response.gameServer.id);
@@ -228,7 +230,7 @@ export class OperationsServersComponent extends DestroyableComponent implements 
 
     addServer() {
         this.dialog
-            .open(AddServerModalComponent, {})
+            .open(AddServerModalComponent, { panelClass: 'no-max-height-dialog' })
             .afterClosed()
             .pipe(first())
             .subscribe({
@@ -249,7 +251,8 @@ export class OperationsServersComponent extends DestroyableComponent implements 
                 data: {
                     server: server,
                     connectionId: this.hubConnection.connection.connectionId
-                }
+                },
+                panelClass: 'no-max-height-dialog'
             })
             .afterClosed()
             .pipe(first())

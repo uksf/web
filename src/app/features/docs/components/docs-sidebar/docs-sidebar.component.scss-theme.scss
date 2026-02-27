@@ -1,26 +1,23 @@
-@use '@angular/material' as mat;
+@use 'styles/theme-helpers' as th;
 
 @mixin docs-sidebar-component-theme($theme) {
-    $background: map-get($theme, background);
-    $primary: map-get($theme, primary);
-
     app-docs-sidebar {
         .sidebar-layout {
-            background-color: mat.get-color-from-palette($background, app-bar);
+            background-color: var(--uksf-app-bar);
 
             .sidebar-container {
                 .sidebar-header {
                     .add-icon-container {
                         &:hover {
-                            background-color: mat.get-color-from-palette($primary);
+                            background-color: th.primary($theme);
 
                             .mat-icon {
-                                color: mat.get-color-from-palette($background, app-bar);
+                                color: var(--uksf-app-bar);
                             }
                         }
 
                         .mat-icon {
-                            color: mat.get-color-from-palette($background, contrast);
+                            color: var(--uksf-contrast);
                         }
                     }
                 }
@@ -29,10 +26,10 @@
             .sidebar-collapse-container {
                 .sidebar-collapse-button {
                     .sidebar-collapse-icon {
-                        background-color: mat.get-color-from-palette($primary);
+                        background-color: th.primary($theme);
 
                         .mat-icon {
-                            color: mat.get-color-from-palette($background, app-bar);
+                            color: var(--uksf-app-bar);
                         }
                     }
                 }
@@ -40,11 +37,11 @@
         }
 
         ::-webkit-scrollbar-track {
-            background-color: mat.get-color-from-palette($background, side-bar);
+            background-color: var(--uksf-side-bar);
         }
 
         ::-webkit-scrollbar-thumb {
-            background-color: mat.get-color-from-palette($background, scroll-thumb);
+            background-color: var(--uksf-scroll-thumb);
         }
     }
 }

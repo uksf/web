@@ -1,47 +1,48 @@
 @use '@angular/material' as mat;
-@import 'palettes.scss';
+@use 'sass:map';
+@use 'palettes' as *;
 
 $light-theme-background: (
-    status-bar: mat.get-color-from-palette($light-pallette, 300),
+    status-bar: mat.m2-get-color-from-palette($light-pallette, 300),
     footer-bar: black,
-    side-bar: mat.get-color-from-palette($light-pallette, 200),
-    app-bar: mat.get-color-from-palette($light-pallette, 100),
-    dark-bar: mat.get-color-from-palette($dark-pallette, 800),
-    background: mat.get-color-from-palette($light-pallette, 50),
-    hover: mat.get-color-from-palette($light-pallette, 400),
-    selected: mat.get-color-from-palette($light-pallette, 300),
+    side-bar: mat.m2-get-color-from-palette($light-pallette, 200),
+    app-bar: mat.m2-get-color-from-palette($light-pallette, 100),
+    dark-bar: mat.m2-get-color-from-palette($dark-pallette, 800),
+    background: mat.m2-get-color-from-palette($light-pallette, 50),
+    hover: mat.m2-get-color-from-palette($light-pallette, 400),
+    selected: mat.m2-get-color-from-palette($light-pallette, 300),
     card: white,
-    dark-card: mat.get-color-from-palette($light-pallette, 100),
+    dark-card: mat.m2-get-color-from-palette($light-pallette, 100),
     dialog: white,
     disabled-button: rgba(black, 0.12),
     raised-button: white,
-    focused-button: mat.get-color-from-palette($light-pallette, 100),
-    selected-button: mat.get-color-from-palette($light-pallette, 300),
-    selected-disabled-button: mat.get-color-from-palette($light-pallette, 400),
-    disabled-button-toggle: mat.get-color-from-palette($light-pallette, 200),
-    unselected-chip: mat.get-color-from-palette($light-pallette, 300),
-    disabled-list-option: mat.get-color-from-palette($light-pallette, 200),
-    org-line: mat.get-color-from-palette($light-pallette, 900),
+    focused-button: mat.m2-get-color-from-palette($light-pallette, 100),
+    selected-button: mat.m2-get-color-from-palette($light-pallette, 300),
+    selected-disabled-button: mat.m2-get-color-from-palette($light-pallette, 400),
+    disabled-button-toggle: mat.m2-get-color-from-palette($light-pallette, 200),
+    unselected-chip: mat.m2-get-color-from-palette($light-pallette, 300),
+    disabled-list-option: mat.m2-get-color-from-palette($light-pallette, 200),
+    org-line: mat.m2-get-color-from-palette($light-pallette, 900),
     org-content: white,
-    org-hover: mat.get-color-from-palette($light-pallette, 200),
-    scroll-track: mat.get-color-from-palette($light-pallette, 200),
-    scroll-thumb: mat.get-color-from-palette($light-pallette, 400),
-    server: mat.get-color-from-palette($light-pallette, 200),
+    org-hover: mat.m2-get-color-from-palette($light-pallette, 200),
+    scroll-track: mat.m2-get-color-from-palette($light-pallette, 200),
+    scroll-thumb: mat.m2-get-color-from-palette($light-pallette, 400),
+    server: mat.m2-get-color-from-palette($light-pallette, 200),
     server-running: white,
     contrast: black,
     underline: rgba(0, 0, 0, 0.42)
 );
 
-$light-theme-primary: mat.define-palette(mat.$indigo-palette, 500);
-$light-theme-accent: mat.define-palette(mat.$amber-palette, A200);
-$light-theme-warn: mat.define-palette(mat.$red-palette, 800);
+$light-theme-primary: mat.m2-define-palette(mat.$m2-indigo-palette, 500);
+$light-theme-accent: mat.m2-define-palette(mat.$m2-amber-palette, A200);
+$light-theme-warn: mat.m2-define-palette(mat.$m2-red-palette, 800);
 // Uses deprecated 3-arg form intentionally: the map-based API nests background/foreground
 // under a `color` key, which breaks the custom palette merge below. Safe until Angular 18+.
-$light-theme: mat.define-light-theme($light-theme-primary, $light-theme-accent, $light-theme-warn);
+$light-theme: mat.m2-define-light-theme($light-theme-primary, $light-theme-accent, $light-theme-warn);
 
-$background: map-get($light-theme, background);
-$background: map_merge($background, $light-theme-background);
-$light-theme: map_merge(
+$background: map.get($light-theme, background);
+$background: map.merge($background, $light-theme-background);
+$light-theme: map.merge(
     $light-theme,
     (
         background: $background

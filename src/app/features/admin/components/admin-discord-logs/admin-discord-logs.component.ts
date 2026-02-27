@@ -13,6 +13,7 @@ import { LogsService } from '../../services/logs.service';
     selector: 'app-admin-discord-logs',
     templateUrl: './admin-discord-logs.component.html',
     styleUrls: ['./admin-discord-logs.component.scss'],
+    standalone: false
 })
 export class AdminDiscordLogsComponent extends AdminLogsComponent implements OnInit, OnDestroy {
     launcherLogDisplayedColumns = ['timestamp', 'discordUserEventType', 'instigatorId', 'instigatorName', 'channelName', 'name', 'message'];

@@ -3,7 +3,8 @@ import { Component, ContentChild, Input, TemplateRef } from '@angular/core';
 @Component({
     selector: 'app-loading-placeholder',
     templateUrl: './loading-placeholder.component.html',
-    styleUrls: ['./loading-placeholder.component.scss']
+    styleUrls: ['./loading-placeholder.component.scss'],
+    standalone: false
 })
 export class LoadingPlaceholderComponent {
     @Input('width') width: string = '64px';

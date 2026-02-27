@@ -11,7 +11,8 @@ import { DestroyableComponent } from '@app/shared/components';
 @Component({
     selector: 'app-docs-page',
     templateUrl: './docs-page.component.html',
-    styleUrls: ['./docs-page.component.scss']
+    styleUrls: ['./docs-page.component.scss'],
+    standalone: false
 })
 export class DocsPageComponent extends DestroyableComponent implements OnInit {
     allFolderMetadata: FolderMetadata[] = [];

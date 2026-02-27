@@ -11,7 +11,8 @@ import { first, takeUntil } from 'rxjs/operators';
 @Component({
     selector: 'app-request-loa-modal',
     templateUrl: './request-loa-modal.component.html',
-    styleUrls: ['./request-loa-modal.component.scss']
+    styleUrls: ['./request-loa-modal.component.scss'],
+    standalone: false
 })
 export class RequestLoaModalComponent implements OnInit, OnDestroy {
     private destroy$ = new Subject<void>();

@@ -11,7 +11,8 @@ import { RanksService } from '../../services/ranks.service';
 @Component({
     selector: 'app-command-ranks',
     templateUrl: './command-ranks.component.html',
-    styleUrls: ['../command-page/command-page.component.scss', './command-ranks.component.scss']
+    styleUrls: ['../command-page/command-page.component.scss', './command-ranks.component.scss'],
+    standalone: false
 })
 export class CommandRanksComponent implements OnInit {
     ranks: Rank[];

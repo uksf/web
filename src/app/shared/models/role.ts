@@ -6,6 +6,7 @@ export enum RoleType {
 }
 
 export class Role {
+    id: string;
     name: string;
     order: number;
     roleType: RoleType;

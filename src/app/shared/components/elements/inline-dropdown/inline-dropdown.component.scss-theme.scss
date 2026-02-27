@@ -1,19 +1,15 @@
-@use '@angular/material' as mat;
+@use 'styles/theme-helpers' as th;
 
 @mixin inline-dropdown-component-theme($theme) {
-    $background: map-get($theme, background);
-    $foreground: map-get($theme, foreground);
-    $warn: map-get($theme, warn);
-
     app-inline-dropdown {
         input {
-            border-color: mat.get-color-from-palette($foreground, divider);
-            color: mat.get-color-from-palette($foreground, text);
-            background-color: mat.get-color-from-palette($background, card);
+            border-color: th.fg-divider($theme);
+            color: th.fg-text($theme);
+            background-color: var(--uksf-card);
         }
 
         .invalid {
-            border-color: mat.get-color-from-palette($warn);
+            border-color: th.warn($theme);
         }
     }
 }

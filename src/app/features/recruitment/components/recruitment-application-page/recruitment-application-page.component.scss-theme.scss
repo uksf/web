@@ -1,16 +1,12 @@
-@use '@angular/material' as mat;
+@use 'styles/theme-helpers' as th;
 
 @mixin recruitment-application-page-component-theme($theme) {
-    $background: map-get($theme, background);
-    $foreground: map-get($theme, foreground);
-    $primary: map-get($theme, primary);
-
     app-recruitment-application-page {
         a {
-            color: mat.get-color-from-palette($primary);
+            color: th.primary($theme);
         }
         .p-rating-icon {
-            color: mat.get-color-from-palette($primary);
+            color: th.primary($theme);
         }
     }
 }

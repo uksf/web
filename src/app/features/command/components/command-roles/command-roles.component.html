@@ -6,7 +6,6 @@
         <div *ngIf="roles">
             <div class="flex-container">
                 <div class="column-container">
-                    <h3>Roles</h3>
                     <ng-template [ngxPermissionsOnly]="['ADMIN']">
                         <div>
                             <form [formGroup]="roleForm" class="flex-container-input">
@@ -16,9 +15,8 @@
                                 <button (click)="addRole()" [disabled]="!roleForm.valid" color="primary" mat-raised-button>Add Role</button>
                             </form>
                         </div>
-                        <br />
                         <div class="roles-list">
-                            <div *ngFor="let role of roles; trackBy: trackByRoleName">
+                            <div *ngFor="let role of roles; trackBy: trackByRoleId">
                                 <mat-card class="roles-list-item">
                                     <app-inline-edit
                                         (finishedEvent)="editRole($event)"
@@ -35,9 +33,8 @@
                         </div>
                     </ng-template>
                     <ng-template [ngxPermissionsExcept]="['ADMIN']">
-                        <br />
                         <div class="roles-list">
-                            <div *ngFor="let role of roles; trackBy: trackByRoleName">
+                            <div *ngFor="let role of roles; trackBy: trackByRoleId">
                                 <mat-card class="roles-list-item">
                                     <span>{{ role.name }}</span>
                                 </mat-card>

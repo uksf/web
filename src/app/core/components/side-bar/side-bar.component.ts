@@ -12,7 +12,8 @@ import { DestroyableComponent } from '@app/shared/components';
 @Component({
     selector: 'app-side-bar',
     templateUrl: './side-bar.component.html',
-    styleUrls: ['./side-bar.component.scss']
+    styleUrls: ['./side-bar.component.scss'],
+    standalone: false
 })
 export class SideBarComponent extends DestroyableComponent implements OnInit {
     newVersion = false;

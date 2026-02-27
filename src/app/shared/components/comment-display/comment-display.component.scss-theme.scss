@@ -1,27 +1,23 @@
-@use '@angular/material' as mat;
+@use 'styles/theme-helpers' as th;
 
 @mixin comment-display-component-theme($theme) {
-    $background: map-get($theme, background);
-    $foreground: map-get($theme, foreground);
-    $primary: map-get($theme, primary);
-
     app-comment-display {
         .comments-container {
             .comment-wrapper {
                 .author {
                     .author-string {
-                      color: mat.get-color-from-palette($primary);
+                      color: th.primary($theme);
                     }
 
                     .date-string {
-                      color: mat.get-color-from-palette($background, hover);
+                      color: var(--uksf-hover);
                     }
 
                     .delete-button {
                         background-color: transparent;
 
                         &:hover {
-                          color: mat.get-color-from-palette($primary);
+                          color: th.primary($theme);
                         }
                     }
                 }

@@ -1,14 +1,10 @@
-@use '@angular/material' as mat;
+@use 'styles/theme-helpers' as th;
 
 @mixin workshop-mod-intervention-modal-component-theme($theme) {
-    $foreground: map-get($theme, foreground);
-    $background: map-get($theme, background);
-    $primary: map-get($theme, primary);
-
     app-workshop-mod-intervention-modal {
         .pbos-list-item {
             span {
-                color: mat.get-color-from-palette($foreground, base);
+                color: th.fg-base($theme);
 
                 &.conflict {
                     color: red;
@@ -17,11 +13,11 @@
         }
 
         ::-webkit-scrollbar-track {
-            background-color: mat.get-color-from-palette($background, side-bar);
+            background-color: var(--uksf-side-bar);
         }
 
         ::-webkit-scrollbar-thumb {
-            background-color: mat.get-color-from-palette($background, scroll-thumb);
+            background-color: var(--uksf-scroll-thumb);
         }
     }
 }

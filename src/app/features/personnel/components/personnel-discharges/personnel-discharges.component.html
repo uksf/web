@@ -29,32 +29,33 @@
                 <mat-spinner></mat-spinner>
             </div>
             <mat-accordion *ngIf="completeDischargeCollections">
-                <mat-expansion-panel *ngFor="let dischargeCollection of dischargeCollections; trackBy: trackByDischargeCollection">
-                    <mat-expansion-panel-header [expandedHeight]="'48px'" appSpotlight>
-                        <mat-panel-title>
-                            {{ dischargeCollection.name }}
-                        </mat-panel-title>
+                <mat-card *ngFor="let dischargeCollection of dischargeCollections; trackBy: trackByDischargeCollection; let i = index">
+                    <div class="header-container" appSpotlight (click)="activate(i)">
+                        <div class="toggle" [@indicatorRotate]="getExpandedState(i)"></div>
+                        <div class="title-container">
+                            <div class="name">{{ dischargeCollection.name }}</div>
+                        </div>
                         <app-flex-filler></app-flex-filler>
                         <div class="description-container" *ngIf="dischargeCollection.requestExists">
-                            <mat-panel-description class="discharge-count discharge-2">Reinstate request created</mat-panel-description>
+                            <span class="discharge-count discharge-2">Reinstate request created</span>
                         </div>
                         <div class="description-container" *ngIf="!dischargeCollection.reinstated && !dischargeCollection.requestExists">
-                            <mat-panel-description *ngIf="dischargeCollection.discharges.length == 1" class="discharge-count discharge-1">Can rejoin 2 more times</mat-panel-description>
-                            <mat-panel-description *ngIf="dischargeCollection.discharges.length == 2" class="discharge-count discharge-2">Can rejoin 1 more time</mat-panel-description>
-                            <mat-panel-description *ngIf="dischargeCollection.discharges.length >= 3" class="discharge-count discharge-limit">Cannot rejoin</mat-panel-description>
+                            <span *ngIf="dischargeCollection.discharges.length == 1" class="discharge-count discharge-1">Can rejoin 2 more times</span>
+                            <span *ngIf="dischargeCollection.discharges.length == 2" class="discharge-count discharge-2">Can rejoin 1 more time</span>
+                            <span *ngIf="dischargeCollection.discharges.length >= 3" class="discharge-count discharge-limit">Cannot rejoin</span>
                         </div>
                         <div class="description-container" *ngIf="dischargeCollection.reinstated && !dischargeCollection.requestExists">
-                            <mat-panel-description *ngIf="dischargeCollection.discharges.length == 1" class="discharge-count discharge-2">
+                            <span *ngIf="dischargeCollection.discharges.length == 1" class="discharge-count discharge-2">
                                 Has been reinstated once (Current Member)
-                            </mat-panel-description>
-                            <mat-panel-description *ngIf="dischargeCollection.discharges.length == 2" class="discharge-count discharge-limit">
+                            </span>
+                            <span *ngIf="dischargeCollection.discharges.length == 2" class="discharge-count discharge-limit">
                                 Has been reinstated twice (Current Member)
-                            </mat-panel-description>
+                            </span>
                         </div>
-                    </mat-expansion-panel-header>
+                    </div>
 
-                    <ng-template matExpansionPanelContent>
-                        <div class="content-container">
+                    <div class="content-container" [@bodyExpansionState]="getExpandedState(i)">
+                        <div class="content-body">
                             <div class="table-container">
                                 <mat-table [dataSource]="dischargeCollection.discharges">
                                     <ng-container matColumnDef="timestamp">
@@ -62,23 +63,23 @@
                                         <mat-cell *matCellDef="let discharge">{{ discharge.timestamp | date: 'dd/MM/yy' }}</mat-cell>
                                     </ng-container>
                                     <ng-container matColumnDef="rank">
-                                        <mat-header-cell *matHeaderCellDef style="cursor: auto">Rank</mat-header-cell>
+                                        <mat-header-cell *matHeaderCellDef>Rank</mat-header-cell>
                                         <mat-cell *matCellDef="let discharge">{{ discharge.rank }}</mat-cell>
                                     </ng-container>
                                     <ng-container matColumnDef="unit">
-                                        <mat-header-cell *matHeaderCellDef style="cursor: auto">Unit</mat-header-cell>
+                                        <mat-header-cell *matHeaderCellDef>Unit</mat-header-cell>
                                         <mat-cell *matCellDef="let discharge">{{ discharge.unit }}</mat-cell>
                                     </ng-container>
                                     <ng-container matColumnDef="role">
-                                        <mat-header-cell *matHeaderCellDef style="cursor: auto">Role</mat-header-cell>
+                                        <mat-header-cell *matHeaderCellDef>Role</mat-header-cell>
                                         <mat-cell *matCellDef="let discharge">{{ discharge.role }}</mat-cell>
                                     </ng-container>
                                     <ng-container matColumnDef="dischargedBy">
-                                        <mat-header-cell *matHeaderCellDef style="cursor: auto">Discharge Requester </mat-header-cell>
+                                        <mat-header-cell *matHeaderCellDef>Discharge Requester</mat-header-cell>
                                         <mat-cell *matCellDef="let discharge">{{ discharge.dischargedBy }}</mat-cell>
                                     </ng-container>
                                     <ng-container matColumnDef="reason">
-                                        <mat-header-cell *matHeaderCellDef style="cursor: auto">Reason </mat-header-cell>
+                                        <mat-header-cell *matHeaderCellDef>Reason</mat-header-cell>
                                         <mat-cell *matCellDef="let discharge" (click)="openMessageDialog($event.target.textContent)">
                                             <div class="mat-column-reason">{{ discharge.reason }}</div>
                                         </mat-cell>
@@ -92,9 +93,8 @@
                                 <ng-template [ngxPermissionsOnly]="['PERSONNEL']">
                                     <div *ngIf="dischargeCollection.discharges.length < 3">
                                         <button
-                                            #button
-                                            (click)="reinstate($event, dischargeCollection); button.disabled = true"
-                                            [disabled]="dischargeCollection.reinstated || dischargeCollection.requestExists"
+                                            (click)="reinstate($event, dischargeCollection)"
+                                            [disabled]="dischargeCollection.reinstated || dischargeCollection.requestExists || pendingActions.has(dischargeCollection.id)"
                                             [matTooltip]="'Reinstate ' + dischargeCollection.name + ' as a member'"
                                             color="primary"
                                             mat-raised-button
@@ -104,11 +104,10 @@
                                     </div>
                                     <div *ngIf="dischargeCollection.discharges.length >= 3 && !dischargeCollection.requestExists">
                                         <button
-                                            #button
-                                            (click)="requestReinstate($event, dischargeCollection); button.disabled = true"
-                                            [disabled]="dischargeCollection.reinstated"
+                                            (click)="requestReinstate($event, dischargeCollection)"
+                                            [disabled]="dischargeCollection.reinstated || pendingActions.has(dischargeCollection.id)"
                                             [matTooltip]="'Request ' + dischargeCollection.name + ' to be reinstated as a member'"
-                                            class="request-override"
+                                            color="primary"
                                             mat-raised-button
                                         >
                                             Request Reinstate
@@ -117,9 +116,8 @@
                                 </ng-template>
                                 <ng-template [ngxPermissionsExcept]="['PERSONNEL']" *ngIf="!dischargeCollection.requestExists">
                                     <button
-                                        #button
-                                        (click)="requestReinstate($event, dischargeCollection); button.disabled = true"
-                                        [disabled]="dischargeCollection.reinstated"
+                                        (click)="requestReinstate($event, dischargeCollection)"
+                                        [disabled]="dischargeCollection.reinstated || pendingActions.has(dischargeCollection.id)"
                                         [matTooltip]="'Request ' + dischargeCollection.name + ' to be reinstated as a member'"
                                         color="primary"
                                         mat-raised-button
@@ -129,8 +127,8 @@
                                 </ng-template>
                             </div>
                         </div>
-                    </ng-template>
-                </mat-expansion-panel>
+                    </div>
+                </mat-card>
             </mat-accordion>
         </div>
     </app-main-content-area>

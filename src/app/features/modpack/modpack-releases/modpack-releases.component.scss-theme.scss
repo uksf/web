@@ -1,29 +1,25 @@
-@use '@angular/material' as mat;
+@use 'styles/theme-helpers' as th;
 
 @mixin modpack-releases-component-theme($theme) {
-    $primary: map-get($theme, primary);
-    $background: map-get($theme, background);
-    $inset-colour: mat.get-color-from-palette($primary, default);
-
     app-modpack-releases {
         a {
-            color: mat.get-color-from-palette($primary);
+            color: th.primary($theme);
         }
 
         .flex-container {
             .release-history-container {
-                background-color: mat.get-color-from-palette($background, app-bar);
+                background-color: var(--uksf-app-bar);
 
                 .release-history-item {
-                    border-bottom: 1px solid mat.get-color-from-palette($background, selected);
+                    border-bottom: 1px solid var(--uksf-selected);
 
                     &.selected {
-                        color: mat.get-color-from-palette($primary, default);
-                        background-color: mat.get-color-from-palette($background, selected);
+                        color: th.primary($theme);
+                        background-color: var(--uksf-selected);
                     }
 
                     &:hover {
-                        background-color: mat.get-color-from-palette($background, hover);
+                        background-color: var(--uksf-hover);
                     }
                 }
             }
@@ -31,13 +27,13 @@
             .release-container {
                 .release-content {
                     textarea {
-                        background-color: mat.get-color-from-palette($background, app-bar);
+                        background-color: var(--uksf-app-bar);
                     }
 
                     .release-changelog {
                         markdown {
                             h4 {
-                                color: mat.get-color-from-palette($primary, default);
+                                color: th.primary($theme);
                             }
                         }
                     }
@@ -46,11 +42,11 @@
         }
 
         ::-webkit-scrollbar-track {
-            background-color: mat.get-color-from-palette($background, side-bar);
+            background-color: var(--uksf-side-bar);
         }
 
         ::-webkit-scrollbar-thumb {
-            background-color: mat.get-color-from-palette($background, scroll-thumb);
+            background-color: var(--uksf-scroll-thumb);
         }
 
         @media only screen and (max-width: 600px) {
@@ -58,7 +54,7 @@
                 .release-history-container {
                     .release-history-item {
                         border-bottom: unset;
-                        border-right: 1px solid mat.get-color-from-palette($background, selected);
+                        border-right: 1px solid var(--uksf-selected);
                     }
                 }
             }

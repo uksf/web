@@ -1,33 +1,27 @@
-@use '@angular/material' as mat;
+@use 'styles/theme-helpers' as th;
 
 @mixin side-bar-component-theme($theme) {
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $inset-colour: mat.get-color-from-palette($primary, default);
-
   .sideNav {
     .sideNavItem {
-      color: mat.get-color-from-palette($foreground, base);
+      color: th.fg-base($theme);
 
       &.selected {
-        color: mat.get-color-from-palette($primary, default);
-        background-color: mat.get-color-from-palette($background, selected);
-        box-shadow: inset 3px 0 0 0 $inset-colour;
+        color: th.primary($theme);
+        background-color: var(--uksf-selected);
+        box-shadow: inset 3px 0 0 0 th.primary($theme);
       }
 
       &:hover {
-        background-color: mat.get-color-from-palette($background, hover);
+        background-color: var(--uksf-hover);
       }
         }
 
         .newVersionNavItem {
-          background-color: mat.get-color-from-palette($primary);
-          color: mat.get-color-from-palette($primary, default-contrast);
+          background-color: th.primary($theme);
+          color: th.primary-contrast($theme);
 
           &:hover {
-            background-color: mat.get-color-from-palette($primary);
+            background-color: th.primary($theme);
           }
         }
     }
