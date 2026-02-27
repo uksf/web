@@ -63,6 +63,7 @@
     "@playwright/test": "1.58.2",
     "@sand4rt/experimental-ct-angular": "^1.58.2",
     "@storybook/addon-docs": "^8.4.0",
+    "@storybook/addon-webpack5-compiler-swc": "^4.0.2",
     "@storybook/angular": "^8.4.0",
     "@types/moment-timezone": "^0.5.30",
     "@types/node": "^16.11.12",

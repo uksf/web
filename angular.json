@@ -75,7 +75,11 @@
                 }
               ]
             },
-            "development": {}
+            "development": {},
+            "storybook": {
+              "sourceMap": false,
+              "optimization": false
+            }
           },
           "defaultConfiguration": "production"
         },
@@ -96,7 +100,7 @@
           "builder": "@storybook/angular:start-storybook",
           "options": {
             "configDir": ".storybook",
-            "browserTarget": "uksf:build",
+            "browserTarget": "uksf:build:storybook",
             "compodoc": false,
             "port": 6006
           }
@@ -105,7 +109,7 @@
           "builder": "@storybook/angular:build-storybook",
           "options": {
             "configDir": ".storybook",
-            "browserTarget": "uksf:build",
+            "browserTarget": "uksf:build:storybook",
             "compodoc": false,
             "outputDir": "storybook-static"
           }
