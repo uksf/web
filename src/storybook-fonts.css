@@ -5,9 +5,22 @@
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 @import url('https://fonts.googleapis.com/css?family=Raleway');
 
-/* Font-family previously from bootstrap-material-design.min.css (now removed). */
+/* Global resets — mirrors inline <style> in index.html. */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 10px;
+}
+
 body,
 .h1, .h2, .h3, .h4, h1, h2, h3, h4, h5, h6 {
     font-family: Roboto, Helvetica, Arial, sans-serif;
     font-weight: 300;
+}
+
+body {
+    font-size: 14px;
+    line-height: 1.42857143;
 }
