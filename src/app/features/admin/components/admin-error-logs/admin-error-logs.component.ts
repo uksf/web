@@ -1,13 +1,9 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatTableDataSource, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';
-import { MatDialog } from '@angular/material/dialog';
-import { SignalRService } from '@app/core/services/signalr.service';
 import { ErrorLog } from '@app/features/admin/models/logging';
 import { AdminLogsComponent } from '../admin-logs/admin-logs.component';
 import { PagedResult } from '@app/shared/models/paged-result';
-import { Clipboard } from '@angular/cdk/clipboard';
 import { first } from 'rxjs/operators';
-import { LogsService } from '../../services/logs.service';
 import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
 import { AdminPageComponent } from '../admin-page/admin-page.component';
@@ -52,12 +48,7 @@ export class AdminErrorLogsComponent extends AdminLogsComponent implements OnIni
     datasource: MatTableDataSource<ErrorLog> = new MatTableDataSource<ErrorLog>();
 
     constructor() {
-        const logsService = inject(LogsService);
-        const dialog = inject(MatDialog);
-        const signalrService = inject(SignalRService);
-        const clipboard = inject(Clipboard);
-
-        super(logsService, dialog, signalrService, clipboard);
+        super();
     }
 
     refreshData() {
