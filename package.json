@@ -1,96 +1,96 @@
 {
-  "name": "uksf",
-  "version": "1.0.0",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/uksf/website-frontend.git"
-  },
-  "scripts": {
-    "ng": "ng",
-    "start": "ng serve && node server.js",
-    "build": "ng build && node server.js",
-    "lint": "ng lint",
-    "test": "vitest run",
-    "test:watch": "vitest --watch",
-    "test:e2e": "node node_modules/@playwright/test/cli.js test",
-    "test:e2e:ui": "node node_modules/@playwright/test/cli.js test --ui",
-    "test:e2e:update-snapshots": "node node_modules/@playwright/test/cli.js test visual-baseline --update-snapshots",
-    "storybook": "ng run uksf:storybook",
-    "build-storybook": "ng run uksf:build-storybook",
-    "test:storybook": "node node_modules/@playwright/test/cli.js test --config=playwright-storybook.config.ts",
-    "test:ct": "node node_modules/@sand4rt/experimental-ct-angular/cli.js test --config=playwright-ct.config.ts",
-    "test:ct:ui": "node node_modules/@sand4rt/experimental-ct-angular/cli.js test --config=playwright-ct.config.ts --ui"
-  },
-  "private": true,
-  "packageManager": "bun@1.3.6",
-  "dependencies": {
-    "@ali-hm/angular-tree-component": "21.0.3",
-    "@angular/animations": "^21.2.0",
-    "@angular/cdk": "^21.2.0",
-    "@angular/common": "^21.2.0",
-    "@angular/compiler": "^21.2.0",
-    "@angular/core": "^21.2.0",
-    "@angular/forms": "21.2.0",
-    "@angular/material": "^21.2.0",
-    "@angular/material-moment-adapter": "^21.2.0",
-    "@angular/platform-browser": "^21.2.0",
-    "@angular/platform-browser-dynamic": "21.2.0",
-    "@angular/router": "21.2.0",
-    "@auth0/angular-jwt": "5.2.0",
-    "@microsoft/signalr": "^6.0.0",
-    "ansi-to-html": "^0.7.2",
-    "chart.js": "^3.6.2",
-    "eslint": "^8.4.1",
-    "marked": "17",
-    "moment-timezone": "^0.5.35",
-    "ngx-markdown": "21.1.0",
-    "ngx-permissions": "19.0.0",
-    "ngx-quill": "24.0.5",
-    "primeicons": "7.0.0",
-    "primeng": "17.18.15",
-    "quill": "^1.3.7",
-    "rxjs": "^7.4.0",
-    "tslib": "^2.3.1",
-    "zone.js": "~0.15.1"
-  },
-  "devDependencies": {
-    "@angular-devkit/architect": "^0.2102.0",
-    "@angular-devkit/build-angular": "^21.2.0",
-    "@angular-devkit/core": "^21.2.0",
-    "@angular/cli": "^21.2.0",
-    "@angular/compiler-cli": "^21.2.0",
-    "@playwright/test": "1.58.2",
-    "@sand4rt/experimental-ct-angular": "^1.58.2",
-    "@storybook/addon-docs": "^8.4.0",
-    "@storybook/addon-webpack5-compiler-swc": "^4.0.2",
-    "@storybook/angular": "^8.4.0",
-    "@types/moment-timezone": "^0.5.30",
-    "@types/node": "^16.11.12",
-    "@types/quill": "^1.3.10",
-    "dotenv": "^17.2.3",
-    "http-server": "^14.1.1",
-    "prettier": "^2.5.1",
-    "storybook": "^8.4.0",
-    "ts-node": "^10.4.0",
-    "typescript": "~5.9.3",
-    "vitest": "^4.0.18"
-  },
-  "prettier": {
-    "tabWidth": 4,
-    "semi": true,
-    "singleQuote": true,
-    "printWidth": 200,
-    "trailingComma": "none",
-    "overrides": [
-      {
-        "files": [
-          "*.html"
-        ],
-        "options": {
-          "printWidth": 200
-        }
-      }
-    ]
-  }
+    "name": "uksf",
+    "version": "1.0.0",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/uksf/website-frontend.git"
+    },
+    "scripts": {
+        "ng": "ng",
+        "start": "ng serve && node server.js",
+        "build": "ng build && node server.js",
+        "lint": "ng lint",
+        "test": "vitest run",
+        "test:watch": "vitest --watch",
+        "test:e2e": "node node_modules/@playwright/test/cli.js test",
+        "test:e2e:ui": "node node_modules/@playwright/test/cli.js test --ui",
+        "test:e2e:update-snapshots": "node node_modules/@playwright/test/cli.js test visual-baseline --update-snapshots",
+        "storybook": "ng run uksf:storybook",
+        "build-storybook": "ng run uksf:build-storybook",
+        "test:storybook": "node node_modules/@playwright/test/cli.js test --config=playwright-storybook.config.ts",
+        "test:ct": "node node_modules/@sand4rt/experimental-ct-angular/cli.js test --config=playwright-ct.config.ts",
+        "test:ct:ui": "node node_modules/@sand4rt/experimental-ct-angular/cli.js test --config=playwright-ct.config.ts --ui"
+    },
+    "private": true,
+    "packageManager": "bun@1.3.6",
+    "dependencies": {
+        "@ali-hm/angular-tree-component": "21.0.3",
+        "@angular/animations": "^21.2.0",
+        "@angular/cdk": "^21.2.0",
+        "@angular/common": "^21.2.0",
+        "@angular/compiler": "^21.2.0",
+        "@angular/core": "^21.2.0",
+        "@angular/forms": "21.2.0",
+        "@angular/material": "^21.2.0",
+        "@angular/material-moment-adapter": "^21.2.0",
+        "@angular/platform-browser": "^21.2.0",
+        "@angular/platform-browser-dynamic": "21.2.0",
+        "@angular/router": "21.2.0",
+        "@auth0/angular-jwt": "5.2.0",
+        "@microsoft/signalr": "^6.0.0",
+        "ansi-to-html": "^0.7.2",
+        "chart.js": "^3.6.2",
+        "eslint": "^8.4.1",
+        "marked": "17",
+        "moment-timezone": "^0.5.35",
+        "ngx-markdown": "21.1.0",
+        "ngx-permissions": "19.0.0",
+        "ngx-quill": "24.0.5",
+        "primeicons": "7.0.0",
+        "primeng": "17.18.15",
+        "quill": "^1.3.7",
+        "rxjs": "^7.4.0",
+        "tslib": "^2.3.1",
+        "zone.js": "~0.15.1"
+    },
+    "devDependencies": {
+        "@angular-devkit/architect": "^0.2102.0",
+        "@angular-devkit/core": "^21.2.0",
+        "@angular/build": "^21.2.0",
+        "@angular/cli": "^21.2.0",
+        "@angular/compiler-cli": "^21.2.0",
+        "@playwright/test": "1.58.2",
+        "@sand4rt/experimental-ct-angular": "^1.58.2",
+        "@storybook/addon-docs": "^8.4.0",
+        "@storybook/addon-webpack5-compiler-swc": "^4.0.2",
+        "@storybook/angular": "^8.4.0",
+        "@types/moment-timezone": "^0.5.30",
+        "@types/node": "^16.11.12",
+        "@types/quill": "^1.3.10",
+        "dotenv": "^17.2.3",
+        "http-server": "^14.1.1",
+        "prettier": "^2.5.1",
+        "storybook": "^8.4.0",
+        "ts-node": "^10.4.0",
+        "typescript": "~5.9.3",
+        "vitest": "^4.0.18"
+    },
+    "prettier": {
+        "tabWidth": 4,
+        "semi": true,
+        "singleQuote": true,
+        "printWidth": 200,
+        "trailingComma": "none",
+        "overrides": [
+            {
+                "files": [
+                    "*.html"
+                ],
+                "options": {
+                    "printWidth": 200
+                }
+            }
+        ]
+    }
 }

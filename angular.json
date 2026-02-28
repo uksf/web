@@ -1,152 +1,132 @@
 {
-  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-  "version": 1,
-  "newProjectRoot": "projects",
-  "projects": {
-    "uksf": {
-      "root": "",
-      "sourceRoot": "src",
-      "projectType": "application",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:browser",
-          "options": {
-            "outputPath": "dist",
-            "index": "src/index.html",
-            "main": "src/main.ts",
-            "tsConfig": "src/tsconfig.app.json",
-            "polyfills": "src/polyfills.ts",
-            "assets": [
-              "src/assets",
-              "src/favicon.ico"
-            ],
-            "styles": [
-              "src/storybook-fonts.css",
-              "src/styles-app-loading.scss",
-              "src/styles.scss",
-              "./node_modules/quill/dist/quill.core.css",
-              "./node_modules/quill/dist/quill.snow.css"
-            ],
-            "scripts": [
-              "./node_modules/quill/dist/quill.min.js",
-              "./node_modules/prismjs/prism.js",
-              "./node_modules/prismjs/components/prism-markdown.min.js",
-              "./node_modules/chart.js/dist/Chart.js"
-            ],
-            "allowedCommonJsDependencies": [
-              "quill",
-              "moment",
-              "moment-timezone",
-              "chart.js",
-              "mobx",
-              "ansi-to-html"
-            ],
-            "vendorChunk": true,
-            "extractLicenses": false,
-            "buildOptimizer": false,
-            "sourceMap": true,
-            "optimization": false,
-            "namedChunks": true,
-            "stylePreprocessorOptions": {
-              "includePaths": [
-                "src"
-              ]
-            }
-          },
-          "configurations": {
-            "production": {
-              "budgets": [
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "6kb"
+    "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+    "version": 1,
+    "newProjectRoot": "projects",
+    "projects": {
+        "uksf": {
+            "root": "",
+            "sourceRoot": "src",
+            "projectType": "application",
+            "architect": {
+                "build": {
+                    "builder": "@angular/build:application",
+                    "options": {
+                        "outputPath": {
+                            "base": "dist"
+                        },
+                        "index": "src/index.html",
+                        "tsConfig": "src/tsconfig.app.json",
+                        "polyfills": ["zone.js"],
+                        "assets": ["src/assets", "src/favicon.ico"],
+                        "styles": ["src/storybook-fonts.css", "src/styles-app-loading.scss", "src/styles.scss", "./node_modules/quill/dist/quill.core.css", "./node_modules/quill/dist/quill.snow.css"],
+                        "scripts": [
+                            "./node_modules/quill/dist/quill.min.js",
+                            "./node_modules/prismjs/prism.js",
+                            "./node_modules/prismjs/components/prism-markdown.min.js",
+                            "./node_modules/chart.js/dist/Chart.js"
+                        ],
+                        "allowedCommonJsDependencies": ["quill", "moment", "moment-timezone", "chart.js", "mobx", "ansi-to-html"],
+                        "extractLicenses": false,
+                        "sourceMap": true,
+                        "optimization": false,
+                        "namedChunks": true,
+                        "stylePreprocessorOptions": {
+                            "includePaths": ["src"]
+                        },
+                        "browser": "src/main.ts"
+                    },
+                    "configurations": {
+                        "production": {
+                            "budgets": [
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "6kb"
+                                }
+                            ],
+                            "optimization": true,
+                            "outputHashing": "all",
+                            "sourceMap": false,
+                            "namedChunks": false,
+                            "extractLicenses": true,
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.prod.ts"
+                                }
+                            ]
+                        },
+                        "development": {},
+                        "storybook": {
+                            "sourceMap": false,
+                            "optimization": false
+                        }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "serve": {
+                    "builder": "@angular/build:dev-server",
+                    "options": {},
+                    "configurations": {
+                        "production": {
+                            "buildTarget": "uksf:build:production"
+                        },
+                        "development": {
+                            "buildTarget": "uksf:build:development"
+                        }
+                    },
+                    "defaultConfiguration": "development"
+                },
+                "storybook": {
+                    "builder": "@storybook/angular:start-storybook",
+                    "options": {
+                        "configDir": ".storybook",
+                        "browserTarget": "uksf:build:storybook",
+                        "compodoc": false,
+                        "port": 6006
+                    }
+                },
+                "build-storybook": {
+                    "builder": "@storybook/angular:build-storybook",
+                    "options": {
+                        "configDir": ".storybook",
+                        "browserTarget": "uksf:build:storybook",
+                        "compodoc": false,
+                        "outputDir": "storybook-static"
+                    }
                 }
-              ],
-              "optimization": true,
-              "outputHashing": "all",
-              "sourceMap": false,
-              "namedChunks": false,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ]
-            },
-            "development": {},
-            "storybook": {
-              "sourceMap": false,
-              "optimization": false
             }
-          },
-          "defaultConfiguration": "production"
-        },
-        "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
-          "options": {},
-          "configurations": {
-            "production": {
-              "buildTarget": "uksf:build:production"
-            },
-            "development": {
-              "buildTarget": "uksf:build:development"
-            }
-          },
-          "defaultConfiguration": "development"
-        },
-        "storybook": {
-          "builder": "@storybook/angular:start-storybook",
-          "options": {
-            "configDir": ".storybook",
-            "browserTarget": "uksf:build:storybook",
-            "compodoc": false,
-            "port": 6006
-          }
-        },
-        "build-storybook": {
-          "builder": "@storybook/angular:build-storybook",
-          "options": {
-            "configDir": ".storybook",
-            "browserTarget": "uksf:build:storybook",
-            "compodoc": false,
-            "outputDir": "storybook-static"
-          }
         }
-      }
+    },
+    "schematics": {
+        "@schematics/angular:component": {
+            "prefix": "app",
+            "style": "scss",
+            "type": "component"
+        },
+        "@schematics/angular:directive": {
+            "prefix": "app",
+            "type": "directive"
+        },
+        "@schematics/angular:service": {
+            "type": "service"
+        },
+        "@schematics/angular:guard": {
+            "typeSeparator": "."
+        },
+        "@schematics/angular:interceptor": {
+            "typeSeparator": "."
+        },
+        "@schematics/angular:module": {
+            "typeSeparator": "."
+        },
+        "@schematics/angular:pipe": {
+            "typeSeparator": "."
+        },
+        "@schematics/angular:resolver": {
+            "typeSeparator": "."
+        }
+    },
+    "cli": {
+        "analytics": false
     }
-  },
-  "schematics": {
-    "@schematics/angular:component": {
-      "prefix": "app",
-      "style": "scss",
-      "type": "component"
-    },
-    "@schematics/angular:directive": {
-      "prefix": "app",
-      "type": "directive"
-    },
-    "@schematics/angular:service": {
-      "type": "service"
-    },
-    "@schematics/angular:guard": {
-      "typeSeparator": "."
-    },
-    "@schematics/angular:interceptor": {
-      "typeSeparator": "."
-    },
-    "@schematics/angular:module": {
-      "typeSeparator": "."
-    },
-    "@schematics/angular:pipe": {
-      "typeSeparator": "."
-    },
-    "@schematics/angular:resolver": {
-      "typeSeparator": "."
-    }
-  },
-  "cli": {
-    "analytics": false
-  }
 }
