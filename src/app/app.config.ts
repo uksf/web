@@ -1,6 +1,6 @@
 import { APP_INITIALIZER, ApplicationConfig, ENVIRONMENT_INITIALIZER, inject, Injectable, Injector, provideZoneChangeDetection } from '@angular/core';
 import { DefaultUrlSerializer, provideRouter, UrlSerializer, UrlTree } from '@angular/router';
-import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { importProvidersFrom } from '@angular/core';
 import { JwtModule } from '@auth0/angular-jwt';
@@ -25,7 +25,7 @@ import { RedirectService } from '@app/core/services/authentication/redirect.serv
 import { UrlService } from '@app/core/services/url.service';
 import { SignalRService } from '@app/core/services/signalr.service';
 import { SignalRHubsService } from '@app/core/services/signalr-hubs.service';
-import { AuthHttpInterceptor } from '@app/core/services/authentication/auth-http-interceptor';
+import { authHttpInterceptor } from '@app/core/services/authentication/auth-http-interceptor';
 
 // Shared Services (not providedIn: 'root')
 import { CountryPickerService } from '@app/shared/services/country-picker/country-picker.service';
@@ -65,7 +65,7 @@ export const appConfig: ApplicationConfig = {
     providers: [
         provideZoneChangeDetection(),
         provideRouter(appRoutes),
-        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClient(withInterceptors([authHttpInterceptor])),
         provideAnimationsAsync(),
         importProvidersFrom(
             JwtModule.forRoot({
@@ -121,11 +121,5 @@ export const appConfig: ApplicationConfig = {
         { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { subscriptSizing: 'dynamic' } },
         // URL serializer
         { provide: UrlSerializer, useClass: LowerCaseUrlSerializer },
-        // HTTP interceptor
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: AuthHttpInterceptor,
-            multi: true
-        }
     ]
 };
