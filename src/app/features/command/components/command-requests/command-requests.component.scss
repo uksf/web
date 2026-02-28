@@ -127,6 +127,8 @@
 }
 
 .mat-mdc-button {
+    --mat-button-text-state-layer-color: white;
+    --mat-button-text-ripple-color: rgba(255, 255, 255, 0.12);
     padding: 0;
     min-width: 45px;
     width: 45px;

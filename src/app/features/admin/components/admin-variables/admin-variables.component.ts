@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatAccordion } from '@angular/material/expansion';
 import { Observable, timer, of } from 'rxjs';
 import { switchMap, map, first } from 'rxjs/operators';
-import { FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormBuilder, AbstractControl, ValidationErrors } from '@angular/forms';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { VariableItem } from '@app/features/admin/models/variable-item';
 import { VariablesService } from '../../services/variables.service';
@@ -18,19 +18,15 @@ export class AdminVariablesComponent implements OnInit {
     @ViewChild(MatAccordion) accordion: MatAccordion;
     expanded = false;
     form = this.formBuilder.group({
-        key: ['', Validators.required, this.validateVariable.bind(this)],
-        item: ['', Validators.required]
+        key: ['', null, this.validateVariable.bind(this)],
+        item: ['']
     });
     updating: boolean;
     variables: VariableItem[];
     variableLists: VariableItemList[];
 
     validationMessages = {
-        key: [
-            { type: 'required', message: 'Key is required' },
-            { type: 'keyTaken', message: 'That key is already in use' }
-        ],
-        item: [{ type: 'required', message: 'Item is required' }]
+        key: [{ type: 'keyTaken', message: 'That key is already in use' }]
     };
 
     constructor(private formBuilder: FormBuilder, private variablesService: VariablesService, private dialog: MatDialog) {}

@@ -2,7 +2,10 @@
 <h2 *ngIf="!edit" mat-dialog-title>Add Unit</h2>
 <h2 *ngIf="edit" mat-dialog-title>Edit Unit</h2>
 <mat-dialog-content>
-    <form [formGroup]="form" class="modal-form">
+    <div *ngIf="!loaded" class="loading-container">
+        <mat-spinner [diameter]="40"></mat-spinner>
+    </div>
+    <form *ngIf="loaded" [formGroup]="form" class="modal-form">
         <app-text-input class="normal" label="Unit Name" formControlName="name" [required]="true"
             [validationMessages]="validationMessages.name">
         </app-text-input>

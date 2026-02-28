@@ -8,6 +8,7 @@ import { Permissions } from './permissions';
 import { ConnectionContainer, SignalRService } from './signalr.service';
 import { AuthenticationService } from './authentication/authentication.service';
 import { Account, MembershipState } from '@app/shared/models/account';
+import { UksfError } from '@app/shared/models/response';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { AppSettingsService, Environments } from './app-settings.service';
 import { LoggingService } from './logging.service';
@@ -126,7 +127,7 @@ export class PermissionsService {
             await firstValueFrom(this.authenticationService.refresh());
         } catch (refreshError: unknown) {
             this.logger.warn('PermissionsService', 'Token refresh failed', refreshError);
-            if (!this.sessionService.hasToken()) {
+            if (this.isNetworkError(refreshError) || !this.sessionService.hasToken()) {
                 this.setUnlogged();
                 this.router.navigate(['/login']);
                 return;
@@ -149,7 +150,7 @@ export class PermissionsService {
             this.accountUpdateEvent.next();
         } catch (accountError: unknown) {
             this.logger.warn('PermissionsService', 'Account fetch failed', accountError);
-            if (!this.sessionService.hasToken()) {
+            if (this.isNetworkError(accountError) || !this.sessionService.hasToken()) {
                 this.setUnlogged();
                 this.router.navigate(['/login']);
             }
@@ -184,6 +185,10 @@ export class PermissionsService {
     private setUnlogged() {
         this.ngxPermissionsService.flushPermissions();
         this.ngxPermissionsService.addPermission(Permissions.UNLOGGED);
+    }
+
+    private isNetworkError(error: unknown): boolean {
+        return typeof error === 'object' && error !== null && (error as UksfError).statusCode === 0;
     }
 
     private waitForId(): Promise<string> {

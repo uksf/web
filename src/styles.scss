@@ -1,3 +1,4 @@
+@use 'styles/bootstrap-reset';
 @use '@angular/material' as mat;
 @use 'styles/theme-helpers' as th;
 @use 'styles/form-field-theme' as fft;
@@ -757,7 +758,7 @@ mat-paginator .mdc-notched-outline__trailing {
 .mat-mdc-dialog-container {
     --mat-dialog-supporting-text-color: white;
     // M3 line-height falls back to 1.5rem which resolves to 15px (root font-size is 10px
-    // from Bootstrap). Use unitless 1.5 so it scales with each element's font-size.
+    // from _bootstrap-reset.scss). Use unitless 1.5 so it scales with each element's font-size.
     --mat-dialog-supporting-text-line-height: 1.5;
 }
 
@@ -777,10 +778,6 @@ mat-dialog-content, .mat-mdc-dialog-content {
     form {
         display: flex;
         flex-direction: column;
-        // M3 checkbox/radio touch targets (48px) are absolutely positioned and extend
-        // 4px beyond their 40px host element. This padding ensures the form has enough
-        // space so they don't inflate scrollHeight and cause a scrollbar.
-        padding-bottom: 4px;
     }
 }
 
@@ -831,6 +828,7 @@ mat-dialog-actions, .mat-mdc-dialog-actions {
 }
 
 .mat-mdc-checkbox {
+    --mat-checkbox-touch-target-size: 40px;
     margin: 0;
 
     label {

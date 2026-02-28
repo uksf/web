@@ -9,31 +9,32 @@
         position: sticky;
         top: 0;
         z-index: 1;
+        padding: 8px 0;
 
         .variables-form-container {
             display: flex;
             flex-direction: row;
-            align-items: center;
+            align-items: flex-start;
+            gap: 10px;
             margin-left: 0;
 
             .key-field {
                 display: block;
-                margin-right: 10px;
                 width: 275px;
             }
 
             .item-field {
                 display: block;
-                margin-right: 10px;
                 flex: 1;
             }
 
             .mat-mdc-raised-button {
                 width: fit-content;
+                margin-top: 4px;
             }
 
-            .mat-mdc-icon-button {
-                margin: auto;
+            .expand-collapse-buttons {
+                display: flex;
             }
         }
     }

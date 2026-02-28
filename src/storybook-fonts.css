@@ -5,11 +5,6 @@
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 @import url('https://fonts.googleapis.com/css?family=Raleway');
 
-/* Font-family from bootstrap-material-design.min.css.
-   We don't include the full file because its global resets (body background,
-   colors, etc.) conflict with Angular Material's dark theme. */
-body,
-.h1, .h2, .h3, .h4, h1, h2, h3, h4, h5, h6 {
-    font-family: Roboto, Helvetica, Arial, sans-serif;
-    font-weight: 300;
-}
+/* Font-family and weight are now provided by _bootstrap-reset.scss
+   (imported via styles.scss), which is compiled into both the app
+   and Storybook CSS bundles. */

@@ -1,0 +1,255 @@
+// Element-level resets extracted from Bootstrap 3.3.7 and bootstrap-material-design 0.5.9.
+// These are the only rules the app actually depends on from those libraries.
+// Class-based utilities (.btn, .col-*, .glyphicon, etc.) were unused and are omitted.
+
+// --- Normalize / HTML5 display ---
+article, aside, details, figcaption, figure, footer, header, hgroup,
+main, menu, nav, section, summary {
+    display: block;
+}
+
+audio, canvas, progress, video {
+    display: inline-block;
+    vertical-align: baseline;
+}
+
+audio:not([controls]) {
+    display: none;
+    height: 0;
+}
+
+[hidden], template {
+    display: none;
+}
+
+// --- Box model ---
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+// --- Root typography ---
+html {
+    font-size: 10px;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: rgb(51, 51, 51);
+    background-color: rgb(255, 255, 255);
+}
+
+// bootstrap-material-design overrides (Roboto font family, light weight)
+body,
+.h1, .h2, .h3, .h4,
+h1, h2, h3, h4, h5, h6 {
+    font-family: Roboto, Helvetica, Arial, sans-serif;
+    font-weight: 300;
+}
+
+// --- Headings ---
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    line-height: 1.1;
+    color: inherit;
+}
+
+h1, .h1, h2, .h2, h3, .h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+h4, .h4, h5, .h5, h6, .h6 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+h1, .h1 { font-size: 36px; }
+h2, .h2 { font-size: 30px; }
+h3, .h3 { font-size: 24px; }
+h4, .h4 { font-size: 18px; }
+h5, .h5 { font-size: 14px; }
+h6, .h6 { font-size: 12px; }
+
+// --- Block elements ---
+p {
+    margin: 0 0 10px;
+}
+
+b, strong {
+    font-weight: 700;
+}
+
+ol, ul {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+ol ol, ol ul, ul ol, ul ul {
+    margin-bottom: 0;
+}
+
+blockquote {
+    margin: 0 0 20px;
+    padding: 10px 20px;
+    border-left: 5px solid rgb(238, 238, 238);
+    font-size: 17.5px;
+}
+
+// --- Links ---
+a {
+    text-decoration: none;
+    background-color: transparent;
+
+    &:hover, &:focus {
+        text-decoration: underline;
+    }
+
+    &:focus {
+        outline: 5px auto -webkit-focus-ring-color;
+        outline-offset: -2px;
+    }
+}
+
+// --- Images ---
+img {
+    vertical-align: middle;
+    border: 0;
+}
+
+// --- Forms ---
+label {
+    display: inline-block;
+    max-width: 100%;
+    margin-bottom: 5px;
+}
+
+button, input, optgroup, select, textarea {
+    margin: 0;
+    font: inherit;
+    color: inherit;
+}
+
+button {
+    overflow: visible;
+}
+
+button, select {
+    text-transform: none;
+}
+
+button,
+html input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+    -webkit-appearance: button;
+    cursor: pointer;
+}
+
+button[disabled],
+html input[type="button"][disabled],
+input[type="reset"][disabled],
+input[type="submit"][disabled] {
+    cursor: default;
+}
+
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+    padding: 0;
+    border: 0;
+}
+
+input {
+    line-height: normal;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    box-sizing: border-box;
+    padding: 0;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    height: auto;
+}
+
+input[type="search"] {
+    box-sizing: content-box;
+    -webkit-appearance: textfield;
+}
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+}
+
+textarea {
+    overflow: auto;
+}
+
+// --- Tables ---
+table {
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+td, th {
+    padding: 0;
+}
+
+// --- Fieldset ---
+fieldset {
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+
+legend {
+    display: block;
+    width: 100%;
+    padding: 0;
+    margin-bottom: 20px;
+    font-size: 21px;
+    line-height: inherit;
+    color: rgb(51, 51, 51);
+    border: 0;
+    border-bottom: 1px solid rgb(229, 229, 229);
+}
+
+// --- Misc ---
+hr {
+    box-sizing: content-box;
+    height: 0;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: 0;
+    border-top: 1px solid rgb(238, 238, 238);
+}
+
+pre {
+    overflow: auto;
+}
+
+abbr[title] {
+    border-bottom: 1px dotted;
+}
+
+sub, sup {
+    position: relative;
+    font-size: 75%;
+    line-height: 0;
+    vertical-align: baseline;
+}
+
+sup { top: -0.5em; }
+sub { bottom: -0.25em; }
+
+small, .small {
+    font-size: 85%;
+}

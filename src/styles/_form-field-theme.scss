@@ -21,7 +21,7 @@
             }
         }
 
-        .form-field-wrapper:hover:not(.form-field-disabled):not(.form-field-focused) {
+        .form-field-wrapper:hover:not(.form-field-disabled):not(.form-field-focused):not(.form-field-has-error) {
             --ff-border-color: #{th.fg-base($theme)};
         }
 

@@ -55,6 +55,7 @@ export class AddUnitModalComponent implements OnInit {
     unit: ResponseUnit;
     edit = false;
     original: string;
+    loaded = false;
 
     constructor(private formBuilder: FormBuilder, private unitsService: UnitsService, private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: { unit?: ResponseUnit }) {
         if (data) {
@@ -81,6 +82,7 @@ export class AddUnitModalComponent implements OnInit {
             next: (units: ResponseUnit[]) => {
                 this.units = units;
                 this.resolveAvailableParentUnits();
+                this.loaded = true;
             }
         });
     }

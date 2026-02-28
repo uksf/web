@@ -13,7 +13,7 @@
 
     input,
     textarea {
-        box-sizing: content-box; // Override Bootstrap's global border-box so cdkTextareaAutosize heights work correctly
+        box-sizing: content-box; // Override global border-box (from _bootstrap-reset.scss) so cdkTextareaAutosize heights work correctly
         width: 100%;
         border: none;
         border-bottom-width: 1px;
@@ -22,7 +22,7 @@
         outline: none;
         background: transparent;
         font-size: 16px;
-        line-height: 20px;
+        line-height: 16px;
         padding: 0 0 4px 0;
         transition: border-color v.$transition-fast v.$ease-standard;
         resize: none;
@@ -37,7 +37,7 @@
     bottom: 5px;
     margin-bottom: 0;
     font-size: 16px;
-    line-height: 20px;
+    line-height: 16px;
     pointer-events: none;
     user-select: none;
     transition: transform v.$transition-fast v.$ease-standard,
