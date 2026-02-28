@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { RecruitmentService, RecruiterActivity, RecruitmentStats, RecruitmentStatsResponse } from '../../services/recruitment.service';
@@ -63,6 +63,11 @@ import { MatTabGroup, MatTab } from '@angular/material/tabs';
     ]
 })
 export class RecruitmentPageComponent extends DestroyableComponent implements OnInit {
+    private accountService = inject(AccountService);
+    private recruitmentService = inject(RecruitmentService);
+    private profileService = inject(ProfileService);
+    private router = inject(Router);
+
     @ViewChild(ThemeEmitterComponent) theme: ThemeEmitterComponent;
     membershipState = MembershipState;
     applicationState = ApplicationState;
@@ -91,10 +96,6 @@ export class RecruitmentPageComponent extends DestroyableComponent implements On
         { mode: 'dateCompleted', direction: 1, name: 'Date Completed (Old - New)' }
     ];
     private filterSubject: Subject<string> = new Subject<string>();
-
-    constructor(private accountService: AccountService, private recruitmentService: RecruitmentService, private profileService: ProfileService, private router: Router) {
-        super();
-    }
 
     ngOnInit() {
         this.recruitmentService

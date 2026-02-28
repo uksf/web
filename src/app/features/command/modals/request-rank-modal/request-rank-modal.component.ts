@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { NgForm, FormsModule } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
@@ -27,6 +27,12 @@ import { ButtonComponent } from '../../../../shared/components/elements/button-p
     imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, SelectionListComponent_1, DropdownComponent, TextInputComponent, MatDialogActions, ButtonComponent]
 })
 export class RequestRankModalComponent implements OnInit {
+    private dialog = inject(MatDialog);
+    private membersService = inject(MembersService);
+    private ranksService = inject(RanksService);
+    private commandRequestsService = inject(CommandRequestsService);
+    data = inject<RequestModalData>(MAT_DIALOG_DATA);
+
     @ViewChild(NgForm) form!: NgForm;
     @ViewChild('accountList', { read: SelectionListComponent }) accountList: SelectionListComponent;
     pending: boolean = false;
@@ -42,13 +48,9 @@ export class RequestRankModalComponent implements OnInit {
         reason: [{ type: 'required', message: () => 'A reason for the promotion/demotion is required' }]
     };
 
-    constructor(
-        private dialog: MatDialog,
-        private membersService: MembersService,
-        private ranksService: RanksService,
-        private commandRequestsService: CommandRequestsService,
-        @Inject(MAT_DIALOG_DATA) public data: RequestModalData
-    ) {
+    constructor() {
+        const data = this.data;
+
         if (data) {
             this.preSelection = data.ids;
         }

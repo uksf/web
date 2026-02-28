@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { UrlService } from './url.service';
 import { HubConnectionBuilder, HubConnectionState, HttpTransportType, LogLevel, HubConnection } from '@microsoft/signalr';
 import { SessionService } from './authentication/session.service';
@@ -6,7 +6,8 @@ import { Subject } from 'rxjs';
 
 @Injectable()
 export class SignalRService {
-    constructor(public readonly urls: UrlService, private sessionService: SessionService) {}
+    readonly urls = inject(UrlService);
+    private sessionService = inject(SessionService);
 
     connect(endpoint: String): ConnectionContainer {
         const reconnectEvent = new Subject<void>();
@@ -16,7 +17,7 @@ export class SignalRService {
                     return this.sessionService.getSessionToken();
                 },
                 transport: HttpTransportType.WebSockets,
-                logger: LogLevel.None,
+                logger: LogLevel.None
             })
             .withAutomaticReconnect()
             .build();

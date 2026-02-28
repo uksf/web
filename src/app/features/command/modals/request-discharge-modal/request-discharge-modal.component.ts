@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { MatDialog, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { NgForm, FormsModule } from '@angular/forms';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
@@ -36,6 +36,10 @@ import { ButtonComponent } from '../../../../shared/components/elements/button-p
     ]
 })
 export class RequestDischargeModalComponent implements OnInit {
+    private dialog = inject(MatDialog);
+    private membersService = inject(MembersService);
+    private commandRequestsService = inject(CommandRequestsService);
+
     @ViewChild(NgForm) form!: NgForm;
     pending = false;
     model: FormModel = {
@@ -46,8 +50,6 @@ export class RequestDischargeModalComponent implements OnInit {
     validationMessages = {
         reason: [{ type: 'required', message: () => 'A discharge reason is required' }]
     };
-
-    constructor(private dialog: MatDialog, private membersService: MembersService, private commandRequestsService: CommandRequestsService) {}
 
     ngOnInit(): void {
         this.membersService

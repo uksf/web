@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { first, takeUntil } from 'rxjs/operators';
 import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
 import { InstallWorkshopModData, WorkshopMod } from '../models/workshop-mod';
@@ -26,14 +26,14 @@ import { MatIcon } from '@angular/material/icon';
     imports: [DefaultContentAreasComponent, FullContentAreaComponent, ModpackPageComponent, NgxPermissionsModule, MatButton, MatCard, FlexFillerComponent, MatTooltip, MatIcon]
 })
 export class ModpackWorkshopComponent extends DestroyableComponent implements OnInit, OnDestroy {
+    private workshopService = inject(WorkshopService);
+    private signalrService = inject(SignalRService);
+    private dialog = inject(MatDialog);
+
     private hubConnection: ConnectionContainer;
     private onReceiveWorkshopModAdded = () => this.getData();
     private onReceiveWorkshopModUpdate = (id: string) => this.getDataForMod(id);
     mods: WorkshopMod[] = [];
-
-    constructor(private workshopService: WorkshopService, private signalrService: SignalRService, private dialog: MatDialog) {
-        super();
-    }
 
     ngOnInit() {
         this.getData(() => {

@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { CreateFolderRequest, DocumentPermissions } from '@app/features/docs/models/documents';
 import { DocsService } from '../../services/docs.service';
@@ -41,6 +41,12 @@ import { ButtonComponent } from '../../../../shared/components/elements/button-p
     ]
 })
 export class CreateFolderModalComponent implements OnInit {
+    private docsService = inject(DocsService);
+    private membersService = inject(MembersService);
+    private dialog = inject(MatDialog);
+    private accountService = inject(AccountService);
+    data = inject<FolderModalData>(MAT_DIALOG_DATA);
+
     @ViewChild(NgForm) form!: NgForm;
     model: FormModel = {
         name: '',
@@ -69,13 +75,9 @@ export class CreateFolderModalComponent implements OnInit {
     initialData: InitialFolderData = null;
     accounts: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
 
-    constructor(
-        private docsService: DocsService,
-        private membersService: MembersService,
-        private dialog: MatDialog,
-        private accountService: AccountService,
-        @Inject(MAT_DIALOG_DATA) public data: FolderModalData
-    ) {
+    constructor() {
+        const data = this.data;
+
         this.parent = data.parent;
         this.inheritedPermissions = data.inheritedPermissions;
 

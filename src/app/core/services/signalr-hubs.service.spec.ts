@@ -1,7 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { SignalRHubsService } from './signalr-hubs.service';
-import { ConnectionContainer } from './signalr.service';
+import { SignalRService, ConnectionContainer } from './signalr.service';
+import { AccountService } from './account.service';
 
 describe('SignalRHubsService', () => {
     let service: SignalRHubsService;
@@ -26,7 +28,14 @@ describe('SignalRHubsService', () => {
             getAccount: vi.fn()
         };
 
-        service = new SignalRHubsService(mockSignalRService, mockAccountService);
+        TestBed.configureTestingModule({
+            providers: [
+                SignalRHubsService,
+                { provide: SignalRService, useValue: mockSignalRService },
+                { provide: AccountService, useValue: mockAccountService },
+            ]
+        });
+        service = TestBed.inject(SignalRHubsService);
     });
 
     describe('getAllHub', () => {

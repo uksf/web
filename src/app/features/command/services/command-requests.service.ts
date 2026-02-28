@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UrlService } from '@app/core/services/url.service';
@@ -15,7 +15,8 @@ export interface CommandRequestExistsBody {
 
 @Injectable({ providedIn: 'root' })
 export class CommandRequestsService {
-    constructor(private httpClient: HttpClient, private urls: UrlService) {}
+    private httpClient = inject(HttpClient);
+    private urls = inject(UrlService);
 
     getRequests(): Observable<CommandRequestsResponse> {
         return this.httpClient.get<CommandRequestsResponse>(`${this.urls.apiUrl}/commandrequests`);

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, NgZone, OnDestroy, Pipe, PipeTransform } from '@angular/core';
+import { ChangeDetectorRef, NgZone, OnDestroy, Pipe, PipeTransform, inject } from '@angular/core';
 import moment from 'moment-timezone';
 
 @Pipe({ name: 'zonedTime' })
@@ -11,9 +11,10 @@ export class ZonedTime implements PipeTransform {
 
 @Pipe({ name: 'timeAgo' })
 export class TimeAgoPipe implements PipeTransform, OnDestroy {
-    private timer: number;
+    private changeDetectorRef = inject(ChangeDetectorRef);
+    private ngZone = inject(NgZone);
 
-    constructor(private changeDetectorRef: ChangeDetectorRef, private ngZone: NgZone) {}
+    private timer: number;
 
     transform(value: Date) {
         this.removeTimer();

@@ -1,4 +1,4 @@
-import { Component, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
+import { Component, OnDestroy, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { isPlatformBrowser } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
@@ -17,9 +17,13 @@ import { FooterBarComponent } from '@app/core/components/footer-bar/footer-bar.c
     imports: [RouterOutlet, HeaderBarComponent, SideBarComponent, FooterBarComponent]
 })
 export class AppComponent implements OnInit, OnDestroy {
-    static utilityHubConnection: ConnectionContainer;
+    private overlayContainer = inject(OverlayContainer);
+    private platformId = inject(PLATFORM_ID);
+    private dialog = inject(MatDialog);
+    private signalrService = inject(SignalRService);
+    private signalRHubsService = inject(SignalRHubsService);
 
-    constructor(private overlayContainer: OverlayContainer, @Inject(PLATFORM_ID) private platformId, private dialog: MatDialog, private signalrService: SignalRService, private signalRHubsService: SignalRHubsService) {}
+    static utilityHubConnection: ConnectionContainer;
 
     ngOnInit() {
         this.overlayContainer.getContainerElement().classList.add('dark-theme');

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject, Observable, of, timer } from 'rxjs';
@@ -82,6 +82,12 @@ function validDob(dayKey: string, monthKey: string, yearKey: string) {
     imports: [MatCard, FormsModule, ReactiveFormsModule, TextInputComponent_1, DropdownComponent, ReactiveFormValueDebugComponent, ButtonComponent, FlexFillerComponent]
 })
 export class ApplicationIdentityComponent extends DestroyableComponent implements OnInit {
+    dialog = inject(MatDialog);
+    formBuilder = inject(UntypedFormBuilder);
+    private applicationService = inject(ApplicationService);
+    private authenticationService = inject(AuthenticationService);
+    private permissionsService = inject(PermissionsService);
+
     @Output() nextEvent = new EventEmitter();
     @Output() previousEvent = new EventEmitter();
     @ViewChild('day') dobDay: TextInputComponent;
@@ -121,14 +127,10 @@ export class ApplicationIdentityComponent extends DestroyableComponent implement
         ]
     };
 
-    constructor(
-        public dialog: MatDialog,
-        public formBuilder: UntypedFormBuilder,
-        private applicationService: ApplicationService,
-        private authenticationService: AuthenticationService,
-        private permissionsService: PermissionsService
-    ) {
+    constructor() {
         super();
+        const formBuilder = this.formBuilder;
+
         this.formGroup = formBuilder.group({
             name: ['', Validators.maxLength(0)],
             email: ['', [Validators.required, Validators.email], this.validateEmail.bind(this)],

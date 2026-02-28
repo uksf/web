@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, inject } from '@angular/core';
 import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
@@ -6,10 +6,12 @@ import { ModpackBuild } from './models/modpack-build';
 
 @Injectable()
 export class ModpackBuildService implements OnDestroy {
+    private httpClient = inject(HttpClient);
+    private urls = inject(UrlService);
+    private signalrService = inject(SignalRService);
+
     private hubConnection: ConnectionContainer;
     builds: ModpackBuild[] = [];
-
-    constructor(private httpClient: HttpClient, private urls: UrlService, private signalrService: SignalRService) {}
 
     ngOnDestroy(): void {
         this.disconnect();

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UrlService } from '@app/core/services/url.service';
@@ -17,7 +17,8 @@ export interface CommentThreadResponse {
 
 @Injectable({ providedIn: 'root' })
 export class CommentThreadService {
-    constructor(private httpClient: HttpClient, private urls: UrlService) {}
+    private httpClient = inject(HttpClient);
+    private urls = inject(UrlService);
 
     getComments(threadId: string): Observable<CommentThreadResponse> {
         return this.httpClient.get<CommentThreadResponse>(`${this.urls.apiUrl}/commentthread/${threadId}`);

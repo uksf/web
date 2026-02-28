@@ -1,4 +1,4 @@
-import { Component, Inject, Renderer2, ViewChild, ElementRef } from '@angular/core';
+import { Component, Renderer2, ViewChild, ElementRef, inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { ValidationReport } from '@app/shared/models/response';
 import { AutofocusStopComponent } from '../../components/elements/autofocus-stop/autofocus-stop.component';
@@ -21,6 +21,10 @@ export interface ValidationReportModalData {
     imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, NgClass, MatMiniFabButton, MatTooltip, MatIcon, FlexFillerComponent, MatDialogActions, MatButton]
 })
 export class ValidationReportModalComponent {
+    dialog = inject<MatDialogRef<ValidationReportModalComponent>>(MatDialogRef);
+    renderer = inject(Renderer2);
+    data = inject<ValidationReportModalData>(MAT_DIALOG_DATA);
+
     @ViewChild('messageBox') messageBox: ElementRef;
     messages: ValidationReport[];
     title: string;
@@ -29,7 +33,9 @@ export class ValidationReportModalComponent {
     private minWidth = 0;
     private minHeight = 0;
 
-    constructor(public dialog: MatDialogRef<ValidationReportModalComponent>, public renderer: Renderer2, @Inject(MAT_DIALOG_DATA) public data: ValidationReportModalData) {
+    constructor() {
+        const data = this.data;
+
         this.title = data.title;
         this.messages = data.messages;
         this.message = this.messages[0];

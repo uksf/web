@@ -1,4 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LoginPageComponent } from './login-page.component';
 import { Subject } from 'rxjs';
 import { NavigationEnd } from '@angular/router';
@@ -20,7 +22,14 @@ describe('LoginPageComponent', () => {
             events: routerEvents$.asObservable()
         };
 
-        component = new LoginPageComponent(mockRoute, mockRouter);
+        TestBed.configureTestingModule({
+            providers: [
+                LoginPageComponent,
+                { provide: ActivatedRoute, useValue: mockRoute },
+                { provide: Router, useValue: mockRouter },
+            ]
+        });
+        component = TestBed.inject(LoginPageComponent);
     });
 
     describe('checkReset', () => {

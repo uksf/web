@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { first, takeUntil } from 'rxjs/operators';
 import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
 import { DebouncedCallback } from '@app/shared/utils/debounce-callback';
@@ -19,6 +19,9 @@ import { ZonedTime } from '../../../../shared/pipes/time.pipe';
     imports: [DefaultContentAreasComponent, MainContentAreaComponent, SideContentAreaComponent, MatCard, FlexFillerComponent, MatProgressSpinner, ZonedTime]
 })
 export class HomePageComponent extends DestroyableComponent implements OnInit {
+    private homeService = inject(HomeService);
+    private signalrService = inject(SignalRService);
+
     commanders: TeamspeakOnlineUser[];
     recruiters: TeamspeakOnlineUser[];
     members: TeamspeakOnlineUser[];
@@ -36,7 +39,7 @@ export class HomePageComponent extends DestroyableComponent implements OnInit {
         });
     };
 
-    constructor(private homeService: HomeService, private signalrService: SignalRService) {
+    constructor() {
         super();
         this._time = new Date();
         this.timeInterval = setInterval(() => {

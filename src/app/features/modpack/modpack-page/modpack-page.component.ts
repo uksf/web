@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { Permissions } from '@app/core/services/permissions';
 import { MatTabNav, MatTabLink, MatTabNavPanel } from '@angular/material/tabs';
@@ -11,13 +11,15 @@ import { RouterLinkActive, RouterLink, RouterOutlet } from '@angular/router';
     imports: [MatTabNav, MatTabLink, RouterLinkActive, RouterLink, MatTabNavPanel, RouterOutlet]
 })
 export class ModpackPageComponent {
+    private permissions = inject(PermissionsService);
+
     tabLinks = [{ label: 'Guide', link: '../guide' }];
 
     trackByLink(index: number, item: { link: string }): string {
         return item.link;
     }
 
-    constructor(private permissions: PermissionsService) {
+    constructor() {
         if (this.permissions.hasPermission(Permissions.MEMBER)) {
             this.tabLinks = [
                 { label: 'Guide', link: '../guide' },

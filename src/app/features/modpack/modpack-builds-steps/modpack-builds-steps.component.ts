@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild, inject } from '@angular/core';
 import { CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf } from '@angular/cdk/scrolling';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Permissions } from '@app/core/services/permissions';
@@ -28,6 +28,12 @@ import { AnsiToHtmlPipe } from '../../../shared/pipes/ansi-to-html.pipe';
     imports: [ThemeEmitterComponent_1, NgClass, FlexFillerComponent, MatButton, MatTooltip, MatIcon, CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf, AnsiToHtmlPipe]
 })
 export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges {
+    private signalrService = inject(SignalRService);
+    private modpackBuildProcessService = inject(ModpackBuildProcessService);
+    private route = inject(ActivatedRoute);
+    private router = inject(Router);
+    private permissions = inject(PermissionsService);
+
     @ViewChild(ThemeEmitterComponent)
     theme: ThemeEmitterComponent;
     @ViewChild(CdkVirtualScrollViewport)
@@ -52,14 +58,6 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
             this.chooseStep();
         }
     };
-
-    constructor(
-        private signalrService: SignalRService,
-        private modpackBuildProcessService: ModpackBuildProcessService,
-        private route: ActivatedRoute,
-        private router: Router,
-        private permissions: PermissionsService
-    ) {}
 
     get selectedStep() {
         return this.build && this.build.steps.length > this.selectedStepIndex ? this.build.steps[this.selectedStepIndex] : undefined;

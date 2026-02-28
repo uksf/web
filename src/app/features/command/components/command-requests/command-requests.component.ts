@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { RequestRankModalComponent } from '@app/features/command/modals/request-rank-modal/request-rank-modal.component';
 import { RequestTransferModalComponent } from '@app/features/command/modals/request-transfer-modal/request-transfer-modal.component';
@@ -31,6 +31,11 @@ import { DatePipe } from '@angular/common';
     imports: [DefaultContentAreasComponent, MainContentAreaComponent, MatButton, MatCard, MatIcon, MatTooltip, MatProgressSpinner, DatePipe]
 })
 export class CommandRequestsComponent extends DestroyableComponent implements OnInit, OnDestroy {
+    private commandRequestsService = inject(CommandRequestsService);
+    dialog = inject(MatDialog);
+    private signalrService = inject(SignalRService);
+    private accountService = inject(AccountService);
+
     reviewState = ReviewState;
     myRequests: CommandRequestItem[] = [];
     otherRequests: CommandRequestItem[] = [];
@@ -41,7 +46,7 @@ export class CommandRequestsComponent extends DestroyableComponent implements On
         this.getRequests();
     };
 
-    constructor(private commandRequestsService: CommandRequestsService, public dialog: MatDialog, private signalrService: SignalRService, private accountService: AccountService) {
+    constructor() {
         super();
         this.getRequests();
     }

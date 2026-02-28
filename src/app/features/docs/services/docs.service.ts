@@ -1,21 +1,15 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UrlService } from '@app/core/services/url.service';
-import {
-    CreateDocumentRequest,
-    CreateFolderRequest,
-    DocumentContent,
-    DocumentMetadata,
-    FolderMetadata,
-    UpdateDocumentContentRequest
-} from '../models/documents';
+import { CreateDocumentRequest, CreateFolderRequest, DocumentContent, DocumentMetadata, FolderMetadata, UpdateDocumentContentRequest } from '../models/documents';
 
 const jsonHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
 
 @Injectable()
 export class DocsService {
-    constructor(private httpClient: HttpClient, private urls: UrlService) {}
+    private httpClient = inject(HttpClient);
+    private urls = inject(UrlService);
 
     getFolders(): Observable<FolderMetadata[]> {
         return this.httpClient.get<FolderMetadata[]>(`${this.urls.apiUrl}/docs/folders`);
@@ -30,11 +24,7 @@ export class DocsService {
     }
 
     updateDocumentContent(folderId: string, documentId: string, request: UpdateDocumentContentRequest): Observable<DocumentContent> {
-        return this.httpClient.put<DocumentContent>(
-            `${this.urls.apiUrl}/docs/folders/${folderId}/documents/${documentId}/content`,
-            request,
-            { headers: jsonHeaders }
-        );
+        return this.httpClient.put<DocumentContent>(`${this.urls.apiUrl}/docs/folders/${folderId}/documents/${documentId}/content`, request, { headers: jsonHeaders });
     }
 
     createFolder(request: CreateFolderRequest): Observable<unknown> {

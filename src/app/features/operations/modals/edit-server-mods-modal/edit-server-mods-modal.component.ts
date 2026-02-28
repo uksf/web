@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MatDialog, MAT_DIALOG_DATA, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { first } from 'rxjs/operators';
 import { GameServersService } from '../../services/game-servers.service';
@@ -18,11 +18,17 @@ import { MatButton } from '@angular/material/button';
     imports: [MatDialogTitle, CdkScrollable, MatDialogContent, FlexFillerComponent, MatProgressSpinner, MatTooltip, MatCheckbox, FormsModule, MatDialogActions, MatButton]
 })
 export class EditServerModsModalComponent implements OnInit {
+    private gameServersService = inject(GameServersService);
+    private dialog = inject(MatDialog);
+    data = inject<EditServerModsData>(MAT_DIALOG_DATA);
+
     server;
     before: string;
     availableMods;
 
-    constructor(private gameServersService: GameServersService, private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: EditServerModsData) {
+    constructor() {
+        const data = this.data;
+
         this.server = data.server;
     }
 

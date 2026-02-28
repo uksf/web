@@ -1,6 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
 import { AuthenticationService, TokenResponse } from './authentication.service';
+import { UrlService } from '../url.service';
+import { SessionService } from './session.service';
+import { AccountService } from '../account.service';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 describe('AuthenticationService', () => {
     let service: AuthenticationService;
@@ -32,13 +38,17 @@ describe('AuthenticationService', () => {
             decodeToken: vi.fn().mockReturnValue({})
         };
 
-        service = new AuthenticationService(
-            mockHttpClient,
-            mockUrls,
-            mockSessionService,
-            mockAccountService,
-            mockJwtHelperService
-        );
+        TestBed.configureTestingModule({
+            providers: [
+                AuthenticationService,
+                { provide: HttpClient, useValue: mockHttpClient },
+                { provide: UrlService, useValue: mockUrls },
+                { provide: SessionService, useValue: mockSessionService },
+                { provide: AccountService, useValue: mockAccountService },
+                { provide: JwtHelperService, useValue: mockJwtHelperService },
+            ]
+        });
+        service = TestBed.inject(AuthenticationService);
     });
 
     describe('login', () => {

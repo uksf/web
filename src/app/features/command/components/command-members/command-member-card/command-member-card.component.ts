@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { Account } from '@app/shared/models/account';
 import { expansionAnimations } from '@app/shared/services/animations.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -26,11 +26,12 @@ import { FormsModule } from '@angular/forms';
     imports: [MatCard, SpotlightDirective, MatIcon, MatTooltip, MatCheckbox, FormsModule]
 })
 export class CommandMemberCardComponent {
+    private dialog = inject(MatDialog);
+    private membersService = inject(MembersService);
+
     @Input('member') member: Account;
     expanded: boolean = false;
     qualificationsPending: boolean = false;
-
-    constructor(private dialog: MatDialog, private membersService: MembersService) {}
 
     editRank() {
         const data: RequestModalData = {

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { MarkdownService, MarkdownComponent } from 'ngx-markdown';
 import { parseMarkdownSync } from '../markdown-utils';
 import { PermissionsService } from '@app/core/services/permissions.service';
@@ -38,6 +38,12 @@ import { FormsModule } from '@angular/forms';
     ]
 })
 export class ModpackReleasesComponent implements OnInit, OnDestroy {
+    private markdownService = inject(MarkdownService);
+    private permissionsService = inject(PermissionsService);
+    private route = inject(ActivatedRoute);
+    private router = inject(Router);
+    private modpackReleaseService = inject(ModpackReleaseService);
+
     selectedReleaseVersion: string = '';
     selectIncomingRelease: boolean = false;
     editing: boolean = false;
@@ -50,13 +56,6 @@ export class ModpackReleasesComponent implements OnInit, OnDestroy {
     publicReleases: ModpackRelease[] = [];
     selectedRelease: ModpackRelease | undefined;
     latestReleaseIsDraft: boolean = false;
-    constructor(
-        private markdownService: MarkdownService,
-        private permissionsService: PermissionsService,
-        private route: ActivatedRoute,
-        private router: Router,
-        private modpackReleaseService: ModpackReleaseService
-    ) {}
 
     get releases() {
         return this.modpackReleaseService.releases;

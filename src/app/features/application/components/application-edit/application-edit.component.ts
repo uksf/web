@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 import { first, takeUntil } from 'rxjs/operators';
@@ -28,6 +28,13 @@ import { ButtonComponent } from '../../../../shared/components/elements/button-p
     imports: [MatCard, CommentDisplayComponent, RouterLink, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatHint, MatError, MatCheckbox, DropdownComponent, ButtonComponent]
 })
 export class ApplicationEditComponent extends DestroyableComponent {
+    formBuilder = inject(UntypedFormBuilder);
+    dialog = inject(MatDialog);
+    private applicationService = inject(ApplicationService);
+    private accountService = inject(AccountService);
+    private permissions = inject(PermissionsService);
+    private router = inject(Router);
+
     formGroup: UntypedFormGroup;
     pending: boolean = false;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
@@ -38,15 +45,10 @@ export class ApplicationEditComponent extends DestroyableComponent {
     validation_messages = DETAILS_VALIDATION_MESSAGES;
     cachedErrors = { armaExperience: '', unitsExperience: '', background: '' };
 
-    constructor(
-        public formBuilder: UntypedFormBuilder,
-        public dialog: MatDialog,
-        private applicationService: ApplicationService,
-        private accountService: AccountService,
-        private permissions: PermissionsService,
-        private router: Router
-    ) {
+    constructor() {
         super();
+        const formBuilder = this.formBuilder;
+
         if (this.permissions.hasPermission(Permissions.RECRUITER)) {
             this.router.navigate(['/recruitment/' + this.accountService.account.id]);
             return;

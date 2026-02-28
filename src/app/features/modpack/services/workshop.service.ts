@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UrlService } from '@app/core/services/url.service';
@@ -6,7 +6,8 @@ import { InstallWorkshopModData, WorkshopMod, WorkshopModUpdatedDate } from '../
 
 @Injectable()
 export class WorkshopService {
-    constructor(private httpClient: HttpClient, private urls: UrlService) {}
+    private httpClient = inject(HttpClient);
+    private urls = inject(UrlService);
 
     getMods(): Observable<WorkshopMod[]> {
         return this.httpClient.get<WorkshopMod[]>(`${this.urls.apiUrl}/workshop`);

@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
 import { InfrastructureService } from './infrastructure.service';
+import { UrlService } from '@app/core/services/url.service';
 import type { ServerInfrastructureCurrent, ServerInfrastructureInstalled, ServerInfrastructureLatest, ServerInfrastructureUpdate } from '@app/shared/models/server-infrastructure';
 
 describe('InfrastructureService', () => {
@@ -11,7 +14,14 @@ describe('InfrastructureService', () => {
     beforeEach(() => {
         httpClient = { get: vi.fn() };
         urls = { apiUrl: 'http://localhost:5500' };
-        service = new InfrastructureService(httpClient as any, urls as any);
+        TestBed.configureTestingModule({
+            providers: [
+                InfrastructureService,
+                { provide: HttpClient, useValue: httpClient },
+                { provide: UrlService, useValue: urls },
+            ]
+        });
+        service = TestBed.inject(InfrastructureService);
     });
 
     it('should call isUpdating endpoint', () => {

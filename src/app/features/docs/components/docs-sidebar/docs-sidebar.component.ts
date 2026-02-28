@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { first } from 'rxjs/operators';
 import { FolderMetadata } from '@app/features/docs/models/documents';
 import { MatDialog } from '@angular/material/dialog';
@@ -17,12 +17,12 @@ import { DocsFolderComponent } from './docs-folder/docs-folder.component';
     imports: [MatIcon, FlexFillerComponent, MatTooltip, DocsFolderComponent]
 })
 export class DocsSidebarComponent implements OnInit {
+    private dialog = inject(MatDialog);
+
     @Input('allDocumentMetadata') allFolderMetadata: FolderMetadata[];
     @Output('refresh') refresh = new EventEmitter();
     collapseHoverState: string = 'collapsed';
     collapsedState: string = 'expanded';
-
-    constructor(private dialog: MatDialog) {}
 
     ngOnInit(): void {}
 

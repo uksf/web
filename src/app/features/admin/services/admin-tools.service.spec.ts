@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
 import { AdminToolsService } from './admin-tools.service';
+import { UrlService } from '@app/core/services/url.service';
 
 describe('AdminToolsService', () => {
     let service: AdminToolsService;
@@ -10,7 +13,14 @@ describe('AdminToolsService', () => {
     beforeEach(() => {
         httpClient = { get: vi.fn(), post: vi.fn(), delete: vi.fn() };
         urls = { apiUrl: 'http://localhost:5500' };
-        service = new AdminToolsService(httpClient as any, urls as any);
+        TestBed.configureTestingModule({
+            providers: [
+                AdminToolsService,
+                { provide: HttpClient, useValue: httpClient },
+                { provide: UrlService, useValue: urls },
+            ]
+        });
+        service = TestBed.inject(AdminToolsService);
     });
 
     it('should get active accounts', () => {

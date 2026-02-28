@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Event, NavigationEnd, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
@@ -15,11 +15,12 @@ import { PasswordResetComponent } from '../reset-password/password-reset.compone
     imports: [CentreWrapperComponent, MatCard, LoginComponent, RequestPasswordResetComponent, PasswordResetComponent]
 })
 export class LoginPageComponent implements OnInit, OnDestroy {
+    private route = inject(ActivatedRoute);
+    private router = inject(Router);
+
     private destroyed = new Subject<void>();
     resetPasswordCode: string;
     mode = 0;
-
-    constructor(private route: ActivatedRoute, private router: Router) {}
 
     ngOnInit() {
         this.checkReset();

@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
@@ -17,6 +17,9 @@ import { ButtonComponent } from '../../../shared/components/elements/button-pend
     imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, MatCheckbox, MatTooltip, MatDialogActions, ButtonComponent]
 })
 export class InstallWorkshopModModalComponent implements OnDestroy {
+    private formBuilder = inject(FormBuilder);
+    dialogRef = inject<MatDialogRef<InstallWorkshopModModalComponent>>(MatDialogRef);
+
     private destroy$ = new Subject<void>();
     form = this.formBuilder.group({
         steamId: ['', Validators.required],
@@ -28,7 +31,7 @@ export class InstallWorkshopModModalComponent implements OnDestroy {
     };
     submitting: boolean = false;
 
-    constructor(private formBuilder: FormBuilder, public dialogRef: MatDialogRef<InstallWorkshopModModalComponent>) {
+    constructor() {
         this.form.controls.rootMod.valueChanges.pipe(takeUntil(this.destroy$)).subscribe({
             next: (isRootMod: boolean) => {
                 const folderNameControl = this.form.controls.folderName;

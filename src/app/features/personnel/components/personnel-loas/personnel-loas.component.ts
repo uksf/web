@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, HostListener, OnInit, QueryList, ViewChildren, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { LoaService } from '@app/shared/services/loa.service';
 import { RequestLoaModalComponent } from '@app/shared/modals/request-loa-modal/request-loa-modal.component';
@@ -67,6 +67,9 @@ export interface DateModeItem {
     ]
 })
 export class PersonnelLoasComponent extends DestroyableComponent implements OnInit {
+    private loaService = inject(LoaService);
+    private dialog = inject(MatDialog);
+
     @ViewChildren(PersonnelLoasListComponent) loaLists: QueryList<PersonnelLoasListComponent>;
     mobile = false;
     viewModes: ViewModeItem[] = [
@@ -86,7 +89,7 @@ export class PersonnelLoasComponent extends DestroyableComponent implements OnIn
     selectedDate?: Moment = this.getUkNow();
     private filterSubject = new Subject<string>();
 
-    constructor(private loaService: LoaService, private dialog: MatDialog) {
+    constructor() {
         super();
         this.dateMode = this.dateModes[0];
         this.viewMode = this.viewModes[0];

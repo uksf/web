@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { WorkshopService } from './workshop.service';
+import { UrlService } from '@app/core/services/url.service';
 import { of } from 'rxjs';
 import { WorkshopMod, WorkshopModUpdatedDate } from '../models/workshop-mod';
 
@@ -15,7 +18,14 @@ describe('WorkshopService', () => {
             delete: vi.fn().mockReturnValue(of({}))
         };
         mockUrls = { apiUrl: 'http://localhost:5500' };
-        service = new WorkshopService(mockHttpClient, mockUrls);
+        TestBed.configureTestingModule({
+            providers: [
+                WorkshopService,
+                { provide: HttpClient, useValue: mockHttpClient },
+                { provide: UrlService, useValue: mockUrls },
+            ]
+        });
+        service = TestBed.inject(WorkshopService);
     });
 
     it('getMods calls GET /workshop', () => {

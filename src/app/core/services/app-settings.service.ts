@@ -1,4 +1,4 @@
-import { Injectable, Injector } from '@angular/core';
+import { Injectable, Injector, inject } from '@angular/core';
 import { HttpBackend, HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { LoggingService } from './logging.service';
@@ -11,10 +11,14 @@ interface AppSettings {
 
 @Injectable()
 export class AppSettingsService {
+    private injector = inject(Injector);
+
     private httpClient: HttpClient;
     private appSettings: AppSettings;
 
-    constructor(handler: HttpBackend, private injector: Injector) {
+    constructor() {
+        const handler = inject(HttpBackend);
+
         this.httpClient = new HttpClient(handler);
     }
 

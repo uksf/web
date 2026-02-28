@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
 import { VariablesService } from './variables.service';
+import { UrlService } from '@app/core/services/url.service';
 import type { VariableItem } from '@app/features/admin/models/variable-item';
 
 describe('VariablesService', () => {
@@ -11,7 +14,14 @@ describe('VariablesService', () => {
     beforeEach(() => {
         httpClient = { get: vi.fn(), put: vi.fn(), post: vi.fn(), patch: vi.fn(), delete: vi.fn() };
         urls = { apiUrl: 'http://localhost:5500' };
-        service = new VariablesService(httpClient as any, urls as any);
+        TestBed.configureTestingModule({
+            providers: [
+                VariablesService,
+                { provide: HttpClient, useValue: httpClient },
+                { provide: UrlService, useValue: urls },
+            ]
+        });
+        service = TestBed.inject(VariablesService);
     });
 
     it('should get variables', () => {

@@ -1,4 +1,4 @@
-import { Injectable, Injector } from '@angular/core';
+import { Injectable, Injector, inject } from '@angular/core';
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { EMPTY, Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -11,7 +11,10 @@ import { RedirectService } from './redirect.service';
 
 @Injectable()
 export class AuthHttpInterceptor implements HttpInterceptor {
-    constructor(private router: Router, private activatedRoute: ActivatedRoute, private injector: Injector, private dialog: MatDialog) {}
+    private router = inject(Router);
+    private activatedRoute = inject(ActivatedRoute);
+    private injector = inject(Injector);
+    private dialog = inject(MatDialog);
 
     intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
         return next.handle(request).pipe(

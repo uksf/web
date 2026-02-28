@@ -1,4 +1,4 @@
-import { Component, Output, ViewChild, EventEmitter } from '@angular/core';
+import { Component, Output, ViewChild, EventEmitter, inject } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
 import { first } from 'rxjs/operators';
@@ -15,6 +15,8 @@ import { ButtonComponent } from '../../../../shared/components/elements/button-p
     imports: [MatDialogTitle, FormsModule, TextInputComponent, ButtonHiddenSubmitComponent, FlexFillerComponent, ButtonComponent]
 })
 export class RequestPasswordResetComponent {
+    private auth = inject(AuthenticationService);
+
     @ViewChild(NgForm) form!: NgForm;
     @Output() onReturnToLogin = new EventEmitter();
     pending = false;
@@ -29,8 +31,6 @@ export class RequestPasswordResetComponent {
             { type: 'email', message: 'Email address is invalid' }
         ]
     };
-
-    constructor(private auth: AuthenticationService) {}
 
     submit() {
         // Honeypot field must be empty

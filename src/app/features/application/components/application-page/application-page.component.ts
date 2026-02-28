@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { first } from 'rxjs/operators';
 import { AccountService } from '@app/core/services/account.service';
@@ -37,9 +37,11 @@ import { ApplicationEditComponent } from '../application-edit/application-edit.c
     ]
 })
 export class ApplicationPageComponent implements OnInit {
-    step = 1;
+    private applicationService = inject(ApplicationService);
+    dialog = inject(MatDialog);
+    private accountService = inject(AccountService);
 
-    constructor(private applicationService: ApplicationService, public dialog: MatDialog, private accountService: AccountService) {}
+    step = 1;
 
     ngOnInit() {
         this.checkStep();

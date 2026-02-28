@@ -1,11 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { TextInputModalComponent, TextInputModalData } from './text-input-modal.component';
 
 describe('TextInputModalComponent', () => {
     let component: TextInputModalComponent;
     let mockDialogRef: any;
-    const formBuilder = new FormBuilder();
 
     beforeEach(() => {
         mockDialogRef = {
@@ -14,7 +15,15 @@ describe('TextInputModalComponent', () => {
     });
 
     function createComponent(data: TextInputModalData): TextInputModalComponent {
-        return new TextInputModalComponent(formBuilder, mockDialogRef, data);
+        TestBed.configureTestingModule({
+            providers: [
+                TextInputModalComponent,
+                FormBuilder,
+                { provide: MatDialogRef, useValue: mockDialogRef },
+                { provide: MAT_DIALOG_DATA, useValue: data },
+            ]
+        });
+        return TestBed.inject(TextInputModalComponent);
     }
 
     describe('constructor', () => {

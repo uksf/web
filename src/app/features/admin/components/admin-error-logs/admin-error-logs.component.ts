@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { MatTableDataSource, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { SignalRService } from '@app/core/services/signalr.service';
@@ -51,7 +51,12 @@ export class AdminErrorLogsComponent extends AdminLogsComponent implements OnIni
     errorLogDisplayedColumns = ['timestamp', 'statusCode', 'method', 'url', 'endpointName', 'userId', 'name', 'message', 'exception'];
     datasource: MatTableDataSource<ErrorLog> = new MatTableDataSource<ErrorLog>();
 
-    constructor(logsService: LogsService, dialog: MatDialog, signalrService: SignalRService, clipboard: Clipboard) {
+    constructor() {
+        const logsService = inject(LogsService);
+        const dialog = inject(MatDialog);
+        const signalrService = inject(SignalRService);
+        const clipboard = inject(Clipboard);
+
         super(logsService, dialog, signalrService, clipboard);
     }
 

@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { RanksService } from './ranks.service';
+import { UrlService } from '@app/core/services/url.service';
 import { of } from 'rxjs';
 import { Rank } from '@app/shared/models/rank';
 
@@ -16,7 +19,14 @@ describe('RanksService', () => {
             delete: vi.fn().mockReturnValue(of([]))
         };
         mockUrls = { apiUrl: 'http://localhost:5500' };
-        service = new RanksService(mockHttpClient, mockUrls);
+        TestBed.configureTestingModule({
+            providers: [
+                RanksService,
+                { provide: HttpClient, useValue: mockHttpClient },
+                { provide: UrlService, useValue: mockUrls },
+            ]
+        });
+        service = TestBed.inject(RanksService);
     });
 
     it('getRanks calls GET /ranks', () => {

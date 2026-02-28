@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { first } from 'rxjs/operators';
 import { DocumentContent, DocumentMetadata, UpdateDocumentContentRequest } from '@app/features/docs/models/documents';
 import { DocsService } from '../../services/docs.service';
@@ -16,12 +16,13 @@ import { FormsModule } from '@angular/forms';
     imports: [ButtonComponent, QuillViewComponent, QuillEditorComponent, FormsModule]
 })
 export class DocsContentComponent implements OnChanges {
+    private docsService = inject(DocsService);
+    private dialog = inject(MatDialog);
+
     @Input('documentMetadata') documentMetadata: DocumentMetadata;
     documentContent: DocumentContent;
     editing: boolean = false;
     pending: boolean = false;
-
-    constructor(private docsService: DocsService, private dialog: MatDialog) {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (!this.documentMetadata) {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormBuilder, ValidationErrors, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Observable, of, timer } from 'rxjs';
 import { first, map, switchMap } from 'rxjs/operators';
@@ -39,6 +39,10 @@ import { MatTooltip } from '@angular/material/tooltip';
     ]
 })
 export class CommandRolesComponent implements OnInit {
+    private formBuilder = inject(FormBuilder);
+    private rolesService = inject(RolesService);
+    private dialog = inject(MatDialog);
+
     roleForm = this.formBuilder.group({
         name: ['', Validators.required, this.validateRole()]
     });
@@ -48,8 +52,6 @@ export class CommandRolesComponent implements OnInit {
         { type: 'required', message: 'Role is required' },
         { type: 'roleTaken', message: 'That role is already in use' }
     ];
-
-    constructor(private formBuilder: FormBuilder, private rolesService: RolesService, private dialog: MatDialog) {}
 
     ngOnInit() {
         this.rolesService

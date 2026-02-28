@@ -1,6 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { of, Subject, throwError } from 'rxjs';
+import { NgxPermissionsService } from 'ngx-permissions';
+import { JwtHelperService } from '@auth0/angular-jwt';
 import { PermissionsService } from './permissions.service';
+import { SessionService } from './authentication/session.service';
+import { AccountService } from './account.service';
+import { SignalRService } from './signalr.service';
+import { AuthenticationService } from './authentication/authentication.service';
+import { AppSettingsService } from './app-settings.service';
+import { LoggingService } from './logging.service';
 import { Account, MembershipState } from '@app/shared/models/account';
 
 describe('PermissionsService', () => {
@@ -80,17 +90,21 @@ describe('PermissionsService', () => {
             debug: vi.fn()
         };
 
-        service = new PermissionsService(
-            mockNgxPermissionsService,
-            mockSessionService,
-            mockAccountService,
-            mockSignalrService,
-            mockRouter,
-            mockAuthenticationService,
-            mockJwtHelperService,
-            mockAppSettings,
-            mockLogger as any
-        );
+        TestBed.configureTestingModule({
+            providers: [
+                PermissionsService,
+                { provide: NgxPermissionsService, useValue: mockNgxPermissionsService },
+                { provide: SessionService, useValue: mockSessionService },
+                { provide: AccountService, useValue: mockAccountService },
+                { provide: SignalRService, useValue: mockSignalrService },
+                { provide: Router, useValue: mockRouter },
+                { provide: AuthenticationService, useValue: mockAuthenticationService },
+                { provide: JwtHelperService, useValue: mockJwtHelperService },
+                { provide: AppSettingsService, useValue: mockAppSettings },
+                { provide: LoggingService, useValue: mockLogger },
+            ]
+        });
+        service = TestBed.inject(PermissionsService);
     });
 
     describe('hasPermission', () => {

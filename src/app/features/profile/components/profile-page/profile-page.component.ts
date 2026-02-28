@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { AccountService } from '@app/core/services/account.service';
 import { UrlService } from '@app/core/services/url.service';
@@ -53,6 +53,16 @@ import { CountryImage } from '../../../../shared/pipes/country.pipe';
     ]
 })
 export class ProfilePageComponent extends DestroyableComponent implements OnInit {
+    dialog = inject(MatDialog);
+    private accountService = inject(AccountService);
+    private route = inject(ActivatedRoute);
+    private profileService = inject(ProfileService);
+    private membersService = inject(MembersService);
+    private urls = inject(UrlService);
+    private router = inject(Router);
+    private formBuilder = inject(FormBuilder);
+    private permissions = inject(PermissionsService);
+
     countries: ICountry[];
     membershipState = MembershipState;
     account;
@@ -68,17 +78,7 @@ export class ProfilePageComponent extends DestroyableComponent implements OnInit
 
     private settingsTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
-    constructor(
-        public dialog: MatDialog,
-        private accountService: AccountService,
-        private route: ActivatedRoute,
-        private profileService: ProfileService,
-        private membersService: MembersService,
-        private urls: UrlService,
-        private router: Router,
-        private formBuilder: FormBuilder,
-        private permissions: PermissionsService
-    ) {
+    constructor() {
         super();
         this.countries = CountryPickerService.countries;
 

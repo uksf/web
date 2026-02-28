@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Observable, timer } from 'rxjs';
 import { first, switchMap } from 'rxjs/operators';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
@@ -37,10 +37,11 @@ import { MatTooltip } from '@angular/material/tooltip';
     ]
 })
 export class CommandTrainingComponent implements OnInit {
+    private trainingsService = inject(TrainingsService);
+    private dialog = inject(MatDialog);
+
     trainings: Training[];
     private validatorCache = new Map<string, (value: string) => Observable<boolean>>();
-
-    constructor(private trainingsService: TrainingsService, private dialog: MatDialog) {}
 
     ngOnInit() {
         this.getTrainings();

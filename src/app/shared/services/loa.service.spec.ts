@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { LoaService } from './loa.service';
-import { HttpParams } from '@angular/common/http';
+import { UrlService } from '@app/core/services/url.service';
 import { of } from 'rxjs';
 
 describe('LoaService', () => {
@@ -12,7 +14,14 @@ describe('LoaService', () => {
             get: vi.fn().mockReturnValue(of({ data: [], totalCount: 0 })),
             delete: vi.fn().mockReturnValue(of(undefined))
         };
-        service = new LoaService(mockHttpClient, { apiUrl: 'http://localhost:5500' } as any);
+        TestBed.configureTestingModule({
+            providers: [
+                LoaService,
+                { provide: HttpClient, useValue: mockHttpClient },
+                { provide: UrlService, useValue: { apiUrl: 'http://localhost:5500' } },
+            ]
+        });
+        service = TestBed.inject(LoaService);
     });
 
     it('getLoas calls correct endpoint with params', () => {

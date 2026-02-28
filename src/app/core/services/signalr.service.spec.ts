@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
 import { SignalRService, ConnectionContainer } from './signalr.service';
+import { UrlService } from './url.service';
+import { SessionService } from './authentication/session.service';
 
 describe('SignalRService', () => {
     let service: SignalRService;
@@ -12,7 +15,15 @@ describe('SignalRService', () => {
         mockSessionService = {
             getSessionToken: vi.fn().mockReturnValue('mock-token')
         };
-        service = new SignalRService(mockUrls, mockSessionService);
+
+        TestBed.configureTestingModule({
+            providers: [
+                SignalRService,
+                { provide: UrlService, useValue: mockUrls },
+                { provide: SessionService, useValue: mockSessionService },
+            ]
+        });
+        service = TestBed.inject(SignalRService);
     });
 
     afterEach(() => {

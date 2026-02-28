@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatDialog, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ValidationMessage } from '@app/shared/services/form-helper.service';
@@ -46,6 +46,10 @@ import { FlexFillerComponent } from '../../components/elements/flex-filler/flex-
     ]
 })
 export class RequestLoaModalComponent implements OnInit, OnDestroy {
+    private dialog = inject(MatDialog);
+    private formBuilder = inject(FormBuilder);
+    private commandRequestsService = inject(CommandRequestsService);
+
     private destroy$ = new Subject<void>();
     form = this.formBuilder.group({
         reason: ['', Validators.required],
@@ -68,7 +72,7 @@ export class RequestLoaModalComponent implements OnInit, OnDestroy {
     submitting = false;
     mobile = false;
 
-    constructor(private dialog: MatDialog, private formBuilder: FormBuilder, private commandRequestsService: CommandRequestsService) {
+    constructor() {
         this.form.controls.start.valueChanges.pipe(takeUntil(this.destroy$)).subscribe({
             next: (_) => {
                 this.datesValid = this.validateDates();

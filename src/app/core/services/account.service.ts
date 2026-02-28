@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, Subject, tap, first } from 'rxjs';
 import { UrlService } from './url.service';
@@ -10,11 +10,14 @@ import { Account, MembershipState } from '@app/shared/models/account';
 
 @Injectable()
 export class AccountService {
+    private httpClient = inject(HttpClient);
+    private urls = inject(UrlService);
+    private sessionService = inject(SessionService);
+    dialog = inject(MatDialog);
+
     public accountChange$ = new Subject<Account>();
     public account: Account;
     private openDialog: MatDialogRef<ConfirmationModalComponent, any> = undefined;
-
-    constructor(private httpClient: HttpClient, private urls: UrlService, private sessionService: SessionService, public dialog: MatDialog) {}
 
     public getAccount(): Observable<Account> | undefined {
         if (this.sessionService.hasToken()) {

@@ -1,4 +1,4 @@
-import { Component, forwardRef, Input, OnInit, Type, ViewChild } from '@angular/core';
+import { Component, forwardRef, Input, OnInit, Type, ViewChild, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
 import { BehaviorSubject, forkJoin } from 'rxjs';
@@ -42,6 +42,9 @@ interface FormModel {
     imports: [MatExpansionPanel, MatExpansionPanelHeader, SpotlightDirective, FormsModule, MatCheckbox, MatTooltip, DropdownComponent, SelectionListComponent, MatDivider]
 })
 export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
+    private httpClient = inject(HttpClient);
+    private urlService = inject(UrlService);
+
     @ViewChild(NgForm) form!: NgForm;
     @Input('type') type: PermissionsType = 'viewers';
     @Input('initialData') initialData: DocumentPermission = null;
@@ -55,8 +58,6 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
     private _value: FormModel = this.createEmptyFormModel();
     private _customValues: FormModel | null = null; // Store custom values before inheriting
     private onChange: (value: FormModel) => void = (): void => {};
-
-    constructor(private httpClient: HttpClient, private urlService: UrlService) {}
 
     ngOnInit(): void {
         this.loadDropdownData();

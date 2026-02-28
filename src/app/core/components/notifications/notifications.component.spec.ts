@@ -1,6 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { ElementRef } from '@angular/core';
 import { NotificationsComponent } from './notifications.component';
-import { Notification } from '@app/core/services/notifications.service';
+import { Notification, NotificationsService } from '@app/core/services/notifications.service';
+import { SignalRService } from '@app/core/services/signalr.service';
+import { AccountService } from '@app/core/services/account.service';
 import { of, Subject, BehaviorSubject } from 'rxjs';
 import { NavigationEnd } from '@angular/router';
 
@@ -55,13 +60,17 @@ describe('NotificationsComponent', () => {
             accountChange$: new BehaviorSubject({ id: 'user1' })
         };
 
-        component = new NotificationsComponent(
-            mockRouter,
-            mockElementRef,
-            mockNotificationsService,
-            mockSignalrService,
-            mockAccountService
-        );
+        TestBed.configureTestingModule({
+            providers: [
+                NotificationsComponent,
+                { provide: Router, useValue: mockRouter },
+                { provide: ElementRef, useValue: mockElementRef },
+                { provide: NotificationsService, useValue: mockNotificationsService },
+                { provide: SignalRService, useValue: mockSignalrService },
+                { provide: AccountService, useValue: mockAccountService },
+            ]
+        });
+        component = TestBed.inject(NotificationsComponent);
     });
 
     describe('updateNotifications', () => {

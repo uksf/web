@@ -1,4 +1,4 @@
-import { Component, isDevMode, OnInit, ViewChild } from '@angular/core';
+import { Component, isDevMode, OnInit, ViewChild, inject } from '@angular/core';
 import { AccountService } from '@app/core/services/account.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
@@ -28,6 +28,13 @@ import { DropdownComponent } from '../../../../shared/components/elements/dropdo
     imports: [DefaultContentAreasComponent, MainContentAreaComponent, AdminPageComponent, ButtonComponent, NgxPermissionsModule, FormsModule, AutofocusStopComponent, DropdownComponent]
 })
 export class AdminToolsComponent implements OnInit {
+    private adminToolsService = inject(AdminToolsService);
+    private accountService = inject(AccountService);
+    private dialog = inject(MatDialog);
+    private permissions = inject(PermissionsService);
+    private auth = inject(AuthenticationService);
+    private router = inject(Router);
+
     @ViewChild(NgForm) form!: NgForm;
     accountId;
     tools: Tool[] = [];
@@ -38,15 +45,6 @@ export class AdminToolsComponent implements OnInit {
         accountId: undefined
     };
     accounts: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
-
-    constructor(
-        private adminToolsService: AdminToolsService,
-        private accountService: AccountService,
-        private dialog: MatDialog,
-        private permissions: PermissionsService,
-        private auth: AuthenticationService,
-        private router: Router
-    ) {}
 
     ngOnInit(): void {
         this.accountId = this.accountService.account.id;

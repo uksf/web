@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { UrlService } from '../url.service';
@@ -13,15 +13,13 @@ export interface TokenResponse {
 
 @Injectable()
 export class AuthenticationService {
-    private impersonatingUserIdClaimKey = 'impersonator';
+    private httpClient = inject(HttpClient);
+    private urls = inject(UrlService);
+    private sessionService = inject(SessionService);
+    private accountService = inject(AccountService);
+    private jwtHelperService = inject(JwtHelperService);
 
-    constructor(
-        private httpClient: HttpClient,
-        private urls: UrlService,
-        private sessionService: SessionService,
-        private accountService: AccountService,
-        private jwtHelperService: JwtHelperService
-    ) {}
+    private impersonatingUserIdClaimKey = 'impersonator';
 
     public login(email: string, password: string, stayLogged: boolean): Observable<TokenResponse> {
         const body = { email, password };
@@ -69,14 +67,16 @@ export class AuthenticationService {
     }
 
     public createAccount(createAccountBody: CreateAccount): Observable<TokenResponse> {
-        return this.httpClient.post<TokenResponse>(this.urls.apiUrl + '/accounts/create', createAccountBody, {
-            headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-        }).pipe(
-            tap((response) => {
-                this.sessionService.setSessionToken(response.token);
-                this.sessionService.setStorageToken();
+        return this.httpClient
+            .post<TokenResponse>(this.urls.apiUrl + '/accounts/create', createAccountBody, {
+                headers: new HttpHeaders({ 'Content-Type': 'application/json' })
             })
-        );
+            .pipe(
+                tap((response) => {
+                    this.sessionService.setSessionToken(response.token);
+                    this.sessionService.setStorageToken();
+                })
+            );
     }
 
     public impersonate(accountId: string): Observable<TokenResponse> {
@@ -93,5 +93,4 @@ export class AuthenticationService {
         const impersonatingUserId: string = jwtData[this.impersonatingUserIdClaimKey];
         return !!impersonatingUserId;
     }
-
 }

@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ValidationMessage } from '@app/shared/services/form-helper.service';
@@ -18,13 +18,19 @@ export interface TextInputModalData {
     imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, MatDialogActions, MatButton]
 })
 export class TextInputModalComponent {
+    private formBuilder = inject(FormBuilder);
+    dialogRef = inject<MatDialogRef<TextInputModalComponent>>(MatDialogRef);
+    data = inject<TextInputModalData>(MAT_DIALOG_DATA);
+
     title: string;
     form = this.formBuilder.group({
         input: ['', Validators.required]
     });
     validationMessages: ValidationMessage[] = [{ type: 'required', message: 'Reason is required' }];
 
-    constructor(private formBuilder: FormBuilder, public dialogRef: MatDialogRef<TextInputModalComponent>, @Inject(MAT_DIALOG_DATA) public data: TextInputModalData) {
+    constructor() {
+        const data = this.data;
+
         this.title = data.title;
     }
 

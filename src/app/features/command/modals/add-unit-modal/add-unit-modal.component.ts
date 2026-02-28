@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, ValidationErrors, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { getValidationError } from '@app/shared/services/form-helper.service';
 import { BehaviorSubject, Observable, of, timer } from 'rxjs';
@@ -40,6 +40,13 @@ import { ButtonComponent } from '../../../../shared/components/elements/button-p
     ]
 })
 export class AddUnitModalComponent implements OnInit {
+    private formBuilder = inject(FormBuilder);
+    private unitsService = inject(UnitsService);
+    private dialog = inject(MatDialog);
+    data = inject<{
+        unit?: ResponseUnit;
+    }>(MAT_DIALOG_DATA);
+
     form = this.formBuilder.group({
         name: ['', Validators.required, this.validateUnit.bind(this)],
         shortname: ['', Validators.required, this.validateUnit.bind(this)],
@@ -81,7 +88,9 @@ export class AddUnitModalComponent implements OnInit {
     original: string;
     loaded = false;
 
-    constructor(private formBuilder: FormBuilder, private unitsService: UnitsService, private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: { unit?: ResponseUnit }) {
+    constructor() {
+        const data = this.data;
+
         if (data) {
             this.edit = true;
             this.unit = data.unit;

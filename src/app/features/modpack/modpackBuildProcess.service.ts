@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { DisplayNameService } from '@app/shared/services/display-name.service';
 import moment from 'moment';
 import { HttpClient } from '@angular/common/http';
@@ -11,9 +11,12 @@ import { MessageModalComponent } from '@app/shared/modals/message-modal/message-
 
 @Injectable()
 export class ModpackBuildProcessService {
-    branches: string[] = [];
+    private displayNameService = inject(DisplayNameService);
+    private httpClient = inject(HttpClient);
+    private urls = inject(UrlService);
+    private dialog = inject(MatDialog);
 
-    constructor(private displayNameService: DisplayNameService, private httpClient: HttpClient, private urls: UrlService, private dialog: MatDialog) {}
+    branches: string[] = [];
 
     getBranches() {
         this.httpClient.get(this.urls.apiUrl + '/github/branches').subscribe({

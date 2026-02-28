@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, NgZone, OnDestroy, Output, Renderer2, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, NgZone, OnDestroy, Output, Renderer2, ViewChild, inject } from '@angular/core';
 import { Subscription, timer } from 'rxjs';
 import { UploadEvent, UploadFile } from '@app/shared/services/file-upload-types.service';
 
@@ -8,6 +8,9 @@ import { UploadEvent, UploadFile } from '@app/shared/services/file-upload-types.
     styleUrls: ['./file-drop.component.scss']
 })
 export class FileDropComponent implements OnDestroy {
+    private zone = inject(NgZone);
+    private renderer = inject(Renderer2);
+
     @ViewChild('dropZone') dropZone: ElementRef;
     @Input() headertext = '';
     @Input() customstyle = null;
@@ -27,8 +30,6 @@ export class FileDropComponent implements OnDestroy {
     globalEnd = this.renderer.listen('document', 'dragend', () => {
         this.globalDisable = false;
     });
-
-    constructor(private zone: NgZone, private renderer: Renderer2) {}
 
     onDragOver(event) {
         if (!this.globalDisable && !this.disableIf) {

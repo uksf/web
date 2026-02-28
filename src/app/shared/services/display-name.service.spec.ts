@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { DisplayNameService } from './display-name.service';
+import { UrlService } from '@app/core/services/url.service';
 import { of, throwError } from 'rxjs';
 
 describe('DisplayNameService', () => {
@@ -10,7 +13,14 @@ describe('DisplayNameService', () => {
     beforeEach(() => {
         httpClient = { get: vi.fn() };
         urlService = { apiUrl: 'http://localhost:5500/api' };
-        service = new DisplayNameService(httpClient as any, urlService as any);
+        TestBed.configureTestingModule({
+            providers: [
+                DisplayNameService,
+                { provide: HttpClient, useValue: httpClient },
+                { provide: UrlService, useValue: urlService },
+            ]
+        });
+        service = TestBed.inject(DisplayNameService);
     });
 
     it('should resolve with name when API returns a name', async () => {

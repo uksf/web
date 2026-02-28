@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { AutofocusStopComponent } from '../../components/elements/autofocus-stop/autofocus-stop.component';
 import { CdkScrollable } from '@angular/cdk/scrolling';
@@ -17,11 +17,16 @@ export interface MessageModalData {
     imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, MatDialogActions, MatButton]
 })
 export class MessageModalComponent {
+    dialogRef = inject<MatDialogRef<MessageModalComponent>>(MatDialogRef);
+    data = inject<MessageModalData>(MAT_DIALOG_DATA);
+
     title: string = '';
     message: string = 'There should be a different message shown here. Please report this mistake to an admin';
     button: string = 'Close';
 
-    constructor(public dialogRef: MatDialogRef<MessageModalComponent>, @Inject(MAT_DIALOG_DATA) public data: MessageModalData) {
+    constructor() {
+        const data = this.data;
+
         this.title = data.title || '';
         this.message = data.message;
         if (data.button) {

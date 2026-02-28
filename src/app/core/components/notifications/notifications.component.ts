@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, HostListener } from '@angular/core';
+import { Component, OnInit, ElementRef, HostListener, inject } from '@angular/core';
 import { first, takeUntil } from 'rxjs/operators';
 import { Router, NavigationEnd } from '@angular/router';
 import { SignalRService, ConnectionContainer } from '@app/core/services/signalr.service';
@@ -18,6 +18,12 @@ import { TimeAgoPipe } from '../../../shared/pipes/time.pipe';
     imports: [MatIcon, MatBadge, MatTooltip, HeaderBarComponent, TimeAgoPipe]
 })
 export class NotificationsComponent extends DestroyableComponent implements OnInit {
+    private router = inject(Router);
+    private elementRef = inject(ElementRef);
+    private notificationsService = inject(NotificationsService);
+    private signalrService = inject(SignalRService);
+    private accountService = inject(AccountService);
+
     panel = false;
     notifications: Notification[] = [];
     unreadNotifications: Notification[] = [];
@@ -49,14 +55,10 @@ export class NotificationsComponent extends DestroyableComponent implements OnIn
         this.updateNotifications();
     };
 
-    constructor(
-        private router: Router,
-        private elementRef: ElementRef,
-        private notificationsService: NotificationsService,
-        private signalrService: SignalRService,
-        private accountService: AccountService
-    ) {
+    constructor() {
         super();
+        const router = this.router;
+
         router.events.pipe(takeUntil(this.destroy$)).subscribe({
             next: (event) => {
                 this.onClose();

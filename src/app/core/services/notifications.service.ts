@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UrlService } from '@app/core/services/url.service';
@@ -14,7 +14,8 @@ export interface Notification {
 
 @Injectable({ providedIn: 'root' })
 export class NotificationsService {
-    constructor(private httpClient: HttpClient, private urls: UrlService) {}
+    private httpClient = inject(HttpClient);
+    private urls = inject(UrlService);
 
     getNotifications(): Observable<Notification[]> {
         return this.httpClient.get<Notification[]>(`${this.urls.apiUrl}/notifications`);

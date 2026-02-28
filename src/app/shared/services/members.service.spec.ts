@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
 import { MembersService } from './members.service';
+import { UrlService } from '@app/core/services/url.service';
 
 describe('MembersService', () => {
     let service: MembersService;
@@ -10,7 +13,14 @@ describe('MembersService', () => {
     beforeEach(() => {
         httpClient = { get: vi.fn(), put: vi.fn() };
         urls = { apiUrl: 'http://localhost:5500' };
-        service = new MembersService(httpClient as any, urls as any);
+        TestBed.configureTestingModule({
+            providers: [
+                MembersService,
+                { provide: HttpClient, useValue: httpClient },
+                { provide: UrlService, useValue: urls },
+            ]
+        });
+        service = TestBed.inject(MembersService);
     });
 
     it('should get members', () => {

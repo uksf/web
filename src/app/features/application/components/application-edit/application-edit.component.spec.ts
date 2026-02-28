@@ -1,6 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ApplicationEditComponent } from './application-edit.component';
+import { TestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
+import { ApplicationEditComponent } from './application-edit.component';
+import { ApplicationService } from '../../services/application.service';
+import { AccountService } from '@app/core/services/account.service';
+import { PermissionsService } from '@app/core/services/permissions.service';
 import { of, Subject } from 'rxjs';
 import { ApplicationState } from '@app/features/application/models/application';
 import * as formConstants from '../../models/application-form.constants';
@@ -47,14 +53,18 @@ describe('ApplicationEditComponent', () => {
         };
         mockRouter = { navigate: vi.fn() };
 
-        component = new ApplicationEditComponent(
-            new UntypedFormBuilder(),
-            mockDialog,
-            mockApplicationService,
-            mockAccountService,
-            mockPermissions,
-            mockRouter
-        );
+        TestBed.configureTestingModule({
+            providers: [
+                ApplicationEditComponent,
+                UntypedFormBuilder,
+                { provide: MatDialog, useValue: mockDialog },
+                { provide: ApplicationService, useValue: mockApplicationService },
+                { provide: AccountService, useValue: mockAccountService },
+                { provide: PermissionsService, useValue: mockPermissions },
+                { provide: Router, useValue: mockRouter },
+            ]
+        });
+        component = TestBed.inject(ApplicationEditComponent);
     });
 
     describe('changesMade caching', () => {

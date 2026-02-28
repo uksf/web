@@ -1,11 +1,29 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { NgControl } from '@angular/forms';
 import { TextInputComponent } from './text-input.component';
+
+function createComponentWithNgControl(mockNgControl: any): TextInputComponent {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+        providers: [
+            TextInputComponent,
+            { provide: NgControl, useValue: mockNgControl },
+        ]
+    });
+    return TestBed.inject(TextInputComponent);
+}
 
 describe('TextInputComponent', () => {
     let component: TextInputComponent;
 
     beforeEach(() => {
-        component = new TextInputComponent(null);
+        TestBed.configureTestingModule({
+            providers: [
+                TextInputComponent,
+            ]
+        });
+        component = TestBed.inject(TextInputComponent);
     });
 
     describe('defaults', () => {
@@ -176,7 +194,7 @@ describe('TextInputComponent', () => {
         it('should return empty when ngControl present but not touched and not dirty', () => {
             const mockControl = { hasError: () => true, touched: false, dirty: false };
             const mockNgControl = { control: mockControl, valueAccessor: null as unknown } as any;
-            const comp = new TextInputComponent(mockNgControl);
+            const comp = createComponentWithNgControl(mockNgControl);
             comp.validationMessages = [{ type: 'required', message: 'Required' }];
             comp.ngDoCheck();
 
@@ -261,7 +279,7 @@ describe('TextInputComponent', () => {
                 touched: true, dirty: false
             };
             const mockNgControl = { control: mockControl, valueAccessor: null as unknown } as any;
-            const comp = new TextInputComponent(mockNgControl);
+            const comp = createComponentWithNgControl(mockNgControl);
             comp.validationMessages = [{ type: 'required', message: 'Required' }];
 
             comp.ngDoCheck();
@@ -275,7 +293,7 @@ describe('TextInputComponent', () => {
                 touched: true, dirty: false
             };
             const mockNgControl = { control: mockControl, valueAccessor: null as unknown } as any;
-            const comp = new TextInputComponent(mockNgControl);
+            const comp = createComponentWithNgControl(mockNgControl);
             comp.validationMessages = [{ type: 'required', message: 'Required' }];
 
             comp.ngDoCheck();
@@ -291,7 +309,7 @@ describe('TextInputComponent', () => {
                 touched: true, dirty: false
             };
             const mockNgControl = { control: mockControl, valueAccessor: null as unknown } as any;
-            const comp = new TextInputComponent(mockNgControl);
+            const comp = createComponentWithNgControl(mockNgControl);
             comp.validationMessages = [{ type: 'required', message: 'Required' }];
 
             comp.ngDoCheck();
@@ -311,7 +329,7 @@ describe('TextInputComponent', () => {
                 touched: false, dirty: false
             };
             const mockNgControl = { control: mockControl, valueAccessor: null as unknown } as any;
-            const comp = new TextInputComponent(mockNgControl);
+            const comp = createComponentWithNgControl(mockNgControl);
             comp.validationMessages = [{ type: 'required', message: 'This field is required' }];
             comp.touched = true;
             comp.ngDoCheck();
@@ -326,7 +344,7 @@ describe('TextInputComponent', () => {
                 touched: false, dirty: false
             };
             const mockNgControl = { control: mockControl, valueAccessor: null as unknown } as any;
-            const comp = new TextInputComponent(mockNgControl);
+            const comp = createComponentWithNgControl(mockNgControl);
             comp.validationMessages = [{ type: 'required', message: 'This field is required' }];
             comp.dirty = true;
             comp.ngDoCheck();
@@ -340,7 +358,7 @@ describe('TextInputComponent', () => {
                 touched: true, dirty: false
             };
             const mockNgControl = { control: mockControl, valueAccessor: null as unknown } as any;
-            const comp = new TextInputComponent(mockNgControl);
+            const comp = createComponentWithNgControl(mockNgControl);
             comp.validationMessages = [{ type: 'required', message: 'This field is required' }];
             comp.ngDoCheck();
 
@@ -354,7 +372,7 @@ describe('TextInputComponent', () => {
                 touched: false, dirty: true
             };
             const mockNgControl = { control: mockControl, valueAccessor: null as unknown } as any;
-            const comp = new TextInputComponent(mockNgControl);
+            const comp = createComponentWithNgControl(mockNgControl);
             comp.validationMessages = [{ type: 'required', message: 'This field is required' }];
             comp.ngDoCheck();
 
@@ -367,7 +385,7 @@ describe('TextInputComponent', () => {
                 touched: false, dirty: false
             };
             const mockNgControl = { control: mockControl, valueAccessor: null as unknown } as any;
-            const comp = new TextInputComponent(mockNgControl);
+            const comp = createComponentWithNgControl(mockNgControl);
             comp.validationMessages = [{ type: 'required', message: 'Required' }];
             comp.touched = true;
             comp.ngDoCheck();
@@ -382,7 +400,7 @@ describe('TextInputComponent', () => {
                 touched: false, dirty: false
             };
             const mockNgControl = { control: mockControl, valueAccessor: null as unknown } as any;
-            const comp = new TextInputComponent(mockNgControl);
+            const comp = createComponentWithNgControl(mockNgControl);
             comp.validationMessages = [{ type: 'minlength', message: () => 'Too short' }];
             comp.touched = true;
             comp.ngDoCheck();

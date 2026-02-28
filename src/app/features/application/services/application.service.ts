@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UrlService } from '@app/core/services/url.service';
@@ -7,7 +7,8 @@ const jsonHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
 
 @Injectable()
 export class ApplicationService {
-    constructor(private httpClient: HttpClient, private urls: UrlService) {}
+    private httpClient = inject(HttpClient);
+    private urls = inject(UrlService);
 
     submitApplication(accountId: string, details: string): Observable<unknown> {
         return this.httpClient.post(`${this.urls.apiUrl}/accounts/${accountId}/application`, details, { headers: jsonHeaders });

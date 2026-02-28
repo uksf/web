@@ -1,9 +1,9 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform, inject } from '@angular/core';
 import { DisplayNameService } from '@app/shared/services/display-name.service';
 
 @Pipe({ standalone: true, name: 'displayName' })
 export class DisplayName implements PipeTransform {
-    constructor(private displayNameService: DisplayNameService) {}
+    private displayNameService = inject(DisplayNameService);
 
     transform(value: string) {
         return this.displayNameService

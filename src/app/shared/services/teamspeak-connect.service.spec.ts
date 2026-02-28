@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { TeamspeakConnectService } from './teamspeak-connect.service';
+import { UrlService } from '@app/core/services/url.service';
 import { of } from 'rxjs';
 
 describe('TeamspeakConnectService', () => {
@@ -11,7 +14,14 @@ describe('TeamspeakConnectService', () => {
             get: vi.fn().mockReturnValue(of(null)),
             post: vi.fn().mockReturnValue(of(null)),
         };
-        service = new TeamspeakConnectService(mockHttpClient, { apiUrl: 'http://localhost:5500' } as any);
+        TestBed.configureTestingModule({
+            providers: [
+                TeamspeakConnectService,
+                { provide: HttpClient, useValue: mockHttpClient },
+                { provide: UrlService, useValue: { apiUrl: 'http://localhost:5500' } },
+            ]
+        });
+        service = TestBed.inject(TeamspeakConnectService);
     });
 
     it('getOnlineClients calls correct endpoint', () => {

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatTableDataSource, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';
 import { CountryPickerService, ICountry } from '@app/shared/services/country-picker/country-picker.service';
 import { RosterAccount } from '@app/shared/models/account';
@@ -33,11 +33,13 @@ import { CountryImage } from '../../../../shared/pipes/country.pipe';
     ]
 })
 export class PersonnelRosterComponent {
+    private membersService = inject(MembersService);
+
     public countries: ICountry[];
     displayedColumns = ['nation', 'name', 'rank', 'roleAssignment', 'unitAssignment'];
     rosterData: MatTableDataSource<RosterAccount>;
 
-    constructor(private membersService: MembersService) {
+    constructor() {
         this.countries = CountryPickerService.countries;
         this.membersService
             .getRoster()

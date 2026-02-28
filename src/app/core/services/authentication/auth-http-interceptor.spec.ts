@@ -1,14 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
 import { HttpErrorResponse, HttpRequest, HttpResponse } from '@angular/common/http';
+import { Router, ActivatedRoute } from '@angular/router';
+import { Injector } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
 import { AuthHttpInterceptor } from './auth-http-interceptor';
+import { PermissionsService } from '../permissions.service';
+import { RedirectService } from './redirect.service';
 import { UksfError } from '@app/shared/models/response';
 
 describe('AuthHttpInterceptor', () => {
     let interceptor: AuthHttpInterceptor;
     let mockRouter: any;
     let mockActivatedRoute: any;
-    let mockInjector: any;
     let mockDialog: any;
     let mockNext: any;
     let mockPermissionsService: any;
@@ -24,31 +29,22 @@ describe('AuthHttpInterceptor', () => {
         mockActivatedRoute = {};
         mockPermissionsService = { revoke: vi.fn() };
         mockRedirectService = { setRedirectUrl: vi.fn() };
-        mockInjector = {
-            get: vi.fn().mockImplementation((token: any) => {
-                if (token.name === 'PermissionsService' || token === mockPermissionsService.constructor) {
-                    return mockPermissionsService;
-                }
-                if (token.name === 'RedirectService' || token === mockRedirectService.constructor) {
-                    return mockRedirectService;
-                }
-                return undefined;
-            })
-        };
-        // Override to just return by service type in order
-        let callCount = 0;
-        mockInjector.get = vi.fn().mockImplementation(() => {
-            callCount++;
-            // First call in 401 handler is RedirectService, second is PermissionsService
-            if (callCount % 2 === 1) return mockRedirectService;
-            return mockPermissionsService;
-        });
         mockDialog = { open: vi.fn() };
         mockNext = {
             handle: vi.fn()
         };
 
-        interceptor = new AuthHttpInterceptor(mockRouter, mockActivatedRoute, mockInjector, mockDialog);
+        TestBed.configureTestingModule({
+            providers: [
+                AuthHttpInterceptor,
+                { provide: Router, useValue: mockRouter },
+                { provide: ActivatedRoute, useValue: mockActivatedRoute },
+                { provide: MatDialog, useValue: mockDialog },
+                { provide: PermissionsService, useValue: mockPermissionsService },
+                { provide: RedirectService, useValue: mockRedirectService },
+            ]
+        });
+        interceptor = TestBed.inject(AuthHttpInterceptor);
     });
 
     it('passes through successful responses', () => {

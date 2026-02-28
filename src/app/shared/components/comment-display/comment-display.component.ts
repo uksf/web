@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, inject } from '@angular/core';
 import { first, takeUntil } from 'rxjs/operators';
 import { AccountService } from '@app/core/services/account.service';
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -23,6 +23,11 @@ import { TimeAgoPipe as TimeAgoPipe_1 } from '../../pipes/time.pipe';
     imports: [FormsModule, ReactiveFormsModule, TextInputComponent, ButtonComponent, MatIconButton, MatTooltip, MatIcon, TimeAgoPipe_1]
 })
 export class CommentDisplayComponent extends DestroyableComponent implements OnInit, OnDestroy {
+    private commentThreadService = inject(CommentThreadService);
+    private formBuilder = inject(FormBuilder);
+    private accountService = inject(AccountService);
+    private signalrService = inject(SignalRService);
+
     @Input() threadId: string;
     private canPostComment;
     private previousResponse;
@@ -40,10 +45,6 @@ export class CommentDisplayComponent extends DestroyableComponent implements OnI
     commentForm = this.formBuilder.group({
         commentContent: ['', Validators.maxLength(1000)]
     });
-
-    constructor(private commentThreadService: CommentThreadService, private formBuilder: FormBuilder, private accountService: AccountService, private signalrService: SignalRService) {
-        super();
-    }
 
     ngOnInit() {
         this.getComments();

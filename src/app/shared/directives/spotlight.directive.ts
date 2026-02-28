@@ -1,13 +1,13 @@
-import { Directive, ElementRef, HostListener, Input, OnDestroy } from '@angular/core';
+import { Directive, ElementRef, HostListener, Input, OnDestroy, inject } from '@angular/core';
 
 @Directive({ selector: '[appSpotlight]' })
 export class SpotlightDirective implements OnDestroy {
+    private el = inject<ElementRef<HTMLElement>>(ElementRef);
+
     @Input() spotlightSize = 200;
     @Input() spotlightColor = 'rgba(255, 255, 255, 0.08)';
 
     private cachedRect: DOMRect | null = null;
-
-    constructor(private el: ElementRef<HTMLElement>) {}
 
     ngOnDestroy(): void {
         this.onMouseLeave();

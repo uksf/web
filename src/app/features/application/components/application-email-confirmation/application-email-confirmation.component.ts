@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, inject } from '@angular/core';
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
@@ -17,20 +17,18 @@ import { ButtonComponent } from '../../../../shared/components/elements/button-p
     imports: [MatCard, FormsModule, ReactiveFormsModule, TextInputComponent, ButtonComponent]
 })
 export class ApplicationEmailConfirmationComponent {
+    private applicationService = inject(ApplicationService);
+    private formBuilder = inject(FormBuilder);
+    dialog = inject(MatDialog);
+    accountService = inject(AccountService);
+    private permissionsService = inject(PermissionsService);
+
     @Output() confirmedEvent = new EventEmitter();
     formGroup = this.formBuilder.group({
         code: ['', Validators.required]
     });
     pending = false;
     resent = false;
-
-    constructor(
-        private applicationService: ApplicationService,
-        private formBuilder: FormBuilder,
-        public dialog: MatDialog,
-        public accountService: AccountService,
-        private permissionsService: PermissionsService
-    ) {}
 
     changed(code: string) {
         if (this.pending) {

@@ -1,6 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { LoginComponent } from './login.component';
+import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
+import { PermissionsService } from '@app/core/services/permissions.service';
+import { RedirectService } from '@app/core/services/authentication/redirect.service';
 
 describe('LoginComponent', () => {
     let component: LoginComponent;
@@ -26,7 +31,16 @@ describe('LoginComponent', () => {
             clearRedirectUrl: vi.fn()
         };
 
-        component = new LoginComponent(mockAuth, mockRouter, mockPermissionsService, mockRedirectService);
+        TestBed.configureTestingModule({
+            providers: [
+                LoginComponent,
+                { provide: AuthenticationService, useValue: mockAuth },
+                { provide: Router, useValue: mockRouter },
+                { provide: PermissionsService, useValue: mockPermissionsService },
+                { provide: RedirectService, useValue: mockRedirectService },
+            ]
+        });
+        component = TestBed.inject(LoginComponent);
         // Mock the form ViewChild
         (component as any).form = { valid: true };
     });

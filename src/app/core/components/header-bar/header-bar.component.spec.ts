@@ -1,6 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
 import { HeaderBarComponent } from './header-bar.component';
-import { Environments } from '@app/core/services/app-settings.service';
+import { PermissionsService } from '@app/core/services/permissions.service';
+import { AccountService } from '@app/core/services/account.service';
+import { AppSettingsService, Environments } from '@app/core/services/app-settings.service';
+import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
 
 describe('HeaderBarComponent', () => {
     let component: HeaderBarComponent;
@@ -18,13 +23,17 @@ describe('HeaderBarComponent', () => {
         mockAppSettings = { appSetting: vi.fn().mockReturnValue(Environments.Production) };
         mockAuth = { isImpersonated: vi.fn().mockReturnValue(false) };
 
-        component = new HeaderBarComponent(
-            mockPermissionsService,
-            mockAccountService,
-            mockDialog,
-            mockAppSettings,
-            mockAuth
-        );
+        TestBed.configureTestingModule({
+            providers: [
+                HeaderBarComponent,
+                { provide: PermissionsService, useValue: mockPermissionsService },
+                { provide: AccountService, useValue: mockAccountService },
+                { provide: MatDialog, useValue: mockDialog },
+                { provide: AppSettingsService, useValue: mockAppSettings },
+                { provide: AuthenticationService, useValue: mockAuth },
+            ]
+        });
+        component = TestBed.inject(HeaderBarComponent);
     });
 
     afterEach(() => {

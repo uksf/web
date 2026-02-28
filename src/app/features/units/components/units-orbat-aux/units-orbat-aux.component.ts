@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ResponseUnitChartNode } from '@app/features/units/models/units';
 import { TreeNode, PrimeTemplate } from 'primeng/api';
@@ -17,10 +17,13 @@ import { FlexFillerComponent } from '../../../../shared/components/elements/flex
     imports: [DefaultContentAreasComponent, MainContentAreaComponent, MatProgressSpinner, OrganizationChartModule, PrimeTemplate, FlexFillerComponent]
 })
 export class UnitsOrbatAuxComponent {
+    private unitsService = inject(UnitsService);
+    private router = inject(Router);
+
     rootNodes: TreeNode[];
     selectedNode;
 
-    constructor(private unitsService: UnitsService, private router: Router) {
+    constructor() {
         this.unitsService
             .getChart('auxiliary')
             .pipe(first())

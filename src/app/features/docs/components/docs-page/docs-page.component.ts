@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { first, takeUntil } from 'rxjs/operators';
 import { DocumentMetadata, FolderMetadata } from '@app/features/docs/models/documents';
 import { DocsService } from '../../services/docs.service';
@@ -17,12 +17,13 @@ import { DocsContentComponent } from '../docs-content/docs-content.component';
     imports: [DocsSidebarComponent, DocsContentComponent]
 })
 export class DocsPageComponent extends DestroyableComponent implements OnInit {
+    private docsService = inject(DocsService);
+    private route = inject(ActivatedRoute);
+    private router = inject(Router);
+    private dialog = inject(MatDialog);
+
     allFolderMetadata: FolderMetadata[] = [];
     selectedDocumentMetadata: DocumentMetadata;
-
-    constructor(private docsService: DocsService, private route: ActivatedRoute, private router: Router, private dialog: MatDialog) {
-        super();
-    }
 
     ngOnInit(): void {
         this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe({

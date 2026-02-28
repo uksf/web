@@ -1,46 +1,49 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
 import { RecruitmentPageComponent } from './recruitment-page.component';
 import { of, Subject } from 'rxjs';
+import { AccountService } from '@app/core/services/account.service';
+import { RecruitmentService } from '../../services/recruitment.service';
+import { ProfileService } from '@app/features/profile/services/profile.service';
+import { Router } from '@angular/router';
 
 describe('RecruitmentPageComponent', () => {
     let component: RecruitmentPageComponent;
-    let mockDialog: any;
     let mockRecruitmentService: any;
     let mockAccountService: any;
-    let mockPermissions: any;
-    let mockSignalrService: any;
+    let mockProfileService: any;
+    let mockRouter: any;
 
     beforeEach(() => {
-        (globalThis as any).window = { setInterval: vi.fn().mockReturnValue(1), clearInterval: vi.fn() };
-        mockDialog = { open: vi.fn().mockReturnValue({ afterClosed: () => of(undefined) }) };
         mockRecruitmentService = {
             getActiveApplications: vi.fn().mockReturnValue(of([])),
             getRecruiters: vi.fn().mockReturnValue(of([])),
             getCompletedApplications: vi.fn().mockReturnValue(of({ data: [], totalCount: 0 })),
             getRecruitmentStats: vi.fn().mockReturnValue(of({ yourStats: null, sr1Stats: null })),
-            getRecruitmentActivity: vi.fn().mockReturnValue(of([]))
+            getRecruitmentActivity: vi.fn().mockReturnValue(of([])),
+            getStats: vi.fn().mockReturnValue(of({ activity: [], yourStats: null, sr1Stats: null })),
+            getTeamspeakOnlineState: vi.fn().mockReturnValue(of({}))
         };
         mockAccountService = {
             account: { id: 'user-1' }
         };
-        mockPermissions = {
-            hasPermission: vi.fn().mockReturnValue(false)
+        mockProfileService = {
+            updateSetting: vi.fn().mockReturnValue(of({}))
         };
-        mockSignalrService = {
-            connect: vi.fn().mockReturnValue({
-                connection: { connectionId: 'conn-1', on: vi.fn(), off: vi.fn(), stop: vi.fn().mockReturnValue(Promise.resolve()) },
-                reconnectEvent: of(),
-                dispose: vi.fn()
-            })
+        mockRouter = {
+            navigate: vi.fn()
         };
 
-        component = new RecruitmentPageComponent(
-            mockDialog,
-            mockRecruitmentService,
-            mockAccountService,
-            mockPermissions,
-            mockSignalrService
-        );
+        TestBed.configureTestingModule({
+            providers: [
+                RecruitmentPageComponent,
+                { provide: AccountService, useValue: mockAccountService },
+                { provide: RecruitmentService, useValue: mockRecruitmentService },
+                { provide: ProfileService, useValue: mockProfileService },
+                { provide: Router, useValue: mockRouter },
+            ]
+        });
+        component = TestBed.inject(RecruitmentPageComponent);
     });
 
     afterEach(() => {

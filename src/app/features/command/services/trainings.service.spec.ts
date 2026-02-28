@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
 import { TrainingsService } from './trainings.service';
+import { UrlService } from '@app/core/services/url.service';
 
 describe('TrainingsService', () => {
     let service: TrainingsService;
@@ -10,7 +13,14 @@ describe('TrainingsService', () => {
     beforeEach(() => {
         httpClient = { get: vi.fn(), post: vi.fn(), patch: vi.fn(), delete: vi.fn(), put: vi.fn() };
         urls = { apiUrl: 'http://localhost:5500' };
-        service = new TrainingsService(httpClient as any, urls as any);
+        TestBed.configureTestingModule({
+            providers: [
+                TrainingsService,
+                { provide: HttpClient, useValue: httpClient },
+                { provide: UrlService, useValue: urls },
+            ]
+        });
+        service = TestBed.inject(TrainingsService);
     });
 
     it('should get trainings', () => {

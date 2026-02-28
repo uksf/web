@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UrlService } from '@app/core/services/url.service';
@@ -25,7 +25,8 @@ export interface InstagramImage {
 
 @Injectable()
 export class HomeService {
-    constructor(private httpClient: HttpClient, private urls: UrlService) {}
+    private httpClient = inject(HttpClient);
+    private urls = inject(UrlService);
 
     getOnlineAccounts(): Observable<TeamspeakOnlineAccountsResponse> {
         return this.httpClient.get<TeamspeakOnlineAccountsResponse>(`${this.urls.apiUrl}/teamspeak/onlineAccounts`);

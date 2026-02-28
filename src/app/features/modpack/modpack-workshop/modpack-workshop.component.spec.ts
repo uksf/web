@@ -1,7 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
 import { ModpackWorkshopComponent } from './modpack-workshop.component';
 import { of, Subject } from 'rxjs';
 import { WorkshopMod, WorkshopModStatus } from '../models/workshop-mod';
+import { WorkshopService } from '../services/workshop.service';
+import { SignalRService } from '@app/core/services/signalr.service';
+import { MatDialog } from '@angular/material/dialog';
 
 describe('ModpackWorkshopComponent', () => {
     let component: ModpackWorkshopComponent;
@@ -44,7 +48,15 @@ describe('ModpackWorkshopComponent', () => {
         };
         mockDialog = { open: vi.fn() };
 
-        component = new ModpackWorkshopComponent(mockWorkshopService, mockSignalrService, mockDialog);
+        TestBed.configureTestingModule({
+            providers: [
+                ModpackWorkshopComponent,
+                { provide: WorkshopService, useValue: mockWorkshopService },
+                { provide: SignalRService, useValue: mockSignalrService },
+                { provide: MatDialog, useValue: mockDialog },
+            ]
+        });
+        component = TestBed.inject(ModpackWorkshopComponent);
     });
 
     describe('interventionRequired', () => {

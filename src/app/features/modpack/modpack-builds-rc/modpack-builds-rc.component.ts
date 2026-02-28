@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { MarkdownService, MarkdownComponent } from 'ngx-markdown';
 import { parseMarkdownSync } from '../markdown-utils';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -39,6 +39,12 @@ import { ModpackBuildsStepsComponent } from '../modpack-builds-steps/modpack-bui
     ]
 })
 export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
+    private markdownService = inject(MarkdownService);
+    private modpackBuildProcessService = inject(ModpackBuildProcessService);
+    private modpackRcService = inject(ModpackRcService);
+    private route = inject(ActivatedRoute);
+    private router = inject(Router);
+
     @ViewChild(ThemeEmitterComponent) theme: ThemeEmitterComponent;
     modpackBuildResult = ModpackBuildResult;
     gameEnvironment = GameEnvironment;
@@ -50,14 +56,6 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
     logOpen = false;
     cancelling = false;
     selectIncomingBuild = false;
-
-    constructor(
-        private markdownService: MarkdownService,
-        private modpackBuildProcessService: ModpackBuildProcessService,
-        private modpackRcService: ModpackRcService,
-        private route: ActivatedRoute,
-        private router: Router
-    ) {}
 
     ngOnInit(): void {
         this.modpackRcService.connect(

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AbstractControl, FormBuilder, ValidationErrors, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Observable, of, timer } from 'rxjs';
 import { first, map, switchMap } from 'rxjs/operators';
@@ -16,6 +16,10 @@ import { ButtonComponent } from '../../../../shared/components/elements/button-p
     imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, MatDialogActions, ButtonComponent]
 })
 export class AddRankModalComponent {
+    private formBuilder = inject(FormBuilder);
+    private ranksService = inject(RanksService);
+    private dialog = inject(MatDialog);
+
     form = this.formBuilder.group({
         name: ['', Validators.required, this.validateRank.bind(this)],
         abbreviation: ['', Validators.required],
@@ -32,8 +36,6 @@ export class AddRankModalComponent {
         abbreviation: [{ type: 'required', message: 'Abbreviation is required' }],
         teamspeakGroup: [{ type: 'rankTaken', message: 'That ID is already in use' }]
     };
-
-    constructor(private formBuilder: FormBuilder, private ranksService: RanksService, private dialog: MatDialog) {}
 
     submit() {
         if (!this.form.valid || this.pending) {

@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { RolesService } from './roles.service';
+import { UrlService } from '@app/core/services/url.service';
 import { of } from 'rxjs';
 import { RolesDataset } from '@app/shared/models/role';
 
@@ -17,7 +20,14 @@ describe('RolesService', () => {
             delete: vi.fn().mockReturnValue(of({}))
         };
         mockUrls = { apiUrl: 'http://localhost:5500' };
-        service = new RolesService(mockHttpClient, mockUrls);
+        TestBed.configureTestingModule({
+            providers: [
+                RolesService,
+                { provide: HttpClient, useValue: mockHttpClient },
+                { provide: UrlService, useValue: mockUrls },
+            ]
+        });
+        service = TestBed.inject(RolesService);
     });
 
     it('getRoles calls GET /roles', () => {

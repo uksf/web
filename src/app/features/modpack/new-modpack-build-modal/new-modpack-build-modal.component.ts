@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { AbstractControl, FormBuilder, FormControl, ValidationErrors, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Observable, of } from 'rxjs';
@@ -40,6 +40,12 @@ function onlyOne(group: AbstractControl): ValidationErrors | null {
     ]
 })
 export class NewModpackBuildModalComponent {
+    private formBuilder = inject(FormBuilder);
+    dialogRef = inject<MatDialogRef<NewModpackBuildModalComponent>>(MatDialogRef);
+    data = inject<{
+        branches: string[];
+    }>(MAT_DIALOG_DATA);
+
     configurationElements: IDropdownElement[] = [
         { value: 'Development', displayValue: 'Development' },
         { value: 'Release', displayValue: 'Release' }
@@ -66,7 +72,9 @@ export class NewModpackBuildModalComponent {
     };
     submitting = false;
 
-    constructor(private formBuilder: FormBuilder, public dialogRef: MatDialogRef<NewModpackBuildModalComponent>, @Inject(MAT_DIALOG_DATA) public data: { branches: string[] }) {
+    constructor() {
+        const data = this.data;
+
         this.branchElements = data.branches.map((b) => ({ value: b, displayValue: b }));
         this.branchElements$ = of(this.branchElements);
 

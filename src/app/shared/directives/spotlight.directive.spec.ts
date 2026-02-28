@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ElementRef } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { SpotlightDirective } from './spotlight.directive';
 
 function createMockElement(): HTMLElement {
@@ -31,7 +32,13 @@ describe('SpotlightDirective', () => {
 
     beforeEach(() => {
         element = createMockElement();
-        directive = new SpotlightDirective(new ElementRef(element));
+        TestBed.configureTestingModule({
+            providers: [
+                SpotlightDirective,
+                { provide: ElementRef, useValue: new ElementRef(element) },
+            ]
+        });
+        directive = TestBed.inject(SpotlightDirective);
     });
 
     it('should add spotlight-active class on mouseenter', () => {

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { MarkdownService, MarkdownComponent } from 'ngx-markdown';
 import { parseMarkdownSync } from '../markdown-utils';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -41,6 +41,13 @@ import { ModpackBuildsStepsComponent } from '../modpack-builds-steps/modpack-bui
     ]
 })
 export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
+    private modpackBuildService = inject(ModpackBuildService);
+    private modpackBuildProcessService = inject(ModpackBuildProcessService);
+    private markdownService = inject(MarkdownService);
+    private route = inject(ActivatedRoute);
+    private router = inject(Router);
+    private permissions = inject(PermissionsService);
+
     @ViewChild(ThemeEmitterComponent) theme: ThemeEmitterComponent;
     modpackBuildResult = ModpackBuildResult;
     selectedBuildId = '';
@@ -49,15 +56,6 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
     logOpen = false;
     cancelling = false;
     selectIncomingBuild = false;
-
-    constructor(
-        private modpackBuildService: ModpackBuildService,
-        private modpackBuildProcessService: ModpackBuildProcessService,
-        private markdownService: MarkdownService,
-        private route: ActivatedRoute,
-        private router: Router,
-        private permissions: PermissionsService
-    ) {}
 
     ngOnInit(): void {
         this.modpackBuildService.connect(

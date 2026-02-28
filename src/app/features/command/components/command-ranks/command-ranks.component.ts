@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable, timer } from 'rxjs';
 import { first, map, switchMap } from 'rxjs/operators';
@@ -41,10 +41,11 @@ import { MatTooltip } from '@angular/material/tooltip';
     ]
 })
 export class CommandRanksComponent implements OnInit {
+    private ranksService = inject(RanksService);
+    private dialog = inject(MatDialog);
+
     ranks: Rank[];
     updatingOrder = false;
-
-    constructor(private ranksService: RanksService, private dialog: MatDialog) {}
 
     ngOnInit() {
         this.getRanks();

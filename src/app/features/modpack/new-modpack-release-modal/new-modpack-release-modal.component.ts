@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ModpackRelease } from '../models/modpack-release';
@@ -16,6 +16,13 @@ import { ButtonComponent } from '../../../shared/components/elements/button-pend
     imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, MatRadioGroup, MatRadioButton, NgClass, MatDialogActions, ButtonComponent]
 })
 export class NewModpackReleaseModalComponent {
+    private formBuilder = inject(FormBuilder);
+    private modpackReleaseService = inject(ModpackReleaseService);
+    dialogRef = inject<MatDialogRef<NewModpackReleaseModalComponent>>(MatDialogRef);
+    data = inject<{
+        previousRelease: ModpackRelease;
+    }>(MAT_DIALOG_DATA);
+
     previousVersion: string;
     major: string;
     minor: string;
@@ -25,15 +32,9 @@ export class NewModpackReleaseModalComponent {
         version: ['', Validators.required]
     });
 
-    constructor(
-        private formBuilder: FormBuilder,
-        private modpackReleaseService: ModpackReleaseService,
-        public dialogRef: MatDialogRef<NewModpackReleaseModalComponent>,
-        @Inject(MAT_DIALOG_DATA)
-        public data: {
-            previousRelease: ModpackRelease;
-        }
-    ) {
+    constructor() {
+        const data = this.data;
+
         this.previousVersion = data.previousRelease.version;
 
         const previousVersionParts: number[] = this.previousVersion.split('.').map((x: string) => parseInt(x, 10));

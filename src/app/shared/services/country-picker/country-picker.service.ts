@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable()
 export class CountryPickerService {
-    public static countries: ICountry[];
+    private httpClient = inject(HttpClient);
 
-    constructor(private httpClient: HttpClient) {}
+    public static countries: ICountry[];
 
     async load() {
         return new Promise((resolve, reject) => {
@@ -16,7 +16,7 @@ export class CountryPickerService {
                 },
                 error: () => {
                     reject('Failed to load country data');
-                },
+                }
             });
         });
     }

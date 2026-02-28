@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Location } from '@angular/common';
 import { first, takeUntil } from 'rxjs/operators';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -40,11 +40,16 @@ import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, Ma
     ]
 })
 export class UnitPageComponent extends DestroyableComponent {
+    private route = inject(ActivatedRoute);
+    private unitsService = inject(UnitsService);
+    dialog = inject(MatDialog);
+    private location = inject(Location);
+
     unit: ResponseUnit;
     displayedColumns = ['chainOfCommandPosition', 'name', 'role'];
     private id: string;
 
-    constructor(private route: ActivatedRoute, private unitsService: UnitsService, public dialog: MatDialog, private location: Location) {
+    constructor() {
         super();
         this.route.params.pipe(takeUntil(this.destroy$)).subscribe({
             next: (params) => {

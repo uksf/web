@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
 import { CommandTrainingComponent } from './command-training.component';
+import { TrainingsService } from '../../services/trainings.service';
 import { of, Subject } from 'rxjs';
 import { Training } from '@app/features/command/models/training';
 
@@ -25,7 +28,14 @@ describe('CommandTrainingComponent', () => {
         };
         mockDialog = { open: vi.fn() };
 
-        component = new CommandTrainingComponent(mockTrainingsService, mockDialog);
+        TestBed.configureTestingModule({
+            providers: [
+                CommandTrainingComponent,
+                { provide: TrainingsService, useValue: mockTrainingsService },
+                { provide: MatDialog, useValue: mockDialog },
+            ]
+        });
+        component = TestBed.inject(CommandTrainingComponent);
     });
 
     describe('ngOnInit', () => {

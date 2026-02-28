@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, Input, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, Input, ViewChild, ViewChildren, inject } from '@angular/core';
 import { Unit } from '@app/features/units/models/units';
 import { MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
 import { all, any } from '@app/shared/services/helper.service';
@@ -12,12 +12,12 @@ import { CommandMemberCardComponent } from '../command-member-card/command-membe
     imports: [MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, CommandMemberCardComponent]
 })
 export class CommandUnitGroupCardComponent implements AfterViewInit {
+    private cdr = inject(ChangeDetectorRef);
+
     @ViewChild(MatAccordion) accordion: MatAccordion;
     @ViewChildren(CommandUnitGroupCardComponent) children;
     @Input('unit') unit: Unit;
     @Input('hideEmpty') hideEmpty: boolean = false;
-
-    constructor(private cdr: ChangeDetectorRef) {}
 
     ngAfterViewInit(): void {
         this.cdr.detectChanges();

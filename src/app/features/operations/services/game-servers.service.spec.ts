@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { GameServersService } from './game-servers.service';
+import { UrlService } from '@app/core/services/url.service';
 import { of } from 'rxjs';
 import { GameServersResponse, MissionUploadResponse, ServerStatusResponse } from '../models/game-server';
 
@@ -17,7 +20,14 @@ describe('GameServersService', () => {
             delete: vi.fn().mockReturnValue(of({}))
         };
         mockUrls = { apiUrl: 'http://localhost:5500' };
-        service = new GameServersService(mockHttpClient, mockUrls);
+        TestBed.configureTestingModule({
+            providers: [
+                GameServersService,
+                { provide: HttpClient, useValue: mockHttpClient },
+                { provide: UrlService, useValue: mockUrls },
+            ]
+        });
+        service = TestBed.inject(GameServersService);
     });
 
     it('getServers calls GET /gameservers', () => {

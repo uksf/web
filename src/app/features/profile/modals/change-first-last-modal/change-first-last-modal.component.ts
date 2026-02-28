@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AccountService } from '@app/core/services/account.service';
 import { nameCase, titleCase } from '@app/shared/services/helper.service';
@@ -22,6 +22,11 @@ import { MatButton } from '@angular/material/button';
     imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, MatError, MatDialogActions, FlexFillerComponent, MatButton]
 })
 export class ChangeFirstLastModalComponent implements OnInit {
+    private formBuilder = inject(FormBuilder);
+    private profileService = inject(ProfileService);
+    private ranksService = inject(RanksService);
+    private accountService = inject(AccountService);
+
     characterBlockPattern = CHARACTER_BLOCK_PATTERN;
     form = this.formBuilder.group({
         firstName: ['', Validators.required],
@@ -31,7 +36,7 @@ export class ChangeFirstLastModalComponent implements OnInit {
     original: string;
     rank: string;
 
-    constructor(private formBuilder: FormBuilder, private profileService: ProfileService, private ranksService: RanksService, private accountService: AccountService) {
+    constructor() {
         this.form.controls.firstName.setValue(this.accountService.account.firstname);
         this.form.controls.lastName.setValue(this.accountService.account.lastname);
         this.ranksService

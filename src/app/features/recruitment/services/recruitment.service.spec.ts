@@ -1,7 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { RecruitmentService } from './recruitment.service';
+import { UrlService } from '@app/core/services/url.service';
 import { of } from 'rxjs';
-import { HttpParams } from '@angular/common/http';
 
 describe('RecruitmentService', () => {
     let service: RecruitmentService;
@@ -12,7 +14,14 @@ describe('RecruitmentService', () => {
             get: vi.fn().mockReturnValue(of(null)),
             post: vi.fn().mockReturnValue(of(null)),
         };
-        service = new RecruitmentService(mockHttpClient, { apiUrl: 'http://localhost:5500' } as any);
+        TestBed.configureTestingModule({
+            providers: [
+                RecruitmentService,
+                { provide: HttpClient, useValue: mockHttpClient },
+                { provide: UrlService, useValue: { apiUrl: 'http://localhost:5500' } },
+            ]
+        });
+        service = TestBed.inject(RecruitmentService);
     });
 
     it('getActiveApplications calls correct endpoint', () => {

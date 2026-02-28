@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, inject } from '@angular/core';
 import { AccountService } from '@app/core/services/account.service';
 import { MatDialog } from '@angular/material/dialog';
 import { RequestLoaModalComponent } from '@app/shared/modals/request-loa-modal/request-loa-modal.component';
@@ -19,18 +19,19 @@ import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
     imports: [RouterLink, FlexFillerComponent, NgxPermissionsModule, NotificationsComponent, MatButton, MatIcon, MatMenuTrigger, MatMenu, MatMenuItem]
 })
 export class HeaderBarComponent implements OnInit {
+    private permissionsService = inject(PermissionsService);
+    private accountService = inject(AccountService);
+    private dialog = inject(MatDialog);
+    private auth = inject(AuthenticationService);
+
     environments = Environments;
     mobile = false;
     mobileSmall = false;
     currentEnvironment: string;
 
-    constructor(
-        private permissionsService: PermissionsService,
-        private accountService: AccountService,
-        private dialog: MatDialog,
-        appSettings: AppSettingsService,
-        private auth: AuthenticationService
-    ) {
+    constructor() {
+        const appSettings = inject(AppSettingsService);
+
         this.currentEnvironment = appSettings.appSetting('environment');
     }
 

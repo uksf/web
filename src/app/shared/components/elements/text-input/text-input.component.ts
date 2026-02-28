@@ -1,4 +1,4 @@
-import { Component, DoCheck, ElementRef, EventEmitter, Input, Optional, Output, Self, ViewChild } from '@angular/core';
+import { Component, DoCheck, ElementRef, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
 import { AbstractControl, ControlValueAccessor, NgControl } from '@angular/forms';
 import { getValidationError, ValidationMessage } from '@app/shared/services/form-helper.service';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -14,6 +14,8 @@ let nextId = 0;
     imports: [MatTooltip, CdkTextareaAutosize, MatIcon]
 })
 export class TextInputComponent implements ControlValueAccessor, DoCheck {
+    ngControl = inject(NgControl, { optional: true, self: true });
+
     @ViewChild('inputElement') inputElement!: ElementRef<HTMLInputElement | HTMLTextAreaElement>;
 
     @Input() label = '';
@@ -48,7 +50,9 @@ export class TextInputComponent implements ControlValueAccessor, DoCheck {
     private onChange: (value: string | number) => void = () => {};
     private onTouched: () => void = () => {};
 
-    constructor(@Optional() @Self() public ngControl: NgControl) {
+    constructor() {
+        const ngControl = this.ngControl;
+
         if (ngControl) {
             ngControl.valueAccessor = this;
         }

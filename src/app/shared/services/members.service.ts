@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UrlService } from '@app/core/services/url.service';
@@ -7,11 +7,14 @@ import { PagedResult } from '@app/shared/models/paged-result';
 
 @Injectable({ providedIn: 'root' })
 export class MembersService {
-    constructor(private httpClient: HttpClient, private urls: UrlService) {}
+    private httpClient = inject(HttpClient);
+    private urls = inject(UrlService);
 
     getMembers(reverse?: boolean): Observable<BasicAccount[]> {
         let url = `${this.urls.apiUrl}/accounts/members`;
-        if (reverse) { url += '?reverse=true'; }
+        if (reverse) {
+            url += '?reverse=true';
+        }
         return this.httpClient.get<BasicAccount[]>(url);
     }
 

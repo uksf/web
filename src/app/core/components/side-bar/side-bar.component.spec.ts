@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { SideBarComponent } from './side-bar.component';
+import { PermissionsService } from '@app/core/services/permissions.service';
+import { AccountService } from '@app/core/services/account.service';
+import { VersionService } from '@app/core/services/version.service';
 import { of } from 'rxjs';
 import { Permissions } from '@app/core/services/permissions';
 import { ApplicationState } from '@app/features/application/models/application';
@@ -24,12 +29,16 @@ describe('SideBarComponent', () => {
             reconnectEvent: of()
         };
 
-        component = new SideBarComponent(
-            mockRouter,
-            mockPermissions,
-            mockAccountService,
-            mockVersionService
-        );
+        TestBed.configureTestingModule({
+            providers: [
+                SideBarComponent,
+                { provide: Router, useValue: mockRouter },
+                { provide: PermissionsService, useValue: mockPermissions },
+                { provide: AccountService, useValue: mockAccountService },
+                { provide: VersionService, useValue: mockVersionService },
+            ]
+        });
+        component = TestBed.inject(SideBarComponent);
     });
 
     describe('getSideBarElements', () => {

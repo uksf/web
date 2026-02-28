@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild, inject } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { MatTableDataSource, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';
@@ -53,6 +53,8 @@ import { NgClass, DatePipe } from '@angular/common';
     ]
 })
 export class AdminLogsComponent extends DestroyableComponent implements OnInit, AfterViewInit {
+    private clipboard = inject(Clipboard);
+
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
     protected logsService: LogsService;
@@ -69,7 +71,11 @@ export class AdminLogsComponent extends DestroyableComponent implements OnInit, 
     logDisplayedColumns = ['timestamp', 'level', 'message'];
     datasource: MatTableDataSource<BasicLog> = new MatTableDataSource<BasicLog>();
 
-    constructor(logsService: LogsService, dialog: MatDialog, signalrService: SignalRService, private clipboard: Clipboard) {
+    constructor() {
+        const logsService = inject(LogsService);
+        const dialog = inject(MatDialog);
+        const signalrService = inject(SignalRService);
+
         super();
         this.logsService = logsService;
         this.dialog = dialog;

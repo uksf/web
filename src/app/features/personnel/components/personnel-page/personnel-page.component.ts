@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Permissions } from '@app/core/services/permissions';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { MatTabNav, MatTabLink, MatTabNavPanel } from '@angular/material/tabs';
@@ -11,6 +11,8 @@ import { RouterLinkActive, RouterLink, RouterOutlet } from '@angular/router';
     imports: [MatTabNav, MatTabLink, RouterLinkActive, RouterLink, MatTabNavPanel, RouterOutlet]
 })
 export class PersonnelPageComponent {
+    private permissions = inject(PermissionsService);
+
     tabLinks = [
         { label: 'LOAs', link: './loas' }
         // { label: 'Activity', link: './activity' }
@@ -20,7 +22,7 @@ export class PersonnelPageComponent {
         return item.link;
     }
 
-    constructor(private permissions: PermissionsService) {
+    constructor() {
         if (this.permissions.hasPermission(Permissions.DISCHARGES)) {
             this.tabLinks = [
                 { label: 'Roster', link: './roster' },

@@ -1,4 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { ChangeDetectorRef, NgZone } from '@angular/core';
 import { TimeAgoPipe } from './time.pipe';
 
 describe('TimeAgoPipe', () => {
@@ -11,7 +13,14 @@ describe('TimeAgoPipe', () => {
 
     beforeEach(() => {
         vi.useFakeTimers();
-        pipe = new TimeAgoPipe(mockChangeDetectorRef, mockNgZone);
+        TestBed.configureTestingModule({
+            providers: [
+                TimeAgoPipe,
+                { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
+                { provide: NgZone, useValue: mockNgZone },
+            ]
+        });
+        pipe = TestBed.inject(TimeAgoPipe);
     });
 
     afterEach(() => {

@@ -1,6 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
 import { OperationsServersComponent } from './operations-servers.component';
 import { of, Subject } from 'rxjs';
+import { GameServersService } from '../../services/game-servers.service';
+import { MatDialog } from '@angular/material/dialog';
+import { SignalRService } from '@app/core/services/signalr.service';
+import { PermissionsService } from '@app/core/services/permissions.service';
 
 describe('OperationsServersComponent', () => {
     let component: OperationsServersComponent;
@@ -61,12 +66,16 @@ describe('OperationsServersComponent', () => {
             hasPermission: vi.fn().mockReturnValue(false),
         };
 
-        component = new OperationsServersComponent(
-            mockGameServersService,
-            mockDialog,
-            mockSignalrService,
-            mockPermissions
-        );
+        TestBed.configureTestingModule({
+            providers: [
+                OperationsServersComponent,
+                { provide: GameServersService, useValue: mockGameServersService },
+                { provide: MatDialog, useValue: mockDialog },
+                { provide: SignalRService, useValue: mockSignalrService },
+                { provide: PermissionsService, useValue: mockPermissions },
+            ]
+        });
+        component = TestBed.inject(OperationsServersComponent);
     });
 
     afterEach(() => {

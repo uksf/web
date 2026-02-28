@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UrlService } from '@app/core/services/url.service';
@@ -7,7 +7,8 @@ import { GameServer, GameServersResponse, MissionUploadResponse, ServerMod, Serv
 
 @Injectable()
 export class GameServersService {
-    constructor(private httpClient: HttpClient, private urls: UrlService) {}
+    private httpClient = inject(HttpClient);
+    private urls = inject(UrlService);
 
     private buildHeaders(connectionId: string): HttpHeaders {
         return new HttpHeaders({ 'Hub-Connection-Id': connectionId });

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { first } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { AddUnitModalComponent } from '@app/features/command/modals/add-unit-modal/add-unit-modal.component';
@@ -20,6 +20,10 @@ import { MatCard } from '@angular/material/card';
     imports: [DefaultContentAreasComponent, MainContentAreaComponent, MatProgressSpinner, MatButton, MatCard, TreeComponent]
 })
 export class CommandUnitsComponent implements OnInit {
+    private unitsService = inject(UnitsService);
+    private dialog = inject(MatDialog);
+    private permissions = inject(PermissionsService);
+
     @ViewChild('combatUnitsTree') combatUnitsTree: TreeNode;
     @ViewChild('auxiliaryUnitsTree') auxiliaryUnitsTree: TreeNode;
     @ViewChild('secondaryUnitsTree') secondaryUnitsTree: TreeNode;
@@ -40,7 +44,9 @@ export class CommandUnitsComponent implements OnInit {
     auxiliary: Unit[];
     secondary: Unit[];
 
-    constructor(private unitsService: UnitsService, private dialog: MatDialog, private permissions: PermissionsService) {
+    constructor() {
+        const permissions = this.permissions;
+
         if (permissions.hasPermission(Permissions.ADMIN)) {
             this.options = {
                 allowDrag: (node: TreeNode) => !this.updatingOrder && node.parent && !node.parent.data.virtual,

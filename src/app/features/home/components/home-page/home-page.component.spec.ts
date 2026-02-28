@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
 import { HomePageComponent } from './home-page.component';
+import { HomeService } from '../../services/home.service';
+import { SignalRService } from '@app/core/services/signalr.service';
 import { of } from 'rxjs';
 
 describe('HomePageComponent', () => {
@@ -24,7 +27,14 @@ describe('HomePageComponent', () => {
             })
         };
 
-        component = new HomePageComponent(mockHomeService, mockSignalrService);
+        TestBed.configureTestingModule({
+            providers: [
+                HomePageComponent,
+                { provide: HomeService, useValue: mockHomeService },
+                { provide: SignalRService, useValue: mockSignalrService },
+            ]
+        });
+        component = TestBed.inject(HomePageComponent);
     });
 
     afterEach(() => {

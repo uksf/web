@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AbstractControl, FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { PermissionsService } from '@app/core/services/permissions.service';
@@ -24,6 +24,11 @@ export function passwordMatcher(form: AbstractControl) {
     imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, MatError, MatDialogActions, MatButton]
 })
 export class ChangePasswordModalComponent {
+    private formBuilder = inject(FormBuilder);
+    private profileService = inject(ProfileService);
+    private permissionsService = inject(PermissionsService);
+    dialog = inject(MatDialog);
+
     form = this.formBuilder.group(
         {
             password: ['', Validators.required],
@@ -31,8 +36,6 @@ export class ChangePasswordModalComponent {
         },
         { validators: passwordMatcher }
     );
-
-    constructor(private formBuilder: FormBuilder, private profileService: ProfileService, private permissionsService: PermissionsService, public dialog: MatDialog) {}
 
     changePassword() {
         const formObj = this.form.getRawValue();

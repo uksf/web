@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { ProfileService } from './profile.service';
+import { UrlService } from '@app/core/services/url.service';
 import { of } from 'rxjs';
 
 describe('ProfileService', () => {
@@ -12,7 +15,14 @@ describe('ProfileService', () => {
             post: vi.fn().mockReturnValue(of(null)),
             put: vi.fn().mockReturnValue(of(null)),
         };
-        service = new ProfileService(mockHttpClient, { apiUrl: 'http://localhost:5500' } as any);
+        TestBed.configureTestingModule({
+            providers: [
+                ProfileService,
+                { provide: HttpClient, useValue: mockHttpClient },
+                { provide: UrlService, useValue: { apiUrl: 'http://localhost:5500' } },
+            ]
+        });
+        service = TestBed.inject(ProfileService);
     });
 
     it('connectSteam calls correct endpoint', () => {

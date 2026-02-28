@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { MatDialog, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { NgForm, FormsModule } from '@angular/forms';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
@@ -25,6 +25,12 @@ import { ButtonComponent } from '../../../../shared/components/elements/button-p
     imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, DropdownComponent, TextInputComponent, MatDialogActions, ButtonComponent]
 })
 export class RequestUnitRemovalModalComponent implements OnInit {
+    private dialog = inject(MatDialog);
+    private membersService = inject(MembersService);
+    private unitsService = inject(UnitsService);
+    private commandRequestsService = inject(CommandRequestsService);
+    private logger = inject(LoggingService);
+
     @ViewChild(NgForm) form!: NgForm;
     pending = false;
     model: FormModel = {
@@ -37,14 +43,6 @@ export class RequestUnitRemovalModalComponent implements OnInit {
     validationMessages = {
         reason: [{ type: 'required', message: () => 'A reason for the unit removal is required' }]
     };
-
-    constructor(
-        private dialog: MatDialog,
-        private membersService: MembersService,
-        private unitsService: UnitsService,
-        private commandRequestsService: CommandRequestsService,
-        private logger: LoggingService
-    ) {}
 
     ngOnInit() {
         this.membersService

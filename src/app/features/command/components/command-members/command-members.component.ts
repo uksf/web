@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import { PagedResult } from '@app/shared/models/paged-result';
 import { PagedEvent, PaginatorComponent } from '@app/shared/components/elements/paginator/paginator.component';
@@ -48,6 +48,10 @@ import { CommandMemberCardComponent } from './command-member-card/command-member
     ]
 })
 export class CommandMembersComponent extends DestroyableComponent implements OnInit, OnDestroy {
+    private membersService = inject(MembersService);
+    private unitsService = inject(UnitsService);
+    private signalrHubsService = inject(SignalRHubsService);
+
     @ViewChild(PaginatorComponent) paginator: PaginatorComponent;
     @ViewChild(CommandUnitGroupCardComponent) unitGroupsRoot: CommandUnitGroupCardComponent;
     loaded: boolean = false;
@@ -82,10 +86,6 @@ export class CommandMembersComponent extends DestroyableComponent implements OnI
     private onReceiveAccountUpdate = () => {
         this.getMembers();
     };
-
-    constructor(private membersService: MembersService, private unitsService: UnitsService, private signalrHubsService: SignalRHubsService) {
-        super();
-    }
 
     ngOnInit(): void {
         from(this.signalrHubsService.getAllHub())

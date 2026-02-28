@@ -1,7 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
 import { PersonnelLoasListComponent } from './personnel-loas-list.component';
 import { of } from 'rxjs';
 import { Loa, LoaReviewState } from '@app/features/command/models/loa';
+import { LoaService } from '@app/shared/services/loa.service';
+import { PermissionsService } from '@app/core/services/permissions.service';
+import { MatDialog } from '@angular/material/dialog';
 
 describe('PersonnelLoasListComponent', () => {
     let component: PersonnelLoasListComponent;
@@ -33,7 +37,15 @@ describe('PersonnelLoasListComponent', () => {
         };
         mockDialog = { open: vi.fn() };
 
-        component = new PersonnelLoasListComponent(mockLoaService, mockPermissions, mockDialog);
+        TestBed.configureTestingModule({
+            providers: [
+                PersonnelLoasListComponent,
+                { provide: LoaService, useValue: mockLoaService },
+                { provide: PermissionsService, useValue: mockPermissions },
+                { provide: MatDialog, useValue: mockDialog },
+            ]
+        });
+        component = TestBed.inject(PersonnelLoasListComponent);
     });
 
     describe('updateComputedProperties', () => {

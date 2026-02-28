@@ -1,4 +1,4 @@
-import { Component, HostListener, ViewChild } from '@angular/core';
+import { Component, HostListener, ViewChild, inject } from '@angular/core';
 import { DatePipe, NgClass, NgStyle, AsyncPipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { RecruitmentService } from '../../services/recruitment.service';
@@ -55,6 +55,13 @@ import { CountryImage, CountryName } from '../../../../shared/pipes/country.pipe
     ]
 })
 export class RecruitmentApplicationPageComponent {
+    private recruitmentService = inject(RecruitmentService);
+    private route = inject(ActivatedRoute);
+    private router = inject(Router);
+    private permissions = inject(PermissionsService);
+    private accountService = inject(AccountService);
+    private dialog = inject(MatDialog);
+
     @ViewChild('recruiterCommentsDisplay') recruiterCommentDisplay: CommentDisplayComponent;
     @ViewChild('applicationCommentsDisplay') applicationCommentDisplay: CommentDisplayComponent;
     membershipState = MembershipState;
@@ -72,14 +79,7 @@ export class RecruitmentApplicationPageComponent {
     adminOverride: boolean = false;
     rolePreferenceOptions: string[] = ['NCO', 'Officer', 'Aviation', 'Medic'];
 
-    constructor(
-        private recruitmentService: RecruitmentService,
-        private route: ActivatedRoute,
-        private router: Router,
-        private permissions: PermissionsService,
-        private accountService: AccountService,
-        private dialog: MatDialog
-    ) {
+    constructor() {
         this.countries = CountryPickerService.countries;
 
         if (this.route.snapshot.params.id) {

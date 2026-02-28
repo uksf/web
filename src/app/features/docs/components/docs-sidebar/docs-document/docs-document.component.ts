@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, inject } from '@angular/core';
 import { DocumentMetadata, FolderMetadata } from '@app/features/docs/models/documents';
 import { folderAnimations } from '@app/shared/services/animations.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -23,6 +23,11 @@ import { MatTooltip } from '@angular/material/tooltip';
     imports: [NgClass, MatIcon, MatMenuTrigger, MatMenu, MatMenuItem, MatTooltip]
 })
 export class DocsDocumentComponent implements OnChanges, OnDestroy {
+    private docsService = inject(DocsService);
+    private dialog = inject(MatDialog);
+    private route = inject(ActivatedRoute);
+    private router = inject(Router);
+
     private destroy$ = new Subject<void>();
     @Input('allDocumentMetadata') allFolderMetadata: FolderMetadata[];
     @Input('folderMetadata') folderMetadata: FolderMetadata;
@@ -32,8 +37,6 @@ export class DocsDocumentComponent implements OnChanges, OnDestroy {
     hover: boolean = false;
     menuOpen: boolean = false;
     selected: boolean = false;
-
-    constructor(private docsService: DocsService, private dialog: MatDialog, private route: ActivatedRoute, private router: Router) {}
 
     ngOnDestroy() {
         this.destroy$.next();

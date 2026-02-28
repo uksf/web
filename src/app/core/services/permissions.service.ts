@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { firstValueFrom, Subject } from 'rxjs';
@@ -16,24 +16,22 @@ import { DebouncedCallback } from '@app/shared/utils/debounce-callback';
 
 @Injectable()
 export class PermissionsService {
+    private ngxPermissionsService = inject(NgxPermissionsService);
+    private sessionService = inject(SessionService);
+    private accountService = inject(AccountService);
+    private signalrService = inject(SignalRService);
+    private router = inject(Router);
+    private authenticationService = inject(AuthenticationService);
+    private jwtHelperService = inject(JwtHelperService);
+    private appSettings = inject(AppSettingsService);
+    private logger = inject(LoggingService);
+
     private jwtRolesKey = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
     private accountHubConnection: ConnectionContainer;
     private refreshPromise: Promise<void> | null = null;
     private revoked = false;
     private debouncedUpdate = new DebouncedCallback();
     public accountUpdateEvent = new Subject<void>();
-
-    constructor(
-        private ngxPermissionsService: NgxPermissionsService,
-        private sessionService: SessionService,
-        private accountService: AccountService,
-        private signalrService: SignalRService,
-        private router: Router,
-        private authenticationService: AuthenticationService,
-        private jwtHelperService: JwtHelperService,
-        private appSettings: AppSettingsService,
-        private logger: LoggingService
-    ) {}
 
     connect() {
         if (this.accountHubConnection !== undefined) {

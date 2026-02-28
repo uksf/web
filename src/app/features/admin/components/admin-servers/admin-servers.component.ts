@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { first } from 'rxjs/operators';
 import type { ServerInfrastructureCurrent, ServerInfrastructureInstalled, ServerInfrastructureLatest } from '@app/shared/models/server-infrastructure';
@@ -21,13 +21,14 @@ import { ButtonComponent } from '../../../../shared/components/elements/button-p
     imports: [DefaultContentAreasComponent, MainContentAreaComponent, AdminPageComponent, LoadingPlaceholderComponent, MatTooltip, NgStyle, MatIcon, ButtonComponent, DatePipe]
 })
 export class AdminServersComponent implements OnInit {
+    private infrastructureService = inject(InfrastructureService);
+    private dialog = inject(MatDialog);
+
     latest: ServerInfrastructureLatest;
     current: ServerInfrastructureCurrent;
     installed: ServerInfrastructureInstalled;
     updating: boolean = false;
     forced: boolean = false;
-
-    constructor(private infrastructureService: InfrastructureService, private dialog: MatDialog) {}
 
     @HostListener('window:keydown', ['$event'])
     @HostListener('window:keyup', ['$event'])

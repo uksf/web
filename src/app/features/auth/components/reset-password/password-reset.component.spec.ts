@@ -1,6 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { ActivatedRoute, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { PasswordResetComponent } from './password-reset.component';
+import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
+import { PermissionsService } from '@app/core/services/permissions.service';
 
 describe('PasswordResetComponent', () => {
     let component: PasswordResetComponent;
@@ -23,7 +27,16 @@ describe('PasswordResetComponent', () => {
             refresh: vi.fn().mockResolvedValue(undefined)
         };
 
-        component = new PasswordResetComponent(mockAuth, mockRoute, mockRouter, mockPermissionsService);
+        TestBed.configureTestingModule({
+            providers: [
+                PasswordResetComponent,
+                { provide: AuthenticationService, useValue: mockAuth },
+                { provide: ActivatedRoute, useValue: mockRoute },
+                { provide: Router, useValue: mockRouter },
+                { provide: PermissionsService, useValue: mockPermissionsService },
+            ]
+        });
+        component = TestBed.inject(PasswordResetComponent);
         component.resetPasswordCode = 'test-code';
         // Mock the form ViewChild
         (component as any).form = { valid: true };

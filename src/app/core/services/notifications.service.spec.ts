@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { NotificationsService } from './notifications.service';
+import { UrlService } from './url.service';
 import { of } from 'rxjs';
 
 describe('NotificationsService', () => {
@@ -11,7 +14,14 @@ describe('NotificationsService', () => {
             get: vi.fn().mockReturnValue(of([])),
             post: vi.fn().mockReturnValue(of(null)),
         };
-        service = new NotificationsService(mockHttpClient, { apiUrl: 'http://localhost:5500' } as any);
+        TestBed.configureTestingModule({
+            providers: [
+                NotificationsService,
+                { provide: HttpClient, useValue: mockHttpClient },
+                { provide: UrlService, useValue: { apiUrl: 'http://localhost:5500' } },
+            ]
+        });
+        service = TestBed.inject(NotificationsService);
     });
 
     it('getNotifications calls correct endpoint', () => {

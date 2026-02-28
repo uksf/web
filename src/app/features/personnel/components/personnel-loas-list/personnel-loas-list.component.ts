@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { Permissions } from '@app/core/services/permissions';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { PagedEvent, PaginatorComponent } from '@app/shared/components/elements/paginator/paginator.component';
@@ -35,6 +35,10 @@ export type SelectionMode = 'current' | 'future' | 'past';
     imports: [PaginatorComponent_1, MatProgressSpinner, MatAccordion, MatCard, NgClass, SpotlightDirective, MatIcon, MatDivider, FlexFillerComponent, MatButton, TitleCasePipe, DatePipe]
 })
 export class PersonnelLoasListComponent implements OnInit {
+    private loaService = inject(LoaService);
+    private permissions = inject(PermissionsService);
+    private dialog = inject(MatDialog);
+
     @ViewChild(PaginatorComponent) paginator: PaginatorComponent;
     @Input() selectionMode: SelectionMode = 'current';
     @Input() viewMode: ViewMode = 'all';
@@ -51,8 +55,6 @@ export class PersonnelLoasListComponent implements OnInit {
     selectedDate?: Moment;
 
     selectedIndex: number = -1;
-
-    constructor(private loaService: LoaService, private permissions: PermissionsService, private dialog: MatDialog) {}
 
     ngOnInit(): void {
         this.getLoas();

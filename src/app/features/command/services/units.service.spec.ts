@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
 import { UnitsService } from './units.service';
+import { UrlService } from '@app/core/services/url.service';
 
 describe('UnitsService', () => {
     let service: UnitsService;
@@ -10,7 +13,14 @@ describe('UnitsService', () => {
     beforeEach(() => {
         httpClient = { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn(), patch: vi.fn() };
         urls = { apiUrl: 'http://localhost:5500' };
-        service = new UnitsService(httpClient as any, urls as any);
+        TestBed.configureTestingModule({
+            providers: [
+                UnitsService,
+                { provide: HttpClient, useValue: httpClient },
+                { provide: UrlService, useValue: urls },
+            ]
+        });
+        service = TestBed.inject(UnitsService);
     });
 
     it('should get unit tree', () => {

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { MatDialog, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { NgForm, FormsModule } from '@angular/forms';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
@@ -25,6 +25,11 @@ import { ButtonComponent } from '../../../../shared/components/elements/button-p
     imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, DropdownComponent, TextInputComponent, MatDialogActions, ButtonComponent]
 })
 export class RequestChainOfCommandPositionModalComponent implements OnInit {
+    private dialog = inject(MatDialog);
+    private membersService = inject(MembersService);
+    private unitsService = inject(UnitsService);
+    private commandRequestsService = inject(CommandRequestsService);
+
     @ViewChild(NgForm) form!: NgForm;
     pending = false;
     model: FormModel = {
@@ -42,8 +47,6 @@ export class RequestChainOfCommandPositionModalComponent implements OnInit {
 
     // Store the actual Unit objects to access chainOfCommand data
     private unitObjects: Unit[] = [];
-
-    constructor(private dialog: MatDialog, private membersService: MembersService, private unitsService: UnitsService, private commandRequestsService: CommandRequestsService) {}
 
     ngOnInit() {
         this.membersService

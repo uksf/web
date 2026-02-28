@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UrlService } from '@app/core/services/url.service';
@@ -8,7 +8,8 @@ const jsonHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
 
 @Injectable({ providedIn: 'root' })
 export class UnitsService {
-    constructor(private httpClient: HttpClient, private urls: UrlService) {}
+    private httpClient = inject(HttpClient);
+    private urls = inject(UrlService);
 
     getUnitTree(): Observable<UnitTreeDataSet> {
         return this.httpClient.get<UnitTreeDataSet>(`${this.urls.apiUrl}/units/tree`);
@@ -21,9 +22,15 @@ export class UnitsService {
     getUnits(filter?: string, accountId?: string): Observable<Unit[]> {
         let url = `${this.urls.apiUrl}/units`;
         const params: string[] = [];
-        if (filter) { params.push(`filter=${filter}`); }
-        if (accountId) { params.push(`accountId=${accountId}`); }
-        if (params.length > 0) { url += `?${params.join('&')}`; }
+        if (filter) {
+            params.push(`filter=${filter}`);
+        }
+        if (accountId) {
+            params.push(`accountId=${accountId}`);
+        }
+        if (params.length > 0) {
+            url += `?${params.join('&')}`;
+        }
         return this.httpClient.get<Unit[]>(url);
     }
 
@@ -33,7 +40,9 @@ export class UnitsService {
 
     checkUnitExists(value: string, editId?: string): Observable<boolean> {
         let url = `${this.urls.apiUrl}/units/exists/${value}`;
-        if (editId) { url += `?id=${editId}`; }
+        if (editId) {
+            url += `?id=${editId}`;
+        }
         return this.httpClient.get<boolean>(url);
     }
 

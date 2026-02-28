@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { first, takeUntil } from 'rxjs/operators';
 import { Router, RouterLinkActive, RouterLink } from '@angular/router';
 import { Permissions } from '@app/core/services/permissions';
@@ -18,6 +18,11 @@ import { MatIcon } from '@angular/material/icon';
     imports: [MatTooltip, MatIcon, RouterLinkActive, RouterLink]
 })
 export class SideBarComponent extends DestroyableComponent implements OnInit {
+    private router = inject(Router);
+    private permissions = inject(PermissionsService);
+    private accountService = inject(AccountService);
+    private versionService = inject(VersionService);
+
     newVersion = false;
     version = 0;
     private onReceiveFrontendUpdate = (version) => {
@@ -54,10 +59,6 @@ export class SideBarComponent extends DestroyableComponent implements OnInit {
     private currentPermissions;
     private currentAccount;
     private cachedSideBarElements;
-
-    constructor(private router: Router, private permissions: PermissionsService, private accountService: AccountService, private versionService: VersionService) {
-        super();
-    }
 
     ngOnInit() {
         this.checkVersion();

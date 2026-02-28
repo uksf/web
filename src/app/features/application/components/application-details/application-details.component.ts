@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, inject } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { getValidationError, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -19,6 +19,9 @@ import { ButtonComponent } from '../../../../shared/components/elements/button-p
     imports: [MatCard, FormsModule, ReactiveFormsModule, TextInputComponent, MatCheckbox, DropdownComponent, ButtonComponent]
 })
 export class ApplicationDetailsComponent extends DestroyableComponent {
+    formBuilder = inject(UntypedFormBuilder);
+    dialog = inject(MatDialog);
+
     @Output() submitEvent = new EventEmitter<string>();
     formGroup: UntypedFormGroup;
     instantErrorStateMatcher = new InstantErrorStateMatcher();
@@ -27,8 +30,10 @@ export class ApplicationDetailsComponent extends DestroyableComponent {
     validation_messages = DETAILS_VALIDATION_MESSAGES;
     cachedErrors = { armaExperience: '', unitsExperience: '', background: '' };
 
-    constructor(public formBuilder: UntypedFormBuilder, public dialog: MatDialog) {
+    constructor() {
         super();
+        const formBuilder = this.formBuilder;
+
         this.formGroup = buildDetailsFormGroup(formBuilder);
         this.formGroup.statusChanges.pipe(takeUntil(this.destroy$)).subscribe({ next: () => this.updateCachedErrors() });
     }

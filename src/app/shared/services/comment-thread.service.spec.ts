@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
 import { CommentThreadService } from './comment-thread.service';
+import { UrlService } from '@app/core/services/url.service';
 import type { CommentThreadResponse } from './comment-thread.service';
 
 describe('CommentThreadService', () => {
@@ -11,7 +14,14 @@ describe('CommentThreadService', () => {
     beforeEach(() => {
         httpClient = { get: vi.fn(), put: vi.fn(), post: vi.fn() };
         urls = { apiUrl: 'http://localhost:5500' };
-        service = new CommentThreadService(httpClient as any, urls as any);
+        TestBed.configureTestingModule({
+            providers: [
+                CommentThreadService,
+                { provide: HttpClient, useValue: httpClient },
+                { provide: UrlService, useValue: urls },
+            ]
+        });
+        service = TestBed.inject(CommentThreadService);
     });
 
     it('should get comments for a thread', () => {

@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
 import { CommandRequestsService } from './command-requests.service';
+import { UrlService } from '@app/core/services/url.service';
 
 describe('CommandRequestsService', () => {
     let service: CommandRequestsService;
@@ -10,7 +13,14 @@ describe('CommandRequestsService', () => {
     beforeEach(() => {
         httpClient = { get: vi.fn(), post: vi.fn(), patch: vi.fn() };
         urls = { apiUrl: 'http://localhost:5500' };
-        service = new CommandRequestsService(httpClient as any, urls as any);
+        TestBed.configureTestingModule({
+            providers: [
+                CommandRequestsService,
+                { provide: HttpClient, useValue: httpClient },
+                { provide: UrlService, useValue: urls },
+            ]
+        });
+        service = TestBed.inject(CommandRequestsService);
     });
 
     it('should get requests', () => {

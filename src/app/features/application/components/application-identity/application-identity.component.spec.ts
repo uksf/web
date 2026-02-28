@@ -1,7 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
 import { ApplicationIdentityComponent } from './application-identity.component';
 import { UntypedFormBuilder } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
+import { ApplicationService } from '../../services/application.service';
+import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
+import { PermissionsService } from '@app/core/services/permissions.service';
 
 describe('ApplicationIdentityComponent', () => {
     let component: ApplicationIdentityComponent;
@@ -23,13 +28,17 @@ describe('ApplicationIdentityComponent', () => {
             refresh: vi.fn().mockResolvedValue(undefined)
         };
 
-        component = new ApplicationIdentityComponent(
-            mockDialog,
-            new UntypedFormBuilder(),
-            mockApplicationService,
-            mockAuthService,
-            mockPermissionsService
-        );
+        TestBed.configureTestingModule({
+            providers: [
+                ApplicationIdentityComponent,
+                UntypedFormBuilder,
+                { provide: MatDialog, useValue: mockDialog },
+                { provide: ApplicationService, useValue: mockApplicationService },
+                { provide: AuthenticationService, useValue: mockAuthService },
+                { provide: PermissionsService, useValue: mockPermissionsService },
+            ]
+        });
+        component = TestBed.inject(ApplicationIdentityComponent);
     });
 
     describe('cachedDobError', () => {

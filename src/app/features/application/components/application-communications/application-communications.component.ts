@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, inject } from '@angular/core';
 import { first } from 'rxjs/operators';
 import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -20,18 +20,18 @@ import { ButtonComponent } from '../../../../shared/components/elements/button-p
     imports: [MatCard, FlexFillerComponent, MatProgressSpinner, ConnectTeamspeakComponent, ButtonComponent]
 })
 export class ApplicationCommunicationsComponent implements OnInit {
+    private profileService = inject(ProfileService);
+    private urls = inject(UrlService);
+    dialog = inject(MatDialog);
+    private accountService = inject(AccountService);
+    private router = inject(Router);
+    private route = inject(ActivatedRoute);
+
     @Output() nextEvent = new EventEmitter();
     mode = 'pending';
     private pendingValidation = false;
 
-    constructor(
-        private profileService: ProfileService,
-        private urls: UrlService,
-        public dialog: MatDialog,
-        private accountService: AccountService,
-        private router: Router,
-        private route: ActivatedRoute
-    ) {
+    constructor() {
         if (window.location.href.indexOf('steamid=') !== -1) {
             this.pendingValidation = true;
             const id = this.route.snapshot.queryParams['steamid'];

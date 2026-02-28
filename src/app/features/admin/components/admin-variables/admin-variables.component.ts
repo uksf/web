@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, MatExpansionPanelContent } from '@angular/material/expansion';
 import { Observable, timer, of } from 'rxjs';
@@ -46,6 +46,10 @@ import { InlineEditComponent } from '../../../../shared/components/elements/inli
     ]
 })
 export class AdminVariablesComponent implements OnInit {
+    private formBuilder = inject(FormBuilder);
+    private variablesService = inject(VariablesService);
+    private dialog = inject(MatDialog);
+
     @ViewChild(MatAccordion) accordion: MatAccordion;
     expanded = false;
     form = this.formBuilder.group({
@@ -59,8 +63,6 @@ export class AdminVariablesComponent implements OnInit {
     validationMessages = {
         key: [{ type: 'keyTaken', message: 'That key is already in use' }]
     };
-
-    constructor(private formBuilder: FormBuilder, private variablesService: VariablesService, private dialog: MatDialog) {}
 
     ngOnInit(): void {
         this.getVariables();

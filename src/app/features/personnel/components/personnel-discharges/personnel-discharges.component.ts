@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { ActivatedRoute } from '@angular/router';
@@ -61,6 +61,11 @@ import { NgxPermissionsModule } from 'ngx-permissions';
     ]
 })
 export class PersonnelDischargesComponent implements OnInit, OnDestroy {
+    private dischargesService = inject(DischargesService);
+    private commandRequestsService = inject(CommandRequestsService);
+    private dialog = inject(MatDialog);
+    private route = inject(ActivatedRoute);
+
     displayedColumns = ['timestamp', 'rank', 'unit', 'role', 'dischargedBy', 'reason'];
     selectedIndex = -1;
     updating: boolean;
@@ -77,8 +82,6 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
     filterString = '';
     pendingActions = new Set<string>();
     private timeout: number;
-
-    constructor(private dischargesService: DischargesService, private commandRequestsService: CommandRequestsService, private dialog: MatDialog, private route: ActivatedRoute) {}
 
     ngOnInit(): void {
         if (this.route.snapshot.queryParams['filter']) {

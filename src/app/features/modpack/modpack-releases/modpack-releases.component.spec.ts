@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
 import { ModpackReleasesComponent } from './modpack-releases.component';
+import { MarkdownService } from 'ngx-markdown';
+import { PermissionsService } from '@app/core/services/permissions.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ModpackReleaseService } from '../modpackRelease.service';
 
 describe('ModpackReleasesComponent', () => {
     let component: ModpackReleasesComponent;
@@ -28,13 +33,17 @@ describe('ModpackReleasesComponent', () => {
             disconnect: vi.fn()
         };
 
-        component = new ModpackReleasesComponent(
-            mockMarkdownService,
-            mockPermissionsService,
-            mockRoute,
-            mockRouter,
-            mockModpackReleaseService
-        );
+        TestBed.configureTestingModule({
+            providers: [
+                ModpackReleasesComponent,
+                { provide: MarkdownService, useValue: mockMarkdownService },
+                { provide: PermissionsService, useValue: mockPermissionsService },
+                { provide: ActivatedRoute, useValue: mockRoute },
+                { provide: Router, useValue: mockRouter },
+                { provide: ModpackReleaseService, useValue: mockModpackReleaseService },
+            ]
+        });
+        component = TestBed.inject(ModpackReleasesComponent);
     });
 
     describe('ngOnDestroy', () => {

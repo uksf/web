@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild, inject } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
 import { Router } from '@angular/router';
@@ -20,6 +20,11 @@ import { ButtonComponent } from '../../../../shared/components/elements/button-p
     imports: [MatDialogTitle, FormsModule, TextInputComponent, ButtonHiddenSubmitComponent, MatCheckbox, FlexFillerComponent, ButtonComponent]
 })
 export class LoginComponent {
+    private auth = inject(AuthenticationService);
+    private router = inject(Router);
+    private permissionsService = inject(PermissionsService);
+    private redirectService = inject(RedirectService);
+
     @ViewChild(NgForm) form!: NgForm;
     @Output() onRequestPasswordReset = new EventEmitter();
     pending = false;
@@ -37,8 +42,6 @@ export class LoginComponent {
         ],
         password: [{ type: 'required', message: 'Password is required' }]
     };
-
-    constructor(private auth: AuthenticationService, private router: Router, private permissionsService: PermissionsService, private redirectService: RedirectService) {}
 
     submit() {
         // Honeypot field must be empty

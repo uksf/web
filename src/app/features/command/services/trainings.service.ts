@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UrlService } from '@app/core/services/url.service';
@@ -8,7 +8,8 @@ const jsonHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
 
 @Injectable()
 export class TrainingsService {
-    constructor(private httpClient: HttpClient, private urls: UrlService) {}
+    private httpClient = inject(HttpClient);
+    private urls = inject(UrlService);
 
     getTrainings(): Observable<Training[]> {
         return this.httpClient.get<Training[]>(`${this.urls.apiUrl}/trainings`);

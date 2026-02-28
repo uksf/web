@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, inject } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { first } from 'rxjs/operators';
@@ -20,6 +20,11 @@ import { ButtonComponent } from '../../../../shared/components/elements/button-p
     imports: [MatDialogTitle, FormsModule, MustMatchDirective, TextInputComponent, ButtonHiddenSubmitComponent, MatCheckbox, FlexFillerComponent, ButtonComponent]
 })
 export class PasswordResetComponent implements OnInit {
+    private auth = inject(AuthenticationService);
+    private route = inject(ActivatedRoute);
+    private router = inject(Router);
+    private permissionsService = inject(PermissionsService);
+
     @ViewChild(NgForm) form!: NgForm;
     @Input() resetPasswordCode: string;
     pending = false;
@@ -42,8 +47,6 @@ export class PasswordResetComponent implements OnInit {
             { type: 'mustMatch', message: 'Passwords are not the same' }
         ]
     };
-
-    constructor(private auth: AuthenticationService, private route: ActivatedRoute, private router: Router, private permissionsService: PermissionsService) {}
 
     ngOnInit() {
         if (!this.resetPasswordCode) {

@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AddServerModalComponent } from '../../modals/add-server-modal/add-server-modal.component';
 import { EditServerModsModalComponent } from '../../modals/edit-server-mods-modal/edit-server-mods-modal.component';
@@ -58,6 +58,11 @@ import { DisplayName } from '../../../../shared/pipes/displayName.pipe';
     ]
 })
 export class OperationsServersComponent extends DestroyableComponent implements OnInit, OnDestroy {
+    private gameServersService = inject(GameServersService);
+    private dialog = inject(MatDialog);
+    private signalrService = inject(SignalRService);
+    private permissions = inject(PermissionsService);
+
     @ViewChild('uploader') uploader: ElementRef;
     @ViewChild('serversContainer') serversContainer: ElementRef;
     missions: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
@@ -99,10 +104,6 @@ export class OperationsServersComponent extends DestroyableComponent implements 
             this.missions.next(missions.map(this.mapMissionElement));
         }
     };
-
-    constructor(private gameServersService: GameServersService, private dialog: MatDialog, private signalrService: SignalRService, private permissions: PermissionsService) {
-        super();
-    }
 
     private get connectionId(): string {
         return this.hubConnection.connection.connectionId;

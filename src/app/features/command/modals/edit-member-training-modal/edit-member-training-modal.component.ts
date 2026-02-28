@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { EditMemberTrainingModalData, EditTrainingItem, Training } from '@app/features/command/models/training';
 import { first } from 'rxjs/operators';
@@ -16,13 +16,19 @@ import { MatButton } from '@angular/material/button';
     imports: [MatDialogTitle, CdkScrollable, MatDialogContent, FlexFillerComponent, MatCheckbox, FormsModule, MatDialogActions, MatButton]
 })
 export class EditMemberTrainingModalComponent implements OnInit {
+    private trainingsService = inject(TrainingsService);
+    private dialog = inject(MatDialog);
+    data = inject<EditMemberTrainingModalData>(MAT_DIALOG_DATA);
+
     accountId: string;
     name: string;
     trainings: Training[];
     availableTrainings: EditTrainingItem[];
     before: string;
 
-    constructor(private trainingsService: TrainingsService, private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: EditMemberTrainingModalData) {
+    constructor() {
+        const data = this.data;
+
         if (data) {
             this.accountId = data.accountId;
             this.name = data.name;

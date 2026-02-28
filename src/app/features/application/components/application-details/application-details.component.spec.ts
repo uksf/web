@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ApplicationDetailsComponent } from './application-details.component';
+import { TestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { ApplicationDetailsComponent } from './application-details.component';
 
 describe('ApplicationDetailsComponent', () => {
     let component: ApplicationDetailsComponent;
@@ -8,7 +10,14 @@ describe('ApplicationDetailsComponent', () => {
 
     beforeEach(() => {
         mockDialog = { open: vi.fn() };
-        component = new ApplicationDetailsComponent(new UntypedFormBuilder(), mockDialog);
+        TestBed.configureTestingModule({
+            providers: [
+                ApplicationDetailsComponent,
+                UntypedFormBuilder,
+                { provide: MatDialog, useValue: mockDialog },
+            ]
+        });
+        component = TestBed.inject(ApplicationDetailsComponent);
     });
 
     describe('updateCachedErrors', () => {

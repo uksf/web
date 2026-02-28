@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { DocumentMetadata, FolderMetadata } from '@app/features/docs/models/documents';
 import { folderAnimations } from '@app/shared/services/animations.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -23,6 +23,9 @@ import { DocsDocumentComponent } from '../docs-document/docs-document.component'
     imports: [NgClass, MatIcon, MatTooltip, MatMenuTrigger, MatMenu, MatMenuItem, DocsDocumentComponent]
 })
 export class DocsFolderComponent {
+    private docsService = inject(DocsService);
+    private dialog = inject(MatDialog);
+
     @Input('allDocumentMetadata') allFolderMetadata: FolderMetadata[];
     @Input('folderMetadata') folderMetadata: FolderMetadata;
     @Output('refresh') refresh = new EventEmitter();
@@ -30,8 +33,6 @@ export class DocsFolderComponent {
     expanded: boolean = false;
     hover: boolean = false;
     menuOpen: boolean = false;
-
-    constructor(private docsService: DocsService, private dialog: MatDialog) {}
 
     trackByFolderId(_: number, folderMetadata: FolderMetadata) {
         return folderMetadata.id;

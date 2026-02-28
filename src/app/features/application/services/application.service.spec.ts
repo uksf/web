@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { ApplicationService } from './application.service';
+import { UrlService } from '@app/core/services/url.service';
 import { of } from 'rxjs';
 
 describe('ApplicationService', () => {
@@ -12,7 +15,14 @@ describe('ApplicationService', () => {
             post: vi.fn().mockReturnValue(of(null)),
             put: vi.fn().mockReturnValue(of(null)),
         };
-        service = new ApplicationService(mockHttpClient, { apiUrl: 'http://localhost:5500' } as any);
+        TestBed.configureTestingModule({
+            providers: [
+                ApplicationService,
+                { provide: HttpClient, useValue: mockHttpClient },
+                { provide: UrlService, useValue: { apiUrl: 'http://localhost:5500' } },
+            ]
+        });
+        service = TestBed.inject(ApplicationService);
     });
 
     it('submitApplication calls correct endpoint', () => {

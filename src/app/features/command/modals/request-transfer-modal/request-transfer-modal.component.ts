@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { NgForm, FormsModule } from '@angular/forms';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
@@ -28,6 +28,13 @@ import { ButtonComponent } from '../../../../shared/components/elements/button-p
     imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, SelectionListComponent_1, DropdownComponent, TextInputComponent, MatDialogActions, ButtonComponent]
 })
 export class RequestTransferModalComponent implements OnInit {
+    private dialog = inject(MatDialog);
+    private membersService = inject(MembersService);
+    private unitsService = inject(UnitsService);
+    private commandRequestsService = inject(CommandRequestsService);
+    data = inject<RequestModalData>(MAT_DIALOG_DATA);
+    private logger = inject(LoggingService);
+
     @ViewChild(NgForm) form!: NgForm;
     @ViewChild('accountList', { read: SelectionListComponent }) accountList: SelectionListComponent;
     pending: boolean = false;
@@ -44,14 +51,9 @@ export class RequestTransferModalComponent implements OnInit {
         reason: [{ type: 'required', message: () => 'A reason for the unit transfer is required' }]
     };
 
-    constructor(
-        private dialog: MatDialog,
-        private membersService: MembersService,
-        private unitsService: UnitsService,
-        private commandRequestsService: CommandRequestsService,
-        @Inject(MAT_DIALOG_DATA) public data: RequestModalData,
-        private logger: LoggingService
-    ) {
+    constructor() {
+        const data = this.data;
+
         if (data) {
             this.preSelection = data.ids;
 

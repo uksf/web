@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Output, EventEmitter, Input, OnInit, OnDestroy, inject } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { first, takeUntil } from 'rxjs/operators';
 import { FormBuilder, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -31,6 +31,12 @@ export enum TeamspeakConnectState {
     imports: [AutofocusStopComponent, FormsModule, ReactiveFormsModule, DropdownComponent, NgClass, MatButton, TextInputComponent]
 })
 export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
+    private teamspeakConnectService = inject(TeamspeakConnectService);
+    private formBuilder = inject(FormBuilder);
+    dialog = inject(MatDialog);
+    private accountService = inject(AccountService);
+    private signalrService = inject(SignalRService);
+
     readonly TeamspeakConnectState = TeamspeakConnectState;
     @Input() showCancel = false;
     @Input() showButtons = true;
@@ -59,14 +65,6 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
             this.updateClients(clients);
         });
     };
-
-    constructor(
-        private teamspeakConnectService: TeamspeakConnectService,
-        private formBuilder: FormBuilder,
-        public dialog: MatDialog,
-        private accountService: AccountService,
-        private signalrService: SignalRService
-    ) {}
 
     ngOnInit(): void {
         this.findTeamspeakClients();

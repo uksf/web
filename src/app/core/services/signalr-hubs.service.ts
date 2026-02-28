@@ -1,14 +1,15 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { first } from 'rxjs/operators';
 import { ConnectionContainer, SignalRService } from './signalr.service';
 import { AccountService } from './account.service';
 
 @Injectable()
 export class SignalRHubsService {
+    private signalrService = inject(SignalRService);
+    private accountService = inject(AccountService);
+
     public allHubConnection: ConnectionContainer;
     public accountGroupedHubConnection: ConnectionContainer;
-
-    constructor(private signalrService: SignalRService, private accountService: AccountService) {}
 
     public async disconnect(): Promise<void> {
         if (this.allHubConnection) {
@@ -43,15 +44,18 @@ export class SignalRHubsService {
                 return;
             }
 
-            this.accountService.getAccount()?.pipe(first()).subscribe({
-                next: (account) => {
-                    this.accountGroupedHubConnection = this.signalrService.connect(`accountGrouped?userId=${account.id}`);
-                    resolve(this.accountGroupedHubConnection);
-                },
-                error: () => {
-                    reject();
-                }
-            });
+            this.accountService
+                .getAccount()
+                ?.pipe(first())
+                .subscribe({
+                    next: (account) => {
+                        this.accountGroupedHubConnection = this.signalrService.connect(`accountGrouped?userId=${account.id}`);
+                        resolve(this.accountGroupedHubConnection);
+                    },
+                    error: () => {
+                        reject();
+                    }
+                });
         });
     }
 }

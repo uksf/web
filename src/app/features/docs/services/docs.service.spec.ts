@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { DocsService } from './docs.service';
+import { UrlService } from '@app/core/services/url.service';
 import { of } from 'rxjs';
 
 describe('DocsService', () => {
@@ -13,7 +16,14 @@ describe('DocsService', () => {
             put: vi.fn().mockReturnValue(of(null)),
             delete: vi.fn().mockReturnValue(of(null))
         };
-        service = new DocsService(mockHttpClient, { apiUrl: 'http://localhost:5500' } as any);
+        TestBed.configureTestingModule({
+            providers: [
+                DocsService,
+                { provide: HttpClient, useValue: mockHttpClient },
+                { provide: UrlService, useValue: { apiUrl: 'http://localhost:5500' } },
+            ]
+        });
+        service = TestBed.inject(DocsService);
     });
 
     it('getFolders calls correct endpoint', () => {

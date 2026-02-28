@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UrlService } from '@app/core/services/url.service';
@@ -6,7 +6,8 @@ import { BasicAccount } from '@app/shared/models/account';
 
 @Injectable()
 export class AdminToolsService {
-    constructor(private httpClient: HttpClient, private urls: UrlService) {}
+    private httpClient = inject(HttpClient);
+    private urls = inject(UrlService);
 
     getActiveAccounts(): Observable<BasicAccount[]> {
         return this.httpClient.get<BasicAccount[]>(`${this.urls.apiUrl}/accounts/active`);

@@ -1,6 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
+import { MatDialog } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
 import { AccountService } from './account.service';
+import { UrlService } from './url.service';
+import { SessionService } from './authentication/session.service';
 import { Account, MembershipState } from '@app/shared/models/account';
 
 describe('AccountService', () => {
@@ -34,7 +39,16 @@ describe('AccountService', () => {
             openDialogs: []
         };
 
-        service = new AccountService(mockHttpClient, mockUrls, mockSessionService, mockDialog);
+        TestBed.configureTestingModule({
+            providers: [
+                AccountService,
+                { provide: HttpClient, useValue: mockHttpClient },
+                { provide: UrlService, useValue: mockUrls },
+                { provide: SessionService, useValue: mockSessionService },
+                { provide: MatDialog, useValue: mockDialog },
+            ]
+        });
+        service = TestBed.inject(AccountService);
         // Spy on checkConnections to avoid window.location access in Node
         checkConnectionsSpy = vi.spyOn(service, 'checkConnections').mockImplementation(() => {});
     });

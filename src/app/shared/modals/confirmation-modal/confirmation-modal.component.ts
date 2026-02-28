@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { AutofocusStopComponent } from '../../components/elements/autofocus-stop/autofocus-stop.component';
 import { CdkScrollable } from '@angular/cdk/scrolling';
@@ -12,11 +12,16 @@ import { FlexFillerComponent } from '../../components/elements/flex-filler/flex-
     imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, MatDialogActions, MatButton, FlexFillerComponent]
 })
 export class ConfirmationModalComponent {
+    dialogRef = inject<MatDialogRef<ConfirmationModalComponent>>(MatDialogRef);
+    data = inject<ConfirmationModalData>(MAT_DIALOG_DATA);
+
     title: string;
     text: string;
     button = 'Confirm';
 
-    constructor(public dialogRef: MatDialogRef<ConfirmationModalComponent>, @Inject(MAT_DIALOG_DATA) public data: ConfirmationModalData) {
+    constructor() {
+        const data = this.data;
+
         this.title = data.title || '';
         this.text = data.message;
         if (data.button) {

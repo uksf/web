@@ -1,4 +1,4 @@
-import { Component, Inject, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, ValidationErrors, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { getValidationError } from '@app/shared/services/form-helper.service';
 import { Observable, of, Subject, timer } from 'rxjs';
@@ -19,6 +19,12 @@ import { MatButton } from '@angular/material/button';
     imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, DropdownComponent, MatDialogActions, MatButton]
 })
 export class AddServerModalComponent implements OnDestroy {
+    private formBuilder = inject(FormBuilder);
+    private dialog = inject(MatDialog);
+    private dialogRef = inject<MatDialogRef<AddServerModalComponent>>(MatDialogRef);
+    private gameServersService = inject(GameServersService);
+    data = inject<AddServerModalData>(MAT_DIALOG_DATA);
+
     private destroy$ = new Subject<void>();
     environmentElements: IDropdownElement[] = [
         { value: '0', displayValue: 'Release' },
@@ -69,13 +75,9 @@ export class AddServerModalComponent implements OnDestroy {
     submitting = false;
     private connectionId: string = '';
 
-    constructor(
-        private formBuilder: FormBuilder,
-        private dialog: MatDialog,
-        private dialogRef: MatDialogRef<AddServerModalComponent>,
-        private gameServersService: GameServersService,
-        @Inject(MAT_DIALOG_DATA) public data: AddServerModalData
-    ) {
+    constructor() {
+        const data = this.data;
+
         if (data) {
             this.edit = true;
             this.server = data.server;
