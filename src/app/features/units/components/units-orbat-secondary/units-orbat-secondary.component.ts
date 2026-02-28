@@ -1,27 +1,35 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ResponseUnitChartNode } from '@app/features/units/models/units';
-import { TreeNode } from 'primeng/api';
+import { TreeNode, PrimeTemplate } from 'primeng/api';
 import { UnitsService } from '@app/features/command/services/units.service';
 import { first } from 'rxjs/operators';
+import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { OrganizationChartModule } from 'primeng/organizationchart';
+import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
 
 @Component({
     selector: 'app-units-orbat-secondary',
     templateUrl: './units-orbat-secondary.component.html',
     styleUrls: ['../units-page/units-page.component.scss', './units-orbat-secondary.component.scss'],
-    standalone: false
+    imports: [DefaultContentAreasComponent, MainContentAreaComponent, MatProgressSpinner, OrganizationChartModule, PrimeTemplate, FlexFillerComponent]
 })
 export class UnitsOrbatSecondaryComponent {
     rootNodes: TreeNode[];
     selectedNode;
 
     constructor(private unitsService: UnitsService, private router: Router) {
-        this.unitsService.getChart('secondary').pipe(first()).subscribe({
-            next: (rootNodeData: ResponseUnitChartNode) => {
-                const rootNode: TreeNode = this.mapToTreeNode(rootNodeData);
-                this.rootNodes = [rootNode];
-            }
-        });
+        this.unitsService
+            .getChart('secondary')
+            .pipe(first())
+            .subscribe({
+                next: (rootNodeData: ResponseUnitChartNode) => {
+                    const rootNode: TreeNode = this.mapToTreeNode(rootNodeData);
+                    this.rootNodes = [rootNode];
+                }
+            });
     }
 
     trackByName(index: number, item: { name: string }): string {
@@ -38,10 +46,10 @@ export class UnitsOrbatSecondaryComponent {
             children: nodeData.children.map((childNode) => this.mapToTreeNode(childNode)),
             data: {
                 id: nodeData.id,
-                members: nodeData.members,
+                members: nodeData.members
             },
             type: 'unit',
-            expanded: true,
+            expanded: true
         };
     }
-} 
+}

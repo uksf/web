@@ -2,17 +2,22 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { first } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { AddUnitModalComponent } from '@app/features/command/modals/add-unit-modal/add-unit-modal.component';
-import { ITreeOptions, KEYS, TREE_ACTIONS, TreeNode } from '@ali-hm/angular-tree-component';
+import { ITreeOptions, KEYS, TREE_ACTIONS, TreeNode, TreeComponent } from '@ali-hm/angular-tree-component';
 import { Permissions } from '@app/core/services/permissions';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { RequestUnitUpdateOrder, RequestUnitUpdateParent, Unit, UnitTreeDataSet } from '@app/features/units/models/units';
 import { UnitsService } from '../../services/units.service';
+import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatButton } from '@angular/material/button';
+import { MatCard } from '@angular/material/card';
 
 @Component({
     selector: 'app-command-units',
     templateUrl: './command-units.component.html',
     styleUrls: ['../command-page/command-page.component.scss', './command-units.component.scss'],
-    standalone: false
+    imports: [DefaultContentAreasComponent, MainContentAreaComponent, MatProgressSpinner, MatButton, MatCard, TreeComponent]
 })
 export class CommandUnitsComponent implements OnInit {
     @ViewChild('combatUnitsTree') combatUnitsTree: TreeNode;
@@ -73,16 +78,19 @@ export class CommandUnitsComponent implements OnInit {
     }
 
     getUnits() {
-        this.unitsService.getUnitTree().pipe(first()).subscribe({
-            next: (response: UnitTreeDataSet) => {
-                this.combat = response.combatNodes;
-                this.auxiliary = response.auxiliaryNodes;
-                this.secondary = response.secondaryNodes;
-                setTimeout(() => {
-                    this.resetTree();
-                }, 100);
-            }
-        });
+        this.unitsService
+            .getUnitTree()
+            .pipe(first())
+            .subscribe({
+                next: (response: UnitTreeDataSet) => {
+                    this.combat = response.combatNodes;
+                    this.auxiliary = response.auxiliaryNodes;
+                    this.secondary = response.secondaryNodes;
+                    setTimeout(() => {
+                        this.resetTree();
+                    }, 100);
+                }
+            });
     }
 
     addUnit() {
@@ -98,23 +106,26 @@ export class CommandUnitsComponent implements OnInit {
     }
 
     editUnit(event) {
-        this.unitsService.getUnit(event.node.id).pipe(first()).subscribe({
-            next: (unit) => {
-                this.dialog
-                    .open(AddUnitModalComponent, {
-                        data: {
-                            unit: unit
-                        }
-                    })
-                    .afterClosed()
-                    .pipe(first())
-                    .subscribe({
-                        next: (_) => {
-                            this.getUnits();
-                        }
-                    });
-            }
-        });
+        this.unitsService
+            .getUnit(event.node.id)
+            .pipe(first())
+            .subscribe({
+                next: (unit) => {
+                    this.dialog
+                        .open(AddUnitModalComponent, {
+                            data: {
+                                unit: unit
+                            }
+                        })
+                        .afterClosed()
+                        .pipe(first())
+                        .subscribe({
+                            next: (_) => {
+                                this.getUnits();
+                            }
+                        });
+                }
+            });
     }
 
     onMove(event) {
@@ -124,20 +135,26 @@ export class CommandUnitsComponent implements OnInit {
                 index: event.to.index,
                 parentId: event.to.parent.id
             };
-            this.unitsService.updateParent(event.node.id, body).pipe(first()).subscribe({
-                next: (_) => {
-                    this.getUnits();
-                }
-            });
+            this.unitsService
+                .updateParent(event.node.id, body)
+                .pipe(first())
+                .subscribe({
+                    next: (_) => {
+                        this.getUnits();
+                    }
+                });
         } else {
             const body: RequestUnitUpdateOrder = {
                 index: event.to.index
             };
-            this.unitsService.updateOrder(event.node.id, body).pipe(first()).subscribe({
-                next: (_) => {
-                    this.getUnits();
-                }
-            });
+            this.unitsService
+                .updateOrder(event.node.id, body)
+                .pipe(first())
+                .subscribe({
+                    next: (_) => {
+                        this.getUnits();
+                    }
+                });
         }
     }
 }

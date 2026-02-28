@@ -4,10 +4,12 @@
         <span>United Kingdom Special Forces</span>
     </div>
     <app-flex-filler></app-flex-filler>
-    <div class="name-wrapper" *ngIf="getName">
+    @if (getName) {
+    <div class="name-wrapper">
         <span routerLink="/profile">{{ getName }}</span>
     </div>
-    <div class="button-wrapper" *ngIf="!mobile && !mobileSmall">
+    } @if (!mobile && !mobileSmall) {
+    <div class="button-wrapper">
         <ng-template [ngxPermissionsExcept]="['UNLOGGED']">
             <app-notifications class="notifications-button"></app-notifications>
         </ng-template>
@@ -35,7 +37,8 @@
             <button mat-menu-item (click)="logout()">Logout</button>
         </mat-menu>
     </div>
-    <div class="button-wrapper" *ngIf="mobile">
+    } @else if (mobile) {
+    <div class="button-wrapper">
         <ng-template [ngxPermissionsExcept]="['UNLOGGED']">
             <app-notifications class="button"></app-notifications>
         </ng-template>
@@ -53,7 +56,8 @@
             <button mat-raised-button color="primary" class="button" (click)="logout()">Logout</button>
         </ng-template>
     </div>
-    <div class="button-wrapper" *ngIf="mobileSmall">
+    } @else if (mobileSmall) {
+    <div class="button-wrapper">
         <ng-template [ngxPermissionsOnly]="['UNLOGGED']">
             <mat-icon routerLink="/login">person</mat-icon>
         </ng-template>
@@ -69,4 +73,5 @@
             <app-notifications></app-notifications>
         </ng-template>
     </div>
+    }
 </div>

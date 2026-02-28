@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { NgForm } from '@angular/forms';
+import { MatDialog, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
+import { NgForm, FormsModule } from '@angular/forms';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { BehaviorSubject, forkJoin } from 'rxjs';
 import { first } from 'rxjs/operators';
@@ -12,12 +12,17 @@ import { CommandRequest } from '@app/features/command/models/command-request';
 import { MembersService } from '@app/shared/services/members.service';
 import { UnitsService } from '../../services/units.service';
 import { CommandRequestsService } from '../../services/command-requests.service';
+import { AutofocusStopComponent } from '../../../../shared/components/elements/autofocus-stop/autofocus-stop.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
+import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
 
 @Component({
     selector: 'app-request-unit-removal-modal',
     templateUrl: './request-unit-removal-modal.component.html',
     styleUrls: ['./request-unit-removal-modal.component.scss', '../../components/command-page/command-page.component.scss'],
-    standalone: false
+    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, DropdownComponent, TextInputComponent, MatDialogActions, ButtonComponent]
 })
 export class RequestUnitRemovalModalComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;
@@ -42,12 +47,15 @@ export class RequestUnitRemovalModalComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        this.membersService.getMembers().pipe(first()).subscribe({
-            next: (accounts: BasicAccount[]) => {
-                this.accounts.next(accounts.map(BasicAccount.mapToElement));
-                this.accounts.complete();
-            }
-        });
+        this.membersService
+            .getMembers()
+            .pipe(first())
+            .subscribe({
+                next: (accounts: BasicAccount[]) => {
+                    this.accounts.next(accounts.map(BasicAccount.mapToElement));
+                    this.accounts.complete();
+                }
+            });
 
         this.units.next([]);
     }
@@ -64,17 +72,19 @@ export class RequestUnitRemovalModalComponent implements OnInit {
         const auxiliaryRequest = this.unitsService.getUnits('auxiliary', accountId);
         const secondaryRequest = this.unitsService.getUnits('secondary', accountId);
 
-        forkJoin([auxiliaryRequest, secondaryRequest]).pipe(first()).subscribe({
-            next: ([auxiliaryUnits, secondaryUnits]) => {
-                // Combine the results from both calls
-                const allUnits = [...auxiliaryUnits, ...secondaryUnits];
-                this.units.next(allUnits.map(Unit.mapToElement));
-            },
-            error: (error) => {
-                this.logger.error('RequestUnitRemovalModal', 'Error fetching units', error);
-                this.units.next([]);
-            }
-        });
+        forkJoin([auxiliaryRequest, secondaryRequest])
+            .pipe(first())
+            .subscribe({
+                next: ([auxiliaryUnits, secondaryUnits]) => {
+                    // Combine the results from both calls
+                    const allUnits = [...auxiliaryUnits, ...secondaryUnits];
+                    this.units.next(allUnits.map(Unit.mapToElement));
+                },
+                error: (error) => {
+                    this.logger.error('RequestUnitRemovalModal', 'Error fetching units', error);
+                    this.units.next([]);
+                }
+            });
     }
 
     submit() {
@@ -89,19 +99,22 @@ export class RequestUnitRemovalModalComponent implements OnInit {
         };
 
         this.pending = true;
-        this.commandRequestsService.createUnitRemoval(commandRequest).pipe(first()).subscribe({
-            next: () => {
-                this.dialog.closeAll();
-                this.pending = false;
-            },
-            error: (error) => {
-                this.dialog.closeAll();
-                this.pending = false;
-                this.dialog.open(MessageModalComponent, {
-                    data: { message: error.error }
-                });
-            }
-        });
+        this.commandRequestsService
+            .createUnitRemoval(commandRequest)
+            .pipe(first())
+            .subscribe({
+                next: () => {
+                    this.dialog.closeAll();
+                    this.pending = false;
+                },
+                error: (error) => {
+                    this.dialog.closeAll();
+                    this.pending = false;
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: error.error }
+                    });
+                }
+            });
     }
 
     getAccountName(element: IDropdownElement): string {

@@ -1,8 +1,15 @@
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { AbstractControl, FormBuilder, FormControl, ValidationErrors, Validators } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
+import { AbstractControl, FormBuilder, FormControl, ValidationErrors, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
+import { AutofocusStopComponent } from '../../../shared/components/elements/autofocus-stop/autofocus-stop.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { DropdownComponent } from '../../../shared/components/elements/dropdown/dropdown.component';
+import { TextInputComponent } from '../../../shared/components/elements/text-input/text-input.component';
+import { MatError } from '@angular/material/form-field';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatButton } from '@angular/material/button';
 
 function onlyOne(group: AbstractControl): ValidationErrors | null {
     const branchValue = (group.get('branch').value as IDropdownElement)?.value ?? '';
@@ -17,7 +24,20 @@ function onlyOne(group: AbstractControl): ValidationErrors | null {
     selector: 'app-new-modpack-build-modal',
     templateUrl: './new-modpack-build-modal.component.html',
     styleUrls: ['./new-modpack-build-modal.component.scss'],
-    standalone: false
+    imports: [
+        AutofocusStopComponent,
+        MatDialogTitle,
+        CdkScrollable,
+        MatDialogContent,
+        FormsModule,
+        ReactiveFormsModule,
+        DropdownComponent,
+        TextInputComponent,
+        MatError,
+        MatCheckbox,
+        MatDialogActions,
+        MatButton
+    ]
 })
 export class NewModpackBuildModalComponent {
     configurationElements: IDropdownElement[] = [
@@ -47,12 +67,12 @@ export class NewModpackBuildModalComponent {
     submitting = false;
 
     constructor(private formBuilder: FormBuilder, public dialogRef: MatDialogRef<NewModpackBuildModalComponent>, @Inject(MAT_DIALOG_DATA) public data: { branches: string[] }) {
-        this.branchElements = data.branches.map(b => ({ value: b, displayValue: b }));
+        this.branchElements = data.branches.map((b) => ({ value: b, displayValue: b }));
         this.branchElements$ = of(this.branchElements);
 
         this.form.controls.configuration.setValue(this.configurationElements[0]);
 
-        const noBranch = this.branchElements.find(e => e.value === 'No branch');
+        const noBranch = this.branchElements.find((e) => e.value === 'No branch');
         if (noBranch) {
             this.form.controls.referenceGroup.controls.branch.setValue(noBranch);
         }

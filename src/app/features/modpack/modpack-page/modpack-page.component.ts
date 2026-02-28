@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { Permissions } from '@app/core/services/permissions';
+import { MatTabNav, MatTabLink, MatTabNavPanel } from '@angular/material/tabs';
+import { RouterLinkActive, RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
     selector: 'app-modpack-page',
     templateUrl: './modpack-page.component.html',
     styleUrls: ['./modpack-page.component.scss', './modpack-page.component.scss-theme.scss'],
-    standalone: false
+    imports: [MatTabNav, MatTabLink, RouterLinkActive, RouterLink, MatTabNavPanel, RouterOutlet]
 })
 export class ModpackPageComponent {
     tabLinks = [{ label: 'Guide', link: '../guide' }];

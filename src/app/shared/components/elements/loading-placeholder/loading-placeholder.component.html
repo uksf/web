@@ -1,6 +1,9 @@
-<div *ngIf="loading; else notLoading">
-    <div *ngIf="loading" [style.height]="height" [style.width]="width" class="loading-shimmer"></div>
+@if (loading) {
+<div>
+    @if (loading) {
+    <div [style.height]="height" [style.width]="width" class="loading-shimmer"></div>
+    }
 </div>
-<ng-template #notLoading>
-    <ng-content *ngTemplateOutlet="elementTemplateRef"></ng-content>
-</ng-template>
+} @else {
+<ng-content *ngTemplateOutlet="elementTemplateRef"></ng-content>
+}

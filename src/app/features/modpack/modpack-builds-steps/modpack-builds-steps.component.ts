@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf } from '@angular/cdk/scrolling';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Permissions } from '@app/core/services/permissions';
 import { PermissionsService } from '@app/core/services/permissions.service';
@@ -13,12 +13,19 @@ import { ModpackBuildStep } from '../models/modpack-build-step';
 import { nextFrame } from '@app/shared/services/helper.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { ThemeEmitterComponent as ThemeEmitterComponent_1 } from '../../../shared/components/elements/theme-emitter/theme-emitter.component';
+import { NgClass } from '@angular/common';
+import { FlexFillerComponent } from '../../../shared/components/elements/flex-filler/flex-filler.component';
+import { MatButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIcon } from '@angular/material/icon';
+import { AnsiToHtmlPipe } from '../../../shared/pipes/ansi-to-html.pipe';
 
 @Component({
     selector: 'app-modpack-builds-steps',
     templateUrl: './modpack-builds-steps.component.html',
     styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-builds-steps.component.scss', './modpack-builds-steps.component.scss-theme.scss'],
-    standalone: false
+    imports: [ThemeEmitterComponent_1, NgClass, FlexFillerComponent, MatButton, MatTooltip, MatIcon, CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf, AnsiToHtmlPipe]
 })
 export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges {
     @ViewChild(ThemeEmitterComponent)

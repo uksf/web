@@ -1,20 +1,26 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { first, takeUntil } from 'rxjs/operators';
 import { AccountService } from '@app/core/services/account.service';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SignalRService, ConnectionContainer } from '@app/core/services/signalr.service';
 import { TimeAgoPipe } from '@app/shared/pipes/time.pipe';
 import { ObjectId } from '@app/shared/models/object-id';
 import { CommentThreadService } from '@app/shared/services/comment-thread.service';
 import type { Comment } from '@app/shared/services/comment-thread.service';
 import { DestroyableComponent } from '@app/shared/components';
+import { TextInputComponent } from '../elements/text-input/text-input.component';
+import { ButtonComponent } from '../elements/button-pending/button.component';
+import { MatIconButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIcon } from '@angular/material/icon';
+import { TimeAgoPipe as TimeAgoPipe_1 } from '../../pipes/time.pipe';
 
 @Component({
     selector: 'app-comment-display',
     templateUrl: './comment-display.component.html',
     styleUrls: ['./comment-display.component.scss'],
     providers: [TimeAgoPipe],
-    standalone: false
+    imports: [FormsModule, ReactiveFormsModule, TextInputComponent, ButtonComponent, MatIconButton, MatTooltip, MatIcon, TimeAgoPipe_1]
 })
 export class CommentDisplayComponent extends DestroyableComponent implements OnInit, OnDestroy {
     @Input() threadId: string;
@@ -61,22 +67,28 @@ export class CommentDisplayComponent extends DestroyableComponent implements OnI
     }
 
     private getComments() {
-        this.commentThreadService.getComments(this.threadId).pipe(first()).subscribe({
-            next: (response) => {
-                if (this.previousResponse !== JSON.stringify(response)) {
-                    this.comments = response.comments;
-                    this.previousResponse = JSON.stringify(response);
+        this.commentThreadService
+            .getComments(this.threadId)
+            .pipe(first())
+            .subscribe({
+                next: (response) => {
+                    if (this.previousResponse !== JSON.stringify(response)) {
+                        this.comments = response.comments;
+                        this.previousResponse = JSON.stringify(response);
+                    }
                 }
-            }
-        });
+            });
     }
 
     getCanPostComment() {
-        this.commentThreadService.canPost(this.threadId).pipe(first()).subscribe({
-            next: (canPost: boolean) => {
-                this.canPostComment = canPost;
-            }
-        });
+        this.commentThreadService
+            .canPost(this.threadId)
+            .pipe(first())
+            .subscribe({
+                next: (canPost: boolean) => {
+                    this.canPostComment = canPost;
+                }
+            });
     }
 
     hasText() {
@@ -92,11 +104,14 @@ export class CommentDisplayComponent extends DestroyableComponent implements OnI
             return;
         }
 
-        this.commentThreadService.postComment(this.threadId, this.commentForm.controls.commentContent.value).pipe(first()).subscribe({
-            next: (_) => {
-                this.commentForm.controls.commentContent.setValue('');
-            }
-        });
+        this.commentThreadService
+            .postComment(this.threadId, this.commentForm.controls.commentContent.value)
+            .pipe(first())
+            .subscribe({
+                next: (_) => {
+                    this.commentForm.controls.commentContent.setValue('');
+                }
+            });
     }
 
     canDelete(comment) {
@@ -104,11 +119,14 @@ export class CommentDisplayComponent extends DestroyableComponent implements OnI
     }
 
     deleteComment(comment) {
-        this.commentThreadService.deleteComment(this.threadId, comment.id).pipe(first()).subscribe({
-            next: () => {
-                this.commentForm.controls.commentContent.setValue('');
-            }
-        });
+        this.commentThreadService
+            .deleteComment(this.threadId, comment.id)
+            .pipe(first())
+            .subscribe({
+                next: () => {
+                    this.commentForm.controls.commentContent.setValue('');
+                }
+            });
     }
 
     trackById(index: number, item: { id: string }): string {

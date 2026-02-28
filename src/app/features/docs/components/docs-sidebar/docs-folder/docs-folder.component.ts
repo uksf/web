@@ -9,13 +9,18 @@ import { CreateFolderModalComponent, FolderModalData } from '../../../modals/cre
 import { UksfError } from '@app/shared/models/response';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { first } from 'rxjs/operators';
+import { NgClass } from '@angular/common';
+import { MatIcon } from '@angular/material/icon';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { DocsDocumentComponent } from '../docs-document/docs-document.component';
 
 @Component({
     selector: 'app-docs-folder',
     templateUrl: './docs-folder.component.html',
     styleUrls: ['./docs-folder.component.scss'],
     animations: [folderAnimations.indicatorRotate, folderAnimations.folderExpansion],
-    standalone: false
+    imports: [NgClass, MatIcon, MatTooltip, MatMenuTrigger, MatMenu, MatMenuItem, DocsDocumentComponent]
 })
 export class DocsFolderComponent {
     @Input('allDocumentMetadata') allFolderMetadata: FolderMetadata[];
@@ -121,18 +126,21 @@ export class DocsFolderComponent {
             .subscribe({
                 next: (result) => {
                     if (result) {
-                        this.docsService.deleteFolder(this.folderMetadata.id).pipe(first()).subscribe({
-                            next: () => {
-                                this.refresh.emit();
-                            },
-                            error: (error: UksfError) => {
-                                this.dialog.open(MessageModalComponent, {
-                                    data: { message: error.error }
-                                });
+                        this.docsService
+                            .deleteFolder(this.folderMetadata.id)
+                            .pipe(first())
+                            .subscribe({
+                                next: () => {
+                                    this.refresh.emit();
+                                },
+                                error: (error: UksfError) => {
+                                    this.dialog.open(MessageModalComponent, {
+                                        data: { message: error.error }
+                                    });
 
-                                this.refresh.emit();
-                            }
-                        });
+                                    this.refresh.emit();
+                                }
+                            });
                     }
                 }
             });

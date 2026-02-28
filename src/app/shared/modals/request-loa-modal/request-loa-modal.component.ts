@@ -1,18 +1,49 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { FormBuilder, Validators } from '@angular/forms';
+import { MatDialog, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
+import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ValidationMessage } from '@app/shared/services/form-helper.service';
 import { CommandRequestsService } from '@app/features/command/services/command-requests.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import moment, { Moment } from 'moment';
 import { Subject } from 'rxjs';
 import { first, takeUntil } from 'rxjs/operators';
+import { AutofocusStopComponent } from '../../components/elements/autofocus-stop/autofocus-stop.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { TextInputComponent } from '../../components/elements/text-input/text-input.component';
+import { MatFormField, MatLabel, MatSuffix, MatError } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatDatepickerInput, MatDatepickerToggle, MatDatepicker } from '@angular/material/datepicker';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatButton } from '@angular/material/button';
+import { FlexFillerComponent } from '../../components/elements/flex-filler/flex-filler.component';
 
 @Component({
     selector: 'app-request-loa-modal',
     templateUrl: './request-loa-modal.component.html',
     styleUrls: ['./request-loa-modal.component.scss'],
-    standalone: false
+    imports: [
+        AutofocusStopComponent,
+        MatDialogTitle,
+        CdkScrollable,
+        MatDialogContent,
+        FormsModule,
+        ReactiveFormsModule,
+        TextInputComponent,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatDatepickerInput,
+        MatDatepickerToggle,
+        MatSuffix,
+        MatDatepicker,
+        MatError,
+        MatCheckbox,
+        MatTooltip,
+        MatDialogActions,
+        MatButton,
+        FlexFillerComponent
+    ]
 })
 export class RequestLoaModalComponent implements OnInit, OnDestroy {
     private destroy$ = new Subject<void>();

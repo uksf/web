@@ -6,12 +6,35 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Training } from '@app/features/command/models/training';
 import { AddTrainingModalComponent } from '@app/features/command/modals/add-training-modal/add-training-modal.component';
 import { TrainingsService } from '../../services/trainings.service';
+import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { NgxPermissionsModule } from 'ngx-permissions';
+import { MatButton } from '@angular/material/button';
+import { MatCard } from '@angular/material/card';
+import { InlineEditComponent } from '../../../../shared/components/elements/inline-edit/inline-edit.component';
+import { FormsModule } from '@angular/forms';
+import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
+import { MatIcon } from '@angular/material/icon';
+import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
     selector: 'app-command-training',
     templateUrl: './command-training.component.html',
     styleUrls: ['../command-page/command-page.component.scss', './command-training.component.scss'],
-    standalone: false
+    imports: [
+        DefaultContentAreasComponent,
+        MainContentAreaComponent,
+        MatProgressSpinner,
+        NgxPermissionsModule,
+        MatButton,
+        MatCard,
+        InlineEditComponent,
+        FormsModule,
+        FlexFillerComponent,
+        MatIcon,
+        MatTooltip
+    ]
 })
 export class CommandTrainingComponent implements OnInit {
     trainings: Training[];
@@ -37,11 +60,14 @@ export class CommandTrainingComponent implements OnInit {
     }
 
     getTrainings() {
-        this.trainingsService.getTrainings().pipe(first()).subscribe({
-            next: (response: Training[]) => {
-                this.trainings = response;
-            }
-        });
+        this.trainingsService
+            .getTrainings()
+            .pipe(first())
+            .subscribe({
+                next: (response: Training[]) => {
+                    this.trainings = response;
+                }
+            });
     }
 
     addTraining() {
@@ -59,11 +85,14 @@ export class CommandTrainingComponent implements OnInit {
     editTraining(check: string) {
         const training: Training = this.trainings.find((x: Training): boolean => x.name === check || x.shortName === check || x.teamspeakGroup === check);
         if (training) {
-            this.trainingsService.editTraining(training).pipe(first()).subscribe({
-                next: (response: Training[]): void => {
-                    this.trainings = response;
-                }
-            });
+            this.trainingsService
+                .editTraining(training)
+                .pipe(first())
+                .subscribe({
+                    next: (response: Training[]): void => {
+                        this.trainings = response;
+                    }
+                });
         }
     }
 
@@ -76,16 +105,22 @@ export class CommandTrainingComponent implements OnInit {
         const dialog: MatDialogRef<ConfirmationModalComponent> = this.dialog.open(ConfirmationModalComponent, {
             data: { message: `Are you sure you want to delete '${training.name}'?` }
         });
-        dialog.afterClosed().pipe(first()).subscribe({
-            next: (result): void => {
-                if (result) {
-                    this.trainingsService.deleteTraining(training.id).pipe(first()).subscribe({
-                        next: (response: Training[]): void => {
-                            this.trainings = response;
-                        }
-                    });
+        dialog
+            .afterClosed()
+            .pipe(first())
+            .subscribe({
+                next: (result): void => {
+                    if (result) {
+                        this.trainingsService
+                            .deleteTraining(training.id)
+                            .pipe(first())
+                            .subscribe({
+                                next: (response: Training[]): void => {
+                                    this.trainings = response;
+                                }
+                            });
+                    }
                 }
-            }
-        });
+            });
     }
 }

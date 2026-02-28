@@ -14,6 +14,16 @@ import { Moment } from 'moment/moment';
 import { UksfError } from '@app/shared/models/response';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { MatDialog } from '@angular/material/dialog';
+import { PaginatorComponent as PaginatorComponent_1 } from '../../../../shared/components/elements/paginator/paginator.component';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatAccordion } from '@angular/material/expansion';
+import { MatCard } from '@angular/material/card';
+import { NgClass, TitleCasePipe, DatePipe } from '@angular/common';
+import { SpotlightDirective } from '../../../../shared/directives/spotlight.directive';
+import { MatIcon } from '@angular/material/icon';
+import { MatDivider } from '@angular/material/divider';
+import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
+import { MatButton } from '@angular/material/button';
 
 export type SelectionMode = 'current' | 'future' | 'past';
 
@@ -22,7 +32,7 @@ export type SelectionMode = 'current' | 'future' | 'past';
     templateUrl: './personnel-loas-list.component.html',
     styleUrls: ['../personnel-page/personnel-page.component.scss', '../personnel-loas/personnel-loas.component.scss', './personnel-loas-list.component.scss'],
     animations: [expansionAnimations.indicatorRotate, expansionAnimations.bodyExpansion],
-    standalone: false
+    imports: [PaginatorComponent_1, MatProgressSpinner, MatAccordion, MatCard, NgClass, SpotlightDirective, MatIcon, MatDivider, FlexFillerComponent, MatButton, TitleCasePipe, DatePipe]
 })
 export class PersonnelLoasListComponent implements OnInit {
     @ViewChild(PaginatorComponent) paginator: PaginatorComponent;

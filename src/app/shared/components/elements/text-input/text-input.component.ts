@@ -1,6 +1,9 @@
 import { Component, DoCheck, ElementRef, EventEmitter, Input, Optional, Output, Self, ViewChild } from '@angular/core';
 import { AbstractControl, ControlValueAccessor, NgControl } from '@angular/forms';
 import { getValidationError, ValidationMessage } from '@app/shared/services/form-helper.service';
+import { MatTooltip } from '@angular/material/tooltip';
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
+import { MatIcon } from '@angular/material/icon';
 
 let nextId = 0;
 
@@ -8,7 +11,7 @@ let nextId = 0;
     selector: 'app-text-input',
     templateUrl: './text-input.component.html',
     styleUrls: ['./text-input.component.scss'],
-    standalone: false
+    imports: [MatTooltip, CdkTextareaAutosize, MatIcon]
 })
 export class TextInputComponent implements ControlValueAccessor, DoCheck {
     @ViewChild('inputElement') inputElement!: ElementRef<HTMLInputElement | HTMLTextAreaElement>;

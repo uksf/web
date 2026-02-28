@@ -1,14 +1,19 @@
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, Validators } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
+import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ModpackRelease } from '../models/modpack-release';
 import { ModpackReleaseService } from '../modpackRelease.service';
+import { AutofocusStopComponent } from '../../../shared/components/elements/autofocus-stop/autofocus-stop.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { MatRadioGroup, MatRadioButton } from '@angular/material/radio';
+import { NgClass } from '@angular/common';
+import { ButtonComponent } from '../../../shared/components/elements/button-pending/button.component';
 
 @Component({
     selector: 'app-new-modpack-release-modal',
     templateUrl: './new-modpack-release-modal.component.html',
     styleUrls: ['./new-modpack-release-modal.component.scss'],
-    standalone: false
+    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, MatRadioGroup, MatRadioButton, NgClass, MatDialogActions, ButtonComponent]
 })
 export class NewModpackReleaseModalComponent {
     previousVersion: string;

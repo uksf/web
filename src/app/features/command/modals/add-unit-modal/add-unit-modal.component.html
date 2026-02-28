@@ -1,11 +1,16 @@
 <app-autofocus-stop></app-autofocus-stop>
-<h2 *ngIf="!edit" mat-dialog-title>Add Unit</h2>
-<h2 *ngIf="edit" mat-dialog-title>Edit Unit</h2>
+@if (!edit) {
+<h2 mat-dialog-title>Add Unit</h2>
+} @else {
+<h2 mat-dialog-title>Edit Unit</h2>
+}
 <mat-dialog-content>
-    <div *ngIf="!loaded" class="loading-container">
+    @if (!loaded) {
+    <div class="loading-container">
         <mat-spinner [diameter]="40"></mat-spinner>
     </div>
-    <form *ngIf="loaded" [formGroup]="form" class="modal-form">
+    } @else {
+    <form [formGroup]="form" class="modal-form">
         <app-text-input class="normal" label="Unit Name" formControlName="name" [required]="true"
             [validationMessages]="validationMessages.name">
         </app-text-input>
@@ -17,12 +22,13 @@
             elementName="branch" (selectionChanged)="resolveAvailableParentUnits()">
             <ng-template #element let-element>{{ element.displayValue }}</ng-template>
         </app-dropdown>
+        @if (!this.edit || this.unit.parent !== '000000000000000000000000') {
         <app-dropdown class="normal" placeholder="Parent Unit" [autocomplete]="false"
-            *ngIf="!this.edit || this.unit.parent !== '000000000000000000000000'"
             [elements]="parentElements$" formControlName="parent" [isRequired]="true"
             elementName="parent">
             <ng-template #element let-element>{{ element.displayValue }}</ng-template>
         </app-dropdown>
+        }
         <app-text-input class="normal" label="TeamSpeak Group ID" formControlName="teamspeakGroup" type="number"
             [validationMessages]="validationMessages.teamspeakGroup">
         </app-text-input>
@@ -36,9 +42,12 @@
         </app-text-input>
         <mat-checkbox color="primary" formControlName="preferShortname">Prefer displaying short name</mat-checkbox>
     </form>
+    }
 </mat-dialog-content>
 <mat-dialog-actions>
-    <button *ngIf="edit" mat-raised-button type="button" color="warn" [disabled]="pending" (click)="delete()">Delete</button>
+    @if (edit) {
+    <button mat-raised-button type="button" color="warn" [disabled]="pending" (click)="delete()">Delete</button>
+    }
     <app-flex-filler></app-flex-filler>
     <app-button (clicked)="submit()" [disabled]="!form.valid || !changesMade" [pending]="pending">Submit</app-button>
 </mat-dialog-actions>

@@ -1,38 +1,50 @@
 <app-default-content-areas>
     <app-main-content-area style="grid-column: span 3">
         <div class="flex-container">
-            <mat-card *ngIf="step != 6">
+            @if (step != 6) {
+            <mat-card>
                 <h2>Application to join UKSF</h2>
-                <p *ngIf="loggedOut()">
-                    If you have already started an application, please <a [routerLink]="['/login']" [queryParams]="{ redirect: 'application' }">login</a> to continue the application
+                @if (loggedOut()) {
+                <p>If you have already started an application, please <a [routerLink]="['/login']" [queryParams]="{ redirect: 'application' }">login</a> to continue the application</p>
+                }
+                <p>
+                    You can edit the Details section after submitting. If you need help, contact an SR1 (red R tag) on our <a href="ts3server://uk-sf.co.uk">TeamSpeak (uk-sf.co.uk)</a> or chat with us
+                    on <a target="_blank" href="http://discord.uk-sf.co.uk">Discord</a>
                 </p>
-                <p>You can edit the Details section after submitting. If you need help, contact an SR1 (red R tag) on our <a href="ts3server://uk-sf.co.uk">TeamSpeak (uk-sf.co.uk)</a> or chat with us on <a target="_blank" href="http://discord.uk-sf.co.uk">Discord</a></p>
             </mat-card>
-            <div class="progress-container" *ngIf="step != 6">
+            } @if (step != 6) {
+            <div class="progress-container">
                 <div class="box" [ngClass]="{ enabled: step == 1, complete: step > 1 }"><span>Information</span></div>
                 <div class="box" [ngClass]="{ enabled: step == 2, complete: step > 2 }"><span>Identity</span></div>
                 <div class="box" [ngClass]="{ enabled: step == 3, complete: step > 3 }"><span>Email Confirmation</span></div>
                 <div class="box" [ngClass]="{ enabled: step == 4, complete: step > 4 }"><span>Communications</span></div>
                 <div class="box" [ngClass]="{ enabled: step == 5 }"><span>Details</span></div>
             </div>
-            <div *ngIf="step == 1">
+            } @if (step == 1) {
+            <div>
                 <app-application-info (nextEvent)="next($event)"></app-application-info>
             </div>
-            <div *ngIf="step == 2">
+            } @if (step == 2) {
+            <div>
                 <app-application-identity (nextEvent)="next($event)" (previousEvent)="previous()"></app-application-identity>
             </div>
-            <div *ngIf="step == 3">
+            } @if (step == 3) {
+            <div>
                 <app-application-email-confirmation (confirmedEvent)="checkStep()"></app-application-email-confirmation>
             </div>
-            <div *ngIf="step == 4">
+            } @if (step == 4) {
+            <div>
                 <app-application-communications (nextEvent)="next($event)"></app-application-communications>
             </div>
-            <div *ngIf="step == 5">
+            } @if (step == 5) {
+            <div>
                 <app-application-details (submitEvent)="submit($event)"></app-application-details>
             </div>
-            <div *ngIf="step == 6">
+            } @if (step == 6) {
+            <div>
                 <app-application-edit></app-application-edit>
             </div>
+            }
         </div>
     </app-main-content-area>
 </app-default-content-areas>

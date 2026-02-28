@@ -1,10 +1,11 @@
 import { Component, ContentChild, Input, TemplateRef } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 
 @Component({
     selector: 'app-loading-placeholder',
     templateUrl: './loading-placeholder.component.html',
     styleUrls: ['./loading-placeholder.component.scss'],
-    standalone: false
+    imports: [NgTemplateOutlet]
 })
 export class LoadingPlaceholderComponent {
     @Input('width') width: string = '64px';

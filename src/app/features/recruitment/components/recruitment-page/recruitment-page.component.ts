@@ -14,12 +14,53 @@ import { buildQuery } from '@app/shared/services/helper.service';
 import { debounceTime, distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
 import { PagedEvent } from '@app/shared/components/elements/paginator/paginator.component';
 import { DestroyableComponent } from '@app/shared/components';
+import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { ThemeEmitterComponent as ThemeEmitterComponent_1 } from '../../../../shared/components/elements/theme-emitter/theme-emitter.component';
+import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
+import { MatCard } from '@angular/material/card';
+import { SpotlightDirective } from '../../../../shared/directives/spotlight.directive';
+import { NgStyle, NgClass, AsyncPipe, DatePipe } from '@angular/common';
+import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { FormsModule } from '@angular/forms';
+import { MatButton } from '@angular/material/button';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { MatIcon } from '@angular/material/icon';
+import { PaginatorComponent } from '../../../../shared/components/elements/paginator/paginator.component';
+import { SideContentAreaComponent } from '../../../../shared/components/content-areas/side-content-area/side-content-area.component';
+import { NgxPermissionsModule } from 'ngx-permissions';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatTabGroup, MatTab } from '@angular/material/tabs';
 
 @Component({
     selector: 'app-recruitment-page',
     templateUrl: './recruitment-page.component.html',
     styleUrls: ['./recruitment-page.component.scss'],
-    standalone: false
+    imports: [
+        DefaultContentAreasComponent,
+        ThemeEmitterComponent_1,
+        MainContentAreaComponent,
+        MatCard,
+        SpotlightDirective,
+        NgStyle,
+        TextInputComponent,
+        FormsModule,
+        MatButton,
+        MatMenuTrigger,
+        MatIcon,
+        MatMenu,
+        MatMenuItem,
+        PaginatorComponent,
+        NgClass,
+        SideContentAreaComponent,
+        NgxPermissionsModule,
+        MatCheckbox,
+        MatTooltip,
+        MatTabGroup,
+        MatTab,
+        AsyncPipe,
+        DatePipe
+    ]
 })
 export class RecruitmentPageComponent extends DestroyableComponent implements OnInit {
     @ViewChild(ThemeEmitterComponent) theme: ThemeEmitterComponent;
@@ -56,19 +97,25 @@ export class RecruitmentPageComponent extends DestroyableComponent implements On
     }
 
     ngOnInit() {
-        this.recruitmentService.getActiveApplications().pipe(first()).subscribe({
-            next: (applications) => {
-                this.userActiveApplications = applications.filter((x: ActiveApplication) => x.account.application.recruiter === this.accountService.account.id);
-                this.allOtherActiveApplications = applications.filter((x: ActiveApplication) => !this.userActiveApplications.includes(x));
-                this.updateApplicationColours();
-                this.getTeamspeakOnlineStates();
-            }
-        });
-        this.recruitmentService.getRecruiters().pipe(first()).subscribe({
-            next: (recruiters) => {
-                this.recruiters = recruiters;
-            }
-        });
+        this.recruitmentService
+            .getActiveApplications()
+            .pipe(first())
+            .subscribe({
+                next: (applications) => {
+                    this.userActiveApplications = applications.filter((x: ActiveApplication) => x.account.application.recruiter === this.accountService.account.id);
+                    this.allOtherActiveApplications = applications.filter((x: ActiveApplication) => !this.userActiveApplications.includes(x));
+                    this.updateApplicationColours();
+                    this.getTeamspeakOnlineStates();
+                }
+            });
+        this.recruitmentService
+            .getRecruiters()
+            .pipe(first())
+            .subscribe({
+                next: (recruiters) => {
+                    this.recruiters = recruiters;
+                }
+            });
 
         this.getCompletedApplications();
         this.getStats();
@@ -80,7 +127,6 @@ export class RecruitmentPageComponent extends DestroyableComponent implements On
         });
     }
 
-
     getUserAccount() {
         return this.accountService.account;
     }
@@ -88,37 +134,36 @@ export class RecruitmentPageComponent extends DestroyableComponent implements On
     updateApplicationColours() {
         const foreground = this.theme?.foregroundColor ?? '';
         [...this.userActiveApplications, ...this.allOtherActiveApplications].forEach((app) => {
-            app._colour = app.processingDifference < 0
-                ? 'green'
-                : app.processingDifference > 10
-                ? 'red'
-                : app.processingDifference > 7
-                ? 'orange'
-                : app.processingDifference > 5
-                ? 'goldenrod'
-                : foreground;
+            app._colour =
+                app.processingDifference < 0 ? 'green' : app.processingDifference > 10 ? 'red' : app.processingDifference > 7 ? 'orange' : app.processingDifference > 5 ? 'goldenrod' : foreground;
         });
     }
 
     setSr1Enabled(recruiter) {
-        this.profileService.updateSetting(recruiter.account.id, recruiter.account.settings).pipe(first()).subscribe({
-            next: (settings: AccountSettings) => {
-                recruiter.account.settings = settings;
-            }
-        });
+        this.profileService
+            .updateSetting(recruiter.account.id, recruiter.account.settings)
+            .pipe(first())
+            .subscribe({
+                next: (settings: AccountSettings) => {
+                    recruiter.account.settings = settings;
+                }
+            });
     }
 
     setAccountSr1Enabled() {
         this.accountService.account.settings.sr1Enabled = !this.accountService.account.settings.sr1Enabled;
 
-        this.profileService.updateSetting(this.accountService.account.id, this.accountService.account.settings).pipe(first()).subscribe({
-            next: (settings: AccountSettings) => {
-                const recruiter = this.activity.find((x) => x.account.id === this.accountService.account.id);
-                if (recruiter !== undefined) {
-                    recruiter.account.settings = settings;
+        this.profileService
+            .updateSetting(this.accountService.account.id, this.accountService.account.settings)
+            .pipe(first())
+            .subscribe({
+                next: (settings: AccountSettings) => {
+                    const recruiter = this.activity.find((x) => x.account.id === this.accountService.account.id);
+                    if (recruiter !== undefined) {
+                        recruiter.account.settings = settings;
+                    }
                 }
-            }
-        });
+            });
     }
 
     openApplication(application: ActiveApplication | CompletedApplication) {
@@ -178,7 +223,8 @@ export class RecruitmentPageComponent extends DestroyableComponent implements On
             .set('sortDirection', this.sortDirection)
             .set('recruiterId', this.recruiterIdFilter);
 
-        this.recruitmentService.getCompletedApplications(params)
+        this.recruitmentService
+            .getCompletedApplications(params)
             .pipe(first())
             .subscribe({
                 next: (pagedMembers) => {
@@ -198,22 +244,28 @@ export class RecruitmentPageComponent extends DestroyableComponent implements On
             let teamspeakState: AsyncSubject<OnlineState> = new AsyncSubject<OnlineState>();
             this.teamspeakStates.Add(application.account.id, teamspeakState);
 
-            this.recruitmentService.getTeamspeakOnlineState(application.account.id).pipe(first()).subscribe({
-                next: (state) => {
-                    teamspeakState.next(state);
-                    teamspeakState.complete();
-                }
-            });
+            this.recruitmentService
+                .getTeamspeakOnlineState(application.account.id)
+                .pipe(first())
+                .subscribe({
+                    next: (state) => {
+                        teamspeakState.next(state);
+                        teamspeakState.complete();
+                    }
+                });
         }
     }
 
     private getStats() {
-        this.recruitmentService.getStats().pipe(first()).subscribe({
-            next: (response) => {
-                this.activity = response.activity;
-                this.yourStats = response.yourStats;
-                this.sr1Stats = response.sr1Stats;
-            }
-        });
+        this.recruitmentService
+            .getStats()
+            .pipe(first())
+            .subscribe({
+                next: (response) => {
+                    this.activity = response.activity;
+                    this.yourStats = response.yourStats;
+                    this.sr1Stats = response.sr1Stats;
+                }
+            });
     }
 }

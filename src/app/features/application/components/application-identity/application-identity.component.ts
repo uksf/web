@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
-import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject, Observable, of, timer } from 'rxjs';
 import { first, map, switchMap, takeUntil } from 'rxjs/operators';
@@ -17,6 +17,12 @@ import { AuthenticationService } from '@app/core/services/authentication/authent
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { ApplicationService } from '../../services/application.service';
 import { DestroyableComponent } from '@app/shared/components';
+import { MatCard } from '@angular/material/card';
+import { TextInputComponent as TextInputComponent_1 } from '../../../../shared/components/elements/text-input/text-input.component';
+import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
+import { ReactiveFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
+import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
+import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
 
 function matchingPasswords(passwordKey: string, confirmPasswordKey: string) {
     return (group: UntypedFormGroup): ValidationErrors | null => {
@@ -73,7 +79,7 @@ function validDob(dayKey: string, monthKey: string, yearKey: string) {
     selector: 'app-application-identity',
     templateUrl: './application-identity.component.html',
     styleUrls: ['../application-page/application-page.component.scss', './application-identity.component.scss'],
-    standalone: false
+    imports: [MatCard, FormsModule, ReactiveFormsModule, TextInputComponent_1, DropdownComponent, ReactiveFormValueDebugComponent, ButtonComponent, FlexFillerComponent]
 })
 export class ApplicationIdentityComponent extends DestroyableComponent implements OnInit {
     @Output() nextEvent = new EventEmitter();
@@ -106,7 +112,7 @@ export class ApplicationIdentityComponent extends DestroyableComponent implement
             { type: 'required', message: 'Date of Birth is required' },
             { type: 'nan', message: 'Invalid date: Not a number' },
             { type: 'dead', message: 'The undead are not welcome here' },
-            { type: 'born', message: "Surely a time traveller has better things to do?" },
+            { type: 'born', message: 'Surely a time traveller has better things to do?' },
             { type: 'day', message: 'Invalid date: Day should be between 1 and 31' },
             { type: 'month', message: 'Invalid date: Month should be between 1 and 12' },
             { type: 'monthday', message: "Invalid date: There aren't that many days in that month" },
@@ -152,20 +158,26 @@ export class ApplicationIdentityComponent extends DestroyableComponent implement
     }
 
     ngOnInit(): void {
-        this.formGroup.get('dobGroup').statusChanges.pipe(takeUntil(this.destroy$)).subscribe({ next: () => this.updateCachedDobError() });
-        this.applicationService.getNations().pipe(first()).subscribe({
-            next: (orderedCountries: string[]) => {
-                const countries = CountryPickerService.countries;
-                orderedCountries.forEach((countryValue: string, orderedIndex: number) => {
-                    const index = countries.findIndex((country: ICountry) => country.value === countryValue);
-                    if (index !== -1) {
-                        countries.splice(orderedIndex, 0, countries.splice(index, 1)[0]);
-                    }
-                });
-                this.countries.next(countries.map(this.mapCountryElement));
-                this.countries.complete();
-            }
-        });
+        this.formGroup
+            .get('dobGroup')
+            .statusChanges.pipe(takeUntil(this.destroy$))
+            .subscribe({ next: () => this.updateCachedDobError() });
+        this.applicationService
+            .getNations()
+            .pipe(first())
+            .subscribe({
+                next: (orderedCountries: string[]) => {
+                    const countries = CountryPickerService.countries;
+                    orderedCountries.forEach((countryValue: string, orderedIndex: number) => {
+                        const index = countries.findIndex((country: ICountry) => country.value === countryValue);
+                        if (index !== -1) {
+                            countries.splice(orderedIndex, 0, countries.splice(index, 1)[0]);
+                        }
+                    });
+                    this.countries.next(countries.map(this.mapCountryElement));
+                    this.countries.complete();
+                }
+            });
     }
 
     private validateEmail(control: AbstractControl): Observable<ValidationErrors> {
@@ -234,20 +246,23 @@ export class ApplicationIdentityComponent extends DestroyableComponent implement
             nation: formObj.nation.value
         };
 
-        this.authenticationService.createAccount(body).pipe(first()).subscribe({
-            next: () => {
-                this.permissionsService.refresh().then(() => {
+        this.authenticationService
+            .createAccount(body)
+            .pipe(first())
+            .subscribe({
+                next: () => {
+                    this.permissionsService.refresh().then(() => {
+                        this.pending = false;
+                        this.nextEvent.emit();
+                    });
+                },
+                error: (error: UksfError) => {
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: error?.error || 'Account creation failed' }
+                    });
                     this.pending = false;
-                    this.nextEvent.emit();
-                });
-            },
-            error: (error: UksfError) => {
-                this.dialog.open(MessageModalComponent, {
-                    data: { message: error?.error || 'Account creation failed' }
-                });
-                this.pending = false;
-            }
-        });
+                }
+            });
     }
 
     previous() {

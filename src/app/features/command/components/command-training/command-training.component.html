@@ -1,10 +1,12 @@
 <app-default-content-areas>
     <app-main-content-area style="grid-column: span 3">
         <div class="flex-container">
-            <div *ngIf="!trainings" class="spinner-container">
+            @if (!trainings) {
+            <div class="spinner-container">
                 <mat-spinner></mat-spinner>
             </div>
-            <div *ngIf="trainings" class="trainings-container">
+            } @if (trainings) {
+            <div class="trainings-container">
                 <ng-template [ngxPermissionsOnly]="['COMMAND']">
                     <div>
                         <button (click)="addTraining()" color="primary" mat-raised-button>Add Training</button>
@@ -16,7 +18,8 @@
                             <span class="teamspeakGroup">TS Group ID</span>
                             <span class="filler"></span>
                         </mat-card>
-                        <mat-card *ngFor="let training of trainings; trackBy: trackByTrainingId" class="trainings-list-item">
+                        @for (training of trainings; track trackByTrainingId($index, training)) {
+                        <mat-card class="trainings-list-item">
                             <app-inline-edit
                                 (finishedEvent)="editTraining($event)"
                                 [(ngModel)]="training.name"
@@ -44,9 +47,11 @@
                             <app-flex-filler></app-flex-filler>
                             <mat-icon (click)="deleteTraining($event, training)" class="delete-icon" matTooltip="Delete training">highlight_off</mat-icon>
                         </mat-card>
+                        }
                     </div>
                 </ng-template>
             </div>
+            }
         </div>
     </app-main-content-area>
 </app-default-content-areas>

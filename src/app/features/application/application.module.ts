@@ -16,16 +16,14 @@ import { ApplicationEditComponent } from './components/application-edit/applicat
     imports: [
         SharedModule,
         ApplicationRoutingModule,
-    ],
-    declarations: [
         ApplicationPageComponent,
         ApplicationInfoComponent,
         ApplicationIdentityComponent,
         ApplicationEmailConfirmationComponent,
         ApplicationCommunicationsComponent,
         ApplicationDetailsComponent,
-        ApplicationEditComponent,
+        ApplicationEditComponent
     ],
-    providers: [ApplicationService],
+    providers: [ApplicationService]
 })
 export class ApplicationModule {}

@@ -4,12 +4,19 @@ import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.
 import { DebouncedCallback } from '@app/shared/utils/debounce-callback';
 import { DestroyableComponent } from '@app/shared/components';
 import { HomeService, InstagramImage, TeamspeakOnlineUser } from '../../services/home.service';
+import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
+import { SideContentAreaComponent } from '../../../../shared/components/content-areas/side-content-area/side-content-area.component';
+import { MatCard } from '@angular/material/card';
+import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { ZonedTime } from '../../../../shared/pipes/time.pipe';
 
 @Component({
     selector: 'app-home-page',
     templateUrl: './home-page.component.html',
     styleUrls: ['./home-page.component.scss'],
-    standalone: false
+    imports: [DefaultContentAreasComponent, MainContentAreaComponent, SideContentAreaComponent, MatCard, FlexFillerComponent, MatProgressSpinner, ZonedTime]
 })
 export class HomePageComponent extends DestroyableComponent implements OnInit {
     commanders: TeamspeakOnlineUser[];
@@ -69,24 +76,27 @@ export class HomePageComponent extends DestroyableComponent implements OnInit {
     }
 
     private getClients() {
-        this.homeService.getOnlineAccounts().pipe(first()).subscribe({
-            next: (response) => {
-                if (response) {
-                    if (response.commanders) {
-                        this.commanders = response.commanders;
-                    }
-                    if (response.recruiters) {
-                        this.recruiters = response.recruiters;
-                    }
-                    if (response.members) {
-                        this.members = response.members;
-                    }
-                    if (response.guests) {
-                        this.guests = response.guests;
+        this.homeService
+            .getOnlineAccounts()
+            .pipe(first())
+            .subscribe({
+                next: (response) => {
+                    if (response) {
+                        if (response.commanders) {
+                            this.commanders = response.commanders;
+                        }
+                        if (response.recruiters) {
+                            this.recruiters = response.recruiters;
+                        }
+                        if (response.members) {
+                            this.members = response.members;
+                        }
+                        if (response.guests) {
+                            this.guests = response.guests;
+                        }
                     }
                 }
-            }
-        });
+            });
     }
 
     trackByInstagramId(index: number, item: InstagramImage): string {
@@ -98,12 +108,15 @@ export class HomePageComponent extends DestroyableComponent implements OnInit {
     }
 
     private getInstagramImages() {
-        this.homeService.getInstagramImages().pipe(first()).subscribe({
-            next: (response) => {
-                if (response.length > 0) {
-                    this.instagramImages = response;
+        this.homeService
+            .getInstagramImages()
+            .pipe(first())
+            .subscribe({
+                next: (response) => {
+                    if (response.length > 0) {
+                        this.instagramImages = response;
+                    }
                 }
-            }
-        });
+            });
     }
 }

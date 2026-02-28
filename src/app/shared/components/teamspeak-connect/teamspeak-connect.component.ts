@@ -1,7 +1,7 @@
 import { Component, Output, EventEmitter, Input, OnInit, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { first, takeUntil } from 'rxjs/operators';
-import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { TeamspeakConnectService } from '@app/shared/services/teamspeak-connect.service';
 import { AccountService } from '@app/core/services/account.service';
@@ -11,19 +11,24 @@ import { UksfError } from '@app/shared/models/response';
 import { TeamspeakConnectClient } from '@app/shared/models/teamspeak-connect-client';
 import { DebouncedCallback } from '@app/shared/utils/debounce-callback';
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
+import { AutofocusStopComponent } from '../elements/autofocus-stop/autofocus-stop.component';
+import { DropdownComponent } from '../elements/dropdown/dropdown.component';
+import { NgClass } from '@angular/common';
+import { MatButton } from '@angular/material/button';
+import { TextInputComponent } from '../elements/text-input/text-input.component';
 
 export enum TeamspeakConnectState {
     SELECT_USER = 0,
     ENTER_CODE = 1,
     SUCCESS = 2,
-    FAILURE = 3,
+    FAILURE = 3
 }
 
 @Component({
     selector: 'app-teamspeak-connect',
     templateUrl: './teamspeak-connect.component.html',
     styleUrls: ['./teamspeak-connect.component.scss'],
-    standalone: false
+    imports: [AutofocusStopComponent, FormsModule, ReactiveFormsModule, DropdownComponent, NgClass, MatButton, TextInputComponent]
 })
 export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
     readonly TeamspeakConnectState = TeamspeakConnectState;
@@ -86,11 +91,14 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
     }
 
     findTeamspeakClients() {
-        this.teamspeakConnectService.getOnlineClients().pipe(first()).subscribe({
-            next: (clients) => {
-                this.updateClients(clients);
-            }
-        });
+        this.teamspeakConnectService
+            .getOnlineClients()
+            .pipe(first())
+            .subscribe({
+                next: (clients) => {
+                    this.updateClients(clients);
+                }
+            });
     }
 
     updateClients(clients: TeamspeakConnectClient[]) {
@@ -106,11 +114,13 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
                 });
             }
             this.previousResponse = JSON.stringify(this.clients);
-            this.clientElements$.next(this.clients.map(c => ({
-                value: String(c.clientDbId),
-                displayValue: c.clientName,
-                data: c
-            })));
+            this.clientElements$.next(
+                this.clients.map((c) => ({
+                    value: String(c.clientDbId),
+                    displayValue: c.clientName,
+                    data: c
+                }))
+            );
         }
     }
 
@@ -131,11 +141,14 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
     }
 
     requestCode() {
-        this.teamspeakConnectService.requestCode(this.selectedTeamspeakId).pipe(first()).subscribe({
-            next: () => {
-                this.state = TeamspeakConnectState.ENTER_CODE;
-            }
-        });
+        this.teamspeakConnectService
+            .requestCode(this.selectedTeamspeakId)
+            .pipe(first())
+            .subscribe({
+                next: () => {
+                    this.state = TeamspeakConnectState.ENTER_CODE;
+                }
+            });
     }
 
     changed(code: string) {

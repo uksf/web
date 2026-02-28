@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { AccountService } from '@app/core/services/account.service';
 import { UrlService } from '@app/core/services/url.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -7,7 +7,7 @@ import { ProfileService } from '../../services/profile.service';
 import { MembersService } from '@app/shared/services/members.service';
 import { ConnectTeamspeakModalComponent } from '../../modals/connect-teamspeak-modal/connect-teamspeak-modal.component';
 import { ChangePasswordModalComponent } from '../../modals/change-password-modal/change-password-modal.component';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ChangeFirstLastModalComponent } from '../../modals/change-first-last-modal/change-first-last-modal.component';
 import { Permissions } from '@app/core/services/permissions';
 import { CountryPickerService, ICountry } from '@app/shared/services/country-picker/country-picker.service';
@@ -17,12 +17,40 @@ import { first, takeUntil } from 'rxjs/operators';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { Account, MembershipState } from '@app/shared/models/account';
 import { DestroyableComponent } from '@app/shared/components';
+import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { FullContentAreaComponent } from '../../../../shared/components/content-areas/full-content-area/full-content-area.component';
+import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
+import { MatButton } from '@angular/material/button';
+import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
+import { MatCard } from '@angular/material/card';
+import { SideContentAreaComponent } from '../../../../shared/components/content-areas/side-content-area/side-content-area.component';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatTooltip } from '@angular/material/tooltip';
+import { NgxPermissionsModule } from 'ngx-permissions';
+import { DatePipe } from '@angular/common';
+import { CountryImage } from '../../../../shared/pipes/country.pipe';
 
 @Component({
     selector: 'app-profile-page',
     templateUrl: './profile-page.component.html',
     styleUrls: ['./profile-page.component.scss'],
-    standalone: false
+    imports: [
+        DefaultContentAreasComponent,
+        FullContentAreaComponent,
+        FlexFillerComponent,
+        MatButton,
+        MainContentAreaComponent,
+        MatCard,
+        RouterLink,
+        SideContentAreaComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        MatCheckbox,
+        MatTooltip,
+        NgxPermissionsModule,
+        DatePipe,
+        CountryImage
+    ]
 })
 export class ProfilePageComponent extends DestroyableComponent implements OnInit {
     countries: ICountry[];
@@ -79,40 +107,43 @@ export class ProfilePageComponent extends DestroyableComponent implements OnInit
                 });
             } else {
                 const code = this.route.snapshot.queryParams['validation'];
-                this.profileService.connectSteam(id, { code: code }).pipe(first()).subscribe({
-                    next: () => {
-                        this.router.navigate(['/profile']).then(() => {
-                            this.getAccount();
-                            this.dialog
-                                .open(MessageModalComponent, {
-                                    data: { message: 'Steam successfully connected' }
-                                })
-                                .afterClosed()
-                                .pipe(first())
-                                .subscribe({
-                                    next: () => {
-                                        this.accountService.checkConnections();
-                                    }
-                                });
-                        });
-                    },
-                    error: (error) => {
-                        this.router.navigate(['/profile']).then(() => {
-                            this.getAccount();
-                            this.dialog
-                                .open(MessageModalComponent, {
-                                    data: { message: error.error }
-                                })
-                                .afterClosed()
-                                .pipe(first())
-                                .subscribe({
-                                    next: () => {
-                                        this.accountService.checkConnections();
-                                    }
-                                });
-                        });
-                    }
-                });
+                this.profileService
+                    .connectSteam(id, { code: code })
+                    .pipe(first())
+                    .subscribe({
+                        next: () => {
+                            this.router.navigate(['/profile']).then(() => {
+                                this.getAccount();
+                                this.dialog
+                                    .open(MessageModalComponent, {
+                                        data: { message: 'Steam successfully connected' }
+                                    })
+                                    .afterClosed()
+                                    .pipe(first())
+                                    .subscribe({
+                                        next: () => {
+                                            this.accountService.checkConnections();
+                                        }
+                                    });
+                            });
+                        },
+                        error: (error) => {
+                            this.router.navigate(['/profile']).then(() => {
+                                this.getAccount();
+                                this.dialog
+                                    .open(MessageModalComponent, {
+                                        data: { message: error.error }
+                                    })
+                                    .afterClosed()
+                                    .pipe(first())
+                                    .subscribe({
+                                        next: () => {
+                                            this.accountService.checkConnections();
+                                        }
+                                    });
+                            });
+                        }
+                    });
             }
         } else if (this.route.snapshot.queryParams['discordid']) {
             const id = this.route.snapshot.queryParams['discordid'];
@@ -134,14 +165,52 @@ export class ProfilePageComponent extends DestroyableComponent implements OnInit
             } else {
                 const code = this.route.snapshot.queryParams['validation'];
                 const added = this.route.snapshot.queryParams['added'];
-                this.profileService.connectDiscord(id, { code: code }).pipe(first()).subscribe({
-                    next: () => {
-                        this.router.navigate(['/profile']).then(() => {
-                            this.getAccount();
-                            if (added === 'true') {
+                this.profileService
+                    .connectDiscord(id, { code: code })
+                    .pipe(first())
+                    .subscribe({
+                        next: () => {
+                            this.router.navigate(['/profile']).then(() => {
+                                this.getAccount();
+                                if (added === 'true') {
+                                    this.dialog
+                                        .open(MessageModalComponent, {
+                                            data: { message: 'Discord successfully connected' }
+                                        })
+                                        .afterClosed()
+                                        .pipe(first())
+                                        .subscribe({
+                                            next: () => {
+                                                this.accountService.checkConnections();
+                                            }
+                                        });
+                                } else {
+                                    this.dialog
+                                        .open(ConfirmationModalComponent, {
+                                            data: {
+                                                message: "Discord successfully connected\n\nWe were unable to add you to our Discord server.\nPlease join by pressing 'Join Discord'",
+                                                button: 'Join Discord'
+                                            }
+                                        })
+                                        .afterClosed()
+                                        .pipe(first())
+                                        .subscribe({
+                                            next: (result) => {
+                                                this.accountService.checkConnections();
+                                                if (result) {
+                                                    window.open('https://discord.uk-sf.co.uk', '_blank');
+                                                }
+                                            }
+                                        });
+                                }
+                            });
+                        },
+                        error: (error) => {
+                            this.router.navigate(['/profile']).then(() => {
+                                this.getAccount();
                                 this.dialog
                                     .open(MessageModalComponent, {
-                                        data: { message: 'Discord successfully connected' }
+                                        data: { message: error.error }
                                     })
                                     .afterClosed()
                                     .pipe(first())
@@ -150,44 +219,9 @@ export class ProfilePageComponent extends DestroyableComponent implements OnInit
                                             this.accountService.checkConnections();
                                         }
                                     });
-                            } else {
-                                this.dialog
-                                    .open(ConfirmationModalComponent, {
-                                        data: {
-                                            message: "Discord successfully connected\n\nWe were unable to add you to our Discord server.\nPlease join by pressing 'Join Discord'",
-                                            button: 'Join Discord'
-                                        }
-                                    })
-                                    .afterClosed()
-                                    .pipe(first())
-                                    .subscribe({
-                                        next: (result) => {
-                                            this.accountService.checkConnections();
-                                            if (result) {
-                                                window.open('https://discord.uk-sf.co.uk', '_blank');
-                                            }
-                                        }
-                                    });
-                            }
-                        });
-                    },
-                    error: (error) => {
-                        this.router.navigate(['/profile']).then(() => {
-                            this.getAccount();
-                            this.dialog
-                                .open(MessageModalComponent, {
-                                    data: { message: error.error }
-                                })
-                                .afterClosed()
-                                .pipe(first())
-                                .subscribe({
-                                    next: () => {
-                                        this.accountService.checkConnections();
-                                    }
-                                });
-                        });
-                    }
-                });
+                            });
+                        }
+                    });
             }
         } else {
             this.getAccount();
@@ -197,20 +231,26 @@ export class ProfilePageComponent extends DestroyableComponent implements OnInit
     getAccount(forceRefresh: boolean = false) {
         if (this.route.snapshot.params.id) {
             this.accountId = this.route.snapshot.params.id;
-            this.membersService.getAccount(this.accountId).pipe(first()).subscribe({
-                next: (response) => {
-                    this.account = response;
-                    this.account.serviceRecord?.reverse();
-                    this.populateSettings();
-                }
-            });
-        } else {
-            if (forceRefresh) {
-                this.accountService.getAccount()?.pipe(first()).subscribe({
-                    next: (account) => {
-                        this.setAccount(account);
+            this.membersService
+                .getAccount(this.accountId)
+                .pipe(first())
+                .subscribe({
+                    next: (response) => {
+                        this.account = response;
+                        this.account.serviceRecord?.reverse();
+                        this.populateSettings();
                     }
                 });
+        } else {
+            if (forceRefresh) {
+                this.accountService
+                    .getAccount()
+                    ?.pipe(first())
+                    .subscribe({
+                        next: (account) => {
+                            this.setAccount(account);
+                        }
+                    });
             } else {
                 this.setAccount(this.accountService.account);
             }
@@ -326,12 +366,15 @@ export class ProfilePageComponent extends DestroyableComponent implements OnInit
 
     changeSetting() {
         this.settingsFormGroup.disable();
-        this.profileService.updateSetting(this.account.id, this.settingsFormGroup.value).pipe(first()).subscribe({
-            next: () => {
-                this.getAccount(true);
-                this.settingsFormGroup.enable();
-            }
-        });
+        this.profileService
+            .updateSetting(this.account.id, this.settingsFormGroup.value)
+            .pipe(first())
+            .subscribe({
+                next: () => {
+                    this.getAccount(true);
+                    this.settingsFormGroup.enable();
+                }
+            });
     }
 
     trackByIndex(index: number): number {

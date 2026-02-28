@@ -1,11 +1,11 @@
 <form #form="ngForm">
     <input [(ngModel)]="model" autocomplete="off" hidden tabindex="-1" name="model" />
-    <div class="form-field-wrapper" [class.form-field-focused]="focused" [class.form-field-has-error]="hasError"
-         [class.form-field-disabled]="disabled" [ngClass]="formFieldClass">
+    <div class="form-field-wrapper" [class.form-field-focused]="focused" [class.form-field-has-error]="hasError" [class.form-field-disabled]="disabled" [ngClass]="formFieldClass">
         <div class="form-field" [class.form-field-simple]="!autocomplete" (click)="!autocomplete && !disabled ? openPanel() : null">
-            <label *ngIf="placeholder" class="form-field-label" [class.required]="required"
-                   [class.floating]="labelFloating" [attr.for]="inputId">{{ placeholder }}</label>
-            <input *ngIf="autocomplete"
+            @if (placeholder) {
+            <label class="form-field-label" [class.required]="required" [class.floating]="labelFloating" [attr.for]="inputId">{{ placeholder }}</label>
+            } @if (autocomplete) {
+            <input
                 #textInput="ngModel"
                 [id]="inputId"
                 [attr.aria-describedby]="showErrors && hasError ? inputId + '-error' : null"
@@ -25,7 +25,8 @@
                 (focus)="onInputFocus()"
                 (blur)="onInputBlur()"
             />
-            <input *ngIf="!autocomplete"
+            } @else {
+            <input
                 #textInput="ngModel"
                 [id]="inputId"
                 [attr.aria-describedby]="showErrors && hasError ? inputId + '-error' : null"
@@ -41,23 +42,22 @@
                 (focus)="onInputFocus()"
                 (blur)="onInputBlur()"
             />
-            <button *ngIf="autocomplete && textModel && !disabled" type="button" class="form-field-clear"
-                    aria-label="Clear" (click)="clear(); $event.stopPropagation()">
+            } @if (autocomplete && textModel && !disabled) {
+            <button type="button" class="form-field-clear" aria-label="Clear" (click)="clear(); $event.stopPropagation()">
                 <mat-icon>close</mat-icon>
             </button>
-            <button *ngIf="!autocomplete && !disabled" type="button" class="form-field-arrow"
-                    aria-label="Open" (click)="openPanel(); $event.stopPropagation()">
+            } @if (!autocomplete && !disabled) {
+            <button type="button" class="form-field-arrow" aria-label="Open" (click)="openPanel(); $event.stopPropagation()">
                 <mat-icon>arrow_drop_down</mat-icon>
             </button>
+            }
         </div>
         <div [id]="inputId + '-error'" class="form-field-error" [class.visible]="showErrors && hasError" [class.reserve-space]="reserveErrorSpace">
             {{ errorMessage }}
         </div>
     </div>
-    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelect($event)"
-                      [displayWith]="autoDisplayWith" [autoActiveFirstOption]="autocomplete">
-        <cdk-virtual-scroll-viewport [maxBufferPx]="1000" [minBufferPx]="600"
-                                     [ngStyle]="{ height: scrollPanelHeight }" itemSize="48">
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelect($event)" [displayWith]="autoDisplayWith" [autoActiveFirstOption]="autocomplete">
+        <cdk-virtual-scroll-viewport [maxBufferPx]="1000" [minBufferPx]="600" [ngStyle]="{ height: scrollPanelHeight }" itemSize="48">
             <mat-option
                 *cdkVirtualFor="let element of filteredElements | async; trackBy: trackBy"
                 [matTooltipDisabled]="tooltip === null"
@@ -67,8 +67,11 @@
                 [value]="element"
                 [disabled]="getElementDisabled(element)"
             >
-                <ng-container *ngIf="elementTemplateRef; else defaultElement" [ngTemplateOutletContext]="{ $implicit: element }" [ngTemplateOutlet]="elementTemplateRef"></ng-container>
-                <ng-template #defaultElement>{{ displayWith(element) }}</ng-template>
+                @if (elementTemplateRef) {
+                <ng-container [ngTemplateOutletContext]="{ $implicit: element }" [ngTemplateOutlet]="elementTemplateRef"></ng-container>
+                } @else {
+                {{ displayWith(element) }}
+                }
             </mat-option>
         </cdk-virtual-scroll-viewport>
     </mat-autocomplete>

@@ -1,4 +1,5 @@
-<div *ngIf="application != null" class="flex-container flex-row padding-bottom-thin collapse">
+@if (application != null) {
+<div class="flex-container flex-row padding-bottom-thin collapse">
     <div class="flex-container flex-grow flex-row no-padding collapse-tiny">
         <button mat-icon-button class="back-button" (click)="back()"><mat-icon>arrow_back</mat-icon></button>
         <h3 class="small-centred">
@@ -8,72 +9,49 @@
                 {{ application.account.application.state == applicationState.ACCEPTED ? 'Accepted' : application.account.application.state == applicationState.REJECTED ? 'Rejected' : '' }}
             </span>
         </h3>
-        <mat-spinner *ngIf="updating" class="updating" [diameter]="30"></mat-spinner>
+        @if (updating) {
+        <mat-spinner class="updating" [diameter]="30"></mat-spinner>
+        }
     </div>
     <div class="flex-container flex-grow flex-row no-padding collapse-tiny">
         <div class="flex-container flex-grow flex-row no-padding controls">
-            <button
-                mat-button
-                *ngIf="application.account.application.state == applicationState.WAITING"
-                class="green"
-                (click)="updateApplicationState(applicationState.ACCEPTED)"
-                [disabled]="!isAcceptableAge() || updating"
-            >
+            @if (application.account.application.state == applicationState.WAITING) {
+            <button mat-button class="green" (click)="updateApplicationState(applicationState.ACCEPTED)" [disabled]="!isAcceptableAge() || updating">
                 <span [matTooltip]="!isAcceptableAge() ? 'Application cannot be accepted due to age requirements' : null">Approve</span>
             </button>
-            <button mat-button *ngIf="application.account.application.state == applicationState.WAITING" class="red" (click)="updateApplicationState(applicationState.REJECTED)" [disabled]="updating">
-                Reject
-            </button>
-            <button
-                mat-button
-                *ngIf="
-                    application.account.application.state != applicationState.WAITING &&
-                    application.account.membershipState != membershipState.MEMBER &&
-                    application.account.membershipState != membershipState.DISCHARGED
-                "
-                class="goldenrod"
-                (click)="updateApplicationState(applicationState.WAITING)"
-                [disabled]="updating"
-            >
-                Reactivate
-            </button>
-            <button
-                mat-button
-                *ngIf="
-                    application.account.application.state != applicationState.WAITING &&
-                    application.account.membershipState != membershipState.MEMBER &&
-                    application.account.membershipState == membershipState.DISCHARGED
-                "
-                class="goldenrod"
-                [routerLink]="['/personnel/discharges']"
-                [queryParams]="{ filter: application.account.lastname }"
-                [disabled]="updating"
-            >
-                View Discharge
-            </button>
-            <button
-                mat-button
-                *ngIf="application.account.application.state == applicationState.ACCEPTED && application.account.membershipState == membershipState.MEMBER"
-                class="red"
-                (click)="resetApplicationToCandidate()"
-                [disabled]="updating"
-            >
-                Reset to Candidate
-            </button>
+            } @if (application.account.application.state == applicationState.WAITING) {
+            <button mat-button class="red" (click)="updateApplicationState(applicationState.REJECTED)" [disabled]="updating">Reject</button>
+            } @if ( application.account.application.state != applicationState.WAITING && application.account.membershipState != membershipState.MEMBER && application.account.membershipState !=
+            membershipState.DISCHARGED ) {
+            <button mat-button class="goldenrod" (click)="updateApplicationState(applicationState.WAITING)" [disabled]="updating">Reactivate</button>
+            } @if ( application.account.application.state != applicationState.WAITING && application.account.membershipState != membershipState.MEMBER && application.account.membershipState ==
+            membershipState.DISCHARGED ) {
+            <button mat-button class="goldenrod" [routerLink]="['/personnel/discharges']" [queryParams]="{ filter: application.account.lastname }" [disabled]="updating">View Discharge</button>
+            } @if (application.account.application.state == applicationState.ACCEPTED && application.account.membershipState == membershipState.MEMBER) {
+            <button mat-button class="red" (click)="resetApplicationToCandidate()" [disabled]="updating">Reset to Candidate</button>
+            }
         </div>
         <ng-template [ngxPermissionsOnly]="['RECRUITER_LEAD']">
             <div class="flex-container flex-row no-padding recruiter">
-                <app-dropdown class="recruiter-dropdown" placeholder="Recruiter"
-                    [autocomplete]="false" [elements]="recruiterElements$" [(ngModel)]="selected"
-                    (selectionChanged)="setNewRecruiter($event)" [disabled]="updating"
-                    elementName="recruiter" [reserveErrorSpace]="false">
+                <app-dropdown
+                    class="recruiter-dropdown"
+                    placeholder="Recruiter"
+                    [autocomplete]="false"
+                    [elements]="recruiterElements$"
+                    [(ngModel)]="selected"
+                    (selectionChanged)="setNewRecruiter($event)"
+                    [disabled]="updating"
+                    elementName="recruiter"
+                    [reserveErrorSpace]="false"
+                >
                     <ng-template #element let-element>{{ element.displayValue }}</ng-template>
                 </app-dropdown>
             </div>
         </ng-template>
     </div>
 </div>
-<div *ngIf="application != null">
+} @if (application != null) {
+<div>
     <div class="flex-container">
         <div class="flex-container flex-row flex-grow no-padding collapse-small">
             <div class="flex-container flex-two-thirds no-padding padding-right">
@@ -90,7 +68,7 @@
                         </div>
                         <div class="flex-container flex-row no-padding">
                             <div class="header"><b>Date of Birth</b></div>
-                            <div>{{ application.account.dob | date: 'd MMM y':'Europe/London' }}</div>
+                            <div>{{ application.account.dob | date : 'd MMM y' : 'Europe/London' }}</div>
                         </div>
                         <div class="flex-container flex-row no-padding">
                             <div class="header"><b>Age</b></div>
@@ -135,25 +113,31 @@
                         </div>
                         <div class="flex-container flex-grow no-padding padding-left">
                             <h4>Specialist Preferences</h4>
-                            <mat-card *ngIf="application.account.rolePreferences.length > 0" class="card-gap-small">
-                                <div *ngFor="let rolePreference of application.account.rolePreferences" class="flex-container flex-row no-padding">
+                            @if (application.account.rolePreferences.length > 0) {
+                            <mat-card class="card-gap-small">
+                                @for (rolePreference of application.account.rolePreferences; track rolePreference) {
+                                <div class="flex-container flex-row no-padding">
                                     <div class="header">
                                         <b>{{ rolePreference }}</b>
                                         <b>Yes</b>
                                     </div>
                                 </div>
-                                <div *ngFor="let rolePreference of otherRolePreferenceOptions" class="flex-container flex-row no-padding">
+                                } @for (rolePreference of otherRolePreferenceOptions; track rolePreference) {
+                                <div class="flex-container flex-row no-padding">
                                     <div class="header small">
                                         <span>{{ rolePreference }}</span>
                                         <span>No</span>
                                     </div>
                                 </div>
+                                }
                             </mat-card>
-                            <mat-card *ngIf="application.account.rolePreferences.length === 0">
+                            } @if (application.account.rolePreferences.length === 0) {
+                            <mat-card>
                                 <div class="flex-container flex-row no-padding">
                                     <div class="header"><b>None</b></div>
                                 </div>
                             </mat-card>
+                            }
                         </div>
                     </div>
                 </div>
@@ -164,9 +148,10 @@
                     <mat-card class="card-gap">
                         <div class="flex-container flex-row flex-grow no-padding">
                             <div class="header"><b>Date Applied</b></div>
-                            <div>{{ application.account.application.dateCreated | date: 'd MMM y':'Europe/London' }}</div>
+                            <div>{{ application.account.application.dateCreated | date : 'd MMM y' : 'Europe/London' }}</div>
                         </div>
-                        <div *ngIf="application.account.application.state == applicationState.WAITING" class="card-gap">
+                        @if (application.account.application.state == applicationState.WAITING) {
+                        <div class="card-gap">
                             <div class="flex-container flex-row flex-grow no-padding">
                                 <div class="header"><b>Next Candidate Op</b></div>
                                 <div>{{ application.nextCandidateOp }}</div>
@@ -176,16 +161,18 @@
                                 <div>{{ application.daysProcessing }} {{ application.daysProcessing == 1 ? 'Day' : 'Days' }}</div>
                             </div>
                         </div>
-                        <div *ngIf="application.account.application.state != applicationState.WAITING" class="card-gap">
+                        } @if (application.account.application.state != applicationState.WAITING) {
+                        <div class="card-gap">
                             <div class="flex-container flex-row flex-grow no-padding">
                                 <div class="header"><b>Date Processed</b></div>
-                                <div>{{ application.account.application.dateAccepted | date: 'd MMM y':'Europe/London' }}</div>
+                                <div>{{ application.account.application.dateAccepted | date : 'd MMM y' : 'Europe/London' }}</div>
                             </div>
                             <div class="flex-container flex-row flex-grow no-padding">
                                 <div class="header"><b>Processing Duration</b></div>
                                 <div>{{ application.daysProcessed }} {{ application.daysProcessed == 1 ? 'Day' : 'Days' }}</div>
                             </div>
                         </div>
+                        }
                         <div class="flex-container flex-row flex-grow no-padding">
                             <div class="header"><b>Average Processing Duration</b></div>
                             <div>{{ application.averageProcessingTime }} {{ application.averageProcessingTime == 1 ? 'Day' : 'Days' }}</div>
@@ -197,23 +184,25 @@
                     <mat-card class="card-gap">
                         <div class="flex-container flex-row flex-grow no-padding">
                             <div class="header"><b>TeamSpeak</b></div>
-                            <div *ngIf="teamspeakState | async as teamspeakState; else teamspeakStateLoading">
+                            @if (teamspeakState | async; as teamspeakState) {
+                            <div>
                                 <div [ngClass]="{ green: teamspeakState.online, red: !teamspeakState.online }">
                                     {{ teamspeakState.online ? 'Online as ' + teamspeakState.nickname : 'Offline' }}
                                 </div>
                             </div>
-                            <ng-template #teamspeakStateLoading>
-                                <div class="red">Offline</div>
-                            </ng-template>
+                            } @else {
+                            <div class="red">Offline</div>
+                            }
                         </div>
                         <div class="flex-container flex-row flex-grow no-padding">
                             <div class="header"><b>Discord</b></div>
-                            <div *ngIf="discordState | async as discordState; else discordStateLoading">
+                            @if (discordState | async; as discordState) {
+                            <div>
                                 <div [ngClass]="{ green: discordState.online, red: !discordState.online }">{{ getDiscordName(discordState) }}</div>
                             </div>
-                            <ng-template #discordStateLoading>
-                                <div class="red">Offline</div>
-                            </ng-template>
+                            } @else {
+                            <div class="red">Offline</div>
+                            }
                         </div>
                         <div class="flex-container flex-row flex-grow no-padding">
                             <div class="header"><b>Steam</b></div>
@@ -253,3 +242,4 @@
         </div>
     </div>
 </div>
+}

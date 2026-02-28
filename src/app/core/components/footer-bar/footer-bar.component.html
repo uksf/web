@@ -16,13 +16,17 @@
             <i class="fab fa-youtube"></i>
         </a>
     </div>
-    <div *ngIf="!mobile && !mobileSmall" class="copyright">
+    @if (!mobile && !mobileSmall) {
+    <div class="copyright">
         <p>© Copyright UKSF 2011-{{ getCurrentYear() }}</p>
     </div>
-    <div *ngIf="mobile" class="copyright">
+    } @if (mobile) {
+    <div class="copyright">
         <p>© UKSF 2011-{{ getCurrentYear() }}</p>
     </div>
-    <div *ngIf="mobileSmall" class="copyright">
+    } @if (mobileSmall) {
+    <div class="copyright">
         <p>© UKSF</p>
     </div>
+    }
 </div>

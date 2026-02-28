@@ -1,5 +1,6 @@
 <div class="block">
-    <div *ngIf="editing">
+    @if (editing) {
+    <div>
         <!--        <input [required]="required" (blur)="unfocus()" [name]="value" [(ngModel)]="value" [type]="type" [placeholder]="label" [class.invalid]="invalid" />-->
         <app-dropdown
             #inlineDropdownControl
@@ -24,8 +25,10 @@
             </ng-template>
         </app-dropdown>
     </div>
-    <div *ngIf="!editing">
+    } @else {
+    <div>
         <span class="bold">{{ label }}</span>
         <div class="inline-edit" title="Click to edit" (click)="edit(value); $event.stopPropagation()" (focus)="edit(value); $event.stopPropagation()" tabindex="0">{{ value }}</div>
     </div>
+    }
 </div>

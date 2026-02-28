@@ -1,20 +1,28 @@
-<div *ngIf="!documentMetadata" class="content-placeholder">
+@if (!documentMetadata) {
+<div class="content-placeholder">
     <h3>Select a document from the left</h3>
 </div>
-<div *ngIf="documentMetadata" class="content-container">
+} @if (documentMetadata) {
+<div class="content-container">
     <div class="content-header">
         <span class="document-title">{{ documentMetadata.name }}</span>
-        <div *ngIf="documentMetadata.canWrite && documentContent" class="buttons-container">
-            <app-button (clicked)="edit()" *ngIf="!editing">Edit</app-button>
-            <app-button (clicked)="save()" *ngIf="editing" [disabled]="false" [pending]="pending">Save</app-button>
+        @if (documentMetadata.canWrite && documentContent) {
+        <div class="buttons-container">
+            @if (!editing) {
+            <app-button (clicked)="edit()">Edit</app-button>
+            } @if (editing) {
+            <app-button (clicked)="save()" [disabled]="false" [pending]="pending">Save</app-button>
+            }
         </div>
+        }
     </div>
-
-    <div #editorBounds *ngIf="documentContent" class="content">
-        <quill-view *ngIf="!editing" [content]="documentContent.text" [preserveWhitespace]="true" class="content-view" format="json"></quill-view>
+    @if (documentContent) {
+    <div #editorBounds class="content">
+        @if (!editing) {
+        <quill-view [content]="documentContent.text" [preserveWhitespace]="true" class="content-view" format="json"></quill-view>
+        } @if (editing) {
         <quill-editor
             (onContentChanged)="onContentChanged($event)"
-            *ngIf="editing"
             [(ngModel)]="documentContent.text"
             [bounds]="editorBounds"
             [preserveWhitespace]="true"
@@ -23,5 +31,8 @@
             placeholder=""
             [scrollingContainer]="editorBounds"
         ></quill-editor>
+        }
     </div>
+    }
 </div>
+}

@@ -1,9 +1,9 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { CreateFolderRequest, DocumentPermissions } from '@app/features/docs/models/documents';
 import { DocsService } from '../../services/docs.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { NgForm } from '@angular/forms';
+import { NgForm, FormsModule } from '@angular/forms';
 import { IDropdownElement, mapFromElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { Unit } from '@app/features/units/models/units';
 import { Rank } from '@app/shared/models/rank';
@@ -12,12 +12,33 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { AccountService } from '@app/core/services/account.service';
 import { MembersService } from '@app/shared/services/members.service';
+import { AutofocusStopComponent } from '../../../../shared/components/elements/autofocus-stop/autofocus-stop.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
+import { MatAccordion } from '@angular/material/expansion';
+import { DocsPermissionsComponent } from '../../components/docs-permissions/docs-permissions.component';
+import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
+import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
 
 @Component({
     selector: 'app-create-folder-modal',
     templateUrl: './create-folder-modal.component.html',
     styleUrls: ['./create-folder-modal.component.scss'],
-    standalone: false
+    imports: [
+        AutofocusStopComponent,
+        MatDialogTitle,
+        CdkScrollable,
+        MatDialogContent,
+        FormsModule,
+        TextInputComponent,
+        DropdownComponent,
+        MatAccordion,
+        DocsPermissionsComponent,
+        MatDialogActions,
+        FlexFillerComponent,
+        ButtonComponent
+    ]
 })
 export class CreateFolderModalComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;
@@ -65,21 +86,24 @@ export class CreateFolderModalComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.membersService.getMembers().pipe(first()).subscribe({
-            next: (accounts: BasicAccount[]) => {
-                const elements = accounts.map(BasicAccount.mapToElement);
-                this.accounts.next(elements);
-                this.accounts.complete();
+        this.membersService
+            .getMembers()
+            .pipe(first())
+            .subscribe({
+                next: (accounts: BasicAccount[]) => {
+                    const elements = accounts.map(BasicAccount.mapToElement);
+                    this.accounts.next(elements);
+                    this.accounts.complete();
 
-                // Set default owner to current user for new folders, or populate from initialData for editing
-                if (this.initialData) {
-                    this.model.owner = elements.find((element) => element.value === this.initialData.owner) || null;
-                } else {
-                    const currentUser = this.accountService.account;
-                    this.model.owner = elements.find((element) => element.value === currentUser?.id) || null;
+                    // Set default owner to current user for new folders, or populate from initialData for editing
+                    if (this.initialData) {
+                        this.model.owner = elements.find((element) => element.value === this.initialData.owner) || null;
+                    } else {
+                        const currentUser = this.accountService.account;
+                        this.model.owner = elements.find((element) => element.value === currentUser?.id) || null;
+                    }
                 }
-            }
-        });
+            });
     }
 
     submit(): void {

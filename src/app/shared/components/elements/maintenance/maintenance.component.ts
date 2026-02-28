@@ -1,9 +1,11 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
+import { CentreWrapperComponent } from '../centre-wrapper/centre-wrapper.component';
+import { MatCard } from '@angular/material/card';
 
 @Component({
     selector: 'app-maintenance',
     templateUrl: './maintenance.component.html',
-    standalone: false
+    imports: [CentreWrapperComponent, MatCard]
 })
 export class MaintenanceComponent {
     @ViewChild('maintenance', { read: ElementRef }) maintenance: ElementRef;

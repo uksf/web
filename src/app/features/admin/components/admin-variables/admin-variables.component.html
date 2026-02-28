@@ -2,18 +2,19 @@
     <app-main-content-area style="grid-column: span 3">
         <app-admin-page></app-admin-page>
         <div class="page-container">
-            <div class="spinner-container" *ngIf="!variables">
+            @if (!variables) {
+            <div class="spinner-container">
                 <mat-spinner></mat-spinner>
             </div>
-            <div *ngIf="variables" class="variables-container">
+            } @if (variables) {
+            <div class="variables-container">
                 <div class="variables-header">
                     <form [formGroup]="form" class="variables-form-container">
-                        <app-text-input class="key-field" label="Key" formControlName="key"
-                            [validationMessages]="validationMessages.key">
-                        </app-text-input>
-                        <app-text-input class="item-field" label="Item" formControlName="item">
-                        </app-text-input>
-                        <button mat-raised-button color="primary" (click)="addVariable()" [disabled]="!form.valid || !form.controls.key.value || !form.controls.item.value || updating">Add Variable</button>
+                        <app-text-input class="key-field" label="Key" formControlName="key" [validationMessages]="validationMessages.key"> </app-text-input>
+                        <app-text-input class="item-field" label="Item" formControlName="item"> </app-text-input>
+                        <button mat-raised-button color="primary" (click)="addVariable()" [disabled]="!form.valid || !form.controls.key.value || !form.controls.item.value || updating">
+                            Add Variable
+                        </button>
                         <div class="expand-collapse-buttons">
                             <button mat-icon-button (click)="accordion.openAll(); expanded = true" matTooltip="Expand all" [disabled]="expanded">
                                 <mat-icon>unfold_more</mat-icon>
@@ -26,23 +27,28 @@
                 </div>
                 <div class="variables-list-container">
                     <mat-accordion [multi]="true" class="variables-list">
-                        <mat-expansion-panel class="variables-list-item" *ngFor="let variableList of variableLists; trackBy: trackByVariableList" [togglePosition]="'before'">
+                        @for (variableList of variableLists; track trackByVariableList($index, variableList)) {
+                        <mat-expansion-panel class="variables-list-item" [togglePosition]="'before'">
                             <mat-expansion-panel-header [collapsedHeight]="'36px'" [expandedHeight]="'36px'">
                                 <mat-panel-title>
                                     {{ variableList.name }}
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <ng-template matExpansionPanelContent>
-                                <mat-card class="variable-item" *ngFor="let variable of variableList.items; trackBy: trackByVariableItem">
+                                @for (variable of variableList.items; track trackByVariableItem($index, variable)) {
+                                <mat-card class="variable-item">
                                     <mat-icon class="delete-icon" (click)="deleteVariable($event, variable)" [ngClass]="{ disabled: updating }" matTooltip="Delete variable">highlight_off</mat-icon>
                                     <span class="key">{{ variable.key }}</span>
                                     <app-inline-edit class="item" [(ngModel)]="variable.item" [required]="true" type="text" (finishedEvent)="editVariable(variable)"></app-inline-edit>
                                 </mat-card>
+                                }
                             </ng-template>
                         </mat-expansion-panel>
+                        }
                     </mat-accordion>
                 </div>
             </div>
+            }
         </div>
     </app-main-content-area>
 </app-default-content-areas>

@@ -18,7 +18,9 @@
             <app-text-input class="normal" label="Commit ID" formControlName="commitId"
                 [validationMessages]="validationMessages.commitId">
             </app-text-input>
-            <mat-error *ngIf="form.get('referenceGroup').hasError('both')">Cannot select both a branch and a commit ID</mat-error>
+            @if (form.get('referenceGroup').hasError('both')) {
+            <mat-error>Cannot select both a branch and a commit ID</mat-error>
+            }
         </div>
         <div class="force-container">
             <mat-checkbox color="primary" formControlName="ace">Force ACE build</mat-checkbox>

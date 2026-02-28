@@ -1,17 +1,23 @@
 import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { NgForm, FormsModule } from '@angular/forms';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
 import { Router } from '@angular/router';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { RedirectService } from '@app/core/services/authentication/redirect.service';
 import { UksfError } from '@app/shared/models/response';
 import { first } from 'rxjs/operators';
+import { MatDialogTitle } from '@angular/material/dialog';
+import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { ButtonHiddenSubmitComponent } from '../../../../shared/components/elements/button-submit/button-hidden-submit.component';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
+import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
 
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss', '../login-page/login-page.component.scss'],
-    standalone: false
+    imports: [MatDialogTitle, FormsModule, TextInputComponent, ButtonHiddenSubmitComponent, MatCheckbox, FlexFillerComponent, ButtonComponent]
 })
 export class LoginComponent {
     @ViewChild(NgForm) form!: NgForm;
@@ -22,22 +28,17 @@ export class LoginComponent {
     model: FormModel = {
         name: null,
         email: null,
-        password: null,
+        password: null
     };
     validationMessages = {
         email: [
             { type: 'required', message: 'Email address is required' },
-            { type: 'email', message: 'Email address is invalid' },
+            { type: 'email', message: 'Email address is invalid' }
         ],
-        password: [{ type: 'required', message: 'Password is required' }],
+        password: [{ type: 'required', message: 'Password is required' }]
     };
 
-    constructor(
-        private auth: AuthenticationService,
-        private router: Router,
-        private permissionsService: PermissionsService,
-        private redirectService: RedirectService
-    ) {}
+    constructor(private auth: AuthenticationService, private router: Router, private permissionsService: PermissionsService, private redirectService: RedirectService) {}
 
     submit() {
         // Honeypot field must be empty
@@ -47,21 +48,27 @@ export class LoginComponent {
 
         this.pending = true;
         this.loginError = '';
-        this.auth.login(this.model.email, this.model.password, this.stayLogged).pipe(first()).subscribe({
-            next: () => {
-                this.permissionsService.refresh().then(() => {
-                    const redirect = this.redirectService.getAndClearRedirectUrl() ?? '/home';
-                    this.router.navigateByUrl(redirect);
-                }).catch(() => {
+        this.auth
+            .login(this.model.email, this.model.password, this.stayLogged)
+            .pipe(first())
+            .subscribe({
+                next: () => {
+                    this.permissionsService
+                        .refresh()
+                        .then(() => {
+                            const redirect = this.redirectService.getAndClearRedirectUrl() ?? '/home';
+                            this.router.navigateByUrl(redirect);
+                        })
+                        .catch(() => {
+                            this.pending = false;
+                            this.loginError = 'Login failed';
+                        });
+                },
+                error: (error: UksfError) => {
                     this.pending = false;
-                    this.loginError = 'Login failed';
-                });
-            },
-            error: (error: UksfError) => {
-                this.pending = false;
-                this.loginError = error?.error || 'Login failed';
-            }
-        });
+                    this.loginError = error?.error || 'Login failed';
+                }
+            });
     }
 
     requestPasswordReset() {

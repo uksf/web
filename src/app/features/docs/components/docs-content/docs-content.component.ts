@@ -5,12 +5,15 @@ import { DocsService } from '../../services/docs.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { UksfError } from '@app/shared/models/response';
+import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
+import { QuillViewComponent, QuillEditorComponent } from 'ngx-quill';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-docs-content',
     templateUrl: './docs-content.component.html',
     styleUrls: ['./docs-content.component.scss', './docs-content.quill.scss'],
-    standalone: false
+    imports: [ButtonComponent, QuillViewComponent, QuillEditorComponent, FormsModule]
 })
 export class DocsContentComponent implements OnChanges {
     @Input('documentMetadata') documentMetadata: DocumentMetadata;
@@ -26,18 +29,21 @@ export class DocsContentComponent implements OnChanges {
             return;
         }
 
-        this.docsService.getDocumentContent(this.documentMetadata.folder, this.documentMetadata.id).pipe(first()).subscribe({
-            next: (content: DocumentContent) => {
-                this.editing = false;
-                this.documentContent = content;
-            },
-            error: (error: UksfError) => {
-                this.editing = false;
-                this.dialog.open(MessageModalComponent, {
-                    data: { message: error.error }
-                });
-            }
-        });
+        this.docsService
+            .getDocumentContent(this.documentMetadata.folder, this.documentMetadata.id)
+            .pipe(first())
+            .subscribe({
+                next: (content: DocumentContent) => {
+                    this.editing = false;
+                    this.documentContent = content;
+                },
+                error: (error: UksfError) => {
+                    this.editing = false;
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: error.error }
+                    });
+                }
+            });
     }
 
     edit() {
@@ -56,7 +62,8 @@ export class DocsContentComponent implements OnChanges {
             newText: this.documentContent.text,
             lastKnownUpdated: this.documentContent.lastUpdated
         };
-        this.docsService.updateDocumentContent(this.documentMetadata.folder, this.documentMetadata.id, updateContentRequest)
+        this.docsService
+            .updateDocumentContent(this.documentMetadata.folder, this.documentMetadata.id, updateContentRequest)
             .pipe(first())
             .subscribe({
                 next: (content: DocumentContent) => {

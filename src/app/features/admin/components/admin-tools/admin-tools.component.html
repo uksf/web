@@ -5,14 +5,20 @@
             <h4>Current user ID: {{ accountId }}</h4>
             <h4>Tools</h4>
             <div class="tools-row">
-                <app-button (clicked)="runFunction(tool)" *ngFor="let tool of tools" [pending]="tool.pending">{{ tool.title }}</app-button>
+                @for (tool of tools; track tool) {
+                <app-button (clicked)="runFunction(tool)" [pending]="tool.pending">{{ tool.title }}</app-button>
+                }
             </div>
-            <div *ngIf="debug">
+            @if (debug) {
+            <div>
                 <h4>Debug Tools</h4>
                 <div class="tools-row">
-                    <app-button (clicked)="runFunction(tool)" *ngFor="let tool of debugTools" [disabled]="true" [pending]="tool.pending">{{ tool.title }}</app-button>
+                    @for (tool of debugTools; track tool) {
+                    <app-button (clicked)="runFunction(tool)" [disabled]="true" [pending]="tool.pending">{{ tool.title }}</app-button>
+                    }
                 </div>
             </div>
+            }
             <ng-template [ngxPermissionsOnly]="['SUPERADMIN']">
                 <h4>SuperAdmin Tools</h4>
                 <form #form="ngForm" class="impersonate-form">

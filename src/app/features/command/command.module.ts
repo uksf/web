@@ -40,7 +40,19 @@ import { RolesService } from './services/roles.service';
 import { TrainingsService } from './services/trainings.service';
 
 @NgModule({
-    declarations: [
+    imports: [
+        CommonModule,
+        FormsModule,
+        SharedModule,
+        CommandRoutingModule,
+        NgxPermissionsModule.forChild(),
+        MatExpansionModule,
+        MatTabsModule,
+        MatTableModule,
+        MatDatepickerModule,
+        MatSlideToggleModule,
+        DragDropModule,
+        TreeModule,
         // Components
         CommandPageComponent,
         CommandRequestsComponent,
@@ -61,22 +73,8 @@ import { TrainingsService } from './services/trainings.service';
         RequestRankModalComponent,
         RequestRoleModalComponent,
         RequestTransferModalComponent,
-        RequestUnitRemovalModalComponent,
+        RequestUnitRemovalModalComponent
     ],
-    imports: [
-        CommonModule,
-        FormsModule,
-        SharedModule,
-        CommandRoutingModule,
-        NgxPermissionsModule.forChild(),
-        MatExpansionModule,
-        MatTabsModule,
-        MatTableModule,
-        MatDatepickerModule,
-        MatSlideToggleModule,
-        DragDropModule,
-        TreeModule,
-    ],
-    providers: [RolesService, TrainingsService],
+    providers: [RolesService, TrainingsService]
 })
 export class CommandModule {}

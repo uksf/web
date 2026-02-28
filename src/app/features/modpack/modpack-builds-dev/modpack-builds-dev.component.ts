@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MarkdownService } from 'ngx-markdown';
+import { MarkdownService, MarkdownComponent } from 'ngx-markdown';
 import { parseMarkdownSync } from '../markdown-utils';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PermissionsService } from '@app/core/services/permissions.service';
@@ -8,12 +8,37 @@ import { ModpackBuildResult } from '../models/modpack-build-result';
 import { ModpackBuildService } from '../modpackBuild.service';
 import { ModpackBuildProcessService } from '../modpackBuildProcess.service';
 import { ModpackBuild } from '../models/modpack-build';
+import { DefaultContentAreasComponent } from '../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { ThemeEmitterComponent as ThemeEmitterComponent_1 } from '../../../shared/components/elements/theme-emitter/theme-emitter.component';
+import { FullContentAreaComponent } from '../../../shared/components/content-areas/full-content-area/full-content-area.component';
+import { ModpackPageComponent } from '../modpack-page/modpack-page.component';
+import { NgxPermissionsModule } from 'ngx-permissions';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { NgClass, NgStyle, DatePipe } from '@angular/common';
+import { FlexFillerComponent } from '../../../shared/components/elements/flex-filler/flex-filler.component';
+import { ModpackBuildsStepsComponent } from '../modpack-builds-steps/modpack-builds-steps.component';
 
 @Component({
     selector: 'app-modpack-builds-dev',
     templateUrl: './modpack-builds-dev.component.html',
     styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-builds-dev.component.scss', './modpack-builds-dev.component.scss-theme.scss'],
-    standalone: false
+    imports: [
+        DefaultContentAreasComponent,
+        ThemeEmitterComponent_1,
+        FullContentAreaComponent,
+        ModpackPageComponent,
+        NgxPermissionsModule,
+        MatButton,
+        MatIconButton,
+        MatIcon,
+        NgClass,
+        NgStyle,
+        FlexFillerComponent,
+        MarkdownComponent,
+        ModpackBuildsStepsComponent,
+        DatePipe
+    ]
 })
 export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
     @ViewChild(ThemeEmitterComponent) theme: ThemeEmitterComponent;

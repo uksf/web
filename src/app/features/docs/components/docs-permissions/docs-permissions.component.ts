@@ -7,9 +7,15 @@ import { IDropdownElement, mapFromElement } from '@app/shared/components/element
 import { Rank } from '@app/shared/models/rank';
 import { Unit } from '@app/features/units/models/units';
 import { BasicAccount } from '@app/shared/models/account';
-import { ControlContainer, ControlValueAccessor, NG_VALUE_ACCESSOR, NgForm, UntypedFormGroup } from '@angular/forms';
+import { ControlContainer, ControlValueAccessor, NG_VALUE_ACCESSOR, NgForm, UntypedFormGroup, FormsModule } from '@angular/forms';
 import { DocumentPermission } from '@app/features/docs/models/documents';
-import { MatExpansionPanel } from '@angular/material/expansion';
+import { MatExpansionPanel, MatExpansionPanelHeader } from '@angular/material/expansion';
+import { SpotlightDirective } from '../../../../shared/directives/spotlight.directive';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatTooltip } from '@angular/material/tooltip';
+import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
+import { SelectionListComponent } from '../../../../shared/components/elements/selection-list/selection-list.component';
+import { MatDivider } from '@angular/material/divider';
 
 export type PermissionsType = 'viewers' | 'collaborators';
 
@@ -33,7 +39,7 @@ interface FormModel {
         }
     ],
     viewProviders: [{ provide: ControlContainer, useExisting: UntypedFormGroup }, MatExpansionPanel],
-    standalone: false
+    imports: [MatExpansionPanel, MatExpansionPanelHeader, SpotlightDirective, FormsModule, MatCheckbox, MatTooltip, DropdownComponent, SelectionListComponent, MatDivider]
 })
 export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
     @ViewChild(NgForm) form!: NgForm;
@@ -61,14 +67,16 @@ export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
             units: this.httpClient.get<Unit[]>(`${this.urlService.apiUrl}/units`),
             ranks: this.httpClient.get<Rank[]>(`${this.urlService.apiUrl}/ranks`),
             members: this.httpClient.get<BasicAccount[]>(`${this.urlService.apiUrl}/accounts/members`)
-        }).pipe(first()).subscribe({
-            next: ({ units, ranks, members }) => {
-                this.units.next(units.map(Unit.mapToElement));
-                this.ranks.next(ranks.map(Rank.mapToElement).reverse());
-                this.members.next(members.map(BasicAccount.mapToElement));
-                this.initializeFormValues();
-            }
-        });
+        })
+            .pipe(first())
+            .subscribe({
+                next: ({ units, ranks, members }) => {
+                    this.units.next(units.map(Unit.mapToElement));
+                    this.ranks.next(ranks.map(Rank.mapToElement).reverse());
+                    this.members.next(members.map(BasicAccount.mapToElement));
+                    this.initializeFormValues();
+                }
+            });
     }
 
     private initializeFormValues(): void {

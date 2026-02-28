@@ -1,29 +1,40 @@
 <h2 mat-dialog-title>Edit Server Mods</h2>
 <mat-dialog-content>
-    <div class="spinner-container" *ngIf="!availableMods">
+    @if (!availableMods) {
+    <div class="spinner-container">
         <app-flex-filler></app-flex-filler>
         <mat-spinner></mat-spinner>
         <app-flex-filler></app-flex-filler>
     </div>
-    <div class="flex-container" *ngIf="availableMods">
+    } @else {
+    <div class="flex-container">
         <div class="mods-list-header">
             <span class="mods-list-header-item" matTooltip="Global mods">&#64;</span>
             <span class="mods-list-header-item" matTooltip="Server-only mods">S</span>
         </div>
         <div class="mods-list-container">
-            <div class="mods-list-item-container" *ngFor="let mod of availableMods">
+            @for (mod of availableMods; track mod) {
+            <div class="mods-list-item-container">
                 <mat-checkbox color="primary" [(ngModel)]="mod.selected" [disabled]="mod.serverMod || duplicateSelected(mod)" matTooltip="Set as global mod"></mat-checkbox>
                 <mat-checkbox color="primary" [(ngModel)]="mod.serverMod" [disabled]="mod.selected || duplicateSelected(mod)" matTooltip="Set as server-only mod"></mat-checkbox>
                 <div class="mods-list-item">
-                    <span *ngIf="!mod.isDuplicate">{{ mod.name }}</span>
-                    <div *ngIf="mod.isDuplicate">
-                        <span *ngIf="mod.pathRelativeToServerExecutable">{{ mod.pathRelativeToServerExecutable }}</span>
-                        <span *ngIf="!mod.pathRelativeToServerExecutable">{{ mod.path }}</span>
+                    @if (!mod.isDuplicate) {
+                    <span>{{ mod.name }}</span>
+                    } @else {
+                    <div>
+                        @if (mod.pathRelativeToServerExecutable) {
+                        <span>{{ mod.pathRelativeToServerExecutable }}</span>
+                        } @else {
+                        <span>{{ mod.path }}</span>
+                        }
                     </div>
+                    }
                 </div>
             </div>
+            }
         </div>
     </div>
+    }
 </mat-dialog-content>
 <mat-dialog-actions>
     <button mat-raised-button color="primary" (click)="reset()">Reset</button>

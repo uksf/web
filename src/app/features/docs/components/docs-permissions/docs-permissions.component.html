@@ -2,15 +2,17 @@
     <mat-expansion-panel-header appSpotlight>
         <div class="permissions-header">
             <h4 class="permissions-title">{{ title }}</h4>
-            <span *ngIf="model.inherit && !expanded">
+            @if (model.inherit && !expanded) {
+            <span>
                 Inherited from parent
             </span>
+            }
         </div>
     </mat-expansion-panel-header>
 
     <form #form="ngForm" class="permissions-form">
+        @if (hasInheritedPermissions) {
         <mat-checkbox
-            *ngIf="hasInheritedPermissions"
             [(ngModel)]="model.inherit"
             (ngModelChange)="onInheritPermissionsChange()"
             color="primary"
@@ -20,6 +22,7 @@
         >
             Inherit from parent
         </mat-checkbox>
+        }
         <div class="permissions-section-container" [hidden]="!expanded">
             <div class="permissions-section">
                 <app-dropdown

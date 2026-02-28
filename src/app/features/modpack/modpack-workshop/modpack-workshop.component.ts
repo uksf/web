@@ -9,12 +9,21 @@ import { InstallWorkshopModModalComponent } from '../install-workshop-mod-modal/
 import { WorkshopModInterventionModalComponent } from '../workshop-mod-intervention-modal/workshop-mod-intervention-modal.component';
 import { WorkshopService } from '../services/workshop.service';
 import { DestroyableComponent } from '@app/shared/components';
+import { DefaultContentAreasComponent } from '../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { FullContentAreaComponent } from '../../../shared/components/content-areas/full-content-area/full-content-area.component';
+import { ModpackPageComponent } from '../modpack-page/modpack-page.component';
+import { NgxPermissionsModule } from 'ngx-permissions';
+import { MatButton } from '@angular/material/button';
+import { MatCard } from '@angular/material/card';
+import { FlexFillerComponent } from '../../../shared/components/elements/flex-filler/flex-filler.component';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
     selector: 'app-modpack-workshop',
     templateUrl: './modpack-workshop.component.html',
     styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-workshop.component.scss', './modpack-workshop.component.scss-theme.scss'],
-    standalone: false
+    imports: [DefaultContentAreasComponent, FullContentAreaComponent, ModpackPageComponent, NgxPermissionsModule, MatButton, MatCard, FlexFillerComponent, MatTooltip, MatIcon]
 })
 export class ModpackWorkshopComponent extends DestroyableComponent implements OnInit, OnDestroy {
     private hubConnection: ConnectionContainer;
@@ -50,38 +59,47 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
     }
 
     getData(callback: () => void = null) {
-        this.workshopService.getMods().pipe(first()).subscribe({
-            next: (mods: WorkshopMod[]) => {
-                this.mods = mods;
-                this.updateModComputedProperties();
-                if (callback) {
-                    callback();
+        this.workshopService
+            .getMods()
+            .pipe(first())
+            .subscribe({
+                next: (mods: WorkshopMod[]) => {
+                    this.mods = mods;
+                    this.updateModComputedProperties();
+                    if (callback) {
+                        callback();
+                    }
                 }
-            }
-        });
+            });
     }
 
     getDataForMod(id: string) {
-        this.workshopService.getMod(id).pipe(first()).subscribe({
-            next: (mod: WorkshopMod) => {
-                const index: number = this.mods.findIndex((x: WorkshopMod) => x.id === mod.id);
-                if (index === -1) {
-                    this.getData();
-                } else {
-                    this.mods.splice(index, 1, mod);
-                    this.updateModComputedProperties();
+        this.workshopService
+            .getMod(id)
+            .pipe(first())
+            .subscribe({
+                next: (mod: WorkshopMod) => {
+                    const index: number = this.mods.findIndex((x: WorkshopMod) => x.id === mod.id);
+                    if (index === -1) {
+                        this.getData();
+                    } else {
+                        this.mods.splice(index, 1, mod);
+                        this.updateModComputedProperties();
+                    }
                 }
-            }
-        });
+            });
     }
 
     getModUpdatedDate(mod: WorkshopMod) {
-        this.workshopService.getModUpdatedDate(mod.steamId).pipe(first()).subscribe({
-            next: (updatedDateResponse) => {
-                mod.updatedDate = updatedDateResponse.updatedDate;
-                mod._updateAvailable = this.updateAvailable(mod);
-            }
-        });
+        this.workshopService
+            .getModUpdatedDate(mod.steamId)
+            .pipe(first())
+            .subscribe({
+                next: (updatedDateResponse) => {
+                    mod.updatedDate = updatedDateResponse.updatedDate;
+                    mod._updateAvailable = this.updateAvailable(mod);
+                }
+            });
     }
 
     updateModComputedProperties() {
@@ -115,20 +133,27 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
     }
 
     install() {
-        this.dialog.open(InstallWorkshopModModalComponent).afterClosed().pipe(first()).subscribe({
-            next: (data: InstallWorkshopModData) => {
-                if (data) {
-                    this.workshopService.installMod(data).pipe(first()).subscribe({
-                        next: () => {},
-                        error: (error: UksfError) => {
-                            this.dialog.open(MessageModalComponent, {
-                                data: { message: error.error }
+        this.dialog
+            .open(InstallWorkshopModModalComponent)
+            .afterClosed()
+            .pipe(first())
+            .subscribe({
+                next: (data: InstallWorkshopModData) => {
+                    if (data) {
+                        this.workshopService
+                            .installMod(data)
+                            .pipe(first())
+                            .subscribe({
+                                next: () => {},
+                                error: (error: UksfError) => {
+                                    this.dialog.open(MessageModalComponent, {
+                                        data: { message: error.error }
+                                    });
+                                }
                             });
-                        }
-                    });
+                    }
                 }
-            }
-        });
+            });
     }
 
     resolveIntervention(mod: WorkshopMod) {
@@ -143,35 +168,47 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
             .subscribe({
                 next: (selectedPbos: string[]) => {
                     if (selectedPbos) {
-                        this.workshopService.resolveIntervention(mod.steamId, selectedPbos).pipe(first()).subscribe({
-                            next: () => {},
-                            error: (error: UksfError) => {
-                                this.dialog.open(MessageModalComponent, {
-                                    data: { message: error.error }
-                                });
-                            }
-                        });
+                        this.workshopService
+                            .resolveIntervention(mod.steamId, selectedPbos)
+                            .pipe(first())
+                            .subscribe({
+                                next: () => {},
+                                error: (error: UksfError) => {
+                                    this.dialog.open(MessageModalComponent, {
+                                        data: { message: error.error }
+                                    });
+                                }
+                            });
                     }
                 }
             });
     }
 
     update(mod: WorkshopMod) {
-        this.workshopService.updateMod(mod.steamId).pipe(first()).subscribe({
-            next: () => {}
-        });
+        this.workshopService
+            .updateMod(mod.steamId)
+            .pipe(first())
+            .subscribe({
+                next: () => {}
+            });
     }
 
     uninstall(mod: WorkshopMod) {
-        this.workshopService.uninstallMod(mod.steamId).pipe(first()).subscribe({
-            next: () => {}
-        });
+        this.workshopService
+            .uninstallMod(mod.steamId)
+            .pipe(first())
+            .subscribe({
+                next: () => {}
+            });
     }
 
     delete(mod: WorkshopMod) {
-        this.workshopService.deleteMod(mod.steamId).pipe(first()).subscribe({
-            next: () => {}
-        });
+        this.workshopService
+            .deleteMod(mod.steamId)
+            .pipe(first())
+            .subscribe({
+                next: () => {}
+            });
     }
 
     showError(mod: WorkshopMod) {

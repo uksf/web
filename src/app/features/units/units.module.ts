@@ -14,13 +14,6 @@ import { UnitsOrbatSecondaryComponent } from './components/units-orbat-secondary
 import { OrganizationChartModule } from 'primeng/organizationchart';
 
 @NgModule({
-    declarations: [
-        UnitsPageComponent,
-        UnitPageComponent,
-        UnitsOrbatComponent,
-        UnitsOrbatAuxComponent,
-        UnitsOrbatSecondaryComponent,
-    ],
     imports: [
         CommonModule,
         SharedModule,
@@ -30,6 +23,11 @@ import { OrganizationChartModule } from 'primeng/organizationchart';
         MatGridListModule,
         MatTableModule,
         MatTabsModule,
-    ],
+        UnitsPageComponent,
+        UnitPageComponent,
+        UnitsOrbatComponent,
+        UnitsOrbatAuxComponent,
+        UnitsOrbatSecondaryComponent
+    ]
 })
 export class UnitsModule {}

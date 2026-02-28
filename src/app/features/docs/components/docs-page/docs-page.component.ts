@@ -7,12 +7,14 @@ import { UksfError } from '@app/shared/models/response';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DestroyableComponent } from '@app/shared/components';
+import { DocsSidebarComponent } from '../docs-sidebar/docs-sidebar.component';
+import { DocsContentComponent } from '../docs-content/docs-content.component';
 
 @Component({
     selector: 'app-docs-page',
     templateUrl: './docs-page.component.html',
     styleUrls: ['./docs-page.component.scss'],
-    standalone: false
+    imports: [DocsSidebarComponent, DocsContentComponent]
 })
 export class DocsPageComponent extends DestroyableComponent implements OnInit {
     allFolderMetadata: FolderMetadata[] = [];
@@ -32,15 +34,18 @@ export class DocsPageComponent extends DestroyableComponent implements OnInit {
     }
 
     getAllFoldersMetadata() {
-        this.docsService.getFolders().pipe(first()).subscribe({
-            next: (allFolderMetadata: FolderMetadata[]) => {
-                this.allFolderMetadata = allFolderMetadata;
-                this.handleQueryParams(this.route.snapshot.queryParams);
-            },
-            error: () => {
-                this.handleQueryParams(this.route.snapshot.queryParams);
-            }
-        });
+        this.docsService
+            .getFolders()
+            .pipe(first())
+            .subscribe({
+                next: (allFolderMetadata: FolderMetadata[]) => {
+                    this.allFolderMetadata = allFolderMetadata;
+                    this.handleQueryParams(this.route.snapshot.queryParams);
+                },
+                error: () => {
+                    this.handleQueryParams(this.route.snapshot.queryParams);
+                }
+            });
     }
 
     private handleQueryParams(params: Record<string, string>) {
@@ -48,18 +53,21 @@ export class DocsPageComponent extends DestroyableComponent implements OnInit {
         const document = params.document;
 
         if (folder && document) {
-            this.docsService.getDocumentMetadata(folder, document).pipe(first()).subscribe({
-                next: (documentMetadata: DocumentMetadata) => {
-                    this.selectedDocumentMetadata = documentMetadata;
-                },
-                error: (error: UksfError) => {
-                    this.dialog.open(MessageModalComponent, {
-                        data: { message: error.error }
-                    });
+            this.docsService
+                .getDocumentMetadata(folder, document)
+                .pipe(first())
+                .subscribe({
+                    next: (documentMetadata: DocumentMetadata) => {
+                        this.selectedDocumentMetadata = documentMetadata;
+                    },
+                    error: (error: UksfError) => {
+                        this.dialog.open(MessageModalComponent, {
+                            data: { message: error.error }
+                        });
 
-                    this.resetSelectedDocument();
-                }
-            });
+                        this.resetSelectedDocument();
+                    }
+                });
         } else {
             this.resetSelectedDocument();
         }

@@ -1,14 +1,21 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MAT_DIALOG_DATA, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { first } from 'rxjs/operators';
 import { GameServersService } from '../../services/game-servers.service';
 import { ServerMod } from '../../models/game-server';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { FormsModule } from '@angular/forms';
+import { MatButton } from '@angular/material/button';
 
 @Component({
     selector: 'app-edit-server-mods-modal',
     templateUrl: './edit-server-mods-modal.component.html',
     styleUrls: ['./edit-server-mods-modal.component.scss'],
-    standalone: false
+    imports: [MatDialogTitle, CdkScrollable, MatDialogContent, FlexFillerComponent, MatProgressSpinner, MatTooltip, MatCheckbox, FormsModule, MatDialogActions, MatButton]
 })
 export class EditServerModsModalComponent implements OnInit {
     server;
@@ -28,12 +35,15 @@ export class EditServerModsModalComponent implements OnInit {
     }
 
     getAvailableMods() {
-        this.gameServersService.getServerMods(this.server.id).pipe(first()).subscribe({
-            next: (response) => {
-                this.populateServerMods(response);
-                this.before = JSON.stringify(this.availableMods);
-            }
-        });
+        this.gameServersService
+            .getServerMods(this.server.id)
+            .pipe(first())
+            .subscribe({
+                next: (response) => {
+                    this.populateServerMods(response);
+                    this.before = JSON.stringify(this.availableMods);
+                }
+            });
     }
 
     populateServerMods(mods) {
@@ -61,7 +71,8 @@ export class EditServerModsModalComponent implements OnInit {
         this.server.mods = mods;
         this.server.serverMods = serverMods;
 
-        this.gameServersService.updateServerMods(this.server.id, this.server)
+        this.gameServersService
+            .updateServerMods(this.server.id, this.server)
             .pipe(first())
             .subscribe({
                 next: () => {
@@ -71,7 +82,8 @@ export class EditServerModsModalComponent implements OnInit {
     }
 
     reset() {
-        this.gameServersService.resetServerMods(this.server.id)
+        this.gameServersService
+            .resetServerMods(this.server.id)
             .pipe(first())
             .subscribe({
                 next: ({ availableMods, mods, serverMods }) => {

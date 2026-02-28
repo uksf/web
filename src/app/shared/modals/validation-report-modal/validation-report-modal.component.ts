@@ -1,6 +1,13 @@
 import { Component, Inject, Renderer2, ViewChild, ElementRef } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { ValidationReport } from '@app/shared/models/response';
+import { AutofocusStopComponent } from '../../components/elements/autofocus-stop/autofocus-stop.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { NgClass } from '@angular/common';
+import { MatMiniFabButton, MatButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIcon } from '@angular/material/icon';
+import { FlexFillerComponent } from '../../components/elements/flex-filler/flex-filler.component';
 
 export interface ValidationReportModalData {
     title: string;
@@ -11,7 +18,7 @@ export interface ValidationReportModalData {
     selector: 'app-validation-report-modal',
     templateUrl: './validation-report-modal.component.html',
     styleUrls: ['./validation-report-modal.component.scss'],
-    standalone: false
+    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, NgClass, MatMiniFabButton, MatTooltip, MatIcon, FlexFillerComponent, MatDialogActions, MatButton]
 })
 export class ValidationReportModalComponent {
     @ViewChild('messageBox') messageBox: ElementRef;

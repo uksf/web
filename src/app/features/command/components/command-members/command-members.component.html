@@ -1,17 +1,26 @@
 <div class="flex-container">
-    <div class="spinner-container" *ngIf="!loaded">
+    @if (!loaded) {
+    <div class="spinner-container">
         <mat-spinner></mat-spinner>
     </div>
-    <div class="members-list-container" *ngIf="loaded">
+    } @if (loaded) {
+    <div class="members-list-container">
         <div class="members-list-header">
-            <app-text-input class="filter-input" label="Filter" [(ngModel)]="filterString"
+            <app-text-input
+                class="filter-input"
+                label="Filter"
+                [(ngModel)]="filterString"
                 tooltip="Use operators 'AND' or 'OR' to combine filters"
-                [clearable]="true" [reserveErrorSpace]="false"
-                (input)="filter()" (cleared)="filter()">
+                [clearable]="true"
+                [reserveErrorSpace]="false"
+                (input)="filter()"
+                (cleared)="filter()"
+            >
             </app-text-input>
             <app-flex-filler></app-flex-filler>
             <app-paginator [total]="totalMembers" (page)="page($event)" [hidden]="groupByUnit"></app-paginator>
-            <div class="unit-group-expand-container" *ngIf="groupByUnit">
+            @if (groupByUnit) {
+            <div class="unit-group-expand-container">
                 <button mat-icon-button (click)="unitGroupsRoot.expandAll(); groupsExpanded = true" matTooltip="Expand all" [disabled]="groupsExpanded">
                     <mat-icon>unfold_more</mat-icon>
                 </button>
@@ -19,42 +28,49 @@
                     <mat-icon>unfold_less</mat-icon>
                 </button>
             </div>
+            }
             <div class="members-list-header-buttons">
                 <button mat-raised-button [matMenuTriggerFor]="sortMenu">
                     <mat-icon class="icon-right">sort</mat-icon>
                     Sort
                 </button>
                 <mat-menu #sortMenu="matMenu">
-                    <button
-                        mat-menu-item
-                        *ngFor="let sortDefinition of sortDefinitions; trackBy: trackBySortName"
-                        [disabled]="sortMode === sortDefinition.mode && sortDirection === sortDefinition.direction"
-                        (click)="sort(sortDefinition.mode, sortDefinition.direction)"
-                    >
+                    @for (sortDefinition of sortDefinitions; track trackBySortName($index, sortDefinition)) {
+                    <button mat-menu-item [disabled]="sortMode === sortDefinition.mode && sortDirection === sortDefinition.direction" (click)="sort(sortDefinition.mode, sortDefinition.direction)">
                         {{ sortDefinition.name }}
                     </button>
+                    }
                 </mat-menu>
                 <button mat-raised-button [matMenuTriggerFor]="modeMenu">
                     <mat-icon class="icon-right">sort</mat-icon>
                     View Mode
                 </button>
                 <mat-menu #modeMenu="matMenu">
-                    <button mat-menu-item *ngFor="let mode of viewModes; trackBy: trackByMode" [disabled]="viewMode === mode.mode" (click)="changeViewMode(mode.mode)">
+                    @for (mode of viewModes; track trackByMode($index, mode)) {
+                    <button mat-menu-item [disabled]="viewMode === mode.mode" (click)="changeViewMode(mode.mode)">
                         <mat-icon class="icon-right">{{ mode.icon }}</mat-icon>
                         <span class="item-text">{{ mode.name }}</span>
                     </button>
+                    }
                 </mat-menu>
-                <button mat-raised-button class="group-by-button" (click)="toggleGroupByUnit()"><mat-icon class="icon-right">group</mat-icon> {{ groupByUnit ? 'Ungroup by Unit' : 'Group by Unit' }}</button>
+                <button mat-raised-button class="group-by-button" (click)="toggleGroupByUnit()">
+                    <mat-icon class="icon-right">group</mat-icon> {{ groupByUnit ? 'Ungroup by Unit' : 'Group by Unit' }}
+                </button>
             </div>
         </div>
-
-        <div *ngIf="!showUnitGroups">
+        @if (!showUnitGroups) {
+        <div>
             <mat-accordion [multi]="true">
-                <app-command-member-card *ngFor="let member of members; trackBy: trackByMemberId" [member]="member"></app-command-member-card>
+                @for (member of members; track trackByMemberId($index, member)) {
+                <app-command-member-card [member]="member"></app-command-member-card>
+                }
             </mat-accordion>
         </div>
-        <div *ngIf="showUnitGroups">
+        } @if (showUnitGroups) {
+        <div>
             <app-command-unit-group-card [unit]="unitRoot" [hideEmpty]="viewMode !== 'all'"></app-command-unit-group-card>
         </div>
+        }
     </div>
+    }
 </div>

@@ -1,17 +1,20 @@
 import { Component, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { AccountService } from '@app/core/services/account.service';
 import { ApplicationService } from '../../services/application.service';
 import { first } from 'rxjs/operators';
+import { MatCard } from '@angular/material/card';
+import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
 
 @Component({
     selector: 'app-application-email-confirmation',
     templateUrl: './application-email-confirmation.component.html',
     styleUrls: ['./application-email-confirmation.component.scss', '../application-page/application-page.component.scss'],
-    standalone: false
+    imports: [MatCard, FormsModule, ReactiveFormsModule, TextInputComponent, ButtonComponent]
 })
 export class ApplicationEmailConfirmationComponent {
     @Output() confirmedEvent = new EventEmitter();
@@ -45,7 +48,8 @@ export class ApplicationEmailConfirmationComponent {
 
         this.pending = true;
         this.formGroup.controls.code.disable();
-        this.applicationService.validateEmailCode({
+        this.applicationService
+            .validateEmailCode({
                 email: this.accountService.account.email,
                 code: sanitisedCode
             })
@@ -77,17 +81,20 @@ export class ApplicationEmailConfirmationComponent {
 
     resend() {
         this.pending = true;
-        this.applicationService.resendEmailCode().pipe(first()).subscribe({
-            next: () => {
-                this.dialog.open(MessageModalComponent, {
-                    data: { message: 'Resent email confirmation code' }
-                });
-                this.pending = false;
-                this.resent = true;
-            },
-            error: () => {
-                this.pending = false;
-            }
-        });
+        this.applicationService
+            .resendEmailCode()
+            .pipe(first())
+            .subscribe({
+                next: () => {
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: 'Resent email confirmation code' }
+                    });
+                    this.pending = false;
+                    this.resent = true;
+                },
+                error: () => {
+                    this.pending = false;
+                }
+            });
     }
 }

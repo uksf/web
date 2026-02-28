@@ -10,6 +10,19 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
 import moment, { Moment } from 'moment';
 import { DestroyableComponent } from '@app/shared/components';
+import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
+import { MatButton } from '@angular/material/button';
+import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
+import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { FormsModule } from '@angular/forms';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { MatIcon } from '@angular/material/icon';
+import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatDatepickerInput, MatDatepickerToggle, MatDatepicker } from '@angular/material/datepicker';
+import { PersonnelPageComponent } from '../personnel-page/personnel-page.component';
 
 export type ViewMode = 'all' | 'coc' | 'mine';
 export type DateMode = 'all' | 'nextOp' | 'nextTraining' | 'select';
@@ -30,7 +43,28 @@ export interface DateModeItem {
     selector: 'app-personnel-loas',
     templateUrl: './personnel-loas.component.html',
     styleUrls: ['../personnel-page/personnel-page.component.scss', './personnel-loas.component.scss'],
-    standalone: false
+    imports: [
+        DefaultContentAreasComponent,
+        MainContentAreaComponent,
+        MatButton,
+        FlexFillerComponent,
+        TextInputComponent,
+        FormsModule,
+        MatTooltip,
+        MatMenuTrigger,
+        MatIcon,
+        MatMenu,
+        MatMenuItem,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatDatepickerInput,
+        MatDatepickerToggle,
+        MatSuffix,
+        MatDatepicker,
+        PersonnelLoasListComponent,
+        PersonnelPageComponent
+    ]
 })
 export class PersonnelLoasComponent extends DestroyableComponent implements OnInit {
     @ViewChildren(PersonnelLoasListComponent) loaLists: QueryList<PersonnelLoasListComponent>;
@@ -123,11 +157,14 @@ export class PersonnelLoasComponent extends DestroyableComponent implements OnIn
                     if (!result) {
                         return;
                     }
-                    this.loaService.deleteLoa(loa.id).pipe(first()).subscribe({
-                        next: (_) => {
-                            this.update();
-                        }
-                    });
+                    this.loaService
+                        .deleteLoa(loa.id)
+                        .pipe(first())
+                        .subscribe({
+                            next: (_) => {
+                                this.update();
+                            }
+                        });
                 }
             });
     }

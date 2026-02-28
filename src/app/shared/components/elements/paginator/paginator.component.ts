@@ -1,10 +1,16 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { MatButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIcon } from '@angular/material/icon';
+import { MatSelect } from '@angular/material/select';
+import { FormsModule } from '@angular/forms';
+import { MatOption } from '@angular/material/autocomplete';
 
 @Component({
     selector: 'app-paginator',
     templateUrl: './paginator.component.html',
     styleUrls: ['./paginator.component.scss'],
-    standalone: false
+    imports: [MatButton, MatTooltip, MatIcon, MatSelect, FormsModule, MatOption]
 })
 export class PaginatorComponent implements OnChanges {
     @Output() page = new EventEmitter<PagedEvent>();

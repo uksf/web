@@ -1,14 +1,15 @@
 import { AfterViewInit, ChangeDetectorRef, Component, Input, ViewChild, ViewChildren } from '@angular/core';
 import { Unit } from '@app/features/units/models/units';
-import { MatAccordion } from '@angular/material/expansion';
+import { MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
 import { all, any } from '@app/shared/services/helper.service';
 import { Account } from '@app/shared/models/account';
+import { CommandMemberCardComponent } from '../command-member-card/command-member-card.component';
 
 @Component({
     selector: 'app-command-unit-group-card',
     templateUrl: './command-unit-group-card.component.html',
     styleUrls: ['./command-unit-group-card.component.scss'],
-    standalone: false
+    imports: [MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, CommandMemberCardComponent]
 })
 export class CommandUnitGroupCardComponent implements AfterViewInit {
     @ViewChild(MatAccordion) accordion: MatAccordion;

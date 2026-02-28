@@ -5,12 +5,17 @@ import { SignalRService, ConnectionContainer } from '@app/core/services/signalr.
 import { AccountService } from '@app/core/services/account.service';
 import { Notification, NotificationsService } from '@app/core/services/notifications.service';
 import { DestroyableComponent } from '@app/shared/components';
+import { MatIcon } from '@angular/material/icon';
+import { MatBadge } from '@angular/material/badge';
+import { MatTooltip } from '@angular/material/tooltip';
+import { HeaderBarComponent } from '../header-bar/header-bar.component';
+import { TimeAgoPipe } from '../../../shared/pipes/time.pipe';
 
 @Component({
     selector: 'app-notifications',
     templateUrl: './notifications.component.html',
     styleUrls: ['./notifications.component.scss'],
-    standalone: false
+    imports: [MatIcon, MatBadge, MatTooltip, HeaderBarComponent, TimeAgoPipe]
 })
 export class NotificationsComponent extends DestroyableComponent implements OnInit {
     panel = false;
@@ -91,12 +96,15 @@ export class NotificationsComponent extends DestroyableComponent implements OnIn
     }
 
     getNotifications() {
-        this.notificationsService.getNotifications().pipe(first()).subscribe({
-            next: (notifications) => {
-                this.notifications = notifications;
-                this.updateNotifications();
-            }
-        });
+        this.notificationsService
+            .getNotifications()
+            .pipe(first())
+            .subscribe({
+                next: (notifications) => {
+                    this.notifications = notifications;
+                    this.updateNotifications();
+                }
+            });
     }
 
     updateNotifications() {
@@ -121,7 +129,8 @@ export class NotificationsComponent extends DestroyableComponent implements OnIn
         if (this.panel) {
             if (this.unreadNotifications.length > 0) {
                 this.unreadTimeout = setTimeout(() => {
-                    this.notificationsService.markRead(this.unreadNotifications)
+                    this.notificationsService
+                        .markRead(this.unreadNotifications)
                         .pipe(first())
                         .subscribe({
                             next: () => {
@@ -150,9 +159,7 @@ export class NotificationsComponent extends DestroyableComponent implements OnIn
 
     clear(notification: Notification = null) {
         const clear = notification ? [notification] : this.notifications;
-        this.notificationsService.clear(clear)
-            .pipe(first())
-            .subscribe();
+        this.notificationsService.clear(clear).pipe(first()).subscribe();
     }
 
     blockScrolling() {

@@ -1,10 +1,12 @@
 <app-default-content-areas>
     <app-main-content-area style="grid-column: span 3">
         <div class="flex-container">
-            <div class="spinner-container" *ngIf="!ranks">
+            @if (!ranks) {
+            <div class="spinner-container">
                 <mat-spinner></mat-spinner>
             </div>
-            <div *ngIf="ranks" class="ranks-container">
+            } @if (ranks) {
+            <div class="ranks-container">
                 <ng-template [ngxPermissionsOnly]="['ADMIN']">
                     <div>
                         <button mat-raised-button color="primary" (click)="addRank()">Add Rank</button>
@@ -17,7 +19,8 @@
                             <span class="teamspeakGroup" style="flex-basis: 14%">TS Group ID</span>
                             <span class="discordRoleId" style="flex-basis: 27%">Discord Role ID</span>
                         </mat-card>
-                        <div *ngFor="let rank of ranks; trackBy: trackByRankId" cdkDrag>
+                        @for (rank of ranks; track trackByRankId($index, rank)) {
+                        <div cdkDrag>
                             <mat-card class="ranks-list-item">
                                 <span class="handle" cdkDragHandle>=</span>
                                 <app-inline-edit
@@ -42,19 +45,23 @@
                                 <mat-icon (click)="deleteRank($event, rank)" class="delete-icon" matTooltip="Delete rank">highlight_off</mat-icon>
                             </mat-card>
                         </div>
+                        }
                     </div>
                 </ng-template>
                 <ng-template [ngxPermissionsExcept]="['ADMIN']">
                     <div class="ranks-list">
-                        <div *ngFor="let rank of ranks; trackBy: trackByRankId">
+                        @for (rank of ranks; track trackByRankId($index, rank)) {
+                        <div>
                             <mat-card class="ranks-list-item">
                                 <span class="name">{{ rank.name }}</span>
                                 <span class="abbreviation">{{ rank.abbreviation }}</span>
                             </mat-card>
                         </div>
+                        }
                     </div>
                 </ng-template>
             </div>
+            }
         </div>
     </app-main-content-area>
 </app-default-content-areas>

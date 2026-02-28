@@ -1,20 +1,22 @@
 import { Component, Output, EventEmitter } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { getValidationError, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import {
-    REFERENCE_ELEMENTS, ROLE_PREFERENCE_OPTIONS, DETAILS_VALIDATION_MESSAGES,
-    buildDetailsFormGroup, extractRolePreferences
-} from '../../models/application-form.constants';
+import { REFERENCE_ELEMENTS, ROLE_PREFERENCE_OPTIONS, DETAILS_VALIDATION_MESSAGES, buildDetailsFormGroup, extractRolePreferences } from '../../models/application-form.constants';
 import { DestroyableComponent } from '@app/shared/components';
+import { MatCard } from '@angular/material/card';
+import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
+import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
 
 @Component({
     selector: 'app-application-details',
     templateUrl: './application-details.component.html',
     styleUrls: ['../application-page/application-page.component.scss', './application-details.component.scss'],
-    standalone: false
+    imports: [MatCard, FormsModule, ReactiveFormsModule, TextInputComponent, MatCheckbox, DropdownComponent, ButtonComponent]
 })
 export class ApplicationDetailsComponent extends DestroyableComponent {
     @Output() submitEvent = new EventEmitter<string>();

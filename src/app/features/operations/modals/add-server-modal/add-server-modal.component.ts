@@ -1,29 +1,34 @@
 import { Component, Inject, OnDestroy } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, ValidationErrors, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { getValidationError } from '@app/shared/services/form-helper.service';
 import { Observable, of, Subject, timer } from 'rxjs';
 import { first, map, switchMap, takeUntil } from 'rxjs/operators';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { GameServersService } from '../../services/game-servers.service';
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
+import { AutofocusStopComponent } from '../../../../shared/components/elements/autofocus-stop/autofocus-stop.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
+import { MatButton } from '@angular/material/button';
 
 @Component({
     selector: 'app-add-server-modal',
     templateUrl: './add-server-modal.component.html',
     styleUrls: ['./add-server-modal.component.scss'],
-    standalone: false
+    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, DropdownComponent, MatDialogActions, MatButton]
 })
 export class AddServerModalComponent implements OnDestroy {
     private destroy$ = new Subject<void>();
     environmentElements: IDropdownElement[] = [
         { value: '0', displayValue: 'Release' },
         { value: '1', displayValue: 'Rc' },
-        { value: '2', displayValue: 'Dev' },
+        { value: '2', displayValue: 'Dev' }
     ];
     serverOptionElements: IDropdownElement[] = [
         { value: '0', displayValue: 'None' },
         { value: '1', displayValue: 'Run alone' },
-        { value: '2', displayValue: 'DCG' },
+        { value: '2', displayValue: 'DCG' }
     ];
     environmentElements$ = of(this.environmentElements);
     serverOptionElements$ = of(this.serverOptionElements);
@@ -37,17 +42,17 @@ export class AddServerModalComponent implements OnDestroy {
         password: ['', Validators.required],
         adminPassword: ['', Validators.required],
         environment: new FormControl<IDropdownElement | null>(null, Validators.required),
-        serverOption: new FormControl<IDropdownElement | null>(null, Validators.required),
+        serverOption: new FormControl<IDropdownElement | null>(null, Validators.required)
     });
     getValidationError = getValidationError;
     validationMessages = {
         name: [
             { type: 'required', message: 'Name is required' },
-            { type: 'serverTaken', message: 'That name is already in use' },
+            { type: 'serverTaken', message: 'That name is already in use' }
         ],
         apiPort: [
             { type: 'required', message: 'Api Port is required' },
-            { type: 'serverTaken', message: 'That api port is already in use' },
+            { type: 'serverTaken', message: 'That api port is already in use' }
         ],
         port: [{ type: 'required', message: 'Port is required' }],
         numberHeadlessClients: [{ type: 'required', message: 'Headless client count is required' }],
@@ -56,7 +61,7 @@ export class AddServerModalComponent implements OnDestroy {
         password: [{ type: 'required', message: 'Server password is required' }],
         adminPassword: [{ type: 'required', message: 'Admin password is required' }],
         environment: [{ type: 'required', message: 'Environment is required' }],
-        serverOption: [{ type: 'required', message: 'Server option is required' }],
+        serverOption: [{ type: 'required', message: 'Server option is required' }]
     };
     edit = false;
     changes = new Set<string>();
@@ -83,23 +88,24 @@ export class AddServerModalComponent implements OnDestroy {
                 profileName: this.server.profileName,
                 hostName: this.server.hostName,
                 password: this.server.password,
-                adminPassword: this.server.adminPassword,
+                adminPassword: this.server.adminPassword
             });
-            this.form.controls.environment.setValue(this.environmentElements.find(e => e.value === String(this.server.environment)));
-            this.form.controls.serverOption.setValue(this.serverOptionElements.find(e => e.value === String(this.server.serverOption)));
+            this.form.controls.environment.setValue(this.environmentElements.find((e) => e.value === String(this.server.environment)));
+            this.form.controls.serverOption.setValue(this.serverOptionElements.find((e) => e.value === String(this.server.serverOption)));
             Object.keys(this.form.controls).forEach((key) => {
-                this.form.get(key).valueChanges.pipe(takeUntil(this.destroy$)).subscribe({
-                    next: (change) => {
-                        const compareValue = key === 'environment' || key === 'serverOption'
-                            ? Number((change as IDropdownElement)?.value)
-                            : change;
-                        if (compareValue !== this.server[key]) {
-                            this.changes.add(key);
-                        } else {
-                            this.changes.delete(key);
+                this.form
+                    .get(key)
+                    .valueChanges.pipe(takeUntil(this.destroy$))
+                    .subscribe({
+                        next: (change) => {
+                            const compareValue = key === 'environment' || key === 'serverOption' ? Number((change as IDropdownElement)?.value) : change;
+                            if (compareValue !== this.server[key]) {
+                                this.changes.add(key);
+                            } else {
+                                this.changes.delete(key);
+                            }
                         }
-                    }
-                });
+                    });
             });
         } else {
             this.form.controls.environment.setValue(this.environmentElements[0]);
@@ -126,7 +132,8 @@ export class AddServerModalComponent implements OnDestroy {
             this.server.adminPassword = this.form.controls.adminPassword.value;
             this.server.environment = Number(this.form.controls.environment.value?.value);
             this.server.serverOption = Number(this.form.controls.serverOption.value?.value);
-            this.gameServersService.editServer(this.server, this.connectionId)
+            this.gameServersService
+                .editServer(this.server, this.connectionId)
                 .pipe(first())
                 .subscribe({
                     next: (environmentChanged: boolean) => {
@@ -134,11 +141,12 @@ export class AddServerModalComponent implements OnDestroy {
                     },
                     error: () => {
                         this.submitting = false;
-                    },
+                    }
                 });
         } else {
             const payload = this.getFormRawValues();
-            this.gameServersService.addServer(JSON.stringify(payload), this.connectionId)
+            this.gameServersService
+                .addServer(JSON.stringify(payload), this.connectionId)
                 .pipe(first())
                 .subscribe({
                     next: () => {
@@ -158,8 +166,7 @@ export class AddServerModalComponent implements OnDestroy {
                     return of(null);
                 }
                 const body = this.edit ? this.server : {};
-                return this.gameServersService.checkServerExists(control.value, body, this.connectionId)
-                    .pipe(map((response) => (response ? { serverTaken: true } : null)));
+                return this.gameServersService.checkServerExists(control.value, body, this.connectionId).pipe(map((response) => (response ? { serverTaken: true } : null)));
             })
         );
     }
@@ -169,7 +176,7 @@ export class AddServerModalComponent implements OnDestroy {
         return {
             ...raw,
             environment: Number(this.form.controls.environment.value?.value ?? 0),
-            serverOption: Number(this.form.controls.serverOption.value?.value ?? 0),
+            serverOption: Number(this.form.controls.serverOption.value?.value ?? 0)
         };
     }
 }

@@ -1,24 +1,31 @@
 <h2 mat-dialog-title>Select PBOs to install</h2>
 <mat-dialog-content>
-    <div class="spinner-container" *ngIf="!availablePbos">
+    @if (!availablePbos) {
+    <div class="spinner-container">
         <app-flex-filler></app-flex-filler>
         <mat-spinner></mat-spinner>
         <app-flex-filler></app-flex-filler>
     </div>
-    <div class="flex-container" *ngIf="availablePbos">
+    } @if (availablePbos) {
+    <div class="flex-container">
         <div class="pbos-list-container">
-            <div class="pbos-list-item-container" *ngFor="let pbo of pboSelection">
+            @for (pbo of pboSelection; track pbo) {
+            <div class="pbos-list-item-container">
                 <div class="pbos-list-item">
                     <span [ngClass]="{ conflict: pbo.conflict }" [matTooltip]="getTooltip(pbo)">{{ pbo.name }}</span>
                 </div>
                 <app-flex-filler></app-flex-filler>
                 <mat-checkbox color="primary" [(ngModel)]="pbo.selected"></mat-checkbox>
             </div>
+            }
         </div>
     </div>
+    }
 </mat-dialog-content>
-<mat-dialog-actions *ngIf="availablePbos">
+@if (availablePbos) {
+<mat-dialog-actions>
     <button mat-raised-button color="primary" (click)="selectAll()">Select All</button>
     <app-flex-filler></app-flex-filler>
     <button mat-raised-button color="primary" (click)="submit()" [disabled]="!valid">Submit</button>
 </mat-dialog-actions>
+}

@@ -8,13 +8,20 @@ import {
     NG_VALUE_ACCESSOR,
     ValidationErrors,
     Validator,
-    ValidatorFn
+    ValidatorFn,
+    FormsModule,
+    ReactiveFormsModule
 } from '@angular/forms';
-import { MatAutocompleteTrigger, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatAutocompleteTrigger, MatAutocompleteSelectedEvent, MatAutocomplete, MatOption } from '@angular/material/autocomplete';
 import { getValidationError } from '@app/shared/services/form-helper.service';
 import { DropdownBaseComponent, IDropdownElement } from '../dropdown-base/dropdown-base.component';
 import { any, nextFrame } from '@app/shared/services/helper.service';
 import { takeUntil } from 'rxjs/operators';
+import { NgClass, NgStyle, NgTemplateOutlet, AsyncPipe } from '@angular/common';
+import { MatTooltip } from '@angular/material/tooltip';
+import { FlexFillerComponent } from '../flex-filler/flex-filler.component';
+import { MatIcon } from '@angular/material/icon';
+import { CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf } from '@angular/cdk/scrolling';
 
 export function SelectionListValidator(required: boolean): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -47,11 +54,27 @@ export function SelectionListValidator(required: boolean): ValidatorFn {
             multi: true
         }
     ],
-    standalone: false
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        NgClass,
+        MatTooltip,
+        FlexFillerComponent,
+        MatIcon,
+        MatAutocompleteTrigger,
+        MatAutocomplete,
+        CdkVirtualScrollViewport,
+        CdkFixedSizeVirtualScroll,
+        NgStyle,
+        CdkVirtualForOf,
+        MatOption,
+        NgTemplateOutlet,
+        AsyncPipe
+    ]
 })
 export class SelectionListComponent extends DropdownBaseComponent implements OnInit, OnChanges, ControlValueAccessor, Validator {
     @Input('listDisabledTooltip') listDisabledTooltip: (element: IDropdownElement) => string = () => '';
-    @Input('listPosition') listPosition: string ='top';
+    @Input('listPosition') listPosition: string = 'top';
     @Input('inputTooltip') inputTooltip: string = '';
     @ViewChild(MatAutocompleteTrigger) autocompleteTriggerRef: MatAutocompleteTrigger;
     form: UntypedFormGroup = new UntypedFormGroup({
@@ -107,12 +130,15 @@ export class SelectionListComponent extends DropdownBaseComponent implements OnI
         this.elementDisabled = this.getDisabled;
         super.ngOnInit();
 
-        this.form.get('textInput').valueChanges.pipe(takeUntil(this.destroy$)).subscribe({
-            next: (value: string) => {
-                this.textModel = value ?? '';
-                this.onTextModelChange(value);
-            }
-        });
+        this.form
+            .get('textInput')
+            .valueChanges.pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (value: string) => {
+                    this.textModel = value ?? '';
+                    this.onTextModelChange(value);
+                }
+            });
     }
 
     ngOnChanges(changes: SimpleChanges): void {

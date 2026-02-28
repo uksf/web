@@ -1,17 +1,42 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, AsyncValidatorFn, FormBuilder, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, AsyncValidatorFn, FormBuilder, ValidationErrors, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Observable, of, timer } from 'rxjs';
 import { first, map, switchMap } from 'rxjs/operators';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Role } from '@app/shared/models/role';
 import { RolesService } from '../../services/roles.service';
+import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { NgxPermissionsModule } from 'ngx-permissions';
+import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { MatButton } from '@angular/material/button';
+import { MatCard } from '@angular/material/card';
+import { InlineEditComponent } from '../../../../shared/components/elements/inline-edit/inline-edit.component';
+import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
+import { MatIcon } from '@angular/material/icon';
+import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
     selector: 'app-command-roles',
     templateUrl: './command-roles.component.html',
     styleUrls: ['../command-page/command-page.component.scss', './command-roles.component.scss'],
-    standalone: false
+    imports: [
+        DefaultContentAreasComponent,
+        MainContentAreaComponent,
+        MatProgressSpinner,
+        NgxPermissionsModule,
+        FormsModule,
+        ReactiveFormsModule,
+        TextInputComponent,
+        MatButton,
+        MatCard,
+        InlineEditComponent,
+        FlexFillerComponent,
+        MatIcon,
+        MatTooltip
+    ]
 })
 export class CommandRolesComponent implements OnInit {
     roleForm = this.formBuilder.group({
@@ -27,11 +52,14 @@ export class CommandRolesComponent implements OnInit {
     constructor(private formBuilder: FormBuilder, private rolesService: RolesService, private dialog: MatDialog) {}
 
     ngOnInit() {
-        this.rolesService.getRoles().pipe(first()).subscribe({
-            next: (response) => {
-                this.roles = response.roles;
-            }
-        });
+        this.rolesService
+            .getRoles()
+            .pipe(first())
+            .subscribe({
+                next: (response) => {
+                    this.roles = response.roles;
+                }
+            });
     }
 
     validateInlineRole(role): Observable<boolean> {
@@ -47,22 +75,28 @@ export class CommandRolesComponent implements OnInit {
 
     addRole() {
         let formString = JSON.stringify(this.roleForm.getRawValue()).replace(/[\n\r]/g, '');
-        this.rolesService.addRole(formString).pipe(first()).subscribe({
-            next: (response) => {
-                this.roles = response.roles;
-                this.roleForm.reset();
-            }
-        });
+        this.rolesService
+            .addRole(formString)
+            .pipe(first())
+            .subscribe({
+                next: (response) => {
+                    this.roles = response.roles;
+                    this.roleForm.reset();
+                }
+            });
     }
 
     editRole(name) {
         const role = this.roles.find((x) => x.name === name);
         if (role) {
-            this.rolesService.editRole(role).pipe(first()).subscribe({
-                next: (response) => {
-                    this.roles = response.roles;
-                }
-            });
+            this.rolesService
+                .editRole(role)
+                .pipe(first())
+                .subscribe({
+                    next: (response) => {
+                        this.roles = response.roles;
+                    }
+                });
         }
     }
 
@@ -71,17 +105,23 @@ export class CommandRolesComponent implements OnInit {
         const dialog = this.dialog.open(ConfirmationModalComponent, {
             data: { message: `Are you sure you want to delete '${role.name}'?` }
         });
-        dialog.afterClosed().pipe(first()).subscribe({
-            next: (result) => {
-                if (result) {
-                    this.rolesService.deleteRole(role.id).pipe(first()).subscribe({
-                        next: (response) => {
-                            this.roles = response.roles;
-                        }
-                    });
+        dialog
+            .afterClosed()
+            .pipe(first())
+            .subscribe({
+                next: (result) => {
+                    if (result) {
+                        this.rolesService
+                            .deleteRole(role.id)
+                            .pipe(first())
+                            .subscribe({
+                                next: (response) => {
+                                    this.roles = response.roles;
+                                }
+                            });
+                    }
                 }
-            }
-        });
+            });
     }
 
     private validateRole(): AsyncValidatorFn {

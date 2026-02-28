@@ -13,12 +13,39 @@ import { debounceTime, distinctUntilChanged, first, takeUntil } from 'rxjs/opera
 import { MembersService } from '@app/shared/services/members.service';
 import { UnitsService } from '../../services/units.service';
 import { DestroyableComponent } from '@app/shared/components';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { FormsModule } from '@angular/forms';
+import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
+import { PaginatorComponent as PaginatorComponent_1 } from '../../../../shared/components/elements/paginator/paginator.component';
+import { MatIconButton, MatButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIcon } from '@angular/material/icon';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { MatAccordion } from '@angular/material/expansion';
+import { CommandMemberCardComponent } from './command-member-card/command-member-card.component';
 
 @Component({
     selector: 'app-command-members',
     templateUrl: './command-members.component.html',
     styleUrls: ['./command-members.component.scss'],
-    standalone: false
+    imports: [
+        MatProgressSpinner,
+        TextInputComponent,
+        FormsModule,
+        FlexFillerComponent,
+        PaginatorComponent_1,
+        MatIconButton,
+        MatTooltip,
+        MatIcon,
+        MatButton,
+        MatMenuTrigger,
+        MatMenu,
+        MatMenuItem,
+        MatAccordion,
+        CommandMemberCardComponent,
+        CommandUnitGroupCardComponent
+    ]
 })
 export class CommandMembersComponent extends DestroyableComponent implements OnInit, OnDestroy {
     @ViewChild(PaginatorComponent) paginator: PaginatorComponent;
@@ -61,25 +88,30 @@ export class CommandMembersComponent extends DestroyableComponent implements OnI
     }
 
     ngOnInit(): void {
-        from(this.signalrHubsService.getAllHub()).pipe(first()).subscribe({
-            next: (allHub) => {
-                this.allHubConnection = allHub;
-                allHub.connection.on('ReceiveAccountUpdate', this.onReceiveAccountUpdate);
-                allHub.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
-                    next: () => {
-                        this.getMembers();
-                    }
-                });
-            }
-        });
+        from(this.signalrHubsService.getAllHub())
+            .pipe(first())
+            .subscribe({
+                next: (allHub) => {
+                    this.allHubConnection = allHub;
+                    allHub.connection.on('ReceiveAccountUpdate', this.onReceiveAccountUpdate);
+                    allHub.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
+                        next: () => {
+                            this.getMembers();
+                        }
+                    });
+                }
+            });
 
         this.getMembers();
 
-        this.unitsService.getUnitTree().pipe(first()).subscribe({
-            next: (unitTreeDataset: UnitTreeDataSet) => {
-                this.unitRoot = unitTreeDataset.combatNodes[0];
-            }
-        });
+        this.unitsService
+            .getUnitTree()
+            .pipe(first())
+            .subscribe({
+                next: (unitTreeDataset: UnitTreeDataSet) => {
+                    this.unitRoot = unitTreeDataset.combatNodes[0];
+                }
+            });
 
         this.filterSubject.pipe(debounceTime(150), distinctUntilChanged(), takeUntil(this.destroy$)).subscribe({
             next: () => {

@@ -9,10 +9,13 @@
                 </ng-template>
             </div>
             <div class="mods-container">
-                <mat-card class="mod-card" *ngFor="let mod of mods; trackBy: trackBySteamId">
+                @for (mod of mods; track trackBySteamId($index, mod)) {
+                <mat-card class="mod-card">
                     <div class="mod-card-section">
                         <h3>{{ mod.name }}</h3>
-                        <span *ngIf="mod.rootMod" class="mod-badge root-mod">Root Mod</span>
+                        @if (mod.rootMod) {
+                        <span class="mod-badge root-mod">Root Mod</span>
+                        }
                         <app-flex-filler></app-flex-filler>
                         <span>{{ mod.statusMessage }}</span>
                     </div>
@@ -24,42 +27,54 @@
                                     {{ mod.steamId }}
                                 </a>
                             </span>
-                            <span class="mod-link-added" *ngIf="mod.modpackVersionFirstAdded">
+                            @if (mod.modpackVersionFirstAdded) {
+                            <span class="mod-link-added">
                                 Added with:
                                 <a target="_blank" [href]="'/modpack/releases?version=' + mod.modpackVersionFirstAdded">
                                     {{ mod.modpackVersionFirstAdded }}
                                 </a>
                             </span>
-                            <span class="mod-link-updated" *ngIf="mod.modpackVersionLastUpdated">
+                            } @if (mod.modpackVersionLastUpdated) {
+                            <span class="mod-link-updated">
                                 Last updated with:
                                 <a target="_blank" [href]="'/modpack/releases?version=' + mod.modpackVersionLastUpdated">
                                     {{ mod.modpackVersionLastUpdated }}
                                 </a>
                             </span>
+                            }
                         </div>
                         <app-flex-filler></app-flex-filler>
-                        <span *ngIf="mod._updateAvailable">Update available</span>
+                        @if (mod._updateAvailable) {
+                        <span>Update available</span>
+                        }
                         <ng-template [ngxPermissionsOnly]="['ADMIN']">
                             <div class="mod-card-buttons">
-                                <button mat-button class="icon delete" *ngIf="mod._hasError" (click)="showError(mod)" matTooltip="View error">
+                                @if (mod._hasError) {
+                                <button mat-button class="icon delete" (click)="showError(mod)" matTooltip="View error">
                                     <mat-icon>error_outline</mat-icon>
                                 </button>
-                                <button mat-button class="icon" *ngIf="mod._interventionRequired" (click)="resolveIntervention(mod)" matTooltip="Resolve Intervention">
+                                } @if (mod._interventionRequired) {
+                                <button mat-button class="icon" (click)="resolveIntervention(mod)" matTooltip="Resolve Intervention">
                                     <mat-icon>construction</mat-icon>
                                 </button>
-                                <button mat-button class="icon" *ngIf="mod._updateAvailable" (click)="update(mod)" matTooltip="Update">
+                                } @if (mod._updateAvailable) {
+                                <button mat-button class="icon" (click)="update(mod)" matTooltip="Update">
                                     <mat-icon>download</mat-icon>
                                 </button>
-                                <button mat-button class="icon" *ngIf="mod._canUninstall" (click)="uninstall(mod)" matTooltip="Uninstall">
+                                } @if (mod._canUninstall) {
+                                <button mat-button class="icon" (click)="uninstall(mod)" matTooltip="Uninstall">
                                     <mat-icon>eject</mat-icon>
                                 </button>
-                                <button mat-button class="icon delete" *ngIf="mod._canDelete" (click)="delete(mod)" matTooltip="Delete">
+                                } @if (mod._canDelete) {
+                                <button mat-button class="icon delete" (click)="delete(mod)" matTooltip="Delete">
                                     <mat-icon>delete</mat-icon>
                                 </button>
+                                }
                             </div>
                         </ng-template>
                     </div>
                 </mat-card>
+                }
             </div>
         </div>
     </app-full-content-area>

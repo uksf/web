@@ -1,16 +1,23 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { NgForm, FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { first } from 'rxjs/operators';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
 import { UksfError } from '@app/shared/models/response';
+import { MatDialogTitle } from '@angular/material/dialog';
+import { MustMatchDirective } from '../../../../shared/directives/must-match.directive';
+import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { ButtonHiddenSubmitComponent } from '../../../../shared/components/elements/button-submit/button-hidden-submit.component';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
+import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
 
 @Component({
     selector: 'app-password-reset',
     templateUrl: './password-reset.component.html',
     styleUrls: ['./password-reset.component.scss', '../login-page/login-page.component.scss'],
-    standalone: false
+    imports: [MatDialogTitle, FormsModule, MustMatchDirective, TextInputComponent, ButtonHiddenSubmitComponent, MatCheckbox, FlexFillerComponent, ButtonComponent]
 })
 export class PasswordResetComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;
@@ -22,18 +29,18 @@ export class PasswordResetComponent implements OnInit {
         name: null,
         email: null,
         password: null,
-        confirmPassword: null,
+        confirmPassword: null
     };
     validationMessages = {
         email: [
             { type: 'required', message: 'Email address is required' },
-            { type: 'email', message: 'Email address is invalid' },
+            { type: 'email', message: 'Email address is invalid' }
         ],
         password: [{ type: 'required', message: 'New password is required' }],
         confirmPassword: [
             { type: 'required', message: 'New password confirmation is required' },
-            { type: 'mustMatch', message: 'Passwords are not the same' },
-        ],
+            { type: 'mustMatch', message: 'Passwords are not the same' }
+        ]
     };
 
     constructor(private auth: AuthenticationService, private route: ActivatedRoute, private router: Router, private permissionsService: PermissionsService) {}
@@ -51,20 +58,26 @@ export class PasswordResetComponent implements OnInit {
         }
 
         this.pending = true;
-        this.auth.passwordReset(this.model.email, this.model.password, this.resetPasswordCode, this.stayLogged).pipe(first()).subscribe({
-            next: () => {
-                this.permissionsService.refresh().then(() => {
-                    this.router.navigate(['/home']).then();
-                }).catch(() => {
+        this.auth
+            .passwordReset(this.model.email, this.model.password, this.resetPasswordCode, this.stayLogged)
+            .pipe(first())
+            .subscribe({
+                next: () => {
+                    this.permissionsService
+                        .refresh()
+                        .then(() => {
+                            this.router.navigate(['/home']).then();
+                        })
+                        .catch(() => {
+                            this.pending = false;
+                            this.loginError = 'Password reset failed';
+                        });
+                },
+                error: (error: UksfError) => {
                     this.pending = false;
-                    this.loginError = 'Password reset failed';
-                });
-            },
-            error: (error: UksfError) => {
-                this.pending = false;
-                this.loginError = error?.error || 'Password reset failed';
-            }
-        });
+                    this.loginError = error?.error || 'Password reset failed';
+                }
+            });
     }
 }
 

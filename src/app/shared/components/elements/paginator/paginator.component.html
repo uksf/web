@@ -7,8 +7,10 @@
         <mat-icon>chevron_right</mat-icon>
     </button>
     <mat-select [(ngModel)]="pageSize" (selectionChange)="pageIndex = 0; pageChange(0)">
-        <mat-option *ngFor="let option of pageSizes; trackBy: trackByIndex" [value]="option">
+        @for (option of pageSizes; track option) {
+        <mat-option [value]="option">
             {{ option }}
         </mat-option>
+        }
     </mat-select>
 </div>

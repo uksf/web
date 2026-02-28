@@ -9,18 +9,7 @@ import { RequestPasswordResetComponent } from './components/request-password-res
 import { PasswordResetComponent } from './components/reset-password/password-reset.component';
 
 @NgModule({
-    declarations: [
-        LoginPageComponent,
-        LoginComponent,
-        RequestPasswordResetComponent,
-        PasswordResetComponent,
-    ],
-    imports: [
-        SharedModule,
-        AuthRoutingModule,
-    ],
-    exports: [
-        LoginPageComponent,
-    ],
+    imports: [SharedModule, AuthRoutingModule, LoginPageComponent, LoginComponent, RequestPasswordResetComponent, PasswordResetComponent],
+    exports: [LoginPageComponent]
 })
 export class AuthModule {}

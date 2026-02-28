@@ -1,22 +1,11 @@
-import {
-    Component,
-    ElementRef,
-    EventEmitter,
-    Input,
-    NgZone,
-    OnDestroy,
-    Output,
-    Renderer2,
-    ViewChild
-} from '@angular/core';
-import {Subscription, timer} from 'rxjs';
-import {UploadEvent, UploadFile} from '@app/shared/services/file-upload-types.service';
+import { Component, ElementRef, EventEmitter, Input, NgZone, OnDestroy, Output, Renderer2, ViewChild } from '@angular/core';
+import { Subscription, timer } from 'rxjs';
+import { UploadEvent, UploadFile } from '@app/shared/services/file-upload-types.service';
 
 @Component({
     selector: 'app-file-drop',
     templateUrl: './file-drop.component.html',
-    styleUrls: ['./file-drop.component.scss'],
-    standalone: false
+    styleUrls: ['./file-drop.component.scss']
 })
 export class FileDropComponent implements OnDestroy {
     @ViewChild('dropZone') dropZone: ElementRef;
@@ -112,7 +101,7 @@ export class FileDropComponent implements OnDestroy {
                             isFile: true,
                             file: (callback) => {
                                 callback(file);
-                            },
+                            }
                         };
                         const toUpload = new UploadFile(fakeFileEntry.name, fakeFileEntry);
                         this.addToQueue(toUpload);

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { NgForm } from '@angular/forms';
+import { MatDialog, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
+import { NgForm, FormsModule } from '@angular/forms';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { BasicAccount } from '@app/shared/models/account';
 import { CommandRequest } from '@app/features/command/models/command-request';
@@ -9,12 +9,31 @@ import { BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { MembersService } from '@app/shared/services/members.service';
 import { CommandRequestsService } from '../../services/command-requests.service';
+import { AutofocusStopComponent } from '../../../../shared/components/elements/autofocus-stop/autofocus-stop.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
+import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
 
 @Component({
     selector: 'app-request-discharge-modal',
     templateUrl: './request-discharge-modal.component.html',
     styleUrls: ['./request-discharge-modal.component.scss', '../../components/command-page/command-page.component.scss'],
-    standalone: false
+    imports: [
+        AutofocusStopComponent,
+        MatDialogTitle,
+        CdkScrollable,
+        MatDialogContent,
+        FormsModule,
+        FlexFillerComponent,
+        MatProgressSpinner,
+        DropdownComponent,
+        TextInputComponent,
+        MatDialogActions,
+        ButtonComponent
+    ]
 })
 export class RequestDischargeModalComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;
@@ -31,12 +50,15 @@ export class RequestDischargeModalComponent implements OnInit {
     constructor(private dialog: MatDialog, private membersService: MembersService, private commandRequestsService: CommandRequestsService) {}
 
     ngOnInit(): void {
-        this.membersService.getMembers(true).pipe(first()).subscribe({
-            next: (accounts: BasicAccount[]) => {
-                this.accounts.next(accounts.map(BasicAccount.mapToElement));
-                this.accounts.complete();
-            }
-        });
+        this.membersService
+            .getMembers(true)
+            .pipe(first())
+            .subscribe({
+                next: (accounts: BasicAccount[]) => {
+                    this.accounts.next(accounts.map(BasicAccount.mapToElement));
+                    this.accounts.complete();
+                }
+            });
     }
 
     submit() {
@@ -50,19 +72,22 @@ export class RequestDischargeModalComponent implements OnInit {
         };
 
         this.pending = true;
-        this.commandRequestsService.createDischarge(commandRequest).pipe(first()).subscribe({
-            next: () => {
-                this.dialog.closeAll();
-                this.pending = false;
-            },
-            error: (error) => {
-                this.dialog.closeAll();
-                this.pending = false;
-                this.dialog.open(MessageModalComponent, {
-                    data: { message: error.error }
-                });
-            }
-        });
+        this.commandRequestsService
+            .createDischarge(commandRequest)
+            .pipe(first())
+            .subscribe({
+                next: () => {
+                    this.dialog.closeAll();
+                    this.pending = false;
+                },
+                error: (error) => {
+                    this.dialog.closeAll();
+                    this.pending = false;
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: error.error }
+                    });
+                }
+            });
     }
 
     getAccountName(element: IDropdownElement): string {

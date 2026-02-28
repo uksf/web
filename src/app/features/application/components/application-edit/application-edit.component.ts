@@ -1,27 +1,31 @@
 import { Component } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 import { first, takeUntil } from 'rxjs/operators';
 import { getValidationError, InstantErrorStateMatcher } from '@app/shared/services/form-helper.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AccountService } from '@app/core/services/account.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { Permissions } from '@app/core/services/permissions';
 import { ApplicationState } from '@app/features/application/models/application';
-import {
-    REFERENCE_ELEMENTS, ROLE_PREFERENCE_OPTIONS, DETAILS_VALIDATION_MESSAGES,
-    buildDetailsFormGroup, extractRolePreferences, findReferenceElement
-} from '../../models/application-form.constants';
+import { REFERENCE_ELEMENTS, ROLE_PREFERENCE_OPTIONS, DETAILS_VALIDATION_MESSAGES, buildDetailsFormGroup, extractRolePreferences, findReferenceElement } from '../../models/application-form.constants';
 import { ApplicationService } from '../../services/application.service';
 import { DestroyableComponent } from '@app/shared/components';
+import { MatCard } from '@angular/material/card';
+import { CommentDisplayComponent } from '../../../../shared/components/comment-display/comment-display.component';
+import { MatFormField, MatLabel, MatHint, MatError } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
+import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
 
 @Component({
     selector: 'app-application-edit',
     templateUrl: './application-edit.component.html',
     styleUrls: ['../application-page/application-page.component.scss', './application-edit.component.scss'],
-    standalone: false
+    imports: [MatCard, CommentDisplayComponent, RouterLink, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatHint, MatError, MatCheckbox, DropdownComponent, ButtonComponent]
 })
 export class ApplicationEditComponent extends DestroyableComponent {
     formGroup: UntypedFormGroup;
@@ -98,16 +102,20 @@ export class ApplicationEditComponent extends DestroyableComponent {
         this.pending = true;
         const formObj = extractRolePreferences(this.formGroup);
         const formString = JSON.stringify(formObj).replace(/[\n\r]/g, '');
-        this.applicationService.updateApplication(this.accountService.account.id, formString)
+        this.applicationService
+            .updateApplication(this.accountService.account.id, formString)
             .pipe(first())
             .subscribe({
                 next: () => {
                     this.pending = false;
-                    this.accountService.getAccount()?.pipe(first()).subscribe({
-                        next: () => {
-                            this.updateOriginal();
-                        }
-                    });
+                    this.accountService
+                        .getAccount()
+                        ?.pipe(first())
+                        .subscribe({
+                            next: () => {
+                                this.updateOriginal();
+                            }
+                        });
                     this.dialog.open(MessageModalComponent, {
                         data: { message: 'Your application was successfully updated' }
                     });

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AccountService } from '@app/core/services/account.service';
 import { nameCase, titleCase } from '@app/shared/services/helper.service';
 import { Rank } from '@app/shared/models/rank';
@@ -7,12 +7,19 @@ import { ProfileService } from '../../services/profile.service';
 import { RanksService } from '@app/features/command/services/ranks.service';
 import { first } from 'rxjs/operators';
 import { CHARACTER_BLOCK_PATTERN } from '@app/shared/directives/character-block.directive';
+import { AutofocusStopComponent } from '../../../../shared/components/elements/autofocus-stop/autofocus-stop.component';
+import { MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { MatError } from '@angular/material/form-field';
+import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
+import { MatButton } from '@angular/material/button';
 
 @Component({
     selector: 'app-change-first-last-modal',
     templateUrl: './change-first-last-modal.component.html',
     styleUrls: ['./change-first-last-modal.component.scss'],
-    standalone: false
+    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, MatError, MatDialogActions, FlexFillerComponent, MatButton]
 })
 export class ChangeFirstLastModalComponent implements OnInit {
     characterBlockPattern = CHARACTER_BLOCK_PATTERN;
@@ -27,12 +34,15 @@ export class ChangeFirstLastModalComponent implements OnInit {
     constructor(private formBuilder: FormBuilder, private profileService: ProfileService, private ranksService: RanksService, private accountService: AccountService) {
         this.form.controls.firstName.setValue(this.accountService.account.firstname);
         this.form.controls.lastName.setValue(this.accountService.account.lastname);
-        this.ranksService.getRanks().pipe(first()).subscribe({
-            next: (ranks: Rank[]) => {
-                const rank = ranks.find((x) => x.name === this.accountService.account.rank);
-                this.rank = rank ? rank.abbreviation : null;
-            }
-        });
+        this.ranksService
+            .getRanks()
+            .pipe(first())
+            .subscribe({
+                next: (ranks: Rank[]) => {
+                    const rank = ranks.find((x) => x.name === this.accountService.account.rank);
+                    this.rank = rank ? rank.abbreviation : null;
+                }
+            });
     }
 
     ngOnInit() {
@@ -41,15 +51,19 @@ export class ChangeFirstLastModalComponent implements OnInit {
 
     changeName() {
         const formString = JSON.stringify(this.form.getRawValue()).replace(/[\n\r]/g, '');
-        this.profileService.changeName(formString)
+        this.profileService
+            .changeName(formString)
             .pipe(first())
             .subscribe({
                 next: () => {
-                    this.accountService.getAccount()?.pipe(first()).subscribe({
-                        next: () => {
-                            this.changed = true;
-                        }
-                    });
+                    this.accountService
+                        .getAccount()
+                        ?.pipe(first())
+                        .subscribe({
+                            next: () => {
+                                this.changed = true;
+                            }
+                        });
                 }
             });
     }

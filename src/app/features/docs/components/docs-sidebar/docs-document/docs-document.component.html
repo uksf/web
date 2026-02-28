@@ -2,7 +2,8 @@
 <div (click)="selectDocument()" (mouseenter)="onMouseOver()" (mouseleave)="onMouseLeave()" [ngClass]="{ hover: hover || menuOpen, selected: selected && !(hover || menuOpen) }" class="document-title">
     <mat-icon>description</mat-icon>
     <span class="document-name">{{ documentMetadata.name }}</span>
-    <div *ngIf="documentMetadata.canWrite" [ngClass]="{ hover: hover || menuOpen }" class="document-title-button-container">
+    @if (documentMetadata.canWrite) {
+    <div [ngClass]="{ hover: hover || menuOpen }" class="document-title-button-container">
         <div class="icon-container">
             <mat-icon (click)="$event.stopPropagation()" (menuClosed)="menuClosed()" (menuOpened)="menuOpened()" [matMenuTriggerFor]="documentMenu">more_horiz </mat-icon>
         </div>
@@ -17,4 +18,5 @@
             </button>
         </mat-menu>
     </div>
+    }
 </div>

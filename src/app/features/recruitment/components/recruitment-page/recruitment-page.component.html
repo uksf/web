@@ -3,12 +3,18 @@
     <app-main-content-area>
         <div class="flex-container">
             <div class="applications">
-                <h3 *ngIf="userActiveApplications.length > 0 || allOtherActiveApplications.length > 0">Active Applications</h3>
-                <div *ngIf="userActiveApplications.length == 0 && allOtherActiveApplications.length > 0">
+                @if (userActiveApplications.length > 0 || allOtherActiveApplications.length > 0) {
+                <h3>Active Applications</h3>
+                }
+                @if (userActiveApplications.length == 0 && allOtherActiveApplications.length > 0) {
+                <div>
                     <h4>You have no active applications</h4>
                 </div>
-                <div *ngIf="userActiveApplications.length > 0" class="applications-container">
-                    <mat-card (click)="openApplication(application)" *ngFor="let application of userActiveApplications; trackBy: trackByActiveApplication" class="application-card mine" appSpotlight>
+                }
+                @if (userActiveApplications.length > 0) {
+                <div class="applications-container">
+                    @for (application of userActiveApplications; track trackByActiveApplication($index, application)) {
+                    <mat-card (click)="openApplication(application)" class="application-card mine" appSpotlight>
                         <div class="name">
                             <h4 [ngStyle]="{ color: application._colour }">{{ application.account.firstname }} {{ application.account.lastname }}</h4>
                         </div>
@@ -21,10 +27,13 @@
                                 <div class="item teamspeak">
                                     <b>TeamSpeak: </b>
                                     <small>
-                                        <span class="green" *ngIf="teamspeakStates.Item(application.account.id) | async as teamspeakState; else teamspeakStateLoading">
+                                        @if (teamspeakStates.Item(application.account.id) | async; as teamspeakState) {
+                                        <span class="green">
                                             {{ teamspeakState.online ? 'Online as ' + teamspeakState.nickname : 'Offline' }}
                                         </span>
-                                        <ng-template #teamspeakStateLoading><span class="red">Offline</span></ng-template>
+                                        } @else {
+                                        <span class="red">Offline</span>
+                                        }
                                     </small>
                                 </div>
                                 <div class="item applied">
@@ -51,21 +60,30 @@
                                     </span>
                                     <small [ngStyle]="{ color: application._colour }">
                                         {{ application.daysProcessing }}
-                                        <span *ngIf="application.daysProcessing == 1; else days">Day</span>
-                                        <ng-template #days>Days</ng-template>
+                                        @if (application.daysProcessing == 1) {
+                                        <span>Day</span>
+                                        } @else {
+                                        <span>Days</span>
+                                        }
                                     </small>
                                 </div>
                             </div>
                         </div>
                     </mat-card>
+                    }
                 </div>
+                }
                 <br />
-                <div *ngIf="userActiveApplications.length == 0 && allOtherActiveApplications.length == 0">
+                @if (userActiveApplications.length == 0 && allOtherActiveApplications.length == 0) {
+                <div>
                     <h4>There are no active applications</h4>
                 </div>
-                <div *ngIf="allOtherActiveApplications.length > 0" class="applications-container">
+                }
+                @if (allOtherActiveApplications.length > 0) {
+                <div class="applications-container">
                     <h4>Other Applications</h4>
-                    <mat-card (click)="openApplication(application)" *ngFor="let application of allOtherActiveApplications; trackBy: trackByActiveApplication" class="application-card others" appSpotlight>
+                    @for (application of allOtherActiveApplications; track trackByActiveApplication($index, application)) {
+                    <mat-card (click)="openApplication(application)" class="application-card others" appSpotlight>
                         <div class="name">
                             <h4 [ngStyle]="{ color: application._colour }">{{ application.account.firstname }} {{ application.account.lastname }}</h4>
                         </div>
@@ -78,10 +96,13 @@
                                 <div class="item teamspeak">
                                     <b>TeamSpeak: </b>
                                     <small>
-                                        <span class="green" *ngIf="teamspeakStates.Item(application.account.id) | async as teamspeakState; else teamspeakStateLoading">
+                                        @if (teamspeakStates.Item(application.account.id) | async; as teamspeakState) {
+                                        <span class="green">
                                             {{ teamspeakState.online ? 'Online as ' + teamspeakState.nickname : 'Offline' }}
                                         </span>
-                                        <ng-template #teamspeakStateLoading><span class="red">Offline</span></ng-template>
+                                        } @else {
+                                        <span class="red">Offline</span>
+                                        }
                                     </small>
                                 </div>
                                 <div class="item applied">
@@ -108,17 +129,23 @@
                                     </span>
                                     <small [ngStyle]="{ color: application._colour }">
                                         {{ application.daysProcessing }}
-                                        <span *ngIf="application.daysProcessing == 1; else days">Day</span>
-                                        <ng-template #days>Days</ng-template>
+                                        @if (application.daysProcessing == 1) {
+                                        <span>Day</span>
+                                        } @else {
+                                        <span>Days</span>
+                                        }
                                     </small>
                                 </div>
                             </div>
                         </div>
                     </mat-card>
+                    }
                 </div>
+                }
             </div>
             <div class="history">
-                <div class="history-header" *ngIf="loaded">
+                @if (loaded) {
+                <div class="history-header">
                     <div class="history-header-part-container title">
                         <h3>Application History</h3>
                     </div>
@@ -136,14 +163,15 @@
                                 <span>Sort</span>
                             </button>
                             <mat-menu #sortMenu="matMenu">
+                                @for (sortDefinition of sortDefinitions; track sortDefinition.name) {
                                 <button
                                     (click)="sort(sortDefinition.mode, sortDefinition.direction)"
-                                    *ngFor="let sortDefinition of sortDefinitions"
                                     [disabled]="sortMode === sortDefinition.mode && sortDirection === sortDefinition.direction"
                                     mat-menu-item
                                 >
                                     {{ sortDefinition.name }}
                                 </button>
+                                }
                             </mat-menu>
                             <button mat-raised-button [matMenuTriggerFor]="filterMenu">
                                 <mat-icon class="icon-right">filter_list</mat-icon>
@@ -151,16 +179,21 @@
                             </button>
                             <mat-menu #filterMenu="matMenu">
                                 <button (click)="filterByRecruiter('')" [disabled]="recruiterIdFilter === ''" mat-menu-item>All</button>
-                                <div *ngFor="let recruiter of recruiters">
+                                @for (recruiter of recruiters; track recruiter.id) {
+                                <div>
                                     <button (click)="filterByRecruiter(recruiter.id)" [disabled]="recruiterIdFilter === recruiter.id" mat-menu-item>{{ recruiter.name }}</button>
                                 </div>
+                                }
                             </mat-menu>
                         </div>
                         <app-paginator (page)="page($event)" [total]="totalCompletedApplications"></app-paginator>
                     </div>
                 </div>
-                <div class="history-applications" *ngIf="loaded">
-                    <mat-card (click)="openApplication(application)" *ngFor="let application of completedApplications; trackBy: trackByApplication" class="history-application" appSpotlight>
+                }
+                @if (loaded) {
+                <div class="history-applications">
+                    @for (application of completedApplications; track trackByApplication($index, application)) {
+                    <mat-card (click)="openApplication(application)" class="history-application" appSpotlight>
                         <div class="name">
                             <b [ngClass]="getHistoryColour(application)">{{ application.displayName }}</b>
                         </div>
@@ -174,40 +207,53 @@
                                 <small>{{ application.account.application.dateCreated | date: 'mediumDate':'Europe/London' }}</small>
                             </div>
                             <div class="item accepted">
-                                <span *ngIf="application.account.application.state == applicationState.ACCEPTED; else rejected">
+                                @if (application.account.application.state == applicationState.ACCEPTED) {
+                                <span>
                                     <b>Accepted: </b>
                                 </span>
-                                <ng-template #rejected>
-                                    <b>Rejected: </b>
-                                </ng-template>
+                                } @else {
+                                <b>Rejected: </b>
+                                }
                                 <small>{{ application.account.application.dateAccepted | date: 'mediumDate':'Europe/London' }}</small>
                             </div>
                             <div class="item processed">
                                 <b>Processed: </b>
                                 <small
                                     >{{ application.daysProcessed }}
-                                    <span *ngIf="application.daysProcessed == 1; else days">Day</span>
-                                    <ng-template #days>Days</ng-template>
+                                    @if (application.daysProcessed == 1) {
+                                    <span>Day</span>
+                                    } @else {
+                                    <span>Days</span>
+                                    }
                                 </small>
                             </div>
                         </div>
                     </mat-card>
+                    }
                 </div>
+                }
             </div>
         </div>
     </app-main-content-area>
     <app-side-content-area>
         <div class="flex-container stats">
-            <div *ngIf="getUserAccount() != null" class="stats-container">
+            @if (getUserAccount() != null) {
+            <div class="stats-container">
                 <div class="stats-item">
                     <h3>SR1 State</h3>
                     <mat-card>
                         <div class="state-container">
-                            <h4 *ngIf="getUserAccount().settings.sr1Enabled" class="enabled">You are taking applications</h4>
-                            <h4 *ngIf="!getUserAccount().settings.sr1Enabled" class="disabled">You are not taking applications</h4>
+                            @if (getUserAccount().settings.sr1Enabled) {
+                            <h4 class="enabled">You are taking applications</h4>
+                            } @else {
+                            <h4 class="disabled">You are not taking applications</h4>
+                            }
                             <button mat-raised-button color="primary" class="state-button" (click)="setAccountSr1Enabled()">
-                                <span *ngIf="getUserAccount().settings.sr1Enabled; else enable">Disable</span>
-                                <ng-template #enable>Enable</ng-template>
+                                @if (getUserAccount().settings.sr1Enabled) {
+                                <span>Disable</span>
+                                } @else {
+                                <span>Enable</span>
+                                }
                             </button>
                         </div>
                     </mat-card>
@@ -225,7 +271,8 @@
                             <div class="item rejected"><b>Rejected</b></div>
                             <div class="item total"><b>Total</b></div>
                         </div>
-                        <div class="activity-row" *ngFor="let item of activity">
+                        @for (item of activity; track item.name) {
+                        <div class="activity-row">
                             <ng-template [ngxPermissionsOnly]="['RECRUITER_LEAD']">
                                 <div class="item state row">
                                     <mat-checkbox color="primary" matTooltip="Recruiter enabled/disabled" [(ngModel)]="item.account.settings.sr1Enabled" (change)="setSr1Enabled(item)"></mat-checkbox>
@@ -237,10 +284,13 @@
                             <div class="item rejected">{{ item.rejected }}</div>
                             <div class="item total">{{ item.active + item.accepted + item.rejected }}</div>
                         </div>
+                        }
                     </mat-card>
                 </div>
             </div>
-            <div class="stats-container" *ngIf="activity != null && yourStats != null && sr1Stats != null">
+            }
+            @if (activity != null && yourStats != null && sr1Stats != null) {
+            <div class="stats-container">
                 <div class="stats-item statistics">
                     <h3>SR1 Statistics</h3>
                     <mat-card class="statistics-container">
@@ -248,25 +298,34 @@
                             <mat-tab label="Your Statistics" style="width: 100%">
                                 <mat-card class="statistics-content">
                                     <h4>Last Month</h4>
-                                    <p *ngFor="let stats of yourStats.lastMonth">{{ stats.fieldName }} - {{ stats.fieldValue }}</p>
+                                    @for (stats of yourStats.lastMonth; track stats.fieldName) {
+                                    <p>{{ stats.fieldName }} - {{ stats.fieldValue }}</p>
+                                    }
                                     <br />
                                     <h4>Total</h4>
-                                    <p *ngFor="let stats of yourStats.overall">{{ stats.fieldName }} - {{ stats.fieldValue }}</p>
+                                    @for (stats of yourStats.overall; track stats.fieldName) {
+                                    <p>{{ stats.fieldName }} - {{ stats.fieldValue }}</p>
+                                    }
                                 </mat-card>
                             </mat-tab>
                             <mat-tab label="All Statistics" style="width: 100%">
                                 <mat-card class="statistics-content">
                                     <h4>Last Month</h4>
-                                    <p *ngFor="let stats of sr1Stats.lastMonth">{{ stats.fieldName }} - {{ stats.fieldValue }}</p>
+                                    @for (stats of sr1Stats.lastMonth; track stats.fieldName) {
+                                    <p>{{ stats.fieldName }} - {{ stats.fieldValue }}</p>
+                                    }
                                     <br />
                                     <h4>Total</h4>
-                                    <p *ngFor="let stats of sr1Stats.overall">{{ stats.fieldName }} - {{ stats.fieldValue }}</p>
+                                    @for (stats of sr1Stats.overall; track stats.fieldName) {
+                                    <p>{{ stats.fieldName }} - {{ stats.fieldValue }}</p>
+                                    }
                                 </mat-card>
                             </mat-tab>
                         </mat-tab-group>
                     </mat-card>
                 </div>
             </div>
+            }
         </div>
     </app-side-content-area>
 </app-default-content-areas>

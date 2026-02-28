@@ -5,12 +5,20 @@ import { RequestLoaModalComponent } from '@app/shared/modals/request-loa-modal/r
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { AppSettingsService, Environments } from '@app/core/services/app-settings.service';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
+import { RouterLink } from '@angular/router';
+import { FlexFillerComponent } from '../../../shared/components/elements/flex-filler/flex-filler.component';
+import { NgxPermissionsModule } from 'ngx-permissions';
+import { NotificationsComponent } from '../notifications/notifications.component';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { CoreModule } from '../../core.module';
 
 @Component({
     selector: 'app-header-bar',
     templateUrl: './header-bar.component.html',
     styleUrls: ['./header-bar.component.scss'],
-    standalone: false
+    imports: [RouterLink, FlexFillerComponent, NgxPermissionsModule, NotificationsComponent, MatButton, MatIcon, MatMenuTrigger, MatMenu, MatMenuItem, CoreModule]
 })
 export class HeaderBarComponent implements OnInit {
     environments = Environments;

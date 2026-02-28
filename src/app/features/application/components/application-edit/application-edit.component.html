@@ -1,11 +1,13 @@
-<div *ngIf="accepted">
+@if (accepted) {
+<div>
     <mat-card>
         <h2>{{ applicationState }}</h2>
         <p>Congratulations! Your application to join UKSF was accepted.</p>
         <p>Your next steps will be detailed to you by either an SR1, or a member of SFSG.</p>
     </mat-card>
 </div>
-<div *ngIf="rejected">
+} @else if (rejected) {
+<div>
     <mat-card>
         <h2>{{ applicationState }}</h2>
         <p>We are sorry but your application to join UKSF has been rejected</p>
@@ -18,7 +20,8 @@
         </mat-card>
     </div>
 </div>
-<div *ngIf="!accepted && !rejected">
+} @else {
+<div>
     <mat-card>
         <h2>{{ applicationState }}</h2>
         <p>Your application has been successfully submitted. Please wait for your SR1 recruitment officer to contact you.</p>
@@ -55,57 +58,47 @@
                 <div>
                     <mat-form-field class="large-input">
                         <mat-label>How much experience do you have playing Arma?</mat-label>
-                        <textarea
-                            matInput
-                            matTextareaAutosize
-                            matAutosizeMinRows="2"
-                            matAutosizeMaxRows="5"
-                            formControlName="armaExperience"
-                            maxlength="500"
-                            #armaText
-                        ></textarea>
-                        <mat-hint *ngIf="armaText.value.length > 200">{{ armaText.value.length }} / 500</mat-hint>
+                        <textarea matInput matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="5" formControlName="armaExperience" maxlength="500" #armaText></textarea>
+                        @if (armaText.value.length > 200) {
+                        <mat-hint>{{ armaText.value.length }} / 500</mat-hint>
+                        }
                         <mat-error>{{ cachedErrors.armaExperience }}</mat-error>
                     </mat-form-field>
                     <mat-form-field class="large-input">
                         <mat-label>Other Units - have you ever been in an Arma unit? Which?</mat-label>
-                        <textarea
-                            matInput
-                            matTextareaAutosize
-                            matAutosizeMinRows="2"
-                            matAutosizeMaxRows="4"
-                            formControlName="unitsExperience"
-                            maxlength="250"
-                            #unitsText
-                        ></textarea>
-                        <mat-hint *ngIf="unitsText.value.length > 200">{{ unitsText.value.length }} / 250</mat-hint>
+                        <textarea matInput matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="4" formControlName="unitsExperience" maxlength="250" #unitsText></textarea>
+                        @if (unitsText.value.length > 200) {
+                        <mat-hint>{{ unitsText.value.length }} / 250</mat-hint>
+                        }
                         <mat-error>{{ cachedErrors.unitsExperience }}</mat-error>
                     </mat-form-field>
                     <mat-form-field class="large-input">
                         <mat-label>Personal background - tell us a little about yourself</mat-label>
-                        <textarea
-                            matInput
-                            matTextareaAutosize
-                            matAutosizeMinRows="5"
-                            matAutosizeMaxRows="10"
-                            formControlName="background"
-                            maxlength="500"
-                            #backgroundText
-                        ></textarea>
-                        <mat-hint *ngIf="backgroundText.value.length > 400">{{ backgroundText.value.length }} / 500</mat-hint>
+                        <textarea matInput matTextareaAutosize matAutosizeMinRows="5" matAutosizeMaxRows="10" formControlName="background" maxlength="500" #backgroundText></textarea>
+                        @if (backgroundText.value.length > 400) {
+                        <mat-hint>{{ backgroundText.value.length }} / 500</mat-hint>
+                        }
                         <mat-error>{{ cachedErrors.background }}</mat-error>
                     </mat-form-field>
                 </div>
                 <mat-checkbox color="primary" formControlName="militaryExperience">Are you or have you ever been a member of the military?</mat-checkbox>
                 <div formGroupName="rolePreferences">
                     <p>These options exist to give us an idea of what kind of role you are interested in. There is no guarantee you will be admitted to any of these programmes.</p>
-                    <div *ngFor="let rolePreferenceOption of rolePreferenceOptions">
+                    @for (rolePreferenceOption of rolePreferenceOptions; track rolePreferenceOption) {
+                    <div>
                         <mat-checkbox color="primary" formControlName="{{ rolePreferenceOption }}">{{ rolePreferenceOption }}</mat-checkbox>
                     </div>
+                    }
                 </div>
-                <app-dropdown class="large-input" placeholder="Where did you hear about UKSF?" [autocomplete]="false"
-                    [elements]="referenceElements$" formControlName="reference" elementName="reference"
-                    [reserveErrorSpace]="false">
+                <app-dropdown
+                    class="large-input"
+                    placeholder="Where did you hear about UKSF?"
+                    [autocomplete]="false"
+                    [elements]="referenceElements$"
+                    formControlName="reference"
+                    elementName="reference"
+                    [reserveErrorSpace]="false"
+                >
                     <ng-template #element let-element>{{ element.displayValue }}</ng-template>
                 </app-dropdown>
                 <div class="button-next">
@@ -119,3 +112,4 @@
         </mat-card>
     </div>
 </div>
+}

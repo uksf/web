@@ -20,17 +20,9 @@ import { FooterBarComponent } from './components/footer-bar/footer-bar.component
 import { SideBarComponent } from './components/side-bar/side-bar.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
 
-const CORE_COMPONENTS = [
-    HeaderBarComponent,
-    FooterBarComponent,
-    SideBarComponent,
-    NotificationsComponent,
-];
+const CORE_COMPONENTS = [HeaderBarComponent, FooterBarComponent, SideBarComponent, NotificationsComponent];
 
 @NgModule({
-    declarations: [
-        ...CORE_COMPONENTS,
-    ],
     imports: [
         CommonModule,
         RouterModule,
@@ -44,9 +36,8 @@ const CORE_COMPONENTS = [
         MatSidenavModule,
         MatToolbarModule,
         MatTooltipModule,
+        ...CORE_COMPONENTS
     ],
-    exports: [
-        ...CORE_COMPONENTS,
-    ],
+    exports: [...CORE_COMPONENTS]
 })
 export class CoreModule {}

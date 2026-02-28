@@ -1,6 +1,6 @@
 import { Component, HostListener, ViewChild } from '@angular/core';
-import { DatePipe } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { DatePipe, NgClass, NgStyle, AsyncPipe } from '@angular/common';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { RecruitmentService } from '../../services/recruitment.service';
 import { CommentDisplayComponent } from '@app/shared/components/comment-display/comment-display.component';
 import { AccountService } from '@app/core/services/account.service';
@@ -16,13 +16,43 @@ import { CountryPickerService, ICountry } from '@app/shared/services/country-pic
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { Permissions } from '@app/core/services/permissions';
+import { MatIconButton, MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatTooltip } from '@angular/material/tooltip';
+import { NgxPermissionsModule } from 'ngx-permissions';
+import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
+import { FormsModule } from '@angular/forms';
+import { MatCard } from '@angular/material/card';
+import { CommentDisplayComponent as CommentDisplayComponent_1 } from '../../../../shared/components/comment-display/comment-display.component';
+import { RecruitmentPageComponent } from '../recruitment-page/recruitment-page.component';
+import { CountryImage, CountryName } from '../../../../shared/pipes/country.pipe';
 
 @Component({
     selector: 'app-recruitment-application-page',
     templateUrl: './recruitment-application-page.component.html',
     styleUrls: ['./recruitment-application-page.component.scss'],
     providers: [DatePipe],
-    standalone: false
+    imports: [
+        MatIconButton,
+        MatIcon,
+        NgClass,
+        MatProgressSpinner,
+        MatButton,
+        MatTooltip,
+        RouterLink,
+        NgxPermissionsModule,
+        DropdownComponent,
+        FormsModule,
+        MatCard,
+        NgStyle,
+        CommentDisplayComponent_1,
+        RecruitmentPageComponent,
+        AsyncPipe,
+        DatePipe,
+        CountryImage,
+        CountryName
+    ]
 })
 export class RecruitmentApplicationPageComponent {
     @ViewChild('recruiterCommentsDisplay') recruiterCommentDisplay: CommentDisplayComponent;
@@ -68,91 +98,109 @@ export class RecruitmentApplicationPageComponent {
     }
 
     getApplication() {
-        this.recruitmentService.getApplication(this.accountId).pipe(first()).subscribe({
-            next: (response: DetailedApplication) => {
-                const application = response;
-                if (application.account.id === this.accountService.account.id && application.account.application.state === ApplicationState.WAITING) {
-                    this.router.navigate(['/application']).then();
-                    return;
-                }
-
-                if (
-                    application.account.id === this.accountService.account.id ||
-                    this.permissions.hasAnyPermissionOf([Permissions.RECRUITER, Permissions.RECRUITER_LEAD, Permissions.COMMAND, Permissions.ADMIN])
-                ) {
-                    this.application = application;
-                    this.otherRolePreferenceOptions = this.rolePreferenceOptions.filter((x: string) => !application.account.rolePreferences.includes(x));
-
-                    this.getTeamspeakState();
-                    this.getDiscordState();
-
-                    if (this.permissions.hasPermission(Permissions.RECRUITER_LEAD)) {
-                        this.recruitmentService.getRecruiters().pipe(first()).subscribe({
-                            next: (recruiters) => {
-                                this.recruiters = recruiters.filter((x: Recruiter) => x.active);
-                                const elements = this.recruiters.map(r => ({ value: r.id, displayValue: r.name }));
-                                this.recruiterElements$.next(elements);
-                                const match = elements.find(e => e.value === this.application.recruiterId);
-                                this.selected = match ?? { value: this.application.recruiterId, displayValue: this.application.recruiter };
-                            }
-                        });
+        this.recruitmentService
+            .getApplication(this.accountId)
+            .pipe(first())
+            .subscribe({
+                next: (response: DetailedApplication) => {
+                    const application = response;
+                    if (application.account.id === this.accountService.account.id && application.account.application.state === ApplicationState.WAITING) {
+                        this.router.navigate(['/application']).then();
+                        return;
                     }
-                    this.updating = false;
-                } else {
-                    this.router.navigate(['/home']).then();
+
+                    if (
+                        application.account.id === this.accountService.account.id ||
+                        this.permissions.hasAnyPermissionOf([Permissions.RECRUITER, Permissions.RECRUITER_LEAD, Permissions.COMMAND, Permissions.ADMIN])
+                    ) {
+                        this.application = application;
+                        this.otherRolePreferenceOptions = this.rolePreferenceOptions.filter((x: string) => !application.account.rolePreferences.includes(x));
+
+                        this.getTeamspeakState();
+                        this.getDiscordState();
+
+                        if (this.permissions.hasPermission(Permissions.RECRUITER_LEAD)) {
+                            this.recruitmentService
+                                .getRecruiters()
+                                .pipe(first())
+                                .subscribe({
+                                    next: (recruiters) => {
+                                        this.recruiters = recruiters.filter((x: Recruiter) => x.active);
+                                        const elements = this.recruiters.map((r) => ({ value: r.id, displayValue: r.name }));
+                                        this.recruiterElements$.next(elements);
+                                        const match = elements.find((e) => e.value === this.application.recruiterId);
+                                        this.selected = match ?? { value: this.application.recruiterId, displayValue: this.application.recruiter };
+                                    }
+                                });
+                        }
+                        this.updating = false;
+                    } else {
+                        this.router.navigate(['/home']).then();
+                    }
                 }
-            }
-        });
+            });
     }
 
     getTeamspeakState() {
-        this.recruitmentService.getTeamspeakOnlineState(this.accountId).pipe(first()).subscribe({
-            next: (state) => {
-                this.teamspeakState.next(state);
-                this.teamspeakState.complete();
-            }
-        });
+        this.recruitmentService
+            .getTeamspeakOnlineState(this.accountId)
+            .pipe(first())
+            .subscribe({
+                next: (state) => {
+                    this.teamspeakState.next(state);
+                    this.teamspeakState.complete();
+                }
+            });
     }
 
     getDiscordState() {
-        this.recruitmentService.getDiscordOnlineState(this.accountId).pipe(first()).subscribe({
-            next: (state) => {
-                this.discordState.next(state);
-                this.discordState.complete();
-            }
-        });
+        this.recruitmentService
+            .getDiscordOnlineState(this.accountId)
+            .pipe(first())
+            .subscribe({
+                next: (state) => {
+                    this.discordState.next(state);
+                    this.discordState.complete();
+                }
+            });
     }
 
     setNewRecruiter(element: IDropdownElement) {
         this.updating = true;
-        this.recruitmentService.setRecruiter(this.accountId, element.value).pipe(first()).subscribe({
-            next: () => {
-                this.getApplication();
-                this.recruiterCommentDisplay.getCanPostComment();
-                this.applicationCommentDisplay.getCanPostComment();
-            },
-            error: (error) => {
-                this.updating = false;
-                this.dialog.open(MessageModalComponent, {
-                    data: { message: error }
-                });
-            }
-        });
+        this.recruitmentService
+            .setRecruiter(this.accountId, element.value)
+            .pipe(first())
+            .subscribe({
+                next: () => {
+                    this.getApplication();
+                    this.recruiterCommentDisplay.getCanPostComment();
+                    this.applicationCommentDisplay.getCanPostComment();
+                },
+                error: (error) => {
+                    this.updating = false;
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: error }
+                    });
+                }
+            });
     }
 
     updateApplicationState(updatedState: ApplicationState) {
         this.updating = true;
-        this.recruitmentService.updateApplicationState(this.accountId, updatedState).pipe(first()).subscribe({
-            next: () => {
-                this.getApplication();
-            },
-            error: (error) => {
-                this.updating = false;
-                this.dialog.open(MessageModalComponent, {
-                    data: { message: error }
-                });
-            }
-        });
+        this.recruitmentService
+            .updateApplicationState(this.accountId, updatedState)
+            .pipe(first())
+            .subscribe({
+                next: () => {
+                    this.getApplication();
+                },
+                error: (error) => {
+                    this.updating = false;
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: error }
+                    });
+                }
+            });
     }
 
     resetApplicationToCandidate() {

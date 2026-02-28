@@ -1,5 +1,8 @@
 import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
+import { AutofocusStopComponent } from '../../components/elements/autofocus-stop/autofocus-stop.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { MatButton } from '@angular/material/button';
 
 export interface MessageModalData {
     message: string;
@@ -11,7 +14,7 @@ export interface MessageModalData {
     selector: 'app-message-modal',
     templateUrl: './message-modal.component.html',
     styleUrls: ['./message-modal.component.scss'],
-    standalone: false
+    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, MatDialogActions, MatButton]
 })
 export class MessageModalComponent {
     title: string = '';

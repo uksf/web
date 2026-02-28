@@ -30,8 +30,6 @@ import { WorkshopService } from './services/workshop.service';
         MarkdownModule.forChild(),
         MatRadioModule,
         MatTabsModule,
-    ],
-    declarations: [
         ModpackPageComponent,
         ModpackGuideComponent,
         ModpackReleasesComponent,
@@ -42,8 +40,8 @@ import { WorkshopService } from './services/workshop.service';
         NewModpackBuildModalComponent,
         NewModpackReleaseModalComponent,
         InstallWorkshopModModalComponent,
-        WorkshopModInterventionModalComponent,
+        WorkshopModInterventionModalComponent
     ],
-    providers: [WorkshopService],
+    providers: [WorkshopService]
 })
 export class ModpackModule {}

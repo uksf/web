@@ -1,11 +1,19 @@
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { FlexFillerComponent } from '../../../shared/components/elements/flex-filler/flex-filler.component';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { NgClass } from '@angular/common';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { FormsModule } from '@angular/forms';
+import { MatButton } from '@angular/material/button';
 
 @Component({
     selector: 'app-workshop-mod-intervention-modal',
     templateUrl: './workshop-mod-intervention-modal.component.html',
     styleUrls: ['./workshop-mod-intervention-modal.component.scss'],
-    standalone: false
+    imports: [MatDialogTitle, CdkScrollable, MatDialogContent, FlexFillerComponent, MatProgressSpinner, NgClass, MatTooltip, MatCheckbox, FormsModule, MatDialogActions, MatButton]
 })
 export class WorkshopModInterventionModalComponent {
     submitting: boolean = false;

@@ -4,9 +4,8 @@ import { Component } from '@angular/core';
     selector: 'app-flex-filler',
     template: '',
     host: {
-        '[style.flex]': '1',
-    },
-    standalone: false
+        '[style.flex]': '1'
+    }
 })
 export class FlexFillerComponent {
     constructor() {}

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { first, takeUntil } from 'rxjs/operators';
-import { Router } from '@angular/router';
+import { Router, RouterLinkActive, RouterLink } from '@angular/router';
 import { Permissions } from '@app/core/services/permissions';
 import { AccountService } from '@app/core/services/account.service';
 import { AppComponent } from '@app/app.component';
@@ -8,12 +8,14 @@ import { VersionService } from '@app/core/services/version.service';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { ApplicationState } from '@app/features/application/models/application';
 import { DestroyableComponent } from '@app/shared/components';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
     selector: 'app-side-bar',
     templateUrl: './side-bar.component.html',
     styleUrls: ['./side-bar.component.scss'],
-    standalone: false
+    imports: [MatTooltip, MatIcon, RouterLinkActive, RouterLink]
 })
 export class SideBarComponent extends DestroyableComponent implements OnInit {
     newVersion = false;
@@ -116,14 +118,17 @@ export class SideBarComponent extends DestroyableComponent implements OnInit {
     }
 
     checkVersion() {
-        this.versionService.getVersion().pipe(first()).subscribe({
-            next: (version) => {
-                if (this.version !== 0 && version > this.version) {
-                    this.newVersion = true;
+        this.versionService
+            .getVersion()
+            .pipe(first())
+            .subscribe({
+                next: (version) => {
+                    if (this.version !== 0 && version > this.version) {
+                        this.newVersion = true;
+                    }
+                    this.version = version;
                 }
-                this.version = version;
-            }
-        });
+            });
     }
 
     trackByLink(index: number, item: { link: string }): string {

@@ -25,21 +25,26 @@
         <!--        </div>-->
     </div>
 
-    <div class="member-panel-content-container" *ngIf="expanded" [@bodyExpansion]="expanded">
+    @if (expanded) {
+    <div class="member-panel-content-container" [@bodyExpansion]="expanded">
         <div class="member-panel-content">
             <div class="member-panel-content-item left">
                 <h4>Units</h4>
-                <div *ngFor="let unit of member.unitObjects; trackBy: trackByUnitId" class="member-panel-content-element">
+                @for (unit of member.unitObjects; track trackByUnitId($index, unit)) {
+                <div class="member-panel-content-element">
                     <div>{{ unit.name }}</div>
                     <div>{{ unit.memberRole }}</div>
                 </div>
+                }
             </div>
             <div class="member-panel-content-item right">
                 <h4>Training</h4>
                 <div class="member-panel-content-elements-container">
-                    <div *ngFor="let training of member.trainings; trackBy: trackByName" class="member-panel-content-element training">
+                    @for (training of member.trainings; track trackByName($index, training)) {
+                    <div class="member-panel-content-element training">
                         <div>{{ training.name }}</div>
                     </div>
+                    }
                 </div>
                 <div (click)="editTraining()" class="member-panel-content-element edit">
                     <span>Add / Remove</span>
@@ -72,4 +77,5 @@
             </div>
         </div>
     </div>
+    }
 </mat-card>

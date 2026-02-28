@@ -7,13 +7,58 @@ import { TextInputModalComponent } from '@app/shared/modals/text-input-modal/tex
 import { DischargesService } from '../../services/discharges.service';
 import { CommandRequestsService, CommandRequestExistsBody } from '@app/features/command/services/command-requests.service';
 import { expansionAnimations } from '@app/shared/services/animations.service';
+import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
+import { MatButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIcon } from '@angular/material/icon';
+import { NgClass, DatePipe } from '@angular/common';
+import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { FormsModule } from '@angular/forms';
+import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
+import { MatSelect } from '@angular/material/select';
+import { MatOption } from '@angular/material/autocomplete';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatAccordion } from '@angular/material/expansion';
+import { MatCard } from '@angular/material/card';
+import { SpotlightDirective } from '../../../../shared/directives/spotlight.directive';
+import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';
+import { NgxPermissionsModule } from 'ngx-permissions';
 
 @Component({
     selector: 'app-personnel-discharges',
     templateUrl: './personnel-discharges.component.html',
     styleUrls: ['../personnel-page/personnel-page.component.scss', './personnel-discharges.component.scss'],
     animations: [expansionAnimations.indicatorRotate, expansionAnimations.bodyExpansionState],
-    standalone: false
+    imports: [
+        DefaultContentAreasComponent,
+        MainContentAreaComponent,
+        MatButton,
+        MatTooltip,
+        MatIcon,
+        NgClass,
+        TextInputComponent,
+        FormsModule,
+        FlexFillerComponent,
+        MatSelect,
+        MatOption,
+        MatProgressSpinner,
+        MatAccordion,
+        MatCard,
+        SpotlightDirective,
+        MatTable,
+        MatColumnDef,
+        MatHeaderCellDef,
+        MatHeaderCell,
+        MatCellDef,
+        MatCell,
+        MatHeaderRowDef,
+        MatHeaderRow,
+        MatRowDef,
+        MatRow,
+        NgxPermissionsModule,
+        DatePipe
+    ]
 })
 export class PersonnelDischargesComponent implements OnInit, OnDestroy {
     displayedColumns = ['timestamp', 'rank', 'unit', 'role', 'dischargedBy', 'reason'];
@@ -33,12 +78,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
     pendingActions = new Set<string>();
     private timeout: number;
 
-    constructor(
-        private dischargesService: DischargesService,
-        private commandRequestsService: CommandRequestsService,
-        private dialog: MatDialog,
-        private route: ActivatedRoute
-    ) {}
+    constructor(private dischargesService: DischargesService, private commandRequestsService: CommandRequestsService, private dialog: MatDialog, private route: ActivatedRoute) {}
 
     ngOnInit(): void {
         if (this.route.snapshot.queryParams['filter']) {
@@ -57,22 +97,25 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
     refresh(initialFilter = '') {
         this.completeDischargeCollections = undefined;
         this.updating = true;
-        this.dischargesService.getDischarges().pipe(first()).subscribe({
-            next: (response: DischargeCollection[]) => {
-                this.completeDischargeCollections = response;
-                if (initialFilter) {
-                    this.filterString = initialFilter;
-                    this.filter(true);
-                } else {
-                    this.filtered = this.completeDischargeCollections;
-                    this.navigate(-1);
+        this.dischargesService
+            .getDischarges()
+            .pipe(first())
+            .subscribe({
+                next: (response: DischargeCollection[]) => {
+                    this.completeDischargeCollections = response;
+                    if (initialFilter) {
+                        this.filterString = initialFilter;
+                        this.filter(true);
+                    } else {
+                        this.filtered = this.completeDischargeCollections;
+                        this.navigate(-1);
+                    }
+                    this.updating = false;
+                },
+                error: (_) => {
+                    this.updating = false;
                 }
-                this.updating = false;
-            },
-            error: (_) => {
-                this.updating = false;
-            }
-        });
+            });
     }
 
     navigate(mode: number) {
@@ -118,18 +161,21 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
     reinstate(event: Event, dischargeCollection: DischargeCollection) {
         event.stopPropagation();
         this.pendingActions.add(dischargeCollection.id);
-        this.dischargesService.reinstateDischarge(dischargeCollection.id).pipe(first()).subscribe({
-            next: (response: DischargeCollection[]) => {
-                this.pendingActions.delete(dischargeCollection.id);
-                this.dischargeCollections = response;
-            },
-            error: (_) => {
-                this.pendingActions.delete(dischargeCollection.id);
-                this.dialog.open(MessageModalComponent, {
-                    data: { message: `Failed to reinstate ${dischargeCollection.name} as a member` }
-                });
-            }
-        });
+        this.dischargesService
+            .reinstateDischarge(dischargeCollection.id)
+            .pipe(first())
+            .subscribe({
+                next: (response: DischargeCollection[]) => {
+                    this.pendingActions.delete(dischargeCollection.id);
+                    this.dischargeCollections = response;
+                },
+                error: (_) => {
+                    this.pendingActions.delete(dischargeCollection.id);
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: `Failed to reinstate ${dischargeCollection.name} as a member` }
+                    });
+                }
+            });
     }
 
     requestReinstate(event: Event, dischargeCollection: DischargeCollection) {

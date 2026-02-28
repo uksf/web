@@ -4,13 +4,17 @@ import { FolderMetadata } from '@app/features/docs/models/documents';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateFolderModalComponent } from '../../modals/create-folder-modal/create-folder-modal.component';
 import { collapseAnimations } from '@app/shared/services/animations.service';
+import { MatIcon } from '@angular/material/icon';
+import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
+import { MatTooltip } from '@angular/material/tooltip';
+import { DocsFolderComponent } from './docs-folder/docs-folder.component';
 
 @Component({
     selector: 'app-docs-sidebar',
     templateUrl: './docs-sidebar.component.html',
     styleUrls: ['./docs-sidebar.component.scss'],
     animations: [collapseAnimations.buttonExpansion, collapseAnimations.indicatorRotate, collapseAnimations.collapsed],
-    standalone: false
+    imports: [MatIcon, FlexFillerComponent, MatTooltip, DocsFolderComponent]
 })
 export class DocsSidebarComponent implements OnInit {
     @Input('allDocumentMetadata') allFolderMetadata: FolderMetadata[];

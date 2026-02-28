@@ -1,8 +1,10 @@
 <div class="nav-bar">
     <nav mat-tab-nav-bar [tabPanel]="tabPanel" aria-label="navigation links">
-        <a mat-tab-link *ngFor="let tabLink of tabLinks; let i = index; trackBy: trackByLink" [routerLink]="tabLink.link" routerLinkActive #rla="routerLinkActive" [active]="rla.isActive ? true : null">
-            {{tabLink.label}}
+        @for (tabLink of tabLinks; track trackByLink(i, tabLink); let i = $index) {
+        <a mat-tab-link [routerLink]="tabLink.link" routerLinkActive #rla="routerLinkActive" [active]="rla.isActive ? true : null">
+            {{ tabLink.label }}
         </a>
+        }
     </nav>
 </div>
 

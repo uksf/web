@@ -10,16 +10,7 @@ import { RecruitmentPageComponent } from './components/recruitment-page/recruitm
 import { RecruitmentApplicationPageComponent } from './components/recruitment-application-page/recruitment-application-page.component';
 
 @NgModule({
-    imports: [
-        SharedModule,
-        RecruitmentRoutingModule,
-        NgxPermissionsModule.forChild(),
-        MatTabsModule,
-    ],
-    declarations: [
-        RecruitmentPageComponent,
-        RecruitmentApplicationPageComponent,
-    ],
-    providers: [RecruitmentService],
+    imports: [SharedModule, RecruitmentRoutingModule, NgxPermissionsModule.forChild(), MatTabsModule, RecruitmentPageComponent, RecruitmentApplicationPageComponent],
+    providers: [RecruitmentService]
 })
 export class RecruitmentModule {}

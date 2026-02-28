@@ -1,44 +1,26 @@
 {
     "compileOnSave": false,
     "compilerOptions": {
-      "importHelpers": true,
-      "module": "ES2022",
-      "outDir": "./dist/out-tsc",
-      "baseUrl": "src",
-      "paths": {
-        "@app/*": [
-          "app/*"
-        ],
-        "@core/*": [
-          "app/core/*"
-        ],
-        "@shared/*": [
-          "app/shared/*"
-        ],
-        "@env/*": [
-          "environments/*"
-        ]
-      },
-      "sourceMap": true,
-      "declaration": false,
-      "moduleResolution": "bundler",
-      "experimentalDecorators": true,
-      "target": "ES2022",
-      "typeRoots": [
-        "node_modules/@types"
-      ],
-      "lib": [
-        "ES2022",
-        "dom",
-        "esnext.disposable"
-      ],
-      "skipLibCheck": true,
-      "useDefineForClassFields": false,
-      "allowSyntheticDefaultImports": true,
-      "esModuleInterop": true
+        "importHelpers": true,
+        "module": "ES2022",
+        "outDir": "./dist/out-tsc",
+        "baseUrl": "src",
+        "paths": {
+            "@app/*": ["app/*"],
+            "@core/*": ["app/core/*"],
+            "@shared/*": ["app/shared/*"],
+            "@env/*": ["environments/*"]
+        },
+        "sourceMap": true,
+        "declaration": false,
+        "moduleResolution": "bundler",
+        "experimentalDecorators": true,
+        "target": "ES2022",
+        "typeRoots": ["node_modules/@types"],
+        "skipLibCheck": true,
+        "useDefineForClassFields": false,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true
     },
-    "include": [
-        "src/main.ts",
-        "src/polyfills.ts"
-    ]
+    "include": ["src/main.ts", "src/polyfills.ts"]
 }

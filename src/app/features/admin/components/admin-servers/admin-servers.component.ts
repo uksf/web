@@ -5,12 +5,20 @@ import type { ServerInfrastructureCurrent, ServerInfrastructureInstalled, Server
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { UksfError } from '@app/shared/models/response';
 import { InfrastructureService } from '../../services/infrastructure.service';
+import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
+import { AdminPageComponent } from '../admin-page/admin-page.component';
+import { LoadingPlaceholderComponent } from '../../../../shared/components/elements/loading-placeholder/loading-placeholder.component';
+import { MatTooltip } from '@angular/material/tooltip';
+import { NgStyle, DatePipe } from '@angular/common';
+import { MatIcon } from '@angular/material/icon';
+import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
 
 @Component({
     selector: 'app-admin-servers',
     templateUrl: './admin-servers.component.html',
     styleUrls: ['./admin-servers.component.scss'],
-    standalone: false
+    imports: [DefaultContentAreasComponent, MainContentAreaComponent, AdminPageComponent, LoadingPlaceholderComponent, MatTooltip, NgStyle, MatIcon, ButtonComponent, DatePipe]
 })
 export class AdminServersComponent implements OnInit {
     latest: ServerInfrastructureLatest;
@@ -32,26 +40,38 @@ export class AdminServersComponent implements OnInit {
     }
 
     getInfrastructureInfo() {
-        this.infrastructureService.isUpdating().pipe(first()).subscribe({
-            next: (updating: boolean) => {
-                this.updating = updating;
-            }
-        });
-        this.infrastructureService.getLatest().pipe(first()).subscribe({
-            next: (info: ServerInfrastructureLatest) => {
-                this.latest = info;
-            }
-        });
-        this.infrastructureService.getCurrent().pipe(first()).subscribe({
-            next: (info: ServerInfrastructureCurrent) => {
-                this.current = info;
-            }
-        });
-        this.infrastructureService.getInstalled().pipe(first()).subscribe({
-            next: (info: ServerInfrastructureInstalled) => {
-                this.installed = info;
-            }
-        });
+        this.infrastructureService
+            .isUpdating()
+            .pipe(first())
+            .subscribe({
+                next: (updating: boolean) => {
+                    this.updating = updating;
+                }
+            });
+        this.infrastructureService
+            .getLatest()
+            .pipe(first())
+            .subscribe({
+                next: (info: ServerInfrastructureLatest) => {
+                    this.latest = info;
+                }
+            });
+        this.infrastructureService
+            .getCurrent()
+            .pipe(first())
+            .subscribe({
+                next: (info: ServerInfrastructureCurrent) => {
+                    this.current = info;
+                }
+            });
+        this.infrastructureService
+            .getInstalled()
+            .pipe(first())
+            .subscribe({
+                next: (info: ServerInfrastructureInstalled) => {
+                    this.installed = info;
+                }
+            });
     }
 
     isLatestBuild(): boolean {
@@ -100,28 +120,31 @@ export class AdminServersComponent implements OnInit {
         }
 
         this.updating = true;
-        this.infrastructureService.update().pipe(first()).subscribe({
-            next: (updateResult) => {
-                this.dialog
-                    .open(MessageModalComponent, {
-                        data: {
-                            message: `Version updated from ${this.installed.installedVersion} to ${updateResult.newVersion}\nUpdate output:\n\n${updateResult.updateOutput}`
-                        }
-                    })
-                    .afterClosed()
-                    .pipe(first())
-                    .subscribe({
-                        next: () => {
-                            this.getInfrastructureInfo();
-                        }
+        this.infrastructureService
+            .update()
+            .pipe(first())
+            .subscribe({
+                next: (updateResult) => {
+                    this.dialog
+                        .open(MessageModalComponent, {
+                            data: {
+                                message: `Version updated from ${this.installed.installedVersion} to ${updateResult.newVersion}\nUpdate output:\n\n${updateResult.updateOutput}`
+                            }
+                        })
+                        .afterClosed()
+                        .pipe(first())
+                        .subscribe({
+                            next: () => {
+                                this.getInfrastructureInfo();
+                            }
+                        });
+                },
+                error: (error: UksfError) => {
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: error.error }
                     });
-            },
-            error: (error: UksfError) => {
-                this.dialog.open(MessageModalComponent, {
-                    data: { message: error.error }
-                });
-                this.getInfrastructureInfo();
-            }
-        });
+                    this.getInfrastructureInfo();
+                }
+            });
     }
 }

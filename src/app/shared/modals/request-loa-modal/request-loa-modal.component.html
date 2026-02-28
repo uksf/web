@@ -3,9 +3,7 @@
 <mat-dialog-content>
     <p class="gmt-note">Dates should be considered as GMT</p>
     <form [formGroup]="form" class="modal-form">
-        <app-text-input class="reason-field" label="Reason" [required]="true" formControlName="reason"
-            [validationMessages]="validationMessages.reason" [reserveErrorSpace]="true">
-        </app-text-input>
+        <app-text-input class="reason-field" label="Reason" [required]="true" formControlName="reason" [validationMessages]="validationMessages.reason" [reserveErrorSpace]="true"> </app-text-input>
         <mat-form-field class="datepicker-field">
             <mat-label>Start date</mat-label>
             <input
@@ -16,7 +14,6 @@
                 formControlName="start"
                 matInput
                 ng-model-options="{timezone: 'utc'}"
-
                 readonly
             />
             <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
@@ -25,24 +22,18 @@
         </mat-form-field>
         <mat-form-field class="datepicker-field">
             <mat-label>End date (inclusive)</mat-label>
-            <input
-                (click)="pickerEnd.open()"
-                [matDatepicker]="pickerEnd"
-                [min]="minEndDate"
-                formControlName="end"
-                matInput
-                ng-model-options="{timezone: 'utc'}"
-
-                readonly
-            />
+            <input (click)="pickerEnd.open()" [matDatepicker]="pickerEnd" [min]="minEndDate" formControlName="end" matInput ng-model-options="{timezone: 'utc'}" readonly />
             <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
             <mat-datepicker #pickerEnd [touchUi]="mobile"></mat-datepicker>
             <mat-error>End date is required</mat-error>
         </mat-form-field>
-        <mat-checkbox color="primary" formControlName="emergency" *ngIf="late" matTooltip="If this is an emergency, tick this box">Emergency</mat-checkbox>
-        <div class="invalid-message" *ngIf="invalidMessage">
+        @if (late) {
+        <mat-checkbox color="primary" formControlName="emergency" matTooltip="If this is an emergency, tick this box">Emergency</mat-checkbox>
+        } @if (invalidMessage) {
+        <div class="invalid-message">
             <span>{{ invalidMessage }}</span>
         </div>
+        }
     </form>
 </mat-dialog-content>
 <mat-dialog-actions>

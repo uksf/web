@@ -1,9 +1,6 @@
 import { Directive, ElementRef, HostListener, Input, OnDestroy } from '@angular/core';
 
-@Directive({
-    selector: '[appSpotlight]',
-    standalone: false
-})
+@Directive({ selector: '[appSpotlight]' })
 export class SpotlightDirective implements OnDestroy {
     @Input() spotlightSize = 200;
     @Input() spotlightColor = 'rgba(255, 255, 255, 0.08)';

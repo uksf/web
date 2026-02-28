@@ -80,12 +80,7 @@ import { SpotlightDirective } from './directives/spotlight.directive';
  */
 
 // Commonly used Angular modules to re-export
-const ANGULAR_MODULES = [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    RouterModule,
-];
+const ANGULAR_MODULES = [CommonModule, FormsModule, ReactiveFormsModule, RouterModule];
 
 // Material modules to re-export
 const MATERIAL_MODULES = [
@@ -104,7 +99,7 @@ const MATERIAL_MODULES = [
     MatSelectModule,
     MatTooltipModule,
     ScrollingModule,
-    TextFieldModule,
+    TextFieldModule
 ];
 
 // Shared components
@@ -137,53 +132,20 @@ const SHARED_COMPONENTS = [
     // Other
     CommentDisplayComponent,
     ConnectTeamspeakComponent,
-    TocList,
+    TocList
 ];
 
 // Shared modals
-const SHARED_MODALS = [
-    MessageModalComponent,
-    ConfirmationModalComponent,
-    TextInputModalComponent,
-    ValidationReportModalComponent,
-    RequestLoaModalComponent,
-];
+const SHARED_MODALS = [MessageModalComponent, ConfirmationModalComponent, TextInputModalComponent, ValidationReportModalComponent, RequestLoaModalComponent];
 
 // Shared pipes
-const SHARED_PIPES = [
-    CountryImage,
-    CountryName,
-    ZonedTime,
-    TimeAgoPipe,
-    AnsiToHtmlPipe,
-];
+const SHARED_PIPES = [CountryImage, CountryName, ZonedTime, TimeAgoPipe, AnsiToHtmlPipe];
 
 // Shared directives
-const SHARED_DIRECTIVES = [
-    MustSelectFromDropdownValidatorDirective,
-    CharacterBlockDirective,
-    MustMatchDirective,
-    SpotlightDirective,
-];
+const SHARED_DIRECTIVES = [MustSelectFromDropdownValidatorDirective, CharacterBlockDirective, MustMatchDirective, SpotlightDirective];
 
 @NgModule({
-    imports: [
-        ...ANGULAR_MODULES,
-        ...MATERIAL_MODULES,
-    ],
-    declarations: [
-        ...SHARED_COMPONENTS,
-        ...SHARED_MODALS,
-        ...SHARED_PIPES,
-        ...SHARED_DIRECTIVES,
-    ],
-    exports: [
-        ...ANGULAR_MODULES,
-        ...MATERIAL_MODULES,
-        ...SHARED_COMPONENTS,
-        ...SHARED_MODALS,
-        ...SHARED_PIPES,
-        ...SHARED_DIRECTIVES,
-    ],
+    imports: [...ANGULAR_MODULES, ...MATERIAL_MODULES, ...SHARED_COMPONENTS, ...SHARED_MODALS, ...SHARED_PIPES, ...SHARED_DIRECTIVES],
+    exports: [...ANGULAR_MODULES, ...MATERIAL_MODULES, ...SHARED_COMPONENTS, ...SHARED_MODALS, ...SHARED_PIPES, ...SHARED_DIRECTIVES]
 })
 export class SharedModule {}

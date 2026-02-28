@@ -2,18 +2,22 @@
     <app-main-content-area style="grid-column: span 3">
         <div class="org-container">
             <h3>Auxiliary Organisation Chart</h3>
-            <div class="spinner-container" *ngIf="!rootNodes">
+            @if (!rootNodes) {
+            <div class="spinner-container">
                 <mat-spinner></mat-spinner>
             </div>
-            <div class="scroll-container" *ngIf="rootNodes">
+            } @if (rootNodes) {
+            <div class="scroll-container">
                 <p-organizationChart [value]="rootNodes" selectionMode="single" [(selection)]="selectedNode" (onNodeSelect)="onNodeSelect($event)">
                     <ng-template let-node pTemplate="unit">
                         <div class="node-header ui-corner-top">
                             <h4 class="title">{{ node.label }}</h4>
                         </div>
-                        <div class="node-content" *ngIf="node.data.members.length > 0">
+                        @if (node.data.members.length > 0) {
+                        <div class="node-content">
                             <table class="inner-table">
-                                <tr *ngFor="let unitMember of node.data.members; trackBy: trackByName">
+                                @for (unitMember of node.data.members; track trackByName($index, unitMember)) {
+                                <tr>
                                     <div class="row-container">
                                         <td style="padding-right: 3px">
                                             <b class="unit-role">{{ unitMember.chainOfCommandPosition?.charAt(0) }}</b>
@@ -23,11 +27,14 @@
                                         <app-flex-filler></app-flex-filler>
                                     </div>
                                 </tr>
+                                }
                             </table>
                         </div>
+                        }
                     </ng-template>
                 </p-organizationChart>
             </div>
+            }
         </div>
     </app-main-content-area>
 </app-default-content-areas>

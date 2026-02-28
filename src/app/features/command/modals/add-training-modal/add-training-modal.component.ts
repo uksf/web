@@ -1,15 +1,19 @@
 import { Component } from '@angular/core';
-import { AbstractControl, FormBuilder, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, ValidationErrors, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Observable, of, timer } from 'rxjs';
 import { first, map, switchMap } from 'rxjs/operators';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { TrainingsService } from '../../services/trainings.service';
+import { AutofocusStopComponent } from '../../../../shared/components/elements/autofocus-stop/autofocus-stop.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
 
 @Component({
     selector: 'app-add-training-modal',
     templateUrl: './add-training-modal.component.html',
     styleUrls: ['./add-training-modal.component.scss'],
-    standalone: false
+    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, MatDialogActions, ButtonComponent]
 })
 export class AddTrainingModalComponent {
     form = this.formBuilder.group({
@@ -36,12 +40,15 @@ export class AddTrainingModalComponent {
         }
 
         this.pending = true;
-        this.trainingsService.addTraining(JSON.stringify(this.form.getRawValue())).pipe(first()).subscribe({
-            next: (_): void => {
-                this.dialog.closeAll();
-                this.pending = false;
-            }
-        });
+        this.trainingsService
+            .addTraining(JSON.stringify(this.form.getRawValue()))
+            .pipe(first())
+            .subscribe({
+                next: (_): void => {
+                    this.dialog.closeAll();
+                    this.pending = false;
+                }
+            });
     }
 
     private validateTraining(control: AbstractControl): Observable<ValidationErrors> {

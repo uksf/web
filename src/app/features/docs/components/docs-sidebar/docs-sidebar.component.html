@@ -11,12 +11,9 @@
             </div>
         </div>
         <div class="sidebar-content">
-            <app-docs-folder
-                (refresh)="refresh.emit()"
-                *ngFor="let rootFolder of getRootFolders; trackBy: trackById"
-                [allDocumentMetadata]="allFolderMetadata"
-                [folderMetadata]="rootFolder"
-            ></app-docs-folder>
+            @for (rootFolder of getRootFolders; track trackById($index, rootFolder)) {
+            <app-docs-folder (refresh)="refresh.emit()" [allDocumentMetadata]="allFolderMetadata" [folderMetadata]="rootFolder"></app-docs-folder>
+            }
         </div>
     </div>
     <div class="sidebar-collapse-container">

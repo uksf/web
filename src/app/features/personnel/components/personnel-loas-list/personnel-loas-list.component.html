@@ -3,22 +3,26 @@
         <h3>{{ selectionMode | titlecase }}</h3>
         <app-paginator [total]="totalLoas" (page)="page($event)" [hidden]="totalLoas == 0"></app-paginator>
     </div>
-    <div class="spinner-container1" *ngIf="!loaded">
+    @if (!loaded) {
+    <div class="spinner-container1">
         <mat-spinner></mat-spinner>
     </div>
-    <p *ngIf="loaded && totalLoas == 0">No {{ selectionMode }} LOAs</p>
-    <mat-accordion *ngIf="loaded && totalLoas > 0">
-        <mat-card *ngFor="let loa of loas; trackBy: trackByLoa; let loaIndex = index" [ngClass]="{ disable: !loa._canViewReason }">
+    } @if (loaded && totalLoas == 0) {
+    <p>No {{ selectionMode }} LOAs</p>
+    } @if (loaded && totalLoas > 0) {
+    <mat-accordion>
+        @for (loa of loas; track trackByLoa(loaIndex, loa); let loaIndex = $index) {
+        <mat-card [ngClass]="{ disable: !loa._canViewReason }">
             <div class="header-container" appSpotlight (click)="activate(loaIndex)">
                 <div class="toggle" [@indicatorRotate]="getExpandedState(loaIndex)" [ngClass]="{ disable: !loa._canViewReason }"></div>
                 <div class="title-container">
                     <div class="date-container">
                         <div class="title start">
-                            {{ loa.start | date: 'dd MMM yy':'Europe/London' }}
+                            {{ loa.start | date : 'dd MMM yy' : 'Europe/London' }}
                         </div>
                         <div class="title to"><mat-icon>east</mat-icon></div>
                         <div class="title end">
-                            {{ loa.end | date: 'dd MMM yy':'Europe/London' }}
+                            {{ loa.end | date : 'dd MMM yy' : 'Europe/London' }}
                         </div>
                     </div>
                     <mat-divider [vertical]="true"></mat-divider>
@@ -28,30 +32,42 @@
                 </div>
                 <app-flex-filler></app-flex-filler>
                 <div class="description-container">
-                    <div *ngIf="loa.emergency" class="description end rejected">Emergency</div>
-                    <div *ngIf="loa.late && !loa.emergency" class="description end pending">Late</div>
-                    <div *ngIf="loa.longTerm" class="description end pending">Long Term</div>
-                    <div *ngIf="loa.state === loaReviewState.PENDING" class="description state-icon pending"><mat-icon>schedule</mat-icon></div>
-                    <div *ngIf="loa.state === loaReviewState.APPROVED" class="description state-icon approved"><mat-icon>check_circle_outline</mat-icon></div>
-                    <div *ngIf="loa.state === loaReviewState.REJECTED" class="description state-icon rejected"><mat-icon>remove_circle_outline</mat-icon></div>
+                    @if (loa.emergency) {
+                    <div class="description end rejected">Emergency</div>
+                    } @if (loa.late && !loa.emergency) {
+                    <div class="description end pending">Late</div>
+                    } @if (loa.longTerm) {
+                    <div class="description end pending">Long Term</div>
+                    } @if (loa.state === loaReviewState.PENDING) {
+                    <div class="description state-icon pending"><mat-icon>schedule</mat-icon></div>
+                    } @if (loa.state === loaReviewState.APPROVED) {
+                    <div class="description state-icon approved"><mat-icon>check_circle_outline</mat-icon></div>
+                    } @if (loa.state === loaReviewState.REJECTED) {
+                    <div class="description state-icon rejected"><mat-icon>remove_circle_outline</mat-icon></div>
+                    }
                 </div>
             </div>
-
-            <div class="content-container" *ngIf="loaIndex === selectedIndex && loa._canViewReason" [@bodyExpansion]>
+            @if (loaIndex === selectedIndex && loa._canViewReason) {
+            <div class="content-container" [@bodyExpansion]>
                 <div class="content-body">
                     <div class="requested">
                         <span><b>Requested</b></span>
-                        <span>{{ loa.submitted | date: 'd MMM y, HH:mm':'Europe/London' }}</span>
+                        <span>{{ loa.submitted | date : 'd MMM y, HH:mm' : 'Europe/London' }}</span>
                     </div>
                     <div class="content">
                         <div class="reason">
                             <span><b>Reason</b></span>
                             <span>{{ loa.reason }}</span>
                         </div>
-                        <button mat-raised-button *ngIf="loa._canDelete" color="primary" (click)="$event.stopPropagation(); delete(loa)">Delete</button>
+                        @if (loa._canDelete) {
+                        <button mat-raised-button color="primary" (click)="$event.stopPropagation(); delete(loa)">Delete</button>
+                        }
                     </div>
                 </div>
             </div>
+            }
         </mat-card>
+        }
     </mat-accordion>
+    }
 </div>

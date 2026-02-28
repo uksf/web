@@ -9,16 +9,23 @@ import { BasicAccount } from '@app/shared/models/account';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { Permissions } from '@app/core/services/permissions';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
-import { NgForm } from '@angular/forms';
+import { NgForm, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UksfError } from '@app/shared/models/response';
 import { AdminToolsService } from '../../services/admin-tools.service';
+import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
+import { AdminPageComponent } from '../admin-page/admin-page.component';
+import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
+import { NgxPermissionsModule } from 'ngx-permissions';
+import { AutofocusStopComponent } from '../../../../shared/components/elements/autofocus-stop/autofocus-stop.component';
+import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
 
 @Component({
     selector: 'app-admin-tools',
     templateUrl: './admin-tools.component.html',
     styleUrls: ['./admin-tools.component.scss'],
-    standalone: false
+    imports: [DefaultContentAreasComponent, MainContentAreaComponent, AdminPageComponent, ButtonComponent, NgxPermissionsModule, FormsModule, AutofocusStopComponent, DropdownComponent]
 })
 export class AdminToolsComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;
@@ -67,13 +74,16 @@ export class AdminToolsComponent implements OnInit {
     }
 
     getAccounts(): void {
-        this.adminToolsService.getActiveAccounts().pipe(first()).subscribe({
-            next: (accounts: BasicAccount[]): void => {
-                const elements: IDropdownElement[] = accounts.map(BasicAccount.mapToElement);
-                this.accounts.next(elements);
-                this.accounts.complete();
-            }
-        });
+        this.adminToolsService
+            .getActiveAccounts()
+            .pipe(first())
+            .subscribe({
+                next: (accounts: BasicAccount[]): void => {
+                    const elements: IDropdownElement[] = accounts.map(BasicAccount.mapToElement);
+                    this.accounts.next(elements);
+                    this.accounts.complete();
+                }
+            });
     }
 
     getAccountName(element: IDropdownElement): string {
@@ -96,20 +106,23 @@ export class AdminToolsComponent implements OnInit {
 
     getDiscordRoles(): void {
         let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'getDiscord');
-        this.adminToolsService.getDiscordRoles().pipe(first()).subscribe({
-            next: (response: string): void => {
-                this.dialog.open(MessageModalComponent, {
-                    data: { message: response }
-                });
-                tool.pending = false;
-            },
-            error: (): void => {
-                this.dialog.open(MessageModalComponent, {
-                    data: { message: 'Failed to get Discord roles' }
-                });
-                tool.pending = false;
-            }
-        });
+        this.adminToolsService
+            .getDiscordRoles()
+            .pipe(first())
+            .subscribe({
+                next: (response: string): void => {
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: response }
+                    });
+                    tool.pending = false;
+                },
+                error: (): void => {
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: 'Failed to get Discord roles' }
+                    });
+                    tool.pending = false;
+                }
+            });
     }
 
     updateDiscordRoles(): void {
@@ -134,38 +147,44 @@ export class AdminToolsComponent implements OnInit {
 
     emergencyCleanupStuckBuilds(): void {
         let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'emergencyCleanup');
-        this.adminToolsService.emergencyCleanupStuckBuilds().pipe(first()).subscribe({
-            next: (response: { message: string }): void => {
-                this.dialog.open(MessageModalComponent, {
-                    data: { message: response.message }
-                });
-                tool.pending = false;
-            },
-            error: (): void => {
-                this.dialog.open(MessageModalComponent, {
-                    data: { message: 'Failed to perform emergency cleanup' }
-                });
-                tool.pending = false;
-            }
-        });
+        this.adminToolsService
+            .emergencyCleanupStuckBuilds()
+            .pipe(first())
+            .subscribe({
+                next: (response: { message: string }): void => {
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: response.message }
+                    });
+                    tool.pending = false;
+                },
+                error: (): void => {
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: 'Failed to perform emergency cleanup' }
+                    });
+                    tool.pending = false;
+                }
+            });
     }
 
     impersonate(): void {
         this.impersonationPending = true;
-        this.auth.impersonate(mapFromElement(BasicAccount, this.model.accountId).id).pipe(first()).subscribe({
-            next: (): void => {
-                this.impersonationPending = false;
-                this.permissions.refresh().then((): void => {
-                    this.router.navigate(['/home']).then();
-                });
-            },
-            error: (error: UksfError): void => {
-                this.impersonationPending = false;
-                this.dialog.open(MessageModalComponent, {
-                    data: { message: error?.error || 'Impersonation failed' }
-                });
-            }
-        });
+        this.auth
+            .impersonate(mapFromElement(BasicAccount, this.model.accountId).id)
+            .pipe(first())
+            .subscribe({
+                next: (): void => {
+                    this.impersonationPending = false;
+                    this.permissions.refresh().then((): void => {
+                        this.router.navigate(['/home']).then();
+                    });
+                },
+                error: (error: UksfError): void => {
+                    this.impersonationPending = false;
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: error?.error || 'Impersonation failed' }
+                    });
+                }
+            });
     }
 
     private setPending(tool: Tool): { next: (_: unknown) => void; error: (_: unknown) => void } {

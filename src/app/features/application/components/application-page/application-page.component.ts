@@ -6,12 +6,35 @@ import { MessageModalComponent } from '@app/shared/modals/message-modal/message-
 import { MembershipState } from '@app/shared/models/account';
 import { ApplicationState } from '@app/features/application/models/application';
 import { ApplicationService } from '../../services/application.service';
+import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
+import { MatCard } from '@angular/material/card';
+import { RouterLink } from '@angular/router';
+import { NgClass } from '@angular/common';
+import { ApplicationInfoComponent } from '../application-info/application-info.component';
+import { ApplicationIdentityComponent } from '../application-identity/application-identity.component';
+import { ApplicationEmailConfirmationComponent } from '../application-email-confirmation/application-email-confirmation.component';
+import { ApplicationCommunicationsComponent } from '../application-communications/application-communications.component';
+import { ApplicationDetailsComponent } from '../application-details/application-details.component';
+import { ApplicationEditComponent } from '../application-edit/application-edit.component';
 
 @Component({
     selector: 'app-application-page',
     templateUrl: './application-page.component.html',
     styleUrls: ['./application-page.component.scss'],
-    standalone: false
+    imports: [
+        DefaultContentAreasComponent,
+        MainContentAreaComponent,
+        MatCard,
+        RouterLink,
+        NgClass,
+        ApplicationInfoComponent,
+        ApplicationIdentityComponent,
+        ApplicationEmailConfirmationComponent,
+        ApplicationCommunicationsComponent,
+        ApplicationDetailsComponent,
+        ApplicationEditComponent
+    ]
 })
 export class ApplicationPageComponent implements OnInit {
     step = 1;
@@ -70,15 +93,19 @@ export class ApplicationPageComponent implements OnInit {
     }
 
     submit(details: string) {
-        this.applicationService.submitApplication(this.accountService.account.id, details)
+        this.applicationService
+            .submitApplication(this.accountService.account.id, details)
             .pipe(first())
             .subscribe({
                 next: () => {
-                    this.accountService.getAccount()?.pipe(first()).subscribe({
-                        next: () => {
-                            this.step = 6;
-                        }
-                    });
+                    this.accountService
+                        .getAccount()
+                        ?.pipe(first())
+                        .subscribe({
+                            next: () => {
+                                this.step = 6;
+                            }
+                        });
                 },
                 error: (error) => {
                     this.dialog.open(MessageModalComponent, {

@@ -2,12 +2,14 @@
 <h2 mat-dialog-title>Discharge Request</h2>
 <mat-dialog-content>
     <form #form="ngForm" (ngSubmit)="submit()">
-        <div *ngIf="!accounts" class="spinner-container">
+        @if (!accounts) {
+        <div class="spinner-container">
             <app-flex-filler></app-flex-filler>
             <mat-spinner></mat-spinner>
             <app-flex-filler></app-flex-filler>
         </div>
-        <div *ngIf="accounts">
+        } @if (accounts) {
+        <div>
             <app-dropdown
                 #accountName="ngModel"
                 [(ngModel)]="model.account"
@@ -22,11 +24,20 @@
                     {{ getAccountName(element) }}
                 </ng-template>
             </app-dropdown>
-            <app-text-input label="Reason" [(ngModel)]="model.reason" name="formReason" id="reason"
-                [multiline]="true" [minRows]="1" [maxRows]="5" [required]="true"
-                [validationMessages]="validationMessages.reason">
+            <app-text-input
+                label="Reason"
+                [(ngModel)]="model.reason"
+                name="formReason"
+                id="reason"
+                [multiline]="true"
+                [minRows]="1"
+                [maxRows]="5"
+                [required]="true"
+                [validationMessages]="validationMessages.reason"
+            >
             </app-text-input>
         </div>
+        }
     </form>
 </mat-dialog-content>
 <mat-dialog-actions>

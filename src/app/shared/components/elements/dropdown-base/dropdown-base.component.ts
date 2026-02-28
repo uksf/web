@@ -4,13 +4,14 @@ import { Observable, of } from 'rxjs';
 import { nextFrame } from '@app/shared/services/helper.service';
 import { map, startWith, takeUntil } from 'rxjs/operators';
 import { MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
-import { DestroyableComponent } from '@app/shared/components';
+import { DestroyableComponent } from '../../destroyable/destroyable.component';
+import { FlexFillerComponent } from '../flex-filler/flex-filler.component';
 
 let nextDropdownId = 0;
 
 @Component({
     template: ``,
-    standalone: false
+    imports: [FlexFillerComponent]
 })
 export class DropdownBaseComponent extends DestroyableComponent implements OnInit {
     readonly inputId = `dropdown-${nextDropdownId++}`;
@@ -187,7 +188,7 @@ export class DropdownBaseComponent extends DestroyableComponent implements OnIni
             this.filteredElements = of(this.allElements);
             this.cachedFilteredElements = this.allElements;
         }
-        this.autocompleteTrigger?.autocomplete?.options?.forEach(option => {
+        this.autocompleteTrigger?.autocomplete?.options?.forEach((option) => {
             if (option.selected) {
                 option.deselect(false);
             }
@@ -211,7 +212,7 @@ export class DropdownBaseComponent extends DestroyableComponent implements OnIni
     /** In simple mode, highlight the currently selected option in the panel */
     private highlightSelectedOption(): void {
         nextFrame(() => {
-            this.autocompleteTrigger?.autocomplete?.options?.forEach(option => {
+            this.autocompleteTrigger?.autocomplete?.options?.forEach((option) => {
                 if (option.value?.value === this._model?.value) {
                     option.select(false);
                 } else if (option.selected) {

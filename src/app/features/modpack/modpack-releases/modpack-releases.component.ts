@@ -1,17 +1,41 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { MarkdownService } from 'ngx-markdown';
+import { MarkdownService, MarkdownComponent } from 'ngx-markdown';
 import { parseMarkdownSync } from '../markdown-utils';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { Permissions } from '@app/core/services/permissions';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModpackReleaseService } from '../modpackRelease.service';
 import { ModpackRelease } from '../models/modpack-release';
+import { DefaultContentAreasComponent } from '../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { FullContentAreaComponent } from '../../../shared/components/content-areas/full-content-area/full-content-area.component';
+import { ModpackPageComponent } from '../modpack-page/modpack-page.component';
+import { NgxPermissionsModule } from 'ngx-permissions';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { NgClass, DatePipe } from '@angular/common';
+import { FlexFillerComponent } from '../../../shared/components/elements/flex-filler/flex-filler.component';
+import { ButtonComponent } from '../../../shared/components/elements/button-pending/button.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-modpack-releases',
     templateUrl: './modpack-releases.component.html',
     styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-releases.component.scss', './modpack-releases.component.scss-theme.scss'],
-    standalone: false
+    imports: [
+        DefaultContentAreasComponent,
+        FullContentAreaComponent,
+        ModpackPageComponent,
+        NgxPermissionsModule,
+        MatButton,
+        MatIconButton,
+        MatIcon,
+        NgClass,
+        FlexFillerComponent,
+        MarkdownComponent,
+        ButtonComponent,
+        FormsModule,
+        DatePipe
+    ]
 })
 export class ModpackReleasesComponent implements OnInit, OnDestroy {
     selectedReleaseVersion: string = '';

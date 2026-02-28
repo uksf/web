@@ -1,7 +1,9 @@
 import { Component, EventEmitter, forwardRef, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { IDropdownElement } from '../dropdown-base/dropdown-base.component';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
+import { DropdownComponent } from '../dropdown/dropdown.component';
+import { FlexFillerComponent } from '../flex-filler/flex-filler.component';
 
 @Component({
     selector: 'app-inline-dropdown',
@@ -14,7 +16,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
             multi: true
         }
     ],
-    standalone: false
+    imports: [DropdownComponent, FormsModule, FlexFillerComponent]
 })
 export class InlineDropdownComponent implements ControlValueAccessor, OnInit, OnDestroy {
     @Input('placeholder') placeholder: string;

@@ -1,7 +1,13 @@
 import { Component, forwardRef } from '@angular/core';
-import { AbstractControl, ControlContainer, ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgForm, Validator } from '@angular/forms';
+import { AbstractControl, ControlContainer, ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgForm, Validator, FormsModule } from '@angular/forms';
 import { getValidationError } from '@app/shared/services/form-helper.service';
 import { DropdownBaseComponent, IDropdownElement } from '../dropdown-base/dropdown-base.component';
+import { NgClass, NgStyle, NgTemplateOutlet, AsyncPipe } from '@angular/common';
+import { MatAutocompleteTrigger, MatAutocomplete, MatOption } from '@angular/material/autocomplete';
+import { MustSelectFromDropdownValidatorDirective } from '../../../directives/dropdown-validator.directive';
+import { MatIcon } from '@angular/material/icon';
+import { CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf } from '@angular/cdk/scrolling';
+import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
     selector: 'app-dropdown',
@@ -20,7 +26,22 @@ import { DropdownBaseComponent, IDropdownElement } from '../dropdown-base/dropdo
         }
     ],
     viewProviders: [{ provide: ControlContainer, useExisting: NgForm }],
-    standalone: false
+    imports: [
+        FormsModule,
+        NgClass,
+        MatAutocompleteTrigger,
+        MustSelectFromDropdownValidatorDirective,
+        MatIcon,
+        MatAutocomplete,
+        CdkVirtualScrollViewport,
+        CdkFixedSizeVirtualScroll,
+        NgStyle,
+        CdkVirtualForOf,
+        MatOption,
+        MatTooltip,
+        NgTemplateOutlet,
+        AsyncPipe
+    ]
 })
 export class DropdownComponent extends DropdownBaseComponent implements ControlValueAccessor, Validator {
     constructor() {

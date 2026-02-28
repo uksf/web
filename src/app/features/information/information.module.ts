@@ -9,15 +9,6 @@ import { RulesPageComponent } from './components/rules-page/rules-page.component
 import { PolicyPageComponent } from './components/policy-page/policy-page.component';
 
 @NgModule({
-    declarations: [
-        InformationPageComponent,
-        AboutPageComponent,
-        RulesPageComponent,
-        PolicyPageComponent,
-    ],
-    imports: [
-        SharedModule,
-        InformationRoutingModule,
-    ],
+    imports: [SharedModule, InformationRoutingModule, InformationPageComponent, AboutPageComponent, RulesPageComponent, PolicyPageComponent]
 })
 export class InformationModule {}

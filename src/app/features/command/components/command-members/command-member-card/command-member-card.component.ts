@@ -11,13 +11,19 @@ import { MembersService } from '@app/shared/services/members.service';
 import { EditMemberTrainingModalComponent } from '@app/features/command/modals/edit-member-training-modal/edit-member-training-modal.component';
 import { UnitBranch } from '@app/features/units/models/units';
 import { first } from 'rxjs/operators';
+import { MatCard } from '@angular/material/card';
+import { SpotlightDirective } from '../../../../../shared/directives/spotlight.directive';
+import { MatIcon } from '@angular/material/icon';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-command-member-card',
     templateUrl: './command-member-card.component.html',
     styleUrls: ['./command-member-card.component.scss'],
     animations: [expansionAnimations.indicatorRotate, expansionAnimations.bodyExpansion],
-    standalone: false
+    imports: [MatCard, SpotlightDirective, MatIcon, MatTooltip, MatCheckbox, FormsModule]
 })
 export class CommandMemberCardComponent {
     @Input('member') member: Account;
@@ -56,14 +62,17 @@ export class CommandMemberCardComponent {
 
     updateQualifications() {
         this.qualificationsPending = true;
-        this.membersService.updateQualifications(this.member.id, this.member.qualifications).pipe(first()).subscribe({
-            next: () => {
-                this.qualificationsPending = false;
-            },
-            error: () => {
-                this.qualificationsPending = false;
-            }
-        });
+        this.membersService
+            .updateQualifications(this.member.id, this.member.qualifications)
+            .pipe(first())
+            .subscribe({
+                next: () => {
+                    this.qualificationsPending = false;
+                },
+                error: () => {
+                    this.qualificationsPending = false;
+                }
+            });
     }
 
     editTraining() {

@@ -9,16 +9,21 @@
                 <button mat-raised-button color="primary" (click)="unitRemovalRequest()">Unit Removal</button>
                 <button mat-raised-button color="primary" (click)="dischargeRequest()">Discharge</button>
             </div>
-            <div class="requests-container" *ngIf="myRequests.length == 0 && otherRequests.length > 0">
+            @if (myRequests.length == 0 && otherRequests.length > 0) {
+            <div class="requests-container">
                 <h3>You have no pending command requests</h3>
             </div>
-            <div class="requests-container" *ngIf="myRequests.length == 0 && otherRequests.length == 0">
+            } @if (myRequests.length == 0 && otherRequests.length == 0) {
+            <div class="requests-container">
                 <h3>There are no pending command requests</h3>
             </div>
-            <div class="requests-container" *ngIf="otherRequests.length == 0"></div>
-            <div class="requests-container" *ngIf="myRequests.length > 0">
+            } @if (otherRequests.length == 0) {
+            <div class="requests-container"></div>
+            } @if (myRequests.length > 0) {
+            <div class="requests-container">
                 <h3>Requests needing your review</h3>
-                <mat-card *ngFor="let request of myRequests; trackBy: trackByRequestId">
+                @for (request of myRequests; track trackByRequestId($index, request)) {
+                <mat-card>
                     <div class="request-wrapper">
                         <div class="request-type">
                             <span class="request-type-text">{{ request.displayType }}</span>
@@ -30,19 +35,25 @@
                                     <div class="request-spacer"></div>
                                     <span class="request-detail"> <b>Recipient:</b> {{ request.data.displayRecipient }} </span>
                                     <div class="request-spacer"></div>
-                                    <span class="request-detail"> <b>Created:</b> {{ request.data.dateCreated | date: 'd MMM y, HH:mm':'Europe/London' }} </span>
+                                    <span class="request-detail"> <b>Created:</b> {{ request.data.dateCreated | date : 'd MMM y, HH:mm' : 'Europe/London' }} </span>
                                 </div>
                                 <div class="request-info-details-fromto">
                                     <span class="request-detail">
                                         <b>From:</b>
-                                        <span *ngIf="isLoa(request); else nonDateFrom"> {{ request.data.displayFrom | date: 'mediumDate':'UTC' }}</span>
-                                        <ng-template #nonDateFrom> {{ request.data.displayFrom }}</ng-template>
+                                        @if (isLoa(request)) {
+                                        <span> {{ request.data.displayFrom | date : 'mediumDate' : 'UTC' }}</span>
+                                        } @else {
+                                        {{ request.data.displayFrom }}
+                                        }
                                     </span>
                                     <div class="request-spacer"></div>
                                     <span class="request-detail">
                                         <b>To:</b>
-                                        <span *ngIf="isLoa(request); else nonDateTo"> {{ request.data.displayValue | date: 'mediumDate':'UTC' }}</span>
-                                        <ng-template #nonDateTo> {{ request.data.displayValue }}</ng-template>
+                                        @if (isLoa(request)) {
+                                        <span> {{ request.data.displayValue | date : 'mediumDate' : 'UTC' }}</span>
+                                        } @else {
+                                        {{ request.data.displayValue }}
+                                        }
                                     </span>
                                     <div class="request-spacer"></div>
                                     <span class="request-detail"> <b>Reason:</b> {{ request.displayReason }} </span>
@@ -52,30 +63,29 @@
                                 <div class="request-reviewers">
                                     <b>Reviewers:</b>
                                     <div>
-                                        <p class="review-container" *ngFor="let review of request.reviews; trackBy: trackByReviewId">
+                                        @for (review of request.reviews; track trackByReviewId($index, review)) {
+                                        <p class="review-container">
                                             <mat-icon class="review-state-icon">{{
                                                 review.state == reviewState.APPROVED ? 'done' : review.state == reviewState.REJECTED ? 'clear' : 'hourglass_empty'
                                             }}</mat-icon>
                                             <span class="review-label">{{ review.name }}</span>
                                         </p>
+                                        }
                                     </div>
                                 </div>
                                 <div class="request-button-container">
                                     <div class="request-spacer"></div>
                                     <div class="request-button-sub-container">
-                                        <button
-                                            *ngIf="canReview(request)"
-                                            mat-button
-                                            style="color: green"
-                                            (click)="setReview(request, reviewState.APPROVED, false)"
-                                            matTooltip="Accept"
-                                            [disabled]="request.updating"
-                                        >
-                                            <mat-icon *ngIf="!request.updating || request.reviewState != 0 || request.reviewOverriden" class="approval-icon">done</mat-icon>
-                                            <mat-spinner *ngIf="request.updating && request.reviewState == 0 && !request.reviewOverriden" class="approval-updating" [diameter]="30"></mat-spinner>
+                                        @if (canReview(request)) {
+                                        <button mat-button style="color: green" (click)="setReview(request, reviewState.APPROVED, false)" matTooltip="Accept" [disabled]="request.updating">
+                                            @if (!request.updating || request.reviewState != 0 || request.reviewOverriden) {
+                                            <mat-icon class="approval-icon">done</mat-icon>
+                                            } @if (request.updating && request.reviewState == 0 && !request.reviewOverriden) {
+                                            <mat-spinner class="approval-updating" [diameter]="30"></mat-spinner>
+                                            }
                                         </button>
+                                        } @if (request.canOverride) {
                                         <button
-                                            *ngIf="request.canOverride"
                                             mat-button
                                             class="override-button"
                                             style="color: green"
@@ -83,24 +93,25 @@
                                             matTooltip="Override accept"
                                             [disabled]="request.updating"
                                         >
-                                            <mat-icon *ngIf="!request.updating || request.reviewState != 0 || !request.reviewOverriden" class="approval-icon">report_problem</mat-icon>
-                                            <mat-spinner *ngIf="request.updating && request.reviewState == 0 && request.reviewOverriden" class="approval-updating" [diameter]="30"></mat-spinner>
+                                            @if (!request.updating || request.reviewState != 0 || !request.reviewOverriden) {
+                                            <mat-icon class="approval-icon">report_problem</mat-icon>
+                                            } @if (request.updating && request.reviewState == 0 && request.reviewOverriden) {
+                                            <mat-spinner class="approval-updating" [diameter]="30"></mat-spinner>
+                                            }
                                         </button>
+                                        }
                                     </div>
                                     <div class="request-button-sub-container">
-                                        <button
-                                            *ngIf="canReview(request)"
-                                            mat-button
-                                            style="color: red"
-                                            (click)="setReview(request, reviewState.REJECTED, false)"
-                                            matTooltip="Reject"
-                                            [disabled]="request.updating"
-                                        >
-                                            <mat-icon *ngIf="!request.updating || request.reviewState != 1 || request.reviewOverriden" class="approval-icon">clear</mat-icon>
-                                            <mat-spinner *ngIf="request.updating && request.reviewState == 1 && !request.reviewOverriden" class="approval-updating" [diameter]="30"></mat-spinner>
+                                        @if (canReview(request)) {
+                                        <button mat-button style="color: red" (click)="setReview(request, reviewState.REJECTED, false)" matTooltip="Reject" [disabled]="request.updating">
+                                            @if (!request.updating || request.reviewState != 1 || request.reviewOverriden) {
+                                            <mat-icon class="approval-icon">clear</mat-icon>
+                                            } @if (request.updating && request.reviewState == 1 && !request.reviewOverriden) {
+                                            <mat-spinner class="approval-updating" [diameter]="30"></mat-spinner>
+                                            }
                                         </button>
+                                        } @if (request.canOverride) {
                                         <button
-                                            *ngIf="request.canOverride"
                                             mat-button
                                             class="override-button"
                                             style="color: red"
@@ -108,9 +119,13 @@
                                             matTooltip="Override reject"
                                             [disabled]="request.updating"
                                         >
-                                            <mat-icon *ngIf="!request.updating || request.reviewState != 1 || !request.reviewOverriden" class="approval-icon">report</mat-icon>
-                                            <mat-spinner *ngIf="request.updating && request.reviewState == 1 && request.reviewOverriden" class="approval-updating" [diameter]="30"></mat-spinner>
+                                            @if (!request.updating || request.reviewState != 1 || !request.reviewOverriden) {
+                                            <mat-icon class="approval-icon">report</mat-icon>
+                                            } @if (request.updating && request.reviewState == 1 && request.reviewOverriden) {
+                                            <mat-spinner class="approval-updating" [diameter]="30"></mat-spinner>
+                                            }
                                         </button>
+                                        }
                                     </div>
                                     <div class="request-spacer"></div>
                                 </div>
@@ -118,10 +133,13 @@
                         </div>
                     </div>
                 </mat-card>
+                }
             </div>
-            <div class="requests-container" *ngIf="otherRequests.length > 0">
+            } @if (otherRequests.length > 0) {
+            <div class="requests-container">
                 <h3>Other requests</h3>
-                <mat-card *ngFor="let request of otherRequests; trackBy: trackByRequestId">
+                @for (request of otherRequests; track trackByRequestId($index, request)) {
+                <mat-card>
                     <div class="request-wrapper">
                         <div class="request-type">
                             <span class="request-type-text">{{ request.displayType }}</span>
@@ -133,19 +151,25 @@
                                     <div class="request-spacer"></div>
                                     <span class="request-detail"> <b>Recipient:</b> {{ request.data.displayRecipient }} </span>
                                     <div class="request-spacer"></div>
-                                    <span class="request-detail"> <b>Created:</b> {{ request.data.dateCreated | date: 'd MMM y, HH:mm':'Europe/London' }} </span>
+                                    <span class="request-detail"> <b>Created:</b> {{ request.data.dateCreated | date : 'd MMM y, HH:mm' : 'Europe/London' }} </span>
                                 </div>
                                 <div class="request-info-details-fromto">
                                     <span class="request-detail">
                                         <b>From:</b>
-                                        <span *ngIf="isLoa(request); else nonDateFromOther"> {{ request.data.displayFrom | date: 'mediumDate':'UTC' }}</span>
-                                        <ng-template #nonDateFromOther> {{ request.data.displayFrom }}</ng-template>
+                                        @if (isLoa(request)) {
+                                        <span> {{ request.data.displayFrom | date : 'mediumDate' : 'UTC' }}</span>
+                                        } @else {
+                                        {{ request.data.displayFrom }}
+                                        }
                                     </span>
                                     <div class="request-spacer"></div>
                                     <span class="request-detail">
                                         <b>To:</b>
-                                        <span *ngIf="isLoa(request); else nonDateToOther"> {{ request.data.displayValue | date: 'mediumDate':'UTC' }}</span>
-                                        <ng-template #nonDateToOther> {{ request.data.displayValue }}</ng-template>
+                                        @if (isLoa(request)) {
+                                        <span> {{ request.data.displayValue | date : 'mediumDate' : 'UTC' }}</span>
+                                        } @else {
+                                        {{ request.data.displayValue }}
+                                        }
                                     </span>
                                     <div class="request-spacer"></div>
                                     <span class="request-detail"> <b>Reason:</b> {{ request.displayReason }} </span>
@@ -155,15 +179,18 @@
                                 <div class="request-reviewers">
                                     <b>Reviewers:</b>
                                     <div>
-                                        <p class="review-container" *ngFor="let review of request.reviews; trackBy: trackByReviewId">
+                                        @for (review of request.reviews; track trackByReviewId($index, review)) {
+                                        <p class="review-container">
                                             <mat-icon class="review-state-icon">{{
                                                 review.state == reviewState.APPROVED ? 'done' : review.state == reviewState.REJECTED ? 'clear' : 'hourglass_empty'
                                             }}</mat-icon>
                                             <span class="review-label">{{ review.name }}</span>
                                         </p>
+                                        }
                                     </div>
                                 </div>
-                                <div class="request-button-container" *ngIf="request.canOverride">
+                                @if (request.canOverride) {
+                                <div class="request-button-container">
                                     <div class="request-spacer"></div>
                                     <div class="request-button-sub-container">
                                         <button
@@ -174,8 +201,11 @@
                                             matTooltip="Override accept"
                                             [disabled]="request.updating"
                                         >
-                                            <mat-icon *ngIf="!request.updating || request.reviewState != 0 || !request.reviewOverriden" class="approval-icon">report_problem</mat-icon>
-                                            <mat-spinner *ngIf="request.updating && request.reviewState == 0 && request.reviewOverriden" class="approval-updating" [diameter]="30"></mat-spinner>
+                                            @if (!request.updating || request.reviewState != 0 || !request.reviewOverriden) {
+                                            <mat-icon class="approval-icon">report_problem</mat-icon>
+                                            } @if (request.updating && request.reviewState == 0 && request.reviewOverriden) {
+                                            <mat-spinner class="approval-updating" [diameter]="30"></mat-spinner>
+                                            }
                                         </button>
                                     </div>
                                     <div class="request-button-sub-container">
@@ -187,17 +217,23 @@
                                             matTooltip="Override reject"
                                             [disabled]="request.updating"
                                         >
-                                            <mat-icon *ngIf="!request.updating || request.reviewState != 1 || !request.reviewOverriden" class="approval-icon">report</mat-icon>
-                                            <mat-spinner *ngIf="request.updating && request.reviewState == 1 && request.reviewOverriden" class="approval-updating" [diameter]="30"></mat-spinner>
+                                            @if (!request.updating || request.reviewState != 1 || !request.reviewOverriden) {
+                                            <mat-icon class="approval-icon">report</mat-icon>
+                                            } @if (request.updating && request.reviewState == 1 && request.reviewOverriden) {
+                                            <mat-spinner class="approval-updating" [diameter]="30"></mat-spinner>
+                                            }
                                         </button>
                                     </div>
                                     <div class="request-spacer"></div>
                                 </div>
+                                }
                             </div>
                         </div>
                     </div>
                 </mat-card>
+                }
             </div>
+            }
         </div>
     </app-main-content-area>
 </app-default-content-areas>

@@ -1,14 +1,20 @@
 import { Component, OnDestroy } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, Validators } from '@angular/forms';
+import { MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
+import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { AutofocusStopComponent } from '../../../shared/components/elements/autofocus-stop/autofocus-stop.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { TextInputComponent } from '../../../shared/components/elements/text-input/text-input.component';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatTooltip } from '@angular/material/tooltip';
+import { ButtonComponent } from '../../../shared/components/elements/button-pending/button.component';
 
 @Component({
     selector: 'app-install-workshop-mod-modal',
     templateUrl: './install-workshop-mod-modal.component.html',
     styleUrls: ['./install-workshop-mod-modal.component.scss'],
-    standalone: false
+    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, MatCheckbox, MatTooltip, MatDialogActions, ButtonComponent]
 })
 export class InstallWorkshopModModalComponent implements OnDestroy {
     private destroy$ = new Subject<void>();

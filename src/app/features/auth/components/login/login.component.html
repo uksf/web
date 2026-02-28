@@ -5,15 +5,28 @@
             <label for="name">If you see this, keep this field blank</label>
             <input type="text" id="name" name="formName" [(ngModel)]="model.name" tabindex="-1" autocomplete="off" [maxLength]="0" />
         </div>
-        <app-text-input class="full-width" label="Email Address" type="email"
-            name="formEmail" [(ngModel)]="model.email" autocomplete="username"
-            [required]="true" email
-            [validationMessages]="validationMessages.email">
-        </app-text-input>
-        <app-text-input class="full-width" label="Password" type="password"
-            name="formPassword" [(ngModel)]="model.password" autocomplete="current-password"
+        <app-text-input
+            class="full-width"
+            label="Email Address"
+            type="email"
+            name="formEmail"
+            [(ngModel)]="model.email"
+            autocomplete="username"
             [required]="true"
-            [validationMessages]="validationMessages.password">
+            email
+            [validationMessages]="validationMessages.email"
+        >
+        </app-text-input>
+        <app-text-input
+            class="full-width"
+            label="Password"
+            type="password"
+            name="formPassword"
+            [(ngModel)]="model.password"
+            autocomplete="current-password"
+            [required]="true"
+            [validationMessages]="validationMessages.password"
+        >
         </app-text-input>
         <app-button-hidden-submit></app-button-hidden-submit>
     </form>
@@ -22,9 +35,11 @@
         <app-flex-filler></app-flex-filler>
         <a class="option-link" (click)="requestPasswordReset()">Reset Password</a>
     </div>
-    <div *ngIf="loginError != ''" class="invalid-message">
+    @if (loginError != '') {
+    <div class="invalid-message">
         <span>{{ loginError }}</span>
     </div>
+    }
     <form>
         <div class="button-container">
             <app-button (clicked)="submit()" [disabled]="!form.valid" [pending]="pending">Login</app-button>

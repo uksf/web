@@ -1,22 +1,32 @@
 <app-default-content-areas>
     <app-main-content-area style="grid-column: span 3">
-        <div class="spinner-container" *ngIf="!roles">
+        @if (!roles) {
+        <div class="spinner-container">
             <mat-spinner></mat-spinner>
         </div>
-        <div *ngIf="roles">
+        } @if (roles) {
+        <div>
             <div class="flex-container">
                 <div class="column-container">
                     <ng-template [ngxPermissionsOnly]="['ADMIN']">
                         <div>
                             <form [formGroup]="roleForm" class="flex-container-input">
-                                <app-text-input class="normal" label="Role" formControlName="name" [required]="true"
-                                    [reserveErrorSpace]="false" [validationMessages]="validationMessages" (blur)="unfocus()">
+                                <app-text-input
+                                    class="normal"
+                                    label="Role"
+                                    formControlName="name"
+                                    [required]="true"
+                                    [reserveErrorSpace]="false"
+                                    [validationMessages]="validationMessages"
+                                    (blur)="unfocus()"
+                                >
                                 </app-text-input>
                                 <button (click)="addRole()" [disabled]="!roleForm.valid" color="primary" mat-raised-button>Add Role</button>
                             </form>
                         </div>
                         <div class="roles-list">
-                            <div *ngFor="let role of roles; trackBy: trackByRoleId">
+                            @for (role of roles; track trackByRoleId($index, role)) {
+                            <div>
                                 <mat-card class="roles-list-item">
                                     <app-inline-edit
                                         (finishedEvent)="editRole($event)"
@@ -30,19 +40,23 @@
                                     <mat-icon (click)="deleteRole($event, role)" class="delete-icon" matTooltip="Delete role">highlight_off</mat-icon>
                                 </mat-card>
                             </div>
+                            }
                         </div>
                     </ng-template>
                     <ng-template [ngxPermissionsExcept]="['ADMIN']">
                         <div class="roles-list">
-                            <div *ngFor="let role of roles; trackBy: trackByRoleId">
+                            @for (role of roles; track trackByRoleId($index, role)) {
+                            <div>
                                 <mat-card class="roles-list-item">
                                     <span>{{ role.name }}</span>
                                 </mat-card>
                             </div>
+                            }
                         </div>
                     </ng-template>
                 </div>
             </div>
         </div>
+        }
     </app-main-content-area>
 </app-default-content-areas>

@@ -1,31 +1,58 @@
-<div class="form-field-wrapper" [class.form-field-focused]="focused" [class.form-field-has-error]="hasError"
-     [class.form-field-disabled]="disabled" [class.form-field-multiline]="multiline">
+<div class="form-field-wrapper" [class.form-field-focused]="focused" [class.form-field-has-error]="hasError" [class.form-field-disabled]="disabled" [class.form-field-multiline]="multiline">
     <div class="form-field">
-        <label *ngIf="label" class="form-field-label" [class.required]="required"
-               [class.floating]="labelFloating" [attr.for]="inputId">{{ label }}</label>
-        <input *ngIf="!multiline" #inputElement [id]="inputId" [type]="type" [value]="value"
-               [placeholder]="labelFloating ? placeholder : ''" [disabled]="disabled" [autocomplete]="autocomplete"
-               [attr.inputmode]="inputmode" [attr.maxlength]="maxlength" [attr.required]="required || null"
-               [attr.aria-describedby]="hasError ? inputId + '-error' : null"
-               [matTooltip]="tooltip"
-               (keypress)="onKeyPress($event)" (input)="onInput($event)" (focus)="onFocus()" (blur)="onBlur()" />
-        <textarea *ngIf="multiline" #inputElement [id]="inputId" cdkTextareaAutosize rows="1"
-                  [cdkAutosizeMinRows]="minRows" [cdkAutosizeMaxRows]="maxRows"
-                  [value]="value" [placeholder]="labelFloating ? placeholder : ''" [disabled]="disabled"
-                  [attr.maxlength]="maxlength" [attr.required]="required || null"
-                  [attr.aria-describedby]="hasError ? inputId + '-error' : null"
-                  [matTooltip]="tooltip"
-                  (keypress)="onKeyPress($event)" (input)="onInput($event)" (focus)="onFocus()" (blur)="onBlur()"></textarea>
-        <button *ngIf="showClearButton" type="button" class="form-field-clear"
-                aria-label="Clear" (click)="clear(); $event.stopPropagation()">
+        @if (label) {
+        <label class="form-field-label" [class.required]="required" [class.floating]="labelFloating" [attr.for]="inputId">{{ label }}</label>
+        } @if (!multiline) {
+        <input
+            #inputElement
+            [id]="inputId"
+            [type]="type"
+            [value]="value"
+            [placeholder]="labelFloating ? placeholder : ''"
+            [disabled]="disabled"
+            [autocomplete]="autocomplete"
+            [attr.inputmode]="inputmode"
+            [attr.maxlength]="maxlength"
+            [attr.required]="required || null"
+            [attr.aria-describedby]="hasError ? inputId + '-error' : null"
+            [matTooltip]="tooltip"
+            (keypress)="onKeyPress($event)"
+            (input)="onInput($event)"
+            (focus)="onFocus()"
+            (blur)="onBlur()"
+        />
+        } @else {
+        <textarea
+            #inputElement
+            [id]="inputId"
+            cdkTextareaAutosize
+            rows="1"
+            [cdkAutosizeMinRows]="minRows"
+            [cdkAutosizeMaxRows]="maxRows"
+            [value]="value"
+            [placeholder]="labelFloating ? placeholder : ''"
+            [disabled]="disabled"
+            [attr.maxlength]="maxlength"
+            [attr.required]="required || null"
+            [attr.aria-describedby]="hasError ? inputId + '-error' : null"
+            [matTooltip]="tooltip"
+            (keypress)="onKeyPress($event)"
+            (input)="onInput($event)"
+            (focus)="onFocus()"
+            (blur)="onBlur()"
+        ></textarea>
+        } @if (showClearButton) {
+        <button type="button" class="form-field-clear" aria-label="Clear" (click)="clear(); $event.stopPropagation()">
             <mat-icon>close</mat-icon>
         </button>
+        }
     </div>
-    <div [id]="inputId + '-error'" class="form-field-error" [class.visible]="hasError" [class.reserve-space]="reserveErrorSpace && !hint"
-         role="alert">
+    <div [id]="inputId + '-error'" class="form-field-error" [class.visible]="hasError" [class.reserve-space]="reserveErrorSpace && !hint" role="alert">
         {{ errorMessage }}
     </div>
-    <div *ngIf="hint && !hasError" class="form-field-hint" [class.reserve-space]="reserveErrorSpace">
+    @if (hint && !hasError) {
+    <div class="form-field-hint" [class.reserve-space]="reserveErrorSpace">
         {{ hint }}
     </div>
+    }
 </div>

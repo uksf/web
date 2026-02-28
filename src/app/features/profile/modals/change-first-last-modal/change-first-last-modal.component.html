@@ -1,26 +1,28 @@
 <app-autofocus-stop></app-autofocus-stop>
 <h2 mat-dialog-title>Change Name</h2>
 <mat-dialog-content>
-    <div *ngIf="!changed">
+    @if (!changed) {
+    <div>
         <form [formGroup]="form">
             <div class="names-container">
-                <app-text-input class="name" formControlName="firstName" [required]="true"
-                    [keypressFilter]="characterBlockPattern" [reserveErrorSpace]="false">
-                </app-text-input>
-                <app-text-input class="name" formControlName="lastName" [required]="true"
-                    [keypressFilter]="characterBlockPattern" [reserveErrorSpace]="false">
-                </app-text-input>
-                <mat-error *ngIf="form.errors != null">{{ formErrors }}</mat-error>
+                <app-text-input class="name" formControlName="firstName" [required]="true" [keypressFilter]="characterBlockPattern" [reserveErrorSpace]="false"> </app-text-input>
+                <app-text-input class="name" formControlName="lastName" [required]="true" [keypressFilter]="characterBlockPattern" [reserveErrorSpace]="false"> </app-text-input>
+                @if (form.errors != null) {
+                <mat-error>{{ formErrors }}</mat-error>
+                }
             </div>
         </form>
     </div>
-    <div *ngIf="changed">
+    } @if (changed) {
+    <div>
         <span>
             Please change your TeamSpeak name and Arma profile name to: <b>{{ displayName }}</b>
         </span>
     </div>
+    }
 </mat-dialog-content>
-<mat-dialog-actions *ngIf="!changed">
+@if (!changed) {
+<mat-dialog-actions>
     <span>
         Your new name will be
         <b>{{ displayName }}</b>
@@ -28,3 +30,4 @@
     <app-flex-filler></app-flex-filler>
     <button mat-raised-button color="primary" type="button" (click)="changeName()" [disabled]="!form.valid || !changesMade">Submit</button>
 </mat-dialog-actions>
+}

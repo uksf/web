@@ -1,9 +1,14 @@
 import { Component } from '@angular/core';
-import { AbstractControl, FormBuilder, Validators } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import { AbstractControl, FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatDialog, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { ProfileService } from '../../services/profile.service';
 import { first } from 'rxjs/operators';
+import { AutofocusStopComponent } from '../../../../shared/components/elements/autofocus-stop/autofocus-stop.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { MatError } from '@angular/material/form-field';
+import { MatButton } from '@angular/material/button';
 
 export function passwordMatcher(form: AbstractControl) {
     if (!form.get('password').value || !form.get('confirmPass').value) {
@@ -16,7 +21,7 @@ export function passwordMatcher(form: AbstractControl) {
     selector: 'app-change-password-modal',
     templateUrl: './change-password-modal.component.html',
     styleUrls: ['./change-password-modal.component.scss'],
-    standalone: false
+    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, MatError, MatDialogActions, MatButton]
 })
 export class ChangePasswordModalComponent {
     form = this.formBuilder.group(
@@ -33,7 +38,8 @@ export class ChangePasswordModalComponent {
         const formObj = this.form.getRawValue();
         delete formObj.confirmPass;
         const formString = JSON.stringify(formObj).replace(/[\n\r]/g, '');
-        this.profileService.changePassword(formString)
+        this.profileService
+            .changePassword(formString)
             .pipe(first())
             .subscribe({
                 next: () => {

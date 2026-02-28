@@ -1,6 +1,9 @@
 <app-autofocus-stop></app-autofocus-stop>
-<h2 mat-dialog-title *ngIf="!edit">Add Server</h2>
-<h2 mat-dialog-title *ngIf="edit">Edit Server</h2>
+@if (!edit) {
+<h2 mat-dialog-title>Add Server</h2>
+} @else {
+<h2 mat-dialog-title>Edit Server</h2>
+}
 <mat-dialog-content>
     <form [formGroup]="form">
         <app-text-input class="normal" label="Server Name" formControlName="name" [required]="true"

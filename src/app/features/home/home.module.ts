@@ -6,15 +6,8 @@ import { HomeService } from './services/home.service';
 import { HomePageComponent } from './components/home-page/home-page.component';
 
 @NgModule({
-    declarations: [
-        HomePageComponent,
-    ],
-    imports: [
-        SharedModule,
-    ],
-    exports: [
-        HomePageComponent,
-    ],
-    providers: [HomeService],
+    imports: [SharedModule, HomePageComponent],
+    exports: [HomePageComponent],
+    providers: [HomeService]
 })
 export class HomeModule {}

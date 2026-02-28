@@ -1,6 +1,7 @@
 <!--TODO: Redo-->
 <app-default-content-areas>
-    <app-main-content-area *ngIf="unit">
+    @if (unit) {
+    <app-main-content-area>
         <div class="flex-container">
             <div style="min-width: 400px">
                 <div class="unit-header">
@@ -15,11 +16,13 @@
                         <mat-grid-tile [colspan]="1" [rowspan]="1">
                             <span>Unit code: {{ unit.code }}</span>
                         </mat-grid-tile>
-                        <mat-grid-tile [colspan]="1" [rowspan]="1" *ngIf="unit.parentName">
+                        @if (unit.parentName) {
+                        <mat-grid-tile [colspan]="1" [rowspan]="1">
                             <span
                                 >Parent unit: <a [routerLink]="['/units', unit.parent]">{{ unit.parentName }}</a></span
                             >
                         </mat-grid-tile>
+                        }
                     </mat-grid-list>
                 </div>
             </mat-card>
@@ -45,4 +48,5 @@
             </div>
         </div>
     </app-main-content-area>
+    }
 </app-default-content-areas>

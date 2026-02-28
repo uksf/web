@@ -2,24 +2,29 @@
     <h2>Communications</h2>
     <p>We require a few different communications platforms to be connected before completing the application. Please follow the instructions for each platform below.</p>
     <br />
-    <div *ngIf="mode === 'pending'" class="flex-container row">
+    @if (mode === 'pending') {
+    <div class="flex-container row">
         <app-flex-filler></app-flex-filler>
         <mat-spinner></mat-spinner>
         <app-flex-filler></app-flex-filler>
     </div>
-    <div *ngIf="mode === 'teamspeak'">
+    } @if (mode === 'teamspeak') {
+    <div>
         <app-teamspeak-connect (connectedEvent)="connected()"></app-teamspeak-connect>
     </div>
-    <div *ngIf="mode === 'steam'">
+    } @if (mode === 'steam') {
+    <div>
         <p>You must connect this account to your Steam account. We only store your steam64 ID in our database to allow our recruitment staff to contact you easily.</p>
         <p>This button will redirect this page where you will need to login through Steam. Once logged in, you will be automatically redirected to this application page.</p>
         <p>If you are not redirected correctly at any stage, please contact an admin.</p>
         <app-button (clicked)="connectSteam()">Connect Steam</app-button>
     </div>
-    <div *ngIf="mode === 'discord'">
+    } @if (mode === 'discord') {
+    <div>
         <p>You must connect this account to your Discord account. We only store your Discord ID in our database.</p>
         <p>This button will redirect this page where you will need to login through Discord. Once logged in, you will be automatically redirected to this application page.</p>
         <p>If you are not redirected correctly at any stage, please contact an admin.</p>
         <app-button (clicked)="connectDiscord()">Connect Discord</app-button>
     </div>
+    }
 </mat-card>

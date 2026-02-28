@@ -1,19 +1,23 @@
 <form [formGroup]="form" class="selection-list-form">
-    <div *ngIf="listPosition === 'top'" class="selection-list-container" [ngClass]="{ empty: listModel.length === 0, disabled: disabled }">
-        <div class="selection-element" *ngFor="let element of listModel; trackBy: trackByDefault">
+    @if (listPosition === 'top') {
+    <div class="selection-list-container" [ngClass]="{ empty: listModel.length === 0, disabled: disabled }">
+        @for (element of listModel; track trackByDefault($index, element)) {
+        <div class="selection-element">
             <span [matTooltipDisabled]="!element.disabled" [matTooltip]="listDisabledTooltip(element)" [ngClass]="{ disabled: element.disabled }">{{ element.displayValue }}</span>
             <app-flex-filler></app-flex-filler>
-            <mat-icon *ngIf="!disabled" class="remove" (click)="remove(element)" matTooltip="Remove from selection">
-                highlight_off
-            </mat-icon>
+            @if (!disabled) {
+            <mat-icon class="remove" (click)="remove(element)" matTooltip="Remove from selection"> highlight_off </mat-icon>
+            }
         </div>
+        }
     </div>
+    }
     <input formControlName="list" autocomplete="off" hidden tabindex="-1" name="list" />
-    <div class="form-field-wrapper" [class.form-field-focused]="focused" [class.form-field-has-error]="hasListError"
-         [class.form-field-disabled]="disabled" [ngClass]="formFieldClass">
+    <div class="form-field-wrapper" [class.form-field-focused]="focused" [class.form-field-has-error]="hasListError" [class.form-field-disabled]="disabled" [ngClass]="formFieldClass">
         <div class="form-field">
-            <label *ngIf="placeholder" class="form-field-label" [class.required]="required"
-                   [class.floating]="labelFloating" [attr.for]="inputId">{{ placeholder }}</label>
+            @if (placeholder) {
+            <label class="form-field-label" [class.required]="required" [class.floating]="labelFloating" [attr.for]="inputId">{{ placeholder }}</label>
+            }
             <input
                 #textInput
                 [id]="inputId"
@@ -30,19 +34,18 @@
                 (focus)="onInputFocus()"
                 (blur)="onInputBlur()"
             />
-            <button *ngIf="textModel && !disabled" type="button" class="form-field-clear"
-                    aria-label="Clear" (click)="clearTextInput(); $event.stopPropagation()">
+            @if (textModel && !disabled) {
+            <button type="button" class="form-field-clear" aria-label="Clear" (click)="clearTextInput(); $event.stopPropagation()">
                 <mat-icon>close</mat-icon>
             </button>
+            }
         </div>
         <div [id]="inputId + '-error'" class="form-field-error" [class.visible]="showErrors && hasListError" [class.reserve-space]="reserveErrorSpace">
             {{ listErrorMessage }}
         </div>
     </div>
-    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelect($event)"
-                      [displayWith]="autoDisplayWith" [autoActiveFirstOption]="false">
-        <cdk-virtual-scroll-viewport [maxBufferPx]="1000" [minBufferPx]="600"
-                                     [ngStyle]="{ height: scrollPanelHeight }" itemSize="48">
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelect($event)" [displayWith]="autoDisplayWith" [autoActiveFirstOption]="false">
+        <cdk-virtual-scroll-viewport [maxBufferPx]="1000" [minBufferPx]="600" [ngStyle]="{ height: scrollPanelHeight }" itemSize="48">
             <mat-option
                 *cdkVirtualFor="let element of filteredElements | async; trackBy: trackBy"
                 [matTooltipDisabled]="tooltip === null"
@@ -52,18 +55,25 @@
                 [value]="element"
                 [disabled]="getElementDisabled(element)"
             >
-                <ng-container *ngIf="elementTemplateRef; else defaultElement" [ngTemplateOutletContext]="{ $implicit: element }" [ngTemplateOutlet]="elementTemplateRef"></ng-container>
-                <ng-template #defaultElement>{{ displayWith(element) }}</ng-template>
+                @if (elementTemplateRef) {
+                <ng-container [ngTemplateOutletContext]="{ $implicit: element }" [ngTemplateOutlet]="elementTemplateRef"></ng-container>
+                } @else {
+                {{ displayWith(element) }}
+                }
             </mat-option>
         </cdk-virtual-scroll-viewport>
     </mat-autocomplete>
-    <div *ngIf="listPosition === 'bottom'" class="selection-list-container" [ngClass]="{ empty: listModel.length === 0, disabled: disabled }">
-        <div class="selection-element" *ngFor="let element of listModel; trackBy: trackByDefault">
+    @if (listPosition === 'bottom') {
+    <div class="selection-list-container" [ngClass]="{ empty: listModel.length === 0, disabled: disabled }">
+        @for (element of listModel; track trackByDefault($index, element)) {
+        <div class="selection-element">
             <span [matTooltipDisabled]="!element.disabled" [matTooltip]="listDisabledTooltip(element)" [ngClass]="{ disabled: element.disabled }">{{ element.displayValue }}</span>
             <app-flex-filler></app-flex-filler>
-            <mat-icon *ngIf="!disabled" class="remove" (click)="remove(element)" matTooltip="Remove from selection">
-                highlight_off
-            </mat-icon>
+            @if (!disabled) {
+            <mat-icon class="remove" (click)="remove(element)" matTooltip="Remove from selection"> highlight_off </mat-icon>
+            }
         </div>
+        }
     </div>
+    }
 </form>

@@ -15,17 +15,15 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
 @NgModule({
-    declarations: [
-        ProfilePageComponent,
-        ChangeFirstLastModalComponent,
-        ChangePasswordModalComponent,
-        ConnectTeamspeakModalComponent,
-    ],
     imports: [
         SharedModule,
         ProfileRoutingModule,
         MatSlideToggleModule,
         NgxPermissionsModule.forChild(),
-    ],
+        ProfilePageComponent,
+        ChangeFirstLastModalComponent,
+        ChangePasswordModalComponent,
+        ConnectTeamspeakModalComponent
+    ]
 })
 export class ProfileModule {}

@@ -15,12 +15,20 @@ import { CommandRequestItem, CommandRequestReview } from '@app/features/command/
 import { first, takeUntil } from 'rxjs/operators';
 import { CommandRequestsService } from '../../services/command-requests.service';
 import { DestroyableComponent } from '@app/shared/components';
+import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
+import { MatButton } from '@angular/material/button';
+import { MatCard } from '@angular/material/card';
+import { MatIcon } from '@angular/material/icon';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { DatePipe } from '@angular/common';
 
 @Component({
     selector: 'app-command-requests',
     templateUrl: './command-requests.component.html',
     styleUrls: ['../command-page/command-page.component.scss', './command-requests.component.scss'],
-    standalone: false
+    imports: [DefaultContentAreasComponent, MainContentAreaComponent, MatButton, MatCard, MatIcon, MatTooltip, MatProgressSpinner, DatePipe]
 })
 export class CommandRequestsComponent extends DestroyableComponent implements OnInit, OnDestroy {
     reviewState = ReviewState;
@@ -56,16 +64,19 @@ export class CommandRequestsComponent extends DestroyableComponent implements On
 
     getRequests() {
         this.updating = true;
-        this.commandRequestsService.getRequests().pipe(first()).subscribe({
-            next: (response) => {
-                this.myRequests = response.myRequests;
-                this.otherRequests = response.otherRequests;
-                this.updating = false;
-            },
-            error: (_) => {
-                this.updating = false;
-            }
-        });
+        this.commandRequestsService
+            .getRequests()
+            .pipe(first())
+            .subscribe({
+                next: (response) => {
+                    this.myRequests = response.myRequests;
+                    this.otherRequests = response.otherRequests;
+                    this.updating = false;
+                },
+                error: (_) => {
+                    this.updating = false;
+                }
+            });
     }
 
     isLoa(request) {
@@ -80,15 +91,18 @@ export class CommandRequestsComponent extends DestroyableComponent implements On
         request.updating = true;
         request.reviewState = reviewState;
         request.reviewOverriden = overriden;
-        this.commandRequestsService.setReview(request.data.id, reviewState, overriden).pipe(first()).subscribe({
-            next: (_) => this.getRequests(),
-            error: (error) => {
-                this.getRequests();
-                this.dialog.open(MessageModalComponent, {
-                    data: { message: error.error }
-                });
-            }
-        });
+        this.commandRequestsService
+            .setReview(request.data.id, reviewState, overriden)
+            .pipe(first())
+            .subscribe({
+                next: (_) => this.getRequests(),
+                error: (error) => {
+                    this.getRequests();
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: error.error }
+                    });
+                }
+            });
     }
 
     transferRequest(): void {
@@ -99,47 +113,62 @@ export class CommandRequestsComponent extends DestroyableComponent implements On
         const dialog = this.dialog.open(RequestTransferModalComponent, {
             data: data
         });
-        dialog.afterClosed().pipe(first()).subscribe({
-            next: (_) => {
-                this.getRequests();
-            }
-        });
+        dialog
+            .afterClosed()
+            .pipe(first())
+            .subscribe({
+                next: (_) => {
+                    this.getRequests();
+                }
+            });
     }
 
     rankRequest(): void {
         const dialog = this.dialog.open(RequestRankModalComponent, {});
-        dialog.afterClosed().pipe(first()).subscribe({
-            next: (_) => {
-                this.getRequests();
-            }
-        });
+        dialog
+            .afterClosed()
+            .pipe(first())
+            .subscribe({
+                next: (_) => {
+                    this.getRequests();
+                }
+            });
     }
 
     roleRequest(): void {
         const dialog = this.dialog.open(RequestRoleModalComponent, {});
-        dialog.afterClosed().pipe(first()).subscribe({
-            next: (_) => {
-                this.getRequests();
-            }
-        });
+        dialog
+            .afterClosed()
+            .pipe(first())
+            .subscribe({
+                next: (_) => {
+                    this.getRequests();
+                }
+            });
     }
 
     chainOfCommandPositionRequest() {
         const dialog = this.dialog.open(RequestChainOfCommandPositionModalComponent, {});
-        dialog.afterClosed().pipe(first()).subscribe({
-            next: (_) => {
-                this.getRequests();
-            }
-        });
+        dialog
+            .afterClosed()
+            .pipe(first())
+            .subscribe({
+                next: (_) => {
+                    this.getRequests();
+                }
+            });
     }
 
     unitRemovalRequest() {
         const dialog = this.dialog.open(RequestUnitRemovalModalComponent, {});
-        dialog.afterClosed().pipe(first()).subscribe({
-            next: (_) => {
-                this.getRequests();
-            }
-        });
+        dialog
+            .afterClosed()
+            .pipe(first())
+            .subscribe({
+                next: (_) => {
+                    this.getRequests();
+                }
+            });
     }
 
     trackByRequestId(index: number, request: { data: { id: string } }): string {
@@ -152,11 +181,14 @@ export class CommandRequestsComponent extends DestroyableComponent implements On
 
     dischargeRequest() {
         const dialog = this.dialog.open(RequestDischargeModalComponent, {});
-        dialog.afterClosed().pipe(first()).subscribe({
-            next: (_) => {
-                this.getRequests();
-            }
-        });
+        dialog
+            .afterClosed()
+            .pipe(first())
+            .subscribe({
+                next: (_) => {
+                    this.getRequests();
+                }
+            });
     }
 }
 

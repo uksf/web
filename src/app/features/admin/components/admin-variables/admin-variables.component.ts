@@ -1,18 +1,49 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatAccordion } from '@angular/material/expansion';
+import { MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, MatExpansionPanelContent } from '@angular/material/expansion';
 import { Observable, timer, of } from 'rxjs';
 import { switchMap, map, first } from 'rxjs/operators';
-import { FormBuilder, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormBuilder, AbstractControl, ValidationErrors, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { VariableItem } from '@app/features/admin/models/variable-item';
 import { VariablesService } from '../../services/variables.service';
+import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
+import { AdminPageComponent } from '../admin-page/admin-page.component';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIcon } from '@angular/material/icon';
+import { MatCard } from '@angular/material/card';
+import { NgClass } from '@angular/common';
+import { InlineEditComponent } from '../../../../shared/components/elements/inline-edit/inline-edit.component';
 
 @Component({
     selector: 'app-admin-variables',
     templateUrl: './admin-variables.component.html',
     styleUrls: ['./admin-variables.component.scss'],
-    standalone: false
+    imports: [
+        DefaultContentAreasComponent,
+        MainContentAreaComponent,
+        AdminPageComponent,
+        MatProgressSpinner,
+        FormsModule,
+        ReactiveFormsModule,
+        TextInputComponent,
+        MatButton,
+        MatIconButton,
+        MatTooltip,
+        MatIcon,
+        MatAccordion,
+        MatExpansionPanel,
+        MatExpansionPanelHeader,
+        MatExpansionPanelTitle,
+        MatExpansionPanelContent,
+        MatCard,
+        NgClass,
+        InlineEditComponent
+    ]
 })
 export class AdminVariablesComponent implements OnInit {
     @ViewChild(MatAccordion) accordion: MatAccordion;
@@ -59,31 +90,37 @@ export class AdminVariablesComponent implements OnInit {
 
     getVariables() {
         this.updating = true;
-        this.variablesService.getVariables().pipe(first()).subscribe({
-            next: (response: VariableItem[]) => {
-                this.variables = response;
-                this.formatVariables();
-                this.updating = false;
-            },
-            error: () => {
-                this.updating = false;
-            }
-        });
+        this.variablesService
+            .getVariables()
+            .pipe(first())
+            .subscribe({
+                next: (response: VariableItem[]) => {
+                    this.variables = response;
+                    this.formatVariables();
+                    this.updating = false;
+                },
+                error: () => {
+                    this.updating = false;
+                }
+            });
     }
 
     addVariable() {
         this.updating = true;
         const formString = JSON.stringify(this.form.getRawValue()).replace(/[\n\r]/g, '');
-        this.variablesService.addVariable(formString).pipe(first()).subscribe({
-            next: () => {
-                this.form.controls.key.reset();
-                this.form.controls.item.reset();
-                this.getVariables();
-            },
-            error: () => {
-                this.updating = false;
-            }
-        });
+        this.variablesService
+            .addVariable(formString)
+            .pipe(first())
+            .subscribe({
+                next: () => {
+                    this.form.controls.key.reset();
+                    this.form.controls.item.reset();
+                    this.getVariables();
+                },
+                error: () => {
+                    this.updating = false;
+                }
+            });
     }
 
     validateVariable(control: AbstractControl): Observable<ValidationErrors> {
@@ -99,14 +136,17 @@ export class AdminVariablesComponent implements OnInit {
 
     editVariable(variable: VariableItem) {
         this.updating = true;
-        this.variablesService.editVariable(variable).pipe(first()).subscribe({
-            next: () => {
-                this.getVariables();
-            },
-            error: () => {
-                this.updating = false;
-            }
-        });
+        this.variablesService
+            .editVariable(variable)
+            .pipe(first())
+            .subscribe({
+                next: () => {
+                    this.getVariables();
+                },
+                error: () => {
+                    this.updating = false;
+                }
+            });
     }
 
     deleteVariable(event, variable: VariableItem) {
@@ -114,21 +154,27 @@ export class AdminVariablesComponent implements OnInit {
         const dialog = this.dialog.open(ConfirmationModalComponent, {
             data: { message: `Are you sure you want to delete '${variable.key}'? This action could break functionality` }
         });
-        dialog.afterClosed().pipe(first()).subscribe({
-            next: (result) => {
-                if (result) {
-                    this.updating = true;
-                    this.variablesService.deleteVariable(variable.key).pipe(first()).subscribe({
-                        next: () => {
-                            this.getVariables();
-                        },
-                        error: () => {
-                            this.updating = false;
-                        }
-                    });
+        dialog
+            .afterClosed()
+            .pipe(first())
+            .subscribe({
+                next: (result) => {
+                    if (result) {
+                        this.updating = true;
+                        this.variablesService
+                            .deleteVariable(variable.key)
+                            .pipe(first())
+                            .subscribe({
+                                next: () => {
+                                    this.getVariables();
+                                },
+                                error: () => {
+                                    this.updating = false;
+                                }
+                            });
+                    }
                 }
-            }
-        });
+            });
     }
 }
 

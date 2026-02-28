@@ -11,57 +11,74 @@
                         </button>
                     </div>
                 </ng-template>
-                <div (click)="selectRelease(release.version)" *ngFor="let release of publicReleases" [ngClass]="{ selected: selectedReleaseVersion === release.version }" class="release-history-item">
-                    <i *ngIf="release.isDraft">{{ release.version }}</i>
-                    <span *ngIf="!release.isDraft">{{ release.version }}</span>
+                @for (release of publicReleases; track release) {
+                <div (click)="selectRelease(release.version)" [ngClass]="{ selected: selectedReleaseVersion === release.version }" class="release-history-item">
+                    @if (release.isDraft) {
+                    <i>{{ release.version }}</i>
+                    } @else {
+                    <span>{{ release.version }}</span>
+                    }
                 </div>
+                }
             </div>
-            <div class="release-container" *ngIf="selectedRelease && !selectedRelease.isDraft">
+            @if (selectedRelease && !selectedRelease.isDraft) {
+            <div class="release-container">
                 <div class="release-header">
                     <h1 class="release-title">Release Version {{ selectedRelease.version }}</h1>
                     <app-flex-filler></app-flex-filler>
-                    <div class="release-date">Released {{ selectedRelease.timestamp | date: 'dd MMM y':'Europe/London' }}</div>
+                    <div class="release-date">Released {{ selectedRelease.timestamp | date : 'dd MMM y' : 'Europe/London' }}</div>
                 </div>
                 <div class="release-content">
-                    <div class="release-date released">Released {{ selectedRelease.timestamp | date: 'dd MMM y':'Europe/London' }}</div>
+                    <div class="release-date released">Released {{ selectedRelease.timestamp | date : 'dd MMM y' : 'Europe/London' }}</div>
                     <h3>Changelog</h3>
                     <div class="release-changelog">
                         <markdown ngPreserveWhitespaces [data]="changelogMarkdown"></markdown>
                     </div>
                 </div>
             </div>
-            <div class="release-container" *ngIf="selectedRelease && selectedRelease.isDraft">
+            } @else if (selectedRelease && selectedRelease.isDraft) {
+            <div class="release-container">
                 <div class="release-header">
                     <h1 class="release-title">Release Version {{ selectedRelease.version }} <i>(Draft)</i></h1>
                     <app-flex-filler></app-flex-filler>
                     <div class="buttons">
                         <ng-template [ngxPermissionsOnly]="['ADMIN']">
-                            <app-button (click)="regenerateChangelog()" *ngIf="!editing" [pending]="savingChangelog"> Regenerate Changelog </app-button>
-                            <app-button (click)="edit()" *ngIf="!editing" [disabled]="savingChangelog">Edit Draft </app-button>
-                            <app-button (click)="save()" *ngIf="editing" [pending]="savingChangelog">Save Draft </app-button>
-                            <app-button (click)="togglePreview()" *ngIf="editing" [disabled]="savingChangelog">Toggle Preview </app-button>
-                            <app-button (click)="discard()" *ngIf="editing" [disabled]="savingChangelog">Discard Changes </app-button>
-                            <app-button (clicked)="release()" *ngIf="!editing" [disabled]="savingChangelog" [pending]="releasing">Release </app-button>
+                            @if (!editing) {
+                            <app-button (click)="regenerateChangelog()" [pending]="savingChangelog"> Regenerate Changelog </app-button>
+                            <app-button (click)="edit()" [disabled]="savingChangelog">Edit Draft </app-button>
+                            <app-button (clicked)="release()" [disabled]="savingChangelog" [pending]="releasing">Release </app-button>
+                            } @else {
+                            <app-button (click)="save()" [pending]="savingChangelog">Save Draft </app-button>
+                            <app-button (click)="togglePreview()" [disabled]="savingChangelog">Toggle Preview </app-button>
+                            <app-button (click)="discard()" [disabled]="savingChangelog">Discard Changes </app-button>
+                            }
                         </ng-template>
                     </div>
                 </div>
-                <div class="release-content" *ngIf="!editing">
-                    <div class="release-date">Draft created {{ selectedRelease.timestamp | date: 'dd MMM y':'Europe/London' }}</div>
+                @if (!editing) {
+                <div class="release-content">
+                    <div class="release-date">Draft created {{ selectedRelease.timestamp | date : 'dd MMM y' : 'Europe/London' }}</div>
                     <h3>Changelog</h3>
                     <div class="release-changelog">
                         <markdown ngPreserveWhitespaces [data]="changelogMarkdown"></markdown>
                     </div>
                 </div>
-                <div class="release-content" *ngIf="editing">
+                } @else {
+                <div class="release-content">
                     <h3>Changelog</h3>
-                    <div class="release-changelog" *ngIf="!preview">
+                    @if (!preview) {
+                    <div class="release-changelog">
                         <textarea [(ngModel)]="changelogEditing" type="text" placeholder="Changelog" maxlength="5000" wrap="soft"></textarea>
                     </div>
-                    <div class="release-changelog" *ngIf="preview">
+                    } @else {
+                    <div class="release-changelog">
                         <markdown ngPreserveWhitespaces [data]="changelogMarkdown"></markdown>
                     </div>
+                    }
                 </div>
+                }
             </div>
+            }
         </div>
     </app-full-content-area>
 </app-default-content-areas>

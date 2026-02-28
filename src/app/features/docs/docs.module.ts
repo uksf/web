@@ -18,16 +18,6 @@ import { MatDividerModule } from '@angular/material/divider';
 import { QuillModule } from 'ngx-quill';
 
 @NgModule({
-    declarations: [
-        DocsPageComponent,
-        DocsSidebarComponent,
-        DocsFolderComponent,
-        DocsDocumentComponent,
-        DocsContentComponent,
-        DocsPermissionsComponent,
-        CreateDocumentModalComponent,
-        CreateFolderModalComponent,
-    ],
     imports: [
         CommonModule,
         SharedModule,
@@ -37,7 +27,15 @@ import { QuillModule } from 'ngx-quill';
         MatTableModule,
         MatDividerModule,
         QuillModule,
+        DocsPageComponent,
+        DocsSidebarComponent,
+        DocsFolderComponent,
+        DocsDocumentComponent,
+        DocsContentComponent,
+        DocsPermissionsComponent,
+        CreateDocumentModalComponent,
+        CreateFolderModalComponent
     ],
-    providers: [DocsService],
+    providers: [DocsService]
 })
 export class DocsModule {}

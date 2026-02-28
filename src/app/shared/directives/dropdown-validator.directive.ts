@@ -4,8 +4,7 @@ import { AbstractControl, NG_VALIDATORS, Validator } from '@angular/forms';
 
 @Directive({
     selector: '[mustSelectFromDropdown]',
-    providers: [{ provide: NG_VALIDATORS, useExisting: MustSelectFromDropdownValidatorDirective, multi: true }],
-    standalone: false
+    providers: [{ provide: NG_VALIDATORS, useExisting: MustSelectFromDropdownValidatorDirective, multi: true }]
 })
 export class MustSelectFromDropdownValidatorDirective implements Validator {
     @Input('mustSelectFromDropdownElements') elements: IDropdownElement[];

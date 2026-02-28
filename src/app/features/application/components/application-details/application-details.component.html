@@ -6,32 +6,61 @@
             <input type="text" id="name" formControlName="name" tabindex="-1" autocomplete="off" />
         </div>
         <div>
-            <app-text-input class="large-input" label="How much experience do you have playing Arma?"
-                formControlName="armaExperience" [multiline]="true" [maxRows]="5" [maxlength]="500" [required]="true"
+            <app-text-input
+                class="large-input"
+                label="How much experience do you have playing Arma?"
+                formControlName="armaExperience"
+                [multiline]="true"
+                [maxRows]="5"
+                [maxlength]="500"
+                [required]="true"
                 [validationMessages]="validation_messages.armaExperience"
-                [hint]="formGroup.get('armaExperience').value?.length > 200 ? formGroup.get('armaExperience').value.length + ' / 500' : ''">
+                [hint]="formGroup.get('armaExperience').value?.length > 200 ? formGroup.get('armaExperience').value.length + ' / 500' : ''"
+            >
             </app-text-input>
-            <app-text-input class="large-input" label="Other units - have you ever been in an Arma unit? Which?"
-                formControlName="unitsExperience" [multiline]="true" [maxRows]="4" [maxlength]="250" [required]="true"
+            <app-text-input
+                class="large-input"
+                label="Other units - have you ever been in an Arma unit? Which?"
+                formControlName="unitsExperience"
+                [multiline]="true"
+                [maxRows]="4"
+                [maxlength]="250"
+                [required]="true"
                 [validationMessages]="validation_messages.unitsExperience"
-                [hint]="formGroup.get('unitsExperience').value?.length > 200 ? formGroup.get('unitsExperience').value.length + ' / 250' : ''">
+                [hint]="formGroup.get('unitsExperience').value?.length > 200 ? formGroup.get('unitsExperience').value.length + ' / 250' : ''"
+            >
             </app-text-input>
-            <app-text-input class="large-input" label="Personal background - tell us a little about yourself"
-                formControlName="background" [multiline]="true" [maxRows]="10" [maxlength]="500" [required]="true"
+            <app-text-input
+                class="large-input"
+                label="Personal background - tell us a little about yourself"
+                formControlName="background"
+                [multiline]="true"
+                [maxRows]="10"
+                [maxlength]="500"
+                [required]="true"
                 [validationMessages]="validation_messages.background"
-                [hint]="formGroup.get('background').value?.length > 400 ? formGroup.get('background').value.length + ' / 500' : ''">
+                [hint]="formGroup.get('background').value?.length > 400 ? formGroup.get('background').value.length + ' / 500' : ''"
+            >
             </app-text-input>
         </div>
         <mat-checkbox class="military-checkbox" color="primary" formControlName="militaryExperience">Are you or have you ever been a member of the military?</mat-checkbox>
         <div formGroupName="rolePreferences">
             <p>These options exist to give us an idea of what kind of role you are interested in. There is no guarantee you will be admitted to any of these programmes.</p>
-            <div *ngFor="let rolePreferenceOption of rolePreferenceOptions">
+            @for (rolePreferenceOption of rolePreferenceOptions; track rolePreferenceOption) {
+            <div>
                 <mat-checkbox color="primary" formControlName="{{ rolePreferenceOption }}">{{ rolePreferenceOption }}</mat-checkbox>
             </div>
+            }
         </div>
-        <app-dropdown class="large-input" placeholder="Where did you hear about UKSF?" [autocomplete]="false"
-            [elements]="referenceElements$" formControlName="reference" elementName="reference"
-            [reserveErrorSpace]="false">
+        <app-dropdown
+            class="large-input"
+            placeholder="Where did you hear about UKSF?"
+            [autocomplete]="false"
+            [elements]="referenceElements$"
+            formControlName="reference"
+            elementName="reference"
+            [reserveErrorSpace]="false"
+        >
             <ng-template #element let-element>{{ element.displayValue }}</ng-template>
         </app-dropdown>
         <div class="button-next">

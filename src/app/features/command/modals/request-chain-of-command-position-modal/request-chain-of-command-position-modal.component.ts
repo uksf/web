@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { NgForm } from '@angular/forms';
+import { MatDialog, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
+import { NgForm, FormsModule } from '@angular/forms';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
@@ -12,12 +12,17 @@ import { Unit } from '@app/features/units/models/units';
 import { MembersService } from '@app/shared/services/members.service';
 import { UnitsService } from '../../services/units.service';
 import { CommandRequestsService } from '../../services/command-requests.service';
+import { AutofocusStopComponent } from '../../../../shared/components/elements/autofocus-stop/autofocus-stop.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
+import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
 
 @Component({
     selector: 'app-request-chain-of-command-position-modal',
     templateUrl: './request-chain-of-command-position-modal.component.html',
     styleUrls: ['./request-chain-of-command-position-modal.component.scss', '../../components/command-page/command-page.component.scss'],
-    standalone: false
+    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, DropdownComponent, TextInputComponent, MatDialogActions, ButtonComponent]
 })
 export class RequestChainOfCommandPositionModalComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;
@@ -38,20 +43,18 @@ export class RequestChainOfCommandPositionModalComponent implements OnInit {
     // Store the actual Unit objects to access chainOfCommand data
     private unitObjects: Unit[] = [];
 
-    constructor(
-        private dialog: MatDialog,
-        private membersService: MembersService,
-        private unitsService: UnitsService,
-        private commandRequestsService: CommandRequestsService
-    ) {}
+    constructor(private dialog: MatDialog, private membersService: MembersService, private unitsService: UnitsService, private commandRequestsService: CommandRequestsService) {}
 
     ngOnInit() {
-        this.membersService.getMembers().pipe(first()).subscribe({
-            next: (accounts: BasicAccount[]) => {
-                this.accounts.next(accounts.map(BasicAccount.mapToElement));
-                this.accounts.complete();
-            }
-        });
+        this.membersService
+            .getMembers()
+            .pipe(first())
+            .subscribe({
+                next: (accounts: BasicAccount[]) => {
+                    this.accounts.next(accounts.map(BasicAccount.mapToElement));
+                    this.accounts.complete();
+                }
+            });
 
         this.units.next([]);
         this.positions.next([]);
@@ -65,12 +68,15 @@ export class RequestChainOfCommandPositionModalComponent implements OnInit {
             return;
         }
 
-        this.unitsService.getUnits(undefined, mapFromElement(BasicAccount, element).id).pipe(first()).subscribe({
-            next: (units: Unit[]) => {
-                this.unitObjects = units;
-                this.units.next(units.map(Unit.mapToElement));
-            }
-        });
+        this.unitsService
+            .getUnits(undefined, mapFromElement(BasicAccount, element).id)
+            .pipe(first())
+            .subscribe({
+                next: (units: Unit[]) => {
+                    this.unitObjects = units;
+                    this.units.next(units.map(Unit.mapToElement));
+                }
+            });
     }
 
     onSelectUnit(element: IDropdownElement) {
@@ -80,7 +86,7 @@ export class RequestChainOfCommandPositionModalComponent implements OnInit {
         }
 
         const selectedAccountId = mapFromElement(BasicAccount, this.model.account).id;
-        const selectedUnit = this.unitObjects.find(unit => unit.id === element.value);
+        const selectedUnit = this.unitObjects.find((unit) => unit.id === element.value);
 
         if (!selectedUnit) {
             this.positions.next([]);
@@ -129,19 +135,22 @@ export class RequestChainOfCommandPositionModalComponent implements OnInit {
         };
 
         this.pending = true;
-        this.commandRequestsService.createChainOfCommandPosition(commandRequest).pipe(first()).subscribe({
-            next: () => {
-                this.dialog.closeAll();
-                this.pending = false;
-            },
-            error: (error) => {
-                this.dialog.closeAll();
-                this.pending = false;
-                this.dialog.open(MessageModalComponent, {
-                    data: { message: error.error }
-                });
-            }
-        });
+        this.commandRequestsService
+            .createChainOfCommandPosition(commandRequest)
+            .pipe(first())
+            .subscribe({
+                next: () => {
+                    this.dialog.closeAll();
+                    this.pending = false;
+                },
+                error: (error) => {
+                    this.dialog.closeAll();
+                    this.pending = false;
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: error.error }
+                    });
+                }
+            });
     }
 
     getAccountName(element: IDropdownElement): string {

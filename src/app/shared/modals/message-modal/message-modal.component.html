@@ -1,5 +1,7 @@
 <app-autofocus-stop></app-autofocus-stop>
-<h2 mat-dialog-title *ngIf="title">{{ title }}</h2>
+@if (title) {
+<h2 mat-dialog-title>{{ title }}</h2>
+}
 <mat-dialog-content [class.no-title]="!title">
     <div class="message-container">
         <p>{{ message }}</p>

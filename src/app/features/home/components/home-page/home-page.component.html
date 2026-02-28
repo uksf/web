@@ -4,33 +4,37 @@
             <div class="timezone">
                 <span class="normal">Your Local Time</span>
                 <span class="short">Local</span>
-                <span class="normal-time">{{ time | zonedTime: 'Local' }}</span>
-                <span class="short-time">{{ time | zonedTime: 'Local':true }}</span>
+                <span class="normal-time">{{ time | zonedTime : 'Local' }}</span>
+                <span class="short-time">{{ time | zonedTime : 'Local' : true }}</span>
             </div>
             <div class="timezone">
                 <span class="normal">Greenwich Mean Time</span>
                 <span class="short">GMT</span>
-                <span class="normal-time">{{ time | zonedTime: 'Europe/London' }}</span>
-                <span class="short-time">{{ time | zonedTime: 'Europe/London':true }}</span>
+                <span class="normal-time">{{ time | zonedTime : 'Europe/London' }}</span>
+                <span class="short-time">{{ time | zonedTime : 'Europe/London' : true }}</span>
             </div>
             <div class="timezone">
                 <span class="normal">Central European Time</span>
                 <span class="short">CET</span>
-                <span class="normal-time">{{ time | zonedTime: 'Europe/Berlin' }}</span>
-                <span class="short-time">{{ time | zonedTime: 'Europe/Berlin':true }}</span>
+                <span class="normal-time">{{ time | zonedTime : 'Europe/Berlin' }}</span>
+                <span class="short-time">{{ time | zonedTime : 'Europe/Berlin' : true }}</span>
             </div>
             <div class="timezone">
                 <span class="normal">US Eastern Standard Time</span>
                 <span class="short">EST</span>
-                <span class="normal-time">{{ time | zonedTime: 'America/New_York' }}</span>
-                <span class="short-time">{{ time | zonedTime: 'America/New_York':true }}</span>
+                <span class="normal-time">{{ time | zonedTime : 'America/New_York' }}</span>
+                <span class="short-time">{{ time | zonedTime : 'America/New_York' : true }}</span>
             </div>
         </div>
-        <div class="flex-container instagram-feed" *ngIf="instagramImages.length > 0">
-            <div class="instagram-image" *ngFor="let instagramImage of instagramImages; trackBy: trackByInstagramId">
+        @if (instagramImages.length > 0) {
+        <div class="flex-container instagram-feed">
+            @for (instagramImage of instagramImages; track trackByInstagramId($index, instagramImage)) {
+            <div class="instagram-image">
                 <img [src]="instagramImage.base64" alt="UKSF Image" />
             </div>
+            }
         </div>
+        }
     </app-main-content-area>
     <app-side-content-area>
         <div class="flex-container">
@@ -42,38 +46,55 @@
                     </a>
                 </div>
                 <div class="teamspeak-content-container">
-                    <div class="spinner-container" *ngIf="!commanders && !recruiters && !members && !guests">
+                    @if (!commanders && !recruiters && !members && !guests) {
+                    <div class="spinner-container">
                         <app-flex-filler></app-flex-filler>
                         <mat-spinner></mat-spinner>
                         <app-flex-filler></app-flex-filler>
                     </div>
-                    <div *ngIf="commanders || recruiters || members || guests">
-                        <div *ngIf="commanders && commanders.length > 0">
+                    } @if (commanders || recruiters || members || guests) {
+                    <div>
+                        @if (commanders && commanders.length > 0) {
+                        <div>
                             <h4>Command Staff</h4>
                             <ul>
-                                <li *ngFor="let user of commanders; trackBy: trackByDisplayName">{{ user.displayName }}</li>
+                                @for (user of commanders; track trackByDisplayName($index, user)) {
+                                <li>{{ user.displayName }}</li>
+                                }
                             </ul>
                         </div>
-                        <div *ngIf="recruiters && recruiters.length > 0">
+                        } @if (recruiters && recruiters.length > 0) {
+                        <div>
                             <h4>Recruitment Staff</h4>
                             <ul>
-                                <li *ngFor="let user of recruiters; trackBy: trackByDisplayName">{{ user.displayName }}</li>
+                                @for (user of recruiters; track trackByDisplayName($index, user)) {
+                                <li>{{ user.displayName }}</li>
+                                }
                             </ul>
                         </div>
-                        <hr *ngIf="((recruiters && recruiters.length > 0) || (commanders && commanders.length > 0)) && ((members && members.length > 0) || (guests && guests.length > 0))" />
-                        <div *ngIf="members && members.length > 0">
+                        } @if (((recruiters && recruiters.length > 0) || (commanders && commanders.length > 0)) && ((members && members.length > 0) || (guests && guests.length > 0))) {
+                        <hr />
+                        } @if (members && members.length > 0) {
+                        <div>
                             <h4>Members</h4>
                             <ul>
-                                <li *ngFor="let user of members; trackBy: trackByDisplayName">{{ user.displayName }}</li>
+                                @for (user of members; track trackByDisplayName($index, user)) {
+                                <li>{{ user.displayName }}</li>
+                                }
                             </ul>
                         </div>
-                        <div *ngIf="guests && guests.length > 0">
+                        } @if (guests && guests.length > 0) {
+                        <div>
                             <h4>Guests</h4>
                             <ul>
-                                <li *ngFor="let user of guests; trackBy: trackByDisplayName">{{ user.displayName }}</li>
+                                @for (user of guests; track trackByDisplayName($index, user)) {
+                                <li>{{ user.displayName }}</li>
+                                }
                             </ul>
                         </div>
+                        }
                     </div>
+                    }
                 </div>
             </mat-card>
             <iframe height="500" src="https://discordapp.com/widget?id=311543678126653451&theme=dark" style="width: 100%; border: none"></iframe>

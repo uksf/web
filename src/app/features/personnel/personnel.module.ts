@@ -19,14 +19,6 @@ import { PersonnelRosterComponent } from './components/personnel-roster/personne
 import { DischargesService } from './services/discharges.service';
 
 @NgModule({
-    declarations: [
-        PersonnelPageComponent,
-        PersonnelLoasComponent,
-        PersonnelLoasListComponent,
-        PersonnelActivityComponent,
-        PersonnelDischargesComponent,
-        PersonnelRosterComponent,
-    ],
     imports: [
         CommonModule,
         FormsModule,
@@ -39,7 +31,13 @@ import { DischargesService } from './services/discharges.service';
         MatExpansionModule,
         MatTableModule,
         MatTabsModule,
+        PersonnelPageComponent,
+        PersonnelLoasComponent,
+        PersonnelLoasListComponent,
+        PersonnelActivityComponent,
+        PersonnelDischargesComponent,
+        PersonnelRosterComponent
     ],
-    providers: [DischargesService],
+    providers: [DischargesService]
 })
 export class PersonnelModule {}

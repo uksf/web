@@ -4,8 +4,7 @@ import { MustMatch } from '@app/shared/validators/must-match.validator';
 
 @Directive({
     selector: '[mustMatch]',
-    providers: [{ provide: NG_VALIDATORS, useExisting: MustMatchDirective, multi: true }],
-    standalone: false
+    providers: [{ provide: NG_VALIDATORS, useExisting: MustMatchDirective, multi: true }]
 })
 export class MustMatchDirective implements Validator {
     @Input('mustMatch') mustMatch: string[] = [];

@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
 import { Permissions } from '@app/core/services/permissions';
 import { PermissionsService } from '@app/core/services/permissions.service';
+import { MatTabNav, MatTabLink, MatTabNavPanel } from '@angular/material/tabs';
+import { RouterLinkActive, RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
     selector: 'app-personnel-page',
     templateUrl: './personnel-page.component.html',
     styleUrls: ['./personnel-page.component.scss'],
-    standalone: false
+    imports: [MatTabNav, MatTabLink, RouterLinkActive, RouterLink, MatTabNavPanel, RouterOutlet]
 })
 export class PersonnelPageComponent {
     tabLinks = [

@@ -17,13 +17,6 @@ import { GameServersService } from './services/game-servers.service';
 import { DisplayName } from '@app/shared/pipes/displayName.pipe';
 
 @NgModule({
-    declarations: [
-        OperationsPageComponent,
-        OperationsServersComponent,
-        OperationsAarComponent,
-        AddServerModalComponent,
-        EditServerModsModalComponent,
-    ],
     imports: [
         CommonModule,
         FormsModule,
@@ -35,7 +28,12 @@ import { DisplayName } from '@app/shared/pipes/displayName.pipe';
         MatExpansionModule,
         MatTabsModule,
         DisplayName,
+        OperationsPageComponent,
+        OperationsServersComponent,
+        OperationsAarComponent,
+        AddServerModalComponent,
+        EditServerModsModalComponent
     ],
-    providers: [GameServersService],
+    providers: [GameServersService]
 })
 export class OperationsModule {}

@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { AddServerModalComponent } from '../../modals/add-server-modal/add-server-modal.component';
 import { EditServerModsModalComponent } from '../../modals/edit-server-mods-modal/edit-server-mods-modal.component';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { ValidationReportModalComponent } from '@app/shared/modals/validation-report-modal/validation-report-modal.component';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -17,12 +17,45 @@ import { OrderUpdateRequest } from '@app/shared/models/order-update-request';
 import { GameServer, Mission, MissionReport } from '../../models/game-server';
 import { GameServersService } from '../../services/game-servers.service';
 import { DestroyableComponent } from '@app/shared/components';
+import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { FileDropComponent } from '../../../../shared/components/elements/file-drop/file-drop.component';
+import { NgClass, AsyncPipe } from '@angular/common';
+import { NgxPermissionsModule } from 'ngx-permissions';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatCard } from '@angular/material/card';
+import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
+import { FormsModule } from '@angular/forms';
+import { DisplayName } from '../../../../shared/pipes/displayName.pipe';
 
 @Component({
     selector: 'app-operations-servers',
     templateUrl: './operations-servers.component.html',
     styleUrls: ['../operations-page/operations-page.component.scss', './operations-servers.component.scss'],
-    standalone: false
+    imports: [
+        DefaultContentAreasComponent,
+        MainContentAreaComponent,
+        MatProgressSpinner,
+        FileDropComponent,
+        NgClass,
+        NgxPermissionsModule,
+        MatButton,
+        MatIcon,
+        FlexFillerComponent,
+        MatTooltip,
+        CdkDropList,
+        CdkDrag,
+        MatCard,
+        CdkDragHandle,
+        DropdownComponent,
+        FormsModule,
+        AsyncPipe,
+        DisplayName
+    ]
 })
 export class OperationsServersComponent extends DestroyableComponent implements OnInit, OnDestroy {
     @ViewChild('uploader') uploader: ElementRef;
@@ -194,11 +227,14 @@ export class OperationsServersComponent extends DestroyableComponent implements 
     }
 
     getDisabledState() {
-        this.gameServersService.getDisabledState().pipe(first()).subscribe({
-            next: (state) => {
-                this.disabled = state;
-            }
-        });
+        this.gameServersService
+            .getDisabledState()
+            .pipe(first())
+            .subscribe({
+                next: (state) => {
+                    this.disabled = state;
+                }
+            });
     }
 
     refreshServerStatus(server) {
@@ -278,12 +314,15 @@ export class OperationsServersComponent extends DestroyableComponent implements 
             .subscribe({
                 next: (result) => {
                     if (result) {
-                        this.gameServersService.deleteServer(server.id, this.connectionId).pipe(first()).subscribe({
-                            next: (response) => {
-                                this.servers = response;
-                                this.updateServerStatusTexts();
-                            }
-                        });
+                        this.gameServersService
+                            .deleteServer(server.id, this.connectionId)
+                            .pipe(first())
+                            .subscribe({
+                                next: (response) => {
+                                    this.servers = response;
+                                    this.updateServerStatusTexts();
+                                }
+                            });
                     }
                 }
             });
@@ -298,13 +337,16 @@ export class OperationsServersComponent extends DestroyableComponent implements 
         moveItemInArray(this.servers, event.previousIndex, event.currentIndex);
 
         const body: OrderUpdateRequest = { previousIndex: event.previousIndex, newIndex: event.currentIndex };
-        this.gameServersService.updateServerOrder(body, this.connectionId).pipe(first()).subscribe({
-            next: (response) => {
-                this.servers = response;
-                this.updateServerStatusTexts();
-                this.updatingOrder = false;
-            }
-        });
+        this.gameServersService
+            .updateServerOrder(body, this.connectionId)
+            .pipe(first())
+            .subscribe({
+                next: (response) => {
+                    this.servers = response;
+                    this.updateServerStatusTexts();
+                    this.updatingOrder = false;
+                }
+            });
     }
 
     showMissionReport(missionReports: MissionReport[]) {
@@ -343,7 +385,8 @@ export class OperationsServersComponent extends DestroyableComponent implements 
         }
 
         this.uploadingFile = true;
-        this.gameServersService.uploadMission(formData, this.connectionId)
+        this.gameServersService
+            .uploadMission(formData, this.connectionId)
             .pipe(first())
             .subscribe({
                 next: (response) => {
@@ -397,25 +440,28 @@ export class OperationsServersComponent extends DestroyableComponent implements 
 
     launch(server) {
         server.updating = true;
-        this.gameServersService.launchServer(server.id, server.missionSelection.value, this.connectionId).pipe(first()).subscribe({
-            next: () => {
-                server.updating = false;
-                this.refreshServerStatus(server);
-            },
-            error: (error: UksfError) => {
-                if (error.statusCode === 400 && error.detailCode === 1 && error.validation != null) {
-                    this.dialog.open(ValidationReportModalComponent, {
-                        data: { title: error.error, messages: error.validation.reports }
-                    });
-                } else {
-                    this.dialog.open(MessageModalComponent, {
-                        data: { message: error.error }
-                    });
+        this.gameServersService
+            .launchServer(server.id, server.missionSelection.value, this.connectionId)
+            .pipe(first())
+            .subscribe({
+                next: () => {
+                    server.updating = false;
+                    this.refreshServerStatus(server);
+                },
+                error: (error: UksfError) => {
+                    if (error.statusCode === 400 && error.detailCode === 1 && error.validation != null) {
+                        this.dialog.open(ValidationReportModalComponent, {
+                            data: { title: error.error, messages: error.validation.reports }
+                        });
+                    } else {
+                        this.dialog.open(MessageModalComponent, {
+                            data: { message: error.error }
+                        });
+                    }
+                    server.updating = false;
+                    this.refreshServerStatus(server);
                 }
-                server.updating = false;
-                this.refreshServerStatus(server);
-            }
-        });
+            });
     }
 
     kill(server, skip = true) {
@@ -440,35 +486,41 @@ export class OperationsServersComponent extends DestroyableComponent implements 
 
     runStop(server) {
         server.updating = true;
-        this.gameServersService.stopServer(server.id, this.connectionId).pipe(first()).subscribe({
-            next: (response) => {
-                const serverIndex = this.servers.findIndex((x) => x.id === response.gameServer.id);
-                this.servers[serverIndex] = response.gameServer;
-                this.instanceCount = response.instanceCount;
-                this.servers[serverIndex].status.stopping = true;
-            },
-            error: (error) => {
-                this.showError(error);
-                server.updating = false;
-                this.refreshServerStatus(server);
-            }
-        });
+        this.gameServersService
+            .stopServer(server.id, this.connectionId)
+            .pipe(first())
+            .subscribe({
+                next: (response) => {
+                    const serverIndex = this.servers.findIndex((x) => x.id === response.gameServer.id);
+                    this.servers[serverIndex] = response.gameServer;
+                    this.instanceCount = response.instanceCount;
+                    this.servers[serverIndex].status.stopping = true;
+                },
+                error: (error) => {
+                    this.showError(error);
+                    server.updating = false;
+                    this.refreshServerStatus(server);
+                }
+            });
     }
 
     runKill(server) {
         server.updating = true;
-        this.gameServersService.killServer(server.id, this.connectionId).pipe(first()).subscribe({
-            next: (response) => {
-                const serverIndex = this.servers.findIndex((x) => x.id === response.gameServer.id);
-                this.servers[serverIndex] = response.gameServer;
-                this.instanceCount = response.instanceCount;
-            },
-            error: (error) => {
-                this.showError(error);
-                server.updating = false;
-                this.refreshServerStatus(server);
-            }
-        });
+        this.gameServersService
+            .killServer(server.id, this.connectionId)
+            .pipe(first())
+            .subscribe({
+                next: (response) => {
+                    const serverIndex = this.servers.findIndex((x) => x.id === response.gameServer.id);
+                    this.servers[serverIndex] = response.gameServer;
+                    this.instanceCount = response.instanceCount;
+                },
+                error: (error) => {
+                    this.showError(error);
+                    server.updating = false;
+                    this.refreshServerStatus(server);
+                }
+            });
     }
 
     editServerMods(event, server) {
@@ -580,15 +632,18 @@ export class OperationsServersComponent extends DestroyableComponent implements 
             .subscribe({
                 next: (result) => {
                     if (result) {
-                        this.gameServersService.killAllServers(this.connectionId).pipe(first()).subscribe({
-                            next: () => {
-                                this.getServers();
-                            },
-                            error: (error) => {
-                                this.showError(error);
-                                this.getServers();
-                            }
-                        });
+                        this.gameServersService
+                            .killAllServers(this.connectionId)
+                            .pipe(first())
+                            .subscribe({
+                                next: () => {
+                                    this.getServers();
+                                },
+                                error: (error) => {
+                                    this.showError(error);
+                                    this.getServers();
+                                }
+                            });
                     }
                 }
             });

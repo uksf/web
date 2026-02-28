@@ -1,19 +1,43 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, ValidationErrors, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { getValidationError } from '@app/shared/services/form-helper.service';
 import { BehaviorSubject, Observable, of, timer } from 'rxjs';
 import { first, map, switchMap } from 'rxjs/operators';
-import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { ResponseUnit, UnitBranch } from '@app/features/units/models/units';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { UnitsService } from '../../services/units.service';
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
+import { AutofocusStopComponent } from '../../../../shared/components/elements/autofocus-stop/autofocus-stop.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatButton } from '@angular/material/button';
+import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
+import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
 
 @Component({
     selector: 'app-add-unit-modal',
     templateUrl: './add-unit-modal.component.html',
     styleUrls: ['./add-unit-modal.component.scss'],
-    standalone: false
+    imports: [
+        AutofocusStopComponent,
+        MatDialogTitle,
+        CdkScrollable,
+        MatDialogContent,
+        MatProgressSpinner,
+        FormsModule,
+        ReactiveFormsModule,
+        TextInputComponent,
+        DropdownComponent,
+        MatCheckbox,
+        MatDialogActions,
+        MatButton,
+        FlexFillerComponent,
+        ButtonComponent
+    ]
 })
 export class AddUnitModalComponent implements OnInit {
     form = this.formBuilder.group({
@@ -70,7 +94,7 @@ export class AddUnitModalComponent implements OnInit {
                 icon: this.unit.icon,
                 preferShortname: this.unit.preferShortname
             });
-            this.form.controls.branch.setValue(this.branchElements.find(e => e.value === String(this.unit.branch)));
+            this.form.controls.branch.setValue(this.branchElements.find((e) => e.value === String(this.unit.branch)));
         } else {
             this.form.controls.branch.setValue(this.branchElements[0]);
         }
@@ -78,13 +102,16 @@ export class AddUnitModalComponent implements OnInit {
 
     ngOnInit() {
         this.original = JSON.stringify(this.getFormRawValues());
-        this.unitsService.getAllUnits().pipe(first()).subscribe({
-            next: (units: ResponseUnit[]) => {
-                this.units = units;
-                this.resolveAvailableParentUnits();
-                this.loaded = true;
-            }
-        });
+        this.unitsService
+            .getAllUnits()
+            .pipe(first())
+            .subscribe({
+                next: (units: ResponseUnit[]) => {
+                    this.units = units;
+                    this.resolveAvailableParentUnits();
+                    this.loaded = true;
+                }
+            });
     }
 
     get changesMade() {
@@ -94,7 +121,7 @@ export class AddUnitModalComponent implements OnInit {
     resolveAvailableParentUnits() {
         const selectedBranch = Number(this.form.controls.branch.value?.value);
         this.availableParentUnits = this.units.filter((x) => x.branch === selectedBranch);
-        const parentElements = this.availableParentUnits.map(u => ({ value: u.id, displayValue: u.name }));
+        const parentElements = this.availableParentUnits.map((u) => ({ value: u.id, displayValue: u.name }));
 
         if (!this.edit) {
             this.parentElements$.next(parentElements);
@@ -106,10 +133,10 @@ export class AddUnitModalComponent implements OnInit {
             }
 
             this.availableParentUnits = this.availableParentUnits.filter((x) => x.id !== this.unit.id);
-            const filteredParentElements = this.availableParentUnits.map(u => ({ value: u.id, displayValue: u.name }));
+            const filteredParentElements = this.availableParentUnits.map((u) => ({ value: u.id, displayValue: u.name }));
             this.parentElements$.next(filteredParentElements);
 
-            const matchingParent = filteredParentElements.find(e => e.value === this.unit.parent);
+            const matchingParent = filteredParentElements.find((e) => e.value === this.unit.parent);
             this.form.controls.parent.setValue(matchingParent ?? filteredParentElements[0] ?? null);
         }
     }
@@ -120,9 +147,7 @@ export class AddUnitModalComponent implements OnInit {
                 if (control.pristine || !control.value) {
                     return of(null);
                 }
-                return this.unitsService
-                    .checkUnitExists(control.value, this.edit ? this.unit.id : undefined)
-                    .pipe(map((exists: boolean) => (exists ? { unitTaken: true } : null)));
+                return this.unitsService.checkUnitExists(control.value, this.edit ? this.unit.id : undefined).pipe(map((exists: boolean) => (exists ? { unitTaken: true } : null)));
             })
         );
     }
@@ -143,21 +168,27 @@ export class AddUnitModalComponent implements OnInit {
             this.unit.callsign = this.form.controls.callsign.value;
             this.unit.icon = this.form.controls.icon.value;
             this.unit.preferShortname = this.form.controls.preferShortname.value;
-            this.unitsService.updateUnit(this.unit.id, this.unit).pipe(first()).subscribe({
-                next: () => {
-                    this.dialog.closeAll();
-                    this.pending = false;
-                }
-            });
+            this.unitsService
+                .updateUnit(this.unit.id, this.unit)
+                .pipe(first())
+                .subscribe({
+                    next: () => {
+                        this.dialog.closeAll();
+                        this.pending = false;
+                    }
+                });
         } else {
             const payload = this.getFormRawValues();
             const formString = JSON.stringify(payload).replace(/[\n\r]/g, '');
-            this.unitsService.createUnit(formString).pipe(first()).subscribe({
-                next: () => {
-                    this.dialog.closeAll();
-                    this.pending = false;
-                }
-            });
+            this.unitsService
+                .createUnit(formString)
+                .pipe(first())
+                .subscribe({
+                    next: () => {
+                        this.dialog.closeAll();
+                        this.pending = false;
+                    }
+                });
         }
     }
 
@@ -169,17 +200,23 @@ export class AddUnitModalComponent implements OnInit {
         const dialog = this.dialog.open(ConfirmationModalComponent, {
             data: { message: `Are you sure you want to delete '${this.unit.name}'?` }
         });
-        dialog.afterClosed().pipe(first()).subscribe({
-            next: (result) => {
-                if (result) {
-                    this.unitsService.deleteUnit(this.unit.id).pipe(first()).subscribe({
-                        next: (_) => {
-                            this.dialog.closeAll();
-                        }
-                    });
+        dialog
+            .afterClosed()
+            .pipe(first())
+            .subscribe({
+                next: (result) => {
+                    if (result) {
+                        this.unitsService
+                            .deleteUnit(this.unit.id)
+                            .pipe(first())
+                            .subscribe({
+                                next: (_) => {
+                                    this.dialog.closeAll();
+                                }
+                            });
+                    }
                 }
-            }
-        });
+            });
     }
 
     private getFormRawValues() {

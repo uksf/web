@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
+import { MatTabNav, MatTabLink, MatTabNavPanel } from '@angular/material/tabs';
+import { RouterLinkActive, RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
     selector: 'app-units-page',
     templateUrl: './units-page.component.html',
     styleUrls: ['./units-page.component.scss'],
-    standalone: false
+    imports: [MatTabNav, MatTabLink, RouterLinkActive, RouterLink, MatTabNavPanel, RouterOutlet]
 })
 export class UnitsPageComponent {
     tabLinks = [

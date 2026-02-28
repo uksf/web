@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatSort, MatSortHeader } from '@angular/material/sort';
+import { MatTableDataSource, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';
 import { HttpParams } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
@@ -14,12 +14,43 @@ import { Subject } from 'rxjs';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { debounceTime, distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
 import { LogsService } from '../../services/logs.service';
+import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
+import { AdminPageComponent } from '../admin-page/admin-page.component';
+import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { FormsModule } from '@angular/forms';
+import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { NgClass, DatePipe } from '@angular/common';
 
 @Component({
     selector: 'app-admin-logs',
     templateUrl: './admin-logs.component.html',
     styleUrls: ['./admin-logs.component.scss'],
-    standalone: false
+    imports: [
+        DefaultContentAreasComponent,
+        MainContentAreaComponent,
+        AdminPageComponent,
+        TextInputComponent,
+        FormsModule,
+        FlexFillerComponent,
+        MatProgressSpinner,
+        MatTable,
+        MatSort,
+        MatColumnDef,
+        MatHeaderCellDef,
+        MatHeaderCell,
+        MatSortHeader,
+        MatCellDef,
+        MatCell,
+        NgClass,
+        MatHeaderRowDef,
+        MatHeaderRow,
+        MatRowDef,
+        MatRow,
+        MatPaginator,
+        DatePipe
+    ]
 })
 export class AdminLogsComponent extends DestroyableComponent implements OnInit, AfterViewInit {
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
@@ -85,13 +116,16 @@ export class AdminLogsComponent extends DestroyableComponent implements OnInit, 
 
     refreshData() {
         const params = this.buildParams();
-        this.logsService.getBasicLogs(params).pipe(first()).subscribe({
-            next: (pagedResult: PagedResult<BasicLog>) => {
-                this.dataLoaded = true;
-                this.paginator.length = pagedResult.totalCount;
-                this.datasource.data = pagedResult.data;
-            }
-        });
+        this.logsService
+            .getBasicLogs(params)
+            .pipe(first())
+            .subscribe({
+                next: (pagedResult: PagedResult<BasicLog>) => {
+                    this.dataLoaded = true;
+                    this.paginator.length = pagedResult.totalCount;
+                    this.datasource.data = pagedResult.data;
+                }
+            });
     }
 
     applyFilter(filterValue: string) {
@@ -101,7 +135,7 @@ export class AdminLogsComponent extends DestroyableComponent implements OnInit, 
 
     openMessageDialog(message) {
         this.dialog.open(MessageModalComponent, {
-            data: { message: message },
+            data: { message: message }
         });
     }
 

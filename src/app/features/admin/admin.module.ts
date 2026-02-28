@@ -32,28 +32,26 @@ import { AdminVariablesComponent } from './components/admin-variables/admin-vari
 import { AdminServersComponent } from './components/admin-servers/admin-servers.component';
 
 @NgModule({
-  declarations: [
-    AdminPageComponent,
-    AdminLogsComponent,
-    AdminErrorLogsComponent,
-    AdminAuditLogsComponent,
-    AdminDiscordLogsComponent,
-    AdminLauncherLogsComponent,
-    AdminToolsComponent,
-    AdminVariablesComponent,
-    AdminServersComponent,
-  ],
-  imports: [
-    SharedModule,
-    AdminRoutingModule,
-    NgxPermissionsModule.forChild(),
-    // Admin-specific modules
-    MatExpansionModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatTabsModule,
-  ],
-  providers: [AdminToolsService, InfrastructureService, LogsService, VariablesService],
+    imports: [
+        SharedModule,
+        AdminRoutingModule,
+        NgxPermissionsModule.forChild(),
+        // Admin-specific modules
+        MatExpansionModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatSortModule,
+        MatTabsModule,
+        AdminPageComponent,
+        AdminLogsComponent,
+        AdminErrorLogsComponent,
+        AdminAuditLogsComponent,
+        AdminDiscordLogsComponent,
+        AdminLauncherLogsComponent,
+        AdminToolsComponent,
+        AdminVariablesComponent,
+        AdminServersComponent
+    ],
+    providers: [AdminToolsService, InfrastructureService, LogsService, VariablesService]
 })
 export class AdminModule {}
