@@ -4,7 +4,6 @@ import { of, Subject } from 'rxjs';
 import { NgxPermissionsModule, NgxPermissionsService } from 'ngx-permissions';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HeaderBarComponent } from './header-bar.component';
-import { CoreModule } from '@app/core/core.module';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { AccountService } from '@app/core/services/account.service';
 import { AppSettingsService, Environments } from '@app/core/services/app-settings.service';
@@ -49,7 +48,7 @@ const meta: Meta<HeaderBarComponent> = {
     component: HeaderBarComponent,
     decorators: [
         moduleMetadata({
-            imports: [CoreModule, RouterTestingModule, NgxPermissionsModule.forRoot()],
+            imports: [RouterTestingModule, NgxPermissionsModule.forRoot()],
             providers: commonProviders(mockAccount, Environments.Production)
         })
     ]

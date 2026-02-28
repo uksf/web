@@ -1,12 +1,11 @@
-import { Injectable, Injector, NgModule } from '@angular/core';
-import { ActivatedRouteSnapshot, DefaultUrlSerializer, RouterModule, RouterStateSnapshot, Routes, UrlTree } from '@angular/router';
+import { Routes } from '@angular/router';
 import { HomePageComponent } from './features/home/components/home-page/home-page.component';
 import { LoginPageComponent } from './features/auth/components/login-page/login-page.component';
 import { NgxPermissionsGuard } from 'ngx-permissions';
 import { Permissions } from '@app/core/services/permissions';
-import { RedirectService } from '@app/core/services/authentication/redirect.service';
+import { loginRedirect } from '@app/login-redirect';
 
-const appRoutes: Routes = [
+export const appRoutes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
     { path: 'home', component: HomePageComponent },
     {
@@ -20,10 +19,10 @@ const appRoutes: Routes = [
             }
         }
     },
-    { path: 'application', loadChildren: () => import('./features/application/application.module').then(m => m.ApplicationModule) },
+    { path: 'application', loadChildren: () => import('./features/application/application.routes').then(m => m.APPLICATION_ROUTES) },
     {
         path: 'profile',
-        loadChildren: () => import('./features/profile/profile.module').then(m => m.ProfileModule),
+        loadChildren: () => import('./features/profile/profile.routes').then(m => m.PROFILE_ROUTES),
         data: {
             permissions: {
                 except: Permissions.UNLOGGED,
@@ -37,7 +36,7 @@ const appRoutes: Routes = [
     },
     {
         path: 'admin',
-        loadChildren: () => import('./features/admin/admin.module').then(m => m.AdminModule),
+        loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES),
         canActivate: [NgxPermissionsGuard],
         data: {
             permissions: {
@@ -53,7 +52,7 @@ const appRoutes: Routes = [
     },
     {
         path: 'recruitment',
-        loadChildren: () => import('./features/recruitment/recruitment.module').then(m => m.RecruitmentModule),
+        loadChildren: () => import('./features/recruitment/recruitment.routes').then(m => m.RECRUITMENT_ROUTES),
         canActivate: [NgxPermissionsGuard],
         data: {
             permissions: {
@@ -68,12 +67,12 @@ const appRoutes: Routes = [
     },
     {
         path: 'information',
-        loadChildren: () => import('./features/information/information.module').then(m => m.InformationModule)
+        loadChildren: () => import('./features/information/information.routes').then(m => m.INFORMATION_ROUTES)
     },
     { path: 'about', redirectTo: 'information/about' },
     {
         path: 'information/docs',
-        loadChildren: () => import('./features/docs/docs.module').then(m => m.DocsModule),
+        loadChildren: () => import('./features/docs/docs.routes').then(m => m.DOCS_ROUTES),
         canActivate: [NgxPermissionsGuard],
         data: {
             permissions: {
@@ -89,7 +88,7 @@ const appRoutes: Routes = [
     { path: 'units/roster', redirectTo: 'personnel/roster' },
     {
         path: 'units',
-        loadChildren: () => import('./features/units/units.module').then(m => m.UnitsModule),
+        loadChildren: () => import('./features/units/units.routes').then(m => m.UNITS_ROUTES),
         canActivate: [NgxPermissionsGuard],
         data: {
             permissions: {
@@ -103,7 +102,7 @@ const appRoutes: Routes = [
     },
     {
         path: 'command',
-        loadChildren: () => import('./features/command/command.module').then(m => m.CommandModule),
+        loadChildren: () => import('./features/command/command.routes').then(m => m.COMMAND_ROUTES),
         canActivate: [NgxPermissionsGuard],
         data: {
             permissions: {
@@ -119,7 +118,7 @@ const appRoutes: Routes = [
     },
     {
         path: 'operations',
-        loadChildren: () => import('./features/operations/operations.module').then(m => m.OperationsModule),
+        loadChildren: () => import('./features/operations/operations.routes').then(m => m.OPERATIONS_ROUTES),
         canActivate: [NgxPermissionsGuard],
         data: {
             permissions: {
@@ -133,7 +132,7 @@ const appRoutes: Routes = [
     },
     {
         path: 'personnel',
-        loadChildren: () => import('./features/personnel/personnel.module').then(m => m.PersonnelModule),
+        loadChildren: () => import('./features/personnel/personnel.routes').then(m => m.PERSONNEL_ROUTES),
         canActivate: [NgxPermissionsGuard],
         data: {
             permissions: {
@@ -147,7 +146,7 @@ const appRoutes: Routes = [
     },
     {
         path: 'modpack',
-        loadChildren: () => import('./features/modpack/modpack.module').then(m => m.ModpackModule),
+        loadChildren: () => import('./features/modpack/modpack.routes').then(m => m.MODPACK_ROUTES),
         canActivate: [NgxPermissionsGuard],
         data: {
             permissions: {
@@ -164,27 +163,3 @@ const appRoutes: Routes = [
     { path: 'rules', redirectTo: 'information/rules' },
     { path: '**', redirectTo: 'home' }
 ];
-
-@NgModule({
-    imports: [RouterModule.forRoot(appRoutes)],
-    exports: [RouterModule]
-})
-export class AppRoutingModule {
-    static injector: Injector;
-    constructor(injector: Injector) {
-        AppRoutingModule.injector = injector;
-    }
-}
-
-export function loginRedirect(rejectedPermissionName: string, activatedRouteSnapshot: ActivatedRouteSnapshot, routerStateSnapshot: RouterStateSnapshot) {
-    const redirectService = AppRoutingModule.injector.get(RedirectService);
-    redirectService.setRedirectUrl(routerStateSnapshot.url);
-    return '/login';
-}
-
-@Injectable()
-export class LowerCaseUrlSerializer extends DefaultUrlSerializer {
-    parse(url: string): UrlTree {
-        return super.parse(url.toLowerCase());
-    }
-}

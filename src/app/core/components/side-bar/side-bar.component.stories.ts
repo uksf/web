@@ -3,7 +3,6 @@ import { moduleMetadata } from '@storybook/angular';
 import { of, Subject } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SideBarComponent } from './side-bar.component';
-import { CoreModule } from '@app/core/core.module';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { AccountService } from '@app/core/services/account.service';
 import { VersionService } from '@app/core/services/version.service';
@@ -46,7 +45,7 @@ const meta: Meta<SideBarComponent> = {
     component: SideBarComponent,
     decorators: [
         moduleMetadata({
-            imports: [CoreModule, RouterTestingModule],
+            imports: [RouterTestingModule],
             providers: sidebarProviders(buildPermissionsMap(Permissions.UNLOGGED), null)
         })
     ]

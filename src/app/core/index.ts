@@ -1,6 +1,3 @@
-// Core module
-export * from './core.module';
-
 // Services
 export * from './services';
 

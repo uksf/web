@@ -1,5 +1,4 @@
-export * from './docs.module';
-export * from './docs-routing.module';
+export * from './docs.routes';
 export * from './components/docs-page/docs-page.component';
 export * from './components/docs-sidebar/docs-sidebar.component';
 export * from './components/docs-sidebar/docs-folder/docs-folder.component';

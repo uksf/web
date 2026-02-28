@@ -1,6 +1,4 @@
-// Admin Feature Module
-export * from './admin.module';
-export * from './admin-routing.module';
+export * from './admin.routes';
 
 // Components
 export * from './components/admin-page/admin-page.component';

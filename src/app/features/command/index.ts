@@ -1,5 +1,4 @@
-export * from './command.module';
-export * from './command-routing.module';
+export * from './command.routes';
 export * from './components/command-page/command-page.component';
 export * from './components/command-requests/command-requests.component';
 export * from './components/command-members/command-members.component';

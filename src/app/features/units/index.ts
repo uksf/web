@@ -1,5 +1,4 @@
-export * from './units.module';
-export * from './units-routing.module';
+export * from './units.routes';
 export * from './components/units-page/units-page.component';
 export * from './components/unit-page/unit-page.component';
 export * from './components/units-orbat/units-orbat.component';

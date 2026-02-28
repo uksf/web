@@ -1,6 +1,4 @@
-// Module
-export { PersonnelModule } from './personnel.module';
-export { PersonnelRoutingModule } from './personnel-routing.module';
+export { PERSONNEL_ROUTES } from './personnel.routes';
 
 // Components
 export { PersonnelPageComponent } from './components/personnel-page/personnel-page.component';

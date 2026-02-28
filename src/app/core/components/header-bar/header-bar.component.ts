@@ -12,13 +12,11 @@ import { NotificationsComponent } from '../notifications/notifications.component
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
-import { CoreModule } from '../../core.module';
-
 @Component({
     selector: 'app-header-bar',
     templateUrl: './header-bar.component.html',
     styleUrls: ['./header-bar.component.scss'],
-    imports: [RouterLink, FlexFillerComponent, NgxPermissionsModule, NotificationsComponent, MatButton, MatIcon, MatMenuTrigger, MatMenu, MatMenuItem, CoreModule]
+    imports: [RouterLink, FlexFillerComponent, NgxPermissionsModule, NotificationsComponent, MatButton, MatIcon, MatMenuTrigger, MatMenu, MatMenuItem]
 })
 export class HeaderBarComponent implements OnInit {
     environments = Environments;

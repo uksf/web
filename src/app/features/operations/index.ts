@@ -1,6 +1,4 @@
-// Module
-export { OperationsModule } from './operations.module';
-export { OperationsRoutingModule } from './operations-routing.module';
+export { OPERATIONS_ROUTES } from './operations.routes';
 
 // Components
 export { OperationsPageComponent } from './components/operations-page/operations-page.component';

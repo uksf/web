@@ -1,13 +1,13 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 import { NgxPermissionsGuard } from 'ngx-permissions';
 import { Permissions } from '@app/core/services/permissions';
-import { loginRedirect } from '@app/app-routing.module';
+import { loginRedirect } from '@app/login-redirect';
 import { PersonnelPageComponent } from './components/personnel-page/personnel-page.component';
 import { PersonnelLoasComponent } from './components/personnel-loas/personnel-loas.component';
 import { PersonnelActivityComponent } from './components/personnel-activity/personnel-activity.component';
 import { PersonnelDischargesComponent } from './components/personnel-discharges/personnel-discharges.component';
 import { PersonnelRosterComponent } from './components/personnel-roster/personnel-roster.component';
+import { DischargesService } from './services/discharges.service';
 
 const memberPermissions = {
     only: Permissions.MEMBER,
@@ -29,10 +29,11 @@ const dischargesPermissions = {
     }
 };
 
-const routes: Routes = [
+export const PERSONNEL_ROUTES: Routes = [
     {
         path: '',
         component: PersonnelPageComponent,
+        providers: [DischargesService],
         children: [
             {
                 path: '',
@@ -80,9 +81,3 @@ const routes: Routes = [
         ]
     }
 ];
-
-@NgModule({
-    imports: [RouterModule.forChild(routes)],
-    exports: [RouterModule]
-})
-export class PersonnelRoutingModule {}
