@@ -1,0 +1,50 @@
+<div class="log-modal-header">
+    <h2 class="log-title">{{ server.name }} — RPT Log</h2>
+    <div class="source-buttons">
+        @for (source of sources; track source.name) {
+            <button mat-flat-button
+                [class.active]="activeSource === source.name"
+                (click)="switchSource(source.name)">
+                {{ source.name }}
+            </button>
+        }
+    </div>
+    <div class="search-bar">
+        <input type="text" placeholder="Search log..." [(ngModel)]="searchQuery" (keydown.enter)="search()">
+        @if (searchResults.length) {
+            <span class="search-count">{{ currentSearchIndex + 1 }} of {{ searchResults.length }}</span>
+        }
+        <button mat-icon-button (click)="searchPrev()" [disabled]="!searchResults.length" matTooltip="Previous match">
+            <mat-icon>keyboard_arrow_up</mat-icon>
+        </button>
+        <button mat-icon-button (click)="searchNext()" [disabled]="!searchResults.length" matTooltip="Next match">
+            <mat-icon>keyboard_arrow_down</mat-icon>
+        </button>
+    </div>
+    <button mat-icon-button (click)="toggleTail()" [class.active]="tailEnabled" matTooltip="Auto-scroll to bottom">
+        <mat-icon>vertical_align_bottom</mat-icon>
+    </button>
+    <button mat-icon-button (click)="downloadLog()" matTooltip="Download log file">
+        <mat-icon>download</mat-icon>
+    </button>
+    <button mat-icon-button (click)="close()" matTooltip="Close">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+<div class="log-content">
+    @if (isLoading) {
+        <div class="log-loading">Loading log...</div>
+    } @else if (!logLines.length) {
+        <div class="log-empty">No log files found for this server.</div>
+    } @else {
+        <cdk-virtual-scroll-viewport [itemSize]="20" class="log-viewport">
+            <div *cdkVirtualFor="let line of highlightedLines; let i = index; trackBy: trackByIndex"
+                 class="log-line"
+                 [class.search-highlight]="isSearchMatch(i)"
+                 [class.search-active]="isActiveSearchMatch(i)">
+                <span class="line-number">{{ i + 1 }}</span>
+                <span class="line-content" [innerHTML]="line"></span>
+            </div>
+        </cdk-virtual-scroll-viewport>
+    }
+</div>
