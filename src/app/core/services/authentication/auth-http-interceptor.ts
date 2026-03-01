@@ -1,4 +1,4 @@
-import { inject } from '@angular/core';
+import { inject, Injector } from '@angular/core';
 import { HttpErrorResponse, HttpHandlerFn, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
 import { EMPTY, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -10,11 +10,11 @@ import { MessageModalComponent } from '@app/shared/modals/message-modal/message-
 import { RedirectService } from './redirect.service';
 
 export const authHttpInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => {
+    const injector = inject(Injector);
     const router = inject(Router);
     const activatedRoute = inject(ActivatedRoute);
     const dialog = inject(MatDialog);
     const redirectService = inject(RedirectService);
-    const permissionsService = inject(PermissionsService);
 
     return next(req).pipe(
         catchError((httpError: HttpErrorResponse) => {
@@ -30,7 +30,7 @@ export const authHttpInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>
 
             if (httpError.status === 401) {
                 redirectService.setRedirectUrl(router.url);
-                permissionsService.revoke();
+                injector.get(PermissionsService).revoke();
                 return EMPTY;
             }
 
