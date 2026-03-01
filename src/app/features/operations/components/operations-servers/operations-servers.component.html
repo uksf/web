@@ -63,6 +63,9 @@
                                             {{ server.name }}{{ server.statusText ? ' - ' + server.statusText : '' }}
                                         </h3>
                                         <app-flex-filler></app-flex-filler>
+                                        <button mat-button class="icon" (click)="openServerLog(server)" matTooltip="View server log">
+                                            <mat-icon>description</mat-icon>
+                                        </button>
                                         <button mat-button class="icon" (click)="refreshServerStatus(server)" matTooltip="Refresh server status">
                                             <mat-icon [ngClass]="{ 'server-updating': server.updating }">refresh </mat-icon>
                                         </button>

@@ -2,6 +2,7 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@an
 import { MatDialog } from '@angular/material/dialog';
 import { AddServerModalComponent } from '../../modals/add-server-modal/add-server-modal.component';
 import { EditServerModsModalComponent } from '../../modals/edit-server-mods-modal/edit-server-mods-modal.component';
+import { ServerLogModalComponent } from '../../modals/server-log-modal/server-log-modal.component';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
@@ -258,6 +259,16 @@ export class OperationsServersComponent extends DestroyableComponent implements 
                 this.updating = false;
                 this.updateServerStatusTexts();
             }
+        });
+    }
+
+    openServerLog(server: GameServer): void {
+        this.dialog.open(ServerLogModalComponent, {
+            data: { server },
+            panelClass: 'rpt-log-dialog',
+            width: '95vw',
+            maxWidth: '95vw',
+            height: '90vh',
         });
     }
 
