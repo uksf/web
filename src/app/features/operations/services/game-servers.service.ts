@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UrlService } from '@app/core/services/url.service';
 import { OrderUpdateRequest } from '@app/shared/models/order-update-request';
-import { GameServer, GameServersResponse, MissionUploadResponse, ServerMod, ServerModsResetResponse, ServerStatusResponse } from '../models/game-server';
+import { GameServer, GameServersResponse, MissionUploadResponse, RptLogSearchResponse, RptLogSource, ServerMod, ServerModsResetResponse, ServerStatusResponse } from '../models/game-server';
 
 @Injectable()
 export class GameServersService {
@@ -93,5 +93,17 @@ export class GameServersService {
         return this.httpClient.get<ServerModsResetResponse>(`${this.urls.apiUrl}/gameservers/${serverId}/mods/reset`, {
             headers: new HttpHeaders({ 'Content-Type': 'application/json' })
         });
+    }
+
+    getLogSources(serverId: string): Observable<RptLogSource[]> {
+        return this.httpClient.get<RptLogSource[]>(`${this.urls.apiUrl}/gameservers/${serverId}/log/sources`);
+    }
+
+    searchLog(serverId: string, source: string, query: string): Observable<RptLogSearchResponse> {
+        return this.httpClient.post<RptLogSearchResponse>(`${this.urls.apiUrl}/gameservers/${serverId}/log/search`, { source, query });
+    }
+
+    getLogDownloadUrl(serverId: string, source: string): string {
+        return `${this.urls.apiUrl}/gameservers/${serverId}/log/download?source=${encodeURIComponent(source)}`;
     }
 }

@@ -233,4 +233,39 @@ describe('GameServersService', () => {
             expect.objectContaining({ headers: expect.any(Object) })
         );
     });
+
+    it('getLogSources should call correct endpoint', () => {
+        const mockSources = [{ name: 'server.rpt', isServer: true }, { name: 'client.rpt', isServer: false }];
+        mockHttpClient.get.mockReturnValue(of(mockSources));
+
+        service.getLogSources('server1').subscribe({
+            next: (response) => {
+                expect(response).toEqual(mockSources);
+            }
+        });
+
+        expect(mockHttpClient.get).toHaveBeenCalledWith('http://localhost:5500/gameservers/server1/log/sources');
+    });
+
+    it('searchLog should post to search endpoint', () => {
+        const mockResponse = { results: [{ lineIndex: 5, text: 'error found' }], totalMatches: 1 };
+        mockHttpClient.post.mockReturnValue(of(mockResponse));
+
+        service.searchLog('server1', 'server.rpt', 'error').subscribe({
+            next: (response) => {
+                expect(response).toEqual(mockResponse);
+            }
+        });
+
+        expect(mockHttpClient.post).toHaveBeenCalledWith(
+            'http://localhost:5500/gameservers/server1/log/search',
+            { source: 'server.rpt', query: 'error' }
+        );
+    });
+
+    it('getLogDownloadUrl should return correct URL', () => {
+        const url = service.getLogDownloadUrl('server1', 'server.rpt');
+
+        expect(url).toBe('http://localhost:5500/gameservers/server1/log/download?source=server.rpt');
+    });
 });

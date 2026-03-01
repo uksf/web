@@ -59,3 +59,18 @@ export interface ServerModsResetResponse {
     mods: ServerMod[];
     serverMods: ServerMod[];
 }
+
+export interface RptLogSource {
+    name: string;
+    isServer: boolean;
+}
+
+export interface RptLogSearchResult {
+    lineIndex: number;
+    text: string;
+}
+
+export interface RptLogSearchResponse {
+    results: RptLogSearchResult[];
+    totalMatches: number;
+}
