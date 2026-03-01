@@ -5,191 +5,164 @@
 ```bash
 bun install           # Install dependencies
 bun start             # Development server (localhost:4200)
-npx ng build          # Production build
-npx ng lint           # Lint check
+ng build              # Production build (use ./node_modules/.bin/ng or npx)
+ng lint               # Lint check (ESLint via angular-eslint)
 bun run test          # Run unit tests (Vitest)
 bun run test:e2e      # Run E2E tests (Playwright)
 ```
 
 ## Architecture
 
-- **Framework:** Angular 17 with Angular Material and PrimeNG
-- **Structure:** Feature-based folder organization (transitioning from centralized)
+- **Framework:** Angular 21 (standalone components, `@if`/`@for` control flow, `inject()` function)
+- **Build:** `@angular/build:application` builder
+- **Structure:** Feature-based folder organization with standalone components
 - **State:** Services with RxJS observables
-- **Auth:** JWT tokens via `@auth0/angular-jwt`
+- **Auth:** JWT tokens via `@auth0/angular-jwt`, functional HTTP interceptor
 - **Real-time:** SignalR for live updates
+- **Styling:** Angular Material + PrimeNG (org charts only), SCSS with theme system
 
 ## File Organization
 
-### Structure (Feature-Based)
+### Structure (Feature-Based, Standalone)
 
 ```
 src/app/
+  app.config.ts               # Application providers (replaces AppModule)
+  app.routes.ts               # Root route configuration
+  login-redirect.ts           # NgxPermissionsGuard redirect helper
   features/
     {feature}/
-      index.ts                    # Barrel exports
-      {feature}.module.ts         # Lazy-loaded NgModule
-      {feature}-routing.module.ts # Feature routes with permissions
-      components/                 # Feature components
-      services/                   # Feature-specific services
-      models/                     # Feature-specific interfaces
-      modals/                     # Feature-specific dialogs
+      index.ts                # Barrel exports
+      {feature}.routes.ts     # Lazy-loaded route array (exported as FEATURE_ROUTES)
+      components/             # Feature components (standalone)
+      services/               # Feature-specific services
+      models/                 # Feature-specific interfaces
+      modals/                 # Feature-specific dialogs
   shared/
-    shared.module.ts              # Reusable components/pipes/directives
-    components/
-    pipes/
-    directives/
-  core/                           # Singleton services, guards, interceptors
+    shared.module.ts          # NgModule wrapper (Storybook only)
+    components/               # Reusable standalone components
+    pipes/                    # Standalone pipes
+    directives/               # Standalone directives
+    modals/                   # Shared dialog components
+    services/                 # Shared services
+  core/                       # Singleton services, interceptors
 ```
 
-### Shared Module
+### Key Patterns
 
-`src/app/shared/` contains reusable primitives used across features:
-- **Components:** flex-filler, loading-placeholder, button-pending, content areas, etc.
-- **Pipes:** displayName, time, country, AnsiToHtml
-- **Directives:** character-block, dropdown-validator, must-match
-
-Import via: `import { SharedModule } from '@shared/shared.module';`
-
-## Naming Conventions
-
-| Type | Convention | Example |
-|------|------------|---------|
-| Components | kebab-case | `loading-placeholder.component.ts` |
-| Services | camelCase prefix | `modpack.service.ts` |
-| Models | PascalCase | `ModpackRelease.ts` |
-| SCSS classes | kebab-case | `.mod-card`, `.button-wrapper` |
-| Feature modules | kebab-case | `modpack.module.ts` |
-
-## Styling
-
-### Variables
-
-Import: `@use 'styles/variables' as v;`
-
-**Spacing (self-describing names):**
-- `v.$spacing-4px` through `v.$spacing-40px`
-
-**Layout breakpoints:**
-```scss
-@include v.below(v.$layout-medium) {
-  // Styles for 768px and below
-}
-```
-
-Breakpoints are for layout shifts (sidebar → top), not device targeting.
-Custom breakpoints are OK when documented.
-
-### Theme System
-
-The app uses Angular Material theming with custom palettes:
-- `src/darkTheme.scss` - Dark theme (active)
-- `src/lightTheme.scss` - Light theme (available)
-- `src/palettes.scss` - Custom color palettes
-
-**Rules:**
-- Never hardcode colors - use theme palette functions
-- `::ng-deep` is deprecated but has no replacement - use sparingly
-- Document any custom breakpoint values with comments
-
-### SCSS Component Themes
-
-Components with theming support have a `*.scss-theme.scss` file alongside their `*.scss` file. These are imported in `styles.scss` and included in the theme mixin.
+- **All components, pipes, and directives are standalone** (Angular 21 default)
+- Components declare their own `imports` in `@Component({ imports: [...] })`
+- No NgModules for feature routing — use plain `Routes` arrays
+- `SharedModule` exists only for Storybook story compatibility
 
 ## Component Patterns
 
-### Subscribe Pattern (Modern)
+### Dependency Injection
+
+Use `inject()` function instead of constructor injection:
 
 ```typescript
-// OLD - Don't use
-this.service.getData().subscribe(data => { ... });
+// Standard pattern
+export class MyComponent {
+    private http = inject(HttpClient);
+    private urls = inject(UrlService);
+}
+```
 
-// NEW - Use observer object
+### Control Flow
+
+Use built-in control flow (not `*ngIf`/`*ngFor`):
+
+```typescript
+// Template
+@if (isLoading) {
+    <app-loading-placeholder>
+} @else {
+    @for (item of items; track item.id) {
+        <div>{{ item.name }}</div>
+    }
+}
+```
+
+### Subscribe Pattern
+
+```typescript
+// Use observer object
 this.service.getData().subscribe({
-  next: (data) => { ... },
-  error: (err) => { ... },
-  complete: () => { ... }
+    next: (data) => { ... },
+    error: (err) => { ... }
 });
 ```
 
 ### Subscription Cleanup
 
 ```typescript
-private destroy$ = new Subject<void>();
-
-ngOnInit() {
-  this.service.data$
-    .pipe(takeUntil(this.destroy$))
-    .subscribe({
-      next: (data) => { ... }
-    });
+// Extend DestroyableComponent for ongoing subscriptions
+export class MyComponent extends DestroyableComponent {
+    ngOnInit() {
+        this.service.data$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({ next: (data) => { ... } });
+    }
 }
 
-ngOnDestroy() {
-  this.destroy$.next();
-  this.destroy$.complete();
-}
+// Use first() for one-shot observables (HTTP, afterClosed)
+this.http.get(url).pipe(first()).subscribe({ next: (data) => { ... } });
 ```
+
+- **One-shot observables** (HTTP, `afterClosed()`): use `pipe(first())` — no destroy$ needed
+- **Ongoing observables** (route params, `valueChanges`, Subject subscriptions): use `pipe(takeUntil(this.destroy$))` via `extends DestroyableComponent`
+- `DestroyableComponent` base class is in `shared/components/destroyable/`
 
 ### Modal Pattern
 
 Return data via `dialogRef.close(result)`, not EventEmitters.
 Caller subscribes to `afterClosed()`.
 
-```typescript
-// Opening a modal
-const dialogRef = this.dialog.open(MyModalComponent, { data: myData });
-dialogRef.afterClosed().subscribe({
-  next: (result) => {
-    if (result) { /* handle result */ }
-  }
-});
-
-// Inside modal
-this.dialogRef.close(resultData);
-```
-
 ### Forms
 
-Prefer typed `FormBuilder` over `UntypedFormBuilder` for new code.
-Migration of existing `UntypedForm*` is optional - some complexity requires untyped forms.
+Prefer typed `FormBuilder` over `UntypedFormBuilder`. Initialize at property declaration for type inference:
 
 ```typescript
-// Typed form (preferred for new code)
 form = this.fb.group({
-  name: ['', Validators.required],
-  email: ['', [Validators.required, Validators.email]]
+    name: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]]
 });
 ```
+
+### Form Debug Components
+
+All forms include debug components that display form values when `debugForms` app setting is enabled:
+- **Reactive forms:** `<app-form-value-debug-reactive [form]="formGroup">` before `</form>`
+- **Template-driven forms:** `<app-form-value-debug-template>` before `</form>` (injects NgForm automatically)
+- Import from `@app/shared/components/elements/form-value-debug/form-value-debug.component`
 
 ## Routing & Permissions
 
-**CRITICAL:** All routes with permissions must use NgxPermissionsGuard:
+All routes with permissions use `NgxPermissionsGuard`. Routes are configured in `app.routes.ts` with lazy-loaded feature routes:
 
 ```typescript
 {
-  path: 'admin',
-  loadChildren: () => import('./features/admin/admin.module').then(m => m.AdminModule),
-  canActivate: [NgxPermissionsGuard],
-  data: {
-    permissions: {
-      only: Permissions.ADMIN,
-      except: Permissions.UNLOGGED,
-      redirectTo: {
-        ADMIN: '/home',
-        UNLOGGED: loginRedirect,
-        default: '/home'
-      }
+    path: 'admin',
+    loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES),
+    canActivate: [NgxPermissionsGuard],
+    data: {
+        permissions: {
+            only: Permissions.ADMIN,
+            except: Permissions.UNLOGGED,
+            redirectTo: {
+                ADMIN: '/home',
+                UNLOGGED: loginRedirect,
+                default: '/home'
+            }
+        }
     }
-  }
 }
 ```
 
-When migrating features, copy permission configurations exactly from `app-routing.module.ts`.
-
 ### Permission Levels
 
-Defined in `Services/permissions.ts`:
+Defined in `core/services/permissions.ts`:
 - `UNLOGGED` - Not authenticated
 - `UNCONFIRMED` - Authenticated but email not confirmed
 - `MEMBER` - Confirmed member
@@ -199,11 +172,77 @@ Defined in `Services/permissions.ts`:
 - `SERVERS` - Server management
 - `DISCHARGES` - Discharge management
 
+## HTTP Services
+
+Extracted services handle all HTTP communication. Components should NOT inject `HttpClient` directly:
+
+```typescript
+// Service pattern
+@Injectable({ providedIn: 'root' })  // or feature-scoped
+export class GameServersService {
+    private http = inject(HttpClient);
+    private urls = inject(UrlService);
+
+    getServers() {
+        return this.http.get<GameServer[]>(`${this.urls.apiUrl}/gameservers`);
+    }
+}
+```
+
+### Auth Interceptor
+
+Functional interceptor in `core/services/authentication/auth-http-interceptor.ts`:
+- 401 → stores redirect URL, revokes session, navigates to login
+- 403 → shows permission denied message modal
+- Status 0 → wraps as `UksfError` with network error message
+
+### SignalR
+
+Real-time updates via `SignalRService`:
+
+```typescript
+private signalrService = inject(SignalRService);
+
+ngOnInit() {
+    this.hubConnection = this.signalrService.connect(`notifications?userId=${id}`);
+    this.hubConnection.connection.on('ReceiveNotification', this.onReceive);
+}
+```
+
+## Styling
+
+### Variables
+
+Import: `@use 'styles/variables' as v;`
+
+**Spacing:** `v.$spacing-4px` through `v.$spacing-40px`
+
+**Layout breakpoints:**
+```scss
+@include v.below(v.$layout-medium) {
+    // Styles for 768px and below
+}
+```
+
+### Theme System
+
+Angular Material theming with custom palettes:
+- `src/darkTheme.scss` - Dark theme (active)
+- `src/lightTheme.scss` - Light theme (available)
+- `src/palettes.scss` - Custom color palettes
+
+**Rules:**
+- Never hardcode colors - use theme palette functions
+- `::ng-deep` is deprecated but has no replacement - use sparingly for third-party components
+- Components with theming support have a `*.scss-theme.scss` file imported in `styles.scss`
+
+### Shared Form Field Styles
+
+`src/styles/_form-field.scss` (structural) and `src/styles/_form-field-theme.scss` (parameterized theme) provide shared SCSS mixins for custom form controls (text-input, dropdown, selection-list).
+
 ## Testing
 
 ### Unit Tests (Vitest)
-
-Location: `*.spec.ts` files alongside source files
 
 ```bash
 bun run test          # Run once
@@ -212,22 +251,7 @@ bun run test:watch    # Watch mode
 
 **IMPORTANT:** Use `bun run test` NOT `bun test`. `bun test` invokes bun's built-in test runner which picks up e2e files and fails.
 
-Test pure functions in Services and Pipes.
-
-### Component Tests (Playwright CT)
-
-Location: `ct/` directory — `*.ct.ts` files
-
-```bash
-bun run test:ct          # Run component tests
-bun run test:ct:ui       # Playwright UI mode for CT
-```
-
-Uses `@sand4rt/experimental-ct-angular` to mount real Angular components in a browser. Only supports standalone components — use standalone wrapper components for NgModule-based components.
-
 ### Storybook Visual Regression
-
-Location: `*.stories.spec.ts` alongside story files
 
 ```bash
 bun run storybook                 # Dev server (port 6006)
@@ -236,111 +260,54 @@ bun run test:storybook            # Run visual regression tests
 bun run test:storybook -- --update-snapshots  # Regenerate baselines
 ```
 
-Stories mount real components via `Meta.component` — no inline HTML replication. Shared mock utilities in `.storybook/utils/mock-providers.ts`. Spec files contain ONLY `toHaveScreenshot()` visual regression tests.
+Stories mount real components via `Meta.component`. Shared mock utilities in `.storybook/utils/mock-providers.ts`. Spec files contain ONLY `toHaveScreenshot()` visual regression tests.
+
+**Note:** Storybook builder `styles` option REPLACES build target styles, does NOT append.
 
 ### E2E Tests (Playwright)
-
-Location: `e2e/` directory
 
 ```bash
 bun run test:e2e                  # Run all E2E tests
 bun run test:e2e:ui               # Playwright UI mode
-bun run test:e2e:update-snapshots # Update visual baselines
-```
-
-**Test credentials:** Stored in `.env.test` (gitignored). Create manually:
-```env
-TEST_EMAIL=your-test-email
-TEST_PASSWORD=your-test-password
 ```
 
 ### Test Safety
 
-**CRITICAL: Tests run on a CI agent that shares the live production environment.** Unit tests (Vitest) run in Node.js — they have no browser and must not interact with any real services. A test that accidentally makes a real API call or WebSocket connection could affect production.
+**CRITICAL: Tests run on a CI agent that shares the live production environment.** Unit tests (Vitest) run in Node.js — they have no browser and must not interact with any real services.
 
 **All external dependencies MUST be mocked in unit tests.**
 
-#### HTTP / API Calls
 - Mock all service methods that return Observables — never let `HttpClient` make real requests
-- Use Angular `HttpTestingController` if testing HTTP layer directly
-- Never make real HTTP requests to localhost, the API, or external URLs
-
-#### SignalR / WebSocket Connections
-- Mock `SignalRService` and all hub connections
-- Mock `HubConnection`, `ConnectionContainer`, and connection events (`on()`, `invoke()`)
-- **Never establish real WebSocket connections** — the live API with active SignalR hubs is on the same box
-
-#### window, document, and Browser APIs
-- Unit tests run in Node.js — there is no real browser
-- Mock `window` object: `(globalThis as any).window = { ... }` in `beforeEach`, clean up in `afterEach`
-- Mock `document` methods (`getElementById`, `querySelector`, etc.)
-- Mock `localStorage` / `sessionStorage` with fake storage objects
-- Mock `window.location`, `window.postMessage`, `window.open`
+- Mock `SignalRService` and all hub connections — **never establish real WebSocket connections**
+- Mock `window`, `document`, `localStorage`, `sessionStorage` — unit tests run in Node.js
+- Mock `File`, `FileReader`, `FormData` for upload-related tests
+- Use `vi.useFakeTimers()` for setTimeout/setInterval-dependent code
 - **Never call real `postMessage`** — on the production box this could interact with other running processes
 
-#### File / Blob APIs
-- Mock `File`, `FileReader`, `FormData` for upload-related tests
-- Use fake File objects, never read real files from disk
+### Naming Conventions
 
-#### Timers and Async
-- Use `vi.useFakeTimers()` for setTimeout/setInterval-dependent code
-- Use `fakeAsync` / `tick` for Angular-specific async testing
-
-#### Acceptable Real Interactions in Unit Tests
-- Importing and instantiating Angular components/services with mocked deps
-- RxJS observable testing with real operators
-- Pure function testing (pipes, utilities, validators)
-
-#### E2E Tests (Playwright)
-- E2E tests run against a real dev server — real HTTP calls and browser interactions are expected there
-- E2E tests should use dedicated test accounts, never production user credentials
-- E2E tests should not modify production data
-
-## API Communication
-
-### HTTP Services
-
-Use `HttpClient` with the base URL from `UrlService`:
-
-```typescript
-constructor(private http: HttpClient, private urls: UrlService) {}
-
-getData() {
-  return this.http.get(`${this.urls.apiUrl}/endpoint`);
-}
-```
-
-### SignalR
-
-Real-time updates via `SignalRService`:
-
-```typescript
-constructor(private signalr: SignalRService) {}
-
-ngOnInit() {
-  this.signalr.hub('modpack').on('BuildUpdated', (build) => {
-    // Handle update
-  });
-}
-```
+| Type | Convention | Example |
+|------|------------|---------|
+| Components | kebab-case | `loading-placeholder.component.ts` |
+| Services | camelCase prefix | `modpack.service.ts` |
+| Models | PascalCase | `ModpackRelease.ts` |
+| SCSS classes | kebab-case | `.mod-card`, `.button-wrapper` |
+| Route files | kebab-case | `modpack.routes.ts` |
 
 ## Path Aliases
 
 Configured in `tsconfig.json`:
 
 ```typescript
-import { Something } from '@app/Services/something.service';
-import { SharedModule } from '@shared/shared.module';
-import { environment } from '@env/environment';
+import { Something } from '@app/core/services/something.service';
+import { SharedComponent } from '@app/shared/components/shared.component';
 ```
 
 ## Build Configuration
 
-- Development: `npx ng serve` or `bun start`
-- Production: `npx ng build --configuration production`
-
-Production builds include:
-- Tree shaking and minification
-- AOT compilation
-- Source maps disabled
-- License extraction
+- **Builder:** `@angular/build:application`
+- **Development:** `ng serve` or `bun start`
+- **Production:** `ng build --configuration production`
+- **Linting:** `ng lint` (angular-eslint)
+- PrimeNG CSS bundled locally via `angular.json` styles array
+- Bootstrap replaced with `src/styles/_bootstrap-reset.scss` (extracted element-level resets)

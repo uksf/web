@@ -12,6 +12,7 @@
             (keydown.enter)="postComment()"
         >
         </app-text-input>
+        <app-form-value-debug-reactive [form]="commentForm"></app-form-value-debug-reactive>
     </form>
     <app-button (clicked)="postComment()" [disabled]="!hasText()">Submit</app-button>
 </div>

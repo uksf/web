@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { CentreWrapperComponent } from '../centre-wrapper/centre-wrapper.component';
 import { MatCard } from '@angular/material/card';
 
@@ -7,7 +7,7 @@ import { MatCard } from '@angular/material/card';
     templateUrl: './maintenance.component.html',
     imports: [CentreWrapperComponent, MatCard]
 })
-export class MaintenanceComponent {
+export class MaintenanceComponent implements AfterViewInit {
     @ViewChild('maintenance', { read: ElementRef }) maintenance: ElementRef;
 
     constructor() {}

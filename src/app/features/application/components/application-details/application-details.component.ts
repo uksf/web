@@ -11,12 +11,13 @@ import { TextInputComponent } from '../../../../shared/components/elements/text-
 import { MatCheckbox } from '@angular/material/checkbox';
 import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
 import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
+import { ReactiveFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-application-details',
     templateUrl: './application-details.component.html',
     styleUrls: ['../application-page/application-page.component.scss', './application-details.component.scss'],
-    imports: [MatCard, FormsModule, ReactiveFormsModule, TextInputComponent, MatCheckbox, DropdownComponent, ButtonComponent]
+    imports: [MatCard, FormsModule, ReactiveFormsModule, TextInputComponent, MatCheckbox, DropdownComponent, ButtonComponent, ReactiveFormValueDebugComponent]
 })
 export class ApplicationDetailsComponent extends DestroyableComponent {
     formBuilder = inject(UntypedFormBuilder);

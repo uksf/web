@@ -9,12 +9,13 @@ import { first } from 'rxjs/operators';
 import { MatCard } from '@angular/material/card';
 import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
 import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
+import { ReactiveFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-application-email-confirmation',
     templateUrl: './application-email-confirmation.component.html',
     styleUrls: ['./application-email-confirmation.component.scss', '../application-page/application-page.component.scss'],
-    imports: [MatCard, FormsModule, ReactiveFormsModule, TextInputComponent, ButtonComponent]
+    imports: [MatCard, FormsModule, ReactiveFormsModule, TextInputComponent, ButtonComponent, ReactiveFormValueDebugComponent]
 })
 export class ApplicationEmailConfirmationComponent {
     private applicationService = inject(ApplicationService);

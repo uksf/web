@@ -272,8 +272,8 @@ export class ApplicationIdentityComponent extends DestroyableComponent implement
     }
 
     get displayName(): string {
-        let firstName = titleCase(this.formGroup.controls['firstName'].value);
-        let lastName = nameCase(this.formGroup.controls['lastName'].value);
+        const firstName = titleCase(this.formGroup.controls['firstName'].value);
+        const lastName = nameCase(this.formGroup.controls['lastName'].value);
         return `Cdt.${lastName}.${firstName ? firstName[0] : '?'}`;
     }
 

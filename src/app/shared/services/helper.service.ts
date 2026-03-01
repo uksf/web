@@ -44,7 +44,7 @@ export function nameCase(string: string) {
     string = string.trim();
 
     if (string !== null && typeof string !== 'undefined' && string !== '') {
-        let chunks = [];
+        const chunks = [];
         let buffer = '';
         let isFirstChunk = true;
         for (let x = 0; x < string.length; x++) {

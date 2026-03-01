@@ -29,7 +29,7 @@ export class InlineDropdownComponent implements ControlValueAccessor, OnInit, On
     @Input('formFieldClass') formFieldClass: string;
     @Input('optionClass') optionClass: string;
     @Input('mapElementName') mapElementName: (element: IDropdownElement) => string;
-    @Output('onSelectionChange') onSelectionChange = new EventEmitter<IDropdownElement>();
+    @Output() onSelectionChange = new EventEmitter<IDropdownElement>();
     @Input() textModel = '';
     model: Model = {
         dropdownValue: null

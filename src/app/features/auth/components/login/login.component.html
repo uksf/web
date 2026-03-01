@@ -29,13 +29,14 @@
         >
         </app-text-input>
         <app-button-hidden-submit></app-button-hidden-submit>
+        <app-form-value-debug-template></app-form-value-debug-template>
     </form>
     <div class="options-container">
         <mat-checkbox color="primary" [(ngModel)]="stayLogged">Stay logged in</mat-checkbox>
         <app-flex-filler></app-flex-filler>
         <a class="option-link" (click)="requestPasswordReset()">Reset Password</a>
     </div>
-    @if (loginError != '') {
+    @if (loginError !== '') {
     <div class="invalid-message">
         <span>{{ loginError }}</span>
     </div>

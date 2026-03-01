@@ -5,14 +5,14 @@
     <div style="text-decoration: none">
         @if (isSelected(navigationItem)) {
         <div class="sideNavItem selected" [routerLink]="navigationItem.link" routerLinkActive="active">
-            @if (navigationItem.icon != '') {
+            @if (navigationItem.icon !== '') {
             <mat-icon>{{ navigationItem.icon }}</mat-icon>
             }
             <span>{{ navigationItem.text }}</span>
         </div>
         } @else {
         <div class="sideNavItem" [routerLink]="navigationItem.link" routerLinkActive="active">
-            @if (navigationItem.icon != '') {
+            @if (navigationItem.icon !== '') {
             <mat-icon>{{ navigationItem.icon }}</mat-icon>
             }
             <span>{{ navigationItem.text }}</span>

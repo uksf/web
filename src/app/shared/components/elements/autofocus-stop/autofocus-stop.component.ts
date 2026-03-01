@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 
 @Component({
     selector: 'app-autofocus-stop',
-    template: '<div style="max-width: 0; max-height: 0; overflow: hidden;"><input autofocus /></div>'
+    template: '<div style="max-width: 0; max-height: 0; overflow: hidden;"><input /></div>'
 })
 export class AutofocusStopComponent {
     constructor() {}

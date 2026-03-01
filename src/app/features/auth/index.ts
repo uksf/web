@@ -1,4 +1,3 @@
-export * from './auth.routes';
 export * from './components/login-page/login-page.component';
 export * from './components/login/login.component';
 export * from './components/request-password-reset/request-password-reset.component';

@@ -5,6 +5,7 @@
         <app-text-input label="Reason" formControlName="input" [required]="true" [maxlength]="200"
             [validationMessages]="validationMessages">
         </app-text-input>
+        <app-form-value-debug-reactive [form]="form"></app-form-value-debug-reactive>
     </form>
 </mat-dialog-content>
 <mat-dialog-actions>

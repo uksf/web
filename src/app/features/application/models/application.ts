@@ -10,7 +10,7 @@ export interface Application {
     applicationCommentThread: string;
     dateAccepted: Date;
     dateCreated: Date;
-    ratings: { [id: string]: number };
+    ratings: Record<string, number>;
     recruiter: string;
     recruiterCommentThread: string;
     state: ApplicationState;

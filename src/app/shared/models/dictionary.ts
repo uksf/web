@@ -9,7 +9,7 @@ export interface IDictionary<T> {
 }
 
 export class Dictionary<T> implements IDictionary<T> {
-    private items: { [index: string]: T } = {};
+    private items: Record<string, T> = {};
 
     private count: number = 0;
 
@@ -53,7 +53,7 @@ export class Dictionary<T> implements IDictionary<T> {
     public Values(): T[] {
         const values: T[] = [];
 
-        for (let prop in this.items) {
+        for (const prop in this.items) {
             if (this.items.hasOwnProperty(prop)) {
                 values.push(this.items[prop]);
             }

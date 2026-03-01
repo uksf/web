@@ -20,12 +20,13 @@ import { ButtonComponent } from '../../../../shared/components/elements/button-p
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { AutofocusStopComponent } from '../../../../shared/components/elements/autofocus-stop/autofocus-stop.component';
 import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
+import { TemplateFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-admin-tools',
     templateUrl: './admin-tools.component.html',
     styleUrls: ['./admin-tools.component.scss'],
-    imports: [DefaultContentAreasComponent, MainContentAreaComponent, AdminPageComponent, ButtonComponent, NgxPermissionsModule, FormsModule, AutofocusStopComponent, DropdownComponent]
+    imports: [DefaultContentAreasComponent, MainContentAreaComponent, AdminPageComponent, ButtonComponent, NgxPermissionsModule, FormsModule, AutofocusStopComponent, DropdownComponent, TemplateFormValueDebugComponent]
 })
 export class AdminToolsComponent implements OnInit {
     private adminToolsService = inject(AdminToolsService);
@@ -98,12 +99,12 @@ export class AdminToolsComponent implements OnInit {
     }
 
     invalidateCaches(): void {
-        let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'invalidate');
+        const tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'invalidate');
         this.adminToolsService.invalidateCaches().pipe(first()).subscribe(this.setPending(tool));
     }
 
     getDiscordRoles(): void {
-        let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'getDiscord');
+        const tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'getDiscord');
         this.adminToolsService
             .getDiscordRoles()
             .pipe(first())
@@ -124,27 +125,27 @@ export class AdminToolsComponent implements OnInit {
     }
 
     updateDiscordRoles(): void {
-        let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'updateDiscord');
+        const tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'updateDiscord');
         this.adminToolsService.updateDiscordRoles().pipe(first()).subscribe(this.setPending(tool));
     }
 
     deleteGithubIssueCommand(): void {
-        let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'deleteGithubIssueCommand');
+        const tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'deleteGithubIssueCommand');
         this.adminToolsService.deleteGithubIssueCommand().pipe(first()).subscribe(this.setPending(tool));
     }
 
     reloadTeamspeak(): void {
-        let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'reloadTeamspeak');
+        const tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'reloadTeamspeak');
         this.adminToolsService.reloadTeamspeak().pipe(first()).subscribe(this.setPending(tool));
     }
 
     testNotification(): void {
-        let tool: Tool = this.debugTools.find((x: Tool): boolean => x.key === 'notification');
+        const tool: Tool = this.debugTools.find((x: Tool): boolean => x.key === 'notification');
         this.adminToolsService.testNotification().pipe(first()).subscribe(this.setPending(tool));
     }
 
     emergencyCleanupStuckBuilds(): void {
-        let tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'emergencyCleanup');
+        const tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'emergencyCleanup');
         this.adminToolsService
             .emergencyCleanupStuckBuilds()
             .pipe(first())

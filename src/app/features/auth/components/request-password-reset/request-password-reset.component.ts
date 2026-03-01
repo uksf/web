@@ -7,12 +7,13 @@ import { TextInputComponent } from '../../../../shared/components/elements/text-
 import { ButtonHiddenSubmitComponent } from '../../../../shared/components/elements/button-submit/button-hidden-submit.component';
 import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
 import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
+import { TemplateFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-request-password-reset',
     templateUrl: './request-password-reset.component.html',
     styleUrls: ['./request-password-reset.component.scss', '../login-page/login-page.component.scss'],
-    imports: [MatDialogTitle, FormsModule, TextInputComponent, ButtonHiddenSubmitComponent, FlexFillerComponent, ButtonComponent]
+    imports: [MatDialogTitle, FormsModule, TextInputComponent, ButtonHiddenSubmitComponent, FlexFillerComponent, ButtonComponent, TemplateFormValueDebugComponent]
 })
 export class RequestPasswordResetComponent {
     private auth = inject(AuthenticationService);

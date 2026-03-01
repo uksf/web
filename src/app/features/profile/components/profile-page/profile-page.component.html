@@ -25,14 +25,14 @@
                 <button mat-raised-button class="button" (click)="openChangeNameModal()">Change name</button>
                 <button mat-raised-button class="button" (click)="openChangePasswordModal()">Change password</button>
                 <button mat-raised-button class="button" (click)="connectSteam()">
-                    @if (account.steamname == null || account.steamname == '') {
+                    @if (account.steamname == null || account.steamname === '') {
                     <span>Connect Steam</span>
                     } @else {
                     <span class="connected">Steam connected</span>
                     }
                 </button>
                 <button mat-raised-button class="button" (click)="connectDiscord()">
-                    @if (account.discordId == null || account.discordId == '') {
+                    @if (account.discordId == null || account.discordId === '') {
                     <span>Connect Discord</span>
                     } @else {
                     <span class="connected">Discord connected</span>
@@ -117,6 +117,7 @@
                             <mat-checkbox color="primary" formControlName="sr1Enabled" matTooltip="Toggle taking SR1 applications" (change)="changeSetting()"> Taking applications </mat-checkbox>
                         </div>
                     </ng-template>
+                    <app-form-value-debug-reactive [form]="settingsFormGroup"></app-form-value-debug-reactive>
                 </form>
             </mat-card>
             }

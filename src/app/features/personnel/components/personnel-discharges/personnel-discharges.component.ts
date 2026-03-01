@@ -247,7 +247,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
 
 export class DischargeCollection {
     public accountId: string;
-    public discharges: Array<Discharge>;
+    public discharges: Discharge[];
     public id: string;
     public name: string;
     public reinstated: boolean;

@@ -18,7 +18,15 @@
                         "tsConfig": "src/tsconfig.app.json",
                         "polyfills": ["zone.js"],
                         "assets": ["src/assets", "src/favicon.ico"],
-                        "styles": ["src/storybook-fonts.css", "src/styles-app-loading.scss", "src/styles.scss", "./node_modules/quill/dist/quill.core.css", "./node_modules/quill/dist/quill.snow.css"],
+                        "styles": [
+                            "src/storybook-fonts.css",
+                            "src/styles-app-loading.scss",
+                            "src/styles.scss",
+                            "./node_modules/primeng/resources/primeng.min.css",
+                            "./node_modules/primeng/resources/themes/md-dark-indigo/theme.css",
+                            "./node_modules/quill/dist/quill.core.css",
+                            "./node_modules/quill/dist/quill.snow.css"
+                        ],
                         "scripts": [
                             "./node_modules/quill/dist/quill.min.js",
                             "./node_modules/prismjs/prism.js",
@@ -93,6 +101,12 @@
                         "compodoc": false,
                         "outputDir": "storybook-static"
                     }
+                },
+                "lint": {
+                    "builder": "@angular-eslint/builder:lint",
+                    "options": {
+                        "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+                    }
                 }
             }
         }
@@ -127,6 +141,7 @@
         }
     },
     "cli": {
-        "analytics": false
+        "analytics": false,
+        "schematicCollections": ["angular-eslint"]
     }
 }

@@ -44,7 +44,7 @@ export class PersonnelLoasListComponent implements OnInit {
     @Input() viewMode: ViewMode = 'all';
     @Input() dateMode: DateMode = 'all';
     @Input() deletable: boolean = true;
-    @Output() deleteEvent: EventEmitter<Loa> = new EventEmitter();
+    @Output() deleteEvent = new EventEmitter<Loa>();
     loaded: boolean = false;
     loaReviewState = LoaReviewState;
     loas: Loa[] = [];

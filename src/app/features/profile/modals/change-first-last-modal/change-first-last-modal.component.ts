@@ -14,12 +14,13 @@ import { TextInputComponent } from '../../../../shared/components/elements/text-
 import { MatError } from '@angular/material/form-field';
 import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
 import { MatButton } from '@angular/material/button';
+import { ReactiveFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-change-first-last-modal',
     templateUrl: './change-first-last-modal.component.html',
     styleUrls: ['./change-first-last-modal.component.scss'],
-    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, MatError, MatDialogActions, FlexFillerComponent, MatButton]
+    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, MatError, MatDialogActions, FlexFillerComponent, MatButton, ReactiveFormValueDebugComponent]
 })
 export class ChangeFirstLastModalComponent implements OnInit {
     private formBuilder = inject(FormBuilder);
@@ -82,8 +83,8 @@ export class ChangeFirstLastModalComponent implements OnInit {
     }
 
     get displayName(): string {
-        let firstName = titleCase(this.form.controls.firstName.value);
-        let lastName = nameCase(this.form.controls.lastName.value);
+        const firstName = titleCase(this.form.controls.firstName.value);
+        const lastName = nameCase(this.form.controls.lastName.value);
         return `${this.rank ? `${this.rank}.` : ''}${lastName}.${firstName ? firstName[0] : '?'}`;
     }
 }

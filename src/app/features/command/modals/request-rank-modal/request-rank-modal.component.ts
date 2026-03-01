@@ -19,12 +19,13 @@ import { SelectionListComponent as SelectionListComponent_1 } from '../../../../
 import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
 import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
 import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
+import { TemplateFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-request-rank-modal',
     templateUrl: './request-rank-modal.component.html',
     styleUrls: ['./request-rank-modal.component.scss', '../../components/command-page/command-page.component.scss'],
-    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, SelectionListComponent_1, DropdownComponent, TextInputComponent, MatDialogActions, ButtonComponent]
+    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, SelectionListComponent_1, DropdownComponent, TextInputComponent, MatDialogActions, ButtonComponent, TemplateFormValueDebugComponent]
 })
 export class RequestRankModalComponent implements OnInit {
     private dialog = inject(MatDialog);
@@ -77,7 +78,7 @@ export class RequestRankModalComponent implements OnInit {
             .pipe(first())
             .subscribe({
                 next: (ranks: Rank[]) => {
-                    let elements = ranks.map(Rank.mapToElement).reverse();
+                    const elements = ranks.map(Rank.mapToElement).reverse();
                     this.ranks.next(elements);
                 }
             });

@@ -17,6 +17,7 @@ import { InlineEditComponent } from '../../../../shared/components/elements/inli
 import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
+import { ReactiveFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-command-roles',
@@ -35,7 +36,8 @@ import { MatTooltip } from '@angular/material/tooltip';
         InlineEditComponent,
         FlexFillerComponent,
         MatIcon,
-        MatTooltip
+        MatTooltip,
+        ReactiveFormValueDebugComponent
     ]
 })
 export class CommandRolesComponent implements OnInit {
@@ -76,7 +78,7 @@ export class CommandRolesComponent implements OnInit {
     }
 
     addRole() {
-        let formString = JSON.stringify(this.roleForm.getRawValue()).replace(/[\n\r]/g, '');
+        const formString = JSON.stringify(this.roleForm.getRawValue()).replace(/[\n\r]/g, '');
         this.rolesService
             .addRole(formString)
             .pipe(first())

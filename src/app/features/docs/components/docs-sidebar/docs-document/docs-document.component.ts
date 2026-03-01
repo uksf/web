@@ -32,8 +32,8 @@ export class DocsDocumentComponent implements OnChanges, OnDestroy {
     @Input('allDocumentMetadata') allFolderMetadata: FolderMetadata[];
     @Input('folderMetadata') folderMetadata: FolderMetadata;
     @Input('documentMetadata') documentMetadata: DocumentMetadata;
-    @Output('refresh') refresh = new EventEmitter();
-    @Output('expandFolder') expandFolder = new EventEmitter();
+    @Output() refresh = new EventEmitter();
+    @Output() expandFolder = new EventEmitter();
     hover: boolean = false;
     menuOpen: boolean = false;
     selected: boolean = false;

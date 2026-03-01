@@ -14,13 +14,14 @@ import { MatIconButton } from '@angular/material/button';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatIcon } from '@angular/material/icon';
 import { TimeAgoPipe as TimeAgoPipe_1 } from '../../pipes/time.pipe';
+import { ReactiveFormValueDebugComponent } from '../elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-comment-display',
     templateUrl: './comment-display.component.html',
     styleUrls: ['./comment-display.component.scss'],
     providers: [TimeAgoPipe],
-    imports: [FormsModule, ReactiveFormsModule, TextInputComponent, ButtonComponent, MatIconButton, MatTooltip, MatIcon, TimeAgoPipe_1]
+    imports: [FormsModule, ReactiveFormsModule, TextInputComponent, ButtonComponent, MatIconButton, MatTooltip, MatIcon, TimeAgoPipe_1, ReactiveFormValueDebugComponent]
 })
 export class CommentDisplayComponent extends DestroyableComponent implements OnInit, OnDestroy {
     private commentThreadService = inject(CommentThreadService);

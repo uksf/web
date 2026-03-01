@@ -20,12 +20,13 @@ import { MatInput } from '@angular/material/input';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
 import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
+import { ReactiveFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-application-edit',
     templateUrl: './application-edit.component.html',
     styleUrls: ['../application-page/application-page.component.scss', './application-edit.component.scss'],
-    imports: [MatCard, CommentDisplayComponent, RouterLink, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatHint, MatError, MatCheckbox, DropdownComponent, ButtonComponent]
+    imports: [MatCard, CommentDisplayComponent, RouterLink, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatHint, MatError, MatCheckbox, DropdownComponent, ButtonComponent, ReactiveFormValueDebugComponent]
 })
 export class ApplicationEditComponent extends DestroyableComponent {
     formBuilder = inject(UntypedFormBuilder);

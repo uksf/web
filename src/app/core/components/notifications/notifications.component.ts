@@ -8,14 +8,13 @@ import { DestroyableComponent } from '@app/shared/components';
 import { MatIcon } from '@angular/material/icon';
 import { MatBadge } from '@angular/material/badge';
 import { MatTooltip } from '@angular/material/tooltip';
-import { HeaderBarComponent } from '../header-bar/header-bar.component';
 import { TimeAgoPipe } from '../../../shared/pipes/time.pipe';
 
 @Component({
     selector: 'app-notifications',
     templateUrl: './notifications.component.html',
     styleUrls: ['./notifications.component.scss'],
-    imports: [MatIcon, MatBadge, MatTooltip, HeaderBarComponent, TimeAgoPipe]
+    imports: [MatIcon, MatBadge, MatTooltip, TimeAgoPipe]
 })
 export class NotificationsComponent extends DestroyableComponent implements OnInit {
     private router = inject(Router);

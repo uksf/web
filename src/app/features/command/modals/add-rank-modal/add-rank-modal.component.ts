@@ -8,12 +8,13 @@ import { AutofocusStopComponent } from '../../../../shared/components/elements/a
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
 import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
+import { ReactiveFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-add-rank-modal',
     templateUrl: './add-rank-modal.component.html',
     styleUrls: ['./add-rank-modal.component.scss'],
-    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, MatDialogActions, ButtonComponent]
+    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, MatDialogActions, ButtonComponent, ReactiveFormValueDebugComponent]
 })
 export class AddRankModalComponent {
     private formBuilder = inject(FormBuilder);

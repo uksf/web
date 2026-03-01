@@ -18,6 +18,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatCard } from '@angular/material/card';
 import { NgClass } from '@angular/common';
 import { InlineEditComponent } from '../../../../shared/components/elements/inline-edit/inline-edit.component';
+import { ReactiveFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-admin-variables',
@@ -42,7 +43,8 @@ import { InlineEditComponent } from '../../../../shared/components/elements/inli
         MatExpansionPanelContent,
         MatCard,
         NgClass,
-        InlineEditComponent
+        InlineEditComponent,
+        ReactiveFormValueDebugComponent
     ]
 })
 export class AdminVariablesComponent implements OnInit {

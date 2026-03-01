@@ -16,6 +16,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
 import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
 import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
+import { TemplateFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-request-discharge-modal',
@@ -32,7 +33,8 @@ import { ButtonComponent } from '../../../../shared/components/elements/button-p
         DropdownComponent,
         TextInputComponent,
         MatDialogActions,
-        ButtonComponent
+        ButtonComponent,
+        TemplateFormValueDebugComponent
     ]
 })
 export class RequestDischargeModalComponent implements OnInit {

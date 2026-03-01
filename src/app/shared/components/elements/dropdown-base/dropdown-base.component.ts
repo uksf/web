@@ -5,13 +5,11 @@ import { nextFrame } from '@app/shared/services/helper.service';
 import { map, startWith, takeUntil } from 'rxjs/operators';
 import { MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { DestroyableComponent } from '../../destroyable/destroyable.component';
-import { FlexFillerComponent } from '../flex-filler/flex-filler.component';
 
 let nextDropdownId = 0;
 
 @Component({
-    template: ``,
-    imports: [FlexFillerComponent]
+    template: ``
 })
 export class DropdownBaseComponent extends DestroyableComponent implements OnInit {
     readonly inputId = `dropdown-${nextDropdownId++}`;
@@ -48,7 +46,7 @@ export class DropdownBaseComponent extends DestroyableComponent implements OnIni
         }
         return this.displayWith(value);
     };
-    @Output('selectionChanged') selectionChanged = new EventEmitter<IDropdownElement>();
+    @Output() selectionChanged = new EventEmitter<IDropdownElement>();
     _model: IDropdownElement = null;
     allElements: IDropdownElement[];
     filteredElements: Observable<IDropdownElement[]>;
@@ -167,8 +165,8 @@ export class DropdownBaseComponent extends DestroyableComponent implements OnIni
             return;
         }
 
-        let filterValue = typeof textModel === 'string' ? textModel : (<IDropdownElement>textModel).displayValue;
-        let filterValueLower = filterValue.toLowerCase();
+        const filterValue = typeof textModel === 'string' ? textModel : (textModel as IDropdownElement).displayValue;
+        const filterValueLower = filterValue.toLowerCase();
 
         this.filteredElements = this.elements.pipe(
             startWith(''),
@@ -276,6 +274,6 @@ export interface IDropdownElement {
     disabled?: boolean;
 }
 
-export function mapFromElement<T>(type: { new (...args: unknown[]): T }, element: IDropdownElement): T {
+export function mapFromElement<T>(type: new (...args: unknown[]) => T, element: IDropdownElement): T {
     return element === null ? null : new type(element);
 }

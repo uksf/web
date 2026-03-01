@@ -22,7 +22,6 @@ import { MatIcon } from '@angular/material/icon';
 import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatDatepickerInput, MatDatepickerToggle, MatDatepicker } from '@angular/material/datepicker';
-import { PersonnelPageComponent } from '../personnel-page/personnel-page.component';
 
 export type ViewMode = 'all' | 'coc' | 'mine';
 export type DateMode = 'all' | 'nextOp' | 'nextTraining' | 'select';
@@ -62,8 +61,7 @@ export interface DateModeItem {
         MatDatepickerToggle,
         MatSuffix,
         MatDatepicker,
-        PersonnelLoasListComponent,
-        PersonnelPageComponent
+        PersonnelLoasListComponent
     ]
 })
 export class PersonnelLoasComponent extends DestroyableComponent implements OnInit {

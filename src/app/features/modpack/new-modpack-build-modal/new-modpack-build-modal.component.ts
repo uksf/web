@@ -10,6 +10,7 @@ import { TextInputComponent } from '../../../shared/components/elements/text-inp
 import { MatError } from '@angular/material/form-field';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatButton } from '@angular/material/button';
+import { ReactiveFormValueDebugComponent } from '../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 function onlyOne(group: AbstractControl): ValidationErrors | null {
     const branchValue = (group.get('branch').value as IDropdownElement)?.value ?? '';
@@ -36,7 +37,8 @@ function onlyOne(group: AbstractControl): ValidationErrors | null {
         MatError,
         MatCheckbox,
         MatDialogActions,
-        MatButton
+        MatButton,
+        ReactiveFormValueDebugComponent
     ]
 })
 export class NewModpackBuildModalComponent {

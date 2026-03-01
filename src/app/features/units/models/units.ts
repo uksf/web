@@ -21,7 +21,7 @@ export class Unit {
     teamspeakGroup: string;
     order: number;
     members: string[];
-    roles: { [id: string]: string };
+    roles: Record<string, string>;
     chainOfCommand: ChainOfCommand;
 
     parentUnit: Unit;

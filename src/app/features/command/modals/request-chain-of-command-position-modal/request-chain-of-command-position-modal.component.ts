@@ -17,12 +17,13 @@ import { CdkScrollable } from '@angular/cdk/scrolling';
 import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
 import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
 import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
+import { TemplateFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-request-chain-of-command-position-modal',
     templateUrl: './request-chain-of-command-position-modal.component.html',
     styleUrls: ['./request-chain-of-command-position-modal.component.scss', '../../components/command-page/command-page.component.scss'],
-    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, DropdownComponent, TextInputComponent, MatDialogActions, ButtonComponent]
+    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, DropdownComponent, TextInputComponent, MatDialogActions, ButtonComponent, TemplateFormValueDebugComponent]
 })
 export class RequestChainOfCommandPositionModalComponent implements OnInit {
     private dialog = inject(MatDialog);

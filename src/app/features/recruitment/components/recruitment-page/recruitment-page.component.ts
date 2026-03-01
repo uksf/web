@@ -213,8 +213,8 @@ export class RecruitmentPageComponent extends DestroyableComponent implements On
 
     private getCompletedApplications() {
         const query: string = buildQuery(this.filterString);
-        let pageIndex: number = this.pageIndex;
-        let pageSize: number = this.pageSize;
+        const pageIndex: number = this.pageIndex;
+        const pageSize: number = this.pageSize;
 
         const params = new HttpParams()
             .set('page', pageIndex + 1)
@@ -240,9 +240,9 @@ export class RecruitmentPageComponent extends DestroyableComponent implements On
     }
 
     private getTeamspeakOnlineStates() {
-        let applications: ActiveApplication[] = this.userActiveApplications.concat(this.allOtherActiveApplications);
+        const applications: ActiveApplication[] = this.userActiveApplications.concat(this.allOtherActiveApplications);
         for (const application of applications) {
-            let teamspeakState: AsyncSubject<OnlineState> = new AsyncSubject<OnlineState>();
+            const teamspeakState: AsyncSubject<OnlineState> = new AsyncSubject<OnlineState>();
             this.teamspeakStates.Add(application.account.id, teamspeakState);
 
             this.recruitmentService

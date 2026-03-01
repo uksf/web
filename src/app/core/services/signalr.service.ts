@@ -9,7 +9,7 @@ export class SignalRService {
     readonly urls = inject(UrlService);
     private sessionService = inject(SessionService);
 
-    connect(endpoint: String): ConnectionContainer {
+    connect(endpoint: string): ConnectionContainer {
         const reconnectEvent = new Subject<void>();
         const connection = new HubConnectionBuilder()
             .withUrl(`${this.urls.apiUrl}/hub/${endpoint}`, {

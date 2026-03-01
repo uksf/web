@@ -16,7 +16,7 @@ export class MustSelectFromDropdownValidatorDirective implements Validator {
             return null;
         }
 
-        const matchValue = typeof control.value === 'string' ? control.value : this.elementDisplayWith(<IDropdownElement>control.value);
+        const matchValue = typeof control.value === 'string' ? control.value : this.elementDisplayWith((control.value as IDropdownElement));
         if (this.elements.findIndex((element: IDropdownElement) => this.elementMatcher(element, matchValue.toLowerCase())) === -1) {
             return { invalid: true };
         }

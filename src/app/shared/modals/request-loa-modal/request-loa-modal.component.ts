@@ -16,7 +16,7 @@ import { MatDatepickerInput, MatDatepickerToggle, MatDatepicker } from '@angular
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatButton } from '@angular/material/button';
-import { FlexFillerComponent } from '../../components/elements/flex-filler/flex-filler.component';
+import { ReactiveFormValueDebugComponent } from '../../components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-request-loa-modal',
@@ -42,7 +42,7 @@ import { FlexFillerComponent } from '../../components/elements/flex-filler/flex-
         MatTooltip,
         MatDialogActions,
         MatButton,
-        FlexFillerComponent
+        ReactiveFormValueDebugComponent
     ]
 })
 export class RequestLoaModalComponent implements OnInit, OnDestroy {

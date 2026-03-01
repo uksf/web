@@ -6,6 +6,7 @@ import { AutofocusStopComponent } from '../../components/elements/autofocus-stop
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { TextInputComponent } from '../../components/elements/text-input/text-input.component';
 import { MatButton } from '@angular/material/button';
+import { ReactiveFormValueDebugComponent } from '../../components/elements/form-value-debug/form-value-debug.component';
 
 export interface TextInputModalData {
     title: string;
@@ -15,7 +16,7 @@ export interface TextInputModalData {
     selector: 'app-text-input-modal',
     templateUrl: './text-input-modal.component.html',
     styleUrls: ['./text-input-modal.component.scss'],
-    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, MatDialogActions, MatButton]
+    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, MatDialogActions, MatButton, ReactiveFormValueDebugComponent]
 })
 export class TextInputModalComponent {
     private formBuilder = inject(FormBuilder);

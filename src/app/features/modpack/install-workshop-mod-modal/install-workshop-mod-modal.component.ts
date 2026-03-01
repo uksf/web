@@ -9,12 +9,13 @@ import { TextInputComponent } from '../../../shared/components/elements/text-inp
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatTooltip } from '@angular/material/tooltip';
 import { ButtonComponent } from '../../../shared/components/elements/button-pending/button.component';
+import { ReactiveFormValueDebugComponent } from '../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-install-workshop-mod-modal',
     templateUrl: './install-workshop-mod-modal.component.html',
     styleUrls: ['./install-workshop-mod-modal.component.scss'],
-    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, MatCheckbox, MatTooltip, MatDialogActions, ButtonComponent]
+    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, MatCheckbox, MatTooltip, MatDialogActions, ButtonComponent, ReactiveFormValueDebugComponent]
 })
 export class InstallWorkshopModModalComponent implements OnDestroy {
     private formBuilder = inject(FormBuilder);

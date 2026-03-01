@@ -25,7 +25,6 @@ import { DropdownComponent } from '../../../../shared/components/elements/dropdo
 import { FormsModule } from '@angular/forms';
 import { MatCard } from '@angular/material/card';
 import { CommentDisplayComponent as CommentDisplayComponent_1 } from '../../../../shared/components/comment-display/comment-display.component';
-import { RecruitmentPageComponent } from '../recruitment-page/recruitment-page.component';
 import { CountryImage, CountryName } from '../../../../shared/pipes/country.pipe';
 
 @Component({
@@ -47,7 +46,6 @@ import { CountryImage, CountryName } from '../../../../shared/pipes/country.pipe
         MatCard,
         NgStyle,
         CommentDisplayComponent_1,
-        RecruitmentPageComponent,
         AsyncPipe,
         DatePipe,
         CountryImage,

@@ -1,11 +1,9 @@
 import { Component, HostListener, OnInit } from '@angular/core';
-import { HeaderBarComponent } from '../header-bar/header-bar.component';
 
 @Component({
     selector: 'app-footer-bar',
     templateUrl: './footer-bar.component.html',
-    styleUrls: ['./footer-bar.component.scss'],
-    imports: [HeaderBarComponent]
+    styleUrls: ['./footer-bar.component.scss']
 })
 export class FooterBarComponent implements OnInit {
     mobile = false;

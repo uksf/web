@@ -52,7 +52,7 @@ describe('InlineEditComponent', () => {
     });
 
     it('does not accumulate subscriptions on repeated value changes', () => {
-      let callCount = 0;
+      const callCount = 0;
       // Use a custom validator that counts how many times it delivers
       const countingSubject = new Subject<boolean>();
       component.validator = countingSubject.asObservable();

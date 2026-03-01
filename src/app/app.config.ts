@@ -63,7 +63,7 @@ export class LowerCaseUrlSerializer extends DefaultUrlSerializer {
 
 export const appConfig: ApplicationConfig = {
     providers: [
-        provideZoneChangeDetection(),
+        provideZoneChangeDetection({ eventCoalescing: true }),
         provideRouter(appRoutes),
         provideHttpClient(withInterceptors([authHttpInterceptor])),
         provideAnimationsAsync(),

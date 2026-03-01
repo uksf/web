@@ -16,6 +16,7 @@ import { MatTooltip } from '@angular/material/tooltip';
 import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
 import { SelectionListComponent } from '../../../../shared/components/elements/selection-list/selection-list.component';
 import { MatDivider } from '@angular/material/divider';
+import { TemplateFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 export type PermissionsType = 'viewers' | 'collaborators';
 
@@ -39,7 +40,7 @@ interface FormModel {
         }
     ],
     viewProviders: [{ provide: ControlContainer, useExisting: UntypedFormGroup }, MatExpansionPanel],
-    imports: [MatExpansionPanel, MatExpansionPanelHeader, SpotlightDirective, FormsModule, MatCheckbox, MatTooltip, DropdownComponent, SelectionListComponent, MatDivider]
+    imports: [MatExpansionPanel, MatExpansionPanelHeader, SpotlightDirective, FormsModule, MatCheckbox, MatTooltip, DropdownComponent, SelectionListComponent, MatDivider, TemplateFormValueDebugComponent]
 })
 export class DocsPermissionsComponent implements OnInit, ControlValueAccessor {
     private httpClient = inject(HttpClient);

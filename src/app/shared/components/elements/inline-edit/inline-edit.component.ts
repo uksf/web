@@ -1,7 +1,6 @@
 import { Component, EventEmitter, forwardRef, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
-import { FlexFillerComponent } from '../flex-filler/flex-filler.component';
 
 const INLINE_EDIT_CONTROL_VALUE_ACCESSOR = {
     provide: NG_VALUE_ACCESSOR,
@@ -14,7 +13,7 @@ const INLINE_EDIT_CONTROL_VALUE_ACCESSOR = {
     templateUrl: './inline-edit.component.html',
     providers: [INLINE_EDIT_CONTROL_VALUE_ACCESSOR],
     styleUrls: ['./inline-edit.component.scss'],
-    imports: [FormsModule, FlexFillerComponent]
+    imports: [FormsModule]
 })
 export class InlineEditComponent implements ControlValueAccessor, OnInit, OnDestroy {
     @ViewChild('inlineEditControl') inlineEditControl;

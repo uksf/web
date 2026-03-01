@@ -26,7 +26,7 @@ export class Permissions {
             return this.lookup;
         }
 
-        let lookup: Record<string, string[]> = {};
+        const lookup: Record<string, string[]> = {};
 
         lookup[Permissions.SUPERADMIN] = [Permissions.SUPERADMIN];
         lookup[Permissions.ADMIN] = [Permissions.ADMIN];

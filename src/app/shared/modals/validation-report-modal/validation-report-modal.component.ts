@@ -1,4 +1,4 @@
-import { Component, Renderer2, ViewChild, ElementRef, inject } from '@angular/core';
+import { Component, Renderer2, ViewChild, ElementRef, inject, AfterViewChecked } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { ValidationReport } from '@app/shared/models/response';
 import { AutofocusStopComponent } from '../../components/elements/autofocus-stop/autofocus-stop.component';
@@ -20,7 +20,7 @@ export interface ValidationReportModalData {
     styleUrls: ['./validation-report-modal.component.scss'],
     imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, NgClass, MatMiniFabButton, MatTooltip, MatIcon, FlexFillerComponent, MatDialogActions, MatButton]
 })
-export class ValidationReportModalComponent {
+export class ValidationReportModalComponent implements AfterViewChecked {
     dialog = inject<MatDialogRef<ValidationReportModalComponent>>(MatDialogRef);
     renderer = inject(Renderer2);
     data = inject<ValidationReportModalData>(MAT_DIALOG_DATA);
