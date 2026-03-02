@@ -127,6 +127,7 @@
     @include fft.form-field-theme($theme, 'app-text-input');
     @include fft.form-field-theme($theme, 'app-dropdown');
     @include fft.form-field-theme($theme, 'app-selection-list');
+    @include fft.form-field-theme($theme, 'app-date-input');
     @include theme-emitter-component-theme($theme);
     @include command-request-component-theme($theme);
     @include command-members-component-theme($theme);
@@ -629,6 +630,7 @@ mat-tab-nav-panel,
     // that are normally scoped to .dark-theme selectors
     @include fft.form-field-theme($dark-theme, 'app-text-input');
     @include fft.form-field-theme($dark-theme, 'app-dropdown');
+    @include fft.form-field-theme($dark-theme, 'app-date-input');
 
     input {
         color: th.fg-base($dark-theme) !important;
