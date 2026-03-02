@@ -8,7 +8,6 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { MarkdownModule } from 'ngx-markdown';
 import { QuillModule } from 'ngx-quill';
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
-import { MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
@@ -117,7 +116,6 @@ export const appConfig: ApplicationConfig = {
         },
         // Material config
         { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
-        { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
         { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { autoFocus: 'first-tabbable' } },
         { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { subscriptSizing: 'dynamic' } },
         // URL serializer

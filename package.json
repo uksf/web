@@ -20,7 +20,8 @@
         "build-storybook": "ng run uksf:build-storybook",
         "test:storybook": "node node_modules/@playwright/test/cli.js test --config=playwright-storybook.config.ts",
         "test:ct": "node node_modules/@sand4rt/experimental-ct-angular/cli.js test --config=playwright-ct.config.ts",
-        "test:ct:ui": "node node_modules/@sand4rt/experimental-ct-angular/cli.js test --config=playwright-ct.config.ts --ui"
+        "test:ct:ui": "node node_modules/@sand4rt/experimental-ct-angular/cli.js test --config=playwright-ct.config.ts --ui",
+        "postinstall": "node scripts/patch-primeng-fonts.js"
     },
     "private": true,
     "packageManager": "bun@1.3.6",
@@ -33,7 +34,6 @@
         "@angular/core": "^21.2.0",
         "@angular/forms": "21.2.0",
         "@angular/material": "^21.2.0",
-        "@angular/material-moment-adapter": "^21.2.0",
         "@angular/platform-browser": "^21.2.0",
         "@angular/platform-browser-dynamic": "21.2.0",
         "@angular/router": "21.2.0",
