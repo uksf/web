@@ -84,9 +84,4 @@ describe('PersonnelLoasListComponent', () => {
         });
     });
 
-    describe('trackByLoa', () => {
-        it('returns loa id', () => {
-            expect(component.trackByLoa(makeLoa({ id: 'abc' }))).toBe('abc');
-        });
-    });
 });

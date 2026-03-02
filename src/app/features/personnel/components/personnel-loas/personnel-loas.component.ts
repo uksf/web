@@ -8,20 +8,19 @@ import { Loa } from '@app/features/command/models/loa';
 import { PersonnelLoasListComponent } from '../personnel-loas-list/personnel-loas-list.component';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
-import moment, { Moment } from 'moment';
+import moment from 'moment';
+import 'moment-timezone';
 import { DestroyableComponent } from '@app/shared/components';
 import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
 import { MatButton } from '@angular/material/button';
 import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
 import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { DateInputComponent } from '../../../../shared/components/elements/date-input/date-input.component';
 import { FormsModule } from '@angular/forms';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 import { MatIcon } from '@angular/material/icon';
-import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
-import { MatDatepickerInput, MatDatepickerToggle, MatDatepicker } from '@angular/material/datepicker';
 
 export type ViewMode = 'all' | 'coc' | 'mine';
 export type DateMode = 'all' | 'nextOp' | 'nextTraining' | 'select';
@@ -54,13 +53,7 @@ export interface DateModeItem {
         MatIcon,
         MatMenu,
         MatMenuItem,
-        MatFormField,
-        MatLabel,
-        MatInput,
-        MatDatepickerInput,
-        MatDatepickerToggle,
-        MatSuffix,
-        MatDatepicker,
+        DateInputComponent,
         PersonnelLoasListComponent
     ]
 })
@@ -84,7 +77,7 @@ export class PersonnelLoasComponent extends DestroyableComponent implements OnIn
     viewMode: ViewModeItem;
     dateMode: DateModeItem;
     filterString: string = '';
-    selectedDate?: Moment = this.getUkNow();
+    selectedDate: Date | null = this.getUkToday();
     private filterSubject = new Subject<string>();
 
     constructor() {
@@ -119,7 +112,7 @@ export class PersonnelLoasComponent extends DestroyableComponent implements OnIn
 
     changeDateMode(newDateMode: DateModeItem) {
         if (newDateMode.mode === 'select') {
-            this.selectedDate = this.getUkNow();
+            this.selectedDate = this.getUkToday();
         } else {
             this.selectedDate = null;
         }
@@ -173,9 +166,9 @@ export class PersonnelLoasComponent extends DestroyableComponent implements OnIn
     getDisplayForDateMode(dateMode: string): string {
         switch (dateMode) {
             case 'nextOp':
-                return ` (${this.getNextDayOfWeek(6).format('DD MMM yy')})`;
+                return ` (${formatDate(this.getNextDayOfWeek(6), 'dd MMM yy', 'en-GB')})`;
             case 'nextTraining':
-                return ` (${this.getNextDayOfWeek(3).format('DD MMM yy')})`;
+                return ` (${formatDate(this.getNextDayOfWeek(3), 'dd MMM yy', 'en-GB')})`;
             case 'all':
             case 'select':
             default:
@@ -183,18 +176,18 @@ export class PersonnelLoasComponent extends DestroyableComponent implements OnIn
         }
     }
 
-    private getNextDayOfWeek(dayOfWeek: number) {
-        const today = this.getUkNow();
+    private getNextDayOfWeek(dayOfWeek: number): Date {
+        const today = moment().tz('Europe/London');
         const currentDayOfWeek = today.isoWeekday();
 
         if (currentDayOfWeek <= dayOfWeek) {
-            return today.isoWeekday(dayOfWeek);
+            return today.isoWeekday(dayOfWeek).toDate();
         } else {
-            return today.add(1, 'weeks').isoWeekday(dayOfWeek);
+            return today.add(1, 'weeks').isoWeekday(dayOfWeek).toDate();
         }
     }
 
-    private getUkNow() {
-        return moment().tz('Europe/London');
+    private getUkToday(): Date {
+        return moment().tz('Europe/London').startOf('day').toDate();
     }
 }

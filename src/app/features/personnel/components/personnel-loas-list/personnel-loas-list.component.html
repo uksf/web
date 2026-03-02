@@ -11,7 +11,7 @@
     <p>No {{ selectionMode }} LOAs</p>
     } @if (loaded && totalLoas > 0) {
     <mat-accordion>
-        @for (loa of loas; track trackByLoa(loaIndex, loa); let loaIndex = $index) {
+        @for (loa of loas; track loa.id; let loaIndex = $index) {
         <mat-card [ngClass]="{ disable: !loa._canViewReason }">
             <div class="header-container" appSpotlight (click)="activate(loaIndex)">
                 <div class="toggle" [@indicatorRotate]="getExpandedState(loaIndex)" [ngClass]="{ disable: !loa._canViewReason }"></div>

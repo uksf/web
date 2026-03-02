@@ -46,12 +46,14 @@
                             </mat-menu>
                         </div>
                         @if (dateMode.mode === 'select') {
-                        <mat-form-field class="select-date-picker">
-                            <mat-label>Select date</mat-label>
-                            <input matInput ng-model-options="{timezone: 'utc'}" readonly (click)="datePicker.open()" (dateInput)="update()" [(ngModel)]="selectedDate" [matDatepicker]="datePicker" />
-                            <mat-datepicker-toggle [for]="datePicker" matSuffix></mat-datepicker-toggle>
-                            <mat-datepicker #datePicker [touchUi]="mobile"></mat-datepicker>
-                        </mat-form-field>
+                        <app-date-input
+                            class="select-date-picker"
+                            label="Select date"
+                            [(ngModel)]="selectedDate"
+                            [touchUi]="mobile"
+                            [reserveErrorSpace]="false"
+                            (ngModelChange)="update()"
+                        ></app-date-input>
                         }
                     </div>
                     <h6>All dates and times are in GMT</h6>

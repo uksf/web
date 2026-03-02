@@ -10,7 +10,6 @@ import { Loa, LoaReviewState } from '@app/features/command/models/loa';
 import { LoaService } from '@app/shared/services/loa.service';
 import { expansionAnimations } from '@app/shared/services/animations.service';
 import { DateMode, DateModeItem, ViewMode, ViewModeItem } from '../personnel-loas/personnel-loas.component';
-import { Moment } from 'moment/moment';
 import { UksfError } from '@app/shared/models/response';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -52,7 +51,7 @@ export class PersonnelLoasListComponent implements OnInit {
     pageIndex: number = 0;
     pageSize: number = 15;
     filterString: string = '';
-    selectedDate?: Moment;
+    selectedDate: Date | null = null;
 
     selectedIndex: number = -1;
 
@@ -60,7 +59,7 @@ export class PersonnelLoasListComponent implements OnInit {
         this.getLoas();
     }
 
-    update(newDateMode: DateModeItem, newViewMode: ViewModeItem, filter: string, newSelectedDate?: Moment) {
+    update(newDateMode: DateModeItem, newViewMode: ViewModeItem, filter: string, newSelectedDate: Date | null = null) {
         this.dateMode = newDateMode.mode;
         this.viewMode = newViewMode.mode;
         this.filterString = filter;
@@ -108,10 +107,6 @@ export class PersonnelLoasListComponent implements OnInit {
         this.pageSize = pagedEvent.pageSize;
 
         this.getLoas();
-    }
-
-    trackByLoa(loa) {
-        return loa.id;
     }
 
     min(a, b) {

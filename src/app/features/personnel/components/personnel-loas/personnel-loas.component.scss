@@ -29,30 +29,10 @@
         margin-right: 10px;
     }
 
-    .mat-mdc-form-field {
-        &.select-date-picker {
-            min-width: 140px;
-            width: 10%;
-            margin-left: 10px;
-
-            .mat-mdc-form-field-subscript-wrapper {
-                display: none;
-            }
-
-            input {
-                cursor: pointer;
-            }
-        }
-
-        .mat-mdc-icon-button {
-            background-color: transparent;
-
-            .mat-icon {
-                margin: 0;
-                height: 21px;
-                line-height: 21px;
-            }
-        }
+    app-date-input.select-date-picker {
+        min-width: 140px;
+        width: 10%;
+        margin-left: 10px;
     }
 }
 
