@@ -8,8 +8,7 @@ import { Loa } from '@app/features/command/models/loa';
 import { PersonnelLoasListComponent } from '../personnel-loas-list/personnel-loas-list.component';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
-import moment from 'moment';
-import 'moment-timezone';
+import moment from 'moment-timezone';
 import { DestroyableComponent } from '@app/shared/components';
 import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
@@ -188,6 +187,7 @@ export class PersonnelLoasComponent extends DestroyableComponent implements OnIn
     }
 
     private getUkToday(): Date {
-        return moment().tz('Europe/London').startOf('day').toDate();
+        const now = moment().tz('Europe/London');
+        return new Date(now.year(), now.month(), now.date());
     }
 }
