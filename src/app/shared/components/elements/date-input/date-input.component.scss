@@ -1,0 +1,20 @@
+@use 'styles/form-field' as ff;
+
+:host {
+    display: block;
+    min-width: 120px;
+}
+
+.form-field-wrapper { @include ff.wrapper(); }
+.form-field { @include ff.field(); }
+.form-field-label { @include ff.label(); }
+.form-field-calendar { @include ff.arrow-button(); }
+.form-field-error { @include ff.error(); }
+
+.form-field-date {
+    cursor: pointer;
+
+    input[readonly] {
+        cursor: pointer;
+    }
+}

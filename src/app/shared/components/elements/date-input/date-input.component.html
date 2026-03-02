@@ -1,0 +1,31 @@
+<div class="form-field-wrapper" [class.form-field-focused]="focused" [class.form-field-has-error]="hasError" [class.form-field-disabled]="disabled">
+    <div class="form-field form-field-date" (click)="onInputClick()">
+        @if (label) {
+        <label class="form-field-label" [class.required]="required" [class.floating]="labelFloating" [attr.for]="inputId">{{ label }}</label>
+        }
+        <input
+            [id]="inputId"
+            [value]="displayValue"
+            [disabled]="disabled"
+            [attr.required]="required || null"
+            [attr.aria-describedby]="hasError ? inputId + '-error' : null"
+            [matDatepicker]="picker"
+            [min]="min"
+            [max]="max"
+            [matDatepickerFilter]="dateFilter"
+            (dateChange)="onDateChange($event.value)"
+            readonly
+            type="text"
+            autocomplete="off"
+            (focus)="onFocus()"
+            (blur)="onBlur()"
+        />
+        <button type="button" class="form-field-calendar" [disabled]="disabled" aria-label="Open calendar" (click)="openPicker(); $event.stopPropagation()">
+            <mat-icon>calendar_today</mat-icon>
+        </button>
+        <mat-datepicker #picker [touchUi]="touchUi" [startAt]="value"></mat-datepicker>
+    </div>
+    <div [id]="inputId + '-error'" class="form-field-error" [class.visible]="hasError" [class.reserve-space]="reserveErrorSpace" role="alert">
+        {{ errorMessage }}
+    </div>
+</div>
