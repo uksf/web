@@ -1,22 +1,20 @@
-import { Component, HostListener, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { MatDialog, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ValidationMessage } from '@app/shared/services/form-helper.service';
 import { CommandRequestsService } from '@app/features/command/services/command-requests.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import moment, { Moment } from 'moment';
-import { Subject } from 'rxjs';
+import moment from 'moment-timezone';
 import { first, takeUntil } from 'rxjs/operators';
 import { AutofocusStopComponent } from '../../components/elements/autofocus-stop/autofocus-stop.component';
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { TextInputComponent } from '../../components/elements/text-input/text-input.component';
-import { MatFormField, MatLabel, MatSuffix, MatError } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
-import { MatDatepickerInput, MatDatepickerToggle, MatDatepicker } from '@angular/material/datepicker';
+import { DateInputComponent } from '../../components/elements/date-input/date-input.component';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatButton } from '@angular/material/button';
 import { ReactiveFormValueDebugComponent } from '../../components/elements/form-value-debug/form-value-debug.component';
+import { DestroyableComponent } from '@app/shared/components';
 
 @Component({
     selector: 'app-request-loa-modal',
@@ -30,14 +28,7 @@ import { ReactiveFormValueDebugComponent } from '../../components/elements/form-
         FormsModule,
         ReactiveFormsModule,
         TextInputComponent,
-        MatFormField,
-        MatLabel,
-        MatInput,
-        MatDatepickerInput,
-        MatDatepickerToggle,
-        MatSuffix,
-        MatDatepicker,
-        MatError,
+        DateInputComponent,
         MatCheckbox,
         MatTooltip,
         MatDialogActions,
@@ -45,27 +36,26 @@ import { ReactiveFormValueDebugComponent } from '../../components/elements/form-
         ReactiveFormValueDebugComponent
     ]
 })
-export class RequestLoaModalComponent implements OnInit, OnDestroy {
+export class RequestLoaModalComponent extends DestroyableComponent implements OnInit {
     private dialog = inject(MatDialog);
     private formBuilder = inject(FormBuilder);
     private commandRequestsService = inject(CommandRequestsService);
 
-    private destroy$ = new Subject<void>();
     form = this.formBuilder.group({
         reason: ['', Validators.required],
-        start: [null as Moment, Validators.required],
-        end: [null as Moment, Validators.required],
+        start: [null as Date | null, Validators.required],
+        end: [null as Date | null, Validators.required],
         emergency: [false],
         late: [false]
     });
     validationMessages: { reason: ValidationMessage[] } = {
         reason: [{ type: 'required', message: 'Reason is required' }]
     };
-    start: Moment = this.getUkNow();
-    end: Moment = this.getUkNow();
-    minStartDate: Moment = this.getUkNow();
-    minEndDate: Moment = this.getUkNow();
-    maxStartDate: Moment;
+    start: Date | null = null;
+    end: Date | null = null;
+    minStartDate: Date = this.getUkToday();
+    minEndDate: Date = this.getUkToday();
+    maxStartDate: Date | null = null;
     late = false;
     datesValid = false;
     invalidMessage = '';
@@ -73,13 +63,14 @@ export class RequestLoaModalComponent implements OnInit, OnDestroy {
     mobile = false;
 
     constructor() {
+        super();
         this.form.controls.start.valueChanges.pipe(takeUntil(this.destroy$)).subscribe({
-            next: (_) => {
+            next: () => {
                 this.datesValid = this.validateDates();
             }
         });
         this.form.controls.end.valueChanges.pipe(takeUntil(this.destroy$)).subscribe({
-            next: (_) => {
+            next: () => {
                 this.datesValid = this.validateDates();
             }
         });
@@ -89,28 +80,25 @@ export class RequestLoaModalComponent implements OnInit, OnDestroy {
         this.mobile = window.screen.width < 400 || window.screen.height < 500;
     }
 
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
-    }
-
     @HostListener('window:resize')
     onResize() {
         this.mobile = window.screen.width < 400 || window.screen.height < 500;
     }
 
-    validateDates() {
-        this.setTimeValues();
-        const nowUk = this.getUkNow();
-        const nowNoTime = nowUk.clone().hours(0).minutes(0).seconds(0).milliseconds(0);
+    validateDates(): boolean {
+        this.start = this.form.controls.start.value;
+        this.end = this.form.controls.end.value;
+
+        const nowUk = moment().tz('Europe/London');
+        const todayStart = new Date(nowUk.year(), nowUk.month(), nowUk.date());
 
         if (this.start) {
-            const startNoTime = this.start.clone().hours(0).minutes(0).seconds(0).milliseconds(0);
-            this.minEndDate = moment(startNoTime);
-            if (startNoTime.isBefore(nowNoTime)) {
+            const startDay = new Date(this.start.getFullYear(), this.start.getMonth(), this.start.getDate());
+            this.minEndDate = new Date(startDay);
+            if (startDay < todayStart) {
                 this.invalidMessage = 'Start date cannot be in the past';
                 return false;
-            } else if (startNoTime.isSame(nowNoTime) && (this.start.day() === 6 || this.start.day() === 3) && nowUk.hour() >= 12) {
+            } else if (startDay.getTime() === todayStart.getTime() && (startDay.getDay() === 6 || startDay.getDay() === 3) && nowUk.hour() >= 12) {
                 this.late = true;
             } else {
                 this.late = false;
@@ -121,15 +109,15 @@ export class RequestLoaModalComponent implements OnInit, OnDestroy {
         }
 
         if (this.end) {
-            const endNoTime = this.end.clone().hours(0).minutes(0).seconds(0).milliseconds(0);
-            this.maxStartDate = moment(endNoTime);
-            if (endNoTime.isBefore(nowNoTime)) {
+            const endDay = new Date(this.end.getFullYear(), this.end.getMonth(), this.end.getDate());
+            this.maxStartDate = new Date(endDay);
+            if (endDay < todayStart) {
                 this.invalidMessage = 'End date cannot be in the past';
                 return false;
             }
             if (this.start) {
-                const startNoTime = this.start.clone().hours(0).minutes(0).seconds(0).milliseconds(0);
-                if (endNoTime.isBefore(startNoTime)) {
+                const startDay = new Date(this.start.getFullYear(), this.start.getMonth(), this.start.getDate());
+                if (endDay < startDay) {
                     this.invalidMessage = 'End date cannot be before start date';
                     return false;
                 }
@@ -142,28 +130,20 @@ export class RequestLoaModalComponent implements OnInit, OnDestroy {
         return true;
     }
 
-    private setTimeValues() {
-        this.start = this.form.controls.start.value;
-        this.end = this.form.controls.end.value;
-        if (this.start) {
-            this.start.hours(0).minutes(0).seconds(0).milliseconds(0);
-        }
-        if (this.end) {
-            this.end.hours(23).minutes(59).seconds(59).milliseconds(0);
-        }
-    }
-
     submit() {
         if (this.submitting) {
             return;
         }
         this.submitting = true;
-        this.setTimeValues();
         this.form.controls.late.setValue(this.late);
+
+        const startDate = this.start ? new Date(this.start.getFullYear(), this.start.getMonth(), this.start.getDate(), 0, 0, 0) : null;
+        const endDate = this.end ? new Date(this.end.getFullYear(), this.end.getMonth(), this.end.getDate(), 23, 59, 59) : null;
+
         const body = {
             reason: this.form.controls.reason.value,
-            start: this.start,
-            end: this.end,
+            start: startDate,
+            end: endDate,
             emergency: this.form.controls.emergency.value,
             late: this.late
         };
@@ -171,7 +151,7 @@ export class RequestLoaModalComponent implements OnInit, OnDestroy {
             .createLoa(body)
             .pipe(first())
             .subscribe({
-                next: (_) => {
+                next: () => {
                     this.dialog.closeAll();
                 },
                 error: (error) => {
@@ -194,7 +174,8 @@ export class RequestLoaModalComponent implements OnInit, OnDestroy {
         return index;
     }
 
-    private getUkNow() {
-        return moment().tz('Europe/London');
+    private getUkToday(): Date {
+        const now = moment().tz('Europe/London');
+        return new Date(now.year(), now.month(), now.date());
     }
 }
