@@ -84,29 +84,6 @@
 
 @import '@ali-hm/angular-tree-component/css/angular-tree-component.css';
 
-// Override PrimeNG theme's bundled Roboto @font-face declarations.
-// The bundled .woff/.woff2 files get corrupted by the Angular application builder's
-// asset pipeline. Roboto is already loaded from Google Fonts CDN via index.html,
-// so we replace the broken local font URLs with the CDN source.
-@font-face {
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Roboto'), local('Roboto-Regular'), url('https://fonts.gstatic.com/s/roboto/v47/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWubEbGmT.woff2') format('woff2');
-}
-@font-face {
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 500;
-    src: local('Roboto Medium'), local('Roboto-Medium'), url('https://fonts.gstatic.com/s/roboto/v47/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWubEbGmT.woff2') format('woff2');
-}
-@font-face {
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 700;
-    src: local('Roboto Bold'), local('Roboto-Bold'), url('https://fonts.gstatic.com/s/roboto/v47/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWubEbGmT.woff2') format('woff2');
-}
-
 // Add components themes
 @mixin custom-components-theme($theme) {
     // Base
@@ -335,6 +312,7 @@
         --mat-stepper-container-shape: 4px;
         --mat-select-container-shape: 4px;
         --mat-datepicker-calendar-container-shape: 4px;
+        --mat-datepicker-calendar-container-background-color: var(--uksf-card);
         --mat-snack-bar-button-color: #fec400;
     }
 
@@ -810,6 +788,11 @@ mat-dialog-content, .mat-mdc-dialog-content {
 
 .no-max-height-dialog .mat-mdc-dialog-content {
     max-height: none;
+}
+
+.rpt-log-backdrop {
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
 }
 
 .rpt-log-dialog {

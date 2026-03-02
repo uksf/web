@@ -1,13 +1,13 @@
 import { APP_INITIALIZER, ApplicationConfig, ENVIRONMENT_INITIALIZER, inject, Injectable, Injector, provideZoneChangeDetection } from '@angular/core';
 import { DefaultUrlSerializer, provideRouter, UrlSerializer, UrlTree } from '@angular/router';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { importProvidersFrom } from '@angular/core';
 import { JwtModule } from '@auth0/angular-jwt';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { MarkdownModule } from 'ngx-markdown';
 import { QuillModule } from 'ngx-quill';
-import { MAT_DATE_LOCALE } from '@angular/material/core';
+import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
@@ -65,8 +65,9 @@ export const appConfig: ApplicationConfig = {
     providers: [
         provideZoneChangeDetection({ eventCoalescing: true }),
         provideRouter(appRoutes),
-        provideHttpClient(withInterceptors([authHttpInterceptor])),
+        provideHttpClient(withInterceptors([authHttpInterceptor]), withInterceptorsFromDi()),
         provideAnimationsAsync(),
+        provideNativeDateAdapter(),
         importProvidersFrom(
             JwtModule.forRoot({
                 config: {
