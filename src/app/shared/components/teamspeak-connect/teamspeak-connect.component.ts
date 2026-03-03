@@ -16,7 +16,6 @@ import { DropdownComponent } from '../elements/dropdown/dropdown.component';
 import { NgClass } from '@angular/common';
 import { MatButton } from '@angular/material/button';
 import { TextInputComponent } from '../elements/text-input/text-input.component';
-import { ReactiveFormValueDebugComponent } from '../elements/form-value-debug/form-value-debug.component';
 
 export enum TeamspeakConnectState {
     SELECT_USER = 0,
@@ -29,7 +28,7 @@ export enum TeamspeakConnectState {
     selector: 'app-teamspeak-connect',
     templateUrl: './teamspeak-connect.component.html',
     styleUrls: ['./teamspeak-connect.component.scss'],
-    imports: [AutofocusStopComponent, FormsModule, ReactiveFormsModule, DropdownComponent, NgClass, MatButton, TextInputComponent, ReactiveFormValueDebugComponent]
+    imports: [AutofocusStopComponent, FormsModule, ReactiveFormsModule, DropdownComponent, NgClass, MatButton, TextInputComponent]
 })
 export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
     private teamspeakConnectService = inject(TeamspeakConnectService);

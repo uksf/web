@@ -20,7 +20,6 @@ import { DestroyableComponent } from '@app/shared/components';
 import { MatCard } from '@angular/material/card';
 import { TextInputComponent as TextInputComponent_1 } from '../../../../shared/components/elements/text-input/text-input.component';
 import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
-import { ReactiveFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
 import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
 
@@ -79,7 +78,7 @@ function validDob(dayKey: string, monthKey: string, yearKey: string) {
     selector: 'app-application-identity',
     templateUrl: './application-identity.component.html',
     styleUrls: ['../application-page/application-page.component.scss', './application-identity.component.scss'],
-    imports: [MatCard, FormsModule, ReactiveFormsModule, TextInputComponent_1, DropdownComponent, ReactiveFormValueDebugComponent, ButtonComponent, FlexFillerComponent]
+    imports: [MatCard, FormsModule, ReactiveFormsModule, TextInputComponent_1, DropdownComponent, ButtonComponent, FlexFillerComponent]
 })
 export class ApplicationIdentityComponent extends DestroyableComponent implements OnInit {
     dialog = inject(MatDialog);

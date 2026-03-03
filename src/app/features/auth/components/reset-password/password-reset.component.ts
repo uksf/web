@@ -12,13 +12,12 @@ import { ButtonHiddenSubmitComponent } from '../../../../shared/components/eleme
 import { MatCheckbox } from '@angular/material/checkbox';
 import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
 import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
-import { TemplateFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-password-reset',
     templateUrl: './password-reset.component.html',
     styleUrls: ['./password-reset.component.scss', '../login-page/login-page.component.scss'],
-    imports: [MatDialogTitle, FormsModule, MustMatchDirective, TextInputComponent, ButtonHiddenSubmitComponent, MatCheckbox, FlexFillerComponent, ButtonComponent, TemplateFormValueDebugComponent]
+    imports: [MatDialogTitle, FormsModule, MustMatchDirective, TextInputComponent, ButtonHiddenSubmitComponent, MatCheckbox, FlexFillerComponent, ButtonComponent]
 })
 export class PasswordResetComponent implements OnInit {
     private auth = inject(AuthenticationService);

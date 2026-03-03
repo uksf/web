@@ -9,7 +9,6 @@ import { CdkScrollable } from '@angular/cdk/scrolling';
 import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
 import { MatError } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
-import { ReactiveFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 export function passwordMatcher(form: AbstractControl) {
     if (!form.get('password').value || !form.get('confirmPass').value) {
@@ -22,7 +21,7 @@ export function passwordMatcher(form: AbstractControl) {
     selector: 'app-change-password-modal',
     templateUrl: './change-password-modal.component.html',
     styleUrls: ['./change-password-modal.component.scss'],
-    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, MatError, MatDialogActions, MatButton, ReactiveFormValueDebugComponent]
+    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, MatError, MatDialogActions, MatButton]
 })
 export class ChangePasswordModalComponent {
     private formBuilder = inject(FormBuilder);

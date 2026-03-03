@@ -8,13 +8,12 @@ import { CdkScrollable } from '@angular/cdk/scrolling';
 import { MatRadioGroup, MatRadioButton } from '@angular/material/radio';
 import { NgClass } from '@angular/common';
 import { ButtonComponent } from '../../../shared/components/elements/button-pending/button.component';
-import { ReactiveFormValueDebugComponent } from '../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-new-modpack-release-modal',
     templateUrl: './new-modpack-release-modal.component.html',
     styleUrls: ['./new-modpack-release-modal.component.scss'],
-    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, MatRadioGroup, MatRadioButton, NgClass, MatDialogActions, ButtonComponent, ReactiveFormValueDebugComponent]
+    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, MatRadioGroup, MatRadioButton, NgClass, MatDialogActions, ButtonComponent]
 })
 export class NewModpackReleaseModalComponent {
     private formBuilder = inject(FormBuilder);

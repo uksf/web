@@ -17,7 +17,6 @@ import { MatCheckbox } from '@angular/material/checkbox';
 import { MatButton } from '@angular/material/button';
 import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
 import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
-import { ReactiveFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-add-unit-modal',
@@ -38,7 +37,7 @@ import { ReactiveFormValueDebugComponent } from '../../../../shared/components/e
         MatButton,
         FlexFillerComponent,
         ButtonComponent,
-        ReactiveFormValueDebugComponent
+        
     ]
 })
 export class AddUnitModalComponent implements OnInit {

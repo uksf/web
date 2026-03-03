@@ -29,7 +29,6 @@ import { MatTooltip } from '@angular/material/tooltip';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { DatePipe } from '@angular/common';
 import { CountryImage } from '../../../../shared/pipes/country.pipe';
-import { ReactiveFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-profile-page',
@@ -51,7 +50,7 @@ import { ReactiveFormValueDebugComponent } from '../../../../shared/components/e
         NgxPermissionsModule,
         DatePipe,
         CountryImage,
-        ReactiveFormValueDebugComponent
+        
     ]
 })
 export class ProfilePageComponent extends DestroyableComponent implements OnInit {

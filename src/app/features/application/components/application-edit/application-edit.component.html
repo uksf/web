@@ -104,7 +104,6 @@
                 <div class="button-next">
                     <app-button (clicked)="update()" [disabled]="!formGroup.valid || !changesMade" [pending]="pending"> Update </app-button>
                 </div>
-                <app-form-value-debug-reactive [form]="formGroup"></app-form-value-debug-reactive>
             </form>
         </mat-card>
         <mat-card>

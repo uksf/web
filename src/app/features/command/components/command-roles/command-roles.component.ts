@@ -17,7 +17,6 @@ import { InlineEditComponent } from '../../../../shared/components/elements/inli
 import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
-import { ReactiveFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-command-roles',
@@ -37,7 +36,7 @@ import { ReactiveFormValueDebugComponent } from '../../../../shared/components/e
         FlexFillerComponent,
         MatIcon,
         MatTooltip,
-        ReactiveFormValueDebugComponent
+        
     ]
 })
 export class CommandRolesComponent implements OnInit {

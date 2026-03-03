@@ -8,13 +8,12 @@ import { AutofocusStopComponent } from '../../../../shared/components/elements/a
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
 import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
-import { ReactiveFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-add-training-modal',
     templateUrl: './add-training-modal.component.html',
     styleUrls: ['./add-training-modal.component.scss'],
-    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, MatDialogActions, ButtonComponent, ReactiveFormValueDebugComponent]
+    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, MatDialogActions, ButtonComponent]
 })
 export class AddTrainingModalComponent {
     private formBuilder = inject(FormBuilder);

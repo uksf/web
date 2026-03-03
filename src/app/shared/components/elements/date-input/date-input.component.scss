@@ -8,7 +8,7 @@
 .form-field-wrapper { @include ff.wrapper(); }
 .form-field { @include ff.field(); }
 .form-field-label { @include ff.label(); }
-.form-field-calendar { @include ff.arrow-button(); }
+.form-field-calendar { @include ff.arrow-button(); bottom: 6px; }
 .form-field-error { @include ff.error(); }
 
 .form-field-date {

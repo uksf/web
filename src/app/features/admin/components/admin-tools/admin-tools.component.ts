@@ -20,13 +20,12 @@ import { ButtonComponent } from '../../../../shared/components/elements/button-p
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { AutofocusStopComponent } from '../../../../shared/components/elements/autofocus-stop/autofocus-stop.component';
 import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
-import { TemplateFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-admin-tools',
     templateUrl: './admin-tools.component.html',
     styleUrls: ['./admin-tools.component.scss'],
-    imports: [DefaultContentAreasComponent, MainContentAreaComponent, AdminPageComponent, ButtonComponent, NgxPermissionsModule, FormsModule, AutofocusStopComponent, DropdownComponent, TemplateFormValueDebugComponent]
+    imports: [DefaultContentAreasComponent, MainContentAreaComponent, AdminPageComponent, ButtonComponent, NgxPermissionsModule, FormsModule, AutofocusStopComponent, DropdownComponent]
 })
 export class AdminToolsComponent implements OnInit {
     private adminToolsService = inject(AdminToolsService);

@@ -20,7 +20,6 @@ import { MatAccordion } from '@angular/material/expansion';
 import { DocsPermissionsComponent } from '../../components/docs-permissions/docs-permissions.component';
 import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
 import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
-import { TemplateFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-create-folder-modal',
@@ -39,7 +38,7 @@ import { TemplateFormValueDebugComponent } from '../../../../shared/components/e
         MatDialogActions,
         FlexFillerComponent,
         ButtonComponent,
-        TemplateFormValueDebugComponent
+        
     ]
 })
 export class CreateFolderModalComponent implements OnInit {

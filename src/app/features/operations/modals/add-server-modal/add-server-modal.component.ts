@@ -11,13 +11,12 @@ import { CdkScrollable } from '@angular/cdk/scrolling';
 import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
 import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
 import { MatButton } from '@angular/material/button';
-import { ReactiveFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-add-server-modal',
     templateUrl: './add-server-modal.component.html',
     styleUrls: ['./add-server-modal.component.scss'],
-    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, DropdownComponent, MatDialogActions, MatButton, ReactiveFormValueDebugComponent]
+    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, DropdownComponent, MatDialogActions, MatButton]
 })
 export class AddServerModalComponent implements OnDestroy {
     private formBuilder = inject(FormBuilder);

@@ -13,7 +13,6 @@ import { DateInputComponent } from '../../components/elements/date-input/date-in
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatButton } from '@angular/material/button';
-import { ReactiveFormValueDebugComponent } from '../../components/elements/form-value-debug/form-value-debug.component';
 import { DestroyableComponent } from '@app/shared/components';
 
 @Component({
@@ -33,7 +32,7 @@ import { DestroyableComponent } from '@app/shared/components';
         MatTooltip,
         MatDialogActions,
         MatButton,
-        ReactiveFormValueDebugComponent
+        
     ]
 })
 export class RequestLoaModalComponent extends DestroyableComponent implements OnInit {

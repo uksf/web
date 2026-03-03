@@ -14,13 +14,12 @@ import { TextInputComponent } from '../../../../shared/components/elements/text-
 import { MatError } from '@angular/material/form-field';
 import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
 import { MatButton } from '@angular/material/button';
-import { ReactiveFormValueDebugComponent } from '../../../../shared/components/elements/form-value-debug/form-value-debug.component';
 
 @Component({
     selector: 'app-change-first-last-modal',
     templateUrl: './change-first-last-modal.component.html',
     styleUrls: ['./change-first-last-modal.component.scss'],
-    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, MatError, MatDialogActions, FlexFillerComponent, MatButton, ReactiveFormValueDebugComponent]
+    imports: [AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, TextInputComponent, MatError, MatDialogActions, FlexFillerComponent, MatButton]
 })
 export class ChangeFirstLastModalComponent implements OnInit {
     private formBuilder = inject(FormBuilder);
