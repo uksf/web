@@ -41,7 +41,6 @@
         "@microsoft/signalr": "^6.0.0",
         "ansi-to-html": "^0.7.2",
         "chart.js": "^3.6.2",
-        "eslint": "^8.4.1",
         "marked": "17",
         "moment-timezone": "^0.5.35",
         "ngx-markdown": "21.1.0",
