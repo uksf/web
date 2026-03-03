@@ -13,6 +13,6 @@
             "@env/*": ["environments/*"]
         }
     },
-    "exclude": ["../src/**/*.spec.ts"],
-    "include": ["../src/**/*.stories.*", "./preview.ts", "../src/**/*.d.ts", "../src/polyfills.ts"]
+    "exclude": ["../src/**/*.spec.ts", "../src/**/*.test.ts"],
+    "include": ["../src/**/*.ts", "./preview.ts"]
 }
