@@ -42,18 +42,25 @@ stages:
             condition: succeededOrFailed()
 
           - script: |
+              git diff HEAD~1 --name-only -- '*.stories.ts' '*.stories.spec.ts' '*.component.ts' '*.component.html' '*.component.scss' '.storybook/**' 'src/styles/**' 'src/*.scss' 'angular.json' 'playwright-storybook.config.ts' | head -1 | grep -q . && echo "##vso[task.setvariable variable=storybookNeeded]true" || echo "##vso[task.setvariable variable=storybookNeeded]false"
+            displayName: 'Check Storybook changes'
+
+          - script: |
               bun run build-storybook
             displayName: 'Build Storybook'
+            condition: eq(variables.storybookNeeded, 'true')
             env:
               CI: 'true'
 
           - script: |
               npx playwright install chromium
             displayName: 'Install Playwright Browsers'
+            condition: eq(variables.storybookNeeded, 'true')
 
           - script: |
               bun run test:storybook
             displayName: 'Storybook Tests'
+            condition: eq(variables.storybookNeeded, 'true')
             env:
               CI: 'true'
 
@@ -63,7 +70,7 @@ stages:
               testResultsFormat: 'JUnit'
               testResultsFiles: 'test-results/storybook-junit.xml'
               testRunTitle: 'Storybook Tests'
-            condition: succeededOrFailed()
+            condition: and(succeededOrFailed(), eq(variables.storybookNeeded, 'true'))
 
           - script: |
               bun x ng build -c production
