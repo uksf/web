@@ -5,7 +5,7 @@ import { MatTableDataSource, MatTable, MatColumnDef, MatHeaderCellDef, MatHeader
 import { HttpParams } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
+import { AdminHubService } from '../../services/admin-hub.service';
 import { BasicLog, LogLevel } from '@app/features/admin/models/logging';
 import { PagedResult } from '@app/shared/models/paged-result';
 import { SortDirection } from '@app/shared/models/sort-direction';
@@ -59,8 +59,7 @@ export class AdminLogsComponent extends DestroyableComponent implements OnInit, 
     @ViewChild(MatSort, { static: true }) sort: MatSort;
     protected logsService: LogsService;
     protected dialog: MatDialog;
-    protected signalrService: SignalRService;
-    protected hubConnection: ConnectionContainer;
+    protected adminHub: AdminHubService;
     protected filterSubject = new Subject<string>();
 
     private onReceiveLog = () => {
@@ -74,18 +73,18 @@ export class AdminLogsComponent extends DestroyableComponent implements OnInit, 
     constructor() {
         const logsService = inject(LogsService);
         const dialog = inject(MatDialog);
-        const signalrService = inject(SignalRService);
+        const adminHub = inject(AdminHubService);
 
         super();
         this.logsService = logsService;
         this.dialog = dialog;
-        this.signalrService = signalrService;
+        this.adminHub = adminHub;
     }
 
     ngOnInit(): void {
-        this.hubConnection = this.signalrService.connect(`admin`);
-        this.hubConnection.connection.on('ReceiveLog', this.onReceiveLog);
-        this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
+        this.adminHub.connect();
+        this.adminHub.on('ReceiveLog', this.onReceiveLog);
+        this.adminHub.reconnected$.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.refreshData();
             }
@@ -113,11 +112,8 @@ export class AdminLogsComponent extends DestroyableComponent implements OnInit, 
 
     override ngOnDestroy(): void {
         super.ngOnDestroy();
-        if (this.hubConnection) {
-            this.hubConnection.connection.off('ReceiveLog', this.onReceiveLog);
-            this.hubConnection.dispose();
-            this.hubConnection.connection.stop();
-        }
+        this.adminHub.off('ReceiveLog', this.onReceiveLog);
+        this.adminHub.disconnect();
     }
 
     refreshData() {

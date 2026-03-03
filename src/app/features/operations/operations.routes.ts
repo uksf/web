@@ -5,13 +5,10 @@ import { loginRedirect } from '@app/login-redirect';
 import { OperationsPageComponent } from './components/operations-page/operations-page.component';
 import { OperationsServersComponent } from './components/operations-servers/operations-servers.component';
 import { OperationsAarComponent } from './components/operations-aar/operations-aar.component';
-import { GameServersService } from './services/game-servers.service';
-
 export const OPERATIONS_ROUTES: Routes = [
     {
         path: '',
         component: OperationsPageComponent,
-        providers: [GameServersService],
         children: [
             {
                 path: '',

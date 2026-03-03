@@ -65,6 +65,10 @@ describe('DateInputComponent', () => {
             expect(component.touched).toBe(false);
             expect(component.dirty).toBe(false);
         });
+
+        it('should not have picker open', () => {
+            expect(component.pickerOpen).toBe(false);
+        });
     });
 
     describe('unique inputId', () => {
@@ -217,21 +221,81 @@ describe('DateInputComponent', () => {
     });
 
     describe('onBlur', () => {
-        it('should set focused to false', () => {
+        it('should set focused to false when picker is closed', () => {
             component.focused = true;
             component.onBlur();
             expect(component.focused).toBe(false);
         });
 
-        it('should set touched to true', () => {
+        it('should set touched to true when picker is closed', () => {
             component.onBlur();
+            expect(component.touched).toBe(true);
+        });
+
+        it('should call onTouched callback when picker is closed', () => {
+            const fn = vi.fn();
+            component.registerOnTouched(fn);
+            component.onBlur();
+            expect(fn).toHaveBeenCalled();
+        });
+
+        it('should keep focused state when picker is open', () => {
+            component.focused = true;
+            component.pickerOpen = true;
+            component.onBlur();
+            expect(component.focused).toBe(true);
+        });
+
+        it('should not call onTouched when picker is open', () => {
+            const fn = vi.fn();
+            component.registerOnTouched(fn);
+            component.pickerOpen = true;
+            component.onBlur();
+            expect(fn).not.toHaveBeenCalled();
+        });
+
+        it('should not mark as touched when picker is open', () => {
+            component.pickerOpen = true;
+            component.onBlur();
+            expect(component.touched).toBe(false);
+        });
+    });
+
+    describe('onPickerOpened', () => {
+        it('should set pickerOpen to true', () => {
+            component.onPickerOpened();
+            expect(component.pickerOpen).toBe(true);
+        });
+
+        it('should set focused to true', () => {
+            component.onPickerOpened();
+            expect(component.focused).toBe(true);
+        });
+    });
+
+    describe('onPickerClosed', () => {
+        it('should set pickerOpen to false', () => {
+            component.pickerOpen = true;
+            component.onPickerClosed();
+            expect(component.pickerOpen).toBe(false);
+        });
+
+        it('should set focused to false', () => {
+            component.focused = true;
+            component.pickerOpen = true;
+            component.onPickerClosed();
+            expect(component.focused).toBe(false);
+        });
+
+        it('should mark as touched', () => {
+            component.onPickerClosed();
             expect(component.touched).toBe(true);
         });
 
         it('should call onTouched callback', () => {
             const fn = vi.fn();
             component.registerOnTouched(fn);
-            component.onBlur();
+            component.onPickerClosed();
             expect(fn).toHaveBeenCalled();
         });
     });

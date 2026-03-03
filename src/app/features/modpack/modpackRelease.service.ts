@@ -1,7 +1,8 @@
 import { Injectable, OnDestroy, inject } from '@angular/core';
-import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
 import { HttpClient } from '@angular/common/http';
+import { Subscription } from 'rxjs';
 import { UrlService } from '@app/core/services/url.service';
+import { ModpackHubService } from './services/modpack-hub.service';
 import { ModpackRelease } from './models/modpack-release';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { NewModpackReleaseModalComponent } from './new-modpack-release-modal/new-modpack-release-modal.component';
@@ -12,11 +13,12 @@ import { MatDialog } from '@angular/material/dialog';
 export class ModpackReleaseService implements OnDestroy {
     private httpClient = inject(HttpClient);
     private urls = inject(UrlService);
-    private signalrService = inject(SignalRService);
+    private modpackHub = inject(ModpackHubService);
     private dialog = inject(MatDialog);
 
     releases: ModpackRelease[] = [];
-    private hubConnection: ConnectionContainer;
+    private onReceiveRelease: ((release: ModpackRelease) => void) | null = null;
+    private reconnectSubscription: Subscription | null = null;
 
     ngOnDestroy(): void {
         this.disconnect();
@@ -25,12 +27,13 @@ export class ModpackReleaseService implements OnDestroy {
     connect(callback: () => void, newReleaseCallback: (string) => void) {
         this.getData(callback);
 
-        this.hubConnection = this.signalrService.connect(`modpack`);
-        this.hubConnection.connection.on('ReceiveRelease', (release: ModpackRelease) => {
+        this.modpackHub.connect();
+        this.onReceiveRelease = (release: ModpackRelease) => {
             this.patchRelease(release);
             newReleaseCallback(release.version);
-        });
-        this.hubConnection.reconnectEvent.subscribe({
+        };
+        this.modpackHub.on('ReceiveRelease', this.onReceiveRelease);
+        this.reconnectSubscription = this.modpackHub.reconnected$.subscribe({
             next: () => {
                 this.getData(callback);
             }
@@ -38,10 +41,13 @@ export class ModpackReleaseService implements OnDestroy {
     }
 
     disconnect() {
-        if (this.hubConnection !== undefined) {
-            this.hubConnection.dispose();
-            this.hubConnection.connection.stop();
+        this.reconnectSubscription?.unsubscribe();
+        this.reconnectSubscription = null;
+        if (this.onReceiveRelease) {
+            this.modpackHub.off('ReceiveRelease', this.onReceiveRelease);
+            this.onReceiveRelease = null;
         }
+        this.modpackHub.disconnect();
     }
 
     getData(callback: () => void) {

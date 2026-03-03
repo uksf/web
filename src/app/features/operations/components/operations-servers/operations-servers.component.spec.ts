@@ -4,14 +4,14 @@ import { OperationsServersComponent } from './operations-servers.component';
 import { of, Subject } from 'rxjs';
 import { GameServersService } from '../../services/game-servers.service';
 import { MatDialog } from '@angular/material/dialog';
-import { SignalRService } from '@app/core/services/signalr.service';
+import { ServersHubService } from '../../services/servers-hub.service';
 import { PermissionsService } from '@app/core/services/permissions.service';
 
 describe('OperationsServersComponent', () => {
     let component: OperationsServersComponent;
     let mockGameServersService: any;
     let mockDialog: any;
-    let mockSignalrService: any;
+    let mockServersHub: any;
     let mockPermissions: any;
     let dialogAfterClosed$: Subject<any>;
 
@@ -50,17 +50,13 @@ describe('OperationsServersComponent', () => {
         mockDialog = {
             open: vi.fn().mockReturnValue({ afterClosed: () => dialogAfterClosed$.asObservable() }),
         };
-        mockSignalrService = {
-            connect: vi.fn().mockReturnValue({
-                connection: {
-                    connectionId: 'conn-123',
-                    on: vi.fn(),
-                    off: vi.fn(),
-                    stop: vi.fn().mockReturnValue(Promise.resolve()),
-                },
-                reconnectEvent: of(),
-                dispose: vi.fn(),
-            }),
+        mockServersHub = {
+            connect: vi.fn(),
+            disconnect: vi.fn(),
+            on: vi.fn(),
+            off: vi.fn(),
+            connectionId: 'conn-123',
+            reconnected$: new Subject<void>().asObservable()
         };
         mockPermissions = {
             hasPermission: vi.fn().mockReturnValue(false),
@@ -71,7 +67,7 @@ describe('OperationsServersComponent', () => {
                 OperationsServersComponent,
                 { provide: GameServersService, useValue: mockGameServersService },
                 { provide: MatDialog, useValue: mockDialog },
-                { provide: SignalRService, useValue: mockSignalrService },
+                { provide: ServersHubService, useValue: mockServersHub },
                 { provide: PermissionsService, useValue: mockPermissions },
             ]
         });
@@ -332,10 +328,10 @@ describe('OperationsServersComponent', () => {
     });
 
     describe('ngOnInit', () => {
-        it('connects to servers SignalR hub', () => {
+        it('connects to servers hub', () => {
             component.ngOnInit();
 
-            expect(mockSignalrService.connect).toHaveBeenCalledWith('servers');
+            expect(mockServersHub.connect).toHaveBeenCalled();
         });
 
         it('fetches servers and disabled state', () => {
@@ -355,15 +351,13 @@ describe('OperationsServersComponent', () => {
     });
 
     describe('ngOnDestroy', () => {
-        it('disconnects SignalR and clears interval', () => {
+        it('disconnects hub and unregisters handlers', () => {
             component.ngOnInit();
-            const hubConnection = mockSignalrService.connect.mock.results[0].value;
 
             component.ngOnDestroy();
 
-            expect(hubConnection.dispose).toHaveBeenCalled();
-            expect(hubConnection.connection.off).toHaveBeenCalledTimes(4);
-            expect(hubConnection.connection.stop).toHaveBeenCalled();
+            expect(mockServersHub.off).toHaveBeenCalledTimes(4);
+            expect(mockServersHub.disconnect).toHaveBeenCalled();
         });
     });
 

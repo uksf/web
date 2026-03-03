@@ -1,30 +1,43 @@
 <div class="log-modal-header">
-    <h2 class="log-title">{{ server.name }} — RPT Log</h2>
+    <h2 class="log-title">RPT Log</h2>
     <div class="source-buttons">
         @for (source of sources; track source.name) {
             <button mat-flat-button
-                [class.active]="activeSource === source.name"
-                (click)="switchSource(source.name)">
-                {{ source.name }}
+                    color="primary"
+                    [disabled]="source.name === activeSource"
+                    (click)="switchSource(source.name)"
+                    [matTooltip]="source.isServer ? 'Server log' : source.name + ' log'">
+                {{ source.isServer ? server.name : source.name }}
             </button>
         }
     </div>
+    <button mat-icon-button (click)="toggleTail()" [class.tail-active]="tailEnabled" [matTooltip]="tailEnabled ? 'Stop following' : 'Follow tail'">
+        <mat-icon>vertical_align_bottom</mat-icon>
+    </button>
     <div class="search-bar">
-        <input type="text" placeholder="Search log..." [(ngModel)]="searchQuery" (keydown.enter)="search()">
-        @if (searchResults.length) {
-            <span class="search-count">{{ currentSearchIndex + 1 }} of {{ searchResults.length }}</span>
-        }
-        <button mat-icon-button (click)="searchPrev()" [disabled]="!searchResults.length" matTooltip="Previous match">
+        <app-text-input
+            placeholder="Search log..."
+            [reserveErrorSpace]="false"
+            [clearable]="true"
+            [(ngModel)]="searchQuery"
+            (ngModelChange)="onSearchChange()"
+            (cleared)="onSearchChange()">
+        </app-text-input>
+        <span class="search-count" [class.search-count-no-match]="searchQuery.trim() && !searchResults.length">
+            @if (searchResults.length) {
+                {{ currentSearchIndex + 1 }} / {{ searchResults.length }}
+            } @else {
+                No results
+            }
+        </span>
+        <button mat-icon-button color="primary" (click)="searchPrev()" [disabled]="!searchResults.length" matTooltip="Previous match">
             <mat-icon>keyboard_arrow_up</mat-icon>
         </button>
-        <button mat-icon-button (click)="searchNext()" [disabled]="!searchResults.length" matTooltip="Next match">
+        <button mat-icon-button color="primary" (click)="searchNext()" [disabled]="!searchResults.length" matTooltip="Next match">
             <mat-icon>keyboard_arrow_down</mat-icon>
         </button>
     </div>
-    <button mat-icon-button (click)="toggleTail()" [class.active]="tailEnabled" matTooltip="Auto-scroll to bottom">
-        <mat-icon>vertical_align_bottom</mat-icon>
-    </button>
-    <button mat-icon-button (click)="downloadLog()" matTooltip="Download log file">
+    <button mat-icon-button (click)="downloadLog()" [disabled]="isDownloading" matTooltip="Download log file">
         <mat-icon>download</mat-icon>
     </button>
     <button mat-icon-button (click)="close()" matTooltip="Close">
@@ -37,14 +50,28 @@
     } @else if (!logLines.length) {
         <div class="log-empty">No log files found for this server.</div>
     } @else {
-        <cdk-virtual-scroll-viewport [itemSize]="20" class="log-viewport">
-            <div *cdkVirtualFor="let line of highlightedLines; let i = index; trackBy: trackByIndex"
-                 class="log-line"
-                 [class.search-highlight]="isSearchMatch(i)"
-                 [class.search-active]="isActiveSearchMatch(i)">
-                <span class="line-number">{{ i + 1 }}</span>
-                <span class="line-content" [innerHTML]="line"></span>
-            </div>
-        </cdk-virtual-scroll-viewport>
+        <div class="log-viewport-wrapper">
+            <cdk-virtual-scroll-viewport [itemSize]="20" class="log-viewport">
+                <div *cdkVirtualFor="let line of highlightedLines; let i = index; trackBy: trackByIndex"
+                     class="log-line"
+                     [class.search-highlight]="isSearchMatch(i)"
+                     [class.search-active]="isActiveSearchMatch(i)"
+                     (click)="onLineClick(i)">
+                    <span class="line-number">{{ i + 1 }}</span>
+                    <span class="line-content" [innerHTML]="line"></span>
+                </div>
+            </cdk-virtual-scroll-viewport>
+            @if (searchResults.length) {
+                <div class="search-indicator-track" (click)="onIndicatorTrackClick($event)">
+                    @for (result of searchResults; track result.lineIndex; let idx = $index) {
+                        <div class="search-indicator-mark"
+                             [class.search-indicator-active]="idx === currentSearchIndex"
+                             [style.top.%]="getSearchIndicatorPosition(result.lineIndex)"
+                             (click)="onIndicatorMarkClick($event, idx)">
+                        </div>
+                    }
+                </div>
+            }
+        </div>
     }
 </div>

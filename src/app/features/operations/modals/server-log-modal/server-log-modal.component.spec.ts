@@ -2,9 +2,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DomSanitizer } from '@angular/platform-browser';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 
-import { SignalRService } from '@app/core/services/signalr.service';
+import { ServersHubService } from '../../services/servers-hub.service';
 import { GameServersService } from '../../services/game-servers.service';
 import { ServerLogModalComponent } from './server-log-modal.component';
 import { RptLogSearchResponse, RptLogSource } from '../../models/game-server';
@@ -13,12 +13,9 @@ describe('ServerLogModalComponent', () => {
     let component: ServerLogModalComponent;
     let mockDialogRef: any;
     let mockGameServersService: any;
-    let mockSignalRService: any;
+    let mockServersHub: any;
     let mockSanitizer: any;
-    let mockConnection: any;
-    let mockHubConnection: any;
     let signalRCallbacks: Record<string, Function>;
-    let originalWindow: any;
 
     const testServer = {
         id: 'server1',
@@ -46,34 +43,24 @@ describe('ServerLogModalComponent', () => {
         mockGameServersService = {
             getLogSources: vi.fn().mockReturnValue(of(testSources)),
             searchLog: vi.fn().mockReturnValue(of({ results: [], totalMatches: 0 })),
-            getLogDownloadUrl: vi.fn().mockReturnValue('http://localhost:5500/gameservers/server1/log/download?source=Server')
+            downloadLog: vi.fn().mockReturnValue(of(new Blob(['test log content'])))
         };
 
-        mockConnection = {
+        mockServersHub = {
+            connect: vi.fn(),
+            disconnect: vi.fn(),
             on: vi.fn((event: string, callback: Function) => {
                 signalRCallbacks[event] = callback;
             }),
             off: vi.fn(),
             invoke: vi.fn().mockResolvedValue(undefined),
-            stop: vi.fn().mockResolvedValue(undefined)
-        };
-
-        mockHubConnection = {
-            connection: mockConnection,
-            reconnectEvent: { complete: vi.fn() },
-            dispose: vi.fn()
-        };
-
-        mockSignalRService = {
-            connect: vi.fn().mockReturnValue(mockHubConnection)
+            connected: Promise.resolve(),
+            reconnected$: new Subject<void>().asObservable()
         };
 
         mockSanitizer = {
             bypassSecurityTrustHtml: vi.fn((html: string) => html)
         };
-
-        originalWindow = (globalThis as any).window;
-        (globalThis as any).window = { open: vi.fn() };
 
         TestBed.configureTestingModule({
             providers: [
@@ -81,16 +68,12 @@ describe('ServerLogModalComponent', () => {
                 { provide: MatDialogRef, useValue: mockDialogRef },
                 { provide: MAT_DIALOG_DATA, useValue: { server: testServer } },
                 { provide: GameServersService, useValue: mockGameServersService },
-                { provide: SignalRService, useValue: mockSignalRService },
+                { provide: ServersHubService, useValue: mockServersHub },
                 { provide: DomSanitizer, useValue: mockSanitizer }
             ]
         });
 
         component = TestBed.inject(ServerLogModalComponent);
-    });
-
-    afterEach(() => {
-        (globalThis as any).window = originalWindow;
     });
 
     describe('creation', () => {
@@ -111,6 +94,7 @@ describe('ServerLogModalComponent', () => {
             expect(component.searchQuery).toBe('');
             expect(component.searchResults).toEqual([]);
             expect(component.currentSearchIndex).toBe(-1);
+            expect(component.isDownloading).toBe(false);
         });
     });
 
@@ -122,28 +106,29 @@ describe('ServerLogModalComponent', () => {
             expect(component.sources).toEqual(testSources);
         });
 
-        it('should connect to SignalR servers hub', () => {
+        it('should connect to servers hub', () => {
             component.ngOnInit();
 
-            expect(mockSignalRService.connect).toHaveBeenCalledWith('servers');
+            expect(mockServersHub.connect).toHaveBeenCalled();
         });
 
         it('should register ReceiveLogContent handler', () => {
             component.ngOnInit();
 
-            expect(mockConnection.on).toHaveBeenCalledWith('ReceiveLogContent', expect.any(Function));
+            expect(mockServersHub.on).toHaveBeenCalledWith('ReceiveLogContent', expect.any(Function));
         });
 
         it('should register ReceiveLogAppend handler', () => {
             component.ngOnInit();
 
-            expect(mockConnection.on).toHaveBeenCalledWith('ReceiveLogAppend', expect.any(Function));
+            expect(mockServersHub.on).toHaveBeenCalledWith('ReceiveLogAppend', expect.any(Function));
         });
 
-        it('should subscribe to Server log on init', () => {
+        it('should subscribe to Server log on init', async () => {
             component.ngOnInit();
+            await mockServersHub.connected;
 
-            expect(mockConnection.invoke).toHaveBeenCalledWith('SubscribeToLog', 'server1', 'Server');
+            expect(mockServersHub.invoke).toHaveBeenCalledWith('SubscribeToLog', 'server1', 'Server');
         });
     });
 
@@ -197,6 +182,24 @@ describe('ServerLogModalComponent', () => {
 
             expect(component.logLines).toEqual(['line1', 'line2', 'line3']);
         });
+
+        it('should trigger search when isComplete and searchQuery is set', () => {
+            const searchSpy = vi.spyOn(component, 'search');
+            component.searchQuery = 'error';
+
+            signalRCallbacks['ReceiveLogContent']('server1', 'Server', ['error line'], 0, true);
+
+            expect(searchSpy).toHaveBeenCalled();
+        });
+
+        it('should not trigger search when isComplete but searchQuery is empty', () => {
+            const searchSpy = vi.spyOn(component, 'search');
+            component.searchQuery = '';
+
+            signalRCallbacks['ReceiveLogContent']('server1', 'Server', ['line'], 0, true);
+
+            expect(searchSpy).not.toHaveBeenCalled();
+        });
     });
 
     describe('ReceiveLogAppend handler', () => {
@@ -234,30 +237,37 @@ describe('ServerLogModalComponent', () => {
     });
 
     describe('switchSource', () => {
-        beforeEach(() => {
+        beforeEach(async () => {
             component.ngOnInit();
-            mockConnection.invoke.mockClear();
+            await mockServersHub.connected;
+            mockServersHub.invoke.mockClear();
         });
 
-        it('should not switch when source is the same', () => {
-            component.switchSource('Server');
+        it('should not switch when source is the same', async () => {
+            await component.switchSource('Server');
 
-            expect(mockConnection.invoke).not.toHaveBeenCalled();
+            expect(mockServersHub.invoke).not.toHaveBeenCalled();
         });
 
-        it('should unsubscribe from old source', () => {
-            component.switchSource('HC1');
+        it('should not switch when source is empty', async () => {
+            await component.switchSource('');
 
-            expect(mockConnection.invoke).toHaveBeenCalledWith('UnsubscribeFromLog', 'server1', 'Server');
+            expect(mockServersHub.invoke).not.toHaveBeenCalled();
         });
 
-        it('should subscribe to new source', () => {
-            component.switchSource('HC1');
+        it('should unsubscribe from old source', async () => {
+            await component.switchSource('HC1');
 
-            expect(mockConnection.invoke).toHaveBeenCalledWith('SubscribeToLog', 'server1', 'HC1');
+            expect(mockServersHub.invoke).toHaveBeenCalledWith('UnsubscribeFromLog', 'server1', 'Server');
         });
 
-        it('should reset log state', () => {
+        it('should subscribe to new source', async () => {
+            await component.switchSource('HC1');
+
+            expect(mockServersHub.invoke).toHaveBeenCalledWith('SubscribeToLog', 'server1', 'HC1');
+        });
+
+        it('should reset log state', async () => {
             component.logLines = ['old'];
             component.highlightedLines = ['old' as any];
             component.isLoading = false;
@@ -265,7 +275,7 @@ describe('ServerLogModalComponent', () => {
             component.searchMatchLines = new Set([0]);
             component.currentSearchIndex = 0;
 
-            component.switchSource('HC1');
+            await component.switchSource('HC1');
 
             expect(component.logLines).toEqual([]);
             expect(component.highlightedLines).toEqual([]);
@@ -275,8 +285,8 @@ describe('ServerLogModalComponent', () => {
             expect(component.currentSearchIndex).toBe(-1);
         });
 
-        it('should update activeSource', () => {
-            component.switchSource('HC1');
+        it('should update activeSource', async () => {
+            await component.switchSource('HC1');
 
             expect(component.activeSource).toBe('HC1');
         });
@@ -328,6 +338,16 @@ describe('ServerLogModalComponent', () => {
             expect(component.currentSearchIndex).toBe(-1);
         });
 
+        it('should rehighlight all lines when clearing search', () => {
+            component.logLines = ['line1', 'line2'];
+            component.highlightedLines = ['old' as any, 'old' as any];
+            component.searchQuery = '';
+
+            component.search();
+
+            expect(mockSanitizer.bypassSecurityTrustHtml).toHaveBeenCalled();
+        });
+
         it('should call searchLog with correct parameters', () => {
             component.searchQuery = 'error';
 
@@ -362,6 +382,58 @@ describe('ServerLogModalComponent', () => {
             component.search();
 
             expect(component.currentSearchIndex).toBe(-1);
+        });
+
+        it('should rehighlight all lines after receiving search results', () => {
+            component.logLines = ['error here', 'no match'];
+            component.highlightedLines = ['old' as any, 'old' as any];
+            mockGameServersService.searchLog.mockReturnValue(of({ results: [{ lineIndex: 0, text: 'error here' }], totalMatches: 1 }));
+            component.searchQuery = 'error';
+            mockSanitizer.bypassSecurityTrustHtml.mockClear();
+
+            component.search();
+
+            expect(mockSanitizer.bypassSecurityTrustHtml).toHaveBeenCalledTimes(2);
+        });
+    });
+
+    describe('onSearchChange', () => {
+        beforeEach(() => {
+            vi.useFakeTimers();
+            component.ngOnInit();
+        });
+
+        afterEach(() => {
+            vi.useRealTimers();
+        });
+
+        it('should debounce and call search after 300ms', () => {
+            component.searchQuery = 'test';
+            const searchSpy = vi.spyOn(component, 'search');
+
+            component.onSearchChange();
+
+            expect(searchSpy).not.toHaveBeenCalled();
+
+            vi.advanceTimersByTime(300);
+
+            expect(searchSpy).toHaveBeenCalledOnce();
+        });
+
+        it('should cancel previous debounce when called again', () => {
+            component.searchQuery = 'test';
+            const searchSpy = vi.spyOn(component, 'search');
+
+            component.onSearchChange();
+            vi.advanceTimersByTime(200);
+            component.onSearchChange();
+            vi.advanceTimersByTime(200);
+
+            expect(searchSpy).not.toHaveBeenCalled();
+
+            vi.advanceTimersByTime(100);
+
+            expect(searchSpy).toHaveBeenCalledOnce();
         });
     });
 
@@ -438,17 +510,223 @@ describe('ServerLogModalComponent', () => {
         });
     });
 
+    describe('findNearestSearchResult', () => {
+        it('should return -1 when no search results', () => {
+            component.searchResults = [];
+
+            expect(component.findNearestSearchResult(50)).toBe(-1);
+        });
+
+        it('should return nearest result index', () => {
+            component.searchResults = [
+                { lineIndex: 10, text: 'a' },
+                { lineIndex: 50, text: 'b' },
+                { lineIndex: 100, text: 'c' }
+            ];
+
+            expect(component.findNearestSearchResult(45)).toBe(1);
+        });
+
+        it('should return exact match index', () => {
+            component.searchResults = [
+                { lineIndex: 10, text: 'a' },
+                { lineIndex: 50, text: 'b' },
+                { lineIndex: 100, text: 'c' }
+            ];
+
+            expect(component.findNearestSearchResult(100)).toBe(2);
+        });
+
+        it('should pick first result when equidistant', () => {
+            component.searchResults = [
+                { lineIndex: 10, text: 'a' },
+                { lineIndex: 30, text: 'b' }
+            ];
+
+            expect(component.findNearestSearchResult(20)).toBe(0);
+        });
+
+        it('should handle line beyond last result', () => {
+            component.searchResults = [
+                { lineIndex: 10, text: 'a' },
+                { lineIndex: 50, text: 'b' }
+            ];
+
+            expect(component.findNearestSearchResult(200)).toBe(1);
+        });
+    });
+
+    describe('onLineClick', () => {
+        it('should do nothing when no search results', () => {
+            component.searchResults = [];
+            component.currentSearchIndex = -1;
+
+            component.onLineClick(50);
+
+            expect(component.currentSearchIndex).toBe(-1);
+        });
+
+        it('should jump to the nearest search result', () => {
+            component.searchResults = [
+                { lineIndex: 10, text: 'a' },
+                { lineIndex: 50, text: 'b' },
+                { lineIndex: 100, text: 'c' }
+            ];
+            component.currentSearchIndex = 0;
+
+            component.onLineClick(45);
+
+            expect(component.currentSearchIndex).toBe(1);
+        });
+
+        it('should jump to exact match', () => {
+            component.searchResults = [
+                { lineIndex: 10, text: 'a' },
+                { lineIndex: 50, text: 'b' },
+                { lineIndex: 100, text: 'c' }
+            ];
+
+            component.onLineClick(100);
+
+            expect(component.currentSearchIndex).toBe(2);
+        });
+    });
+
+    describe('getSearchIndicatorPosition', () => {
+        it('should return 0 when logLines is empty', () => {
+            component.logLines = [];
+
+            expect(component.getSearchIndicatorPosition(5)).toBe(0);
+        });
+
+        it('should return correct percentage position', () => {
+            component.logLines = new Array(200).fill('line');
+
+            expect(component.getSearchIndicatorPosition(100)).toBe(50);
+        });
+
+        it('should return 0 for first line', () => {
+            component.logLines = new Array(100).fill('line');
+
+            expect(component.getSearchIndicatorPosition(0)).toBe(0);
+        });
+
+        it('should return 100 for line at end', () => {
+            component.logLines = new Array(100).fill('line');
+
+            expect(component.getSearchIndicatorPosition(100)).toBe(100);
+        });
+    });
+
+    describe('onIndicatorMarkClick', () => {
+        it('should set currentSearchIndex and scroll to result', () => {
+            component.searchResults = [
+                { lineIndex: 10, text: 'a' },
+                { lineIndex: 50, text: 'b' },
+                { lineIndex: 100, text: 'c' }
+            ];
+            component.currentSearchIndex = 0;
+            const event = { stopPropagation: vi.fn() } as unknown as MouseEvent;
+
+            component.onIndicatorMarkClick(event, 2);
+
+            expect(event.stopPropagation).toHaveBeenCalled();
+            expect(component.currentSearchIndex).toBe(2);
+        });
+    });
+
+    describe('onIndicatorTrackClick', () => {
+        it('should find nearest result based on click position', () => {
+            component.searchResults = [
+                { lineIndex: 10, text: 'a' },
+                { lineIndex: 90, text: 'b' }
+            ];
+            component.logLines = new Array(100).fill('line');
+            const mockTrack = { getBoundingClientRect: () => ({ top: 0, height: 500 }) };
+            const event = { currentTarget: mockTrack, clientY: 450 } as unknown as MouseEvent;
+
+            component.onIndicatorTrackClick(event);
+
+            expect(component.currentSearchIndex).toBe(1);
+        });
+
+        it('should do nothing when no search results', () => {
+            component.searchResults = [];
+            component.logLines = new Array(100).fill('line');
+            component.currentSearchIndex = -1;
+            const mockTrack = { getBoundingClientRect: () => ({ top: 0, height: 500 }) };
+            const event = { currentTarget: mockTrack, clientY: 250 } as unknown as MouseEvent;
+
+            component.onIndicatorTrackClick(event);
+
+            expect(component.currentSearchIndex).toBe(-1);
+        });
+    });
+
     describe('downloadLog', () => {
-        it('should open download URL in new tab', () => {
+        let mockAnchor: any;
+        let originalCreateElement: typeof document.createElement;
+        let originalCreateObjectURL: typeof URL.createObjectURL;
+        let originalRevokeObjectURL: typeof URL.revokeObjectURL;
+
+        beforeEach(() => {
+            mockAnchor = { href: '', download: '', click: vi.fn() };
+            originalCreateElement = document.createElement.bind(document);
+            vi.spyOn(document, 'createElement').mockImplementation((tag: string) => {
+                if (tag === 'a') return mockAnchor;
+                return originalCreateElement(tag);
+            });
+            originalCreateObjectURL = URL.createObjectURL;
+            originalRevokeObjectURL = URL.revokeObjectURL;
+            URL.createObjectURL = vi.fn().mockReturnValue('blob:test-url');
+            URL.revokeObjectURL = vi.fn();
+        });
+
+        afterEach(() => {
+            URL.createObjectURL = originalCreateObjectURL;
+            URL.revokeObjectURL = originalRevokeObjectURL;
+        });
+
+        it('should call downloadLog with correct server and source', () => {
             component.ngOnInit();
 
             component.downloadLog();
 
-            expect(mockGameServersService.getLogDownloadUrl).toHaveBeenCalledWith('server1', 'Server');
-            expect((globalThis as any).window.open).toHaveBeenCalledWith(
-                'http://localhost:5500/gameservers/server1/log/download?source=Server',
-                '_blank'
-            );
+            expect(mockGameServersService.downloadLog).toHaveBeenCalledWith('server1', 'Server');
+        });
+
+        it('should trigger a file download via anchor click', () => {
+            component.ngOnInit();
+
+            component.downloadLog();
+
+            expect(mockAnchor.click).toHaveBeenCalled();
+            expect(mockAnchor.download).toBe('Test Server_Server.rpt');
+        });
+
+        it('should set isDownloading to false after download completes', () => {
+            component.ngOnInit();
+
+            component.downloadLog();
+
+            expect(component.isDownloading).toBe(false);
+        });
+
+        it('should use current activeSource for download', () => {
+            component.ngOnInit();
+            component.activeSource = 'HC1';
+
+            component.downloadLog();
+
+            expect(mockGameServersService.downloadLog).toHaveBeenCalledWith('server1', 'HC1');
+        });
+
+        it('should revoke the object URL after download', () => {
+            component.ngOnInit();
+
+            component.downloadLog();
+
+            expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:test-url');
         });
     });
 
@@ -517,20 +795,40 @@ describe('ServerLogModalComponent', () => {
     });
 
     describe('ngOnDestroy', () => {
-        it('should unsubscribe, clean up handlers, dispose, and stop connection', () => {
+        it('should clean up handlers and disconnect hub', () => {
             component.ngOnInit();
 
             component.ngOnDestroy();
 
-            expect(mockConnection.invoke).toHaveBeenCalledWith('UnsubscribeFromLog', 'server1', 'Server');
-            expect(mockConnection.off).toHaveBeenCalledWith('ReceiveLogContent');
-            expect(mockConnection.off).toHaveBeenCalledWith('ReceiveLogAppend');
-            expect(mockHubConnection.dispose).toHaveBeenCalled();
-            expect(mockConnection.stop).toHaveBeenCalled();
+            expect(mockServersHub.off).toHaveBeenCalledWith('ReceiveLogContent', expect.any(Function));
+            expect(mockServersHub.off).toHaveBeenCalledWith('ReceiveLogAppend', expect.any(Function));
+            expect(mockServersHub.disconnect).toHaveBeenCalled();
         });
 
         it('should not throw when hubConnection is not set', () => {
             expect(() => component.ngOnDestroy()).not.toThrow();
+        });
+    });
+
+    describe('search highlighting', () => {
+        beforeEach(() => {
+            component.ngOnInit();
+        });
+
+        it('should include search term markup in highlighted lines when searchQuery is set', () => {
+            component.searchQuery = 'error';
+            signalRCallbacks['ReceiveLogContent']('server1', 'Server', ['an error occurred'], 0, true);
+
+            const htmlArg = mockSanitizer.bypassSecurityTrustHtml.mock.calls[0][0];
+            expect(htmlArg).toContain('search-term');
+        });
+
+        it('should not include search term markup when searchQuery is empty', () => {
+            component.searchQuery = '';
+            signalRCallbacks['ReceiveLogContent']('server1', 'Server', ['an error occurred'], 0, true);
+
+            const htmlArg = mockSanitizer.bypassSecurityTrustHtml.mock.calls[0][0];
+            expect(htmlArg).not.toContain('search-term');
         });
     });
 });

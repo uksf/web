@@ -263,9 +263,12 @@ describe('GameServersService', () => {
         );
     });
 
-    it('getLogDownloadUrl should return correct URL', () => {
-        const url = service.getLogDownloadUrl('server1', 'server.rpt');
+    it('downloadLog should request blob from correct URL', () => {
+        service.downloadLog('server1', 'server.rpt').subscribe();
 
-        expect(url).toBe('http://localhost:5500/gameservers/server1/log/download?source=server.rpt');
+        expect(mockHttpClient.get).toHaveBeenCalledWith(
+            'http://localhost:5500/gameservers/server1/log/download?source=server.rpt',
+            { responseType: 'blob' }
+        );
     });
 });

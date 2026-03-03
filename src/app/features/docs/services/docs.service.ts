@@ -6,7 +6,7 @@ import { CreateDocumentRequest, CreateFolderRequest, DocumentContent, DocumentMe
 
 const jsonHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class DocsService {
     private httpClient = inject(HttpClient);
     private urls = inject(UrlService);

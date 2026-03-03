@@ -4,8 +4,8 @@
     <p class="gmt-note">Dates should be considered as GMT</p>
     <form [formGroup]="form" class="modal-form">
         <app-text-input class="reason-field" label="Reason" [required]="true" formControlName="reason" [validationMessages]="validationMessages.reason" [reserveErrorSpace]="true"> </app-text-input>
-        <app-date-input label="Start date" formControlName="start" [min]="minStartDate" [max]="maxStartDate" [required]="true" [touchUi]="mobile" [reserveErrorSpace]="false"></app-date-input>
-        <app-date-input label="End date (inclusive)" formControlName="end" [min]="minEndDate" [required]="true" [touchUi]="mobile" [reserveErrorSpace]="false"></app-date-input>
+        <app-date-input label="Start date" formControlName="start" [min]="minStartDate" [max]="maxStartDate" [required]="true" [touchUi]="mobile" [reserveErrorSpace]="true" [validationMessages]="validationMessages.date"></app-date-input>
+        <app-date-input label="End date (inclusive)" formControlName="end" [min]="minEndDate" [required]="true" [touchUi]="mobile" [reserveErrorSpace]="true" [validationMessages]="validationMessages.date"></app-date-input>
         @if (late) {
         <mat-checkbox color="primary" formControlName="emergency" matTooltip="If this is an emergency, tick this box">Emergency</mat-checkbox>
         } @if (invalidMessage) {

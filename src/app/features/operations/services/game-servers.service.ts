@@ -5,7 +5,7 @@ import { UrlService } from '@app/core/services/url.service';
 import { OrderUpdateRequest } from '@app/shared/models/order-update-request';
 import { GameServer, GameServersResponse, MissionUploadResponse, RptLogSearchResponse, RptLogSource, ServerMod, ServerModsResetResponse, ServerStatusResponse } from '../models/game-server';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class GameServersService {
     private httpClient = inject(HttpClient);
     private urls = inject(UrlService);
@@ -103,7 +103,9 @@ export class GameServersService {
         return this.httpClient.post<RptLogSearchResponse>(`${this.urls.apiUrl}/gameservers/${serverId}/log/search`, { source, query });
     }
 
-    getLogDownloadUrl(serverId: string, source: string): string {
-        return `${this.urls.apiUrl}/gameservers/${serverId}/log/download?source=${encodeURIComponent(source)}`;
+    downloadLog(serverId: string, source: string): Observable<Blob> {
+        return this.httpClient.get(`${this.urls.apiUrl}/gameservers/${serverId}/log/download?source=${encodeURIComponent(source)}`, {
+            responseType: 'blob'
+        });
     }
 }

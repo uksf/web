@@ -2,13 +2,13 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { HomePageComponent } from './home-page.component';
 import { HomeService } from '../../services/home.service';
-import { SignalRService } from '@app/core/services/signalr.service';
-import { of } from 'rxjs';
+import { TeamspeakClientsHubService } from '@app/shared/services/teamspeak-clients-hub.service';
+import { of, Subject } from 'rxjs';
 
 describe('HomePageComponent', () => {
     let component: HomePageComponent;
     let mockHomeService: any;
-    let mockSignalrService: any;
+    let mockTeamspeakHub: any;
 
     beforeEach(() => {
         vi.useFakeTimers();
@@ -16,22 +16,19 @@ describe('HomePageComponent', () => {
             getOnlineAccounts: vi.fn().mockReturnValue(of({})),
             getInstagramImages: vi.fn().mockReturnValue(of([]))
         };
-        mockSignalrService = {
-            connect: vi.fn().mockReturnValue({
-                connection: {
-                    on: vi.fn(),
-                    off: vi.fn(),
-                    stop: vi.fn()
-                },
-                reconnectEvent: of()
-            })
+        mockTeamspeakHub = {
+            connect: vi.fn(),
+            disconnect: vi.fn(),
+            on: vi.fn(),
+            off: vi.fn(),
+            reconnected$: new Subject<void>().asObservable()
         };
 
         TestBed.configureTestingModule({
             providers: [
                 HomePageComponent,
                 { provide: HomeService, useValue: mockHomeService },
-                { provide: SignalRService, useValue: mockSignalrService },
+                { provide: TeamspeakClientsHubService, useValue: mockTeamspeakHub },
             ]
         });
         component = TestBed.inject(HomePageComponent);
@@ -104,10 +101,11 @@ describe('HomePageComponent', () => {
     });
 
     describe('ngOnInit', () => {
-        it('connects to teamspeakClients SignalR hub', () => {
+        it('connects to TeamspeakClientsHubService', () => {
             component.ngOnInit();
 
-            expect(mockSignalrService.connect).toHaveBeenCalledWith('teamspeakClients');
+            expect(mockTeamspeakHub.connect).toHaveBeenCalled();
+            expect(mockTeamspeakHub.on).toHaveBeenCalledWith('ReceiveClients', expect.any(Function));
         });
 
         it('fetches instagram images', () => {
@@ -127,14 +125,13 @@ describe('HomePageComponent', () => {
             expect(clearIntervalSpy).toHaveBeenCalled();
         });
 
-        it('disconnects SignalR hub', () => {
+        it('disconnects hub service', () => {
             component.ngOnInit();
-            const hubConnection = mockSignalrService.connect.mock.results[0].value;
 
             component.ngOnDestroy();
 
-            expect(hubConnection.connection.off).toHaveBeenCalledWith('ReceiveClients', expect.any(Function));
-            expect(hubConnection.connection.stop).toHaveBeenCalled();
+            expect(mockTeamspeakHub.off).toHaveBeenCalledWith('ReceiveClients', expect.any(Function));
+            expect(mockTeamspeakHub.disconnect).toHaveBeenCalled();
         });
     });
 });

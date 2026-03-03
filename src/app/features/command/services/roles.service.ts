@@ -6,7 +6,7 @@ import { Role, RolesDataset } from '@app/shared/models/role';
 
 const jsonHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class RolesService {
     private httpClient = inject(HttpClient);
     private urls = inject(UrlService);

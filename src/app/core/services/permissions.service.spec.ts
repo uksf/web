@@ -7,7 +7,7 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 import { PermissionsService } from './permissions.service';
 import { SessionService } from './authentication/session.service';
 import { AccountService } from './account.service';
-import { SignalRService } from './signalr.service';
+import { AccountHubService } from './account-hub.service';
 import { AuthenticationService } from './authentication/authentication.service';
 import { AppSettingsService } from './app-settings.service';
 import { LoggingService } from './logging.service';
@@ -18,13 +18,11 @@ describe('PermissionsService', () => {
     let mockNgxPermissionsService: any;
     let mockSessionService: any;
     let mockAccountService: any;
-    let mockSignalrService: any;
+    let mockAccountHub: any;
     let mockRouter: any;
     let mockAuthenticationService: any;
     let mockJwtHelperService: any;
     let mockAppSettings: any;
-    let mockConnection: any;
-    let mockConnectionContainer: any;
 
     beforeEach(() => {
         const permissions: Record<string, any> = {};
@@ -52,18 +50,12 @@ describe('PermissionsService', () => {
             clear: vi.fn()
         };
 
-        mockConnection = {
-            stop: vi.fn().mockResolvedValue(undefined),
-            on: vi.fn()
-        };
-        mockConnectionContainer = {
-            connection: mockConnection,
-            reconnectEvent: new Subject<void>(),
-            dispose: vi.fn()
-        };
-
-        mockSignalrService = {
-            connect: vi.fn().mockReturnValue(mockConnectionContainer)
+        mockAccountHub = {
+            connect: vi.fn(),
+            disconnect: vi.fn(),
+            on: vi.fn(),
+            off: vi.fn(),
+            reconnected$: new Subject<void>().asObservable()
         };
 
         mockRouter = {
@@ -96,7 +88,7 @@ describe('PermissionsService', () => {
                 { provide: NgxPermissionsService, useValue: mockNgxPermissionsService },
                 { provide: SessionService, useValue: mockSessionService },
                 { provide: AccountService, useValue: mockAccountService },
-                { provide: SignalRService, useValue: mockSignalrService },
+                { provide: AccountHubService, useValue: mockAccountHub },
                 { provide: Router, useValue: mockRouter },
                 { provide: AuthenticationService, useValue: mockAuthenticationService },
                 { provide: JwtHelperService, useValue: mockJwtHelperService },
@@ -144,56 +136,47 @@ describe('PermissionsService', () => {
     });
 
     describe('connect', () => {
-        it('connects to SignalR when account is already loaded', async () => {
-            mockAccountService.account = { id: 'test-id' } as Account;
-
+        it('connects to AccountHubService', () => {
             service.connect();
 
-            await new Promise(resolve => setTimeout(resolve, 0));
-
-            expect(mockSignalrService.connect).toHaveBeenCalledWith('account?userId=test-id');
+            expect(mockAccountHub.connect).toHaveBeenCalled();
+            expect(mockAccountHub.on).toHaveBeenCalledWith('ReceiveAccountUpdate', expect.any(Function));
         });
 
-        it('waits for account change event when account is not yet loaded', async () => {
-            mockAccountService.account = undefined;
-
+        it('disconnects previous connection before reconnecting', () => {
+            service.connect();
             service.connect();
 
-            expect(mockSignalrService.connect).not.toHaveBeenCalled();
-
-            mockAccountService.account = { id: 'delayed-id' } as Account;
-            mockAccountService.accountChange$.next({ id: 'delayed-id' } as Account);
-
-            await new Promise(resolve => setTimeout(resolve, 0));
-
-            expect(mockSignalrService.connect).toHaveBeenCalledWith('account?userId=delayed-id');
+            expect(mockAccountHub.disconnect).toHaveBeenCalledTimes(2);
+            expect(mockAccountHub.connect).toHaveBeenCalledTimes(2);
         });
 
-        it('stops existing connection before creating a new one', async () => {
-            mockAccountService.account = { id: 'test-id' } as Account;
+        it('does not leak reconnected$ subscriptions across connect cycles', () => {
+            const reconnected$ = new Subject<void>();
+            mockAccountHub.reconnected$ = reconnected$.asObservable();
 
             service.connect();
-            await new Promise(resolve => setTimeout(resolve, 0));
 
+            // The first reconnected$ subscription should be cleaned up on next connect()
+            const reconnected2$ = new Subject<void>();
+            mockAccountHub.reconnected$ = reconnected2$.asObservable();
             service.connect();
-            await new Promise(resolve => setTimeout(resolve, 0));
 
-            expect(mockConnection.stop).toHaveBeenCalled();
-            expect(mockSignalrService.connect).toHaveBeenCalledTimes(2);
+            // Emitting on old subject should not trigger refresh
+            const refreshSpy = vi.spyOn(service, 'refresh');
+            reconnected$.next();
+
+            expect(refreshSpy).not.toHaveBeenCalled();
         });
     });
 
     describe('disconnect', () => {
-        it('disposes and stops SignalR connection', async () => {
-            mockAccountService.account = { id: 'test-id' } as Account;
-
+        it('disconnects AccountHubService', () => {
             service.connect();
-            await new Promise(resolve => setTimeout(resolve, 0));
-
             service.disconnect();
 
-            expect(mockConnectionContainer.dispose).toHaveBeenCalled();
-            expect(mockConnection.stop).toHaveBeenCalled();
+            expect(mockAccountHub.off).toHaveBeenCalledWith('ReceiveAccountUpdate', expect.any(Function));
+            expect(mockAccountHub.disconnect).toHaveBeenCalled();
         });
 
         it('is safe to call when no connection exists', () => {
@@ -210,17 +193,13 @@ describe('PermissionsService', () => {
             expect(mockAuthenticationService.logout).not.toHaveBeenCalled();
         });
 
-        it('disconnects SignalR, sets unlogged, logs out, and navigates to login', async () => {
+        it('disconnects hub, sets unlogged, logs out, and navigates to login', () => {
             mockNgxPermissionsService.getPermissions.mockReturnValue({ MEMBER: { name: 'MEMBER' } });
-            mockAccountService.account = { id: 'test-id' } as Account;
 
             service.connect();
-            await new Promise(resolve => setTimeout(resolve, 0));
-
             service.revoke();
 
-            expect(mockConnectionContainer.dispose).toHaveBeenCalled();
-            expect(mockConnection.stop).toHaveBeenCalled();
+            expect(mockAccountHub.disconnect).toHaveBeenCalled();
             expect(mockNgxPermissionsService.flushPermissions).toHaveBeenCalled();
             expect(mockNgxPermissionsService.addPermission).toHaveBeenCalledWith('UNLOGGED');
             expect(mockAuthenticationService.logout).toHaveBeenCalled();

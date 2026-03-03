@@ -1,17 +1,19 @@
 import { Injectable, OnDestroy, inject } from '@angular/core';
-import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
 import { HttpClient } from '@angular/common/http';
+import { Subscription } from 'rxjs';
 import { UrlService } from '@app/core/services/url.service';
+import { ModpackHubService } from './services/modpack-hub.service';
 import { ModpackBuild } from './models/modpack-build';
 
 @Injectable()
 export class ModpackBuildService implements OnDestroy {
     private httpClient = inject(HttpClient);
     private urls = inject(UrlService);
-    private signalrService = inject(SignalRService);
+    private modpackHub = inject(ModpackHubService);
 
-    private hubConnection: ConnectionContainer;
     builds: ModpackBuild[] = [];
+    private onReceiveBuild: ((build: ModpackBuild) => void) | null = null;
+    private reconnectSubscription: Subscription | null = null;
 
     ngOnDestroy(): void {
         this.disconnect();
@@ -20,12 +22,13 @@ export class ModpackBuildService implements OnDestroy {
     connect(callback: () => void, newBuildCallback: (string) => void) {
         this.getData(callback);
 
-        this.hubConnection = this.signalrService.connect(`modpack`);
-        this.hubConnection.connection.on('ReceiveBuild', (build: ModpackBuild) => {
+        this.modpackHub.connect();
+        this.onReceiveBuild = (build: ModpackBuild) => {
             this.patchBuild(build);
             newBuildCallback(build.id);
-        });
-        this.hubConnection.reconnectEvent.subscribe({
+        };
+        this.modpackHub.on('ReceiveBuild', this.onReceiveBuild);
+        this.reconnectSubscription = this.modpackHub.reconnected$.subscribe({
             next: () => {
                 this.getData(callback);
             }
@@ -33,10 +36,13 @@ export class ModpackBuildService implements OnDestroy {
     }
 
     disconnect() {
-        if (this.hubConnection !== undefined) {
-            this.hubConnection.dispose();
-            this.hubConnection.connection.stop();
+        this.reconnectSubscription?.unsubscribe();
+        this.reconnectSubscription = null;
+        if (this.onReceiveBuild) {
+            this.modpackHub.off('ReceiveBuild', this.onReceiveBuild);
+            this.onReceiveBuild = null;
         }
+        this.modpackHub.disconnect();
     }
 
     sortBuilds() {

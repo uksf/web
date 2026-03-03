@@ -2,7 +2,8 @@ import { Component, OnInit, Input, OnDestroy, inject } from '@angular/core';
 import { first, takeUntil } from 'rxjs/operators';
 import { AccountService } from '@app/core/services/account.service';
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { SignalRService, ConnectionContainer } from '@app/core/services/signalr.service';
+import { HubConnectionFactory } from '@app/core/services/hub-connection-factory';
+import { HubConnectionHandle } from '@app/core/services/hub-connection-handle';
 import { TimeAgoPipe } from '@app/shared/pipes/time.pipe';
 import { ObjectId } from '@app/shared/models/object-id';
 import { CommentThreadService } from '@app/shared/services/comment-thread.service';
@@ -27,12 +28,12 @@ export class CommentDisplayComponent extends DestroyableComponent implements OnI
     private commentThreadService = inject(CommentThreadService);
     private formBuilder = inject(FormBuilder);
     private accountService = inject(AccountService);
-    private signalrService = inject(SignalRService);
+    private hubFactory = inject(HubConnectionFactory);
 
     @Input() threadId: string;
     private canPostComment;
     private previousResponse;
-    private hubConnection: ConnectionContainer;
+    private hubConnection: HubConnectionHandle;
     private onReceiveComment = (comment) => {
         this.comments.unshift(comment);
     };
@@ -50,10 +51,10 @@ export class CommentDisplayComponent extends DestroyableComponent implements OnI
     ngOnInit() {
         this.getComments();
         this.getCanPostComment();
-        this.hubConnection = this.signalrService.connect(`commentThread?threadId=${this.threadId}`);
-        this.hubConnection.connection.on('ReceiveComment', this.onReceiveComment);
-        this.hubConnection.connection.on('DeleteComment', this.onDeleteComment);
-        this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
+        this.hubConnection = this.hubFactory.connect(`commentThread?threadId=${this.threadId}`);
+        this.hubConnection.on('ReceiveComment', this.onReceiveComment);
+        this.hubConnection.on('DeleteComment', this.onDeleteComment);
+        this.hubConnection.reconnected$.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.getComments();
                 this.getCanPostComment();
@@ -63,9 +64,7 @@ export class CommentDisplayComponent extends DestroyableComponent implements OnI
 
     override ngOnDestroy() {
         super.ngOnDestroy();
-        this.hubConnection.connection.off('ReceiveComment', this.onReceiveComment);
-        this.hubConnection.connection.off('DeleteComment', this.onDeleteComment);
-        this.hubConnection.connection.stop();
+        this.hubConnection.disconnect();
     }
 
     private getComments() {

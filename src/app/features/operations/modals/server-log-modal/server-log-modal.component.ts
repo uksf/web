@@ -10,7 +10,9 @@ import { ScrollingModule, CdkVirtualScrollViewport } from '@angular/cdk/scrollin
 import { CdkVirtualForOf } from '@angular/cdk/scrolling';
 
 import { DestroyableComponent } from '@app/shared/components/destroyable/destroyable.component';
-import { SignalRService, ConnectionContainer } from '@app/core/services/signalr.service';
+import { TextInputComponent } from '@app/shared/components/elements/text-input/text-input.component';
+import { DebouncedCallback } from '@app/shared/utils/debounce-callback';
+import { ServersHubService } from '../../services/servers-hub.service';
 import { GameServersService } from '../../services/game-servers.service';
 import { GameServer, RptLogSource, RptLogSearchResult } from '../../models/game-server';
 import { highlightRptLine } from '../../utils/rpt-syntax-highlighter';
@@ -30,14 +32,15 @@ interface ServerLogDialogData {
         MatIconModule,
         MatTooltipModule,
         ScrollingModule,
-        CdkVirtualForOf
+        CdkVirtualForOf,
+        TextInputComponent
     ]
 })
 export class ServerLogModalComponent extends DestroyableComponent implements OnInit {
     private dialogRef = inject(MatDialogRef<ServerLogModalComponent>);
     private data: ServerLogDialogData = inject(MAT_DIALOG_DATA);
     private gameServersService = inject(GameServersService);
-    private signalrService = inject(SignalRService);
+    private serversHub = inject(ServersHubService);
     private sanitizer = inject(DomSanitizer);
 
     server: GameServer;
@@ -51,10 +54,11 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     searchResults: RptLogSearchResult[] = [];
     searchMatchLines: Set<number> = new Set();
     currentSearchIndex = -1;
+    isDownloading = false;
 
     @ViewChild(CdkVirtualScrollViewport) viewport!: CdkVirtualScrollViewport;
 
-    private hubConnection!: ConnectionContainer;
+    private searchDebounce = new DebouncedCallback(300);
 
     constructor() {
         super();
@@ -68,55 +72,64 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
             }
         });
 
-        this.hubConnection = this.signalrService.connect('servers');
+        this.serversHub.connect();
 
-        this.hubConnection.connection.on('ReceiveLogContent',
-            (serverId: string, source: string, lines: string[], startLineIndex: number, isComplete: boolean) => {
-                if (serverId !== this.server.id || source !== this.activeSource) {
-                    return;
-                }
-                this.logLines.splice(startLineIndex, 0, ...lines);
-                const highlighted = lines.map(l => this.sanitizer.bypassSecurityTrustHtml(highlightRptLine(l)));
-                this.highlightedLines.splice(startLineIndex, 0, ...highlighted);
-                if (isComplete) {
-                    this.isLoading = false;
-                }
-                if (this.tailEnabled && !this.isLoading) {
-                    setTimeout(() => this.scrollToBottom());
-                }
-            }
+        this.serversHub.on('ReceiveLogContent',
+            this.onReceiveLogContent
         );
 
-        this.hubConnection.connection.on('ReceiveLogAppend',
-            (serverId: string, source: string, lines: string[]) => {
-                if (serverId !== this.server.id || source !== this.activeSource) {
-                    return;
-                }
-                this.logLines.push(...lines);
-                const highlighted = lines.map(l => this.sanitizer.bypassSecurityTrustHtml(highlightRptLine(l)));
-                this.highlightedLines.push(...highlighted);
-                if (this.tailEnabled) {
-                    setTimeout(() => this.scrollToBottom());
-                }
-            }
+        this.serversHub.on('ReceiveLogAppend',
+            this.onReceiveLogAppend
         );
 
-        this.hubConnection.connection.invoke('SubscribeToLog', this.server.id, 'Server');
+        this.serversHub.connected.then(() => {
+            this.serversHub.invoke('SubscribeToLog', this.server.id, 'Server');
+        });
     }
 
-    switchSource(source: string): void {
-        if (source === this.activeSource) {
+    private onReceiveLogContent = (serverId: string, source: string, lines: string[], startLineIndex: number, isComplete: boolean) => {
+        if (serverId !== this.server.id || source !== this.activeSource) {
             return;
         }
-        this.hubConnection.connection.invoke('UnsubscribeFromLog', this.server.id, this.activeSource);
+        this.logLines.splice(startLineIndex, 0, ...lines);
+        const highlighted = lines.map(l => this.highlightLine(l));
+        this.highlightedLines.splice(startLineIndex, 0, ...highlighted);
+        if (isComplete) {
+            this.isLoading = false;
+            if (this.searchQuery.trim()) {
+                this.search();
+            }
+        }
+        if (this.tailEnabled && !this.isLoading) {
+            setTimeout(() => this.scrollToBottom());
+        }
+    };
+
+    private onReceiveLogAppend = (serverId: string, source: string, lines: string[]) => {
+        if (serverId !== this.server.id || source !== this.activeSource) {
+            return;
+        }
+        this.logLines.push(...lines);
+        const highlighted = lines.map(l => this.highlightLine(l));
+        this.highlightedLines.push(...highlighted);
+        if (this.tailEnabled) {
+            setTimeout(() => this.scrollToBottom());
+        }
+    };
+
+    async switchSource(sourceName: string): Promise<void> {
+        if (!sourceName || sourceName === this.activeSource) {
+            return;
+        }
+        await this.serversHub.invoke('UnsubscribeFromLog', this.server.id, this.activeSource);
         this.logLines = [];
         this.highlightedLines = [];
         this.isLoading = true;
         this.searchResults = [];
         this.searchMatchLines = new Set();
         this.currentSearchIndex = -1;
-        this.activeSource = source;
-        this.hubConnection.connection.invoke('SubscribeToLog', this.server.id, source);
+        this.activeSource = sourceName;
+        this.serversHub.invoke('SubscribeToLog', this.server.id, sourceName);
     }
 
     toggleTail(): void {
@@ -126,11 +139,16 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         }
     }
 
+    onSearchChange(): void {
+        this.searchDebounce.schedule(() => this.search());
+    }
+
     search(): void {
         if (!this.searchQuery.trim()) {
             this.searchResults = [];
             this.searchMatchLines = new Set();
             this.currentSearchIndex = -1;
+            this.rehighlightAll();
             return;
         }
         this.gameServersService.searchLog(this.server.id, this.activeSource, this.searchQuery).pipe(first()).subscribe({
@@ -138,6 +156,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
                 this.searchResults = response.results;
                 this.searchMatchLines = new Set(response.results.map(r => r.lineIndex));
                 this.currentSearchIndex = response.results.length > 0 ? 0 : -1;
+                this.rehighlightAll();
                 if (this.currentSearchIndex >= 0) {
                     this.scrollToSearchResult();
                 }
@@ -161,8 +180,72 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         this.scrollToSearchResult();
     }
 
+    onLineClick(lineIndex: number): void {
+        const nearestIndex = this.findNearestSearchResult(lineIndex);
+        if (nearestIndex < 0) {
+            return;
+        }
+        this.currentSearchIndex = nearestIndex;
+    }
+
+    getSearchIndicatorPosition(lineIndex: number): number {
+        if (!this.logLines.length) {
+            return 0;
+        }
+        return (lineIndex / this.logLines.length) * 100;
+    }
+
+    onIndicatorMarkClick(event: MouseEvent, resultIndex: number): void {
+        event.stopPropagation();
+        this.currentSearchIndex = resultIndex;
+        this.scrollToSearchResult();
+    }
+
+    onIndicatorTrackClick(event: MouseEvent): void {
+        const track = event.currentTarget as HTMLElement;
+        const rect = track.getBoundingClientRect();
+        const ratio = (event.clientY - rect.top) / rect.height;
+        const lineIndex = Math.round(ratio * this.logLines.length);
+        const nearestIndex = this.findNearestSearchResult(lineIndex);
+        if (nearestIndex < 0) {
+            return;
+        }
+        this.currentSearchIndex = nearestIndex;
+        this.scrollToSearchResult();
+    }
+
+    findNearestSearchResult(lineIndex: number): number {
+        if (!this.searchResults.length) {
+            return -1;
+        }
+        let nearestIndex = 0;
+        let nearestDistance = Math.abs(this.searchResults[0].lineIndex - lineIndex);
+        for (let i = 1; i < this.searchResults.length; i++) {
+            const distance = Math.abs(this.searchResults[i].lineIndex - lineIndex);
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearestIndex = i;
+            }
+        }
+        return nearestIndex;
+    }
+
     downloadLog(): void {
-        window.open(this.gameServersService.getLogDownloadUrl(this.server.id, this.activeSource), '_blank');
+        this.isDownloading = true;
+        this.gameServersService.downloadLog(this.server.id, this.activeSource).pipe(first()).subscribe({
+            next: (blob) => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${this.server.name}_${this.activeSource}.rpt`;
+                a.click();
+                URL.revokeObjectURL(url);
+                this.isDownloading = false;
+            },
+            error: () => {
+                this.isDownloading = false;
+            }
+        });
     }
 
     close(): void {
@@ -185,14 +268,34 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     }
 
     override ngOnDestroy(): void {
-        if (this.hubConnection) {
-            this.hubConnection.connection.invoke('UnsubscribeFromLog', this.server.id, this.activeSource);
-            this.hubConnection.connection.off('ReceiveLogContent');
-            this.hubConnection.connection.off('ReceiveLogAppend');
-            this.hubConnection.dispose();
-            this.hubConnection.connection.stop().then();
-        }
+        this.searchDebounce.cancel();
+        this.serversHub.off('ReceiveLogContent', this.onReceiveLogContent);
+        this.serversHub.off('ReceiveLogAppend', this.onReceiveLogAppend);
+        this.serversHub.disconnect();
         super.ngOnDestroy();
+    }
+
+    private highlightLine(line: string): SafeHtml {
+        let html = highlightRptLine(line);
+        if (this.searchQuery.trim()) {
+            html = this.addSearchHighlights(html, this.searchQuery);
+        }
+        return this.sanitizer.bypassSecurityTrustHtml(html);
+    }
+
+    private addSearchHighlights(html: string, query: string): string {
+        const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const pattern = new RegExp(`(${escapedQuery})`, 'gi');
+        return html.replace(/(<[^>]+>)|([^<]+)/g, (match, tag: string, text: string) => {
+            if (tag) {
+                return tag;
+            }
+            return text.replace(pattern, '<mark class="search-term">$1</mark>');
+        });
+    }
+
+    private rehighlightAll(): void {
+        this.highlightedLines = this.logLines.map(l => this.highlightLine(l));
     }
 
     private scrollToBottom(): void {
@@ -202,9 +305,14 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     }
 
     private scrollToSearchResult(): void {
-        if (this.viewport && this.currentSearchIndex >= 0 && this.currentSearchIndex < this.searchResults.length) {
-            const lineIndex = this.searchResults[this.currentSearchIndex].lineIndex;
-            this.viewport.scrollToIndex(lineIndex);
+        if (!this.viewport || this.currentSearchIndex < 0 || this.currentSearchIndex >= this.searchResults.length) {
+            return;
         }
+        const lineIndex = this.searchResults[this.currentSearchIndex].lineIndex;
+        const itemSize = 20;
+        const viewportSize = this.viewport.getViewportSize();
+        const offset = lineIndex * itemSize;
+        const centeredOffset = Math.max(0, offset - (viewportSize / 2) + itemSize);
+        this.viewport.scrollToOffset(centeredOffset);
     }
 }

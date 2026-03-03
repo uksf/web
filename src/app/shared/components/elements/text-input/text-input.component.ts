@@ -63,7 +63,7 @@ export class TextInputComponent implements ControlValueAccessor, DoCheck {
     }
 
     get labelFloating(): boolean {
-        return this.focused || this.value.length > 0;
+        return !this.label || this.focused || this.value.length > 0;
     }
 
     get showClearButton(): boolean {

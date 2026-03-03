@@ -32,6 +32,7 @@ export class DateInputComponent implements ControlValueAccessor, DoCheck {
     readonly inputId = `date-input-${nextId++}`;
     value: Date | null = null;
     focused = false;
+    pickerOpen = false;
     touched = false;
     dirty = false;
     cachedErrorMessage = '';
@@ -98,6 +99,18 @@ export class DateInputComponent implements ControlValueAccessor, DoCheck {
         this.openPicker();
     }
 
+    onPickerOpened(): void {
+        this.pickerOpen = true;
+        this.focused = true;
+    }
+
+    onPickerClosed(): void {
+        this.pickerOpen = false;
+        this.focused = false;
+        this.touched = true;
+        this.onTouched();
+    }
+
     onDateChange(value: Date | null): void {
         this.value = value;
         this.dirty = true;
@@ -109,9 +122,11 @@ export class DateInputComponent implements ControlValueAccessor, DoCheck {
     }
 
     onBlur(): void {
-        this.focused = false;
-        this.touched = true;
-        this.onTouched();
+        if (!this.pickerOpen) {
+            this.focused = false;
+            this.touched = true;
+            this.onTouched();
+        }
     }
 
     writeValue(value: Date | null): void {

@@ -42,7 +42,8 @@
     </div>
 </div>
 
-<div [@folderExpansion]="expanded" [ngClass]="{ hidden: !expanded }" class="folder-panel">
+@if (expanded) {
+<div @folderExpansion class="folder-panel">
     <div class="folder-panel-line-container">
         <div class="folder-panel-line"></div>
     </div>
@@ -60,3 +61,4 @@
         }
     </div>
 </div>
+}

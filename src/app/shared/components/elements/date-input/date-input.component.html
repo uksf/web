@@ -7,23 +7,28 @@
             [id]="inputId"
             [value]="displayValue"
             [disabled]="disabled"
+            [placeholder]="labelFloating ? 'DD/MM/YYYY' : ''"
             [attr.required]="required || null"
             [attr.aria-describedby]="hasError ? inputId + '-error' : null"
-            [matDatepicker]="picker"
-            [min]="min"
-            [max]="max"
-            [matDatepickerFilter]="dateFilter"
-            (dateChange)="onDateChange($event.value)"
             readonly
             type="text"
             autocomplete="off"
             (focus)="onFocus()"
             (blur)="onBlur()"
         />
+        <input
+            #hiddenDateInput
+            class="hidden-date-input"
+            [matDatepicker]="picker"
+            [min]="min"
+            [max]="max"
+            [matDatepickerFilter]="dateFilter"
+            (dateChange)="onDateChange($event.value)"
+        />
         <button type="button" class="form-field-calendar" [disabled]="disabled" aria-label="Open calendar" (click)="openPicker(); $event.stopPropagation()">
             <mat-icon>calendar_today</mat-icon>
         </button>
-        <mat-datepicker #picker [touchUi]="touchUi" [startAt]="value"></mat-datepicker>
+        <mat-datepicker #picker [touchUi]="touchUi" [startAt]="value" (opened)="onPickerOpened()" (closed)="onPickerClosed()"></mat-datepicker>
     </div>
     <div [id]="inputId + '-error'" class="form-field-error" [class.visible]="hasError" [class.reserve-space]="reserveErrorSpace" role="alert">
         {{ errorMessage }}

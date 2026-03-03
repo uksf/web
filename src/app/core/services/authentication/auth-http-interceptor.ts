@@ -20,7 +20,7 @@ export const authHttpInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>
         catchError((httpError: HttpErrorResponse) => {
             if (httpError.status === 0) {
                 const uksfError: UksfError = {
-                    error: 'Network error — unable to reach the server',
+                    error: 'Network error - unable to reach the server',
                     statusCode: 0,
                     detailCode: 0,
                     validation: { reports: [] }

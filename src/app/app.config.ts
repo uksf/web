@@ -23,7 +23,6 @@ import { PermissionsService } from '@app/core/services/permissions.service';
 import { RedirectService } from '@app/core/services/authentication/redirect.service';
 import { UrlService } from '@app/core/services/url.service';
 import { SignalRService } from '@app/core/services/signalr.service';
-import { SignalRHubsService } from '@app/core/services/signalr-hubs.service';
 import { authHttpInterceptor } from '@app/core/services/authentication/auth-http-interceptor';
 
 // Shared Services (not providedIn: 'root')
@@ -87,7 +86,6 @@ export const appConfig: ApplicationConfig = {
         RedirectService,
         UrlService,
         SignalRService,
-        SignalRHubsService,
         // Shared services
         CountryPickerService,
         DisplayNameService,

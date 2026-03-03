@@ -3,7 +3,7 @@ import { first, takeUntil } from 'rxjs/operators';
 import { Router, RouterLinkActive, RouterLink } from '@angular/router';
 import { Permissions } from '@app/core/services/permissions';
 import { AccountService } from '@app/core/services/account.service';
-import { AppComponent } from '@app/app.component';
+import { UtilityHubService } from '@app/core/services/utility-hub.service';
 import { VersionService } from '@app/core/services/version.service';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { ApplicationState } from '@app/features/application/models/application';
@@ -21,6 +21,7 @@ export class SideBarComponent extends DestroyableComponent implements OnInit {
     private router = inject(Router);
     private permissions = inject(PermissionsService);
     private accountService = inject(AccountService);
+    private utilityHub = inject(UtilityHubService);
     private versionService = inject(VersionService);
 
     newVersion = false;
@@ -62,8 +63,8 @@ export class SideBarComponent extends DestroyableComponent implements OnInit {
 
     ngOnInit() {
         this.checkVersion();
-        AppComponent.utilityHubConnection.connection.on('ReceiveFrontendUpdate', this.onReceiveFrontendUpdate);
-        AppComponent.utilityHubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
+        this.utilityHub.on('ReceiveFrontendUpdate', this.onReceiveFrontendUpdate);
+        this.utilityHub.reconnected$.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.checkVersion();
             }
@@ -72,7 +73,7 @@ export class SideBarComponent extends DestroyableComponent implements OnInit {
 
     override ngOnDestroy() {
         super.ngOnDestroy();
-        AppComponent.utilityHubConnection.connection.off('ReceiveFrontendUpdate', this.onReceiveFrontendUpdate);
+        this.utilityHub.off('ReceiveFrontendUpdate', this.onReceiveFrontendUpdate);
     }
 
     get currentRouterItem() {

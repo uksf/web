@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { first, takeUntil } from 'rxjs/operators';
-import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
+import { ModpackHubService } from '../services/modpack-hub.service';
 import { InstallWorkshopModData, WorkshopMod } from '../models/workshop-mod';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { UksfError } from '@app/shared/models/response';
@@ -27,10 +27,9 @@ import { MatIcon } from '@angular/material/icon';
 })
 export class ModpackWorkshopComponent extends DestroyableComponent implements OnInit, OnDestroy {
     private workshopService = inject(WorkshopService);
-    private signalrService = inject(SignalRService);
+    private modpackHub = inject(ModpackHubService);
     private dialog = inject(MatDialog);
 
-    private hubConnection: ConnectionContainer;
     private onReceiveWorkshopModAdded = () => this.getData();
     private onReceiveWorkshopModUpdate = (id: string) => this.getDataForMod(id);
     mods: WorkshopMod[] = [];
@@ -41,10 +40,10 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
                 this.getModUpdatedDate(mod);
             });
         });
-        this.hubConnection = this.signalrService.connect(`modpack`);
-        this.hubConnection.connection.on('ReceiveWorkshopModAdded', this.onReceiveWorkshopModAdded);
-        this.hubConnection.connection.on('ReceiveWorkshopModUpdate', this.onReceiveWorkshopModUpdate);
-        this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
+        this.modpackHub.connect();
+        this.modpackHub.on('ReceiveWorkshopModAdded', this.onReceiveWorkshopModAdded);
+        this.modpackHub.on('ReceiveWorkshopModUpdate', this.onReceiveWorkshopModUpdate);
+        this.modpackHub.reconnected$.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.getData();
             }
@@ -53,9 +52,9 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
 
     override ngOnDestroy() {
         super.ngOnDestroy();
-        this.hubConnection.connection.off('ReceiveWorkshopModAdded', this.onReceiveWorkshopModAdded);
-        this.hubConnection.connection.off('ReceiveWorkshopModUpdate', this.onReceiveWorkshopModUpdate);
-        this.hubConnection.connection.stop();
+        this.modpackHub.off('ReceiveWorkshopModAdded', this.onReceiveWorkshopModAdded);
+        this.modpackHub.off('ReceiveWorkshopModUpdate', this.onReceiveWorkshopModUpdate);
+        this.modpackHub.disconnect();
     }
 
     getData(callback: () => void = null) {

@@ -3,11 +3,15 @@ import { applicationConfig, moduleMetadata } from '@storybook/angular';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { importProvidersFrom } from '@angular/core';
 import { SharedModule } from '../src/app/shared/shared.module';
+import { AppSettingsService } from '../src/app/core/services/app-settings.service';
 
 const preview: Preview = {
     decorators: [
         applicationConfig({
-            providers: [importProvidersFrom(BrowserAnimationsModule)]
+            providers: [
+                importProvidersFrom(BrowserAnimationsModule),
+                { provide: AppSettingsService, useValue: { appSetting: () => false } }
+            ]
         }),
         moduleMetadata({
             imports: [SharedModule]

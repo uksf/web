@@ -150,7 +150,12 @@ describe('TextInputComponent', () => {
     });
 
     describe('labelFloating', () => {
-        it('should not float when empty and unfocused', () => {
+        it('should always float when no label is set', () => {
+            expect(component.labelFloating).toBe(true);
+        });
+
+        it('should not float when empty and unfocused with label', () => {
+            component.label = 'Name';
             expect(component.labelFloating).toBe(false);
         });
 
@@ -170,7 +175,8 @@ describe('TextInputComponent', () => {
             expect(component.labelFloating).toBe(true);
         });
 
-        it('should stop floating when blurred and empty', () => {
+        it('should stop floating when blurred and empty with label', () => {
+            component.label = 'Name';
             component.onFocus();
             expect(component.labelFloating).toBe(true);
             component.onBlur();

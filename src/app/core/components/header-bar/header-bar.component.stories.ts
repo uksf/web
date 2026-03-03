@@ -8,7 +8,7 @@ import { PermissionsService } from '@app/core/services/permissions.service';
 import { AccountService } from '@app/core/services/account.service';
 import { AppSettingsService, Environments } from '@app/core/services/app-settings.service';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
-import { SignalRService } from '@app/core/services/signalr.service';
+import { HubConnectionFactory } from '@app/core/services/hub-connection-factory';
 import { NotificationsService } from '@app/core/services/notifications.service';
 import { Account, MembershipState } from '@app/shared/models/account';
 
@@ -24,11 +24,12 @@ const mockAccount: Account = {
     roleAssignment: 'Trooper',
 } as Account;
 
-const mockSignalRService = {
+const mockHubConnectionFactory = {
     connect: () => ({
-        connection: { on: () => {}, off: () => {}, stop: () => Promise.resolve() },
-        reconnectEvent: new Subject<void>(),
-        dispose: () => {}
+        on: () => {},
+        off: () => {},
+        disconnect: () => {},
+        reconnected$: new Subject<void>().asObservable()
     })
 };
 
@@ -38,7 +39,7 @@ function commonProviders(account: Account | null, environment: string) {
         { provide: AccountService, useValue: { account, accountChange$: new Subject<Account>() } },
         { provide: AppSettingsService, useValue: { appSetting: (key: string) => key === 'environment' ? environment : '' } },
         { provide: AuthenticationService, useValue: { isImpersonated: () => false } },
-        { provide: SignalRService, useValue: mockSignalRService },
+        { provide: HubConnectionFactory, useValue: mockHubConnectionFactory },
         { provide: NotificationsService, useValue: { getNotifications: () => of([]) } }
     ];
 }

@@ -6,9 +6,8 @@ import { Unit, UnitTreeDataSet } from '@app/features/units/models/units';
 import { Account } from '@app/shared/models/account';
 import { buildQuery } from '@app/shared/services/helper.service';
 import { CommandUnitGroupCardComponent } from './command-unit-group-card/command-unit-group-card.component';
-import { SignalRHubsService } from '@app/core/services/signalr-hubs.service';
-import { ConnectionContainer } from '@app/core/services/signalr.service';
-import { from, Subject } from 'rxjs';
+import { AllHubService } from '@app/core/services/all-hub.service';
+import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
 import { MembersService } from '@app/shared/services/members.service';
 import { UnitsService } from '../../services/units.service';
@@ -50,7 +49,7 @@ import { CommandMemberCardComponent } from './command-member-card/command-member
 export class CommandMembersComponent extends DestroyableComponent implements OnInit, OnDestroy {
     private membersService = inject(MembersService);
     private unitsService = inject(UnitsService);
-    private signalrHubsService = inject(SignalRHubsService);
+    private allHub = inject(AllHubService);
 
     @ViewChild(PaginatorComponent) paginator: PaginatorComponent;
     @ViewChild(CommandUnitGroupCardComponent) unitGroupsRoot: CommandUnitGroupCardComponent;
@@ -81,26 +80,19 @@ export class CommandMembersComponent extends DestroyableComponent implements OnI
     ];
     viewMode: string = 'all';
     private filterSubject = new Subject<string>();
-    private allHubConnection: ConnectionContainer;
 
     private onReceiveAccountUpdate = () => {
         this.getMembers();
     };
 
     ngOnInit(): void {
-        from(this.signalrHubsService.getAllHub())
-            .pipe(first())
-            .subscribe({
-                next: (allHub) => {
-                    this.allHubConnection = allHub;
-                    allHub.connection.on('ReceiveAccountUpdate', this.onReceiveAccountUpdate);
-                    allHub.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
-                        next: () => {
-                            this.getMembers();
-                        }
-                    });
-                }
-            });
+        this.allHub.connect();
+        this.allHub.on('ReceiveAccountUpdate', this.onReceiveAccountUpdate);
+        this.allHub.reconnected$.pipe(takeUntil(this.destroy$)).subscribe({
+            next: () => {
+                this.getMembers();
+            }
+        });
 
         this.getMembers();
 
@@ -206,9 +198,8 @@ export class CommandMembersComponent extends DestroyableComponent implements OnI
 
     override ngOnDestroy(): void {
         super.ngOnDestroy();
-        if (this.allHubConnection) {
-            this.allHubConnection.connection.off('ReceiveAccountUpdate', this.onReceiveAccountUpdate);
-        }
+        this.allHub.off('ReceiveAccountUpdate', this.onReceiveAccountUpdate);
+        this.allHub.disconnect();
     }
 
     private setUnitMembers(unit: Unit) {

@@ -4,7 +4,7 @@ import { CommentDisplayComponent } from './comment-display.component';
 import { SharedModule } from '@shared/shared.module';
 import { CommentThreadService } from '@app/shared/services/comment-thread.service';
 import { AccountService } from '@app/core/services/account.service';
-import { SignalRService } from '@app/core/services/signalr.service';
+import { HubConnectionFactory } from '@app/core/services/hub-connection-factory';
 import { of, Subject } from 'rxjs';
 
 const mockComments = [
@@ -13,9 +13,13 @@ const mockComments = [
     { id: '3', displayName: 'SSgt. Williams', content: 'Approved. Meets all requirements for promotion.', timestamp: new Date(Date.now() - 86400000).toISOString(), author: '3' }
 ];
 
-const mockHubConnection = {
-    connection: { on: () => {}, off: () => {}, stop: () => {} },
-    reconnectEvent: new Subject()
+const mockHubConnectionFactory = {
+    connect: () => ({
+        on: () => {},
+        off: () => {},
+        disconnect: () => {},
+        reconnected$: new Subject<void>().asObservable()
+    })
 };
 
 const meta: Meta<CommentDisplayComponent> = {
@@ -32,7 +36,7 @@ const meta: Meta<CommentDisplayComponent> = {
                     deleteComment: () => of({})
                 }},
                 { provide: AccountService, useValue: { account: { id: '1' } } },
-                { provide: SignalRService, useValue: { connect: () => mockHubConnection } }
+                { provide: HubConnectionFactory, useValue: mockHubConnectionFactory }
             ]
         })
     ],

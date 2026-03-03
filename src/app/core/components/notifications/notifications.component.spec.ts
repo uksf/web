@@ -4,17 +4,16 @@ import { Router } from '@angular/router';
 import { ElementRef } from '@angular/core';
 import { NotificationsComponent } from './notifications.component';
 import { Notification, NotificationsService } from '@app/core/services/notifications.service';
-import { SignalRService } from '@app/core/services/signalr.service';
+import { HubConnectionFactory } from '@app/core/services/hub-connection-factory';
 import { AccountService } from '@app/core/services/account.service';
 import { of, Subject, BehaviorSubject } from 'rxjs';
-import { NavigationEnd } from '@angular/router';
 
 describe('NotificationsComponent', () => {
     let component: NotificationsComponent;
     let mockRouter: any;
     let mockElementRef: any;
     let mockNotificationsService: any;
-    let mockSignalrService: any;
+    let mockHubFactory: any;
     let mockAccountService: any;
     let routerEvents$: Subject<any>;
 
@@ -45,14 +44,12 @@ describe('NotificationsComponent', () => {
             markRead: vi.fn().mockReturnValue(of({})),
             clear: vi.fn().mockReturnValue(of({}))
         };
-        mockSignalrService = {
+        mockHubFactory = {
             connect: vi.fn().mockReturnValue({
-                connection: {
-                    on: vi.fn(),
-                    off: vi.fn(),
-                    stop: vi.fn()
-                },
-                reconnectEvent: of()
+                on: vi.fn(),
+                off: vi.fn(),
+                disconnect: vi.fn(),
+                reconnected$: new Subject<void>().asObservable()
             })
         };
         mockAccountService = {
@@ -66,7 +63,7 @@ describe('NotificationsComponent', () => {
                 { provide: Router, useValue: mockRouter },
                 { provide: ElementRef, useValue: mockElementRef },
                 { provide: NotificationsService, useValue: mockNotificationsService },
-                { provide: SignalRService, useValue: mockSignalrService },
+                { provide: HubConnectionFactory, useValue: mockHubFactory },
                 { provide: AccountService, useValue: mockAccountService },
             ]
         });

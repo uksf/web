@@ -1,7 +1,8 @@
 import { Component, OnInit, ElementRef, HostListener, inject } from '@angular/core';
 import { first, takeUntil } from 'rxjs/operators';
 import { Router, NavigationEnd } from '@angular/router';
-import { SignalRService, ConnectionContainer } from '@app/core/services/signalr.service';
+import { HubConnectionFactory } from '@app/core/services/hub-connection-factory';
+import { HubConnectionHandle } from '@app/core/services/hub-connection-handle';
 import { AccountService } from '@app/core/services/account.service';
 import { Notification, NotificationsService } from '@app/core/services/notifications.service';
 import { DestroyableComponent } from '@app/shared/components';
@@ -20,14 +21,14 @@ export class NotificationsComponent extends DestroyableComponent implements OnIn
     private router = inject(Router);
     private elementRef = inject(ElementRef);
     private notificationsService = inject(NotificationsService);
-    private signalrService = inject(SignalRService);
+    private hubFactory = inject(HubConnectionFactory);
     private accountService = inject(AccountService);
 
     panel = false;
     notifications: Notification[] = [];
     unreadNotifications: Notification[] = [];
     private unreadTimeout: ReturnType<typeof setTimeout>;
-    private hubConnection: ConnectionContainer;
+    private hubConnection: HubConnectionHandle;
 
     private onReceiveNotification = (notification: Notification) => {
         this.notifications.unshift(notification);
@@ -73,11 +74,11 @@ export class NotificationsComponent extends DestroyableComponent implements OnIn
     ngOnInit() {
         this.getNotifications();
         this.waitForId().then((id) => {
-            this.hubConnection = this.signalrService.connect(`notifications?userId=${id}`);
-            this.hubConnection.connection.on('ReceiveNotification', this.onReceiveNotification);
-            this.hubConnection.connection.on('ReceiveRead', this.onReceiveRead);
-            this.hubConnection.connection.on('ReceiveClear', this.onReceiveClear);
-            this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
+            this.hubConnection = this.hubFactory.connect(`notifications?userId=${id}`);
+            this.hubConnection.on('ReceiveNotification', this.onReceiveNotification);
+            this.hubConnection.on('ReceiveRead', this.onReceiveRead);
+            this.hubConnection.on('ReceiveClear', this.onReceiveClear);
+            this.hubConnection.reconnected$.pipe(takeUntil(this.destroy$)).subscribe({
                 next: () => {
                     this.getNotifications();
                 }
@@ -88,10 +89,7 @@ export class NotificationsComponent extends DestroyableComponent implements OnIn
     override ngOnDestroy() {
         super.ngOnDestroy();
         if (this.hubConnection) {
-            this.hubConnection.connection.off('ReceiveNotification', this.onReceiveNotification);
-            this.hubConnection.connection.off('ReceiveRead', this.onReceiveRead);
-            this.hubConnection.connection.off('ReceiveClear', this.onReceiveClear);
-            this.hubConnection.connection.stop();
+            this.hubConnection.disconnect();
         }
         clearTimeout(this.unreadTimeout);
     }

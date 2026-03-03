@@ -1,11 +1,11 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxPermissionsService } from 'ngx-permissions';
-import { firstValueFrom, Subject } from 'rxjs';
+import { firstValueFrom, Subject, Subscription } from 'rxjs';
 import { AccountService } from './account.service';
 import { SessionService } from './authentication/session.service';
 import { Permissions } from './permissions';
-import { ConnectionContainer, SignalRService } from './signalr.service';
+import { AccountHubService } from './account-hub.service';
 import { AuthenticationService } from './authentication/authentication.service';
 import { Account, MembershipState } from '@app/shared/models/account';
 import { UksfError } from '@app/shared/models/response';
@@ -19,7 +19,7 @@ export class PermissionsService {
     private ngxPermissionsService = inject(NgxPermissionsService);
     private sessionService = inject(SessionService);
     private accountService = inject(AccountService);
-    private signalrService = inject(SignalRService);
+    private accountHub = inject(AccountHubService);
     private router = inject(Router);
     private authenticationService = inject(AuthenticationService);
     private jwtHelperService = inject(JwtHelperService);
@@ -27,42 +27,36 @@ export class PermissionsService {
     private logger = inject(LoggingService);
 
     private jwtRolesKey = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
-    private accountHubConnection: ConnectionContainer;
     private refreshPromise: Promise<void> | null = null;
     private revoked = false;
     private debouncedUpdate = new DebouncedCallback();
+    private reconnectSubscription: Subscription | null = null;
+    private onAccountUpdate = () => {
+        this.debouncedUpdate.schedule(() => {
+            this.refresh().then();
+        });
+    };
     public accountUpdateEvent = new Subject<void>();
 
     connect() {
-        if (this.accountHubConnection !== undefined) {
-            this.accountHubConnection.dispose();
-            this.accountHubConnection.connection.stop().then();
-        }
-
-        this.waitForId().then((id) => {
-            this.accountHubConnection = this.signalrService.connect(`account?userId=${id}`);
-            this.accountHubConnection.connection.on('ReceiveAccountUpdate', () => {
+        this.disconnect();
+        this.accountHub.connect();
+        this.accountHub.on('ReceiveAccountUpdate', this.onAccountUpdate);
+        this.reconnectSubscription = this.accountHub.reconnected$.subscribe({
+            next: () => {
                 this.debouncedUpdate.schedule(() => {
                     this.refresh().then();
                 });
-            });
-            this.accountHubConnection.reconnectEvent.subscribe({
-                next: () => {
-                    this.debouncedUpdate.schedule(() => {
-                        this.refresh().then();
-                    });
-                }
-            });
+            }
         });
     }
 
     disconnect() {
         this.debouncedUpdate.cancel();
-        if (this.accountHubConnection !== undefined) {
-            this.accountHubConnection.dispose();
-            this.accountHubConnection.connection.stop().then();
-            this.accountHubConnection = undefined;
-        }
+        this.reconnectSubscription?.unsubscribe();
+        this.reconnectSubscription = null;
+        this.accountHub.off('ReceiveAccountUpdate', this.onAccountUpdate);
+        this.accountHub.disconnect();
     }
 
     hasPermission(permission: string) {
@@ -189,20 +183,4 @@ export class PermissionsService {
         return typeof error === 'object' && error !== null && (error as UksfError).statusCode === 0;
     }
 
-    private waitForId(): Promise<string> {
-        if (this.accountService.account?.id) {
-            return Promise.resolve(this.accountService.account.id);
-        }
-
-        return new Promise<string>((resolve) => {
-            const subscription = this.accountService.accountChange$.subscribe({
-                next: (account: Account) => {
-                    if (account?.id) {
-                        subscription.unsubscribe();
-                        resolve(account.id);
-                    }
-                }
-            });
-        });
-    }
 }

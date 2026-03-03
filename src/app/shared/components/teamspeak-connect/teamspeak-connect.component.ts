@@ -5,7 +5,7 @@ import { FormBuilder, FormControl, Validators, FormsModule, ReactiveFormsModule 
 import { MatDialog } from '@angular/material/dialog';
 import { TeamspeakConnectService } from '@app/shared/services/teamspeak-connect.service';
 import { AccountService } from '@app/core/services/account.service';
-import { SignalRService, ConnectionContainer } from '@app/core/services/signalr.service';
+import { TeamspeakClientsHubService } from '@app/shared/services/teamspeak-clients-hub.service';
 import { nextFrame } from '@app/shared/services/helper.service';
 import { UksfError } from '@app/shared/models/response';
 import { TeamspeakConnectClient } from '@app/shared/models/teamspeak-connect-client';
@@ -36,7 +36,7 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
     private formBuilder = inject(FormBuilder);
     dialog = inject(MatDialog);
     private accountService = inject(AccountService);
-    private signalrService = inject(SignalRService);
+    private teamspeakHub = inject(TeamspeakClientsHubService);
 
     readonly TeamspeakConnectState = TeamspeakConnectState;
     @Input() showCancel = false;
@@ -56,7 +56,6 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
     clients: TeamspeakConnectClient[] = [];
     errorMessage: string = 'Unknown error. Please try again';
     private previousResponse = '-1';
-    private hubConnection: ConnectionContainer;
     private destroy$ = new Subject<void>();
     private debouncedUpdate = new DebouncedCallback();
     private debouncedChanged = new DebouncedCallback(100);
@@ -69,9 +68,9 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.findTeamspeakClients();
-        this.hubConnection = this.signalrService.connect('teamspeakClients');
-        this.hubConnection.connection.on('ReceiveClients', this.onReceiveClients);
-        this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
+        this.teamspeakHub.connect();
+        this.teamspeakHub.on('ReceiveClients', this.onReceiveClients);
+        this.teamspeakHub.reconnected$.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.debouncedUpdate.schedule(() => {
                     this.findTeamspeakClients();
@@ -85,8 +84,8 @@ export class ConnectTeamspeakComponent implements OnInit, OnDestroy {
         this.destroy$.complete();
         this.debouncedUpdate.cancel();
         this.debouncedChanged.cancel();
-        this.hubConnection.connection.off('ReceiveClients', this.onReceiveClients);
-        this.hubConnection.connection.stop();
+        this.teamspeakHub.off('ReceiveClients', this.onReceiveClients);
+        this.teamspeakHub.disconnect();
     }
 
     findTeamspeakClients() {

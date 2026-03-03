@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { first, takeUntil } from 'rxjs/operators';
-import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
+import { TeamspeakClientsHubService } from '@app/shared/services/teamspeak-clients-hub.service';
 import { DebouncedCallback } from '@app/shared/utils/debounce-callback';
 import { DestroyableComponent } from '@app/shared/components';
 import { HomeService, InstagramImage, TeamspeakOnlineUser } from '../../services/home.service';
@@ -20,7 +20,7 @@ import { ZonedTime } from '../../../../shared/pipes/time.pipe';
 })
 export class HomePageComponent extends DestroyableComponent implements OnInit {
     private homeService = inject(HomeService);
-    private signalrService = inject(SignalRService);
+    private teamspeakHub = inject(TeamspeakClientsHubService);
 
     commanders: TeamspeakOnlineUser[];
     recruiters: TeamspeakOnlineUser[];
@@ -29,7 +29,6 @@ export class HomePageComponent extends DestroyableComponent implements OnInit {
     content = [];
     instagramImages: InstagramImage[] = [];
     _time: Date;
-    private hubConnection: ConnectionContainer;
     private debouncedUpdate = new DebouncedCallback();
     private timeInterval: ReturnType<typeof setInterval>;
 
@@ -49,9 +48,9 @@ export class HomePageComponent extends DestroyableComponent implements OnInit {
 
     ngOnInit(): void {
         this.getClients();
-        this.hubConnection = this.signalrService.connect('teamspeakClients');
-        this.hubConnection.connection.on('ReceiveClients', this.onReceiveClients);
-        this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
+        this.teamspeakHub.connect();
+        this.teamspeakHub.on('ReceiveClients', this.onReceiveClients);
+        this.teamspeakHub.reconnected$.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.debouncedUpdate.schedule(() => {
                     this.getClients();
@@ -68,10 +67,8 @@ export class HomePageComponent extends DestroyableComponent implements OnInit {
             clearInterval(this.timeInterval);
         }
         this.debouncedUpdate.cancel();
-        if (this.hubConnection) {
-            this.hubConnection.connection.off('ReceiveClients', this.onReceiveClients);
-            this.hubConnection.connection.stop();
-        }
+        this.teamspeakHub.off('ReceiveClients', this.onReceiveClients);
+        this.teamspeakHub.disconnect();
     }
 
     get time() {
@@ -103,7 +100,7 @@ export class HomePageComponent extends DestroyableComponent implements OnInit {
     }
 
     trackByInstagramId(index: number, item: InstagramImage): string {
-        return item.id;
+        return item.id || String(index);
     }
 
     trackByDisplayName(index: number, item: { displayName: string }): string {

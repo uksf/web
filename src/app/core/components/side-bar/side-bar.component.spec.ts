@@ -5,10 +5,10 @@ import { SideBarComponent } from './side-bar.component';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { AccountService } from '@app/core/services/account.service';
 import { VersionService } from '@app/core/services/version.service';
+import { UtilityHubService } from '@app/core/services/utility-hub.service';
 import { of } from 'rxjs';
 import { Permissions } from '@app/core/services/permissions';
 import { ApplicationState } from '@app/features/application/models/application';
-import { AppComponent } from '@app/app.component';
 
 describe('SideBarComponent', () => {
     let component: SideBarComponent;
@@ -16,17 +16,17 @@ describe('SideBarComponent', () => {
     let mockPermissions: any;
     let mockAccountService: any;
     let mockVersionService: any;
+    let mockUtilityHub: any;
 
     beforeEach(() => {
         mockRouter = { url: '/home' };
         mockPermissions = { getPermissions: vi.fn().mockReturnValue({}) };
         mockAccountService = { account: { displayName: 'User', application: null } };
         mockVersionService = { getVersion: vi.fn().mockReturnValue(of(0)) };
-
-        // Mock AppComponent static hub
-        (AppComponent as any).utilityHubConnection = {
-            connection: { on: vi.fn(), off: vi.fn() },
-            reconnectEvent: of()
+        mockUtilityHub = {
+            on: vi.fn(),
+            off: vi.fn(),
+            reconnected$: of()
         };
 
         TestBed.configureTestingModule({
@@ -36,6 +36,7 @@ describe('SideBarComponent', () => {
                 { provide: PermissionsService, useValue: mockPermissions },
                 { provide: AccountService, useValue: mockAccountService },
                 { provide: VersionService, useValue: mockVersionService },
+                { provide: UtilityHubService, useValue: mockUtilityHub },
             ]
         });
         component = TestBed.inject(SideBarComponent);
@@ -226,7 +227,7 @@ describe('SideBarComponent', () => {
             component.ngOnInit();
 
             expect(mockVersionService.getVersion).toHaveBeenCalled();
-            expect(AppComponent.utilityHubConnection.connection.on).toHaveBeenCalledWith(
+            expect(mockUtilityHub.on).toHaveBeenCalledWith(
                 'ReceiveFrontendUpdate',
                 expect.any(Function)
             );
@@ -239,7 +240,7 @@ describe('SideBarComponent', () => {
 
             component.ngOnDestroy();
 
-            expect(AppComponent.utilityHubConnection.connection.off).toHaveBeenCalledWith(
+            expect(mockUtilityHub.off).toHaveBeenCalledWith(
                 'ReceiveFrontendUpdate',
                 expect.any(Function)
             );

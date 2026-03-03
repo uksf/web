@@ -6,16 +6,9 @@ import { SideBarComponent } from './side-bar.component';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { AccountService } from '@app/core/services/account.service';
 import { VersionService } from '@app/core/services/version.service';
+import { UtilityHubService } from '@app/core/services/utility-hub.service';
 import { Permissions } from '@app/core/services/permissions';
 import { Account, MembershipState } from '@app/shared/models/account';
-import { AppComponent } from '@app/app.component';
-
-// Mock the static AppComponent.utilityHubConnection used in SideBarComponent.ngOnInit
-(AppComponent as any).utilityHubConnection = {
-    connection: { on: () => {}, off: () => {} },
-    reconnectEvent: new Subject<void>(),
-    dispose: () => {}
-};
 
 const mockAccount: Account = {
     id: '1',
@@ -36,7 +29,14 @@ function sidebarProviders(permissions: Record<string, boolean>, account: Account
     return [
         { provide: PermissionsService, useValue: { getPermissions: () => permissions } },
         { provide: AccountService, useValue: { account, accountChange$: new Subject<Account>() } },
-        { provide: VersionService, useValue: { getVersion: () => of(1) } }
+        { provide: VersionService, useValue: { getVersion: () => of(1) } },
+        {
+            provide: UtilityHubService, useValue: {
+                on: () => {},
+                off: () => {},
+                reconnected$: new Subject<void>()
+            }
+        }
     ];
 }
 

@@ -22,7 +22,11 @@ export class SignalRService {
             .withAutomaticReconnect()
             .build();
         const container = new ConnectionContainer(connection, reconnectEvent);
-        this.waitForConnection(container).then(() => {
+        connection.onreconnected(() => {
+            reconnectEvent.next();
+        });
+        container.connected = this.startConnection(container);
+        container.connected.then(() => {
             connection.onclose((error) => {
                 if (error) {
                     container.reconnectIntervalId = setInterval(() => {
@@ -47,7 +51,7 @@ export class SignalRService {
         return container;
     }
 
-    private waitForConnection(container: ConnectionContainer): Promise<void> {
+    private startConnection(container: ConnectionContainer): Promise<void> {
         return new Promise<void>((resolve) => {
             const connectFunction = () => {
                 container.connection
@@ -71,6 +75,7 @@ export class ConnectionContainer {
     reconnectEvent: Subject<void>;
     reconnectIntervalId: ReturnType<typeof setInterval> | undefined;
     connectTimeoutId: ReturnType<typeof setTimeout> | undefined;
+    connected: Promise<void> = Promise.resolve();
 
     constructor(connection: HubConnection, reconnectEvent: Subject<void>) {
         this.connection = connection;

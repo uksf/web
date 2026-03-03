@@ -6,7 +6,7 @@ import { SharedModule } from '@shared/shared.module';
 import { MatDialog } from '@angular/material/dialog';
 import { AccountService } from '@app/core/services/account.service';
 import { PermissionsService } from '@app/core/services/permissions.service';
-import { SignalRService } from '@app/core/services/signalr.service';
+import { HubConnectionFactory } from '@app/core/services/hub-connection-factory';
 import { CommentThreadService } from '@app/shared/services/comment-thread.service';
 import { ApplicationService } from '../../services/application.service';
 import { of, Subject } from 'rxjs';
@@ -39,11 +39,12 @@ const meta: Meta<ApplicationEditComponent> = {
                 { provide: AccountService, useValue: { account: { ...mockAccount }, accountChange$: new Subject(), getAccount: () => of({}) } },
                 { provide: PermissionsService, useValue: { hasPermission: () => false, accountUpdateEvent: new Subject() } },
                 { provide: ApplicationService, useValue: { updateApplication: () => of({}) } },
-                { provide: SignalRService, useValue: {
+                { provide: HubConnectionFactory, useValue: {
                     connect: () => ({
-                        connection: { on: () => {}, off: () => {}, stop: () => Promise.resolve() },
-                        reconnectEvent: new Subject<void>(),
-                        dispose: () => {}
+                        on: () => {},
+                        off: () => {},
+                        disconnect: () => {},
+                        reconnected$: new Subject<void>().asObservable()
                     })
                 }},
                 { provide: CommentThreadService, useValue: {

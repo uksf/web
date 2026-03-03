@@ -9,9 +9,6 @@ import { CommandUnitsComponent } from './components/command-units/command-units.
 import { CommandRanksComponent } from './components/command-ranks/command-ranks.component';
 import { CommandRolesComponent } from './components/command-roles/command-roles.component';
 import { CommandTrainingComponent } from './components/command-training/command-training.component';
-import { RolesService } from './services/roles.service';
-import { TrainingsService } from './services/trainings.service';
-
 const commandPermissions = {
     only: Permissions.COMMAND,
     except: Permissions.UNLOGGED,
@@ -26,7 +23,6 @@ export const COMMAND_ROUTES: Routes = [
     {
         path: '',
         component: CommandPageComponent,
-        providers: [RolesService, TrainingsService],
         children: [
             { path: '', redirectTo: 'requests', pathMatch: 'full' },
             {

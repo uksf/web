@@ -9,7 +9,7 @@ import { MessageModalComponent } from '@app/shared/modals/message-modal/message-
 import { ValidationReportModalComponent } from '@app/shared/modals/validation-report-modal/validation-report-modal.component';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { first, takeUntil } from 'rxjs/operators';
-import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
+import { ServersHubService } from '../../services/servers-hub.service';
 import { Permissions } from '@app/core/services/permissions';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { UksfError } from '@app/shared/models/response';
@@ -61,7 +61,7 @@ import { DisplayName } from '../../../../shared/pipes/displayName.pipe';
 export class OperationsServersComponent extends DestroyableComponent implements OnInit, OnDestroy {
     private gameServersService = inject(GameServersService);
     private dialog = inject(MatDialog);
-    private signalrService = inject(SignalRService);
+    private serversHub = inject(ServersHubService);
     private permissions = inject(PermissionsService);
 
     @ViewChild('uploader') uploader: ElementRef;
@@ -80,7 +80,6 @@ export class OperationsServersComponent extends DestroyableComponent implements 
     fileDragging;
     dropZoneHeight = 0;
     dropZoneWidth = 0;
-    private hubConnection: ConnectionContainer;
     private uptimeInterval: number;
 
     private onReceiveDisabledState = (state) => {
@@ -88,38 +87,38 @@ export class OperationsServersComponent extends DestroyableComponent implements 
     };
 
     private onReceiveAnyUpdate = (connectionId: string, skipRefresh: boolean) => {
-        if (connectionId !== this.hubConnection.connection.connectionId) {
+        if (connectionId !== this.serversHub.connectionId) {
             this.getServers(skipRefresh);
         }
     };
 
     private onReceiveServerUpdate = (connectionId: string, serverId: string) => {
-        if (connectionId !== this.hubConnection.connection.connectionId) {
+        if (connectionId !== this.serversHub.connectionId) {
             const server = this.servers.find((server) => server.id === serverId);
             this.refreshServerStatus(server);
         }
     };
 
     private onReceiveMissionsUpdate = (connectionId: string, missions: Mission[]) => {
-        if (connectionId !== this.hubConnection.connection.connectionId) {
+        if (connectionId !== this.serversHub.connectionId) {
             this.missions.next(missions.map(this.mapMissionElement));
         }
     };
 
     private get connectionId(): string {
-        return this.hubConnection.connection.connectionId;
+        return this.serversHub.connectionId;
     }
 
     ngOnInit() {
         this.admin = this.permissions.hasPermission(Permissions.ADMIN);
 
-        this.hubConnection = this.signalrService.connect(`servers`);
+        this.serversHub.connect();
 
-        this.hubConnection.connection.on('ReceiveDisabledState', this.onReceiveDisabledState);
-        this.hubConnection.connection.on('ReceiveAnyUpdateIfNotCaller', this.onReceiveAnyUpdate);
-        this.hubConnection.connection.on('ReceiveServerUpdateIfNotCaller', this.onReceiveServerUpdate);
-        this.hubConnection.connection.on('ReceiveMissionsUpdateIfNotCaller', this.onReceiveMissionsUpdate);
-        this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
+        this.serversHub.on('ReceiveDisabledState', this.onReceiveDisabledState);
+        this.serversHub.on('ReceiveAnyUpdateIfNotCaller', this.onReceiveAnyUpdate);
+        this.serversHub.on('ReceiveServerUpdateIfNotCaller', this.onReceiveServerUpdate);
+        this.serversHub.on('ReceiveMissionsUpdateIfNotCaller', this.onReceiveMissionsUpdate);
+        this.serversHub.reconnected$.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.getServers();
                 this.getDisabledState();
@@ -149,12 +148,11 @@ export class OperationsServersComponent extends DestroyableComponent implements 
                 }
             });
         }
-        this.hubConnection.connection.off('ReceiveDisabledState', this.onReceiveDisabledState);
-        this.hubConnection.connection.off('ReceiveAnyUpdateIfNotCaller', this.onReceiveAnyUpdate);
-        this.hubConnection.connection.off('ReceiveServerUpdateIfNotCaller', this.onReceiveServerUpdate);
-        this.hubConnection.connection.off('ReceiveMissionsUpdateIfNotCaller', this.onReceiveMissionsUpdate);
-        this.hubConnection.dispose();
-        this.hubConnection.connection.stop().then();
+        this.serversHub.off('ReceiveDisabledState', this.onReceiveDisabledState);
+        this.serversHub.off('ReceiveAnyUpdateIfNotCaller', this.onReceiveAnyUpdate);
+        this.serversHub.off('ReceiveServerUpdateIfNotCaller', this.onReceiveServerUpdate);
+        this.serversHub.off('ReceiveMissionsUpdateIfNotCaller', this.onReceiveMissionsUpdate);
+        this.serversHub.disconnect();
     }
 
     getServers(skip = false) {
@@ -266,9 +264,11 @@ export class OperationsServersComponent extends DestroyableComponent implements 
         this.dialog.open(ServerLogModalComponent, {
             data: { server },
             panelClass: 'rpt-log-dialog',
+            backdropClass: 'rpt-log-backdrop',
             width: '95vw',
             maxWidth: '95vw',
             height: '90vh',
+            autoFocus: false,
         });
     }
 
@@ -298,7 +298,7 @@ export class OperationsServersComponent extends DestroyableComponent implements 
             .open(AddServerModalComponent, {
                 data: {
                     server: server,
-                    connectionId: this.hubConnection.connection.connectionId
+                    connectionId: this.connectionId
                 },
                 panelClass: 'no-max-height-dialog'
             })

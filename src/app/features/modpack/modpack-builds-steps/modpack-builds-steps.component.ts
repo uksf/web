@@ -7,7 +7,8 @@ import { GameEnvironment } from '@app/shared/models/game-environment';
 import { ThemeEmitterComponent } from '@app/shared/components/elements/theme-emitter/theme-emitter.component';
 import { ModpackBuild } from '../models/modpack-build';
 import { ModpackBuildResult } from '../models/modpack-build-result';
-import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
+import { HubConnectionFactory } from '@app/core/services/hub-connection-factory';
+import { HubConnectionHandle } from '@app/core/services/hub-connection-handle';
 import { ModpackBuildProcessService } from '../modpackBuildProcess.service';
 import { ModpackBuildStep } from '../models/modpack-build-step';
 import { nextFrame } from '@app/shared/services/helper.service';
@@ -28,7 +29,7 @@ import { AnsiToHtmlPipe } from '../../../shared/pipes/ansi-to-html.pipe';
     imports: [ThemeEmitterComponent_1, NgClass, FlexFillerComponent, MatButton, MatTooltip, MatIcon, CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf, AnsiToHtmlPipe]
 })
 export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges {
-    private signalrService = inject(SignalRService);
+    private hubFactory = inject(HubConnectionFactory);
     private modpackBuildProcessService = inject(ModpackBuildProcessService);
     private route = inject(ActivatedRoute);
     private router = inject(Router);
@@ -49,7 +50,7 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
     ignoreUpdates = false;
     cancelling = false;
     autoScroll = true;
-    private hubConnection: ConnectionContainer;
+    private hubConnection: HubConnectionHandle;
     private destroy$ = new Subject<void>();
 
     private onReceiveBuildStep = (step: ModpackBuildStep) => {
@@ -97,9 +98,9 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
             this.chooseStep();
 
             if (!this.build.finished) {
-                this.hubConnection = this.signalrService.connect(`modpack?buildId=${this.build.id}`);
-                this.hubConnection.connection.on('ReceiveBuildStep', this.onReceiveBuildStep);
-                this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
+                this.hubConnection = this.hubFactory.connect(`modpack?buildId=${this.build.id}`);
+                this.hubConnection.on('ReceiveBuildStep', this.onReceiveBuildStep);
+                this.hubConnection.reconnected$.pipe(takeUntil(this.destroy$)).subscribe({
                     next: () => {
                         this.modpackBuildProcessService.getBuildData(this.build.id, (reconnectBuild: ModpackBuild) => {
                             this.build = reconnectBuild;
@@ -112,10 +113,9 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
     }
 
     disconnect() {
-        if (this.hubConnection !== undefined) {
-            this.hubConnection.connection.off('ReceiveBuildStep', this.onReceiveBuildStep);
-            this.hubConnection.dispose();
-            this.hubConnection.connection.stop();
+        if (this.hubConnection) {
+            this.hubConnection.disconnect();
+            this.hubConnection = null;
         }
     }
 

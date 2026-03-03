@@ -6,7 +6,7 @@ import { Training } from '@app/features/command/models/training';
 
 const jsonHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class TrainingsService {
     private httpClient = inject(HttpClient);
     private urls = inject(UrlService);

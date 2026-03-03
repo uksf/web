@@ -6,7 +6,7 @@ import { RequestRoleModalComponent } from '@app/features/command/modals/request-
 import { RequestChainOfCommandPositionModalComponent } from '@app/features/command/modals/request-chain-of-command-position-modal/request-chain-of-command-position-modal.component';
 import { RequestDischargeModalComponent } from '@app/features/command/modals/request-discharge-modal/request-discharge-modal.component';
 import { RequestUnitRemovalModalComponent } from '@app/features/command/modals/request-unit-removal-modal/request-unit-removal-modal.component';
-import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
+import { CommandRequestsHubService } from '../../services/command-requests-hub.service';
 import { AccountService } from '@app/core/services/account.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { RequestModalData } from '@app/shared/models/shared';
@@ -33,14 +33,13 @@ import { DatePipe } from '@angular/common';
 export class CommandRequestsComponent extends DestroyableComponent implements OnInit, OnDestroy {
     private commandRequestsService = inject(CommandRequestsService);
     dialog = inject(MatDialog);
-    private signalrService = inject(SignalRService);
+    private commandRequestsHub = inject(CommandRequestsHubService);
     private accountService = inject(AccountService);
 
     reviewState = ReviewState;
     myRequests: CommandRequestItem[] = [];
     otherRequests: CommandRequestItem[] = [];
     updating;
-    private hubConnection: ConnectionContainer;
 
     private onReceiveRequestUpdate = () => {
         this.getRequests();
@@ -52,9 +51,9 @@ export class CommandRequestsComponent extends DestroyableComponent implements On
     }
 
     ngOnInit() {
-        this.hubConnection = this.signalrService.connect(`commandRequests`);
-        this.hubConnection.connection.on('ReceiveRequestUpdate', this.onReceiveRequestUpdate);
-        this.hubConnection.reconnectEvent.pipe(takeUntil(this.destroy$)).subscribe({
+        this.commandRequestsHub.connect();
+        this.commandRequestsHub.on('ReceiveRequestUpdate', this.onReceiveRequestUpdate);
+        this.commandRequestsHub.reconnected$.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.getRequests();
             }
@@ -63,8 +62,8 @@ export class CommandRequestsComponent extends DestroyableComponent implements On
 
     override ngOnDestroy(): void {
         super.ngOnDestroy();
-        this.hubConnection.connection.off('ReceiveRequestUpdate', this.onReceiveRequestUpdate);
-        this.hubConnection.connection.stop();
+        this.commandRequestsHub.off('ReceiveRequestUpdate', this.onReceiveRequestUpdate);
+        this.commandRequestsHub.disconnect();
     }
 
     getRequests() {

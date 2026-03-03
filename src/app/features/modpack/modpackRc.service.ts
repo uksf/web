@@ -1,18 +1,20 @@
 import { Injectable, OnDestroy, inject } from '@angular/core';
-import { ConnectionContainer, SignalRService } from '@app/core/services/signalr.service';
+import { Subscription } from 'rxjs';
 import { ModpackRc } from './models/modpack-rc';
 import { ModpackBuild } from './models/modpack-build';
 import { HttpClient } from '@angular/common/http';
 import { UrlService } from '@app/core/services/url.service';
+import { ModpackHubService } from './services/modpack-hub.service';
 
 @Injectable()
 export class ModpackRcService implements OnDestroy {
     private httpClient = inject(HttpClient);
     private urls = inject(UrlService);
-    private signalrService = inject(SignalRService);
+    private modpackHub = inject(ModpackHubService);
 
-    private hubConnection: ConnectionContainer;
     rcs: ModpackRc[] = [];
+    private onReceiveRc: ((build: ModpackBuild) => void) | null = null;
+    private reconnectSubscription: Subscription | null = null;
 
     ngOnDestroy(): void {
         this.disconnect();
@@ -21,12 +23,13 @@ export class ModpackRcService implements OnDestroy {
     connect(callback: () => void, newBuildCallback: (string) => void) {
         this.getData(callback);
 
-        this.hubConnection = this.signalrService.connect(`modpack`);
-        this.hubConnection.connection.on('ReceiveReleaseCandidateBuild', (build: ModpackBuild) => {
+        this.modpackHub.connect();
+        this.onReceiveRc = (build: ModpackBuild) => {
             this.patchBuild(build);
             newBuildCallback(build.version);
-        });
-        this.hubConnection.reconnectEvent.subscribe({
+        };
+        this.modpackHub.on('ReceiveReleaseCandidateBuild', this.onReceiveRc);
+        this.reconnectSubscription = this.modpackHub.reconnected$.subscribe({
             next: () => {
                 this.getData(callback);
             }
@@ -34,10 +37,13 @@ export class ModpackRcService implements OnDestroy {
     }
 
     disconnect() {
-        if (this.hubConnection !== undefined) {
-            this.hubConnection.dispose();
-            this.hubConnection.connection.stop();
+        this.reconnectSubscription?.unsubscribe();
+        this.reconnectSubscription = null;
+        if (this.onReceiveRc) {
+            this.modpackHub.off('ReceiveReleaseCandidateBuild', this.onReceiveRc);
+            this.onReceiveRc = null;
         }
+        this.modpackHub.disconnect();
     }
 
     sortRcs() {

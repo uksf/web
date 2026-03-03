@@ -48,8 +48,9 @@ export class RequestLoaModalComponent extends DestroyableComponent implements On
         emergency: [false],
         late: [false]
     });
-    validationMessages: { reason: ValidationMessage[] } = {
-        reason: [{ type: 'required', message: 'Reason is required' }]
+    validationMessages: { reason: ValidationMessage[]; date: ValidationMessage[] } = {
+        reason: [{ type: 'required', message: 'Reason is required' }],
+        date: [{ type: 'required', message: 'Date is required' }]
     };
     start: Date | null = null;
     end: Date | null = null;

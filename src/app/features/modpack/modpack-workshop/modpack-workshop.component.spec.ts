@@ -4,13 +4,13 @@ import { ModpackWorkshopComponent } from './modpack-workshop.component';
 import { of, Subject } from 'rxjs';
 import { WorkshopMod, WorkshopModStatus } from '../models/workshop-mod';
 import { WorkshopService } from '../services/workshop.service';
-import { SignalRService } from '@app/core/services/signalr.service';
+import { ModpackHubService } from '../services/modpack-hub.service';
 import { MatDialog } from '@angular/material/dialog';
 
 describe('ModpackWorkshopComponent', () => {
     let component: ModpackWorkshopComponent;
     let mockWorkshopService: any;
-    let mockSignalrService: any;
+    let mockModpackHub: any;
     let mockDialog: any;
 
     const makeMod = (overrides: Partial<WorkshopMod> = {}): WorkshopMod => ({
@@ -40,11 +40,12 @@ describe('ModpackWorkshopComponent', () => {
             uninstallMod: vi.fn().mockReturnValue(of(undefined)),
             deleteMod: vi.fn().mockReturnValue(of(undefined))
         };
-        mockSignalrService = {
-            connect: vi.fn().mockReturnValue({
-                connection: { on: vi.fn(), off: vi.fn(), stop: vi.fn() },
-                reconnectEvent: of()
-            })
+        mockModpackHub = {
+            connect: vi.fn(),
+            disconnect: vi.fn(),
+            on: vi.fn(),
+            off: vi.fn(),
+            reconnected$: new Subject<void>().asObservable()
         };
         mockDialog = { open: vi.fn() };
 
@@ -52,7 +53,7 @@ describe('ModpackWorkshopComponent', () => {
             providers: [
                 ModpackWorkshopComponent,
                 { provide: WorkshopService, useValue: mockWorkshopService },
-                { provide: SignalRService, useValue: mockSignalrService },
+                { provide: ModpackHubService, useValue: mockModpackHub },
                 { provide: MatDialog, useValue: mockDialog },
             ]
         });
@@ -254,31 +255,29 @@ describe('ModpackWorkshopComponent', () => {
     });
 
     describe('ngOnInit', () => {
-        it('connects to modpack SignalR hub', () => {
+        it('connects to modpack hub', () => {
             component.ngOnInit();
 
-            expect(mockSignalrService.connect).toHaveBeenCalledWith('modpack');
+            expect(mockModpackHub.connect).toHaveBeenCalled();
         });
 
-        it('registers SignalR event handlers', () => {
+        it('registers event handlers', () => {
             component.ngOnInit();
 
-            const hubConnection = mockSignalrService.connect.mock.results[0].value;
-            expect(hubConnection.connection.on).toHaveBeenCalledWith('ReceiveWorkshopModAdded', expect.any(Function));
-            expect(hubConnection.connection.on).toHaveBeenCalledWith('ReceiveWorkshopModUpdate', expect.any(Function));
+            expect(mockModpackHub.on).toHaveBeenCalledWith('ReceiveWorkshopModAdded', expect.any(Function));
+            expect(mockModpackHub.on).toHaveBeenCalledWith('ReceiveWorkshopModUpdate', expect.any(Function));
         });
     });
 
     describe('ngOnDestroy', () => {
-        it('disconnects SignalR hub', () => {
+        it('disconnects hub', () => {
             component.ngOnInit();
-            const hubConnection = mockSignalrService.connect.mock.results[0].value;
 
             component.ngOnDestroy();
 
-            expect(hubConnection.connection.off).toHaveBeenCalledWith('ReceiveWorkshopModAdded', expect.any(Function));
-            expect(hubConnection.connection.off).toHaveBeenCalledWith('ReceiveWorkshopModUpdate', expect.any(Function));
-            expect(hubConnection.connection.stop).toHaveBeenCalled();
+            expect(mockModpackHub.off).toHaveBeenCalledWith('ReceiveWorkshopModAdded', expect.any(Function));
+            expect(mockModpackHub.off).toHaveBeenCalledWith('ReceiveWorkshopModUpdate', expect.any(Function));
+            expect(mockModpackHub.disconnect).toHaveBeenCalled();
         });
     });
 
