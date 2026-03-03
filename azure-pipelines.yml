@@ -7,7 +7,7 @@ trigger:
 pool: Avengers
 
 variables:
-  buildOutput: '$(Build.SourcesDirectory)\dist'
+  buildOutput: '$(Build.SourcesDirectory)\dist\browser'
 
 stages:
   - stage: Build
