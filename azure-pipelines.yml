@@ -41,9 +41,19 @@ stages:
               testResultsFiles: 'test-results/junit.xml'
             condition: succeededOrFailed()
 
-          - script: |
-              git diff HEAD~1 --name-only -- '*.stories.ts' '*.stories.spec.ts' '*.component.ts' '*.component.html' '*.component.scss' '.storybook/**' 'src/styles/**' 'src/*.scss' 'angular.json' 'playwright-storybook.config.ts' | head -1 | grep -q . && echo "##vso[task.setvariable variable=storybookNeeded]true" || echo "##vso[task.setvariable variable=storybookNeeded]false"
+          - task: PowerShell@2
             displayName: 'Check Storybook changes'
+            inputs:
+              targetType: 'inline'
+              script: |
+                $changes = git diff HEAD~1 --name-only -- '*.stories.ts' '*.stories.spec.ts' '*.component.ts' '*.component.html' '*.component.scss' '.storybook/**' 'src/styles/**' 'src/*.scss' 'angular.json' 'playwright-storybook.config.ts'
+                if ($changes) {
+                    Write-Host "Storybook-relevant changes detected"
+                    Write-Host "##vso[task.setvariable variable=storybookNeeded]true"
+                } else {
+                    Write-Host "No storybook-relevant changes, skipping"
+                    Write-Host "##vso[task.setvariable variable=storybookNeeded]false"
+                }
 
           - script: |
               bun run build-storybook
