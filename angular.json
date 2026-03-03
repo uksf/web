@@ -85,21 +85,45 @@
                     "defaultConfiguration": "development"
                 },
                 "storybook": {
-                    "builder": "@storybook/angular:start-storybook",
+                    "builder": "@analogjs/storybook-angular:start-storybook",
                     "options": {
                         "configDir": ".storybook",
-                        "browserTarget": "uksf:build:storybook",
+                        "buildTarget": "uksf:build:storybook",
                         "compodoc": false,
-                        "port": 6006
+                        "port": 6006,
+                        "styles": [
+                            "src/storybook-fonts.css",
+                            "src/styles-app-loading.scss",
+                            "src/styles.scss",
+                            "./node_modules/primeng/resources/primeng.min.css",
+                            "./node_modules/primeng/resources/themes/md-dark-indigo/theme.css",
+                            "./node_modules/quill/dist/quill.core.css",
+                            "./node_modules/quill/dist/quill.snow.css"
+                        ],
+                        "stylePreprocessorOptions": {
+                            "includePaths": ["src"]
+                        }
                     }
                 },
                 "build-storybook": {
-                    "builder": "@storybook/angular:build-storybook",
+                    "builder": "@analogjs/storybook-angular:build-storybook",
                     "options": {
                         "configDir": ".storybook",
-                        "browserTarget": "uksf:build:storybook",
+                        "buildTarget": "uksf:build:storybook",
                         "compodoc": false,
-                        "outputDir": "storybook-static"
+                        "outputDir": "storybook-static",
+                        "styles": [
+                            "src/storybook-fonts.css",
+                            "src/styles-app-loading.scss",
+                            "src/styles.scss",
+                            "./node_modules/primeng/resources/primeng.min.css",
+                            "./node_modules/primeng/resources/themes/md-dark-indigo/theme.css",
+                            "./node_modules/quill/dist/quill.core.css",
+                            "./node_modules/quill/dist/quill.snow.css"
+                        ],
+                        "stylePreprocessorOptions": {
+                            "includePaths": ["src"]
+                        }
                     }
                 },
                 "lint": {
