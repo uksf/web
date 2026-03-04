@@ -41,15 +41,22 @@ const config: StorybookConfig = {
             if (angularPlugin?.transform) {
                 const cwd = process.cwd().replace(/\\/g, '/');
                 const cwdLower = cwd.toLowerCase();
+                console.log('[storybook-debug] cwd:', cwd);
                 const originalHandler = typeof angularPlugin.transform === 'function'
                     ? angularPlugin.transform
                     : angularPlugin.transform.handler;
-                const patchedHandler = function (this: any, code: string, id: string) {
+                const patchedHandler = async function (this: any, code: string, id: string) {
+                    const originalId = id;
                     const idLowerPrefix = id.substring(0, cwd.length).toLowerCase();
                     if (idLowerPrefix === cwdLower) {
                         id = cwd + id.substring(cwd.length);
                     }
-                    return originalHandler.call(this, code, id);
+                    const result = await originalHandler.call(this, code, id);
+                    if (id.includes('preview') || id.includes('.stories.')) {
+                        const output = typeof result === 'string' ? result : result?.code;
+                        console.log(`[storybook-debug] transform ${id} (was ${originalId}) => output length: ${output?.length ?? 'null'}, first 200: ${output?.substring(0, 200)}`);
+                    }
+                    return result;
                 };
                 if (typeof angularPlugin.transform === 'function') {
                     angularPlugin.transform = patchedHandler;
