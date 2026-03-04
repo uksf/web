@@ -320,7 +320,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         const itemSize = 20;
         const viewportSize = this.viewport.getViewportSize();
         const offset = lineIndex * itemSize;
-        const centeredOffset = Math.max(0, offset - (viewportSize / 2) + itemSize);
+        const centeredOffset = Math.max(0, offset - (viewportSize / 2) + (itemSize / 2));
         this.viewport.scrollToOffset(centeredOffset);
     }
 }

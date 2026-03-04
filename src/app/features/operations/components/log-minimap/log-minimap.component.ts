@@ -111,7 +111,7 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         const rect = canvas.getBoundingClientRect();
         const y = event.clientY - rect.top;
         const totalLines = this.logLines().length;
-        const canvasHeight = canvas.height;
+        const canvasHeight = canvas.clientHeight;
 
         const searchIdx = findSearchResultAtY(
             y, this.searchResults(), totalLines, canvasHeight, 5
@@ -164,7 +164,7 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         const rect = canvas.getBoundingClientRect();
         const y = event.clientY - rect.top;
         const deltaY = y - this.dragStartY;
-        const canvasHeight = canvas.height;
+        const canvasHeight = canvas.clientHeight;
         const totalH = this.totalHeight();
 
         if (canvasHeight === 0 || totalH === 0) return;
