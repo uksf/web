@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { highlightRptLine } from './rpt-syntax-highlighter';
+import { highlightRptLine, RPT_COLORS, classifyRptLine } from './rpt-syntax-highlighter';
 
 describe('highlightRptLine', () => {
     it('highlights timestamp at start of line', () => {
@@ -98,5 +98,81 @@ describe('highlightRptLine', () => {
     it('highlights inline ERROR keyword', () => {
         const result = highlightRptLine('12:00:00 ERROR something failed');
         expect(result).toContain('<span class="rpt-error">ERROR</span>');
+    });
+});
+
+describe('RPT_COLORS', () => {
+    it('should export color constants for all syntax classes', () => {
+        expect(RPT_COLORS.timestamp).toBe('#6a737d');
+        expect(RPT_COLORS.error).toBe('#f97583');
+        expect(RPT_COLORS.warning).toBe('#ffab70');
+        expect(RPT_COLORS.info).toBe('#85e89d');
+        expect(RPT_COLORS.modTag).toBe('#79b8ff');
+        expect(RPT_COLORS.modComponent).toBe('#b392f0');
+        expect(RPT_COLORS.string).toBe('#9ecbff');
+        expect(RPT_COLORS.noise).toBe('#6a737d');
+        expect(RPT_COLORS.separator).toBe('#6a737d');
+        expect(RPT_COLORS.mission).toBe('#85e89d');
+        expect(RPT_COLORS.defaultText).toBe('#d4d4d4');
+        expect(RPT_COLORS.search).toBe('rgba(255, 200, 0, 0.5)');
+        expect(RPT_COLORS.searchActive).toBe('rgba(255, 200, 0, 0.9)');
+    });
+});
+
+describe('classifyRptLine', () => {
+    it('should classify a noise line', () => {
+        const result = classifyRptLine('Skipped loading of addon my_addon');
+        expect(result).toEqual([{ color: '#6a737d', start: 0, end: 1 }]);
+    });
+
+    it('should classify a separator line', () => {
+        const result = classifyRptLine('========================================');
+        expect(result).toEqual([{ color: '#6a737d', start: 0, end: 1 }]);
+    });
+
+    it('should classify an error line', () => {
+        const result = classifyRptLine('Error in expression <something>');
+        expect(result).toEqual([{ color: '#f97583', start: 0, end: 1 }]);
+    });
+
+    it('should classify a mission line', () => {
+        const result = classifyRptLine('Mission file: co40_uksf_op.Altis');
+        expect(result).toEqual([{ color: '#85e89d', start: 0, end: 1 }]);
+    });
+
+    it('should classify a plain line as default text', () => {
+        const result = classifyRptLine('just a plain log line');
+        expect(result).toEqual([{ color: '#d4d4d4', start: 0, end: 1 }]);
+    });
+
+    it('should classify a timestamp line with segments', () => {
+        const result = classifyRptLine('12:34:56 Some log message');
+        expect(result.length).toBeGreaterThanOrEqual(2);
+        expect(result[0]).toEqual({ color: '#6a737d', start: 0, end: expect.closeTo(8 / 25, 1) });
+    });
+
+    it('should classify ERROR keyword', () => {
+        const result = classifyRptLine('12:00:00 ERROR something failed');
+        const errorSegment = result.find(s => s.color === '#f97583');
+        expect(errorSegment).toBeDefined();
+    });
+
+    it('should classify mod tag with component', () => {
+        const result = classifyRptLine('[ACE] (medical) Initialized');
+        const tagSegment = result.find(s => s.color === '#79b8ff');
+        const compSegment = result.find(s => s.color === '#b392f0');
+        expect(tagSegment).toBeDefined();
+        expect(compSegment).toBeDefined();
+    });
+
+    it('should classify quoted strings', () => {
+        const result = classifyRptLine('Loading file "config.bin" from disk');
+        const stringSegment = result.find(s => s.color === '#9ecbff');
+        expect(stringSegment).toBeDefined();
+    });
+
+    it('should return empty array for empty line', () => {
+        const result = classifyRptLine('');
+        expect(result).toEqual([]);
     });
 });
