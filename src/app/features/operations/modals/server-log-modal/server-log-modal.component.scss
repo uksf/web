@@ -157,27 +157,6 @@ button.tail-active {
     font-size: 14px;
 }
 
-.search-indicator-track {
-    width: 12px;
-    position: relative;
-    flex-shrink: 0;
-    background: rgba(255, 255, 255, 0.03);
-    border-left: 1px solid #333;
-    cursor: pointer;
-}
-
-.search-indicator-mark {
-    position: absolute;
-    left: 1px;
-    right: 1px;
-    height: 3px;
-    background: rgba(255, 200, 0, 0.5);
-
-    &.search-indicator-active {
-        background: rgba(255, 200, 0, 0.9);
-    }
-}
-
 // Syntax highlighting colors
 :host ::ng-deep {
     .rpt-timestamp { color: #6a737d; }

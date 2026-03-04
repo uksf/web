@@ -592,74 +592,45 @@ describe('ServerLogModalComponent', () => {
         });
     });
 
-    describe('getSearchIndicatorPosition', () => {
-        it('should return 0 when logLines is empty', () => {
-            component.logLines = [];
-
-            expect(component.getSearchIndicatorPosition(5)).toBe(0);
+    describe('minimap integration', () => {
+        beforeEach(() => {
+            component.ngOnInit();
         });
 
-        it('should return correct percentage position', () => {
-            component.logLines = new Array(200).fill('line');
-
-            expect(component.getSearchIndicatorPosition(100)).toBe(50);
+        it('should expose viewportScrollOffset', () => {
+            expect(component.viewportScrollOffset).toBe(0);
         });
 
-        it('should return 0 for first line', () => {
-            component.logLines = new Array(100).fill('line');
-
-            expect(component.getSearchIndicatorPosition(0)).toBe(0);
+        it('should expose viewportVisibleSize', () => {
+            expect(component.viewportVisibleSize).toBe(0);
         });
 
-        it('should return 100 for line at end', () => {
-            component.logLines = new Array(100).fill('line');
-
-            expect(component.getSearchIndicatorPosition(100)).toBe(100);
+        it('should expose totalScrollHeight', () => {
+            expect(component.totalScrollHeight).toBe(0);
         });
-    });
 
-    describe('onIndicatorMarkClick', () => {
-        it('should set currentSearchIndex and scroll to result', () => {
+        it('should handle onMinimapScrollToLine', () => {
+            component.viewport = {
+                scrollToOffset: vi.fn(),
+                getViewportSize: vi.fn().mockReturnValue(500),
+                elementRef: { nativeElement: { scrollTop: 0 } }
+            } as any;
+
+            component.onMinimapScrollToLine(50);
+
+            // 50*20 - 500/2 + 20/2 = 760
+            expect(component.viewport.scrollToOffset).toHaveBeenCalledWith(760);
+        });
+
+        it('should handle onMinimapSearchNavigate', () => {
             component.searchResults = [
                 { lineIndex: 10, text: 'a' },
-                { lineIndex: 50, text: 'b' },
-                { lineIndex: 100, text: 'c' }
+                { lineIndex: 50, text: 'b' }
             ];
-            component.currentSearchIndex = 0;
-            const event = { stopPropagation: vi.fn() } as unknown as MouseEvent;
 
-            component.onIndicatorMarkClick(event, 2);
-
-            expect(event.stopPropagation).toHaveBeenCalled();
-            expect(component.currentSearchIndex).toBe(2);
-        });
-    });
-
-    describe('onIndicatorTrackClick', () => {
-        it('should find nearest result based on click position', () => {
-            component.searchResults = [
-                { lineIndex: 10, text: 'a' },
-                { lineIndex: 90, text: 'b' }
-            ];
-            component.logLines = new Array(100).fill('line');
-            const mockTrack = { getBoundingClientRect: () => ({ top: 0, height: 500 }) };
-            const event = { currentTarget: mockTrack, clientY: 450 } as unknown as MouseEvent;
-
-            component.onIndicatorTrackClick(event);
+            component.onMinimapSearchNavigate(1);
 
             expect(component.currentSearchIndex).toBe(1);
-        });
-
-        it('should do nothing when no search results', () => {
-            component.searchResults = [];
-            component.logLines = new Array(100).fill('line');
-            component.currentSearchIndex = -1;
-            const mockTrack = { getBoundingClientRect: () => ({ top: 0, height: 500 }) };
-            const event = { currentTarget: mockTrack, clientY: 250 } as unknown as MouseEvent;
-
-            component.onIndicatorTrackClick(event);
-
-            expect(component.currentSearchIndex).toBe(-1);
         });
     });
 

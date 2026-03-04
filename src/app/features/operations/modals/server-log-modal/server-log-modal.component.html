@@ -51,7 +51,7 @@
         <div class="log-empty">No log files found for this server.</div>
     } @else {
         <div class="log-viewport-wrapper">
-            <cdk-virtual-scroll-viewport [itemSize]="20" class="log-viewport">
+            <cdk-virtual-scroll-viewport [itemSize]="20" class="log-viewport" (scroll)="onViewportScroll()">
                 <div *cdkVirtualFor="let line of highlightedLines; let i = index; trackBy: trackByIndex"
                      class="log-line"
                      [class.search-highlight]="isSearchMatch(i)"
@@ -61,17 +61,16 @@
                     <span class="line-content" [innerHTML]="line"></span>
                 </div>
             </cdk-virtual-scroll-viewport>
-            @if (searchResults.length) {
-                <div class="search-indicator-track" (click)="onIndicatorTrackClick($event)">
-                    @for (result of searchResults; track result.lineIndex; let idx = $index) {
-                        <div class="search-indicator-mark"
-                             [class.search-indicator-active]="idx === currentSearchIndex"
-                             [style.top.%]="getSearchIndicatorPosition(result.lineIndex)"
-                             (click)="onIndicatorMarkClick($event, idx)">
-                        </div>
-                    }
-                </div>
-            }
+            <app-log-minimap
+                [logLines]="logLines"
+                [searchResults]="searchResults"
+                [currentSearchIndex]="currentSearchIndex"
+                [viewportOffset]="viewportScrollOffset"
+                [viewportSize]="viewportVisibleSize"
+                [totalHeight]="totalScrollHeight"
+                (scrollToLine)="onMinimapScrollToLine($event)"
+                (navigateToSearchResult)="onMinimapSearchNavigate($event)">
+            </app-log-minimap>
         </div>
     }
 </div>

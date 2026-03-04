@@ -16,6 +16,7 @@ import { ServersHubService } from '../../services/servers-hub.service';
 import { GameServersService } from '../../services/game-servers.service';
 import { GameServer, RptLogSource, RptLogSearchResult } from '../../models/game-server';
 import { highlightRptLine } from '../../utils/rpt-syntax-highlighter';
+import { LogMinimapComponent } from '../../components/log-minimap/log-minimap.component';
 
 interface ServerLogDialogData {
     server: GameServer;
@@ -33,7 +34,8 @@ interface ServerLogDialogData {
         MatTooltipModule,
         ScrollingModule,
         CdkVirtualForOf,
-        TextInputComponent
+        TextInputComponent,
+        LogMinimapComponent
     ]
 })
 export class ServerLogModalComponent extends DestroyableComponent implements OnInit {
@@ -55,6 +57,9 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     searchMatchLines: Set<number> = new Set();
     currentSearchIndex = -1;
     isDownloading = false;
+    viewportScrollOffset = 0;
+    viewportVisibleSize = 0;
+    totalScrollHeight = 0;
 
     @ViewChild(CdkVirtualScrollViewport) viewport!: CdkVirtualScrollViewport;
 
@@ -103,6 +108,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (this.tailEnabled && !this.isLoading) {
             setTimeout(() => this.scrollToBottom());
         }
+        setTimeout(() => this.updateViewportMetrics());
     };
 
     private onReceiveLogAppend = (serverId: string, source: string, lines: string[]) => {
@@ -115,6 +121,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (this.tailEnabled) {
             setTimeout(() => this.scrollToBottom());
         }
+        setTimeout(() => this.updateViewportMetrics());
     };
 
     async switchSource(sourceName: string): Promise<void> {
@@ -188,29 +195,22 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         this.currentSearchIndex = nearestIndex;
     }
 
-    getSearchIndicatorPosition(lineIndex: number): number {
-        if (!this.logLines.length) {
-            return 0;
-        }
-        return (lineIndex / this.logLines.length) * 100;
+    onViewportScroll(): void {
+        this.updateViewportMetrics();
     }
 
-    onIndicatorMarkClick(event: MouseEvent, resultIndex: number): void {
-        event.stopPropagation();
+    onMinimapScrollToLine(lineIndex: number): void {
+        if (!this.viewport) return;
+        const itemSize = 20;
+        const viewportSize = this.viewport.getViewportSize();
+        const offset = lineIndex * itemSize;
+        const centeredOffset = Math.max(0, offset - (viewportSize / 2) + (itemSize / 2));
+        this.viewport.scrollToOffset(centeredOffset);
+    }
+
+    onMinimapSearchNavigate(resultIndex: number): void {
+        if (resultIndex < 0 || resultIndex >= this.searchResults.length) return;
         this.currentSearchIndex = resultIndex;
-        this.scrollToSearchResult();
-    }
-
-    onIndicatorTrackClick(event: MouseEvent): void {
-        const track = event.currentTarget as HTMLElement;
-        const rect = track.getBoundingClientRect();
-        const ratio = (event.clientY - rect.top) / rect.height;
-        const lineIndex = Math.round(ratio * this.logLines.length);
-        const nearestIndex = this.findNearestSearchResult(lineIndex);
-        if (nearestIndex < 0) {
-            return;
-        }
-        this.currentSearchIndex = nearestIndex;
         this.scrollToSearchResult();
     }
 
@@ -273,6 +273,14 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         this.serversHub.off('ReceiveLogAppend', this.onReceiveLogAppend);
         this.serversHub.disconnect();
         super.ngOnDestroy();
+    }
+
+    private updateViewportMetrics(): void {
+        if (!this.viewport) return;
+        const el = this.viewport.elementRef.nativeElement;
+        this.viewportScrollOffset = el.scrollTop;
+        this.viewportVisibleSize = this.viewport.getViewportSize();
+        this.totalScrollHeight = el.scrollHeight;
     }
 
     private highlightLine(line: string): SafeHtml {
