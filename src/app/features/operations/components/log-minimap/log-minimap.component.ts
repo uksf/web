@@ -62,6 +62,7 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
     itemSize = input<number>(20);
 
     scrollToLine = output<number>();
+    scrollToOffset = output<number>();
     navigateToSearchResult = output<number>();
 
     @ViewChild('minimapCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
@@ -173,8 +174,7 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         const newOffset = this.dragStartOffset + deltaScroll;
         const maxOffset = totalH - this.viewportSize();
         const clampedOffset = Math.max(0, Math.min(maxOffset, newOffset));
-        const line = Math.round(clampedOffset / this.itemSize());
-        this.scrollToLine.emit(line);
+        this.scrollToOffset.emit(clampedOffset);
     };
 
     private onDocumentMouseUp = (): void => {

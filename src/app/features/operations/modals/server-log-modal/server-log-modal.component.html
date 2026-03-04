@@ -69,6 +69,7 @@
                 [viewportSize]="viewportVisibleSize"
                 [totalHeight]="totalScrollHeight"
                 (scrollToLine)="onMinimapScrollToLine($event)"
+                (scrollToOffset)="onMinimapScrollToOffset($event)"
                 (navigateToSearchResult)="onMinimapSearchNavigate($event)">
             </app-log-minimap>
         </div>

@@ -208,6 +208,11 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         this.viewport.scrollToOffset(centeredOffset);
     }
 
+    onMinimapScrollToOffset(offset: number): void {
+        if (!this.viewport) return;
+        this.viewport.scrollToOffset(Math.max(0, offset));
+    }
+
     onMinimapSearchNavigate(resultIndex: number): void {
         if (resultIndex < 0 || resultIndex >= this.searchResults.length) return;
         this.currentSearchIndex = resultIndex;
