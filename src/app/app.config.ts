@@ -5,7 +5,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { importProvidersFrom } from '@angular/core';
 import { JwtModule } from '@auth0/angular-jwt';
 import { NgxPermissionsModule } from 'ngx-permissions';
-import { MarkdownModule } from 'ngx-markdown';
+import { MarkdownModule, MARKED_OPTIONS } from 'ngx-markdown';
 import { QuillModule } from 'ngx-quill';
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
@@ -74,7 +74,12 @@ export const appConfig: ApplicationConfig = {
                 }
             }),
             NgxPermissionsModule.forRoot(),
-            MarkdownModule.forRoot(),
+            MarkdownModule.forRoot({
+                markedOptions: {
+                    provide: MARKED_OPTIONS,
+                    useValue: { async: false },
+                },
+            }),
             QuillModule.forRoot()
         ),
         // Core services
