@@ -1,20 +1,11 @@
-import { MarkdownService } from 'ngx-markdown';
+import { marked } from 'marked';
 
 /**
- * Synchronous wrapper around MarkdownService.parse().
- *
- * In ngx-markdown 17+, parse() returns `string | Promise<string>`.
- * It only returns a Promise when async plugins (mermaid, katex, etc.)
- * are configured. Since we don't use any, the result is always a string.
- * This wrapper asserts that at runtime, failing fast if a future upgrade
- * introduces async behaviour unexpectedly.
+ * Synchronous markdown parser using marked directly with async: false.
  *
  * All links are post-processed to open in new tabs with nofollow.
  */
-export function parseMarkdownSync(service: MarkdownService, markdown: string): string {
-    const result = service.parse(markdown);
-    if (typeof result !== 'string') {
-        throw new Error('MarkdownService.parse() returned a Promise — async markdown plugins are not supported');
-    }
+export function parseMarkdownSync(markdown: string): string {
+    const result = marked.parse(markdown, { async: false });
     return result.replace(/<a /g, '<a target="_blank" rel="nofollow" ');
 }

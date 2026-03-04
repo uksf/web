@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
-import { MarkdownService, MarkdownComponent } from 'ngx-markdown';
+import { MarkdownComponent } from 'ngx-markdown';
 import { parseMarkdownSync } from '../markdown-utils';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PermissionsService } from '@app/core/services/permissions.service';
@@ -43,7 +43,6 @@ import { ModpackBuildsStepsComponent } from '../modpack-builds-steps/modpack-bui
 export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
     private modpackBuildService = inject(ModpackBuildService);
     private modpackBuildProcessService = inject(ModpackBuildProcessService);
-    private markdownService = inject(MarkdownService);
     private route = inject(ActivatedRoute);
     private router = inject(Router);
     private permissions = inject(PermissionsService);
@@ -125,7 +124,7 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
                     this.builderName = 'UKSF Bot';
                 }
             );
-            this.changesMarkdown = parseMarkdownSync(this.markdownService, this.selectedBuild.commit.message);
+            this.changesMarkdown = parseMarkdownSync(this.selectedBuild.commit.message);
             if (this.logOpen) {
                 this.openLog();
             }

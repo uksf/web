@@ -1,23 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { ModpackReleasesComponent } from './modpack-releases.component';
-import { MarkdownService } from 'ngx-markdown';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModpackReleaseService } from '../modpackRelease.service';
 
 describe('ModpackReleasesComponent', () => {
     let component: ModpackReleasesComponent;
-    let mockMarkdownService: any;
     let mockPermissionsService: any;
     let mockRoute: any;
     let mockRouter: any;
     let mockModpackReleaseService: any;
 
     beforeEach(() => {
-        mockMarkdownService = {
-            parse: vi.fn().mockReturnValue('')
-        };
         mockPermissionsService = {
             hasPermission: vi.fn().mockReturnValue(false)
         };
@@ -36,7 +31,6 @@ describe('ModpackReleasesComponent', () => {
         TestBed.configureTestingModule({
             providers: [
                 ModpackReleasesComponent,
-                { provide: MarkdownService, useValue: mockMarkdownService },
                 { provide: PermissionsService, useValue: mockPermissionsService },
                 { provide: ActivatedRoute, useValue: mockRoute },
                 { provide: Router, useValue: mockRouter },

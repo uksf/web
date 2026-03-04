@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { MarkdownService, MarkdownComponent } from 'ngx-markdown';
+import { MarkdownComponent } from 'ngx-markdown';
 import { parseMarkdownSync } from '../markdown-utils';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { Permissions } from '@app/core/services/permissions';
@@ -38,7 +38,6 @@ import { FormsModule } from '@angular/forms';
     ]
 })
 export class ModpackReleasesComponent implements OnInit, OnDestroy {
-    private markdownService = inject(MarkdownService);
     private permissionsService = inject(PermissionsService);
     private route = inject(ActivatedRoute);
     private router = inject(Router);
@@ -113,7 +112,7 @@ export class ModpackReleasesComponent implements OnInit, OnDestroy {
                 queryParamsHandling: 'merge'
             });
         } else {
-            this.changelogMarkdown = parseMarkdownSync(this.markdownService, this.selectedRelease.changelog);
+            this.changelogMarkdown = parseMarkdownSync(this.selectedRelease.changelog);
             this.router.navigate([], {
                 relativeTo: this.route,
                 queryParams: { version: this.selectedReleaseVersion },
@@ -144,7 +143,7 @@ export class ModpackReleasesComponent implements OnInit, OnDestroy {
     regenerateChangelog() {
         this.savingChangelog = true;
         this.modpackReleaseService.regenerateChangelog(this.selectedReleaseVersion, (changelog: string) => {
-            this.changelogMarkdown = parseMarkdownSync(this.markdownService, changelog);
+            this.changelogMarkdown = parseMarkdownSync(changelog);
             this.savingChangelog = false;
         });
     }
@@ -159,7 +158,7 @@ export class ModpackReleasesComponent implements OnInit, OnDestroy {
         this.preview = !this.preview;
         if (this.preview) {
             this.formatChangelog(false);
-            this.changelogMarkdown = parseMarkdownSync(this.markdownService, this.changelogStaging);
+            this.changelogMarkdown = parseMarkdownSync(this.changelogStaging);
         }
     }
 
@@ -170,7 +169,7 @@ export class ModpackReleasesComponent implements OnInit, OnDestroy {
         this.formatChangelog(this.editing);
         this.selectedRelease.changelog = this.changelogStaging;
         this.modpackReleaseService.saveReleaseChanges(this.selectedRelease, () => {
-            this.changelogMarkdown = parseMarkdownSync(this.markdownService, this.selectedRelease.changelog);
+            this.changelogMarkdown = parseMarkdownSync(this.selectedRelease.changelog);
             this.savingChangelog = false;
         });
     }
@@ -180,7 +179,7 @@ export class ModpackReleasesComponent implements OnInit, OnDestroy {
         this.preview = false;
         this.changelogEditing = '';
         this.changelogStaging = '';
-        this.changelogMarkdown = parseMarkdownSync(this.markdownService, this.selectedRelease.changelog);
+        this.changelogMarkdown = parseMarkdownSync(this.selectedRelease.changelog);
     }
 
     formatChangelog(editing: boolean) {
