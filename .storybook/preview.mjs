@@ -1,11 +1,11 @@
-import type { Preview } from '@storybook/angular';
 import { applicationConfig, moduleMetadata } from '@storybook/angular';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { importProvidersFrom } from '@angular/core';
 import { SharedModule } from '../src/app/shared/shared.module';
 import { AppSettingsService } from '../src/app/core/services/app-settings.service';
 
-const preview: Preview = {
+/** @type {import('@storybook/angular').Preview} */
+const preview = {
     decorators: [
         applicationConfig({
             providers: [
