@@ -26,43 +26,41 @@ const config: StorybookConfig = {
             '@env': resolve(srcPath, 'environments')
         };
 
-        // Fix Windows case-sensitivity bug in @analogjs/vite-plugin-angular.
-        // On Windows, process.cwd() can return a path with different casing than
-        // the actual filesystem directory (e.g., "uksf" vs "UKSF"). Vite resolves
-        // paths using the real filesystem casing, while the Angular plugin's
-        // TypeScript compiler resolves paths relative to cwd (lowercase). This
-        // causes a case-sensitive Map lookup miss in the plugin's fileEmitter.
-        // Fix: normalize the Vite id to match the cwd-based casing that
-        // TypeScript will use when storing compiled output.
-        if (process.platform === 'win32') {
-            const angularPlugin = (viteConfig.plugins ?? []).flat().find(
-                (p): p is Plugin => !!(p && typeof p === 'object' && 'name' in p && p.name === '@analogjs/vite-plugin-angular')
-            );
-            if (angularPlugin?.transform) {
-                const cwd = process.cwd().replace(/\\/g, '/');
-                const cwdLower = cwd.toLowerCase();
-                console.log('[storybook-debug] cwd:', cwd);
-                const originalHandler = typeof angularPlugin.transform === 'function'
-                    ? angularPlugin.transform
-                    : angularPlugin.transform.handler;
-                const patchedHandler = async function (this: any, code: string, id: string) {
-                    const originalId = id;
+        // Patch @analogjs/vite-plugin-angular transform for two issues:
+        // 1. Skip .storybook/ files — they contain no Angular decorators, so
+        //    esbuild can handle them directly. The Angular compiler's output
+        //    for these files causes Rollup parse errors on some environments.
+        // 2. (Windows only) Fix case-sensitivity bug where process.cwd() returns
+        //    different casing than the filesystem, causing Map lookup misses
+        //    in the plugin's fileEmitter.
+        const angularPlugin = (viteConfig.plugins ?? []).flat().find(
+            (p): p is Plugin => !!(p && typeof p === 'object' && 'name' in p && p.name === '@analogjs/vite-plugin-angular')
+        );
+        if (angularPlugin?.transform) {
+            const cwd = process.cwd().replace(/\\/g, '/');
+            const cwdLower = cwd.toLowerCase();
+            const storybookDir = resolve(currentDir).replace(/\\/g, '/');
+            const originalHandler = typeof angularPlugin.transform === 'function'
+                ? angularPlugin.transform
+                : angularPlugin.transform.handler;
+            const patchedHandler = function (this: any, code: string, id: string) {
+                // Skip .storybook/ files — let esbuild handle them
+                if (id.startsWith(storybookDir)) {
+                    return undefined;
+                }
+                // Normalize Windows path casing to match cwd
+                if (process.platform === 'win32') {
                     const idLowerPrefix = id.substring(0, cwd.length).toLowerCase();
                     if (idLowerPrefix === cwdLower) {
                         id = cwd + id.substring(cwd.length);
                     }
-                    const result = await originalHandler.call(this, code, id);
-                    if (id.includes('preview') || id.includes('.stories.')) {
-                        const output = typeof result === 'string' ? result : result?.code;
-                        console.log(`[storybook-debug] transform ${id} (was ${originalId}) => output length: ${output?.length ?? 'null'}, first 200: ${output?.substring(0, 200)}`);
-                    }
-                    return result;
-                };
-                if (typeof angularPlugin.transform === 'function') {
-                    angularPlugin.transform = patchedHandler;
-                } else {
-                    angularPlugin.transform.handler = patchedHandler;
                 }
+                return originalHandler.call(this, code, id);
+            };
+            if (typeof angularPlugin.transform === 'function') {
+                angularPlugin.transform = patchedHandler;
+            } else {
+                angularPlugin.transform.handler = patchedHandler;
             }
         }
 
