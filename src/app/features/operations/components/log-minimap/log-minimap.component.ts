@@ -134,7 +134,7 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         this.scrollToLine.emit(line);
     }
 
-    onMouseMove(event: MouseEvent): void {
+    onMouseMove(_event: MouseEvent): void {
         if (!this.isDragging) {
             this.isHovering = true;
             this.scheduleRedraw();

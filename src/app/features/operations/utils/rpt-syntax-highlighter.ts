@@ -75,7 +75,7 @@ export function classifyRptLine(line: string): RptColorSegment[] {
     }
 
     // Keywords
-    const keywords: Array<{ pattern: RegExp; color: string }> = [
+    const keywords: { pattern: RegExp; color: string }[] = [
         { pattern: /\bERROR\b/g, color: RPT_COLORS.error },
         { pattern: /\bWARNING\b/g, color: RPT_COLORS.warning },
         { pattern: /\bWarning\b/g, color: RPT_COLORS.warning },
