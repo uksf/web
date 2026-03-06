@@ -1,5 +1,3 @@
-@use 'styles/variables' as v;
-
 .funnel-container {
     padding: 0;
 
@@ -18,7 +16,7 @@
 .duration-row {
     display: flex;
     align-items: center;
-    padding: v.$spacing-4px 0;
+    padding: 2px 0;
 }
 
 .stage-label,
