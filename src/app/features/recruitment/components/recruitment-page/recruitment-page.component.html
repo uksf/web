@@ -295,29 +295,29 @@
                     <h3>SR1 Statistics</h3>
                     <mat-card class="statistics-container">
                         <mat-tab-group mat-stretch-tabs="true">
-                            <mat-tab label="Your Statistics" style="width: 100%">
+                            <mat-tab label="Last Month">
                                 <mat-card class="statistics-content">
-                                    <h4>Last Month</h4>
+                                    <h4>Your Statistics</h4>
                                     @for (stats of yourStats.lastMonth; track stats.fieldName) {
-                                    <p>{{ stats.fieldName }} - {{ stats.fieldValue }}</p>
+                                    <div class="stat-row"><span class="stat-label">{{ stats.fieldName }}</span><span class="stat-value">{{ stats.fieldValue }}</span></div>
                                     }
-                                    <br />
-                                    <h4>Total</h4>
-                                    @for (stats of yourStats.overall; track stats.fieldName) {
-                                    <p>{{ stats.fieldName }} - {{ stats.fieldValue }}</p>
+                                    <hr class="stat-divider" />
+                                    <h4>All Statistics</h4>
+                                    @for (stats of sr1Stats.lastMonth; track stats.fieldName) {
+                                    <div class="stat-row"><span class="stat-label">{{ stats.fieldName }}</span><span class="stat-value">{{ stats.fieldValue }}</span></div>
                                     }
                                 </mat-card>
                             </mat-tab>
-                            <mat-tab label="All Statistics" style="width: 100%">
+                            <mat-tab label="Total">
                                 <mat-card class="statistics-content">
-                                    <h4>Last Month</h4>
-                                    @for (stats of sr1Stats.lastMonth; track stats.fieldName) {
-                                    <p>{{ stats.fieldName }} - {{ stats.fieldValue }}</p>
+                                    <h4>Your Statistics</h4>
+                                    @for (stats of yourStats.overall; track stats.fieldName) {
+                                    <div class="stat-row"><span class="stat-label">{{ stats.fieldName }}</span><span class="stat-value">{{ stats.fieldValue }}</span></div>
                                     }
-                                    <br />
-                                    <h4>Total</h4>
+                                    <hr class="stat-divider" />
+                                    <h4>All Statistics</h4>
                                     @for (stats of sr1Stats.overall; track stats.fieldName) {
-                                    <p>{{ stats.fieldName }} - {{ stats.fieldValue }}</p>
+                                    <div class="stat-row"><span class="stat-label">{{ stats.fieldName }}</span><span class="stat-value">{{ stats.fieldValue }}</span></div>
                                     }
                                 </mat-card>
                             </mat-tab>
@@ -326,6 +326,11 @@
                 </div>
             </div>
             }
+            <div class="stats-container">
+                <div class="stats-item">
+                    <app-application-funnel></app-application-funnel>
+                </div>
+            </div>
         </div>
     </app-side-content-area>
 </app-default-content-areas>

@@ -51,7 +51,7 @@
         <div class="log-empty">No log files found for this server.</div>
     } @else {
         <div class="log-viewport-wrapper">
-            <cdk-virtual-scroll-viewport [itemSize]="20" class="log-viewport" (scroll)="onViewportScroll()">
+            <cdk-virtual-scroll-viewport [itemSize]="20" class="log-viewport">
                 <div *cdkVirtualFor="let line of highlightedLines; let i = index; trackBy: trackByIndex"
                      class="log-line"
                      [class.search-highlight]="isSearchMatch(i)"
@@ -68,6 +68,7 @@
                 [viewportOffset]="viewportScrollOffset"
                 [viewportSize]="viewportVisibleSize"
                 [totalHeight]="totalScrollHeight"
+                [viewportContentWidth]="viewportContentWidth"
                 (scrollToLine)="onMinimapScrollToLine($event)"
                 (scrollToOffset)="onMinimapScrollToOffset($event)"
                 (navigateToSearchResult)="onMinimapSearchNavigate($event)">

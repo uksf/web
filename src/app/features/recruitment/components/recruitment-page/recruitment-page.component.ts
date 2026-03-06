@@ -31,6 +31,7 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatTabGroup, MatTab } from '@angular/material/tabs';
+import { ApplicationFunnelComponent } from '../application-funnel/application-funnel.component';
 
 @Component({
     selector: 'app-recruitment-page',
@@ -59,7 +60,8 @@ import { MatTabGroup, MatTab } from '@angular/material/tabs';
         MatTabGroup,
         MatTab,
         AsyncPipe,
-        DatePipe
+        DatePipe,
+        ApplicationFunnelComponent
     ]
 })
 export class RecruitmentPageComponent extends DestroyableComponent implements OnInit {

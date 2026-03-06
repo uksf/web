@@ -192,7 +192,28 @@ app-side-content-area {
     }
 
     .statistics-content {
-        padding: 0 16px;
+        padding: 0 16px 16px;
+    }
+
+    .stat-row {
+        display: flex;
+        align-items: center;
+        padding: 2px 0;
+    }
+
+    .stat-label {
+        flex: 1;
+    }
+
+    .stat-value {
+        text-align: right;
+        font-weight: 500;
+    }
+
+    .stat-divider {
+        border: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        margin: 8px 0;
     }
 }
 
@@ -213,7 +234,8 @@ app-side-content-area {
 
     .flex-container.stats {
         flex-direction: row;
-        .stats-container { width: 50%; &:last-of-type { margin-left: 16px; } }
+        gap: 16px;
+        .stats-container { width: 50%; }
     }
 }
 
@@ -241,7 +263,8 @@ app-side-content-area {
 
     .flex-container.stats {
         flex-direction: column;
-        .stats-container { width: 100%; &:last-of-type { margin-left: 0; } }
+        gap: 16px;
+        .stats-container { width: 100%; }
     }
 }
 

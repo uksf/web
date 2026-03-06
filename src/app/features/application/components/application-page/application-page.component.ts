@@ -6,6 +6,7 @@ import { MessageModalComponent } from '@app/shared/modals/message-modal/message-
 import { MembershipState } from '@app/shared/models/account';
 import { ApplicationState } from '@app/features/application/models/application';
 import { ApplicationService } from '../../services/application.service';
+import { ApplicationAnalyticsService } from '../../services/application-analytics.service';
 import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
 import { MatCard } from '@angular/material/card';
@@ -38,6 +39,7 @@ import { ApplicationEditComponent } from '../application-edit/application-edit.c
 })
 export class ApplicationPageComponent implements OnInit {
     private applicationService = inject(ApplicationService);
+    private analytics = inject(ApplicationAnalyticsService);
     dialog = inject(MatDialog);
     private accountService = inject(AccountService);
 
@@ -88,10 +90,20 @@ export class ApplicationPageComponent implements OnInit {
     }
 
     next(event) {
+        const completedStep = this.step;
         setTimeout(() => {
             this.step++;
             this.checkStep();
+            this.trackStepCompletion(completedStep);
         }, 1);
+    }
+
+    private trackStepCompletion(completedStep: number) {
+        switch (completedStep) {
+            case 2: this.analytics.trackEvent('account_created'); break;
+            case 3: this.analytics.trackEvent('email_confirmed'); break;
+            case 4: this.analytics.trackEvent('comms_linked'); break;
+        }
     }
 
     submit(details: string) {
@@ -106,6 +118,7 @@ export class ApplicationPageComponent implements OnInit {
                         .subscribe({
                             next: () => {
                                 this.step = 6;
+                                this.analytics.trackEvent('application_submitted');
                             }
                         });
                 },

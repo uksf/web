@@ -17,7 +17,7 @@ import { TextInputComponent } from '../../../../shared/components/elements/text-
 import { FormsModule } from '@angular/forms';
 import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
 import { MatSelect } from '@angular/material/select';
-import { MatOption } from '@angular/material/autocomplete';
+import { MatOption } from '@angular/material/core';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatAccordion } from '@angular/material/expansion';
 import { MatCard } from '@angular/material/card';

@@ -3,7 +3,43 @@ import {
     input, output, effect, AfterViewInit
 } from '@angular/core';
 import { RptLogSearchResult } from '../../models/game-server';
-import { classifyRptLine, RPT_COLORS, RptColorSegment } from '../../utils/rpt-syntax-highlighter';
+import { classifyRptLine, RPT_COLORS, type RptColorSegment } from '../../utils/rpt-syntax-highlighter';
+
+interface MinimapRun {
+    color: string;
+    startCol: number;
+    endCol: number;
+}
+
+/** Convert proportional segments + raw text into character-position runs, breaking at whitespace */
+export function buildMinimapRuns(line: string, segments: RptColorSegment[]): MinimapRun[] {
+    const runs: MinimapRun[] = [];
+    const len = line.length;
+    if (len === 0) return runs;
+
+    for (const seg of segments) {
+        const startChar = Math.round(seg.start * len);
+        const endChar = Math.round(seg.end * len);
+        let runStart = -1;
+
+        for (let col = startChar; col < endChar; col++) {
+            const ch = line[col];
+            if (ch === ' ' || ch === '\t') {
+                if (runStart >= 0) {
+                    runs.push({ color: seg.color, startCol: runStart, endCol: col });
+                    runStart = -1;
+                }
+            } else {
+                if (runStart < 0) runStart = col;
+            }
+        }
+        if (runStart >= 0) {
+            runs.push({ color: seg.color, startCol: runStart, endCol: endChar });
+        }
+    }
+
+    return runs;
+}
 
 /** Map a line index to a canvas Y coordinate */
 export function lineToCanvasY(lineIndex: number, totalLines: number, canvasHeight: number): number {
@@ -59,6 +95,7 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
     viewportOffset = input<number>(0);
     viewportSize = input<number>(0);
     totalHeight = input<number>(0);
+    viewportContentWidth = input<number>(0);
     itemSize = input<number>(20);
 
     scrollToLine = output<number>();
@@ -71,7 +108,7 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
     isHovering = false;
     private dragStartY = 0;
     private dragStartOffset = 0;
-    private cachedSegments: RptColorSegment[][] = [];
+    private cachedRuns: MinimapRun[][] = [];
     private animationFrameId: number | null = null;
     private resizeObserver: ResizeObserver | null = null;
 
@@ -83,12 +120,13 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
             this.viewportOffset();
             this.viewportSize();
             this.totalHeight();
+            this.viewportContentWidth();
             this.scheduleRedraw();
         });
 
         effect(() => {
             const lines = this.logLines();
-            this.cachedSegments = lines.map(line => classifyRptLine(line));
+            this.cachedRuns = lines.map(line => buildMinimapRuns(line, classifyRptLine(line)));
         });
     }
 
@@ -113,9 +151,10 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         const y = event.clientY - rect.top;
         const totalLines = this.logLines().length;
         const canvasHeight = canvas.clientHeight;
+        const contentCanvasHeight = this.getContentCanvasHeight(canvasHeight);
 
         const searchIdx = findSearchResultAtY(
-            y, this.searchResults(), totalLines, canvasHeight, 5
+            y, this.searchResults(), totalLines, contentCanvasHeight, 5
         );
         if (searchIdx >= 0) {
             this.navigateToSearchResult.emit(searchIdx);
@@ -131,7 +170,7 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
             return;
         }
 
-        const line = canvasYToLine(y, totalLines, canvasHeight);
+        const line = canvasYToLine(y, totalLines, contentCanvasHeight);
         this.scrollToLine.emit(line);
     }
 
@@ -192,6 +231,13 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         document.removeEventListener('mouseup', this.onDocumentMouseUp);
     }
 
+    private getContentCanvasHeight(canvasHeight: number): number {
+        const totalH = this.totalHeight();
+        if (totalH === 0) return canvasHeight;
+        const contentHeight = this.logLines().length * this.itemSize();
+        return (contentHeight / totalH) * canvasHeight;
+    }
+
     private scheduleRedraw(): void {
         if (this.animationFrameId !== null) return;
         this.animationFrameId = requestAnimationFrame(() => {
@@ -221,8 +267,15 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         ctx.clearRect(0, 0, displayWidth, displayHeight);
 
         if (totalLines > 0) {
-            this.drawContent(ctx, displayWidth, displayHeight, totalLines);
-            this.drawSearchHighlights(ctx, displayWidth, displayHeight, totalLines);
+            // Content occupies only the proportion of the canvas matching content vs total scroll height
+            const contentHeight = totalLines * this.itemSize();
+            const totalH = this.totalHeight();
+            const contentCanvasHeight = totalH > 0
+                ? (contentHeight / totalH) * displayHeight
+                : displayHeight;
+
+            this.drawContent(ctx, displayWidth, contentCanvasHeight, totalLines);
+            this.drawSearchHighlights(ctx, displayWidth, contentCanvasHeight, totalLines);
             this.drawViewportSlider(ctx, displayWidth, displayHeight);
         }
     }
@@ -231,23 +284,23 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         ctx: CanvasRenderingContext2D, width: number, height: number, totalLines: number
     ): void {
         const lineH = Math.max(height / totalLines, 1);
-        const charWidth = 1.5;
-        const maxChars = Math.floor(width / charWidth);
+        const vpWidth = this.viewportContentWidth();
+        // Each monospace char at 13px ≈ 7.8px wide; scale minimap to match viewport proportions
+        const monoCharPx = 7.8;
+        const charPx = vpWidth > 0 ? (width * monoCharPx) / vpWidth : width / 120;
 
-        for (let i = 0; i < this.cachedSegments.length; i++) {
+        for (let i = 0; i < this.cachedRuns.length; i++) {
             const y = lineToCanvasY(i, totalLines, height);
-            const segments = this.cachedSegments[i];
-            const lineLen = this.logLines()[i]?.length ?? 0;
 
-            for (const seg of segments) {
-                ctx.fillStyle = seg.color;
-                if (seg.color === RPT_COLORS.defaultText) {
-                    ctx.globalAlpha = 0.4;
-                } else {
-                    ctx.globalAlpha = 0.8;
-                }
-                const x = seg.start * Math.min(lineLen, maxChars) * charWidth;
-                const w = (seg.end - seg.start) * Math.min(lineLen, maxChars) * charWidth;
+            for (const run of this.cachedRuns[i]) {
+                const x = run.startCol * charPx;
+                if (x >= width) continue;
+                const xEnd = Math.min(run.endCol * charPx, width);
+                const w = xEnd - x;
+                if (w <= 0) continue;
+
+                ctx.fillStyle = run.color;
+                ctx.globalAlpha = run.color === RPT_COLORS.defaultText ? 0.4 : 0.8;
                 ctx.fillRect(x, y, Math.max(w, 1), Math.max(lineH, 1));
             }
         }

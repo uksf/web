@@ -613,7 +613,8 @@ describe('ServerLogModalComponent', () => {
             component.viewport = {
                 scrollToOffset: vi.fn(),
                 getViewportSize: vi.fn().mockReturnValue(500),
-                elementRef: { nativeElement: { scrollTop: 0 } }
+                elementRef: { nativeElement: { scrollTop: 0, scrollHeight: 1000 } },
+                elementScrolled: () => new Subject<void>().asObservable()
             } as any;
 
             component.onMinimapScrollToLine(50);

@@ -1,7 +1,7 @@
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject, NgZone } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { first } from 'rxjs/operators';
+import { first, takeUntil } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -44,6 +44,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     private gameServersService = inject(GameServersService);
     private serversHub = inject(ServersHubService);
     private sanitizer = inject(DomSanitizer);
+    private ngZone = inject(NgZone);
 
     server: GameServer;
     sources: RptLogSource[] = [];
@@ -60,8 +61,26 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     viewportScrollOffset = 0;
     viewportVisibleSize = 0;
     totalScrollHeight = 0;
+    viewportContentWidth = 0;
 
-    @ViewChild(CdkVirtualScrollViewport) viewport!: CdkVirtualScrollViewport;
+    private _viewport: CdkVirtualScrollViewport | undefined;
+
+    @ViewChild(CdkVirtualScrollViewport)
+    set viewport(vp: CdkVirtualScrollViewport | undefined) {
+        if (vp && vp !== this._viewport) {
+            this._viewport = vp;
+            vp.elementScrolled().pipe(
+                takeUntil(this.destroy$)
+            ).subscribe(() => {
+                this.ngZone.run(() => this.updateViewportMetrics());
+            });
+            this.scheduleMetricsUpdate();
+        }
+    }
+
+    get viewport(): CdkVirtualScrollViewport | undefined {
+        return this._viewport;
+    }
 
     private searchDebounce = new DebouncedCallback(300);
 
@@ -108,7 +127,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (this.tailEnabled && !this.isLoading) {
             setTimeout(() => this.scrollToBottom());
         }
-        setTimeout(() => this.updateViewportMetrics());
+        this.scheduleMetricsUpdate();
     };
 
     private onReceiveLogAppend = (serverId: string, source: string, lines: string[]) => {
@@ -121,7 +140,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (this.tailEnabled) {
             setTimeout(() => this.scrollToBottom());
         }
-        setTimeout(() => this.updateViewportMetrics());
+        this.scheduleMetricsUpdate();
     };
 
     async switchSource(sourceName: string): Promise<void> {
@@ -193,10 +212,6 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
             return;
         }
         this.currentSearchIndex = nearestIndex;
-    }
-
-    onViewportScroll(): void {
-        this.updateViewportMetrics();
     }
 
     onMinimapScrollToLine(lineIndex: number): void {
@@ -280,12 +295,24 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         super.ngOnDestroy();
     }
 
+    private scheduleMetricsUpdate(): void {
+        setTimeout(() => {
+            if (typeof requestAnimationFrame !== 'undefined') {
+                requestAnimationFrame(() => this.updateViewportMetrics());
+            } else {
+                this.updateViewportMetrics();
+            }
+        });
+    }
+
     private updateViewportMetrics(): void {
         if (!this.viewport) return;
         const el = this.viewport.elementRef.nativeElement;
         this.viewportScrollOffset = el.scrollTop;
         this.viewportVisibleSize = this.viewport.getViewportSize();
         this.totalScrollHeight = el.scrollHeight;
+        // Content width = viewport width minus line-number gutter (60px + 8px + 1px) and content padding (8px)
+        this.viewportContentWidth = el.clientWidth - 77;
     }
 
     private highlightLine(line: string): SafeHtml {

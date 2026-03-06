@@ -6,11 +6,9 @@
     <button mat-raised-button color="primary" [disabled]="(pageIndex + 1) * pageSize >= total" (click)="pageChange(1)" matTooltip="Next">
         <mat-icon>chevron_right</mat-icon>
     </button>
-    <mat-select [(ngModel)]="pageSize" (selectionChange)="pageIndex = 0; pageChange(0)">
-        @for (option of pageSizes; track option) {
-        <mat-option [value]="option">
-            {{ option }}
-        </mat-option>
+    <mat-select class="page-size-select" [(ngModel)]="pageSize" (selectionChange)="pageIndex = 0; pageChange(0)">
+        @for (size of pageSizes; track size) {
+            <mat-option [value]="size">{{ size }}</mat-option>
         }
     </mat-select>
 </div>

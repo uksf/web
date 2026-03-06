@@ -46,6 +46,10 @@ export class RecruitmentService {
     getDiscordOnlineState(accountId: string): Observable<OnlineState> {
         return this.httpClient.get<OnlineState>(`${this.urls.apiUrl}/discord/${accountId}/onlineUserDetails`);
     }
+
+    getFunnelStats(): Observable<ApplicationFunnelResponse> {
+        return this.httpClient.get<ApplicationFunnelResponse>(`${this.urls.apiUrl}/application/analytics/funnel`);
+    }
 }
 
 export interface RecruiterActivity {
@@ -70,4 +74,29 @@ export interface RecruitmentStatsResponse {
     activity: RecruiterActivity[];
     yourStats: RecruitmentStats;
     sr1Stats: RecruitmentStats;
+}
+
+export interface FunnelStages {
+    infoPageViews: number;
+    infoPageNext: number;
+    accountCreated: number;
+    emailConfirmed: number;
+    commsLinked: number;
+    applicationSubmitted: number;
+}
+
+export interface FunnelDurations {
+    overall: number;
+    bounced: number;
+    proceeded: number;
+}
+
+export interface FunnelData {
+    stages: FunnelStages;
+    avgDuration: FunnelDurations;
+}
+
+export interface ApplicationFunnelResponse {
+    lastMonth: FunnelData;
+    total: FunnelData;
 }

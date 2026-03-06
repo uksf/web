@@ -4,7 +4,7 @@ import { MatTooltip } from '@angular/material/tooltip';
 import { MatIcon } from '@angular/material/icon';
 import { MatSelect } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
-import { MatOption } from '@angular/material/autocomplete';
+import { MatOption } from '@angular/material/core';
 
 @Component({
     selector: 'app-paginator',
@@ -33,10 +33,6 @@ export class PaginatorComponent implements OnChanges {
         this.pageIndex += change;
 
         this.page.emit({ pageIndex: this.pageIndex, pageSize: this.pageSize });
-    }
-
-    trackByIndex(index: number): number {
-        return index;
     }
 
     min(a: number, b: number): number {

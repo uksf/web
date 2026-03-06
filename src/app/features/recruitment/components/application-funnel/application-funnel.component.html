@@ -1,0 +1,63 @@
+<h3>Application Funnel</h3>
+<mat-card class="funnel-container">
+    @if (funnel) {
+    <mat-tab-group mat-stretch-tabs="true">
+        <mat-tab label="Last Month">
+            <ng-template matTabContent>
+                <mat-card class="funnel-content">
+                    <ng-container *ngTemplateOutlet="funnelData; context: { $implicit: funnel.lastMonth }"></ng-container>
+                </mat-card>
+            </ng-template>
+        </mat-tab>
+        <mat-tab label="Total">
+            <ng-template matTabContent>
+                <mat-card class="funnel-content">
+                    <ng-container *ngTemplateOutlet="funnelData; context: { $implicit: funnel.total }"></ng-container>
+                </mat-card>
+            </ng-template>
+        </mat-tab>
+    </mat-tab-group>
+    }
+</mat-card>
+
+<ng-template #funnelData let-data>
+    <h4>Stages</h4>
+    <div class="funnel-row">
+        <span class="stage-label">Viewed info page</span>
+        <span class="stage-value">{{ data.stages.infoPageViews }}</span>
+    </div>
+    <div class="funnel-row">
+        <span class="stage-label">Clicked Next</span>
+        <span class="stage-value">{{ data.stages.infoPageNext }} <span class="stage-percent">{{ percentage(data, data.stages.infoPageNext) }}</span></span>
+    </div>
+    <div class="funnel-row">
+        <span class="stage-label">Account created</span>
+        <span class="stage-value">{{ data.stages.accountCreated }} <span class="stage-percent">{{ percentage(data, data.stages.accountCreated) }}</span></span>
+    </div>
+    <div class="funnel-row">
+        <span class="stage-label">Email confirmed</span>
+        <span class="stage-value">{{ data.stages.emailConfirmed }} <span class="stage-percent">{{ percentage(data, data.stages.emailConfirmed) }}</span></span>
+    </div>
+    <div class="funnel-row">
+        <span class="stage-label">Comms linked</span>
+        <span class="stage-value">{{ data.stages.commsLinked }} <span class="stage-percent">{{ percentage(data, data.stages.commsLinked) }}</span></span>
+    </div>
+    <div class="funnel-row">
+        <span class="stage-label">Application submitted</span>
+        <span class="stage-value">{{ data.stages.applicationSubmitted }} <span class="stage-percent">{{ percentage(data, data.stages.applicationSubmitted) }}</span></span>
+    </div>
+    <hr class="funnel-divider" />
+    <h4>Time on info page</h4>
+    <div class="duration-row" matTooltip="Average time all visitors spent on the info page">
+        <span class="duration-label">Average (all)</span>
+        <span class="duration-value">{{ formatDuration(data.avgDuration.overall) }}</span>
+    </div>
+    <div class="duration-row" matTooltip="Average time for visitors who left without clicking Next">
+        <span class="duration-label">Average (bounced)</span>
+        <span class="duration-value">{{ formatDuration(data.avgDuration.bounced) }}</span>
+    </div>
+    <div class="duration-row" matTooltip="Average time for visitors who clicked Next to continue">
+        <span class="duration-label">Average (proceeded)</span>
+        <span class="duration-value">{{ formatDuration(data.avgDuration.proceeded) }}</span>
+    </div>
+</ng-template>
