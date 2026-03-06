@@ -7,7 +7,7 @@ import { of, Subject } from 'rxjs';
 import { ServersHubService } from '../../services/servers-hub.service';
 import { GameServersService } from '../../services/game-servers.service';
 import { ServerLogModalComponent } from './server-log-modal.component';
-import { RptLogSearchResponse, RptLogSource } from '../../models/game-server';
+import { RptLogSource } from '../../models/game-server';
 
 describe('ServerLogModalComponent', () => {
     let component: ServerLogModalComponent;
@@ -17,9 +17,15 @@ describe('ServerLogModalComponent', () => {
     let mockSanitizer: any;
     let signalRCallbacks: Record<string, Function>;
 
+    const testSources: RptLogSource[] = [
+        { name: 'Server', isServer: true },
+        { name: 'HC1', isServer: false }
+    ];
+
     const testServer = {
         id: 'server1',
         name: 'Test Server',
+        logSources: testSources,
         status: {
             parsedUptime: '00:00:00',
             stopping: false,
@@ -30,19 +36,12 @@ describe('ServerLogModalComponent', () => {
         }
     };
 
-    const testSources: RptLogSource[] = [
-        { name: 'Server', isServer: true },
-        { name: 'HC1', isServer: false }
-    ];
-
     beforeEach(() => {
         signalRCallbacks = {};
 
         mockDialogRef = { close: vi.fn() };
 
         mockGameServersService = {
-            getLogSources: vi.fn().mockReturnValue(of(testSources)),
-            searchLog: vi.fn().mockReturnValue(of({ results: [], totalMatches: 0 })),
             downloadLog: vi.fn().mockReturnValue(of(new Blob(['test log content'])))
         };
 
@@ -96,14 +95,67 @@ describe('ServerLogModalComponent', () => {
             expect(component.currentSearchIndex).toBe(-1);
             expect(component.isDownloading).toBe(false);
         });
+
+        it('should enable tail when server is running', () => {
+            expect(component.tailEnabled).toBe(true);
+        });
+    });
+
+    describe('tail auto-detection', () => {
+        it('should enable tail when server is running', () => {
+            expect(component.tailEnabled).toBe(true);
+        });
+
+        it('should disable tail for offline server', () => {
+            component.server = { ...testServer, status: { ...testServer.status, running: false, started: false, stopping: false } };
+            component.tailEnabled = (component as any).isServerActive();
+            expect(component.tailEnabled).toBe(false);
+        });
+
+        it('should enable tail when server is started but not yet running', () => {
+            component.server = { ...testServer, status: { ...testServer.status, running: false, started: true, stopping: false } };
+            component.tailEnabled = (component as any).isServerActive();
+            expect(component.tailEnabled).toBe(true);
+        });
+
+        it('should enable tail when server is stopping', () => {
+            component.server = { ...testServer, status: { ...testServer.status, running: false, started: false, stopping: true } };
+            component.tailEnabled = (component as any).isServerActive();
+            expect(component.tailEnabled).toBe(true);
+        });
+
+        it('should disable tail when server has no status', () => {
+            component.server = { ...testServer, status: undefined as any };
+            component.tailEnabled = (component as any).isServerActive();
+            expect(component.tailEnabled).toBe(false);
+        });
     });
 
     describe('ngOnInit', () => {
-        it('should load log sources', () => {
+        it('should set sources from server data', () => {
             component.ngOnInit();
 
-            expect(mockGameServersService.getLogSources).toHaveBeenCalledWith('server1');
             expect(component.sources).toEqual(testSources);
+        });
+
+        it('should fallback to Server source when logSources is undefined', () => {
+            TestBed.resetTestingModule();
+            const serverWithoutSources = { ...testServer, logSources: undefined };
+            TestBed.configureTestingModule({
+                providers: [
+                    ServerLogModalComponent,
+                    { provide: MatDialogRef, useValue: mockDialogRef },
+                    { provide: MAT_DIALOG_DATA, useValue: { server: serverWithoutSources } },
+                    { provide: GameServersService, useValue: mockGameServersService },
+                    { provide: ServersHubService, useValue: mockServersHub },
+                    { provide: DomSanitizer, useValue: mockSanitizer }
+                ]
+            });
+
+            const comp = TestBed.inject(ServerLogModalComponent);
+            comp.ngOnInit();
+
+            expect(comp.sources).toEqual([{ name: 'Server', isServer: true }]);
         });
 
         it('should connect to servers hub', () => {
@@ -274,6 +326,7 @@ describe('ServerLogModalComponent', () => {
             component.searchResults = [{ lineIndex: 0, text: 'match' }];
             component.searchMatchLines = new Set([0]);
             component.currentSearchIndex = 0;
+            component.linkedLineIndex = 5;
 
             await component.switchSource('HC1');
 
@@ -283,6 +336,7 @@ describe('ServerLogModalComponent', () => {
             expect(component.searchResults).toEqual([]);
             expect(component.searchMatchLines.size).toBe(0);
             expect(component.currentSearchIndex).toBe(-1);
+            expect(component.linkedLineIndex).toBe(-1);
         });
 
         it('should update activeSource', async () => {
@@ -326,7 +380,6 @@ describe('ServerLogModalComponent', () => {
             expect(component.searchResults).toEqual([]);
             expect(component.searchMatchLines.size).toBe(0);
             expect(component.currentSearchIndex).toBe(-1);
-            expect(mockGameServersService.searchLog).not.toHaveBeenCalled();
         });
 
         it('should clear results when query is whitespace', () => {
@@ -334,49 +387,60 @@ describe('ServerLogModalComponent', () => {
 
             component.search();
 
-            expect(mockGameServersService.searchLog).not.toHaveBeenCalled();
             expect(component.currentSearchIndex).toBe(-1);
         });
 
-        it('should rehighlight all lines when clearing search', () => {
-            component.logLines = ['line1', 'line2'];
-            component.highlightedLines = ['old' as any, 'old' as any];
+        it('should reset to base highlights when clearing search', () => {
+            // Populate base data via content handler
+            signalRCallbacks['ReceiveLogContent']('server1', 'Server', ['line1', 'line2'], 0, true);
+            const baseLines = [...component.highlightedLines];
+
+            // Simulate having search results
+            component.searchResults = [{ lineIndex: 0, text: 'line1' }];
+            component.highlightedLines = ['modified' as any, 'modified' as any];
             component.searchQuery = '';
 
             component.search();
 
-            expect(mockSanitizer.bypassSecurityTrustHtml).toHaveBeenCalled();
+            expect(component.highlightedLines).toEqual(baseLines);
         });
 
-        it('should call searchLog with correct parameters', () => {
+        it('should find matching lines from loaded log data', () => {
+            signalRCallbacks['ReceiveLogContent']('server1', 'Server', [
+                'no match here',
+                'error at line 1',
+                'another line',
+                'error at line 3',
+                'final line'
+            ], 0, true);
             component.searchQuery = 'error';
 
             component.search();
 
-            expect(mockGameServersService.searchLog).toHaveBeenCalledWith('server1', 'Server', 'error');
-        });
-
-        it('should populate search results', () => {
-            const response: RptLogSearchResponse = {
-                results: [
-                    { lineIndex: 5, text: 'error at line 5' },
-                    { lineIndex: 10, text: 'error at line 10' }
-                ],
-                totalMatches: 2
-            };
-            mockGameServersService.searchLog.mockReturnValue(of(response));
-            component.searchQuery = 'error';
-
-            component.search();
-
-            expect(component.searchResults).toEqual(response.results);
-            expect(component.searchMatchLines.has(5)).toBe(true);
-            expect(component.searchMatchLines.has(10)).toBe(true);
+            expect(component.searchResults).toHaveLength(2);
+            expect(component.searchResults[0]).toEqual({ lineIndex: 1, text: 'error at line 1' });
+            expect(component.searchResults[1]).toEqual({ lineIndex: 3, text: 'error at line 3' });
+            expect(component.searchMatchLines.has(1)).toBe(true);
+            expect(component.searchMatchLines.has(3)).toBe(true);
+            expect(component.totalMatches).toBe(2);
             expect(component.currentSearchIndex).toBe(0);
         });
 
+        it('should search case-insensitively', () => {
+            signalRCallbacks['ReceiveLogContent']('server1', 'Server', [
+                'ERROR uppercase',
+                'error lowercase',
+                'no match'
+            ], 0, true);
+            component.searchQuery = 'Error';
+
+            component.search();
+
+            expect(component.searchResults).toHaveLength(2);
+        });
+
         it('should set currentSearchIndex to -1 when no results', () => {
-            mockGameServersService.searchLog.mockReturnValue(of({ results: [], totalMatches: 0 }));
+            signalRCallbacks['ReceiveLogContent']('server1', 'Server', ['some line'], 0, true);
             component.searchQuery = 'nonexistent';
 
             component.search();
@@ -384,16 +448,15 @@ describe('ServerLogModalComponent', () => {
             expect(component.currentSearchIndex).toBe(-1);
         });
 
-        it('should rehighlight all lines after receiving search results', () => {
-            component.logLines = ['error here', 'no match'];
-            component.highlightedLines = ['old' as any, 'old' as any];
-            mockGameServersService.searchLog.mockReturnValue(of({ results: [{ lineIndex: 0, text: 'error here' }], totalMatches: 1 }));
+        it('should rehighlight only matched lines after search', () => {
+            signalRCallbacks['ReceiveLogContent']('server1', 'Server', ['error here', 'no match'], 0, true);
             component.searchQuery = 'error';
             mockSanitizer.bypassSecurityTrustHtml.mockClear();
 
             component.search();
 
-            expect(mockSanitizer.bypassSecurityTrustHtml).toHaveBeenCalledTimes(2);
+            // Only the matched line (index 0) should be re-highlighted with search marks
+            expect(mockSanitizer.bypassSecurityTrustHtml).toHaveBeenCalledTimes(1);
         });
     });
 
@@ -407,7 +470,7 @@ describe('ServerLogModalComponent', () => {
             vi.useRealTimers();
         });
 
-        it('should debounce and call search after 300ms', () => {
+        it('should debounce and call search after 50ms', () => {
             component.searchQuery = 'test';
             const searchSpy = vi.spyOn(component, 'search');
 
@@ -415,7 +478,7 @@ describe('ServerLogModalComponent', () => {
 
             expect(searchSpy).not.toHaveBeenCalled();
 
-            vi.advanceTimersByTime(300);
+            vi.advanceTimersByTime(50);
 
             expect(searchSpy).toHaveBeenCalledOnce();
         });
@@ -425,13 +488,13 @@ describe('ServerLogModalComponent', () => {
             const searchSpy = vi.spyOn(component, 'search');
 
             component.onSearchChange();
-            vi.advanceTimersByTime(200);
+            vi.advanceTimersByTime(30);
             component.onSearchChange();
-            vi.advanceTimersByTime(200);
+            vi.advanceTimersByTime(30);
 
             expect(searchSpy).not.toHaveBeenCalled();
 
-            vi.advanceTimersByTime(100);
+            vi.advanceTimersByTime(20);
 
             expect(searchSpy).toHaveBeenCalledOnce();
         });
@@ -774,11 +837,79 @@ describe('ServerLogModalComponent', () => {
 
             expect(mockServersHub.off).toHaveBeenCalledWith('ReceiveLogContent', expect.any(Function));
             expect(mockServersHub.off).toHaveBeenCalledWith('ReceiveLogAppend', expect.any(Function));
+            expect(mockServersHub.invoke).toHaveBeenCalledWith('UnsubscribeFromLog', 'server1', 'Server');
             expect(mockServersHub.disconnect).toHaveBeenCalled();
+        });
+
+        it('should unsubscribe from the active source on destroy', async () => {
+            component.ngOnInit();
+            await component.switchSource('HC1');
+
+            component.ngOnDestroy();
+
+            expect(mockServersHub.invoke).toHaveBeenCalledWith('UnsubscribeFromLog', 'server1', 'HC1');
         });
 
         it('should not throw when hubConnection is not set', () => {
             expect(() => component.ngOnDestroy()).not.toThrow();
+        });
+    });
+
+    describe('scrollToLine from dialog data', () => {
+        it('should disable tail when scrollToLine is provided', () => {
+            TestBed.resetTestingModule();
+            TestBed.configureTestingModule({
+                providers: [
+                    ServerLogModalComponent,
+                    { provide: MatDialogRef, useValue: mockDialogRef },
+                    { provide: MAT_DIALOG_DATA, useValue: { server: testServer, scrollToLine: 42 } },
+                    { provide: GameServersService, useValue: mockGameServersService },
+                    { provide: ServersHubService, useValue: mockServersHub },
+                    { provide: DomSanitizer, useValue: mockSanitizer }
+                ]
+            });
+
+            const comp = TestBed.inject(ServerLogModalComponent);
+            expect(comp.tailEnabled).toBe(false);
+        });
+    });
+
+    describe('copyLineLink', () => {
+        let writeTextSpy: ReturnType<typeof vi.fn>;
+
+        beforeEach(() => {
+            writeTextSpy = vi.fn().mockResolvedValue(undefined);
+            Object.defineProperty(navigator, 'clipboard', {
+                value: { writeText: writeTextSpy },
+                writable: true,
+                configurable: true
+            });
+            (globalThis as any).window = { location: { origin: 'http://localhost:4200' } };
+        });
+
+        afterEach(() => {
+            delete (globalThis as any).window;
+        });
+
+        it('should copy a URL with server id and line number to clipboard', () => {
+            const event = { stopPropagation: vi.fn() } as unknown as MouseEvent;
+
+            component.copyLineLink(event, 41);
+
+            expect(event.stopPropagation).toHaveBeenCalled();
+            expect(writeTextSpy).toHaveBeenCalledWith(
+                expect.stringContaining('/operations/servers?log=server1&line=42')
+            );
+        });
+
+        it('should use 1-based line number', () => {
+            const event = { stopPropagation: vi.fn() } as unknown as MouseEvent;
+
+            component.copyLineLink(event, 0);
+
+            expect(writeTextSpy).toHaveBeenCalledWith(
+                expect.stringContaining('&line=1')
+            );
         });
     });
 
@@ -787,20 +918,23 @@ describe('ServerLogModalComponent', () => {
             component.ngOnInit();
         });
 
-        it('should include search term markup in highlighted lines when searchQuery is set', () => {
+        it('should include search term markup when search query is set and content arrives', () => {
             component.searchQuery = 'error';
             signalRCallbacks['ReceiveLogContent']('server1', 'Server', ['an error occurred'], 0, true);
 
-            const htmlArg = mockSanitizer.bypassSecurityTrustHtml.mock.calls[0][0];
-            expect(htmlArg).toContain('search-term');
+            // Search marks are applied during content receive when searchQuery is set
+            const calls = mockSanitizer.bypassSecurityTrustHtml.mock.calls.map((c: any[]) => c[0]);
+            const hasSearchMark = calls.some((html: string) => html.includes('search-term'));
+            expect(hasSearchMark).toBe(true);
         });
 
         it('should not include search term markup when searchQuery is empty', () => {
             component.searchQuery = '';
             signalRCallbacks['ReceiveLogContent']('server1', 'Server', ['an error occurred'], 0, true);
 
-            const htmlArg = mockSanitizer.bypassSecurityTrustHtml.mock.calls[0][0];
-            expect(htmlArg).not.toContain('search-term');
+            const calls = mockSanitizer.bypassSecurityTrustHtml.mock.calls.map((c: any[]) => c[0]);
+            const hasSearchMark = calls.some((html: string) => html.includes('search-term'));
+            expect(hasSearchMark).toBe(false);
         });
     });
 });

@@ -13,6 +13,7 @@ export interface GameServer {
     id: string;
     name: string;
     status: GameServerStatus;
+    logSources?: RptLogSource[];
     missionSelection?: IDropdownElement;
     // Frontend-only properties set during runtime
     updating?: boolean;
