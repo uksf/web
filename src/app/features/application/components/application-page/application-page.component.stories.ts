@@ -5,6 +5,7 @@ import { SharedModule } from '@shared/shared.module';
 import { MatDialog } from '@angular/material/dialog';
 import { AccountService } from '@app/core/services/account.service';
 import { ApplicationService } from '../../services/application.service';
+import { ApplicationAnalyticsService } from '../../services/application-analytics.service';
 import { of } from 'rxjs';
 import { ApplicationInfoComponent } from '../application-info/application-info.component';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -18,6 +19,7 @@ const meta: Meta<ApplicationPageComponent> = {
             declarations: [ApplicationInfoComponent],
             providers: [
                 { provide: ApplicationService, useValue: { submitApplication: () => of({}) } },
+                { provide: ApplicationAnalyticsService, useValue: { trackEvent: () => {} } },
                 { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(undefined) }) } },
                 { provide: AccountService, useValue: { account: undefined } }
             ]
