@@ -183,7 +183,7 @@ describe('OperationsServersComponent', () => {
 
             const result = component.mapMission(element);
 
-            expect(result).toEqual({ path: '/path/to/mission.pbo', name: 'mission', map: 'Altis' });
+            expect(result).toEqual({ path: '/path/to/mission.pbo', name: 'mission', map: 'Altis', size: 0, lastModified: '' });
         });
     });
 

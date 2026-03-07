@@ -23,31 +23,30 @@ export class MissionsService {
 
     uploadMission(formData: FormData, connectionId: string): Observable<MissionUploadResponse> {
         return this.httpClient.post<MissionUploadResponse>(`${this.urls.apiUrl}/missions/upload`, formData, {
-            reportProgress: true,
             headers: this.buildHeaders(connectionId)
         });
     }
 
     downloadMission(fileName: string): Observable<Blob> {
-        return this.httpClient.get(`${this.urls.apiUrl}/missions/${fileName}/download`, {
+        return this.httpClient.get(`${this.urls.apiUrl}/missions/${encodeURIComponent(fileName)}/download`, {
             responseType: 'blob'
         });
     }
 
     deleteMission(fileName: string, connectionId: string): Observable<void> {
-        return this.httpClient.delete<void>(`${this.urls.apiUrl}/missions/${fileName}`, {
+        return this.httpClient.delete<void>(`${this.urls.apiUrl}/missions/${encodeURIComponent(fileName)}`, {
             headers: this.buildHeaders(connectionId)
         });
     }
 
     archiveMission(fileName: string, connectionId: string): Observable<void> {
-        return this.httpClient.post<void>(`${this.urls.apiUrl}/missions/${fileName}/archive`, null, {
+        return this.httpClient.post<void>(`${this.urls.apiUrl}/missions/${encodeURIComponent(fileName)}/archive`, null, {
             headers: this.buildHeaders(connectionId)
         });
     }
 
     restoreMission(fileName: string, connectionId: string): Observable<void> {
-        return this.httpClient.post<void>(`${this.urls.apiUrl}/missions/${fileName}/restore`, null, {
+        return this.httpClient.post<void>(`${this.urls.apiUrl}/missions/${encodeURIComponent(fileName)}/restore`, null, {
             headers: this.buildHeaders(connectionId)
         });
     }

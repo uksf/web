@@ -123,12 +123,12 @@
 }
 
 // Expansion panel overrides
-:host {
+:host ::ng-deep {
     mat-expansion-panel {
         background: transparent;
         box-shadow: none;
 
-        ::ng-deep .mat-expansion-panel-header {
+        .mat-expansion-panel-header {
             height: 36px;
             padding: 0 v.$spacing-12px;
         }

@@ -8,8 +8,8 @@ import { Mission, MissionUploadResponse } from '../models/game-server';
 
 describe('MissionsService', () => {
     let service: MissionsService;
-    let mockHttpClient: any;
-    let mockUrls: any;
+    let mockHttpClient: { get: ReturnType<typeof vi.fn>; post: ReturnType<typeof vi.fn>; delete: ReturnType<typeof vi.fn> };
+    let mockUrls: { apiUrl: string };
 
     beforeEach(() => {
         mockHttpClient = {
@@ -46,7 +46,7 @@ describe('MissionsService', () => {
         expect(mockHttpClient.get).toHaveBeenCalledWith('http://localhost:5500/missions/archived');
     });
 
-    it('uploadMission calls POST /missions/upload with reportProgress and Hub-Connection-Id header', () => {
+    it('uploadMission calls POST /missions/upload with Hub-Connection-Id header', () => {
         const formData = new FormData();
         const mockResponse: MissionUploadResponse = { missions: [], missionReports: [] };
         mockHttpClient.post.mockReturnValue(of(mockResponse));
@@ -56,7 +56,7 @@ describe('MissionsService', () => {
         expect(mockHttpClient.post).toHaveBeenCalledWith(
             'http://localhost:5500/missions/upload',
             formData,
-            expect.objectContaining({ reportProgress: true, headers: expect.any(Object) })
+            expect.objectContaining({ headers: expect.any(Object) })
         );
         const headers = mockHttpClient.post.mock.calls[0][2].headers;
         expect(headers.get('Hub-Connection-Id')).toBe('conn-123');

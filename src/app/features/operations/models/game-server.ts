@@ -1,4 +1,5 @@
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
+import { ValidationReport } from '@app/shared/models/response';
 
 export interface GameServerStatus {
     parsedUptime: string;
@@ -47,7 +48,7 @@ export interface Mission {
 
 export interface MissionReport {
     mission: string;
-    reports: string[];
+    reports: ValidationReport[];
 }
 
 export interface ServerMod {

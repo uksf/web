@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
 import { MatIconButton } from '@angular/material/button';
@@ -22,7 +22,7 @@ import { UksfError } from '@app/shared/models/response';
 type SortField = 'name' | 'date' | 'map';
 type SortDirection = 'asc' | 'desc';
 
-interface MissionGroup {
+export interface MissionGroup {
     map: string;
     missions: Mission[];
 }
@@ -33,6 +33,7 @@ interface MissionGroup {
     styleUrls: ['./operations-missions.component.scss'],
     imports: [
         DatePipe,
+        NgTemplateOutlet,
         MatAccordion,
         MatExpansionPanel,
         MatExpansionPanelHeader,
@@ -49,21 +50,22 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
     private serversHub = inject(ServersHubService);
     private dialog = inject(MatDialog);
 
-    @ViewChild('uploader') uploader: ElementRef;
+    @ViewChild('uploader') uploader!: ElementRef;
 
     activeMissions: Mission[] = [];
     archivedMissions: Mission[] = [];
+    activeGroups: MissionGroup[] = [];
+    archivedGroups: MissionGroup[] = [];
     sortField: SortField = 'map';
     sortDirection: SortDirection = 'asc';
     groupByMap = false;
     uploading = false;
     fileDragging = false;
-    dropZoneHeight = 0;
-    dropZoneWidth = 0;
 
-    private onReceiveMissionsUpdate = (connectionId: string) => {
+    private onReceiveMissionsUpdate = (connectionId: string, missions: Mission[]) => {
         if (connectionId !== this.serversHub.connectionId) {
-            this.loadMissions();
+            this.setActiveMissions(missions);
+            this.loadArchivedMissions();
         }
     };
 
@@ -83,16 +85,8 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
     }
 
     loadMissions() {
-        this.missionsService.getActiveMissions().pipe(first()).subscribe({
-            next: (missions) => {
-                this.activeMissions = this.sortMissions(missions);
-            }
-        });
-        this.missionsService.getArchivedMissions().pipe(first()).subscribe({
-            next: (missions) => {
-                this.archivedMissions = this.sortMissions(missions);
-            }
-        });
+        this.loadActiveMissions();
+        this.loadArchivedMissions();
     }
 
     setSort(field: SortField) {
@@ -104,25 +98,11 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
         }
         this.activeMissions = this.sortMissions(this.activeMissions);
         this.archivedMissions = this.sortMissions(this.archivedMissions);
+        this.recomputeGroups();
     }
 
     toggleGroupByMap() {
         this.groupByMap = !this.groupByMap;
-    }
-
-    getGroups(missions: Mission[]): MissionGroup[] {
-        const groupMap = new Map<string, Mission[]>();
-        for (const mission of missions) {
-            const existing = groupMap.get(mission.map);
-            if (existing) {
-                existing.push(mission);
-            } else {
-                groupMap.set(mission.map, [mission]);
-            }
-        }
-        return Array.from(groupMap.entries())
-            .map(([map, missionList]) => ({ map, missions: missionList }))
-            .sort((a, b) => a.map.localeCompare(b.map));
     }
 
     uploadFromButton(event: Event) {
@@ -143,20 +123,22 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
     onFileDrop(event: { files: { relativePath: string; fileEntry: { file: (cb: (f: File) => void) => void } }[] }) {
         this.fileDragging = false;
         const files = event.files;
-        const lastIndex = files.length - 1;
+        if (files.length === 0) return;
+
         const pboFiles: File[] = [];
         const invalidFiles: File[] = [];
-        const regex = /(?:\.([^.]+))?$/;
+        let resolved = 0;
 
-        files.forEach((file, index) => {
+        files.forEach((file) => {
             file.fileEntry.file((resolvedFile: File) => {
-                const ext = regex.exec(file.relativePath)?.[1];
+                const ext = file.relativePath.split('.').pop()?.toLowerCase();
                 if (ext === 'pbo') {
                     pboFiles.push(resolvedFile);
                 } else {
                     invalidFiles.push(resolvedFile);
                 }
-                if (index === lastIndex) {
+                resolved++;
+                if (resolved === files.length) {
                     this.fileDropFinished(pboFiles, invalidFiles);
                 }
             });
@@ -164,12 +146,12 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
     }
 
     download(mission: Mission) {
-        this.missionsService.downloadMission(mission.name).pipe(first()).subscribe({
+        this.missionsService.downloadMission(mission.path).pipe(first()).subscribe({
             next: (blob) => {
                 const url = URL.createObjectURL(blob);
                 const anchor = document.createElement('a');
                 anchor.href = url;
-                anchor.download = mission.name;
+                anchor.download = mission.path;
                 anchor.click();
                 URL.revokeObjectURL(url);
             }
@@ -177,13 +159,13 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
     }
 
     archive(mission: Mission) {
-        this.missionsService.archiveMission(mission.name, this.serversHub.connectionId ?? '').pipe(first()).subscribe({
+        this.missionsService.archiveMission(mission.path, this.serversHub.connectionId ?? '').pipe(first()).subscribe({
             next: () => this.loadMissions()
         });
     }
 
     restore(mission: Mission) {
-        this.missionsService.restoreMission(mission.name, this.serversHub.connectionId ?? '').pipe(first()).subscribe({
+        this.missionsService.restoreMission(mission.path, this.serversHub.connectionId ?? '').pipe(first()).subscribe({
             next: () => this.loadMissions()
         });
     }
@@ -194,7 +176,7 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
         }).afterClosed().pipe(first()).subscribe({
             next: (confirmed) => {
                 if (confirmed) {
-                    this.missionsService.deleteMission(mission.name, this.serversHub.connectionId ?? '').pipe(first()).subscribe({
+                    this.missionsService.deleteMission(mission.path, this.serversHub.connectionId ?? '').pipe(first()).subscribe({
                         next: () => this.loadMissions()
                     });
                 }
@@ -202,12 +184,52 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
         });
     }
 
-    trackByMissionName(_index: number, mission: Mission): string {
-        return mission.name;
+    trackByMissionPath(_index: number, mission: Mission): string {
+        return mission.path;
     }
 
     trackByMapGroup(_index: number, group: MissionGroup): string {
         return group.map;
+    }
+
+    private loadActiveMissions() {
+        this.missionsService.getActiveMissions().pipe(first()).subscribe({
+            next: (missions) => this.setActiveMissions(missions)
+        });
+    }
+
+    private loadArchivedMissions() {
+        this.missionsService.getArchivedMissions().pipe(first()).subscribe({
+            next: (missions) => {
+                this.archivedMissions = this.sortMissions(missions);
+                this.archivedGroups = this.computeGroups(this.archivedMissions);
+            }
+        });
+    }
+
+    private setActiveMissions(missions: Mission[]) {
+        this.activeMissions = this.sortMissions(missions);
+        this.activeGroups = this.computeGroups(this.activeMissions);
+    }
+
+    private recomputeGroups() {
+        this.activeGroups = this.computeGroups(this.activeMissions);
+        this.archivedGroups = this.computeGroups(this.archivedMissions);
+    }
+
+    private computeGroups(missions: Mission[]): MissionGroup[] {
+        const groupMap = new Map<string, Mission[]>();
+        for (const mission of missions) {
+            const existing = groupMap.get(mission.map);
+            if (existing) {
+                existing.push(mission);
+            } else {
+                groupMap.set(mission.map, [mission]);
+            }
+        }
+        return Array.from(groupMap.entries())
+            .map(([map, missionList]) => ({ map, missions: missionList }))
+            .sort((a, b) => a.map.localeCompare(b.map));
     }
 
     private sortMissions(missions: Mission[]): Mission[] {
@@ -235,7 +257,7 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
 
         const formData = new FormData();
         for (let i = 0; i < files.length; i++) {
-            const file = files instanceof FileList ? files.item(i)! : files[i];
+            const file = files[i];
             formData.append(file.name, file, file.name);
         }
 

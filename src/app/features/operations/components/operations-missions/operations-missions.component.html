@@ -34,59 +34,56 @@
             </button>
         </div>
 
+        <ng-template #missionItem let-mission let-isArchived="isArchived">
+            <div class="mission-item">
+                <div class="mission-info">
+                    <span class="mission-name">{{ mission.name }}</span>
+                    <span class="mission-details">{{ mission.map }} &middot; {{ mission.size | fileSize }} &middot; {{ mission.lastModified | date:'short' }}</span>
+                </div>
+                <div class="mission-actions">
+                    <button mat-icon-button (click)="download(mission)" matTooltip="Download">
+                        <mat-icon>download</mat-icon>
+                    </button>
+                    @if (isArchived) {
+                        <button mat-icon-button (click)="restore(mission)" matTooltip="Restore">
+                            <mat-icon>unarchive</mat-icon>
+                        </button>
+                    } @else {
+                        <button mat-icon-button (click)="archive(mission)" matTooltip="Archive">
+                            <mat-icon>archive</mat-icon>
+                        </button>
+                    }
+                    <button mat-icon-button (click)="deleteMission(mission)" matTooltip="Delete">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </ng-template>
+
         <div class="missions-container">
             <div class="missions-column">
                 <h3>Active <span class="count">({{ activeMissions.length }})</span></h3>
                 @if (groupByMap) {
                     <mat-accordion multi>
-                        @for (group of getGroups(activeMissions); track group.map) {
+                        @for (group of activeGroups; track group.map) {
                             <mat-expansion-panel>
                                 <mat-expansion-panel-header>
                                     <mat-panel-title>
                                         {{ group.map }} <span class="count">({{ group.missions.length }})</span>
                                     </mat-panel-title>
                                 </mat-expansion-panel-header>
-                                @for (mission of group.missions; track mission.name) {
-                                    <div class="mission-item">
-                                        <div class="mission-info">
-                                            <span class="mission-name">{{ mission.name }}</span>
-                                            <span class="mission-details">{{ mission.map }} &middot; {{ mission.size | fileSize }} &middot; {{ mission.lastModified | date:'short' }}</span>
-                                        </div>
-                                        <div class="mission-actions">
-                                            <button mat-icon-button (click)="download(mission)" matTooltip="Download">
-                                                <mat-icon>download</mat-icon>
-                                            </button>
-                                            <button mat-icon-button (click)="archive(mission)" matTooltip="Archive">
-                                                <mat-icon>archive</mat-icon>
-                                            </button>
-                                            <button mat-icon-button (click)="deleteMission(mission)" matTooltip="Delete">
-                                                <mat-icon>delete</mat-icon>
-                                            </button>
-                                        </div>
-                                    </div>
+                                @for (mission of group.missions; track mission.path) {
+                                    <ng-container *ngTemplateOutlet="missionItem; context: { $implicit: mission, isArchived: false }"></ng-container>
                                 }
                             </mat-expansion-panel>
                         }
                     </mat-accordion>
+                    @if (activeGroups.length === 0) {
+                        <div class="empty-state">No active missions</div>
+                    }
                 } @else {
-                    @for (mission of activeMissions; track mission.name) {
-                        <div class="mission-item">
-                            <div class="mission-info">
-                                <span class="mission-name">{{ mission.name }}</span>
-                                <span class="mission-details">{{ mission.map }} &middot; {{ mission.size | fileSize }} &middot; {{ mission.lastModified | date:'short' }}</span>
-                            </div>
-                            <div class="mission-actions">
-                                <button mat-icon-button (click)="download(mission)" matTooltip="Download">
-                                    <mat-icon>download</mat-icon>
-                                </button>
-                                <button mat-icon-button (click)="archive(mission)" matTooltip="Archive">
-                                    <mat-icon>archive</mat-icon>
-                                </button>
-                                <button mat-icon-button (click)="deleteMission(mission)" matTooltip="Delete">
-                                    <mat-icon>delete</mat-icon>
-                                </button>
-                            </div>
-                        </div>
+                    @for (mission of activeMissions; track mission.path) {
+                        <ng-container *ngTemplateOutlet="missionItem; context: { $implicit: mission, isArchived: false }"></ng-container>
                     }
                     @if (activeMissions.length === 0) {
                         <div class="empty-state">No active missions</div>
@@ -98,54 +95,25 @@
                 <h3>Archived <span class="count">({{ archivedMissions.length }})</span></h3>
                 @if (groupByMap) {
                     <mat-accordion multi>
-                        @for (group of getGroups(archivedMissions); track group.map) {
+                        @for (group of archivedGroups; track group.map) {
                             <mat-expansion-panel>
                                 <mat-expansion-panel-header>
                                     <mat-panel-title>
                                         {{ group.map }} <span class="count">({{ group.missions.length }})</span>
                                     </mat-panel-title>
                                 </mat-expansion-panel-header>
-                                @for (mission of group.missions; track mission.name) {
-                                    <div class="mission-item">
-                                        <div class="mission-info">
-                                            <span class="mission-name">{{ mission.name }}</span>
-                                            <span class="mission-details">{{ mission.map }} &middot; {{ mission.size | fileSize }} &middot; {{ mission.lastModified | date:'short' }}</span>
-                                        </div>
-                                        <div class="mission-actions">
-                                            <button mat-icon-button (click)="download(mission)" matTooltip="Download">
-                                                <mat-icon>download</mat-icon>
-                                            </button>
-                                            <button mat-icon-button (click)="restore(mission)" matTooltip="Restore">
-                                                <mat-icon>unarchive</mat-icon>
-                                            </button>
-                                            <button mat-icon-button (click)="deleteMission(mission)" matTooltip="Delete">
-                                                <mat-icon>delete</mat-icon>
-                                            </button>
-                                        </div>
-                                    </div>
+                                @for (mission of group.missions; track mission.path) {
+                                    <ng-container *ngTemplateOutlet="missionItem; context: { $implicit: mission, isArchived: true }"></ng-container>
                                 }
                             </mat-expansion-panel>
                         }
                     </mat-accordion>
+                    @if (archivedGroups.length === 0) {
+                        <div class="empty-state">No archived missions</div>
+                    }
                 } @else {
-                    @for (mission of archivedMissions; track mission.name) {
-                        <div class="mission-item">
-                            <div class="mission-info">
-                                <span class="mission-name">{{ mission.name }}</span>
-                                <span class="mission-details">{{ mission.map }} &middot; {{ mission.size | fileSize }} &middot; {{ mission.lastModified | date:'short' }}</span>
-                            </div>
-                            <div class="mission-actions">
-                                <button mat-icon-button (click)="download(mission)" matTooltip="Download">
-                                    <mat-icon>download</mat-icon>
-                                </button>
-                                <button mat-icon-button (click)="restore(mission)" matTooltip="Restore">
-                                    <mat-icon>unarchive</mat-icon>
-                                </button>
-                                <button mat-icon-button (click)="deleteMission(mission)" matTooltip="Delete">
-                                    <mat-icon>delete</mat-icon>
-                                </button>
-                            </div>
-                        </div>
+                    @for (mission of archivedMissions; track mission.path) {
+                        <ng-container *ngTemplateOutlet="missionItem; context: { $implicit: mission, isArchived: true }"></ng-container>
                     }
                     @if (archivedMissions.length === 0) {
                         <div class="empty-state">No archived missions</div>
