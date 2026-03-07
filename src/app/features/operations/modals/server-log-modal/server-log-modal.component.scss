@@ -124,7 +124,7 @@ button.tail-active {
     font-size: 13px;
     line-height: 20px;
     color: #d4d4d4;
-    cursor: default;
+    cursor: text;
 
     &.search-highlight {
         background: rgba(255, 255, 255, 0.06);
@@ -132,6 +132,11 @@ button.tail-active {
 
     &.search-active {
         background: rgba(255, 255, 255, 0.12);
+    }
+
+    &.linked-line {
+        background: rgba(255, 200, 0, 0.12);
+        border-left: 2px solid rgba(255, 200, 0, 0.6);
     }
 }
 
@@ -143,6 +148,11 @@ button.tail-active {
     border-right: 1px solid #333;
     user-select: none;
     flex-shrink: 0;
+    cursor: pointer;
+
+    &:hover {
+        color: #999;
+    }
 }
 
 .line-content {

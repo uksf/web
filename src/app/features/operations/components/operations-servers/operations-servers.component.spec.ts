@@ -6,6 +6,7 @@ import { GameServersService } from '../../services/game-servers.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ServersHubService } from '../../services/servers-hub.service';
 import { PermissionsService } from '@app/core/services/permissions.service';
+import { ActivatedRoute } from '@angular/router';
 
 describe('OperationsServersComponent', () => {
     let component: OperationsServersComponent;
@@ -69,6 +70,7 @@ describe('OperationsServersComponent', () => {
                 { provide: MatDialog, useValue: mockDialog },
                 { provide: ServersHubService, useValue: mockServersHub },
                 { provide: PermissionsService, useValue: mockPermissions },
+                { provide: ActivatedRoute, useValue: { snapshot: { queryParams: {} } } },
             ]
         });
         component = TestBed.inject(OperationsServersComponent);

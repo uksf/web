@@ -16,8 +16,13 @@ export const RPT_COLORS = {
 
 export interface RptColorSegment {
     color: string;
-    start: number; // 0..1 proportion of line length
-    end: number;   // 0..1 proportion of line length
+    cssClass: string; // CSS class name, empty for default text
+    start: number;    // 0..1 proportion of line length
+    end: number;      // 0..1 proportion of line length
+}
+
+function seg(cssClass: string, color: string, start: number, end: number): RptColorSegment {
+    return { color, cssClass, start, end };
 }
 
 export function classifyRptLine(line: string): RptColorSegment[] {
@@ -26,16 +31,16 @@ export function classifyRptLine(line: string): RptColorSegment[] {
 
     // Full-line patterns
     if (line.includes('Skipped loading of addon') || line.includes('Updating base class')) {
-        return [{ color: RPT_COLORS.noise, start: 0, end: 1 }];
+        return [seg('rpt-noise', RPT_COLORS.noise, 0, 1)];
     }
     if (/^====/.test(line) || /^----/.test(line)) {
-        return [{ color: RPT_COLORS.separator, start: 0, end: 1 }];
+        return [seg('rpt-separator', RPT_COLORS.separator, 0, 1)];
     }
     if (line.includes('Error in expression') || line.includes('Error position:') || /Error \w+:/.test(line)) {
-        return [{ color: RPT_COLORS.error, start: 0, end: 1 }];
+        return [seg('rpt-error', RPT_COLORS.error, 0, 1)];
     }
     if (line.includes('Mission file:') || line.includes('Mission world:') || line.includes('Mission id:')) {
-        return [{ color: RPT_COLORS.mission, start: 0, end: 1 }];
+        return [seg('rpt-mission', RPT_COLORS.mission, 0, 1)];
     }
 
     // Inline patterns — collect segments
@@ -45,7 +50,7 @@ export function classifyRptLine(line: string): RptColorSegment[] {
     // Timestamp at start
     const tsMatch = line.match(/^(\d{2}:\d{2}:\d{2})/);
     if (tsMatch) {
-        segments.push({ color: RPT_COLORS.timestamp, start: 0, end: tsMatch[1].length / len });
+        segments.push(seg('rpt-timestamp', RPT_COLORS.timestamp, 0, tsMatch[1].length / len));
         hasInlineMatch = true;
     }
 
@@ -56,9 +61,9 @@ export function classifyRptLine(line: string): RptColorSegment[] {
         const tagStart = m.index;
         const tagName = m[1];
         const compName = m[2];
-        segments.push({ color: RPT_COLORS.modTag, start: tagStart / len, end: (tagStart + tagName.length + 2) / len });
+        segments.push(seg('rpt-mod-tag', RPT_COLORS.modTag, tagStart / len, (tagStart + tagName.length + 2) / len));
         const compStart = m.index + m[0].indexOf('(' + compName + ')');
-        segments.push({ color: RPT_COLORS.modComponent, start: compStart / len, end: (compStart + compName.length + 2) / len });
+        segments.push(seg('rpt-mod-component', RPT_COLORS.modComponent, compStart / len, (compStart + compName.length + 2) / len));
         hasInlineMatch = true;
     }
 
@@ -66,24 +71,24 @@ export function classifyRptLine(line: string): RptColorSegment[] {
     const tagRegex = /\[(\w+)\]/g;
     while ((m = tagRegex.exec(line)) !== null) {
         const alreadyMatched = segments.some(s =>
-            Math.abs(s.start - m!.index / len) < 0.001 && s.color === RPT_COLORS.modTag
+            Math.abs(s.start - m!.index / len) < 0.001 && s.cssClass === 'rpt-mod-tag'
         );
         if (!alreadyMatched) {
-            segments.push({ color: RPT_COLORS.modTag, start: m.index / len, end: (m.index + m[0].length) / len });
+            segments.push(seg('rpt-mod-tag', RPT_COLORS.modTag, m.index / len, (m.index + m[0].length) / len));
             hasInlineMatch = true;
         }
     }
 
     // Keywords
-    const keywords: { pattern: RegExp; color: string }[] = [
-        { pattern: /\bERROR\b/g, color: RPT_COLORS.error },
-        { pattern: /\bWARNING\b/g, color: RPT_COLORS.warning },
-        { pattern: /\bWarning\b/g, color: RPT_COLORS.warning },
-        { pattern: /\bINFO\b/g, color: RPT_COLORS.info }
+    const keywords: { pattern: RegExp; cssClass: string; color: string }[] = [
+        { pattern: /\bERROR\b/g, cssClass: 'rpt-error', color: RPT_COLORS.error },
+        { pattern: /\bWARNING\b/g, cssClass: 'rpt-warning', color: RPT_COLORS.warning },
+        { pattern: /\bWarning\b/g, cssClass: 'rpt-warning', color: RPT_COLORS.warning },
+        { pattern: /\bINFO\b/g, cssClass: 'rpt-info', color: RPT_COLORS.info }
     ];
     for (const kw of keywords) {
         while ((m = kw.pattern.exec(line)) !== null) {
-            segments.push({ color: kw.color, start: m.index / len, end: (m.index + m[0].length) / len });
+            segments.push(seg(kw.cssClass, kw.color, m.index / len, (m.index + m[0].length) / len));
             hasInlineMatch = true;
         }
     }
@@ -91,27 +96,27 @@ export function classifyRptLine(line: string): RptColorSegment[] {
     // Quoted strings
     const strRegex = /"[^"]*"/g;
     while ((m = strRegex.exec(line)) !== null) {
-        segments.push({ color: RPT_COLORS.string, start: m.index / len, end: (m.index + m[0].length) / len });
+        segments.push(seg('rpt-string', RPT_COLORS.string, m.index / len, (m.index + m[0].length) / len));
         hasInlineMatch = true;
     }
 
     if (!hasInlineMatch) {
-        return [{ color: RPT_COLORS.defaultText, start: 0, end: 1 }];
+        return [seg('', RPT_COLORS.defaultText, 0, 1)];
     }
 
     // Fill gaps with default text
     segments.sort((a, b) => a.start - b.start);
     const filled: RptColorSegment[] = [];
     let cursor = 0;
-    for (const seg of segments) {
-        if (seg.start > cursor + 0.001) {
-            filled.push({ color: RPT_COLORS.defaultText, start: cursor, end: seg.start });
+    for (const s of segments) {
+        if (s.start > cursor + 0.001) {
+            filled.push(seg('', RPT_COLORS.defaultText, cursor, s.start));
         }
-        filled.push(seg);
-        cursor = Math.max(cursor, seg.end);
+        filled.push(s);
+        cursor = Math.max(cursor, s.end);
     }
     if (cursor < 0.999) {
-        filled.push({ color: RPT_COLORS.defaultText, start: cursor, end: 1 });
+        filled.push(seg('', RPT_COLORS.defaultText, cursor, 1));
     }
     return filled;
 }
@@ -127,61 +132,20 @@ function escapeHtml(text: string): string {
     return text.replace(/[&<>"]/g, (char) => ESCAPE_MAP[char]);
 }
 
-function wrapLine(className: string, content: string): string {
-    return `<span class="${className}">${content}</span>`;
-}
-
 export function highlightRptLine(line: string): string {
-    const escaped = escapeHtml(line);
-
-    // Full-line patterns (return early)
-    if (escaped.includes('Skipped loading of addon') || escaped.includes('Updating base class')) {
-        return wrapLine('rpt-noise', escaped);
+    if (!line.length) return '';
+    const segments = classifyRptLine(line);
+    const len = line.length;
+    let result = '';
+    for (const s of segments) {
+        const start = Math.round(s.start * len);
+        const end = Math.round(s.end * len);
+        const text = escapeHtml(line.substring(start, end));
+        if (s.cssClass) {
+            result += `<span class="${s.cssClass}">${text}</span>`;
+        } else {
+            result += text;
+        }
     }
-
-    if (/^====/.test(escaped) || /^----/.test(escaped)) {
-        return wrapLine('rpt-separator', escaped);
-    }
-
-    if (escaped.includes('Error in expression') || escaped.includes('Error position:') || /Error \w+:/.test(escaped)) {
-        return wrapLine('rpt-error', escaped);
-    }
-
-    if (escaped.includes('Mission file:') || escaped.includes('Mission world:') || escaped.includes('Mission id:')) {
-        return wrapLine('rpt-mission', escaped);
-    }
-
-    // Inline replacements
-    let result = escaped;
-
-    // Timestamp at start
-    result = result.replace(/^(\d{2}:\d{2}:\d{2})/, '<span class="rpt-timestamp">$1</span>');
-
-    // Mod tag + component: [ACE] (medical)
-    // Use sentinel to prevent standalone regex from re-matching tags already handled
-    const tagComponentPairs: string[] = [];
-    result = result.replace(/\[(\w+)\]\s*\((\w+)\)/g, (_match, tag, component) => {
-        const index = tagComponentPairs.length;
-        tagComponentPairs.push(`<span class="rpt-mod-tag">[${tag}]</span> <span class="rpt-mod-component">(${component})</span>`);
-        return `\x00TC${index}\x00`;
-    });
-
-    // Standalone mod tag: [ACE]
-    result = result.replace(/\[(\w+)\]/g, '<span class="rpt-mod-tag">[$1]</span>');
-
-    // Restore tag+component pairs
-    for (let i = 0; i < tagComponentPairs.length; i++) {
-        result = result.replace(`\x00TC${i}\x00`, tagComponentPairs[i]);
-    }
-
-    // Keywords
-    result = result.replace(/\bERROR\b/g, '<span class="rpt-error">ERROR</span>');
-    result = result.replace(/\bWARNING\b/g, '<span class="rpt-warning">WARNING</span>');
-    result = result.replace(/\bWarning\b/g, '<span class="rpt-warning">Warning</span>');
-    result = result.replace(/\bINFO\b/g, '<span class="rpt-info">INFO</span>');
-
-    // Quoted strings (already HTML-escaped, so match &quot;)
-    result = result.replace(/&quot;[^&]*&quot;/g, (match) => `<span class="rpt-string">${match}</span>`);
-
     return result;
 }

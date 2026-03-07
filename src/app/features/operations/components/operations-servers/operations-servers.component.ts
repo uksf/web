@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { AddServerModalComponent } from '../../modals/add-server-modal/add-server-modal.component';
 import { EditServerModsModalComponent } from '../../modals/edit-server-mods-modal/edit-server-mods-modal.component';
@@ -61,6 +62,7 @@ import { DisplayName } from '../../../../shared/pipes/displayName.pipe';
 export class OperationsServersComponent extends DestroyableComponent implements OnInit, OnDestroy {
     private gameServersService = inject(GameServersService);
     private dialog = inject(MatDialog);
+    private route = inject(ActivatedRoute);
     private serversHub = inject(ServersHubService);
     private permissions = inject(PermissionsService);
 
@@ -174,6 +176,7 @@ export class OperationsServersComponent extends DestroyableComponent implements 
                 this.servers.forEach((server) => {
                     this.refreshServerStatus(server);
                 });
+                this.checkDeepLink();
             },
             error: () => {
                 this.updating = false;
@@ -260,9 +263,9 @@ export class OperationsServersComponent extends DestroyableComponent implements 
         });
     }
 
-    openServerLog(server: GameServer): void {
+    openServerLog(server: GameServer, scrollToLine?: number): void {
         this.dialog.open(ServerLogModalComponent, {
-            data: { server },
+            data: { server, scrollToLine },
             panelClass: 'rpt-log-dialog',
             backdropClass: 'rpt-log-backdrop',
             width: '95vw',
@@ -270,6 +273,17 @@ export class OperationsServersComponent extends DestroyableComponent implements 
             height: '90vh',
             autoFocus: false,
         });
+    }
+
+    private checkDeepLink(): void {
+        const params = this.route.snapshot.queryParams;
+        if (params['log'] && this.servers) {
+            const server = this.servers.find(s => s.id === params['log']);
+            if (server) {
+                const line = params['line'] ? parseInt(params['line'], 10) : undefined;
+                this.openServerLog(server, line);
+            }
+        }
     }
 
     get isDisabled() {

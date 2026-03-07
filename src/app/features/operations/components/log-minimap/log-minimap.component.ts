@@ -91,6 +91,7 @@ export function findSearchResultAtY(
 export class LogMinimapComponent implements AfterViewInit, OnDestroy {
     logLines = input<string[]>([]);
     searchResults = input<RptLogSearchResult[]>([]);
+    searchQuery = input<string>('');
     currentSearchIndex = input<number>(-1);
     viewportOffset = input<number>(0);
     viewportSize = input<number>(0);
@@ -116,6 +117,7 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         effect(() => {
             this.logLines();
             this.searchResults();
+            this.searchQuery();
             this.currentSearchIndex();
             this.viewportOffset();
             this.viewportSize();
@@ -165,13 +167,19 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
             this.viewportOffset(), this.viewportSize(), this.totalHeight(), canvasHeight
         );
         if (y >= slider.top && y <= slider.top + slider.height) {
+            // Clicked inside viewport slider — drag from current position
             this.startDrag(y);
-            this.setupDocumentListeners();
-            return;
+        } else {
+            // Clicked outside viewport slider — center viewport on click, then start dragging
+            const sliderMidOffset = slider.height / 2;
+            const newTop = y - sliderMidOffset;
+            const newOffset = (newTop / canvasHeight) * this.totalHeight();
+            const maxOffset = this.totalHeight() - this.viewportSize();
+            const clampedOffset = Math.max(0, Math.min(maxOffset, newOffset));
+            this.scrollToOffset.emit(clampedOffset);
+            this.startDrag(y, clampedOffset);
         }
-
-        const line = canvasYToLine(y, totalLines, contentCanvasHeight);
-        this.scrollToLine.emit(line);
+        this.setupDocumentListeners();
     }
 
     onMouseMove(_event: MouseEvent): void {
@@ -188,10 +196,10 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         }
     }
 
-    startDrag(y: number): void {
+    startDrag(y: number, offset?: number): void {
         this.isDragging = true;
         this.dragStartY = y;
-        this.dragStartOffset = this.viewportOffset();
+        this.dragStartOffset = offset ?? this.viewportOffset();
     }
 
     endDrag(): void {
@@ -212,8 +220,7 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         const deltaScroll = (deltaY / canvasHeight) * totalH;
         const newOffset = this.dragStartOffset + deltaScroll;
         const maxOffset = totalH - this.viewportSize();
-        const clampedOffset = Math.max(0, Math.min(maxOffset, newOffset));
-        this.scrollToOffset.emit(clampedOffset);
+        this.scrollToOffset.emit(Math.max(0, Math.min(maxOffset, newOffset)));
     };
 
     private onDocumentMouseUp = (): void => {
@@ -312,12 +319,42 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
     ): void {
         const results = this.searchResults();
         const activeIdx = this.currentSearchIndex();
+        const query = this.searchQuery();
+        const lines = this.logLines();
+        const lineH = Math.max(height / totalLines, 2);
+
+        const vpWidth = this.viewportContentWidth();
+        const monoCharPx = 7.8;
+        const charPx = vpWidth > 0 ? (width * monoCharPx) / vpWidth : width / 120;
 
         for (let i = 0; i < results.length; i++) {
-            const y = lineToCanvasY(results[i].lineIndex, totalLines, height);
-            ctx.fillStyle = i === activeIdx ? RPT_COLORS.searchActive : RPT_COLORS.search;
-            ctx.fillRect(0, y, width, Math.max(height / totalLines, 2));
+            const result = results[i];
+            const y = lineToCanvasY(result.lineIndex, totalLines, height);
+            const isActive = i === activeIdx;
+
+            // Draw dim line background for context
+            ctx.fillStyle = isActive ? RPT_COLORS.searchActive : RPT_COLORS.search;
+            ctx.globalAlpha = isActive ? 0.15 : 0.08;
+            ctx.fillRect(0, y, width, lineH);
+
+            // Draw actual match positions as brighter markers
+            if (query && result.lineIndex < lines.length) {
+                const line = lines[result.lineIndex];
+                const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const pattern = new RegExp(escaped, 'gi');
+                let match: RegExpExecArray | null;
+                ctx.fillStyle = isActive ? RPT_COLORS.searchActive : RPT_COLORS.search;
+                ctx.globalAlpha = isActive ? 1 : 0.8;
+                while ((match = pattern.exec(line)) !== null) {
+                    const x = match.index * charPx;
+                    const w = Math.max(match[0].length * charPx, 2);
+                    if (x < width) {
+                        ctx.fillRect(x, y, Math.min(w, width - x), lineH);
+                    }
+                }
+            }
         }
+        ctx.globalAlpha = 1;
     }
 
     private drawViewportSlider(

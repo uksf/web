@@ -1,7 +1,7 @@
 <div class="icon-container">
     @if (unreadNotifications.length > 0) {
     <mat-icon class="notification" (click)="togglePanel()" matBadge="{{ unreadNotifications.length }}" matBadgePosition="above after" matBadgeColor="warning" matBadgeSize="small"
-        >notifications</mat-icon
+        aria-hidden="false" aria-label="Notifications">notifications</mat-icon
     >
     } @else if (notifications.length > 0) {
     <mat-icon class="notification" (click)="togglePanel()">notifications</mat-icon>

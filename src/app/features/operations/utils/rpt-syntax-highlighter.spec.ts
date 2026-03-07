@@ -122,52 +122,52 @@ describe('RPT_COLORS', () => {
 describe('classifyRptLine', () => {
     it('should classify a noise line', () => {
         const result = classifyRptLine('Skipped loading of addon my_addon');
-        expect(result).toEqual([{ color: '#6a737d', start: 0, end: 1 }]);
+        expect(result).toEqual([{ color: '#6a737d', cssClass: 'rpt-noise', start: 0, end: 1 }]);
     });
 
     it('should classify a separator line', () => {
         const result = classifyRptLine('========================================');
-        expect(result).toEqual([{ color: '#6a737d', start: 0, end: 1 }]);
+        expect(result).toEqual([{ color: '#6a737d', cssClass: 'rpt-separator', start: 0, end: 1 }]);
     });
 
     it('should classify an error line', () => {
         const result = classifyRptLine('Error in expression <something>');
-        expect(result).toEqual([{ color: '#f97583', start: 0, end: 1 }]);
+        expect(result).toEqual([{ color: '#f97583', cssClass: 'rpt-error', start: 0, end: 1 }]);
     });
 
     it('should classify a mission line', () => {
         const result = classifyRptLine('Mission file: co40_uksf_op.Altis');
-        expect(result).toEqual([{ color: '#85e89d', start: 0, end: 1 }]);
+        expect(result).toEqual([{ color: '#85e89d', cssClass: 'rpt-mission', start: 0, end: 1 }]);
     });
 
     it('should classify a plain line as default text', () => {
         const result = classifyRptLine('just a plain log line');
-        expect(result).toEqual([{ color: '#d4d4d4', start: 0, end: 1 }]);
+        expect(result).toEqual([{ color: '#d4d4d4', cssClass: '', start: 0, end: 1 }]);
     });
 
     it('should classify a timestamp line with segments', () => {
         const result = classifyRptLine('12:34:56 Some log message');
         expect(result.length).toBeGreaterThanOrEqual(2);
-        expect(result[0]).toEqual({ color: '#6a737d', start: 0, end: expect.closeTo(8 / 25, 1) });
+        expect(result[0]).toEqual({ color: '#6a737d', cssClass: 'rpt-timestamp', start: 0, end: expect.closeTo(8 / 25, 1) });
     });
 
     it('should classify ERROR keyword', () => {
         const result = classifyRptLine('12:00:00 ERROR something failed');
-        const errorSegment = result.find(s => s.color === '#f97583');
+        const errorSegment = result.find(s => s.cssClass === 'rpt-error');
         expect(errorSegment).toBeDefined();
     });
 
     it('should classify mod tag with component', () => {
         const result = classifyRptLine('[ACE] (medical) Initialized');
-        const tagSegment = result.find(s => s.color === '#79b8ff');
-        const compSegment = result.find(s => s.color === '#b392f0');
+        const tagSegment = result.find(s => s.cssClass === 'rpt-mod-tag');
+        const compSegment = result.find(s => s.cssClass === 'rpt-mod-component');
         expect(tagSegment).toBeDefined();
         expect(compSegment).toBeDefined();
     });
 
     it('should classify quoted strings', () => {
         const result = classifyRptLine('Loading file "config.bin" from disk');
-        const stringSegment = result.find(s => s.color === '#9ecbff');
+        const stringSegment = result.find(s => s.cssClass === 'rpt-string');
         expect(stringSegment).toBeDefined();
     });
 

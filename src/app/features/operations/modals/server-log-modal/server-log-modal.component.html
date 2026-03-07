@@ -25,7 +25,7 @@
         </app-text-input>
         <span class="search-count" [class.search-count-no-match]="searchQuery.trim() && !searchResults.length">
             @if (searchResults.length) {
-                {{ currentSearchIndex + 1 }} / {{ searchResults.length }}
+                {{ currentSearchIndex + 1 }} of {{ totalMatches }}
             } @else {
                 No results
             }
@@ -56,14 +56,16 @@
                      class="log-line"
                      [class.search-highlight]="isSearchMatch(i)"
                      [class.search-active]="isActiveSearchMatch(i)"
+                     [class.linked-line]="i === linkedLineIndex"
                      (click)="onLineClick(i)">
-                    <span class="line-number">{{ i + 1 }}</span>
+                    <span class="line-number" (click)="copyLineLink($event, i)" matTooltip="Copy link to line">{{ i + 1 }}</span>
                     <span class="line-content" [innerHTML]="line"></span>
                 </div>
             </cdk-virtual-scroll-viewport>
             <app-log-minimap
                 [logLines]="logLines"
                 [searchResults]="searchResults"
+                [searchQuery]="searchQuery"
                 [currentSearchIndex]="currentSearchIndex"
                 [viewportOffset]="viewportScrollOffset"
                 [viewportSize]="viewportVisibleSize"
