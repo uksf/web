@@ -698,7 +698,9 @@ export class OperationsServersComponent extends DestroyableComponent implements 
         return {
             path: dropdownElement.value,
             name: dropdownElement.displayValue,
-            map: dropdownElement.data as string
+            map: dropdownElement.data as string,
+            size: 0,
+            lastModified: ''
         };
     }
 

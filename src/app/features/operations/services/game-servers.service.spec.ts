@@ -124,7 +124,7 @@ describe('GameServersService', () => {
         });
 
         expect(mockHttpClient.post).toHaveBeenCalledWith(
-            'http://localhost:5500/gameservers/mission',
+            'http://localhost:5500/missions/upload',
             formData,
             expect.objectContaining({ reportProgress: true, headers: expect.any(Object) })
         );

@@ -39,7 +39,7 @@ export class GameServersService {
     }
 
     uploadMission(formData: FormData, connectionId: string): Observable<MissionUploadResponse> {
-        return this.httpClient.post<MissionUploadResponse>(`${this.urls.apiUrl}/gameservers/mission`, formData, {
+        return this.httpClient.post<MissionUploadResponse>(`${this.urls.apiUrl}/missions/upload`, formData, {
             reportProgress: true,
             headers: this.buildHeaders(connectionId)
         });

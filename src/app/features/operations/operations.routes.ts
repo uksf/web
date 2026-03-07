@@ -5,6 +5,7 @@ import { loginRedirect } from '@app/login-redirect';
 import { OperationsPageComponent } from './components/operations-page/operations-page.component';
 import { OperationsServersComponent } from './components/operations-servers/operations-servers.component';
 import { OperationsAarComponent } from './components/operations-aar/operations-aar.component';
+import { OperationsMissionsComponent } from './components/operations-missions/operations-missions.component';
 export const OPERATIONS_ROUTES: Routes = [
     {
         path: '',
@@ -23,6 +24,21 @@ export const OPERATIONS_ROUTES: Routes = [
             {
                 path: 'servers',
                 component: OperationsServersComponent,
+                data: {
+                    permissions: {
+                        only: Permissions.SERVERS,
+                        except: Permissions.UNLOGGED,
+                        redirectTo: {
+                            UNLOGGED: loginRedirect,
+                            default: '/operations/aar'
+                        }
+                    }
+                },
+                canActivate: [NgxPermissionsGuard]
+            },
+            {
+                path: 'missions',
+                component: OperationsMissionsComponent,
                 data: {
                     permissions: {
                         only: Permissions.SERVERS,

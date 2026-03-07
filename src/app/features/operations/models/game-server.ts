@@ -41,6 +41,8 @@ export interface Mission {
     map: string;
     name: string;
     path: string;
+    size: number;
+    lastModified: string;
 }
 
 export interface MissionReport {
