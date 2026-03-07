@@ -1,0 +1,157 @@
+<app-file-drop (onFileOver)="onFileOver()" (onFileLeave)="onFileLeave()" (onFileDrop)="onFileDrop($event)">
+    <div class="missions-page" [class.file-dragging]="fileDragging">
+        <div class="missions-header">
+            <h2>Missions</h2>
+
+            <button mat-icon-button (click)="uploader.click()" [disabled]="uploading" matTooltip="Upload mission (.pbo)">
+                @if (uploading) {
+                    <mat-icon class="uploading-icon">autorenew</mat-icon>
+                } @else {
+                    <mat-icon>upload_file</mat-icon>
+                }
+            </button>
+            <input #uploader type="file" accept=".pbo" multiple hidden (change)="uploadFromButton($event)">
+
+            <div class="sort-controls">
+                <button mat-icon-button (click)="setSort('name')" [class.active]="sortField === 'name'" matTooltip="Sort by name">
+                    <mat-icon>sort_by_alpha</mat-icon>
+                </button>
+                <button mat-icon-button (click)="setSort('date')" [class.active]="sortField === 'date'" matTooltip="Sort by date">
+                    <mat-icon>schedule</mat-icon>
+                </button>
+                <button mat-icon-button (click)="setSort('map')" [class.active]="sortField === 'map'" matTooltip="Sort by map">
+                    <mat-icon>map</mat-icon>
+                </button>
+                @if (sortDirection === 'asc') {
+                    <mat-icon class="sort-direction-icon">arrow_upward</mat-icon>
+                } @else {
+                    <mat-icon class="sort-direction-icon">arrow_downward</mat-icon>
+                }
+            </div>
+
+            <button mat-icon-button (click)="toggleGroupByMap()" [class.active]="groupByMap" matTooltip="Group by map">
+                <mat-icon>folder</mat-icon>
+            </button>
+        </div>
+
+        <div class="missions-container">
+            <div class="missions-column">
+                <h3>Active <span class="count">({{ activeMissions.length }})</span></h3>
+                @if (groupByMap) {
+                    <mat-accordion multi>
+                        @for (group of getGroups(activeMissions); track group.map) {
+                            <mat-expansion-panel>
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title>
+                                        {{ group.map }} <span class="count">({{ group.missions.length }})</span>
+                                    </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                @for (mission of group.missions; track mission.name) {
+                                    <div class="mission-item">
+                                        <div class="mission-info">
+                                            <span class="mission-name">{{ mission.name }}</span>
+                                            <span class="mission-details">{{ mission.map }} &middot; {{ mission.size | fileSize }} &middot; {{ mission.lastModified | date:'short' }}</span>
+                                        </div>
+                                        <div class="mission-actions">
+                                            <button mat-icon-button (click)="download(mission)" matTooltip="Download">
+                                                <mat-icon>download</mat-icon>
+                                            </button>
+                                            <button mat-icon-button (click)="archive(mission)" matTooltip="Archive">
+                                                <mat-icon>archive</mat-icon>
+                                            </button>
+                                            <button mat-icon-button (click)="deleteMission(mission)" matTooltip="Delete">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                            </mat-expansion-panel>
+                        }
+                    </mat-accordion>
+                } @else {
+                    @for (mission of activeMissions; track mission.name) {
+                        <div class="mission-item">
+                            <div class="mission-info">
+                                <span class="mission-name">{{ mission.name }}</span>
+                                <span class="mission-details">{{ mission.map }} &middot; {{ mission.size | fileSize }} &middot; {{ mission.lastModified | date:'short' }}</span>
+                            </div>
+                            <div class="mission-actions">
+                                <button mat-icon-button (click)="download(mission)" matTooltip="Download">
+                                    <mat-icon>download</mat-icon>
+                                </button>
+                                <button mat-icon-button (click)="archive(mission)" matTooltip="Archive">
+                                    <mat-icon>archive</mat-icon>
+                                </button>
+                                <button mat-icon-button (click)="deleteMission(mission)" matTooltip="Delete">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                    @if (activeMissions.length === 0) {
+                        <div class="empty-state">No active missions</div>
+                    }
+                }
+            </div>
+
+            <div class="missions-column">
+                <h3>Archived <span class="count">({{ archivedMissions.length }})</span></h3>
+                @if (groupByMap) {
+                    <mat-accordion multi>
+                        @for (group of getGroups(archivedMissions); track group.map) {
+                            <mat-expansion-panel>
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title>
+                                        {{ group.map }} <span class="count">({{ group.missions.length }})</span>
+                                    </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                @for (mission of group.missions; track mission.name) {
+                                    <div class="mission-item">
+                                        <div class="mission-info">
+                                            <span class="mission-name">{{ mission.name }}</span>
+                                            <span class="mission-details">{{ mission.map }} &middot; {{ mission.size | fileSize }} &middot; {{ mission.lastModified | date:'short' }}</span>
+                                        </div>
+                                        <div class="mission-actions">
+                                            <button mat-icon-button (click)="download(mission)" matTooltip="Download">
+                                                <mat-icon>download</mat-icon>
+                                            </button>
+                                            <button mat-icon-button (click)="restore(mission)" matTooltip="Restore">
+                                                <mat-icon>unarchive</mat-icon>
+                                            </button>
+                                            <button mat-icon-button (click)="deleteMission(mission)" matTooltip="Delete">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                            </mat-expansion-panel>
+                        }
+                    </mat-accordion>
+                } @else {
+                    @for (mission of archivedMissions; track mission.name) {
+                        <div class="mission-item">
+                            <div class="mission-info">
+                                <span class="mission-name">{{ mission.name }}</span>
+                                <span class="mission-details">{{ mission.map }} &middot; {{ mission.size | fileSize }} &middot; {{ mission.lastModified | date:'short' }}</span>
+                            </div>
+                            <div class="mission-actions">
+                                <button mat-icon-button (click)="download(mission)" matTooltip="Download">
+                                    <mat-icon>download</mat-icon>
+                                </button>
+                                <button mat-icon-button (click)="restore(mission)" matTooltip="Restore">
+                                    <mat-icon>unarchive</mat-icon>
+                                </button>
+                                <button mat-icon-button (click)="deleteMission(mission)" matTooltip="Delete">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                    @if (archivedMissions.length === 0) {
+                        <div class="empty-state">No archived missions</div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</app-file-drop>
