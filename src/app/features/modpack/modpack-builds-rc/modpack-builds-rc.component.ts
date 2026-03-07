@@ -55,6 +55,8 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
     logOpen = false;
     cancelling = false;
     selectIncomingBuild = false;
+    private durationTimer: ReturnType<typeof setInterval> | null = null;
+    private liveDuration = '';
 
     ngOnInit(): void {
         this.modpackRcService.connect(
@@ -64,6 +66,7 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
                 } else {
                     this.selectRc(undefined);
                 }
+                this.updateDurationTimer();
             },
             (version: string) => {
                 if (this.selectIncomingBuild) {
@@ -75,6 +78,7 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.clearDurationTimer();
         this.modpackRcService.disconnect();
     }
 
@@ -124,6 +128,7 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
 
     selectBuild(id: string) {
         this.selectedBuildId = id;
+        this.updateDurationTimer();
         if (!this.selectedBuild) {
             this.closeLog();
             this.changesMarkdown = '';
@@ -207,7 +212,29 @@ export class ModpackBuildsRcComponent implements OnInit, OnDestroy {
     }
 
     get duration() {
+        if (this.selectedBuild.running) {
+            return this.liveDuration;
+        }
         return this.modpackBuildProcessService.duration(this.selectedBuild.startTime, this.selectedBuild.endTime);
+    }
+
+    private updateDurationTimer() {
+        this.clearDurationTimer();
+        if (this.selectedBuild?.running) {
+            this.updateLiveDuration();
+            this.durationTimer = setInterval(() => this.updateLiveDuration(), 1000);
+        }
+    }
+
+    private updateLiveDuration() {
+        this.liveDuration = this.modpackBuildProcessService.duration(this.selectedBuild.startTime, new Date());
+    }
+
+    private clearDurationTimer() {
+        if (this.durationTimer) {
+            clearInterval(this.durationTimer);
+            this.durationTimer = null;
+        }
     }
 
     get branch() {

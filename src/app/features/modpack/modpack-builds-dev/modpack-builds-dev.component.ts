@@ -55,6 +55,8 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
     logOpen = false;
     cancelling = false;
     selectIncomingBuild = false;
+    private durationTimer: ReturnType<typeof setInterval> | null = null;
+    private liveDuration = '';
 
     ngOnInit(): void {
         this.modpackBuildService.connect(
@@ -64,6 +66,7 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
                 } else {
                     this.selectBuild('');
                 }
+                this.updateDurationTimer();
             },
             (id: string) => {
                 if (this.selectIncomingBuild) {
@@ -80,6 +83,7 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.clearDurationTimer();
         this.modpackBuildService.disconnect();
     }
 
@@ -111,6 +115,7 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
 
     selectBuild(id: string) {
         this.selectedBuildId = id;
+        this.updateDurationTimer();
         if (!this.selectedBuild) {
             this.changesMarkdown = '';
             this.closeLog();
@@ -167,7 +172,29 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
     }
 
     get duration() {
+        if (this.selectedBuild.running) {
+            return this.liveDuration;
+        }
         return this.modpackBuildProcessService.duration(this.selectedBuild.startTime, this.selectedBuild.endTime);
+    }
+
+    private updateDurationTimer() {
+        this.clearDurationTimer();
+        if (this.selectedBuild?.running) {
+            this.updateLiveDuration();
+            this.durationTimer = setInterval(() => this.updateLiveDuration(), 1000);
+        }
+    }
+
+    private updateLiveDuration() {
+        this.liveDuration = this.modpackBuildProcessService.duration(this.selectedBuild.startTime, new Date());
+    }
+
+    private clearDurationTimer() {
+        if (this.durationTimer) {
+            clearInterval(this.durationTimer);
+            this.durationTimer = null;
+        }
     }
 
     get branch() {

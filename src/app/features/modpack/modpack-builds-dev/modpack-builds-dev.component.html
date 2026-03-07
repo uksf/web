@@ -81,7 +81,7 @@
                 <div class="footer-item">
                     {{ selectedBuild.startTime | date : 'dd MMM HH:mm' : 'Europe/London' }}
                 </div>
-                @if (selectedBuild.finished) {
+                @if (selectedBuild.running || selectedBuild.finished) {
                 <div class="footer-item">
                     {{ duration }}
                 </div>
