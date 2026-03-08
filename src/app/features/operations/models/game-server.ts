@@ -74,7 +74,3 @@ export interface RptLogSearchResult {
     text: string;
 }
 
-export interface RptLogSearchResponse {
-    results: RptLogSearchResult[];
-    totalMatches: number;
-}

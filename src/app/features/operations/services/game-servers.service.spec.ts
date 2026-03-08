@@ -234,22 +234,6 @@ describe('GameServersService', () => {
         );
     });
 
-    it('searchLog should post to search endpoint', () => {
-        const mockResponse = { results: [{ lineIndex: 5, text: 'error found' }], totalMatches: 1 };
-        mockHttpClient.post.mockReturnValue(of(mockResponse));
-
-        service.searchLog('server1', 'server.rpt', 'error').subscribe({
-            next: (response) => {
-                expect(response).toEqual(mockResponse);
-            }
-        });
-
-        expect(mockHttpClient.post).toHaveBeenCalledWith(
-            'http://localhost:5500/gameservers/server1/log/search',
-            { source: 'server.rpt', query: 'error' }
-        );
-    });
-
     it('downloadLog should request blob from correct URL', () => {
         service.downloadLog('server1', 'server.rpt').subscribe();
 

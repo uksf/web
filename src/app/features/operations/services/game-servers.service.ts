@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UrlService } from '@app/core/services/url.service';
 import { OrderUpdateRequest } from '@app/shared/models/order-update-request';
-import { GameServer, GameServersResponse, MissionUploadResponse, RptLogSearchResponse, ServerMod, ServerModsResetResponse, ServerStatusResponse } from '../models/game-server';
+import { GameServer, GameServersResponse, MissionUploadResponse, ServerMod, ServerModsResetResponse, ServerStatusResponse } from '../models/game-server';
 
 @Injectable({ providedIn: 'root' })
 export class GameServersService {
@@ -93,10 +93,6 @@ export class GameServersService {
         return this.httpClient.get<ServerModsResetResponse>(`${this.urls.apiUrl}/gameservers/${serverId}/mods/reset`, {
             headers: new HttpHeaders({ 'Content-Type': 'application/json' })
         });
-    }
-
-    searchLog(serverId: string, source: string, query: string): Observable<RptLogSearchResponse> {
-        return this.httpClient.post<RptLogSearchResponse>(`${this.urls.apiUrl}/gameservers/${serverId}/log/search`, { source, query });
     }
 
     downloadLog(serverId: string, source: string): Observable<Blob> {
