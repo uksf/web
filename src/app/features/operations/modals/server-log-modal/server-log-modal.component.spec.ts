@@ -686,16 +686,59 @@ describe('ServerLogModalComponent', () => {
             expect(component.viewport.scrollToOffset).toHaveBeenCalledWith(760);
         });
 
-        it('should handle onMinimapSearchNavigate', () => {
-            component.searchResults = [
-                { lineIndex: 10, text: 'a' },
-                { lineIndex: 50, text: 'b' }
-            ];
+        it('should disable tail when user scrolls via minimap line', () => {
+            component.viewport = {
+                scrollToOffset: vi.fn(),
+                getViewportSize: vi.fn().mockReturnValue(500),
+                elementRef: { nativeElement: { scrollTop: 0, scrollHeight: 1000 } },
+                elementScrolled: () => new Subject<void>().asObservable()
+            } as any;
+            component.tailEnabled = true;
 
-            component.onMinimapSearchNavigate(1);
+            component.onMinimapScrollToLine(50);
 
-            expect(component.currentSearchIndex).toBe(1);
+            expect(component.tailEnabled).toBe(false);
         });
+
+        it('should disable tail when user scrolls via minimap offset', () => {
+            component.viewport = {
+                scrollToOffset: vi.fn(),
+                getViewportSize: vi.fn().mockReturnValue(500),
+                elementRef: { nativeElement: { scrollTop: 0, scrollHeight: 1000 } },
+                elementScrolled: () => new Subject<void>().asObservable()
+            } as any;
+            component.tailEnabled = true;
+
+            component.onMinimapScrollToOffset(500);
+
+            expect(component.tailEnabled).toBe(false);
+        });
+
+        it('should not disable tail on programmatic scroll to bottom', () => {
+            const scrollSubject = new Subject<void>();
+            const mockVp = {
+                scrollTo: vi.fn(),
+                scrollToOffset: vi.fn(),
+                getViewportSize: vi.fn().mockReturnValue(500),
+                elementRef: { nativeElement: { scrollTop: 0, scrollHeight: 1000 } },
+                elementScrolled: () => scrollSubject.asObservable()
+            } as any;
+
+            // Trigger the viewport setter to set up the elementScrolled subscription
+            component.viewport = mockVp;
+
+            component.tailEnabled = true;
+
+            // Call scrollToBottom (programmatic) — sets programmaticScroll flag
+            (component as any).scrollToBottom();
+
+            // Simulate the async scroll event firing
+            scrollSubject.next();
+
+            // tailEnabled should still be true because scrollToBottom set programmaticScroll
+            expect(component.tailEnabled).toBe(true);
+        });
+
     });
 
     describe('downloadLog', () => {

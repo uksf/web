@@ -1,93 +1,66 @@
 import { describe, it, expect } from 'vitest';
-import {
-    lineToCanvasY,
-    canvasYToLine,
-    getViewportSliderRect,
-    findSearchResultAtY
-} from './log-minimap.component';
-import { RptLogSearchResult } from '../../models/game-server';
+import { computeStartLine, computeSlider } from './log-minimap.component';
 
 describe('LogMinimapComponent', () => {
-    describe('lineToCanvasY', () => {
-        it('should map line 0 to y=0', () => {
-            expect(lineToCanvasY(0, 1000, 500)).toBe(0);
+    describe('computeStartLine', () => {
+        it('should return 0 when all lines fit', () => {
+            expect(computeStartLine(0, 1000, 100, 450, 20)).toBe(0);
         });
 
-        it('should map proportionally', () => {
-            expect(lineToCanvasY(250, 500, 500)).toBe(250);
+        it('should return 0 at top of scroll', () => {
+            expect(computeStartLine(0, 10000, 10000, 450, 20)).toBe(0);
         });
 
-        it('should scale when more lines than pixels', () => {
-            expect(lineToCanvasY(5000, 10000, 500)).toBeCloseTo(250);
+        it('should return last page at bottom of scroll', () => {
+            const totalLines = 10000;
+            const visibleLines = 450;
+            const maxScroll = 10000;
+            const result = computeStartLine(maxScroll, maxScroll, totalLines, visibleLines, 20);
+            expect(result).toBe(totalLines - visibleLines);
         });
 
-        it('should return 0 when totalLines is 0', () => {
-            expect(lineToCanvasY(5, 0, 500)).toBe(0);
-        });
-    });
-
-    describe('getViewportSliderRect', () => {
-        it('should return correct rect for middle of document', () => {
-            const rect = getViewportSliderRect(5000, 500, 20000, 400);
-            expect(rect.top).toBeCloseTo(100);
-            expect(rect.height).toBeCloseTo(10);
+        it('should return proportional start line at midpoint', () => {
+            const totalLines = 10000;
+            const visibleLines = 450;
+            const maxScroll = 10000;
+            const result = computeStartLine(maxScroll / 2, maxScroll, totalLines, visibleLines, 20);
+            expect(result).toBe(Math.round((totalLines - visibleLines) / 2));
         });
 
-        it('should clamp to canvas height', () => {
-            const rect = getViewportSliderRect(19500, 500, 20000, 400);
-            expect(rect.top + rect.height).toBeLessThanOrEqual(400);
-        });
-
-        it('should handle zero totalHeight', () => {
-            const rect = getViewportSliderRect(0, 500, 0, 400);
-            expect(rect.top).toBe(0);
-            expect(rect.height).toBe(400);
+        it('should return 0 when maxScroll is 0', () => {
+            expect(computeStartLine(0, 0, 100, 450, 20)).toBe(0);
         });
     });
 
-    describe('canvasYToLine', () => {
-        it('should convert canvas y position to line number', () => {
-            expect(canvasYToLine(250, 1000, 500)).toBe(500);
+    describe('computeSlider', () => {
+        it('should fill canvas when no scroll content', () => {
+            const result = computeSlider(0, 500, 0, 900, 0, 0, 450);
+            expect(result.top).toBe(0);
+            expect(result.height).toBe(900);
         });
 
-        it('should clamp to valid range', () => {
-            expect(canvasYToLine(-10, 1000, 500)).toBe(0);
-            expect(canvasYToLine(600, 1000, 500)).toBe(1000);
+        it('should have proportional height', () => {
+            // viewport = 500, totalHeight = 10000 → 5% of canvas
+            const result = computeSlider(0, 500, 10000, 900, 0, 5000, 450);
+            const expectedHeight = Math.max(Math.round(0.05 * 900), 20);
+            expect(result.height).toBe(expectedHeight);
         });
 
-        it('should return 0 when canvas height is 0', () => {
-            expect(canvasYToLine(100, 1000, 0)).toBe(0);
-        });
-    });
-
-    describe('findSearchResultAtY', () => {
-        it('should return -1 when no search results', () => {
-            expect(findSearchResultAtY(100, [], 1000, 500, 5)).toBe(-1);
+        it('should be at top when scrollTop is 0', () => {
+            const result = computeSlider(0, 500, 10000, 900, 0, 5000, 450);
+            expect(result.top).toBe(0);
         });
 
-        it('should return nearest result index within tolerance', () => {
-            const results: RptLogSearchResult[] = [
-                { lineIndex: 100, text: 'a' },
-                { lineIndex: 500, text: 'b' },
-                { lineIndex: 900, text: 'c' }
-            ];
-            expect(findSearchResultAtY(252, results, 1000, 500, 5)).toBe(1);
+        it('should be at bottom when scrolled to end', () => {
+            const scrollTop = 9500; // totalHeight - viewportSize
+            const result = computeSlider(scrollTop, 500, 10000, 900, 0, 5000, 450);
+            expect(result.top + result.height).toBe(900);
         });
 
-        it('should return -1 when click is outside tolerance', () => {
-            const results: RptLogSearchResult[] = [
-                { lineIndex: 100, text: 'a' }
-            ];
-            expect(findSearchResultAtY(200, results, 1000, 500, 5)).toBe(-1);
-        });
-    });
-
-    describe('canvasYToLine emitting scrollToLine', () => {
-        it('should calculate correct line for click position', () => {
-            // Verifies the logic that handleCanvasClick delegates to:
-            // canvasYToLine(100, 1000, 500) => line 200
-            const line = canvasYToLine(100, 1000, 500);
-            expect(line).toBe(200);
+        it('should enforce minimum slider height of 20px', () => {
+            // Very small viewport relative to total
+            const result = computeSlider(0, 10, 100000, 900, 0, 50000, 450);
+            expect(result.height).toBeGreaterThanOrEqual(20);
         });
     });
 });

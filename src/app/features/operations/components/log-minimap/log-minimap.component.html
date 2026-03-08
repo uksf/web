@@ -1,6 +1,9 @@
-<canvas #minimapCanvas
-        class="minimap-canvas"
-        (mousedown)="onMouseDown($event)"
-        (mousemove)="onMouseMove($event)"
-        (mouseleave)="onMouseLeave()">
+<div class="minimap-container"
+     (mousedown)="onMinimapMouseDown($event)">
+    <canvas #contentCanvas class="content-canvas"></canvas>
+    <canvas #overlayCanvas class="overlay-canvas"></canvas>
+</div>
+<canvas #scrollbarCanvas
+        class="scrollbar-canvas"
+        (mousedown)="onScrollbarMouseDown($event)">
 </canvas>
