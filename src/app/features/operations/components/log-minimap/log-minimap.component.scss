@@ -1,15 +1,37 @@
 :host {
-    display: block;
-    width: 100px;
+    display: flex;
     height: 100%;
-    position: relative;
     flex-shrink: 0;
-    border-left: 1px solid #333;
     cursor: pointer;
+
+    --minimap-border-color: var(--uksf-gray-200);
+    --minimap-bg: var(--uksf-background);
+    --minimap-scrollbar-track: var(--uksf-side-bar);
+    --minimap-scrollbar-thumb: var(--uksf-hover);
 }
 
-.minimap-canvas {
-    display: block;
+.minimap-container {
+    width: 120px;
+    height: 100%;
+    position: relative;
+    border-left: 1px solid var(--minimap-border-color);
+}
+
+.content-canvas,
+.overlay-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
+}
+
+.overlay-canvas {
+    z-index: 1;
+}
+
+.scrollbar-canvas {
+    width: 14px;
+    height: 100%;
+    flex-shrink: 0;
 }

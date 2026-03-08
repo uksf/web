@@ -1,85 +1,50 @@
 import {
     Component, ElementRef, ViewChild, OnDestroy,
-    input, output, effect, AfterViewInit
+    input, output, effect, AfterViewInit, inject
 } from '@angular/core';
 import { RptLogSearchResult } from '../../models/game-server';
 import { classifyRptLine, RPT_COLORS, type RptColorSegment } from '../../utils/rpt-syntax-highlighter';
+import {
+    generateCharBitmaps, renderLineToImageData, fillBackground,
+    type CharAtlas
+} from './minimap-char-renderer';
 
-interface MinimapRun {
-    color: string;
-    startCol: number;
-    endCol: number;
-}
+const MINIMAP_WIDTH = 120;       // chars per line
+const LINE_HEIGHT_PX = 2;        // pixels per line
 
-/** Convert proportional segments + raw text into character-position runs, breaking at whitespace */
-export function buildMinimapRuns(line: string, segments: RptColorSegment[]): MinimapRun[] {
-    const runs: MinimapRun[] = [];
-    const len = line.length;
-    if (len === 0) return runs;
+const SCROLLBAR_THUMB_RADIUS = 4;
+const SCROLLBAR_TRACK_RADIUS = 4;
+const SEARCH_MARKER_COLOR = 'rgba(255, 200, 0, 0.5)';
+const SEARCH_MARKER_ACTIVE_COLOR = 'rgba(255, 200, 0, 0.9)';
 
-    for (const seg of segments) {
-        const startChar = Math.round(seg.start * len);
-        const endChar = Math.round(seg.end * len);
-        let runStart = -1;
-
-        for (let col = startChar; col < endChar; col++) {
-            const ch = line[col];
-            if (ch === ' ' || ch === '\t') {
-                if (runStart >= 0) {
-                    runs.push({ color: seg.color, startCol: runStart, endCol: col });
-                    runStart = -1;
-                }
-            } else {
-                if (runStart < 0) runStart = col;
-            }
-        }
-        if (runStart >= 0) {
-            runs.push({ color: seg.color, startCol: runStart, endCol: endChar });
-        }
-    }
-
-    return runs;
-}
-
-/** Map a line index to a canvas Y coordinate */
-export function lineToCanvasY(lineIndex: number, totalLines: number, canvasHeight: number): number {
-    if (totalLines === 0) return 0;
-    return (lineIndex / totalLines) * canvasHeight;
-}
-
-/** Convert a canvas Y position back to a line number */
-export function canvasYToLine(y: number, totalLines: number, canvasHeight: number): number {
-    if (canvasHeight === 0) return 0;
-    const line = Math.round((y / canvasHeight) * totalLines);
-    return Math.max(0, Math.min(totalLines, line));
-}
-
-/** Calculate the viewport slider rectangle on the minimap */
-export function getViewportSliderRect(
-    offset: number, vpSize: number, totalH: number, canvasHeight: number
-): { top: number; height: number } {
-    if (totalH === 0) return { top: 0, height: canvasHeight };
-    const top = (offset / totalH) * canvasHeight;
-    const height = Math.min((vpSize / totalH) * canvasHeight, canvasHeight - top);
-    return { top, height };
-}
-
-/** Find the nearest search result within a pixel tolerance of a Y coordinate */
-export function findSearchResultAtY(
-    y: number, results: RptLogSearchResult[], totalLines: number, canvasHeight: number, tolerancePx: number
+/** Compute which line the minimap content window starts at (proportional scrolling) */
+export function computeStartLine(
+    scrollTop: number, maxScroll: number, totalLines: number, visibleLines: number, itemSize: number
 ): number {
-    if (!results.length) return -1;
-    let nearest = -1;
-    let nearestDist = Infinity;
-    for (let i = 0; i < results.length; i++) {
-        const resultY = lineToCanvasY(results[i].lineIndex, totalLines, canvasHeight);
-        const dist = Math.abs(y - resultY);
-        if (dist < nearestDist && dist <= tolerancePx) {
-            nearestDist = dist;
-            nearest = i;
-        }
-    }
-    return nearest;
+    if (totalLines <= visibleLines) return 0;
+    if (maxScroll <= 0) return 0;
+
+    const scrollFraction = scrollTop / maxScroll;
+    const maxStartLine = totalLines - visibleLines;
+    return Math.round(scrollFraction * maxStartLine);
+}
+
+/** Calculate viewport slider position and height on the overlay canvas */
+export function computeSlider(
+    scrollTop: number, viewportSize: number, totalHeight: number,
+    canvasHeight: number, startLine: number, totalLines: number, visibleLines: number
+): { top: number; height: number } {
+    if (totalHeight <= 0 || totalLines <= 0) return { top: 0, height: canvasHeight };
+
+    const vpFraction = viewportSize / totalHeight;
+    const sliderHeight = Math.max(Math.round(vpFraction * canvasHeight), 20);
+
+    const maxScroll = totalHeight - viewportSize;
+    const maxSliderTop = canvasHeight - sliderHeight;
+    const scrollFraction = maxScroll > 0 ? scrollTop / maxScroll : 0;
+    const top = Math.round(scrollFraction * maxSliderTop);
+
+    return { top: Math.max(0, Math.min(top, maxSliderTop)), height: sliderHeight };
 }
 
 @Component({
@@ -89,6 +54,8 @@ export function findSearchResultAtY(
     standalone: true
 })
 export class LogMinimapComponent implements AfterViewInit, OnDestroy {
+    private hostRef = inject(ElementRef);
+
     logLines = input<string[]>([]);
     searchResults = input<RptLogSearchResult[]>([]);
     searchQuery = input<string>('');
@@ -96,135 +63,235 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
     viewportOffset = input<number>(0);
     viewportSize = input<number>(0);
     totalHeight = input<number>(0);
-    viewportContentWidth = input<number>(0);
     itemSize = input<number>(20);
 
     scrollToLine = output<number>();
     scrollToOffset = output<number>();
-    navigateToSearchResult = output<number>();
 
-    @ViewChild('minimapCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('contentCanvas') contentCanvasRef!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('overlayCanvas') overlayCanvasRef!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('scrollbarCanvas') scrollbarCanvasRef!: ElementRef<HTMLCanvasElement>;
 
-    isDragging = false;
-    isHovering = false;
+    private charAtlas: CharAtlas | null = null;
+    private bitmapCanvas: HTMLCanvasElement | null = null;
+    private cachedSegments: RptColorSegment[][] = [];
+    private lastClassifiedIndex = 0;
+
+    private contentImageData: ImageData | null = null;
+    private prevStartLine = -1;
+    private prevRenderedCount = 0;
+
+    private isDragging = false;
+    private isScrollbarDragging = false;
     private dragStartY = 0;
     private dragStartOffset = 0;
-    private cachedRuns: MinimapRun[][] = [];
-    private animationFrameId: number | null = null;
+
+    private contentFrameId: number | null = null;
+    private overlayFrameId: number | null = null;
     private resizeObserver: ResizeObserver | null = null;
 
+    // Canvas colors resolved from CSS custom properties
+    private bgR = 18;
+    private bgG = 18;
+    private bgB = 18;
+    private scrollbarTrackColor = '#1c1c1c';
+    private scrollbarThumbColor = '#484848';
+
     constructor() {
+        // Classify new lines incrementally
         effect(() => {
-            this.logLines();
-            this.searchResults();
-            this.searchQuery();
-            this.currentSearchIndex();
+            const lines = this.logLines();
+            if (lines.length > this.lastClassifiedIndex) {
+                for (let i = this.lastClassifiedIndex; i < lines.length; i++) {
+                    this.cachedSegments[i] = classifyRptLine(lines[i]);
+                }
+                this.lastClassifiedIndex = lines.length;
+            } else if (lines.length < this.lastClassifiedIndex) {
+                // Lines replaced (source switch)
+                this.cachedSegments = lines.map(l => classifyRptLine(l));
+                this.lastClassifiedIndex = lines.length;
+                this.prevStartLine = -1;
+            }
+            this.scheduleContentRedraw();
+        });
+
+        // Overlay redraws on scroll/search changes
+        effect(() => {
             this.viewportOffset();
             this.viewportSize();
             this.totalHeight();
-            this.viewportContentWidth();
-            this.scheduleRedraw();
+            this.searchResults();
+            this.currentSearchIndex();
+            this.searchQuery();
+            this.scheduleOverlayRedraw();
         });
 
+        // Content redraws when scroll position changes the visible window
         effect(() => {
-            const lines = this.logLines();
-            this.cachedRuns = lines.map(line => buildMinimapRuns(line, classifyRptLine(line)));
+            this.viewportOffset();
+            this.totalHeight();
+            this.scheduleContentRedraw();
         });
     }
 
     ngAfterViewInit(): void {
-        this.resizeObserver = new ResizeObserver(() => this.scheduleRedraw());
-        this.resizeObserver.observe(this.canvasRef.nativeElement);
-        this.scheduleRedraw();
+        this.resolveThemeColors();
+        this.initAtlas();
+        this.resizeObserver = new ResizeObserver(() => {
+            this.prevStartLine = -1; // force full redraw on resize
+            this.scheduleContentRedraw();
+            this.scheduleOverlayRedraw();
+        });
+        this.resizeObserver.observe(this.contentCanvasRef.nativeElement);
+        this.scheduleContentRedraw();
+        this.scheduleOverlayRedraw();
     }
 
     ngOnDestroy(): void {
-        if (this.animationFrameId !== null) {
-            cancelAnimationFrame(this.animationFrameId);
-        }
+        if (this.contentFrameId !== null) cancelAnimationFrame(this.contentFrameId);
+        if (this.overlayFrameId !== null) cancelAnimationFrame(this.overlayFrameId);
         this.resizeObserver?.disconnect();
         this.cleanupDocumentListeners();
     }
 
-    onMouseDown(event: MouseEvent): void {
+    private resolveThemeColors(): void {
+        const styles = getComputedStyle(this.hostRef.nativeElement);
+        const bg = styles.getPropertyValue('--minimap-bg').trim();
+        if (bg) {
+            const rgb = this.parseHexColor(bg);
+            if (rgb) {
+                this.bgR = rgb.r;
+                this.bgG = rgb.g;
+                this.bgB = rgb.b;
+            }
+        }
+        const track = styles.getPropertyValue('--minimap-scrollbar-track').trim();
+        if (track) this.scrollbarTrackColor = track;
+        const thumb = styles.getPropertyValue('--minimap-scrollbar-thumb').trim();
+        if (thumb) this.scrollbarThumbColor = thumb;
+    }
+
+    private parseHexColor(hex: string): { r: number; g: number; b: number } | null {
+        const match = hex.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+        if (!match) return null;
+        return { r: parseInt(match[1], 16), g: parseInt(match[2], 16), b: parseInt(match[3], 16) };
+    }
+
+    private initAtlas(): void {
+        this.bitmapCanvas = document.createElement('canvas');
+        this.charAtlas = generateCharBitmaps(this.bitmapCanvas);
+    }
+
+    // --- Minimap mouse handling ---
+
+    onMinimapMouseDown(event: MouseEvent): void {
         event.preventDefault();
-        const canvas = this.canvasRef.nativeElement;
+        const canvas = this.overlayCanvasRef.nativeElement;
         const rect = canvas.getBoundingClientRect();
         const y = event.clientY - rect.top;
-        const totalLines = this.logLines().length;
         const canvasHeight = canvas.clientHeight;
-        const contentCanvasHeight = this.getContentCanvasHeight(canvasHeight);
 
-        const searchIdx = findSearchResultAtY(
-            y, this.searchResults(), totalLines, contentCanvasHeight, 5
-        );
-        if (searchIdx >= 0) {
-            this.navigateToSearchResult.emit(searchIdx);
-            return;
-        }
+        const { startLine, visibleLines } = this.getMinimapWindow(canvasHeight);
+        const slider = this.getSlider(canvasHeight);
 
-        const slider = getViewportSliderRect(
-            this.viewportOffset(), this.viewportSize(), this.totalHeight(), canvasHeight
-        );
         if (y >= slider.top && y <= slider.top + slider.height) {
-            // Clicked inside viewport slider — drag from current position
-            this.startDrag(y);
+            this.isDragging = true;
+            this.dragStartY = y;
+            this.dragStartOffset = this.viewportOffset();
         } else {
-            // Clicked outside viewport slider — center viewport on click, then start dragging
-            const sliderMidOffset = slider.height / 2;
-            const newTop = y - sliderMidOffset;
-            const newOffset = (newTop / canvasHeight) * this.totalHeight();
-            const maxOffset = this.totalHeight() - this.viewportSize();
-            const clampedOffset = Math.max(0, Math.min(maxOffset, newOffset));
-            this.scrollToOffset.emit(clampedOffset);
-            this.startDrag(y, clampedOffset);
+            // Click on minimap background → scroll to that line
+            const clickedLine = startLine + Math.floor(y / LINE_HEIGHT_PX);
+            const totalLines = this.logLines().length;
+            const clampedLine = Math.max(0, Math.min(clickedLine, totalLines - 1));
+            this.scrollToLine.emit(clampedLine);
+
+            // Start dragging from the new position, using the same centered offset
+            // the parent applies when scrolling to a line
+            this.isDragging = true;
+            this.dragStartY = y;
+            const lineOffset = clampedLine * this.itemSize();
+            const centeredOffset = Math.max(0, lineOffset - this.viewportSize() / 2 + this.itemSize() / 2);
+            this.dragStartOffset = centeredOffset;
         }
         this.setupDocumentListeners();
     }
 
-    onMouseMove(_event: MouseEvent): void {
-        if (!this.isDragging) {
-            this.isHovering = true;
-            this.scheduleRedraw();
+    // --- Scrollbar mouse handling ---
+
+    onScrollbarMouseDown(event: MouseEvent): void {
+        event.preventDefault();
+        const canvas = this.scrollbarCanvasRef.nativeElement;
+        const rect = canvas.getBoundingClientRect();
+        const y = event.clientY - rect.top;
+        const canvasHeight = canvas.clientHeight;
+
+        const thumbRect = this.getScrollbarThumb(canvasHeight);
+
+        if (y >= thumbRect.top && y <= thumbRect.top + thumbRect.height) {
+            this.isScrollbarDragging = true;
+            this.dragStartY = y;
+            this.dragStartOffset = this.viewportOffset();
+        } else {
+            // Click on track → jump to proportional position
+            const scrollFraction = y / canvasHeight;
+            const maxScroll = this.totalHeight() - this.viewportSize();
+            const newOffset = Math.max(0, Math.min(scrollFraction * this.totalHeight() - this.viewportSize() / 2, maxScroll));
+            this.scrollToOffset.emit(newOffset);
+
+            this.isScrollbarDragging = true;
+            this.dragStartY = y;
+            this.dragStartOffset = newOffset;
         }
-    }
-
-    onMouseLeave(): void {
-        if (!this.isDragging) {
-            this.isHovering = false;
-            this.scheduleRedraw();
-        }
-    }
-
-    startDrag(y: number, offset?: number): void {
-        this.isDragging = true;
-        this.dragStartY = y;
-        this.dragStartOffset = offset ?? this.viewportOffset();
-    }
-
-    endDrag(): void {
-        this.isDragging = false;
+        this.setupDocumentListeners();
     }
 
     private onDocumentMouseMove = (event: MouseEvent): void => {
-        if (!this.isDragging) return;
-        const canvas = this.canvasRef.nativeElement;
+        if (this.isDragging) {
+            this.handleMinimapDrag(event);
+        } else if (this.isScrollbarDragging) {
+            this.handleScrollbarDrag(event);
+        }
+    };
+
+    private handleMinimapDrag(event: MouseEvent): void {
+        const canvas = this.overlayCanvasRef.nativeElement;
+        const canvasHeight = canvas.clientHeight;
+        if (canvasHeight === 0) return;
+
         const rect = canvas.getBoundingClientRect();
         const y = event.clientY - rect.top;
         const deltaY = y - this.dragStartY;
+        const slider = this.getSlider(canvasHeight);
+        const maxSliderTravel = canvasHeight - slider.height;
+        if (maxSliderTravel <= 0) return;
+
+        const maxScroll = this.totalHeight() - this.viewportSize();
+        const deltaScroll = (deltaY / maxSliderTravel) * maxScroll;
+        const newOffset = Math.max(0, Math.min(this.dragStartOffset + deltaScroll, maxScroll));
+        this.scrollToOffset.emit(newOffset);
+    }
+
+    private handleScrollbarDrag(event: MouseEvent): void {
+        const canvas = this.scrollbarCanvasRef.nativeElement;
         const canvasHeight = canvas.clientHeight;
-        const totalH = this.totalHeight();
+        if (canvasHeight === 0) return;
 
-        if (canvasHeight === 0 || totalH === 0) return;
+        const rect = canvas.getBoundingClientRect();
+        const y = event.clientY - rect.top;
+        const deltaY = y - this.dragStartY;
+        const thumbRect = this.getScrollbarThumb(canvasHeight);
+        const maxThumbTravel = canvasHeight - thumbRect.height;
+        if (maxThumbTravel <= 0) return;
 
-        const deltaScroll = (deltaY / canvasHeight) * totalH;
-        const newOffset = this.dragStartOffset + deltaScroll;
-        const maxOffset = totalH - this.viewportSize();
-        this.scrollToOffset.emit(Math.max(0, Math.min(maxOffset, newOffset)));
-    };
+        const maxScroll = this.totalHeight() - this.viewportSize();
+        const deltaScroll = (deltaY / maxThumbTravel) * maxScroll;
+        const newOffset = Math.max(0, Math.min(this.dragStartOffset + deltaScroll, maxScroll));
+        this.scrollToOffset.emit(newOffset);
+    }
 
     private onDocumentMouseUp = (): void => {
-        this.endDrag();
+        this.isDragging = false;
+        this.isScrollbarDragging = false;
         this.cleanupDocumentListeners();
     };
 
@@ -238,138 +305,229 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         document.removeEventListener('mouseup', this.onDocumentMouseUp);
     }
 
-    private getContentCanvasHeight(canvasHeight: number): number {
-        const totalH = this.totalHeight();
-        if (totalH === 0) return canvasHeight;
-        const contentHeight = this.logLines().length * this.itemSize();
-        return (contentHeight / totalH) * canvasHeight;
-    }
+    // --- Rendering ---
 
-    private scheduleRedraw(): void {
-        if (this.animationFrameId !== null) return;
-        this.animationFrameId = requestAnimationFrame(() => {
-            this.animationFrameId = null;
-            this.draw();
+    private scheduleContentRedraw(): void {
+        if (this.contentFrameId !== null) return;
+        this.contentFrameId = requestAnimationFrame(() => {
+            this.contentFrameId = null;
+            this.drawContent();
         });
     }
 
-    private draw(): void {
-        const canvas = this.canvasRef?.nativeElement;
-        if (!canvas) return;
+    private scheduleOverlayRedraw(): void {
+        if (this.overlayFrameId !== null) return;
+        this.overlayFrameId = requestAnimationFrame(() => {
+            this.overlayFrameId = null;
+            this.drawOverlay();
+            this.drawScrollbar();
+        });
+    }
 
-        const dpr = window.devicePixelRatio || 1;
+    private getMinimapWindow(canvasHeight: number): { startLine: number; visibleLines: number } {
+        const totalLines = this.logLines().length;
+        const visibleLines = Math.floor(canvasHeight / LINE_HEIGHT_PX);
+        const maxScroll = this.totalHeight() - this.viewportSize();
+        const startLine = computeStartLine(
+            this.viewportOffset(), maxScroll, totalLines, visibleLines, this.itemSize()
+        );
+        return { startLine, visibleLines };
+    }
+
+    private getSlider(canvasHeight: number): { top: number; height: number } {
+        const { startLine, visibleLines } = this.getMinimapWindow(canvasHeight);
+        return computeSlider(
+            this.viewportOffset(), this.viewportSize(), this.totalHeight(),
+            canvasHeight, startLine, this.logLines().length, visibleLines
+        );
+    }
+
+    private getScrollbarThumb(canvasHeight: number): { top: number; height: number } {
+        const totalH = this.totalHeight();
+        if (totalH <= 0) return { top: 0, height: canvasHeight };
+        const vpFraction = this.viewportSize() / totalH;
+        const thumbHeight = Math.max(Math.round(vpFraction * canvasHeight), 20);
+        const maxScroll = totalH - this.viewportSize();
+        const maxThumbTop = canvasHeight - thumbHeight;
+        const scrollFraction = maxScroll > 0 ? this.viewportOffset() / maxScroll : 0;
+        const top = Math.round(scrollFraction * maxThumbTop);
+        return { top: Math.max(0, Math.min(top, maxThumbTop)), height: thumbHeight };
+    }
+
+    private drawContent(): void {
+        const canvas = this.contentCanvasRef?.nativeElement;
+        if (!canvas || !this.charAtlas) return;
+
         const displayWidth = canvas.clientWidth;
         const displayHeight = canvas.clientHeight;
+        if (displayWidth === 0 || displayHeight === 0) return;
 
-        canvas.width = displayWidth * dpr;
-        canvas.height = displayHeight * dpr;
+        canvas.width = displayWidth;
+        canvas.height = displayHeight;
 
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
         if (!ctx) return;
-        ctx.scale(dpr, dpr);
 
         const lines = this.logLines();
         const totalLines = lines.length;
+        const visibleLines = Math.floor(displayHeight / LINE_HEIGHT_PX);
+        const maxScroll = this.totalHeight() - this.viewportSize();
+        const startLine = computeStartLine(
+            this.viewportOffset(), maxScroll, totalLines, visibleLines, this.itemSize()
+        );
+
+        const endLine = Math.min(startLine + visibleLines, totalLines);
+        const renderCount = endLine - startLine;
+        const pixelHeight = renderCount * LINE_HEIGHT_PX;
+
+        // Create or reuse ImageData
+        if (!this.contentImageData || this.contentImageData.width !== displayWidth || this.contentImageData.height !== displayHeight) {
+            this.contentImageData = ctx.createImageData(displayWidth, displayHeight);
+            this.prevStartLine = -1;
+        }
+
+        const data = this.contentImageData.data;
+
+        // Fill background
+        fillBackground(data, displayWidth, 0, displayHeight, this.bgR, this.bgG, this.bgB);
+
+        // Render visible lines
+        const atlas = this.charAtlas;
+        for (let i = 0; i < renderCount; i++) {
+            const lineIdx = startLine + i;
+            if (lineIdx >= this.cachedSegments.length) break;
+            const yOffset = i * LINE_HEIGHT_PX;
+            renderLineToImageData(
+                lines[lineIdx],
+                this.cachedSegments[lineIdx],
+                atlas,
+                data as Uint8ClampedArray,
+                displayWidth,
+                yOffset,
+                this.bgR, this.bgG, this.bgB,
+                MINIMAP_WIDTH
+            );
+        }
+
+        ctx.putImageData(this.contentImageData, 0, 0);
+        this.prevStartLine = startLine;
+        this.prevRenderedCount = renderCount;
+
+        // Also redraw overlay since content position changed
+        this.scheduleOverlayRedraw();
+    }
+
+    private drawOverlay(): void {
+        const canvas = this.overlayCanvasRef?.nativeElement;
+        if (!canvas) return;
+
+        const displayWidth = canvas.clientWidth;
+        const displayHeight = canvas.clientHeight;
+        if (displayWidth === 0 || displayHeight === 0) return;
+
+        canvas.width = displayWidth;
+        canvas.height = displayHeight;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
 
         ctx.clearRect(0, 0, displayWidth, displayHeight);
 
-        if (totalLines > 0) {
-            // Content occupies only the proportion of the canvas matching content vs total scroll height
-            const contentHeight = totalLines * this.itemSize();
-            const totalH = this.totalHeight();
-            const contentCanvasHeight = totalH > 0
-                ? (contentHeight / totalH) * displayHeight
-                : displayHeight;
+        const totalLines = this.logLines().length;
+        if (totalLines === 0) return;
 
-            this.drawContent(ctx, displayWidth, contentCanvasHeight, totalLines);
-            this.drawSearchHighlights(ctx, displayWidth, contentCanvasHeight, totalLines);
-            this.drawViewportSlider(ctx, displayWidth, displayHeight);
-        }
-    }
-
-    private drawContent(
-        ctx: CanvasRenderingContext2D, width: number, height: number, totalLines: number
-    ): void {
-        const lineH = Math.max(height / totalLines, 1);
-        const vpWidth = this.viewportContentWidth();
-        // Each monospace char at 13px ≈ 7.8px wide; scale minimap to match viewport proportions
-        const monoCharPx = 7.8;
-        const charPx = vpWidth > 0 ? (width * monoCharPx) / vpWidth : width / 120;
-
-        for (let i = 0; i < this.cachedRuns.length; i++) {
-            const y = lineToCanvasY(i, totalLines, height);
-
-            for (const run of this.cachedRuns[i]) {
-                const x = run.startCol * charPx;
-                if (x >= width) continue;
-                const xEnd = Math.min(run.endCol * charPx, width);
-                const w = xEnd - x;
-                if (w <= 0) continue;
-
-                ctx.fillStyle = run.color;
-                ctx.globalAlpha = run.color === RPT_COLORS.defaultText ? 0.4 : 0.8;
-                ctx.fillRect(x, y, Math.max(w, 1), Math.max(lineH, 1));
-            }
-        }
-        ctx.globalAlpha = 1;
-    }
-
-    private drawSearchHighlights(
-        ctx: CanvasRenderingContext2D, width: number, height: number, totalLines: number
-    ): void {
-        const results = this.searchResults();
-        const activeIdx = this.currentSearchIndex();
-        const query = this.searchQuery();
-        const lines = this.logLines();
-        const lineH = Math.max(height / totalLines, 2);
-
-        const vpWidth = this.viewportContentWidth();
-        const monoCharPx = 7.8;
-        const charPx = vpWidth > 0 ? (width * monoCharPx) / vpWidth : width / 120;
-
-        for (let i = 0; i < results.length; i++) {
-            const result = results[i];
-            const y = lineToCanvasY(result.lineIndex, totalLines, height);
-            const isActive = i === activeIdx;
-
-            // Draw dim line background for context
-            ctx.fillStyle = isActive ? RPT_COLORS.searchActive : RPT_COLORS.search;
-            ctx.globalAlpha = isActive ? 0.15 : 0.08;
-            ctx.fillRect(0, y, width, lineH);
-
-            // Draw actual match positions as brighter markers
-            if (query && result.lineIndex < lines.length) {
-                const line = lines[result.lineIndex];
-                const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                const pattern = new RegExp(escaped, 'gi');
-                let match: RegExpExecArray | null;
-                ctx.fillStyle = isActive ? RPT_COLORS.searchActive : RPT_COLORS.search;
-                ctx.globalAlpha = isActive ? 1 : 0.8;
-                while ((match = pattern.exec(line)) !== null) {
-                    const x = match.index * charPx;
-                    const w = Math.max(match[0].length * charPx, 2);
-                    if (x < width) {
-                        ctx.fillRect(x, y, Math.min(w, width - x), lineH);
-                    }
-                }
-            }
-        }
-        ctx.globalAlpha = 1;
-    }
-
-    private drawViewportSlider(
-        ctx: CanvasRenderingContext2D, width: number, height: number
-    ): void {
-        const slider = getViewportSliderRect(
-            this.viewportOffset(), this.viewportSize(), this.totalHeight(), height
+        const visibleLines = Math.floor(displayHeight / LINE_HEIGHT_PX);
+        const maxScroll = this.totalHeight() - this.viewportSize();
+        const startLine = computeStartLine(
+            this.viewportOffset(), maxScroll, totalLines, visibleLines, this.itemSize()
         );
 
-        const fillAlpha = this.isHovering || this.isDragging ? 0.15 : 0.1;
-        ctx.fillStyle = `rgba(255, 255, 255, ${fillAlpha})`;
-        ctx.fillRect(0, slider.top, width, slider.height);
+        // Draw search highlights on visible minimap lines
+        this.drawSearchMarkers(ctx, displayWidth, startLine, visibleLines, totalLines);
 
+        // Draw viewport slider
+        const slider = this.getSlider(displayHeight);
+        ctx.fillStyle = this.isDragging ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.1)';
+        ctx.fillRect(0, slider.top, displayWidth, slider.height);
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
         ctx.lineWidth = 1;
-        ctx.strokeRect(0.5, slider.top + 0.5, width - 1, slider.height - 1);
+        ctx.strokeRect(0.5, slider.top + 0.5, displayWidth - 1, slider.height - 1);
+    }
+
+    private drawSearchMarkers(
+        ctx: CanvasRenderingContext2D, width: number,
+        startLine: number, visibleLines: number, totalLines: number
+    ): void {
+        const results = this.searchResults();
+        if (!results.length) return;
+
+        const activeIdx = this.currentSearchIndex();
+        const endLine = startLine + visibleLines;
+
+        for (let i = 0; i < results.length; i++) {
+            const lineIdx = results[i].lineIndex;
+            if (lineIdx < startLine || lineIdx >= endLine) continue;
+
+            const y = (lineIdx - startLine) * LINE_HEIGHT_PX;
+            const isActive = i === activeIdx;
+
+            ctx.fillStyle = isActive ? RPT_COLORS.searchActive : RPT_COLORS.search;
+            ctx.globalAlpha = isActive ? 0.8 : 0.5;
+            ctx.fillRect(0, y, width, LINE_HEIGHT_PX);
+        }
+        ctx.globalAlpha = 1;
+    }
+
+    private drawScrollbar(): void {
+        const canvas = this.scrollbarCanvasRef?.nativeElement;
+        if (!canvas) return;
+
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+        if (width === 0 || height === 0) return;
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        // Track background
+        ctx.fillStyle = this.scrollbarTrackColor;
+        this.roundRect(ctx, 0, 0, width, height, SCROLLBAR_TRACK_RADIUS);
+        ctx.fill();
+
+        // Thumb
+        const thumb = this.getScrollbarThumb(height);
+        ctx.fillStyle = this.scrollbarThumbColor;
+        this.roundRect(ctx, 0, thumb.top, width, thumb.height, SCROLLBAR_THUMB_RADIUS);
+        ctx.fill();
+
+        // Search markers across full scrollbar height
+        const results = this.searchResults();
+        const totalLines = this.logLines().length;
+        if (results.length > 0 && totalLines > 0) {
+            const activeIdx = this.currentSearchIndex();
+            for (let i = 0; i < results.length; i++) {
+                const y = Math.round((results[i].lineIndex / totalLines) * height);
+                const isActive = i === activeIdx;
+                ctx.fillStyle = isActive ? SEARCH_MARKER_ACTIVE_COLOR : SEARCH_MARKER_COLOR;
+                ctx.fillRect(0, y, width, 2);
+            }
+        }
+    }
+
+    private roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number): void {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
     }
 }

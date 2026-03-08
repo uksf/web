@@ -63,7 +63,6 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     viewportScrollOffset = 0;
     viewportVisibleSize = 0;
     totalScrollHeight = 0;
-    viewportContentWidth = 0;
     linkedLineIndex = -1;
 
     private baseHtml: string[] = [];
@@ -71,6 +70,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     private _viewport: CdkVirtualScrollViewport | undefined;
     private metricsRafId: number | null = null;
     private pendingScrollToBottom = false;
+    private programmaticScroll = false;
 
     @HostListener('window:keydown', ['$event'])
     handleKeydown(event: KeyboardEvent) {
@@ -84,7 +84,14 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
             vp.elementScrolled().pipe(
                 takeUntil(this.destroy$)
             ).subscribe(() => {
-                this.ngZone.run(() => this.updateViewportMetrics());
+                this.ngZone.run(() => {
+                    if (this.programmaticScroll) {
+                        this.programmaticScroll = false;
+                    } else {
+                        this.tailEnabled = false;
+                    }
+                    this.updateViewportMetrics();
+                });
             });
             this.scheduleMetricsUpdate();
             if (this.pendingScrollToBottom) {
@@ -242,6 +249,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (event.key === 'Home') {
             event.preventDefault();
             this.tailEnabled = false;
+            this.programmaticScroll = true;
             this.viewport?.scrollToIndex(0);
         } else if (event.key === 'End') {
             event.preventDefault();
@@ -305,6 +313,8 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
 
     onMinimapScrollToLine(lineIndex: number): void {
         if (!this.viewport) return;
+        this.tailEnabled = false;
+        this.programmaticScroll = true;
         const viewportSize = this.viewport.getViewportSize();
         const offset = lineIndex * ITEM_SIZE;
         const centeredOffset = Math.max(0, offset - (viewportSize / 2) + (ITEM_SIZE / 2));
@@ -313,13 +323,9 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
 
     onMinimapScrollToOffset(offset: number): void {
         if (!this.viewport) return;
+        this.tailEnabled = false;
+        this.programmaticScroll = true;
         this.viewport.scrollToOffset(Math.max(0, offset));
-    }
-
-    onMinimapSearchNavigate(resultIndex: number): void {
-        if (resultIndex < 0 || resultIndex >= this.searchResults.length) return;
-        this.currentSearchIndex = resultIndex;
-        this.scrollToSearchResult();
     }
 
     findNearestSearchResult(lineIndex: number): number {
@@ -412,8 +418,6 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         this.viewportScrollOffset = el.scrollTop;
         this.viewportVisibleSize = this.viewport.getViewportSize();
         this.totalScrollHeight = el.scrollHeight;
-        // Content width = viewport width minus line-number gutter (60px + 8px + 1px) and content padding (8px)
-        this.viewportContentWidth = el.clientWidth - 77;
     }
 
     private addSearchHighlights(html: string, query: string): string {
@@ -443,6 +447,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
 
     private scrollToLineIndex(lineNumber: number): void {
         if (!this.viewport) return;
+        this.programmaticScroll = true;
         const index = Math.max(0, lineNumber - 1);
         const viewportSize = this.viewport.getViewportSize();
         const offset = index * ITEM_SIZE;
@@ -452,6 +457,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
 
     private scrollToBottom(): void {
         if (this.viewport) {
+            this.programmaticScroll = true;
             this.viewport.scrollTo({ bottom: 0 });
         }
     }
@@ -460,6 +466,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (!this.viewport || this.currentSearchIndex < 0 || this.currentSearchIndex >= this.searchResults.length) {
             return;
         }
+        this.programmaticScroll = true;
         const lineIndex = this.searchResults[this.currentSearchIndex].lineIndex;
         const viewportSize = this.viewport.getViewportSize();
         const offset = lineIndex * ITEM_SIZE;
