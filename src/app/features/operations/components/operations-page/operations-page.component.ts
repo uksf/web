@@ -21,10 +21,7 @@ export class OperationsPageComponent {
 
     constructor() {
         if (this.permissions.hasPermission(Permissions.SERVERS)) {
-            this.tabLinks.unshift(
-                { label: 'Servers', link: './servers' },
-                { label: 'Missions', link: './missions' }
-            );
+            this.tabLinks.unshift({ label: 'Servers', link: './servers' });
         }
     }
 }

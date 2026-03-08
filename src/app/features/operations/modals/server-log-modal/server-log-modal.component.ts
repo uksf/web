@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, inject, NgZone } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild, inject, NgZone } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { first, takeUntil } from 'rxjs/operators';
@@ -71,6 +71,11 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     private _viewport: CdkVirtualScrollViewport | undefined;
     private metricsRafId: number | null = null;
     private pendingScrollToBottom = false;
+
+    @HostListener('window:keydown', ['$event'])
+    handleKeydown(event: KeyboardEvent) {
+        this.onKeydown(event);
+    }
 
     @ViewChild(CdkVirtualScrollViewport)
     set viewport(vp: CdkVirtualScrollViewport | undefined) {
@@ -225,6 +230,21 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     toggleTail(): void {
         this.tailEnabled = !this.tailEnabled;
         if (this.tailEnabled) {
+            this.scrollToBottom();
+        }
+    }
+
+    onKeydown(event: KeyboardEvent): void {
+        const tag = (event.target as HTMLElement)?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') {
+            return;
+        }
+        if (event.key === 'Home') {
+            event.preventDefault();
+            this.tailEnabled = false;
+            this.viewport?.scrollToIndex(0);
+        } else if (event.key === 'End') {
+            event.preventDefault();
             this.scrollToBottom();
         }
     }

@@ -913,6 +913,57 @@ describe('ServerLogModalComponent', () => {
         });
     });
 
+    describe('onKeydown', () => {
+        it('should scroll to top and disable tail on Home key', () => {
+            const mockViewport = { scrollToIndex: vi.fn() } as any;
+            (component as any)._viewport = mockViewport;
+            component.tailEnabled = true;
+
+            const event = { key: 'Home', preventDefault: vi.fn() } as unknown as KeyboardEvent;
+            component.onKeydown(event);
+
+            expect(event.preventDefault).toHaveBeenCalled();
+            expect(component.tailEnabled).toBe(false);
+            expect(mockViewport.scrollToIndex).toHaveBeenCalledWith(0);
+        });
+
+        it('should scroll to bottom on End key', () => {
+            const mockViewport = { scrollTo: vi.fn() } as any;
+            (component as any)._viewport = mockViewport;
+
+            const event = { key: 'End', preventDefault: vi.fn() } as unknown as KeyboardEvent;
+            component.onKeydown(event);
+
+            expect(event.preventDefault).toHaveBeenCalled();
+            expect(mockViewport.scrollTo).toHaveBeenCalledWith({ bottom: 0 });
+        });
+
+        it('should not prevent default for other keys', () => {
+            const event = { key: 'a', preventDefault: vi.fn() } as unknown as KeyboardEvent;
+            component.onKeydown(event);
+
+            expect(event.preventDefault).not.toHaveBeenCalled();
+        });
+
+        it('should handle Home when viewport is not set', () => {
+            component.viewport = undefined;
+
+            const event = { key: 'Home', preventDefault: vi.fn() } as unknown as KeyboardEvent;
+            expect(() => component.onKeydown(event)).not.toThrow();
+        });
+
+        it('should not intercept Home/End when focused on an input element', () => {
+            const mockViewport = { scrollToIndex: vi.fn() } as any;
+            (component as any)._viewport = mockViewport;
+
+            const event = { key: 'Home', preventDefault: vi.fn(), target: { tagName: 'INPUT' } } as unknown as KeyboardEvent;
+            component.onKeydown(event);
+
+            expect(event.preventDefault).not.toHaveBeenCalled();
+            expect(mockViewport.scrollToIndex).not.toHaveBeenCalled();
+        });
+    });
+
     describe('search highlighting', () => {
         beforeEach(() => {
             component.ngOnInit();
