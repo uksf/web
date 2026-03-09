@@ -4,6 +4,7 @@ import {
 } from '@angular/core';
 import { RptLogSearchResult } from '../../models/game-server';
 import { classifyRptLine, RPT_COLORS, type RptColorSegment } from '../../utils/rpt-syntax-highlighter';
+import { createLineProjection, type LineProjection } from './line-projection';
 import {
     generateCharBitmaps, renderLineToImageData, fillBackground,
     type CharAtlas
@@ -64,6 +65,7 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
     viewportSize = input<number>(0);
     totalHeight = input<number>(0);
     itemSize = input<number>(20);
+    contentWidth = input<number>(0);
 
     scrollToLine = output<number>();
     scrollToOffset = output<number>();
@@ -76,6 +78,9 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
     private bitmapCanvas: HTMLCanvasElement | null = null;
     private cachedSegments: RptColorSegment[][] = [];
     private lastClassifiedIndex = 0;
+    private projection: LineProjection | null = null;
+    private charsPerRow = 80;
+    private charWidthPx = 0;
 
     private contentImageData: ImageData | null = null;
     private prevStartLine = -1;
@@ -135,11 +140,20 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
             this.totalHeight();
             this.scheduleContentRedraw();
         });
+
+        // Recompute projection when lines or content width change
+        effect(() => {
+            this.logLines();
+            this.contentWidth();
+            this.updateProjection();
+            this.scheduleContentRedraw();
+        });
     }
 
     ngAfterViewInit(): void {
         this.resolveThemeColors();
         this.initAtlas();
+        this.measureCharWidth();
         this.resizeObserver = new ResizeObserver(() => {
             this.prevStartLine = -1; // force full redraw on resize
             this.scheduleContentRedraw();
@@ -187,6 +201,22 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         this.charAtlas = generateCharBitmaps(this.bitmapCanvas, this.currentScale);
     }
 
+    private measureCharWidth(): void {
+        if (!this.bitmapCanvas) return;
+        const ctx = this.bitmapCanvas.getContext('2d');
+        if (!ctx) return;
+        ctx.font = '13px Cascadia Code, Fira Code, Consolas, Monaco, monospace';
+        this.charWidthPx = ctx.measureText('x').width;
+    }
+
+    private updateProjection(): void {
+        const width = this.contentWidth();
+        if (width > 0 && this.charWidthPx > 0) {
+            this.charsPerRow = Math.max(1, Math.floor(width / this.charWidthPx));
+        }
+        this.projection = createLineProjection(this.logLines(), this.charsPerRow);
+    }
+
     private checkDprChange(): boolean {
         const dpr = window.devicePixelRatio ?? 1;
         const scale = dpr >= 2 ? 2 : 1;
@@ -220,9 +250,11 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
             this.dragStartOffset = this.viewportOffset();
         } else {
             // Click on minimap background → scroll to that line
-            const clickedLine = startLine + Math.floor(y / LINE_HEIGHT_PX);
-            const totalLines = this.logLines().length;
-            const clampedLine = Math.max(0, Math.min(clickedLine, totalLines - 1));
+            const clickedViewLine = startLine + Math.floor(y / LINE_HEIGHT_PX);
+            const proj = this.projection;
+            const totalViewLines = proj?.viewLineCount ?? this.logLines().length;
+            const clampedViewLine = Math.max(0, Math.min(clickedViewLine, totalViewLines - 1));
+            const clampedLine = proj ? proj.getViewLine(clampedViewLine).logLineIndex : clampedViewLine;
             this.scrollToLine.emit(clampedLine);
 
             // Start dragging from the new position, using the same centered offset
@@ -345,7 +377,7 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
     }
 
     private getMinimapWindow(canvasHeight: number): { startLine: number; visibleLines: number } {
-        const totalLines = this.logLines().length;
+        const totalLines = this.projection?.viewLineCount ?? this.logLines().length;
         const visibleLines = Math.floor(canvasHeight / LINE_HEIGHT_PX);
         const maxScroll = this.totalHeight() - this.viewportSize();
         const startLine = computeStartLine(
@@ -356,9 +388,10 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
 
     private getSlider(canvasHeight: number): { top: number; height: number } {
         const { startLine, visibleLines } = this.getMinimapWindow(canvasHeight);
+        const totalLines = this.projection?.viewLineCount ?? this.logLines().length;
         return computeSlider(
             this.viewportOffset(), this.viewportSize(), this.totalHeight(),
-            canvasHeight, startLine, this.logLines().length, visibleLines
+            canvasHeight, startLine, totalLines, visibleLines
         );
     }
 
@@ -398,15 +431,17 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         if (!ctx) return;
 
         const lines = this.logLines();
-        const totalLines = lines.length;
+        const proj = this.projection;
+        const atlas = this.charAtlas;
         const scaledLineHeight = LINE_HEIGHT_PX * scale;
+        const totalViewLines = proj?.viewLineCount ?? lines.length;
         const visibleLines = Math.floor(bufferHeight / scaledLineHeight);
         const maxScroll = this.totalHeight() - this.viewportSize();
         const startLine = computeStartLine(
-            this.viewportOffset(), maxScroll, totalLines, visibleLines, this.itemSize()
+            this.viewportOffset(), maxScroll, totalViewLines, visibleLines, this.itemSize()
         );
 
-        const endLine = Math.min(startLine + visibleLines, totalLines);
+        const endLine = Math.min(startLine + visibleLines, totalViewLines);
         const renderCount = endLine - startLine;
 
         // Create or reuse ImageData
@@ -421,14 +456,19 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         fillBackground(data, bufferWidth, 0, bufferHeight, this.bgR, this.bgG, this.bgB);
 
         // Render visible lines
-        const atlas = this.charAtlas;
         for (let i = 0; i < renderCount; i++) {
-            const lineIdx = startLine + i;
-            if (lineIdx >= this.cachedSegments.length) break;
+            const viewLineIdx = startLine + i;
+            if (!proj || viewLineIdx >= proj.viewLineCount) break;
+
+            const { text, logLineIndex } = proj.getViewLine(viewLineIdx);
+            const segments = logLineIndex < this.cachedSegments.length
+                ? this.cachedSegments[logLineIndex]
+                : [];
             const yOffset = i * scaledLineHeight;
+
             renderLineToImageData(
-                lines[lineIdx],
-                this.cachedSegments[lineIdx],
+                text,
+                segments,
                 atlas,
                 data as Uint8ClampedArray,
                 bufferWidth,
@@ -467,7 +507,7 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         ctx.scale(dpr, dpr);
         ctx.clearRect(0, 0, displayWidth, displayHeight);
 
-        const totalLines = this.logLines().length;
+        const totalLines = this.projection?.viewLineCount ?? this.logLines().length;
         if (totalLines === 0) return;
 
         const visibleLines = Math.floor(displayHeight / LINE_HEIGHT_PX);
@@ -497,12 +537,14 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
 
         const activeIdx = this.currentSearchIndex();
         const endLine = startLine + visibleLines;
+        const proj = this.projection;
 
         for (let i = 0; i < results.length; i++) {
-            const lineIdx = results[i].lineIndex;
-            if (lineIdx < startLine || lineIdx >= endLine) continue;
+            const logLineIdx = results[i].lineIndex;
+            const viewLineIdx = proj ? proj.logLineToViewLine(logLineIdx) : logLineIdx;
+            if (viewLineIdx < startLine || viewLineIdx >= endLine) continue;
 
-            const y = (lineIdx - startLine) * LINE_HEIGHT_PX;
+            const y = (viewLineIdx - startLine) * LINE_HEIGHT_PX;
             const isActive = i === activeIdx;
 
             ctx.fillStyle = isActive ? RPT_COLORS.searchActive : RPT_COLORS.search;
@@ -545,10 +587,14 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         // Search markers across full scrollbar height
         const results = this.searchResults();
         const totalLines = this.logLines().length;
-        if (results.length > 0 && totalLines > 0) {
+        const totalViewLines = this.projection?.viewLineCount ?? totalLines;
+        if (results.length > 0 && totalViewLines > 0) {
+            const proj = this.projection;
             const activeIdx = this.currentSearchIndex();
             for (let i = 0; i < results.length; i++) {
-                const y = Math.round((results[i].lineIndex / totalLines) * height);
+                const logLineIdx = results[i].lineIndex;
+                const viewLineIdx = proj ? proj.logLineToViewLine(logLineIdx) : logLineIdx;
+                const y = Math.round((viewLineIdx / totalViewLines) * height);
                 const isActive = i === activeIdx;
                 ctx.fillStyle = isActive ? SEARCH_MARKER_ACTIVE_COLOR : SEARCH_MARKER_COLOR;
                 ctx.fillRect(0, y, width, 2);
