@@ -19,15 +19,16 @@ const SEARCH_MARKER_COLOR = 'rgba(255, 200, 0, 0.5)';
 const SEARCH_MARKER_ACTIVE_COLOR = 'rgba(255, 200, 0, 0.9)';
 
 /**
- * VS Code-style minimap layout computation.
+ * VS Code-style minimap layout computation (from minimap.ts MinimapLayout.create).
  *
- * Computes slider position first, then derives the content start line from the
- * slider position. This ensures the slider always overlays the correct content,
- * avoiding the drift that occurs when slider and content are computed independently.
- *
- * Key formula (from VS Code minimap.ts):
- *   sliderTop = scrollTop × (minimapHeight - sliderHeight) / (scrollHeight - viewportHeight)
- *   contentStartLine = viewportFirstLine - floor(sliderTop / minimapLineHeight)
+ * Key differences from a naive implementation:
+ * 1. Slider height = visible viewport lines × minimap line height (not a proportional
+ *    ratio of canvas height). This ensures the slider covers exactly the lines visible
+ *    in the viewport.
+ * 2. Slider position uses a computed ratio: maxSliderTop / maxScroll, mapping the
+ *    editor's scroll range to the minimap's slider travel range.
+ * 3. startLine is derived from the slider position, then sliderTop is re-derived
+ *    from startLine to guarantee pixel-perfect alignment.
  */
 export function computeMinimapLayout(
     scrollTop: number, viewportSize: number, totalHeight: number,
@@ -35,28 +36,39 @@ export function computeMinimapLayout(
 ): { startLine: number; visibleLines: number; sliderTop: number; sliderHeight: number } {
     const visibleLines = Math.floor(canvasHeight / LINE_HEIGHT_PX);
 
-    if (totalHeight <= 0 || totalLines <= 0) {
+    if (totalLines <= 0) {
         return { startLine: 0, visibleLines, sliderTop: 0, sliderHeight: canvasHeight };
     }
 
-    // 1. Compute slider dimensions (VS Code: sliderHeight = viewportHeight² / scrollHeight)
-    const sliderHeight = Math.max(Math.round((viewportSize / totalHeight) * canvasHeight), 20);
+    const contentHeight = totalLines * itemSize;
+
+    if (contentHeight <= viewportSize) {
+        return { startLine: 0, visibleLines, sliderTop: 0, sliderHeight: canvasHeight };
+    }
+
+    // 1. Slider height: visible viewport lines converted to minimap pixels.
+    //    VS Code: sliderHeight = expectedViewportLineCount * minimapLineHeight / pixelRatio
+    //    Our minimapLineHeight (LINE_HEIGHT_PX) is already in CSS pixels, so no pixelRatio division.
+    const viewportLineCount = viewportSize / itemSize;
+    const sliderHeight = Math.max(Math.round(viewportLineCount * LINE_HEIGHT_PX), 20);
     const maxSliderTop = Math.max(0, canvasHeight - sliderHeight);
 
-    // 2. Compute slider position proportional to scroll
+    // 2. Slider position: VS Code's computedSliderRatio = maxSliderTop / maxScroll
     const maxScroll = totalHeight - viewportSize;
-    const scrollFraction = maxScroll > 0 ? scrollTop / maxScroll : 0;
-    const sliderTop = Math.round(scrollFraction * maxSliderTop);
-    const clampedSliderTop = Math.max(0, Math.min(sliderTop, maxSliderTop));
+    const computedSliderRatio = maxScroll > 0 ? maxSliderTop / maxScroll : 0;
+    const rawSliderTop = scrollTop * computedSliderRatio;
 
-    // 3. Derive content start line from slider position (VS Code approach)
-    //    The viewport's first line should appear at the slider's top position in the minimap.
-    //    contentStartLine = viewportFirstLine - (sliderTop / LINE_HEIGHT_PX)
-    const viewportFirstLine = Math.floor(scrollTop / itemSize);
-    const linesAboveSlider = Math.floor(clampedSliderTop / LINE_HEIGHT_PX);
-    const startLine = Math.max(0, Math.min(viewportFirstLine - linesAboveSlider, totalLines - visibleLines));
+    // 3. First visible view line
+    const viewportFirstLine = Math.min(Math.floor(scrollTop / itemSize), totalLines - 1);
 
-    return { startLine, visibleLines, sliderTop: clampedSliderTop, sliderHeight };
+    // 4. Derive startLine from slider position, then re-derive sliderTop from startLine
+    //    to guarantee pixel-perfect alignment (VS Code's sliderTopAligned approach).
+    const exactLinesAbove = rawSliderTop / LINE_HEIGHT_PX;
+    const maxStartLine = Math.max(0, totalLines - visibleLines);
+    const startLine = Math.max(0, Math.min(Math.round(viewportFirstLine - exactLinesAbove), maxStartLine));
+    const sliderTop = Math.max(0, Math.min((viewportFirstLine - startLine) * LINE_HEIGHT_PX, maxSliderTop));
+
+    return { startLine, visibleLines, sliderTop, sliderHeight };
 }
 
 @Component({
