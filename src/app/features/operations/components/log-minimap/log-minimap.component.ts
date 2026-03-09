@@ -274,17 +274,26 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
             this.dragStartY = y;
             this.dragStartOffset = this.viewportOffset();
         } else {
-            // Click on minimap background → center slider on click position
-            const targetSliderTop = Math.max(0, Math.min(y - layout.sliderHeight / 2, canvasHeight - layout.sliderHeight));
-            const maxSliderTop = Math.max(0, canvasHeight - layout.sliderHeight);
-            const maxScroll = this.totalHeight() - this.viewportSize();
-            const newOffset = maxSliderTop > 0
-                ? Math.max(0, Math.min((targetSliderTop / maxSliderTop) * maxScroll, maxScroll))
-                : 0;
+            // Click on minimap background → scroll to the line at the click position
+            const clickedViewLine = layout.startLine + Math.floor(y / LINE_HEIGHT_PX);
+            const totalViewLines = this.projection?.viewLineCount ?? this.logLines().length;
+            const clampedViewLine = Math.max(0, Math.min(clickedViewLine, totalViewLines - 1));
+
+            // Center the clicked line in the viewport
+            const newOffset = Math.max(0, Math.min(
+                clampedViewLine * this.itemSize() - this.viewportSize() / 2 + this.itemSize() / 2,
+                this.totalHeight() - this.viewportSize()
+            ));
             this.scrollToOffset.emit(newOffset);
 
+            // For drag continuity, compute where the slider will end up after the jump
+            // so that dragStartY matches the slider's new center position
+            const newLayout = computeMinimapLayout(
+                newOffset, this.viewportSize(), this.totalHeight(),
+                canvasHeight, totalViewLines, this.itemSize()
+            );
             this.isDragging = true;
-            this.dragStartY = y;
+            this.dragStartY = newLayout.sliderTop + newLayout.sliderHeight / 2;
             this.dragStartOffset = newOffset;
         }
         this.setupDocumentListeners();

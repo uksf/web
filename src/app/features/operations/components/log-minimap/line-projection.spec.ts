@@ -1,5 +1,58 @@
 import { describe, it, expect } from 'vitest';
-import { createLineProjection } from './line-projection';
+import { createLineProjection, countWordWrapLines } from './line-projection';
+
+describe('countWordWrapLines', () => {
+    it('returns 1 for empty string', () => {
+        expect(countWordWrapLines('', 10)).toBe(1);
+    });
+
+    it('returns 1 when text fits on one line', () => {
+        expect(countWordWrapLines('hello', 10)).toBe(1);
+    });
+
+    it('returns 1 for exact-width text', () => {
+        expect(countWordWrapLines('abcdefghij', 10)).toBe(1);
+    });
+
+    it('character-breaks a long word with no spaces', () => {
+        // 25 chars, 10 per row → 3 lines
+        expect(countWordWrapLines('abcdefghijklmnopqrstuvwxy', 10)).toBe(3);
+    });
+
+    it('character-breaks exact multiple length word', () => {
+        // 20 chars, 10 per row → 2 lines (not 3)
+        expect(countWordWrapLines('abcdefghijklmnopqrst', 10)).toBe(2);
+    });
+
+    it('wraps at word boundary when word would exceed line', () => {
+        // "hello world!" → "hello " (6 chars) then "world!" (6 chars) on next line
+        expect(countWordWrapLines('hello world!', 10)).toBe(2);
+    });
+
+    it('keeps word on same line when it fits', () => {
+        // "hi there" → 8 chars fits in 10
+        expect(countWordWrapLines('hi there', 10)).toBe(1);
+    });
+
+    it('wraps long word after short word', () => {
+        // "ab cdefghijklmno" → "ab " (3) then "cdefghijkl" (10) then "mno" (3)
+        expect(countWordWrapLines('ab cdefghijklmno', 10)).toBe(3);
+    });
+
+    it('handles multiple words with wrapping', () => {
+        // "aaa bbb ccc ddd" (15 chars) at width 10
+        // "aaa bbb " (8 chars) fits, "ccc" (3 more = 11) → wrap
+        // line 1: "aaa bbb " (8), then "ccc" doesn't fit (8+3=11>10) → wrap
+        // Actually: "aaa bbb" = 7, space = 8, "ccc" = 3, 8+3=11>10 → wrap
+        // line 1: "aaa bbb ", line 2: "ccc ddd"
+        expect(countWordWrapLines('aaa bbb ccc ddd', 10)).toBe(2);
+    });
+
+    it('handles space at exactly charsPerRow boundary', () => {
+        // "abcdefghi j" → "abcdefghi" (9) + space (col=10 ≥ 10 → wrap) + "j"
+        expect(countWordWrapLines('abcdefghi j', 10)).toBe(2);
+    });
+});
 
 describe('LineProjection', () => {
     it('returns 1 view line per logical line when no wrapping needed', () => {
@@ -11,7 +64,7 @@ describe('LineProjection', () => {
     });
 
     it('wraps long lines into multiple view lines (charsPerRow=10, 25 chars → 3 view lines)', () => {
-        const line = 'abcdefghijklmnopqrstuvwxy'; // 25 chars
+        const line = 'abcdefghijklmnopqrstuvwxy'; // 25 chars, no spaces
         const projection = createLineProjection([line], 10);
         expect(projection.viewLineCount).toBe(3);
         expect(projection.getViewLine(0)).toEqual({ text: 'abcdefghij', logLineIndex: 0 });
@@ -88,5 +141,12 @@ describe('LineProjection', () => {
         expect(projection.getViewLineCountForLogLine(0)).toBe(1);
         expect(projection.getViewLineCountForLogLine(1)).toBe(2);
         expect(projection.getViewLineCountForLogLine(2)).toBe(1);
+    });
+
+    it('word-wraps lines with spaces', () => {
+        // "hello world!" at width 10: wraps "world!" to next line
+        const projection = createLineProjection(['hello world!'], 10);
+        expect(projection.viewLineCount).toBe(2);
+        expect(projection.getViewLineCountForLogLine(0)).toBe(2);
     });
 });
