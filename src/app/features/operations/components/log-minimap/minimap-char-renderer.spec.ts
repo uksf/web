@@ -73,8 +73,7 @@ describe('minimap-char-renderer', () => {
             const atlas = generateCharBitmaps(canvas);
 
             const space = atlas.get(32)!;
-            expect(space.top).toBe(0);
-            expect(space.bottom).toBe(0);
+            expect(space.alphas.every(a => a === 0)).toBe(true);
         });
 
         it('should have non-zero alpha for visible characters', () => {
@@ -83,7 +82,7 @@ describe('minimap-char-renderer', () => {
 
             // 'A' = 65
             const a = atlas.get(65)!;
-            expect(a.top + a.bottom).toBeGreaterThan(0);
+            expect(a.alphas.some(v => v > 0)).toBe(true);
         });
 
         it('should normalize brightness so max is 255', () => {
@@ -93,9 +92,25 @@ describe('minimap-char-renderer', () => {
             let maxAlpha = 0;
             for (const [code, bitmap] of atlas) {
                 if (code === 32) continue; // skip space
-                maxAlpha = Math.max(maxAlpha, bitmap.top, bitmap.bottom);
+                maxAlpha = Math.max(maxAlpha, ...bitmap.alphas);
             }
             expect(maxAlpha).toBe(255);
+        });
+
+        it('should generate 1x2 bitmaps at scale 1', () => {
+            const canvas = createMockCanvas();
+            const atlas = generateCharBitmaps(canvas);
+
+            const a = atlas.get(65)!;
+            expect(a.alphas.length).toBe(2);
+        });
+
+        it('should generate 2x4 bitmaps at scale 2', () => {
+            const canvas = createMockCanvas();
+            const atlas = generateCharBitmaps(canvas, 2);
+
+            const a = atlas.get(65)!;
+            expect(a.alphas.length).toBe(8);
         });
     });
 
@@ -105,9 +120,9 @@ describe('minimap-char-renderer', () => {
         beforeEach(() => {
             atlas = new Map();
             // Simple atlas: 'A' (65) has full brightness, space (32) has zero
-            atlas.set(65, { top: 255, bottom: 128 });
-            atlas.set(66, { top: 200, bottom: 200 });
-            atlas.set(32, { top: 0, bottom: 0 });
+            atlas.set(65, { alphas: [255, 128] });
+            atlas.set(66, { alphas: [200, 200] });
+            atlas.set(32, { alphas: [0, 0] });
         });
 
         it('should render characters into pixel data', () => {
@@ -193,7 +208,7 @@ describe('minimap-char-renderer', () => {
             const data = new Uint8ClampedArray(width * height * 4);
             fillBackground(data, width, 0, height, 0, 0, 0);
 
-            // B has top=200, bottom=200
+            // B has alphas=[200, 200]
             renderLineToImageData(
                 'B',
                 [{ color: '#ffffff', start: 0, end: 1 }],
@@ -204,6 +219,36 @@ describe('minimap-char-renderer', () => {
             // Top pixel: alpha = 200/255 ≈ 0.784, blend = 0 + (255-0)*0.784 ≈ 200
             const topIdx = 0;
             expect(data[topIdx]).toBeCloseTo(200, 0);
+        });
+
+        it('should render 2x4 pixel blocks at scale 2', () => {
+            const scale2Atlas: CharAtlas = new Map();
+            // 'A' at scale 2: 2 wide × 4 tall = 8 alphas, row-major
+            scale2Atlas.set(65, { alphas: [255, 200, 180, 160, 140, 120, 100, 80] });
+            scale2Atlas.set(32, { alphas: [0, 0, 0, 0, 0, 0, 0, 0] });
+
+            const width = 10;
+            const height = 8;
+            const data = new Uint8ClampedArray(width * height * 4);
+            fillBackground(data, width, 0, height, 0, 0, 0);
+
+            renderLineToImageData(
+                'A',
+                [{ color: '#ffffff', start: 0, end: 1 }],
+                scale2Atlas, data, width, 0,
+                0, 0, 0, 120,
+                2 // scale = 2
+            );
+
+            // Top-left pixel (0,0): alpha = 255/255 = 1.0, blend = 255
+            expect(data[0]).toBe(255);
+            // Top-right pixel (1,0): alpha = 200/255 ≈ 0.784, blend ≈ 200
+            expect(data[1 * 4]).toBeCloseTo(200, 0);
+            // Second row left (0,1): alpha = 180/255
+            const row1Idx = (1 * width) * 4;
+            expect(data[row1Idx]).toBeCloseTo(180, 0);
+            // Second row right (1,1): alpha = 160/255
+            expect(data[row1Idx + 1 * 4]).toBeCloseTo(160, 0);
         });
     });
 

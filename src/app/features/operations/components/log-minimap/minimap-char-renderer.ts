@@ -1,9 +1,12 @@
 /**
  * VS Code-style minimap character bitmap renderer.
  *
- * Pre-computes 1×2 pixel alpha bitmaps for printable ASCII (32–126),
+ * Pre-computes pixel alpha bitmaps for printable ASCII (32–126),
  * then renders lines by blending foreground color × alpha onto a background
  * directly into an ImageData pixel buffer.
+ *
+ * At scale 1: each character is 1×2 pixels.
+ * At scale 2: each character is 2×4 pixels (for high-DPI / retina displays).
  */
 
 const CHAR_WIDTH = 1;
@@ -12,10 +15,10 @@ const SAMPLE_FONT_SIZE = 16;
 const PRINTABLE_START = 32;
 const PRINTABLE_END = 126;
 
-/** Two alpha values (top pixel, bottom pixel) for a single character */
+/** Alpha values for a single character at a given scale.
+ *  Scale 1: 2 values (1×2). Scale 2: 8 values (2×4), stored row-major. */
 export interface CharBitmap {
-    top: number;    // 0–255
-    bottom: number; // 0–255
+    alphas: number[]; // length = charWidth * charHeight
 }
 
 /** Pre-computed bitmap atlas for ASCII 32–126 */
@@ -23,13 +26,19 @@ export type CharAtlas = Map<number, CharBitmap>;
 
 /**
  * Generate character bitmaps by rendering each printable ASCII character
- * on a hidden canvas, downsampling to 1×2 pixels with area averaging,
+ * on a hidden canvas, downsampling to charW×charH pixels with area averaging,
  * and normalizing brightness.
+ *
+ * @param canvas - offscreen canvas for rendering
+ * @param scale - DPI scale factor (default 1). Character dimensions = (1*scale) × (2*scale)
  */
-export function generateCharBitmaps(canvas: HTMLCanvasElement): CharAtlas {
+export function generateCharBitmaps(canvas: HTMLCanvasElement, scale: number = 1): CharAtlas {
     const atlas: CharAtlas = new Map();
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     if (!ctx) return atlas;
+
+    const charW = CHAR_WIDTH * scale;
+    const charH = CHAR_HEIGHT * scale;
 
     const cellW = SAMPLE_FONT_SIZE;
     const cellH = SAMPLE_FONT_SIZE;
@@ -40,7 +49,7 @@ export function generateCharBitmaps(canvas: HTMLCanvasElement): CharAtlas {
     ctx.textBaseline = 'top';
 
     let globalMax = 0;
-    const rawValues: { code: number; top: number; bottom: number }[] = [];
+    const rawValues: { code: number; alphas: number[] }[] = [];
 
     for (let code = PRINTABLE_START; code <= PRINTABLE_END; code++) {
         ctx.clearRect(0, 0, cellW, cellH);
@@ -49,41 +58,43 @@ export function generateCharBitmaps(canvas: HTMLCanvasElement): CharAtlas {
 
         const imageData = ctx.getImageData(0, 0, cellW, cellH);
         const pixels = imageData.data;
-        const halfH = Math.floor(cellH / 2);
 
-        // Area-average top half → top pixel
-        let topSum = 0;
-        for (let y = 0; y < halfH; y++) {
-            for (let x = 0; x < cellW; x++) {
-                topSum += pixels[(y * cellW + x) * 4 + 3]; // alpha channel
+        // Area-average downsample: divide the cellW×cellH source into charW×charH destination pixels
+        const alphas: number[] = [];
+        for (let dy = 0; dy < charH; dy++) {
+            const srcYStart = Math.floor((dy * cellH) / charH);
+            const srcYEnd = Math.floor(((dy + 1) * cellH) / charH);
+            for (let dx = 0; dx < charW; dx++) {
+                const srcXStart = Math.floor((dx * cellW) / charW);
+                const srcXEnd = Math.floor(((dx + 1) * cellW) / charW);
+
+                let sum = 0;
+                let count = 0;
+                for (let y = srcYStart; y < srcYEnd; y++) {
+                    for (let x = srcXStart; x < srcXEnd; x++) {
+                        sum += pixels[(y * cellW + x) * 4 + 3]; // alpha channel
+                        count++;
+                    }
+                }
+                const avg = count > 0 ? sum / count : 0;
+                alphas.push(avg);
+                globalMax = Math.max(globalMax, avg);
             }
         }
-        const topAvg = topSum / (halfH * cellW);
 
-        // Area-average bottom half → bottom pixel
-        let bottomSum = 0;
-        for (let y = halfH; y < cellH; y++) {
-            for (let x = 0; x < cellW; x++) {
-                bottomSum += pixels[(y * cellW + x) * 4 + 3];
-            }
-        }
-        const bottomAvg = bottomSum / ((cellH - halfH) * cellW);
-
-        globalMax = Math.max(globalMax, topAvg, bottomAvg);
-        rawValues.push({ code, top: topAvg, bottom: bottomAvg });
+        rawValues.push({ code, alphas });
     }
 
     // Normalize so brightest pixel = 255
-    const scale = globalMax > 0 ? 255 / globalMax : 0;
-    for (const { code, top, bottom } of rawValues) {
+    const normScale = globalMax > 0 ? 255 / globalMax : 0;
+    for (const { code, alphas } of rawValues) {
         atlas.set(code, {
-            top: Math.round(top * scale),
-            bottom: Math.round(bottom * scale)
+            alphas: alphas.map(a => Math.round(a * normScale))
         });
     }
 
     // Space gets zero alpha
-    atlas.set(32, { top: 0, bottom: 0 });
+    atlas.set(32, { alphas: new Array(charW * charH).fill(0) });
 
     return atlas;
 }
@@ -132,11 +143,12 @@ function getCachedColor(color: string): [number, number, number] {
  * @param atlas - pre-computed character bitmaps
  * @param data - ImageData.data (Uint8ClampedArray) to write into
  * @param canvasWidth - width of the ImageData in pixels
- * @param yOffset - Y pixel offset (top row of this line's 2px height)
+ * @param yOffset - Y pixel offset (top row of this line's pixel height)
  * @param bgR - background red component
  * @param bgG - background green component
  * @param bgB - background blue component
  * @param maxChars - maximum characters to render per line
+ * @param scale - DPI scale factor (default 1)
  */
 export function renderLineToImageData(
     line: string,
@@ -148,14 +160,15 @@ export function renderLineToImageData(
     bgR: number,
     bgG: number,
     bgB: number,
-    maxChars: number
+    maxChars: number,
+    scale: number = 1
 ): void {
     const len = line.length;
     if (len === 0 || segments.length === 0) return;
 
-    const charsToRender = Math.min(len, maxChars, canvasWidth / CHAR_WIDTH);
-    const topRowStart = yOffset * canvasWidth * 4;
-    const bottomRowStart = (yOffset + 1) * canvasWidth * 4;
+    const charW = CHAR_WIDTH * scale;
+    const charH = CHAR_HEIGHT * scale;
+    const charsToRender = Math.min(len, maxChars, Math.floor(canvasWidth / charW));
 
     // Build a per-character color lookup from segments
     for (const seg of segments) {
@@ -170,29 +183,24 @@ export function renderLineToImageData(
             if (code < PRINTABLE_START || code > PRINTABLE_END) continue;
 
             const bitmap = atlas.get(code);
-            if (!bitmap || (bitmap.top === 0 && bitmap.bottom === 0)) continue;
+            if (!bitmap || bitmap.alphas.every(a => a === 0)) continue;
 
-            const x = col * CHAR_WIDTH;
+            const x = col * charW;
             if (x >= canvasWidth) break;
 
-            // Top pixel
-            if (bitmap.top > 0) {
-                const alpha = bitmap.top / 255;
-                const idx = topRowStart + x * 4;
-                data[idx] = bgR + (fgR - bgR) * alpha;
-                data[idx + 1] = bgG + (fgG - bgG) * alpha;
-                data[idx + 2] = bgB + (fgB - bgB) * alpha;
-                data[idx + 3] = 255;
-            }
-
-            // Bottom pixel
-            if (bitmap.bottom > 0) {
-                const alpha = bitmap.bottom / 255;
-                const idx = bottomRowStart + x * 4;
-                data[idx] = bgR + (fgR - bgR) * alpha;
-                data[idx + 1] = bgG + (fgG - bgG) * alpha;
-                data[idx + 2] = bgB + (fgB - bgB) * alpha;
-                data[idx + 3] = 255;
+            // Render charW × charH pixel block
+            for (let dy = 0; dy < charH; dy++) {
+                for (let dx = 0; dx < charW; dx++) {
+                    const alphaVal = bitmap.alphas[dy * charW + dx];
+                    if (alphaVal > 0) {
+                        const alpha = alphaVal / 255;
+                        const idx = ((yOffset + dy) * canvasWidth + x + dx) * 4;
+                        data[idx] = bgR + (fgR - bgR) * alpha;
+                        data[idx + 1] = bgG + (fgG - bgG) * alpha;
+                        data[idx + 2] = bgB + (fgB - bgB) * alpha;
+                        data[idx + 3] = 255;
+                    }
+                }
             }
         }
     }
