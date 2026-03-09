@@ -86,6 +86,9 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
     private dragStartY = 0;
     private dragStartOffset = 0;
 
+    private currentScale = 1;
+    private currentDpr = 1;
+
     private contentFrameId: number | null = null;
     private overlayFrameId: number | null = null;
     private resizeObserver: ResizeObserver | null = null;
@@ -179,7 +182,24 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
 
     private initAtlas(): void {
         this.bitmapCanvas = document.createElement('canvas');
-        this.charAtlas = generateCharBitmaps(this.bitmapCanvas);
+        this.currentDpr = window.devicePixelRatio ?? 1;
+        this.currentScale = this.currentDpr >= 2 ? 2 : 1;
+        this.charAtlas = generateCharBitmaps(this.bitmapCanvas, this.currentScale);
+    }
+
+    private checkDprChange(): boolean {
+        const dpr = window.devicePixelRatio ?? 1;
+        const scale = dpr >= 2 ? 2 : 1;
+        if (scale !== this.currentScale) {
+            this.currentDpr = dpr;
+            this.currentScale = scale;
+            this.charAtlas = generateCharBitmaps(this.bitmapCanvas!, this.currentScale);
+            this.contentImageData = null;
+            this.prevStartLine = -1;
+            return true;
+        }
+        this.currentDpr = dpr;
+        return false;
     }
 
     // --- Minimap mouse handling ---
@@ -358,19 +378,29 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         const canvas = this.contentCanvasRef?.nativeElement;
         if (!canvas || !this.charAtlas) return;
 
+        this.checkDprChange();
+
         const displayWidth = canvas.clientWidth;
         const displayHeight = canvas.clientHeight;
         if (displayWidth === 0 || displayHeight === 0) return;
 
-        canvas.width = displayWidth;
-        canvas.height = displayHeight;
+        const dpr = this.currentDpr;
+        const scale = this.currentScale;
+        const bufferWidth = Math.floor(displayWidth * dpr);
+        const bufferHeight = Math.floor(displayHeight * dpr);
+
+        canvas.width = bufferWidth;
+        canvas.height = bufferHeight;
+        canvas.style.width = `${displayWidth}px`;
+        canvas.style.height = `${displayHeight}px`;
 
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
         if (!ctx) return;
 
         const lines = this.logLines();
         const totalLines = lines.length;
-        const visibleLines = Math.floor(displayHeight / LINE_HEIGHT_PX);
+        const scaledLineHeight = LINE_HEIGHT_PX * scale;
+        const visibleLines = Math.floor(bufferHeight / scaledLineHeight);
         const maxScroll = this.totalHeight() - this.viewportSize();
         const startLine = computeStartLine(
             this.viewportOffset(), maxScroll, totalLines, visibleLines, this.itemSize()
@@ -378,34 +408,34 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
 
         const endLine = Math.min(startLine + visibleLines, totalLines);
         const renderCount = endLine - startLine;
-        const pixelHeight = renderCount * LINE_HEIGHT_PX;
 
         // Create or reuse ImageData
-        if (!this.contentImageData || this.contentImageData.width !== displayWidth || this.contentImageData.height !== displayHeight) {
-            this.contentImageData = ctx.createImageData(displayWidth, displayHeight);
+        if (!this.contentImageData || this.contentImageData.width !== bufferWidth || this.contentImageData.height !== bufferHeight) {
+            this.contentImageData = ctx.createImageData(bufferWidth, bufferHeight);
             this.prevStartLine = -1;
         }
 
         const data = this.contentImageData.data;
 
         // Fill background
-        fillBackground(data, displayWidth, 0, displayHeight, this.bgR, this.bgG, this.bgB);
+        fillBackground(data, bufferWidth, 0, bufferHeight, this.bgR, this.bgG, this.bgB);
 
         // Render visible lines
         const atlas = this.charAtlas;
         for (let i = 0; i < renderCount; i++) {
             const lineIdx = startLine + i;
             if (lineIdx >= this.cachedSegments.length) break;
-            const yOffset = i * LINE_HEIGHT_PX;
+            const yOffset = i * scaledLineHeight;
             renderLineToImageData(
                 lines[lineIdx],
                 this.cachedSegments[lineIdx],
                 atlas,
                 data as Uint8ClampedArray,
-                displayWidth,
+                bufferWidth,
                 yOffset,
                 this.bgR, this.bgG, this.bgB,
-                MINIMAP_WIDTH
+                MINIMAP_WIDTH,
+                this.currentScale
             );
         }
 
@@ -425,12 +455,16 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         const displayHeight = canvas.clientHeight;
         if (displayWidth === 0 || displayHeight === 0) return;
 
-        canvas.width = displayWidth;
-        canvas.height = displayHeight;
+        const dpr = this.currentDpr;
+        canvas.width = Math.floor(displayWidth * dpr);
+        canvas.height = Math.floor(displayHeight * dpr);
+        canvas.style.width = `${displayWidth}px`;
+        canvas.style.height = `${displayHeight}px`;
 
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
+        ctx.scale(dpr, dpr);
         ctx.clearRect(0, 0, displayWidth, displayHeight);
 
         const totalLines = this.logLines().length;
@@ -486,11 +520,16 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         const height = canvas.clientHeight;
         if (width === 0 || height === 0) return;
 
-        canvas.width = width;
-        canvas.height = height;
+        const dpr = this.currentDpr;
+        canvas.width = Math.floor(width * dpr);
+        canvas.height = Math.floor(height * dpr);
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
 
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
+
+        ctx.scale(dpr, dpr);
 
         // Track background
         ctx.fillStyle = this.scrollbarTrackColor;
