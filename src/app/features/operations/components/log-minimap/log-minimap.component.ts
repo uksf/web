@@ -18,34 +18,45 @@ const SCROLLBAR_TRACK_RADIUS = 4;
 const SEARCH_MARKER_COLOR = 'rgba(255, 200, 0, 0.5)';
 const SEARCH_MARKER_ACTIVE_COLOR = 'rgba(255, 200, 0, 0.9)';
 
-/** Compute which line the minimap content window starts at (proportional scrolling) */
-export function computeStartLine(
-    scrollTop: number, maxScroll: number, totalLines: number, visibleLines: number, itemSize: number
-): number {
-    if (totalLines <= visibleLines) return 0;
-    if (maxScroll <= 0) return 0;
-
-    const scrollFraction = scrollTop / maxScroll;
-    const maxStartLine = totalLines - visibleLines;
-    return Math.round(scrollFraction * maxStartLine);
-}
-
-/** Calculate viewport slider position and height on the overlay canvas */
-export function computeSlider(
+/**
+ * VS Code-style minimap layout computation.
+ *
+ * Computes slider position first, then derives the content start line from the
+ * slider position. This ensures the slider always overlays the correct content,
+ * avoiding the drift that occurs when slider and content are computed independently.
+ *
+ * Key formula (from VS Code minimap.ts):
+ *   sliderTop = scrollTop × (minimapHeight - sliderHeight) / (scrollHeight - viewportHeight)
+ *   contentStartLine = viewportFirstLine - floor(sliderTop / minimapLineHeight)
+ */
+export function computeMinimapLayout(
     scrollTop: number, viewportSize: number, totalHeight: number,
-    canvasHeight: number, startLine: number, totalLines: number, visibleLines: number
-): { top: number; height: number } {
-    if (totalHeight <= 0 || totalLines <= 0) return { top: 0, height: canvasHeight };
+    canvasHeight: number, totalLines: number, itemSize: number
+): { startLine: number; visibleLines: number; sliderTop: number; sliderHeight: number } {
+    const visibleLines = Math.floor(canvasHeight / LINE_HEIGHT_PX);
 
-    const vpFraction = viewportSize / totalHeight;
-    const sliderHeight = Math.max(Math.round(vpFraction * canvasHeight), 20);
+    if (totalHeight <= 0 || totalLines <= 0) {
+        return { startLine: 0, visibleLines, sliderTop: 0, sliderHeight: canvasHeight };
+    }
 
+    // 1. Compute slider dimensions (VS Code: sliderHeight = viewportHeight² / scrollHeight)
+    const sliderHeight = Math.max(Math.round((viewportSize / totalHeight) * canvasHeight), 20);
+    const maxSliderTop = Math.max(0, canvasHeight - sliderHeight);
+
+    // 2. Compute slider position proportional to scroll
     const maxScroll = totalHeight - viewportSize;
-    const maxSliderTop = canvasHeight - sliderHeight;
     const scrollFraction = maxScroll > 0 ? scrollTop / maxScroll : 0;
-    const top = Math.round(scrollFraction * maxSliderTop);
+    const sliderTop = Math.round(scrollFraction * maxSliderTop);
+    const clampedSliderTop = Math.max(0, Math.min(sliderTop, maxSliderTop));
 
-    return { top: Math.max(0, Math.min(top, maxSliderTop)), height: sliderHeight };
+    // 3. Derive content start line from slider position (VS Code approach)
+    //    The viewport's first line should appear at the slider's top position in the minimap.
+    //    contentStartLine = viewportFirstLine - (sliderTop / LINE_HEIGHT_PX)
+    const viewportFirstLine = Math.floor(scrollTop / itemSize);
+    const linesAboveSlider = Math.floor(clampedSliderTop / LINE_HEIGHT_PX);
+    const startLine = Math.max(0, Math.min(viewportFirstLine - linesAboveSlider, totalLines - visibleLines));
+
+    return { startLine, visibleLines, sliderTop: clampedSliderTop, sliderHeight };
 }
 
 @Component({
@@ -241,16 +252,15 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         const y = event.clientY - rect.top;
         const canvasHeight = canvas.clientHeight;
 
-        const { startLine, visibleLines } = this.getMinimapWindow(canvasHeight);
-        const slider = this.getSlider(canvasHeight);
+        const layout = this.getLayout(canvasHeight);
 
-        if (y >= slider.top && y <= slider.top + slider.height) {
+        if (y >= layout.sliderTop && y <= layout.sliderTop + layout.sliderHeight) {
             this.isDragging = true;
             this.dragStartY = y;
             this.dragStartOffset = this.viewportOffset();
         } else {
             // Click on minimap background → scroll to that line
-            const clickedViewLine = startLine + Math.floor(y / LINE_HEIGHT_PX);
+            const clickedViewLine = layout.startLine + Math.floor(y / LINE_HEIGHT_PX);
             const proj = this.projection;
             const totalViewLines = proj?.viewLineCount ?? this.logLines().length;
             const clampedViewLine = Math.max(0, Math.min(clickedViewLine, totalViewLines - 1));
@@ -313,8 +323,8 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         const rect = canvas.getBoundingClientRect();
         const y = event.clientY - rect.top;
         const deltaY = y - this.dragStartY;
-        const slider = this.getSlider(canvasHeight);
-        const maxSliderTravel = canvasHeight - slider.height;
+        const layout = this.getLayout(canvasHeight);
+        const maxSliderTravel = canvasHeight - layout.sliderHeight;
         if (maxSliderTravel <= 0) return;
 
         const maxScroll = this.totalHeight() - this.viewportSize();
@@ -376,22 +386,11 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         });
     }
 
-    private getMinimapWindow(canvasHeight: number): { startLine: number; visibleLines: number } {
+    private getLayout(canvasHeight: number) {
         const totalLines = this.projection?.viewLineCount ?? this.logLines().length;
-        const visibleLines = Math.floor(canvasHeight / LINE_HEIGHT_PX);
-        const maxScroll = this.totalHeight() - this.viewportSize();
-        const startLine = computeStartLine(
-            this.viewportOffset(), maxScroll, totalLines, visibleLines, this.itemSize()
-        );
-        return { startLine, visibleLines };
-    }
-
-    private getSlider(canvasHeight: number): { top: number; height: number } {
-        const { startLine, visibleLines } = this.getMinimapWindow(canvasHeight);
-        const totalLines = this.projection?.viewLineCount ?? this.logLines().length;
-        return computeSlider(
+        return computeMinimapLayout(
             this.viewportOffset(), this.viewportSize(), this.totalHeight(),
-            canvasHeight, startLine, totalLines, visibleLines
+            canvasHeight, totalLines, this.itemSize()
         );
     }
 
@@ -435,12 +434,9 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         const atlas = this.charAtlas;
         const scaledLineHeight = LINE_HEIGHT_PX * scale;
         const totalViewLines = proj?.viewLineCount ?? lines.length;
-        // Use display height for visible line count (consistent with overlay/slider calculations)
-        const visibleLines = Math.floor(displayHeight / LINE_HEIGHT_PX);
-        const maxScroll = this.totalHeight() - this.viewportSize();
-        const startLine = computeStartLine(
-            this.viewportOffset(), maxScroll, totalViewLines, visibleLines, this.itemSize()
-        );
+        const layout = this.getLayout(displayHeight);
+        const startLine = layout.startLine;
+        const visibleLines = layout.visibleLines;
 
         const endLine = Math.min(startLine + visibleLines, totalViewLines);
         const renderCount = endLine - startLine;
@@ -511,22 +507,17 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         const totalLines = this.projection?.viewLineCount ?? this.logLines().length;
         if (totalLines === 0) return;
 
-        const visibleLines = Math.floor(displayHeight / LINE_HEIGHT_PX);
-        const maxScroll = this.totalHeight() - this.viewportSize();
-        const startLine = computeStartLine(
-            this.viewportOffset(), maxScroll, totalLines, visibleLines, this.itemSize()
-        );
+        const layout = this.getLayout(displayHeight);
 
         // Draw search highlights on visible minimap lines
-        this.drawSearchMarkers(ctx, displayWidth, startLine, visibleLines, totalLines);
+        this.drawSearchMarkers(ctx, displayWidth, layout.startLine, layout.visibleLines, totalLines);
 
         // Draw viewport slider
-        const slider = this.getSlider(displayHeight);
         ctx.fillStyle = this.isDragging ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.1)';
-        ctx.fillRect(0, slider.top, displayWidth, slider.height);
+        ctx.fillRect(0, layout.sliderTop, displayWidth, layout.sliderHeight);
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
         ctx.lineWidth = 1;
-        ctx.strokeRect(0.5, slider.top + 0.5, displayWidth - 1, slider.height - 1);
+        ctx.strokeRect(0.5, layout.sliderTop + 0.5, displayWidth - 1, layout.sliderHeight - 1);
     }
 
     private drawSearchMarkers(
@@ -587,19 +578,21 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         this.roundRect(ctx, 0, thumb.top, width, thumb.height, SCROLLBAR_THUMB_RADIUS);
         ctx.fill();
 
-        // Search markers across full scrollbar height
+        // Search markers positioned relative to scroll height (accounts for bottom padding)
         const results = this.searchResults();
-        const totalLines = this.logLines().length;
-        const totalViewLines = this.projection?.viewLineCount ?? totalLines;
-        if (results.length > 0 && totalViewLines > 0) {
+        const totalH = this.totalHeight();
+        if (results.length > 0 && totalH > 0) {
             const proj = this.projection;
+            const iSize = this.itemSize();
             const activeIdx = this.currentSearchIndex();
             for (let i = 0; i < results.length; i++) {
                 const logLineIdx = results[i].lineIndex;
                 const viewLineIdx = proj ? proj.logLineToViewLine(logLineIdx) : logLineIdx;
                 const viewLineCount = proj ? proj.getViewLineCountForLogLine(logLineIdx) : 1;
-                const y = Math.round((viewLineIdx / totalViewLines) * height);
-                const markerH = Math.max(2, Math.round((viewLineCount / totalViewLines) * height));
+                // Map line's scroll offset to scrollbar position
+                const lineScrollOffset = viewLineIdx * iSize;
+                const y = Math.round((lineScrollOffset / totalH) * height);
+                const markerH = Math.max(2, Math.round((viewLineCount * iSize / totalH) * height));
                 const isActive = i === activeIdx;
                 ctx.fillStyle = isActive ? SEARCH_MARKER_ACTIVE_COLOR : SEARCH_MARKER_COLOR;
                 ctx.fillRect(0, y, width, markerH);
