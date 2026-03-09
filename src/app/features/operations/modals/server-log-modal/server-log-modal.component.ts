@@ -16,10 +16,16 @@ import { GameServersService } from '../../services/game-servers.service';
 import { GameServer, RptLogSource, RptLogSearchResult } from '../../models/game-server';
 import { highlightRptLine } from '../../utils/rpt-syntax-highlighter';
 import { LogMinimapComponent } from '../../components/log-minimap/log-minimap.component';
+import { createLineProjection, type LineProjection } from '../../components/log-minimap/line-projection';
 
 interface ServerLogDialogData {
     server: GameServer;
     scrollToLine?: number;
+}
+
+interface ViewLineEntry {
+    logLineIndex: number;
+    subLineIndex: number;
 }
 
 const ITEM_SIZE = 20;
@@ -52,6 +58,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     activeSource = 'Server';
     logLines: string[] = [];
     highlightedLines: SafeHtml[] = [];
+    viewLineEntries: ViewLineEntry[] = [];
     isLoading = true;
     tailEnabled = false;
     searchQuery = '';
@@ -72,6 +79,10 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     private metricsRafId: number | null = null;
     private pendingScrollToBottom = false;
     private programmaticScroll = false;
+    private projection: LineProjection | null = null;
+    private charWidthPx = 0;
+    private charsPerRow = 0;
+    private resizeObserver: ResizeObserver | null = null;
 
     @HostListener('window:keydown', ['$event'])
     handleKeydown(event: KeyboardEvent) {
@@ -94,16 +105,38 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
                     this.updateViewportMetrics();
                 });
             });
-            this.scheduleMetricsUpdate();
-            if (this.pendingScrollToBottom) {
-                this.pendingScrollToBottom = false;
-                setTimeout(() => this.scrollToBottom());
-            } else if (this.pendingScrollToLine !== undefined) {
-                const line = this.pendingScrollToLine;
-                this.pendingScrollToLine = undefined;
-                this.linkedLineIndex = Math.max(0, line - 1);
-                setTimeout(() => this.scrollToLineIndex(line));
+
+            // Measure char width and content width after first render
+            if (!this.charWidthPx) {
+                this.measureCharWidth();
             }
+            this.resizeObserver?.disconnect();
+            if (typeof ResizeObserver !== 'undefined') {
+                this.resizeObserver = new ResizeObserver(() => {
+                    this.ngZone.run(() => {
+                        this.updateContentWidth();
+                        this.rebuildViewLines();
+                        this.scheduleMetricsUpdate();
+                    });
+                });
+                this.resizeObserver.observe(vp.elementRef.nativeElement);
+            }
+
+            this.scheduleMetricsUpdate();
+            // Defer initial scroll + content width measurement to after first render
+            setTimeout(() => {
+                this.updateContentWidth();
+                this.rebuildViewLines();
+                if (this.pendingScrollToBottom) {
+                    this.pendingScrollToBottom = false;
+                    setTimeout(() => this.scrollToBottom());
+                } else if (this.pendingScrollToLine !== undefined) {
+                    const line = this.pendingScrollToLine;
+                    this.pendingScrollToLine = undefined;
+                    this.linkedLineIndex = Math.max(0, line - 1);
+                    setTimeout(() => this.scrollToLineIndex(line));
+                }
+            });
         }
     }
 
@@ -169,6 +202,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         } else {
             this.highlightedLines.push(...baseSafe);
         }
+        this.rebuildViewLines();
         if (isComplete) {
             this.isLoading = false;
             if (this.searchQuery.trim()) {
@@ -210,6 +244,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         } else {
             this.highlightedLines.push(...baseSafe);
         }
+        this.rebuildViewLines();
         if (this.tailEnabled) {
             setTimeout(() => this.scrollToBottom());
         }
@@ -223,6 +258,8 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         await this.serversHub.invoke('UnsubscribeFromLog', this.server.id, this.activeSource);
         this.logLines = [];
         this.highlightedLines = [];
+        this.viewLineEntries = [];
+        this.projection = null;
         this.baseHtml = [];
         this.baseHighlightedLines = [];
         this.isLoading = true;
@@ -316,8 +353,9 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (!this.viewport) return;
         this.tailEnabled = false;
         this.programmaticScroll = true;
+        const viewLineIndex = this.projection ? this.projection.logLineToViewLine(lineIndex) : lineIndex;
         const viewportSize = this.viewport.getViewportSize();
-        const offset = lineIndex * ITEM_SIZE;
+        const offset = viewLineIndex * ITEM_SIZE;
         const centeredOffset = Math.max(0, offset - (viewportSize / 2) + (ITEM_SIZE / 2));
         this.viewport.scrollToOffset(centeredOffset);
     }
@@ -394,6 +432,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (this.metricsRafId !== null) {
             cancelAnimationFrame(this.metricsRafId);
         }
+        this.resizeObserver?.disconnect();
         this.serversHub.off('ReceiveLogContent', this.onReceiveLogContent);
         this.serversHub.off('ReceiveLogAppend', this.onReceiveLogAppend);
         this.serversHub.invoke('UnsubscribeFromLog', this.server.id, this.activeSource).catch(() => {});
@@ -419,15 +458,52 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         this.viewportScrollOffset = el.scrollTop;
         this.viewportVisibleSize = this.viewport.getViewportSize();
         this.totalScrollHeight = el.scrollHeight;
+    }
 
-        // Measure actual content width from a rendered line-content element
-        const lineContent = el.querySelector?.('.line-content') as HTMLElement | null;
-        if (lineContent) {
-            this.logContentWidth = lineContent.clientWidth;
-        } else {
-            // Fallback: viewport minus approximate gutter
-            this.logContentWidth = Math.max(0, el.clientWidth - 77);
+    private measureCharWidth(): void {
+        if (typeof document === 'undefined') return;
+        try {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+            ctx.font = '13px Cascadia Code, Fira Code, Consolas, Monaco, monospace';
+            this.charWidthPx = ctx.measureText('x').width;
+        } catch {
+            // Canvas not available in test environment
         }
+    }
+
+    private updateContentWidth(): void {
+        if (!this.viewport) return;
+        const el = this.viewport.elementRef.nativeElement;
+        // Measure from a rendered clip container, or estimate from viewport width
+        const clipEl = el.querySelector?.('.line-content-clip') as HTMLElement | null;
+        if (clipEl && clipEl.clientWidth > 0) {
+            this.logContentWidth = clipEl.clientWidth;
+        } else {
+            // Fallback: viewport width minus line-number gutter (60px min-width + 8px padding + 1px border)
+            this.logContentWidth = Math.max(0, el.clientWidth - 69);
+        }
+        if (this.charWidthPx > 0 && this.logContentWidth > 0) {
+            this.charsPerRow = Math.max(1, Math.floor(this.logContentWidth / this.charWidthPx));
+        }
+    }
+
+    private rebuildViewLines(): void {
+        if (this.charsPerRow <= 0) {
+            // Not yet measured — create 1:1 entries (no wrapping)
+            this.viewLineEntries = this.logLines.map((_, i) => ({ logLineIndex: i, subLineIndex: 0 }));
+            this.projection = null;
+            return;
+        }
+        this.projection = createLineProjection(this.logLines, this.charsPerRow);
+        const entries: ViewLineEntry[] = new Array(this.projection.viewLineCount);
+        for (let v = 0; v < this.projection.viewLineCount; v++) {
+            const { logLineIndex } = this.projection.getViewLine(v);
+            const subLineIndex = v - this.projection.logLineToViewLine(logLineIndex);
+            entries[v] = { logLineIndex, subLineIndex };
+        }
+        this.viewLineEntries = entries;
     }
 
     private addSearchHighlights(html: string, query: string): string {
@@ -458,9 +534,10 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     private scrollToLineIndex(lineNumber: number): void {
         if (!this.viewport) return;
         this.programmaticScroll = true;
-        const index = Math.max(0, lineNumber - 1);
+        const logIndex = Math.max(0, lineNumber - 1);
+        const viewLineIndex = this.projection ? this.projection.logLineToViewLine(logIndex) : logIndex;
         const viewportSize = this.viewport.getViewportSize();
-        const offset = index * ITEM_SIZE;
+        const offset = viewLineIndex * ITEM_SIZE;
         const centeredOffset = Math.max(0, offset - (viewportSize / 2) + (ITEM_SIZE / 2));
         this.viewport.scrollToOffset(centeredOffset);
     }
@@ -477,9 +554,10 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
             return;
         }
         this.programmaticScroll = true;
-        const lineIndex = this.searchResults[this.currentSearchIndex].lineIndex;
+        const logLineIndex = this.searchResults[this.currentSearchIndex].lineIndex;
+        const viewLineIndex = this.projection ? this.projection.logLineToViewLine(logLineIndex) : logLineIndex;
         const viewportSize = this.viewport.getViewportSize();
-        const offset = lineIndex * ITEM_SIZE;
+        const offset = viewLineIndex * ITEM_SIZE;
         const centeredOffset = Math.max(0, offset - (viewportSize / 2) + (ITEM_SIZE / 2));
         this.viewport.scrollToOffset(centeredOffset);
     }

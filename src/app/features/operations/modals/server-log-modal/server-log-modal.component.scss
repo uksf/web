@@ -120,6 +120,7 @@ button.tail-active {
 
 .log-line {
     display: flex;
+    height: 20px;
     font-family: 'Cascadia Code', 'Fira Code', 'Consolas', 'Monaco', monospace;
     font-size: 13px;
     line-height: 20px;
@@ -155,11 +156,17 @@ button.tail-active {
     }
 }
 
-.line-content {
+.line-content-clip {
+    overflow: hidden;
+    height: 20px;
+    flex: 1;
     padding-left: v.$spacing-8px;
+}
+
+.line-content {
+    display: block;
     white-space: pre-wrap;
     word-break: break-all;
-    flex: 1;
 }
 
 .log-loading,

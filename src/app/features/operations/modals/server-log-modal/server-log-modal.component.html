@@ -52,14 +52,20 @@
     } @else {
         <div class="log-viewport-wrapper">
             <cdk-virtual-scroll-viewport [itemSize]="20" class="log-viewport">
-                <div *cdkVirtualFor="let line of highlightedLines; let i = index; trackBy: trackByIndex"
+                <div *cdkVirtualFor="let vl of viewLineEntries; trackBy: trackByIndex"
                      class="log-line"
-                     [class.search-highlight]="isSearchMatch(i)"
-                     [class.search-active]="isActiveSearchMatch(i)"
-                     [class.linked-line]="i === linkedLineIndex"
-                     (click)="onLineClick(i)">
-                    <span class="line-number" (click)="copyLineLink($event, i)" matTooltip="Copy link to line">{{ i + 1 }}</span>
-                    <span class="line-content" [innerHTML]="line"></span>
+                     [class.search-highlight]="isSearchMatch(vl.logLineIndex)"
+                     [class.search-active]="isActiveSearchMatch(vl.logLineIndex)"
+                     [class.linked-line]="vl.logLineIndex === linkedLineIndex"
+                     (click)="onLineClick(vl.logLineIndex)">
+                    <span class="line-number"
+                          (click)="copyLineLink($event, vl.logLineIndex)"
+                          matTooltip="Copy link to line">@if (vl.subLineIndex === 0) {{{ vl.logLineIndex + 1 }}}</span>
+                    <span class="line-content-clip">
+                        <span class="line-content"
+                              [innerHTML]="highlightedLines[vl.logLineIndex]"
+                              [style.margin-top.px]="-(vl.subLineIndex * 20)"></span>
+                    </span>
                 </div>
             </cdk-virtual-scroll-viewport>
             <app-log-minimap
