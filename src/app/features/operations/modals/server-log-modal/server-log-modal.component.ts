@@ -420,9 +420,14 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         this.viewportVisibleSize = this.viewport.getViewportSize();
         this.totalScrollHeight = el.scrollHeight;
 
-        // Content area width: viewport minus line-number gutter (60px + 8px padding + 1px border) and content padding (8px)
-        const viewportWidth = el.clientWidth;
-        this.logContentWidth = Math.max(0, viewportWidth - 69 - 8);
+        // Measure actual content width from a rendered line-content element
+        const lineContent = el.querySelector?.('.line-content') as HTMLElement | null;
+        if (lineContent) {
+            this.logContentWidth = lineContent.clientWidth;
+        } else {
+            // Fallback: viewport minus approximate gutter
+            this.logContentWidth = Math.max(0, el.clientWidth - 77);
+        }
     }
 
     private addSearchHighlights(html: string, query: string): string {

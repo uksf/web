@@ -435,7 +435,8 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         const atlas = this.charAtlas;
         const scaledLineHeight = LINE_HEIGHT_PX * scale;
         const totalViewLines = proj?.viewLineCount ?? lines.length;
-        const visibleLines = Math.floor(bufferHeight / scaledLineHeight);
+        // Use display height for visible line count (consistent with overlay/slider calculations)
+        const visibleLines = Math.floor(displayHeight / LINE_HEIGHT_PX);
         const maxScroll = this.totalHeight() - this.viewportSize();
         const startLine = computeStartLine(
             this.viewportOffset(), maxScroll, totalViewLines, visibleLines, this.itemSize()
@@ -542,14 +543,16 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         for (let i = 0; i < results.length; i++) {
             const logLineIdx = results[i].lineIndex;
             const viewLineIdx = proj ? proj.logLineToViewLine(logLineIdx) : logLineIdx;
-            if (viewLineIdx < startLine || viewLineIdx >= endLine) continue;
+            const viewLineCount = proj ? proj.getViewLineCountForLogLine(logLineIdx) : 1;
+            if (viewLineIdx + viewLineCount <= startLine || viewLineIdx >= endLine) continue;
 
             const y = (viewLineIdx - startLine) * LINE_HEIGHT_PX;
+            const markerHeight = viewLineCount * LINE_HEIGHT_PX;
             const isActive = i === activeIdx;
 
             ctx.fillStyle = isActive ? RPT_COLORS.searchActive : RPT_COLORS.search;
             ctx.globalAlpha = isActive ? 0.8 : 0.5;
-            ctx.fillRect(0, y, width, LINE_HEIGHT_PX);
+            ctx.fillRect(0, y, width, markerHeight);
         }
         ctx.globalAlpha = 1;
     }
@@ -594,10 +597,12 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
             for (let i = 0; i < results.length; i++) {
                 const logLineIdx = results[i].lineIndex;
                 const viewLineIdx = proj ? proj.logLineToViewLine(logLineIdx) : logLineIdx;
+                const viewLineCount = proj ? proj.getViewLineCountForLogLine(logLineIdx) : 1;
                 const y = Math.round((viewLineIdx / totalViewLines) * height);
+                const markerH = Math.max(2, Math.round((viewLineCount / totalViewLines) * height));
                 const isActive = i === activeIdx;
                 ctx.fillStyle = isActive ? SEARCH_MARKER_ACTIVE_COLOR : SEARCH_MARKER_COLOR;
-                ctx.fillRect(0, y, width, 2);
+                ctx.fillRect(0, y, width, markerH);
             }
         }
     }
