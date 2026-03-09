@@ -63,8 +63,11 @@ export function computeMinimapLayout(
 
     // 4. Derive startLine from slider position, then re-derive sliderTop from startLine
     //    to guarantee pixel-perfect alignment (VS Code's sliderTopAligned approach).
+    //    Use totalHeight (not contentHeight) for maxStartLine so the minimap can show
+    //    empty space matching the viewport's bottom padding.
     const exactLinesAbove = rawSliderTop / LINE_HEIGHT_PX;
-    const maxStartLine = Math.max(0, totalLines - visibleLines);
+    const totalScrollLines = Math.ceil(totalHeight / itemSize);
+    const maxStartLine = Math.max(0, totalScrollLines - visibleLines);
     const startLine = Math.max(0, Math.min(Math.round(viewportFirstLine - exactLinesAbove), maxStartLine));
     const sliderTop = Math.max(0, Math.min((viewportFirstLine - startLine) * LINE_HEIGHT_PX, maxSliderTop));
 
@@ -271,21 +274,18 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
             this.dragStartY = y;
             this.dragStartOffset = this.viewportOffset();
         } else {
-            // Click on minimap background → scroll to that line
-            const clickedViewLine = layout.startLine + Math.floor(y / LINE_HEIGHT_PX);
-            const proj = this.projection;
-            const totalViewLines = proj?.viewLineCount ?? this.logLines().length;
-            const clampedViewLine = Math.max(0, Math.min(clickedViewLine, totalViewLines - 1));
-            const clampedLine = proj ? proj.getViewLine(clampedViewLine).logLineIndex : clampedViewLine;
-            this.scrollToLine.emit(clampedLine);
+            // Click on minimap background → center slider on click position
+            const targetSliderTop = Math.max(0, Math.min(y - layout.sliderHeight / 2, canvasHeight - layout.sliderHeight));
+            const maxSliderTop = Math.max(0, canvasHeight - layout.sliderHeight);
+            const maxScroll = this.totalHeight() - this.viewportSize();
+            const newOffset = maxSliderTop > 0
+                ? Math.max(0, Math.min((targetSliderTop / maxSliderTop) * maxScroll, maxScroll))
+                : 0;
+            this.scrollToOffset.emit(newOffset);
 
-            // Start dragging from the new position, using the same centered offset
-            // the parent applies when scrolling to a line
             this.isDragging = true;
             this.dragStartY = y;
-            const lineOffset = clampedLine * this.itemSize();
-            const centeredOffset = Math.max(0, lineOffset - this.viewportSize() / 2 + this.itemSize() / 2);
-            this.dragStartOffset = centeredOffset;
+            this.dragStartOffset = newOffset;
         }
         this.setupDocumentListeners();
     }

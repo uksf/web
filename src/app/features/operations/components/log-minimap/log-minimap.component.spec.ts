@@ -71,11 +71,26 @@ describe('LogMinimapComponent', () => {
             expect(result.startLine).toBeGreaterThanOrEqual(0);
         });
 
-        it('should not exceed max startLine', () => {
+        it('should not exceed max startLine (includes padding lines)', () => {
             const scrollTop = totalHeight - viewportSize;
             const visibleLines = Math.floor(canvasHeight / LINE_HEIGHT_PX);
+            const totalScrollLines = Math.ceil(totalHeight / itemSize);
             const result = computeMinimapLayout(scrollTop, viewportSize, totalHeight, canvasHeight, totalLines, itemSize);
-            expect(result.startLine).toBeLessThanOrEqual(totalLines - visibleLines);
+            expect(result.startLine).toBeLessThanOrEqual(totalScrollLines - visibleLines);
+        });
+
+        it('should allow startLine beyond content lines to show bottom padding', () => {
+            // With 50000 lines + padding, when scrolled to bottom the minimap
+            // should show empty space below the last content line
+            const bigTotalLines = 50000;
+            const bigContentHeight = bigTotalLines * itemSize;
+            const bigTotalHeight = bigContentHeight + 525; // 42vh padding
+            const bigCanvasHeight = 700;
+            const scrollTop = bigTotalHeight - viewportSize;
+            const result = computeMinimapLayout(scrollTop, viewportSize, bigTotalHeight, bigCanvasHeight, bigTotalLines, itemSize);
+            const visibleLines = Math.floor(bigCanvasHeight / LINE_HEIGHT_PX);
+            // startLine should be beyond totalLines - visibleLines (into padding territory)
+            expect(result.startLine).toBeGreaterThan(bigTotalLines - visibleLines);
         });
 
         it('should use real scroll position not clamped to content height', () => {
