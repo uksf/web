@@ -128,11 +128,11 @@ button.tail-active {
     cursor: text;
 
     &.search-highlight {
-        background: rgba(255, 255, 255, 0.06);
+        background: rgba(255, 255, 255, 0.03);
     }
 
     &.search-active {
-        background: rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.05);
     }
 
     &.linked-line {
@@ -193,13 +193,13 @@ button.tail-active {
     .rpt-mission { color: #85e89d; }
 
     mark.search-term {
-        background: rgba(255, 200, 0, 0.25);
+        background: rgba(255, 200, 0, 0.35);
         color: inherit;
         padding: 0;
         border-radius: 2px;
     }
 
     .search-active mark.search-term {
-        background: rgba(255, 200, 0, 0.5);
+        background: rgba(255, 200, 0, 0.6);
     }
 }
