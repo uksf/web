@@ -63,6 +63,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     viewportScrollOffset = 0;
     viewportVisibleSize = 0;
     totalScrollHeight = 0;
+    logContentWidth = 0;
     linkedLineIndex = -1;
 
     private baseHtml: string[] = [];
@@ -418,6 +419,10 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         this.viewportScrollOffset = el.scrollTop;
         this.viewportVisibleSize = this.viewport.getViewportSize();
         this.totalScrollHeight = el.scrollHeight;
+
+        // Content area width: viewport minus line-number gutter (60px + 8px padding + 1px border) and content padding (8px)
+        const viewportWidth = el.clientWidth;
+        this.logContentWidth = Math.max(0, viewportWidth - 69 - 8);
     }
 
     private addSearchHighlights(html: string, query: string): string {
