@@ -47,13 +47,8 @@ export class ModpackBuildProcessService {
             });
     }
 
-    getBuildData(id: string, callback: (arg0: ModpackBuild) => void) {
-        // get request for build
-        this.httpClient.get(this.urls.apiUrl + `/modpack/builds/${id}`).subscribe({
-            next: (build: ModpackBuild) => {
-                callback(build);
-            }
-        });
+    getBuildData(id: string) {
+        return this.httpClient.get<ModpackBuild>(this.urls.apiUrl + `/modpack/builds/${id}`);
     }
 
     newBuild(callback: () => void) {

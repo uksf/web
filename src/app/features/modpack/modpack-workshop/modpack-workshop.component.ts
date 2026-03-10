@@ -60,7 +60,7 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
     getData(callback: () => void = null) {
         this.workshopService
             .getMods()
-            .pipe(first())
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (mods: WorkshopMod[]) => {
                     this.mods = mods;
@@ -75,7 +75,7 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
     getDataForMod(id: string) {
         this.workshopService
             .getMod(id)
-            .pipe(first())
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (mod: WorkshopMod) => {
                     const index: number = this.mods.findIndex((x: WorkshopMod) => x.id === mod.id);
@@ -92,7 +92,7 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
     getModUpdatedDate(mod: WorkshopMod) {
         this.workshopService
             .getModUpdatedDate(mod.steamId)
-            .pipe(first())
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (updatedDateResponse) => {
                     mod.updatedDate = updatedDateResponse.updatedDate;

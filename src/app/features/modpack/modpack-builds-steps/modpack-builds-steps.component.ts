@@ -13,7 +13,7 @@ import { ModpackBuildProcessService } from '../modpackBuildProcess.service';
 import { ModpackBuildStep } from '../models/modpack-build-step';
 import { nextFrame } from '@app/shared/services/helper.service';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { switchMap, takeUntil } from 'rxjs/operators';
 import { ThemeEmitterComponent as ThemeEmitterComponent_1 } from '../../../shared/components/elements/theme-emitter/theme-emitter.component';
 import { NgClass } from '@angular/common';
 import { FlexFillerComponent } from '../../../shared/components/elements/flex-filler/flex-filler.component';
@@ -92,24 +92,32 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
     }
 
     connect() {
-        this.modpackBuildProcessService.getBuildData(this.build.id, (newBuild: ModpackBuild) => {
-            this.build = newBuild;
-            this.checkRoute();
-            this.chooseStep();
+        this.modpackBuildProcessService
+            .getBuildData(this.build.id)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (newBuild) => {
+                    this.build = newBuild;
+                    this.checkRoute();
+                    this.chooseStep();
 
-            if (!this.build.finished) {
-                this.hubConnection = this.hubFactory.connect(`modpack?buildId=${this.build.id}`);
-                this.hubConnection.on('ReceiveBuildStep', this.onReceiveBuildStep);
-                this.hubConnection.reconnected$.pipe(takeUntil(this.destroy$)).subscribe({
-                    next: () => {
-                        this.modpackBuildProcessService.getBuildData(this.build.id, (reconnectBuild: ModpackBuild) => {
-                            this.build = reconnectBuild;
-                            this.chooseStep();
-                        });
+                    if (!this.build.finished) {
+                        this.hubConnection = this.hubFactory.connect(`modpack?buildId=${this.build.id}`);
+                        this.hubConnection.on('ReceiveBuildStep', this.onReceiveBuildStep);
+                        this.hubConnection.reconnected$
+                            .pipe(
+                                switchMap(() => this.modpackBuildProcessService.getBuildData(this.build.id)),
+                                takeUntil(this.destroy$)
+                            )
+                            .subscribe({
+                                next: (reconnectBuild) => {
+                                    this.build = reconnectBuild;
+                                    this.chooseStep();
+                                }
+                            });
                     }
-                });
-            }
-        });
+                }
+            });
     }
 
     disconnect() {

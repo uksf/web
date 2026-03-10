@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy, inject } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { merge, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { ModpackRc } from './models/modpack-rc';
 import { ModpackBuild } from './models/modpack-build';
 import { HttpClient } from '@angular/common/http';
@@ -14,31 +14,41 @@ export class ModpackRcService implements OnDestroy {
 
     rcs: ModpackRc[] = [];
     private onReceiveRc: ((build: ModpackBuild) => void) | null = null;
-    private reconnectSubscription: Subscription | null = null;
+    private readonly disconnect$ = new Subject<void>();
 
     ngOnDestroy(): void {
         this.disconnect();
     }
 
-    connect(callback: () => void, newBuildCallback: (string) => void) {
-        this.getData(callback);
-
+    connect(callback: () => void, newBuildCallback: (version: string) => void) {
         this.modpackHub.connect();
         this.onReceiveRc = (build: ModpackBuild) => {
             this.patchBuild(build);
             newBuildCallback(build.version);
         };
         this.modpackHub.on('ReceiveReleaseCandidateBuild', this.onReceiveRc);
-        this.reconnectSubscription = this.modpackHub.reconnected$.subscribe({
-            next: () => {
-                this.getData(callback);
-            }
-        });
+
+        merge(of(undefined), this.modpackHub.reconnected$)
+            .pipe(
+                switchMap(() => this.httpClient.get<ModpackBuild[]>(this.urls.apiUrl + '/modpack/rcs')),
+                takeUntil(this.disconnect$)
+            )
+            .subscribe({
+                next: (builds) => {
+                    if (builds.length === 0) {
+                        this.rcs = [];
+                    }
+
+                    builds.forEach((build: ModpackBuild) => {
+                        this.patchBuild(build);
+                    });
+                    callback();
+                }
+            });
     }
 
     disconnect() {
-        this.reconnectSubscription?.unsubscribe();
-        this.reconnectSubscription = null;
+        this.disconnect$.next();
         if (this.onReceiveRc) {
             this.modpackHub.off('ReceiveReleaseCandidateBuild', this.onReceiveRc);
             this.onReceiveRc = null;
@@ -71,22 +81,5 @@ export class ModpackRcService implements OnDestroy {
 
         this.sortRcs();
         this.sortBuilds(rc);
-    }
-
-    getData(callback: () => void) {
-        // get request for all builds (groups by version)
-        this.httpClient.get(this.urls.apiUrl + '/modpack/rcs').subscribe({
-            next: (builds: ModpackBuild[]) => {
-                // this.rcs = builds;
-                if (builds.length === 0) {
-                    this.rcs = [];
-                }
-
-                builds.forEach((build: ModpackBuild) => {
-                    this.patchBuild(build);
-                });
-                callback();
-            }
-        });
     }
 }
