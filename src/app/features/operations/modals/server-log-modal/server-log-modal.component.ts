@@ -99,8 +99,13 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
                 this.ngZone.run(() => {
                     if (this.programmaticScroll) {
                         this.programmaticScroll = false;
-                    } else {
-                        this.tailEnabled = false;
+                    } else if (this.tailEnabled) {
+                        // Only disable tail if user scrolled away from the bottom
+                        const el = vp.elementRef.nativeElement;
+                        const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - ITEM_SIZE;
+                        if (!atBottom) {
+                            this.tailEnabled = false;
+                        }
                     }
                     this.updateViewportMetrics();
                 });
@@ -189,7 +194,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (serverId !== this.server.id || source !== this.activeSource) {
             return;
         }
-        this.logLines.push(...lines);
+        this.logLines = this.logLines.concat(lines);
         const htmls = lines.map(l => highlightRptLine(l));
         this.baseHtml.push(...htmls);
         const baseSafe = htmls.map(html => this.sanitizer.bypassSecurityTrustHtml(html));
@@ -231,7 +236,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (serverId !== this.server.id || source !== this.activeSource) {
             return;
         }
-        this.logLines.push(...lines);
+        this.logLines = this.logLines.concat(lines);
         const htmls = lines.map(l => highlightRptLine(l));
         this.baseHtml.push(...htmls);
         const baseSafe = htmls.map(html => this.sanitizer.bypassSecurityTrustHtml(html));
@@ -243,6 +248,9 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
             this.highlightedLines.push(...highlighted);
         } else {
             this.highlightedLines.push(...baseSafe);
+        }
+        if (this.tailEnabled) {
+            this.programmaticScroll = true;
         }
         this.rebuildViewLines();
         if (this.tailEnabled) {
