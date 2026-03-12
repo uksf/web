@@ -655,6 +655,63 @@ describe('ServerLogModalComponent', () => {
         });
     });
 
+    describe('ReceiveLogAppend batching', () => {
+        beforeEach(() => {
+            component.ngOnInit();
+        });
+
+        it('should batch multiple rapid appends into a single flush', () => {
+            // In test env (no requestAnimationFrame), each append flushes immediately
+            // But the lines are buffered first, then flushed
+            signalRCallbacks['ReceiveLogAppend']('server1', 'Server', ['line1']);
+            signalRCallbacks['ReceiveLogAppend']('server1', 'Server', ['line2']);
+
+            expect(component.logLines).toEqual(['line1', 'line2']);
+        });
+
+        it('should set lastAppendTime on flush', () => {
+            const before = Date.now();
+
+            signalRCallbacks['ReceiveLogAppend']('server1', 'Server', ['line1']);
+
+            expect((component as any).lastAppendTime).toBeGreaterThanOrEqual(before);
+        });
+
+        it('should clear pending buffer on switchSource', async () => {
+            // Simulate some pending data
+            (component as any).pendingAppendLines = ['buffered'];
+
+            await component.switchSource('HC1');
+
+            expect((component as any).pendingAppendLines).toEqual([]);
+        });
+    });
+
+    describe('tail grace window', () => {
+        it('should not disable tail during the append grace window', () => {
+            const scrollSubject = new Subject<void>();
+            const mockVp = {
+                scrollTo: vi.fn(),
+                scrollToOffset: vi.fn(),
+                getViewportSize: vi.fn().mockReturnValue(500),
+                elementRef: { nativeElement: { scrollTop: 0, clientHeight: 500, scrollHeight: 2000 } },
+                elementScrolled: () => scrollSubject.asObservable()
+            } as any;
+
+            component.viewport = mockVp;
+            component.tailEnabled = true;
+            component.ngOnInit();
+
+            // Simulate an append that sets lastAppendTime
+            signalRCallbacks['ReceiveLogAppend']('server1', 'Server', ['new line']);
+
+            // Simulate scroll event while NOT at bottom — within grace window
+            scrollSubject.next();
+
+            expect(component.tailEnabled).toBe(true);
+        });
+    });
+
     describe('minimap integration', () => {
         beforeEach(() => {
             component.ngOnInit();

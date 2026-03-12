@@ -83,6 +83,9 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     private charWidthPx = 0;
     private charsPerRow = 0;
     private resizeObserver: ResizeObserver | null = null;
+    private pendingAppendLines: string[] = [];
+    private appendRafId: number | null = null;
+    private lastAppendTime = 0;
 
     @HostListener('window:keydown', ['$event'])
     handleKeydown(event: KeyboardEvent) {
@@ -100,11 +103,16 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
                     if (this.programmaticScroll) {
                         this.programmaticScroll = false;
                     } else if (this.tailEnabled) {
-                        // Only disable tail if user scrolled away from the bottom
-                        const el = vp.elementRef.nativeElement;
-                        const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - ITEM_SIZE;
-                        if (!atBottom) {
-                            this.tailEnabled = false;
+                        // Don't disable tail if content was just appended — the scroll
+                        // event can race with new content changing scrollHeight
+                        if (Date.now() - this.lastAppendTime < 150) {
+                            // Within the append grace window — keep tail enabled
+                        } else {
+                            const el = vp.elementRef.nativeElement;
+                            const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - ITEM_SIZE;
+                            if (!atBottom) {
+                                this.tailEnabled = false;
+                            }
                         }
                     }
                     this.updateViewportMetrics();
@@ -236,6 +244,29 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (serverId !== this.server.id || source !== this.activeSource) {
             return;
         }
+        this.pendingAppendLines.push(...lines);
+        this.scheduleAppendFlush();
+    };
+
+    private scheduleAppendFlush(): void {
+        if (this.appendRafId !== null) return;
+        if (typeof requestAnimationFrame !== 'undefined') {
+            this.appendRafId = requestAnimationFrame(() => {
+                this.appendRafId = null;
+                this.ngZone.run(() => this.flushPendingAppends());
+            });
+        } else {
+            // Fallback for test environments without requestAnimationFrame
+            this.flushPendingAppends();
+        }
+    }
+
+    private flushPendingAppends(): void {
+        const lines = this.pendingAppendLines;
+        if (!lines.length) return;
+        this.pendingAppendLines = [];
+
+        this.lastAppendTime = Date.now();
         this.logLines = this.logLines.concat(lines);
         const htmls = lines.map(l => highlightRptLine(l));
         this.baseHtml.push(...htmls);
@@ -249,15 +280,13 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         } else {
             this.highlightedLines.push(...baseSafe);
         }
-        if (this.tailEnabled) {
-            this.programmaticScroll = true;
-        }
         this.rebuildViewLines();
         if (this.tailEnabled) {
-            setTimeout(() => this.scrollToBottom());
+            this.programmaticScroll = true;
+            this.scrollToBottom();
         }
         this.scheduleMetricsUpdate();
-    };
+    }
 
     async switchSource(sourceName: string): Promise<void> {
         if (!sourceName || sourceName === this.activeSource) {
@@ -270,6 +299,11 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         this.projection = null;
         this.baseHtml = [];
         this.baseHighlightedLines = [];
+        this.pendingAppendLines = [];
+        if (this.appendRafId !== null) {
+            cancelAnimationFrame(this.appendRafId);
+            this.appendRafId = null;
+        }
         this.isLoading = true;
         this.searchResults = [];
         this.searchMatchLines = new Set();
@@ -439,6 +473,9 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         this.searchDebounce.cancel();
         if (this.metricsRafId !== null) {
             cancelAnimationFrame(this.metricsRafId);
+        }
+        if (this.appendRafId !== null) {
+            cancelAnimationFrame(this.appendRafId);
         }
         this.resizeObserver?.disconnect();
         this.serversHub.off('ReceiveLogContent', this.onReceiveLogContent);
