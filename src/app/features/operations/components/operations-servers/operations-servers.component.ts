@@ -490,11 +490,7 @@ export class OperationsServersComponent extends DestroyableComponent implements 
             });
     }
 
-    kill(server, skip = true) {
-        if (skip) {
-            this.runKill(server);
-            return;
-        }
+    kill(server) {
         this.dialog
             .open(ConfirmationModalComponent, {
                 data: { message: `Are you sure you want to kill '${server.name}'? This could have unexpected effects on the server` }

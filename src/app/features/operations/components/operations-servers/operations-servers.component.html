@@ -157,7 +157,10 @@
                                                 @if (server.launchedBy && (server.status.started || server.status.running)) {
                                                 <span class="launched-by"><b>Launched by:</b> {{ server.launchedBy | displayName | async }}</span>
                                                 } @if (server.status.started || server.status.running) {
-                                                <button (click)="kill(server, true)" [disabled]="server.updating || isDisabled" color="primary" mat-raised-button>Stop</button>
+                                                <button (click)="stop(server)" [disabled]="server.updating || isDisabled" color="primary" mat-raised-button>Stop</button>
+                                                }
+                                                @if (server.status.stopping && admin) {
+                                                <button (click)="kill(server)" [disabled]="server.updating || isDisabled" color="warn" mat-raised-button>Kill</button>
                                                 }
                                             </div>
                                         </div>

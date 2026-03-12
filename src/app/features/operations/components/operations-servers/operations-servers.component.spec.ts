@@ -409,22 +409,33 @@ describe('OperationsServersComponent', () => {
     });
 
     describe('kill', () => {
-        it('runs kill directly when skip is true (default)', () => {
+        it('always shows confirmation dialog', () => {
             const server = makeServer();
             component.ngOnInit();
 
             component.kill(server);
 
-            expect(mockGameServersService.killServer).toHaveBeenCalledWith('server1', 'conn-123');
+            expect(mockDialog.open).toHaveBeenCalled();
         });
 
-        it('shows confirmation when skip is false', () => {
+        it('calls killServer when confirmation is accepted', () => {
             const server = makeServer();
             component.ngOnInit();
 
-            component.kill(server, false);
+            component.kill(server);
+            dialogAfterClosed$.next(true);
 
-            expect(mockDialog.open).toHaveBeenCalled();
+            expect(mockGameServersService.killServer).toHaveBeenCalledWith('server1', 'conn-123');
+        });
+
+        it('does not call killServer when confirmation is rejected', () => {
+            const server = makeServer();
+            component.ngOnInit();
+
+            component.kill(server);
+            dialogAfterClosed$.next(false);
+
+            expect(mockGameServersService.killServer).not.toHaveBeenCalled();
         });
     });
 
