@@ -578,12 +578,18 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         this.viewport.scrollToOffset(centeredOffset);
     }
 
-    // Computes the bottom offset from our own data (viewLineEntries.length * ITEM_SIZE)
-    // so we can scroll immediately without waiting for CDK to recalculate its spacer height.
+    // Scrolls to bottom using our known data dimensions. Pre-sizes the CDK spacer
+    // element so the browser allows scrolling to the new bottom before Angular CD
+    // has run. CDK will overwrite the spacer height with the same value during CD.
     private scrollToComputedBottom(): void {
         if (!this.viewport) return;
         const totalHeight = this.viewLineEntries.length * ITEM_SIZE;
         const viewportSize = this.viewport.getViewportSize();
+        const el = this.viewport.elementRef.nativeElement;
+        const spacer = el.querySelector('.cdk-virtual-scroll-spacer') as HTMLElement | null;
+        if (spacer) {
+            spacer.style.height = `${totalHeight}px`;
+        }
         this.viewport.scrollToOffset(Math.max(0, totalHeight - viewportSize));
     }
 
