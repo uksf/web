@@ -293,6 +293,9 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
             cancelAnimationFrame(this.appendRafId);
             this.appendRafId = null;
         }
+        // Clear stale viewport reference — the @if(isLoading) will destroy it,
+        // but @ViewChild setter won't fire with undefined on removal.
+        this._viewport = undefined;
         this.isLoading = true;
         this.searchResults = [];
         this.searchMatchLines = new Set();
