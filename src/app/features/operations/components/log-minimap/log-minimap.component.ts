@@ -58,8 +58,8 @@ export function computeMinimapLayout(
     const computedSliderRatio = maxScroll > 0 ? maxSliderTop / maxScroll : 0;
     const rawSliderTop = scrollTop * computedSliderRatio;
 
-    // 3. First visible view line
-    const viewportFirstLine = Math.min(Math.floor(scrollTop / itemSize), totalLines - 1);
+    // 3. First visible view line (fractional for sub-line accuracy)
+    const viewportFirstLineFrac = Math.min(scrollTop / itemSize, totalLines - 1);
 
     // 4. Derive startLine from slider position, then re-derive sliderTop from startLine
     //    to guarantee pixel-perfect alignment (VS Code's sliderTopAligned approach).
@@ -68,8 +68,8 @@ export function computeMinimapLayout(
     const exactLinesAbove = rawSliderTop / LINE_HEIGHT_PX;
     const totalScrollLines = Math.ceil(totalHeight / itemSize);
     const maxStartLine = Math.max(0, totalScrollLines - visibleLines);
-    const startLine = Math.max(0, Math.min(Math.round(viewportFirstLine - exactLinesAbove), maxStartLine));
-    const sliderTop = Math.max(0, Math.min((viewportFirstLine - startLine) * LINE_HEIGHT_PX, maxSliderTop));
+    const startLine = Math.max(0, Math.min(Math.round(viewportFirstLineFrac - exactLinesAbove), maxStartLine));
+    const sliderTop = Math.max(0, Math.min(Math.round((viewportFirstLineFrac - startLine) * LINE_HEIGHT_PX), maxSliderTop));
 
     return { startLine, visibleLines, sliderTop, sliderHeight };
 }

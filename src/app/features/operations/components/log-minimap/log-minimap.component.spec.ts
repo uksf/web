@@ -38,7 +38,9 @@ describe('LogMinimapComponent', () => {
         it('should place slider at bottom when scrolled to max', () => {
             const scrollTop = totalHeight - viewportSize; // max scroll
             const result = computeMinimapLayout(scrollTop, viewportSize, totalHeight, canvasHeight, totalLines, itemSize);
-            expect(result.sliderTop + result.sliderHeight).toBe(canvasHeight);
+            // Allow ±1px tolerance from rounding fractional line positions
+            expect(result.sliderTop + result.sliderHeight).toBeGreaterThanOrEqual(canvasHeight - 1);
+            expect(result.sliderTop + result.sliderHeight).toBeLessThanOrEqual(canvasHeight);
         });
 
         it('should compute slider height from visible viewport lines', () => {
@@ -54,12 +56,12 @@ describe('LogMinimapComponent', () => {
         });
 
         it('should guarantee slider-to-content alignment', () => {
-            // At any scroll position, sliderTop must equal (viewportFirstLine - startLine) * LINE_HEIGHT_PX
+            // At any scroll position, sliderTop must equal round((viewportFirstLine - startLine) * LINE_HEIGHT_PX)
             const positions = [0, 1000, 2000, 3000, 4000, 5000, totalHeight - viewportSize];
             for (const scrollTop of positions) {
                 const result = computeMinimapLayout(scrollTop, viewportSize, totalHeight, canvasHeight, totalLines, itemSize);
-                const viewportFirstLine = Math.min(Math.floor(scrollTop / itemSize), totalLines - 1);
-                const expectedSliderTop = (viewportFirstLine - result.startLine) * LINE_HEIGHT_PX;
+                const viewportFirstLineFrac = Math.min(scrollTop / itemSize, totalLines - 1);
+                const expectedSliderTop = Math.round((viewportFirstLineFrac - result.startLine) * LINE_HEIGHT_PX);
                 expect(result.sliderTop).toBe(
                     Math.max(0, Math.min(expectedSliderTop, canvasHeight - result.sliderHeight))
                 );
@@ -94,12 +96,14 @@ describe('LogMinimapComponent', () => {
         });
 
         it('should use real scroll position not clamped to content height', () => {
-            // At max scroll, the slider should be at maxSliderTop
+            // At max scroll, the slider should be at or near maxSliderTop
             const scrollTop = totalHeight - viewportSize;
             const result = computeMinimapLayout(scrollTop, viewportSize, totalHeight, canvasHeight, totalLines, itemSize);
-            expect(result.sliderTop + result.sliderHeight).toBe(canvasHeight);
+            // Allow ±1px tolerance from rounding fractional line positions
+            expect(result.sliderTop + result.sliderHeight).toBeGreaterThanOrEqual(canvasHeight - 1);
+            expect(result.sliderTop + result.sliderHeight).toBeLessThanOrEqual(canvasHeight);
             // viewportFirstLine should use real scroll, not clamped
-            const viewportFirstLine = Math.min(Math.floor(scrollTop / itemSize), totalLines - 1);
+            const viewportFirstLine = Math.min(scrollTop / itemSize, totalLines - 1);
             expect(viewportFirstLine).toBeGreaterThan(0);
         });
     });

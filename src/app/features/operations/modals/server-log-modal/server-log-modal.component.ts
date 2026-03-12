@@ -145,6 +145,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     private searchDebounce = new DebouncedCallback(50);
 
     private pendingScrollToLine: number | undefined;
+    private scrollToBottomOnLoad = false;
 
     constructor() {
         super();
@@ -206,6 +207,8 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
             if (this.searchQuery.trim()) {
                 this.search();
             }
+            const shouldScrollToBottom = this.tailEnabled || this.scrollToBottomOnLoad;
+            this.scrollToBottomOnLoad = false;
             if (this.pendingScrollToLine !== undefined) {
                 if (this.viewport) {
                     const line = this.pendingScrollToLine;
@@ -214,7 +217,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
                     setTimeout(() => this.scrollToLineIndex(line));
                 }
                 // else: viewport setter will handle it when viewport appears
-            } else if (this.tailEnabled) {
+            } else if (shouldScrollToBottom) {
                 if (this.viewport) {
                     setTimeout(() => this.scrollToBottom());
                 } else {
@@ -296,6 +299,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         this.totalMatches = 0;
         this.currentSearchIndex = -1;
         this.linkedLineIndex = -1;
+        this.scrollToBottomOnLoad = true;
         this.activeSource = sourceName;
         this.serversHub.invoke('SubscribeToLog', this.server.id, sourceName);
     }
@@ -583,14 +587,18 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     // has run. CDK will overwrite the spacer height with the same value during CD.
     private scrollToComputedBottom(): void {
         if (!this.viewport) return;
-        const totalHeight = this.viewLineEntries.length * ITEM_SIZE;
-        const viewportSize = this.viewport.getViewportSize();
+        const contentHeight = this.viewLineEntries.length * ITEM_SIZE;
         const el = this.viewport.elementRef.nativeElement;
         const spacer = el.querySelector('.cdk-virtual-scroll-spacer') as HTMLElement | null;
         if (spacer) {
-            spacer.style.height = `${totalHeight}px`;
+            spacer.style.height = `${contentHeight}px`;
         }
-        this.viewport.scrollToOffset(Math.max(0, totalHeight - viewportSize));
+        // Scroll to the absolute bottom including any CSS margin on the spacer
+        // (e.g. the 42vh bottom padding). Using scrollHeight after sizing the spacer
+        // captures the full scrollable area.
+        const viewportSize = this.viewport.getViewportSize();
+        const scrollableHeight = el.scrollHeight;
+        this.viewport.scrollToOffset(Math.max(0, scrollableHeight - viewportSize));
     }
 
     private scrollToBottom(): void {
