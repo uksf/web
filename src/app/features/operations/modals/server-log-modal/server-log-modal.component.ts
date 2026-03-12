@@ -84,7 +84,6 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     private resizeObserver: ResizeObserver | null = null;
     private pendingAppendLines: string[] = [];
     private appendRafId: number | null = null;
-    private tailScrollId: ReturnType<typeof setTimeout> | null = null;
 
     @HostListener('window:keydown', ['$event'])
     handleKeydown(event: KeyboardEvent) {
@@ -267,7 +266,10 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         }
         this.rebuildViewLines();
         if (this.tailEnabled) {
-            this.scheduleTailScroll();
+            // Scroll using the known data dimensions rather than relying on CDK's
+            // internal total height (which hasn't been recalculated yet). This lets
+            // us scroll in the same frame the data is updated — no flash.
+            this.scrollToComputedBottom();
         }
         this.scheduleMetricsUpdate();
     }
@@ -287,10 +289,6 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (this.appendRafId !== null) {
             cancelAnimationFrame(this.appendRafId);
             this.appendRafId = null;
-        }
-        if (this.tailScrollId !== null) {
-            clearTimeout(this.tailScrollId);
-            this.tailScrollId = null;
         }
         this.isLoading = true;
         this.searchResults = [];
@@ -462,9 +460,6 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (this.appendRafId !== null) {
             cancelAnimationFrame(this.appendRafId);
         }
-        if (this.tailScrollId !== null) {
-            clearTimeout(this.tailScrollId);
-        }
         this._viewport?.elementRef.nativeElement.removeEventListener('wheel', this.onWheel);
         this.resizeObserver?.disconnect();
         this.serversHub.off('ReceiveLogContent', this.onReceiveLogContent);
@@ -565,20 +560,6 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         }
     }
 
-    // Defers scrollToBottom until after Angular change detection and CDK virtual
-    // scroll have processed the new data. Coalesces rapid flushes into one scroll.
-    private scheduleTailScroll(): void {
-        if (this.tailScrollId !== null) {
-            clearTimeout(this.tailScrollId);
-        }
-        this.tailScrollId = setTimeout(() => {
-            this.tailScrollId = null;
-            if (this.tailEnabled) {
-                this.scrollToBottom();
-            }
-        });
-    }
-
     private onWheel = (event: WheelEvent): void => {
         if (this.tailEnabled && event.deltaY < 0) {
             this.ngZone.run(() => {
@@ -595,6 +576,15 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         const offset = viewLineIndex * ITEM_SIZE;
         const centeredOffset = Math.max(0, offset - (viewportSize / 2) + (ITEM_SIZE / 2));
         this.viewport.scrollToOffset(centeredOffset);
+    }
+
+    // Computes the bottom offset from our own data (viewLineEntries.length * ITEM_SIZE)
+    // so we can scroll immediately without waiting for CDK to recalculate its spacer height.
+    private scrollToComputedBottom(): void {
+        if (!this.viewport) return;
+        const totalHeight = this.viewLineEntries.length * ITEM_SIZE;
+        const viewportSize = this.viewport.getViewportSize();
+        this.viewport.scrollToOffset(Math.max(0, totalHeight - viewportSize));
     }
 
     private scrollToBottom(): void {
