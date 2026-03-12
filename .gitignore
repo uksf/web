@@ -66,3 +66,6 @@ Thumbs.db
 # Plan documents
 docs/plans/
 tmp-*.txt
+
+# Worktrees
+.worktrees/
