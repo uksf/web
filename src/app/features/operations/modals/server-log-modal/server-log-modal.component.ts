@@ -78,14 +78,12 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     private _viewport: CdkVirtualScrollViewport | undefined;
     private metricsRafId: number | null = null;
     private pendingScrollToBottom = false;
-    private programmaticScroll = false;
     private projection: LineProjection | null = null;
     private charWidthPx = 0;
     private charsPerRow = 0;
     private resizeObserver: ResizeObserver | null = null;
     private pendingAppendLines: string[] = [];
     private appendRafId: number | null = null;
-    private lastAppendTime = 0;
 
     @HostListener('window:keydown', ['$event'])
     handleKeydown(event: KeyboardEvent) {
@@ -99,25 +97,12 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
             vp.elementScrolled().pipe(
                 takeUntil(this.destroy$)
             ).subscribe(() => {
-                this.ngZone.run(() => {
-                    if (this.programmaticScroll) {
-                        this.programmaticScroll = false;
-                    } else if (this.tailEnabled) {
-                        // Don't disable tail if content was just appended — the scroll
-                        // event can race with new content changing scrollHeight
-                        if (Date.now() - this.lastAppendTime < 150) {
-                            // Within the append grace window — keep tail enabled
-                        } else {
-                            const el = vp.elementRef.nativeElement;
-                            const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - ITEM_SIZE;
-                            if (!atBottom) {
-                                this.tailEnabled = false;
-                            }
-                        }
-                    }
-                    this.updateViewportMetrics();
-                });
+                this.ngZone.run(() => this.updateViewportMetrics());
             });
+
+            // Wheel events only fire from user interaction, never from programmatic scrolling.
+            // This eliminates race conditions between scroll events and content updates.
+            vp.elementRef.nativeElement.addEventListener('wheel', this.onWheel, { passive: true });
 
             // Measure char width and content width after first render
             if (!this.charWidthPx) {
@@ -266,7 +251,6 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (!lines.length) return;
         this.pendingAppendLines = [];
 
-        this.lastAppendTime = Date.now();
         this.logLines = this.logLines.concat(lines);
         const htmls = lines.map(l => highlightRptLine(l));
         this.baseHtml.push(...htmls);
@@ -282,7 +266,6 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         }
         this.rebuildViewLines();
         if (this.tailEnabled) {
-            this.programmaticScroll = true;
             this.scrollToBottom();
         }
         this.scheduleMetricsUpdate();
@@ -329,7 +312,6 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (event.key === 'Home') {
             event.preventDefault();
             this.tailEnabled = false;
-            this.programmaticScroll = true;
             this.viewport?.scrollToIndex(0);
         } else if (event.key === 'End') {
             event.preventDefault();
@@ -394,7 +376,6 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     onMinimapScrollToLine(lineIndex: number): void {
         if (!this.viewport) return;
         this.tailEnabled = false;
-        this.programmaticScroll = true;
         const viewLineIndex = this.projection ? this.projection.logLineToViewLine(lineIndex) : lineIndex;
         const viewportSize = this.viewport.getViewportSize();
         const offset = viewLineIndex * ITEM_SIZE;
@@ -405,7 +386,6 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     onMinimapScrollToOffset(offset: number): void {
         if (!this.viewport) return;
         this.tailEnabled = false;
-        this.programmaticScroll = true;
         this.viewport.scrollToOffset(Math.max(0, offset));
     }
 
@@ -477,6 +457,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (this.appendRafId !== null) {
             cancelAnimationFrame(this.appendRafId);
         }
+        this._viewport?.elementRef.nativeElement.removeEventListener('wheel', this.onWheel);
         this.resizeObserver?.disconnect();
         this.serversHub.off('ReceiveLogContent', this.onReceiveLogContent);
         this.serversHub.off('ReceiveLogAppend', this.onReceiveLogAppend);
@@ -576,9 +557,16 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         }
     }
 
+    private onWheel = (event: WheelEvent): void => {
+        if (this.tailEnabled && event.deltaY < 0) {
+            this.ngZone.run(() => {
+                this.tailEnabled = false;
+            });
+        }
+    };
+
     private scrollToLineIndex(lineNumber: number): void {
         if (!this.viewport) return;
-        this.programmaticScroll = true;
         const logIndex = Math.max(0, lineNumber - 1);
         const viewLineIndex = this.projection ? this.projection.logLineToViewLine(logIndex) : logIndex;
         const viewportSize = this.viewport.getViewportSize();
@@ -589,7 +577,6 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
 
     private scrollToBottom(): void {
         if (this.viewport) {
-            this.programmaticScroll = true;
             this.viewport.scrollTo({ bottom: 0 });
         }
     }
@@ -598,7 +585,6 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (!this.viewport || this.currentSearchIndex < 0 || this.currentSearchIndex >= this.searchResults.length) {
             return;
         }
-        this.programmaticScroll = true;
         const logLineIndex = this.searchResults[this.currentSearchIndex].lineIndex;
         const viewLineIndex = this.projection ? this.projection.logLineToViewLine(logLineIndex) : logLineIndex;
         const viewportSize = this.viewport.getViewportSize();

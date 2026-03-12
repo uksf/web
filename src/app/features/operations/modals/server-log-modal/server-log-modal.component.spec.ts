@@ -669,14 +669,6 @@ describe('ServerLogModalComponent', () => {
             expect(component.logLines).toEqual(['line1', 'line2']);
         });
 
-        it('should set lastAppendTime on flush', () => {
-            const before = Date.now();
-
-            signalRCallbacks['ReceiveLogAppend']('server1', 'Server', ['line1']);
-
-            expect((component as any).lastAppendTime).toBeGreaterThanOrEqual(before);
-        });
-
         it('should clear pending buffer on switchSource', async () => {
             // Simulate some pending data
             (component as any).pendingAppendLines = ['buffered'];
@@ -687,28 +679,90 @@ describe('ServerLogModalComponent', () => {
         });
     });
 
-    describe('tail grace window', () => {
-        it('should not disable tail during the append grace window', () => {
-            const scrollSubject = new Subject<void>();
+    describe('tail wheel detection', () => {
+        it('should disable tail when user scrolls up via wheel', () => {
+            const mockNativeElement = {
+                scrollTop: 0, clientHeight: 500, scrollHeight: 2000,
+                addEventListener: vi.fn(),
+                removeEventListener: vi.fn()
+            };
             const mockVp = {
                 scrollTo: vi.fn(),
                 scrollToOffset: vi.fn(),
                 getViewportSize: vi.fn().mockReturnValue(500),
-                elementRef: { nativeElement: { scrollTop: 0, clientHeight: 500, scrollHeight: 2000 } },
-                elementScrolled: () => scrollSubject.asObservable()
+                elementRef: { nativeElement: mockNativeElement },
+                elementScrolled: () => new Subject<void>().asObservable()
             } as any;
 
             component.viewport = mockVp;
             component.tailEnabled = true;
-            component.ngOnInit();
 
-            // Simulate an append that sets lastAppendTime
-            signalRCallbacks['ReceiveLogAppend']('server1', 'Server', ['new line']);
+            // Get the wheel handler that was registered
+            const wheelCall = mockNativeElement.addEventListener.mock.calls.find(
+                (c: any[]) => c[0] === 'wheel'
+            );
+            expect(wheelCall).toBeTruthy();
+            const wheelHandler = wheelCall[1];
 
-            // Simulate scroll event while NOT at bottom — within grace window
-            scrollSubject.next();
+            // Simulate wheel up (negative deltaY)
+            wheelHandler({ deltaY: -100 } as WheelEvent);
+
+            expect(component.tailEnabled).toBe(false);
+        });
+
+        it('should not disable tail when user scrolls down via wheel', () => {
+            const mockNativeElement = {
+                scrollTop: 0, clientHeight: 500, scrollHeight: 2000,
+                addEventListener: vi.fn(),
+                removeEventListener: vi.fn()
+            };
+            const mockVp = {
+                scrollTo: vi.fn(),
+                scrollToOffset: vi.fn(),
+                getViewportSize: vi.fn().mockReturnValue(500),
+                elementRef: { nativeElement: mockNativeElement },
+                elementScrolled: () => new Subject<void>().asObservable()
+            } as any;
+
+            component.viewport = mockVp;
+            component.tailEnabled = true;
+
+            const wheelCall = mockNativeElement.addEventListener.mock.calls.find(
+                (c: any[]) => c[0] === 'wheel'
+            );
+            const wheelHandler = wheelCall[1];
+
+            // Simulate wheel down (positive deltaY)
+            wheelHandler({ deltaY: 100 } as WheelEvent);
 
             expect(component.tailEnabled).toBe(true);
+        });
+
+        it('should not react to wheel when tail is already disabled', () => {
+            const mockNativeElement = {
+                scrollTop: 0, clientHeight: 500, scrollHeight: 2000,
+                addEventListener: vi.fn(),
+                removeEventListener: vi.fn()
+            };
+            const mockVp = {
+                scrollTo: vi.fn(),
+                scrollToOffset: vi.fn(),
+                getViewportSize: vi.fn().mockReturnValue(500),
+                elementRef: { nativeElement: mockNativeElement },
+                elementScrolled: () => new Subject<void>().asObservable()
+            } as any;
+
+            component.viewport = mockVp;
+            component.tailEnabled = false;
+
+            const wheelCall = mockNativeElement.addEventListener.mock.calls.find(
+                (c: any[]) => c[0] === 'wheel'
+            );
+            const wheelHandler = wheelCall[1];
+
+            wheelHandler({ deltaY: -100 } as WheelEvent);
+
+            expect(component.tailEnabled).toBe(false);
         });
     });
 
@@ -733,7 +787,7 @@ describe('ServerLogModalComponent', () => {
             component.viewport = {
                 scrollToOffset: vi.fn(),
                 getViewportSize: vi.fn().mockReturnValue(500),
-                elementRef: { nativeElement: { scrollTop: 0, scrollHeight: 1000 } },
+                elementRef: { nativeElement: { scrollTop: 0, scrollHeight: 1000, addEventListener: vi.fn(), removeEventListener: vi.fn() } },
                 elementScrolled: () => new Subject<void>().asObservable()
             } as any;
 
@@ -747,7 +801,7 @@ describe('ServerLogModalComponent', () => {
             component.viewport = {
                 scrollToOffset: vi.fn(),
                 getViewportSize: vi.fn().mockReturnValue(500),
-                elementRef: { nativeElement: { scrollTop: 0, scrollHeight: 1000 } },
+                elementRef: { nativeElement: { scrollTop: 0, scrollHeight: 1000, addEventListener: vi.fn(), removeEventListener: vi.fn() } },
                 elementScrolled: () => new Subject<void>().asObservable()
             } as any;
             component.tailEnabled = true;
@@ -761,7 +815,7 @@ describe('ServerLogModalComponent', () => {
             component.viewport = {
                 scrollToOffset: vi.fn(),
                 getViewportSize: vi.fn().mockReturnValue(500),
-                elementRef: { nativeElement: { scrollTop: 0, scrollHeight: 1000 } },
+                elementRef: { nativeElement: { scrollTop: 0, scrollHeight: 1000, addEventListener: vi.fn(), removeEventListener: vi.fn() } },
                 elementScrolled: () => new Subject<void>().asObservable()
             } as any;
             component.tailEnabled = true;
@@ -771,28 +825,31 @@ describe('ServerLogModalComponent', () => {
             expect(component.tailEnabled).toBe(false);
         });
 
-        it('should not disable tail on programmatic scroll to bottom', () => {
+        it('should not disable tail on programmatic scroll (no wheel event fired)', () => {
             const scrollSubject = new Subject<void>();
+            const mockNativeElement = {
+                scrollTop: 0, scrollHeight: 1000,
+                addEventListener: vi.fn(),
+                removeEventListener: vi.fn()
+            };
             const mockVp = {
                 scrollTo: vi.fn(),
                 scrollToOffset: vi.fn(),
                 getViewportSize: vi.fn().mockReturnValue(500),
-                elementRef: { nativeElement: { scrollTop: 0, scrollHeight: 1000 } },
+                elementRef: { nativeElement: mockNativeElement },
                 elementScrolled: () => scrollSubject.asObservable()
             } as any;
 
-            // Trigger the viewport setter to set up the elementScrolled subscription
             component.viewport = mockVp;
-
             component.tailEnabled = true;
 
-            // Call scrollToBottom (programmatic) — sets programmaticScroll flag
+            // Programmatic scrollToBottom — no wheel event fires
             (component as any).scrollToBottom();
 
-            // Simulate the async scroll event firing
+            // Scroll event fires from the programmatic scroll
             scrollSubject.next();
 
-            // tailEnabled should still be true because scrollToBottom set programmaticScroll
+            // Tail stays enabled because only wheel events can disable it
             expect(component.tailEnabled).toBe(true);
         });
 
@@ -939,6 +996,27 @@ describe('ServerLogModalComponent', () => {
             expect(mockServersHub.off).toHaveBeenCalledWith('ReceiveLogAppend', expect.any(Function));
             expect(mockServersHub.invoke).toHaveBeenCalledWith('UnsubscribeFromLog', 'server1', 'Server');
             expect(mockServersHub.disconnect).toHaveBeenCalled();
+        });
+
+        it('should remove wheel event listener from viewport', () => {
+            const mockNativeElement = {
+                scrollTop: 0, scrollHeight: 1000,
+                addEventListener: vi.fn(),
+                removeEventListener: vi.fn()
+            };
+            const mockVp = {
+                scrollTo: vi.fn(),
+                scrollToOffset: vi.fn(),
+                getViewportSize: vi.fn().mockReturnValue(500),
+                elementRef: { nativeElement: mockNativeElement },
+                elementScrolled: () => new Subject<void>().asObservable()
+            } as any;
+            component.viewport = mockVp;
+            component.ngOnInit();
+
+            component.ngOnDestroy();
+
+            expect(mockNativeElement.removeEventListener).toHaveBeenCalledWith('wheel', expect.any(Function));
         });
 
         it('should unsubscribe from the active source on destroy', async () => {
