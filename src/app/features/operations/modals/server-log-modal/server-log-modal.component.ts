@@ -84,6 +84,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     private resizeObserver: ResizeObserver | null = null;
     private pendingAppendLines: string[] = [];
     private appendRafId: number | null = null;
+    private tailScrollId: ReturnType<typeof setTimeout> | null = null;
 
     @HostListener('window:keydown', ['$event'])
     handleKeydown(event: KeyboardEvent) {
@@ -266,7 +267,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         }
         this.rebuildViewLines();
         if (this.tailEnabled) {
-            this.scrollToBottom();
+            this.scheduleTailScroll();
         }
         this.scheduleMetricsUpdate();
     }
@@ -286,6 +287,10 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (this.appendRafId !== null) {
             cancelAnimationFrame(this.appendRafId);
             this.appendRafId = null;
+        }
+        if (this.tailScrollId !== null) {
+            clearTimeout(this.tailScrollId);
+            this.tailScrollId = null;
         }
         this.isLoading = true;
         this.searchResults = [];
@@ -457,6 +462,9 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (this.appendRafId !== null) {
             cancelAnimationFrame(this.appendRafId);
         }
+        if (this.tailScrollId !== null) {
+            clearTimeout(this.tailScrollId);
+        }
         this._viewport?.elementRef.nativeElement.removeEventListener('wheel', this.onWheel);
         this.resizeObserver?.disconnect();
         this.serversHub.off('ReceiveLogContent', this.onReceiveLogContent);
@@ -555,6 +563,20 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
                 }
             }
         }
+    }
+
+    // Defers scrollToBottom until after Angular change detection and CDK virtual
+    // scroll have processed the new data. Coalesces rapid flushes into one scroll.
+    private scheduleTailScroll(): void {
+        if (this.tailScrollId !== null) {
+            clearTimeout(this.tailScrollId);
+        }
+        this.tailScrollId = setTimeout(() => {
+            this.tailScrollId = null;
+            if (this.tailEnabled) {
+                this.scrollToBottom();
+            }
+        });
     }
 
     private onWheel = (event: WheelEvent): void => {
