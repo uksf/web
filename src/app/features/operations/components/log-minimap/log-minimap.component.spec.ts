@@ -15,15 +15,24 @@ describe('LogMinimapComponent', () => {
         const viewportSize = 1053;
         const canvasHeight = 347;
 
-        it('should return start 0 when no lines', () => {
+        it('should return start 0 and zero slider when no lines', () => {
             const result = computeMinimapLayout(0, 500, 0, 900, 0, 20);
             expect(result.startLine).toBe(0);
             expect(result.sliderTop).toBe(0);
-            expect(result.sliderHeight).toBe(900);
+            expect(result.sliderHeight).toBe(0);
         });
 
-        it('should fill canvas when all content fits in viewport', () => {
+        it('should size slider to content when all content fits in viewport', () => {
+            // 10 lines × 2px = 20px minimap content, canvas is 900px
             const result = computeMinimapLayout(0, 500, 600, 900, 10, 20);
+            expect(result.startLine).toBe(0);
+            expect(result.sliderTop).toBe(0);
+            expect(result.sliderHeight).toBe(10 * LINE_HEIGHT_PX);
+        });
+
+        it('should cap slider to canvas height when content fills minimap', () => {
+            // 500 lines × 2px = 1000px minimap content, canvas is 900px → capped to 900
+            const result = computeMinimapLayout(0, 20000, 20000, 900, 500, 20);
             expect(result.startLine).toBe(0);
             expect(result.sliderTop).toBe(0);
             expect(result.sliderHeight).toBe(900);

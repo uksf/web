@@ -37,13 +37,16 @@ export function computeMinimapLayout(
     const visibleLines = Math.floor(canvasHeight / LINE_HEIGHT_PX);
 
     if (totalLines <= 0) {
-        return { startLine: 0, visibleLines, sliderTop: 0, sliderHeight: canvasHeight };
+        return { startLine: 0, visibleLines, sliderTop: 0, sliderHeight: 0 };
     }
 
     const contentHeight = totalLines * itemSize;
 
     if (contentHeight <= viewportSize) {
-        return { startLine: 0, visibleLines, sliderTop: 0, sliderHeight: canvasHeight };
+        // Content fits in viewport — slider covers only the minimap area with content
+        const minimapContentHeight = totalLines * LINE_HEIGHT_PX;
+        const sliderHeight = Math.min(minimapContentHeight, canvasHeight);
+        return { startLine: 0, visibleLines, sliderTop: 0, sliderHeight };
     }
 
     // 1. Slider height: visible viewport lines converted to minimap pixels.
