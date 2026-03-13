@@ -105,7 +105,7 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
     private cachedSegments: RptColorSegment[][] = [];
     private lastClassifiedIndex = 0;
     private projection: LineProjection | null = null;
-    private charsPerRow = 80;
+    private charsPerRow = Number.MAX_SAFE_INTEGER;
     private charWidthPx = 0;
 
     private contentImageData: ImageData | null = null;
@@ -180,6 +180,7 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         this.resolveThemeColors();
         this.initAtlas();
         this.measureCharWidth();
+        this.updateProjection();
         this.resizeObserver = new ResizeObserver(() => {
             this.prevStartLine = -1; // force full redraw on resize
             this.scheduleContentRedraw();
@@ -599,21 +600,22 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
         this.roundRect(ctx, 0, thumb.top, width, thumb.height, SCROLLBAR_THUMB_RADIUS);
         ctx.fill();
 
-        // Search markers positioned relative to scroll height (accounts for bottom padding)
+        // Search markers positioned relative to content height (excludes bottom padding)
         const results = this.searchResults();
-        const totalH = this.totalHeight();
-        if (results.length > 0 && totalH > 0) {
-            const proj = this.projection;
+        const proj = this.projection;
+        const totalViewLines = proj?.viewLineCount ?? this.logLines().length;
+        if (results.length > 0 && totalViewLines > 0) {
             const iSize = this.itemSize();
+            const contentH = totalViewLines * iSize;
             const activeIdx = this.currentSearchIndex();
             for (let i = 0; i < results.length; i++) {
                 const logLineIdx = results[i].lineIndex;
                 const viewLineIdx = proj ? proj.logLineToViewLine(logLineIdx) : logLineIdx;
                 const viewLineCount = proj ? proj.getViewLineCountForLogLine(logLineIdx) : 1;
-                // Map line's scroll offset to scrollbar position
+                // Map line position proportionally to scrollbar height using content-only height
                 const lineScrollOffset = viewLineIdx * iSize;
-                const y = Math.round((lineScrollOffset / totalH) * height);
-                const markerH = Math.max(2, Math.round((viewLineCount * iSize / totalH) * height));
+                const y = Math.round((lineScrollOffset / contentH) * height);
+                const markerH = Math.max(2, Math.round((viewLineCount * iSize / contentH) * height));
                 const isActive = i === activeIdx;
                 ctx.fillStyle = isActive ? SEARCH_MARKER_ACTIVE_COLOR : SEARCH_MARKER_COLOR;
                 ctx.fillRect(0, y, width, markerH);

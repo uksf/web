@@ -149,4 +149,47 @@ describe('LineProjection', () => {
         expect(projection.viewLineCount).toBe(2);
         expect(projection.getViewLineCountForLogLine(0)).toBe(2);
     });
+
+    it('produces same view line offsets regardless of charsPerRow when lines are short enough', () => {
+        // RPT log lines ~85 chars: wrap at charsPerRow=80 but not at 150
+        const lines = [
+            'short line',
+            '18:33:56 D:\\Modpack\\Release\\Repo\\@uksf_ace\\addons\\ace_viewrestriction.pbo - 3.20.2.108', // ~85 chars
+            'another short line',
+        ];
+
+        const narrowProj = createLineProjection(lines, 80);
+        const wideProj = createLineProjection(lines, 150);
+
+        // Wide projection: no wrapping, all 1:1
+        expect(wideProj.viewLineCount).toBe(3);
+        expect(wideProj.logLineToViewLine(2)).toBe(2);
+
+        // Narrow projection: line 1 wraps, shifting line 2's offset
+        expect(narrowProj.viewLineCount).toBe(4); // one extra view line from wrapping
+        expect(narrowProj.logLineToViewLine(2)).toBe(3); // offset by 1 due to wrapped line
+
+        // This demonstrates why using charsPerRow=80 (minimap default) when the viewport
+        // uses a wider value causes search markers to appear at wrong positions
+    });
+
+    it('accumulates offset over many wrapped lines', () => {
+        // Simulate 100 RPT lines that are ~85 chars (wrap at 80, not at 150)
+        const line85 = '18:33:56 D:\\Modpack\\Release\\Repo\\@uksf_ace\\addons\\ace_viewrestriction.pbo - 3.20.2.108';
+        const lines = Array.from({ length: 100 }, () => line85);
+
+        const narrowProj = createLineProjection(lines, 80);
+        const wideProj = createLineProjection(lines, 150);
+
+        // Wide: 100 view lines (no wrapping)
+        expect(wideProj.viewLineCount).toBe(100);
+        expect(wideProj.logLineToViewLine(99)).toBe(99);
+
+        // Narrow: each line wraps to 2 view lines → 200 total
+        expect(narrowProj.viewLineCount).toBe(200);
+        expect(narrowProj.logLineToViewLine(99)).toBe(198); // offset of 99!
+
+        // A search marker at line 99 would be drawn at viewLine 198 instead of 99
+        // — nearly 2x the correct position on the scrollbar
+    });
 });
