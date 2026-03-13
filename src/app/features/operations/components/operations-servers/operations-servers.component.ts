@@ -521,6 +521,7 @@ export class OperationsServersComponent extends DestroyableComponent implements 
                 error: (error) => {
                     this.showError(error);
                     server.updating = false;
+                    server.status.stopping = false;
                     this.refreshServerStatus(server);
                 }
             });
