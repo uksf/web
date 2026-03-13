@@ -354,7 +354,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         this.totalMatches = results.length;
         this.currentSearchIndex = results.length > 0 ? 0 : -1;
         this.rehighlightForSearch();
-        if (this.currentSearchIndex >= 0) {
+        if (this.currentSearchIndex >= 0 && !this.tailEnabled) {
             this.scrollToSearchResult();
         }
     }
@@ -363,6 +363,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (!this.searchResults.length) {
             return;
         }
+        this.tailEnabled = false;
         this.currentSearchIndex = (this.currentSearchIndex + 1) % this.searchResults.length;
         this.scrollToSearchResult();
     }
@@ -371,6 +372,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (!this.searchResults.length) {
             return;
         }
+        this.tailEnabled = false;
         this.currentSearchIndex = (this.currentSearchIndex - 1 + this.searchResults.length) % this.searchResults.length;
         this.scrollToSearchResult();
     }

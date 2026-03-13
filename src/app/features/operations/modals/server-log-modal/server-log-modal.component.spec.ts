@@ -458,6 +458,23 @@ describe('ServerLogModalComponent', () => {
             // Only the matched line (index 0) should be re-highlighted with search marks
             expect(mockSanitizer.bypassSecurityTrustHtml).toHaveBeenCalledTimes(1);
         });
+
+        it('should not scroll to search result when tail is enabled', () => {
+            signalRCallbacks['ReceiveLogContent']('server1', 'Server', [
+                'no match here',
+                'error at line 1',
+                'another line'
+            ], 0, true);
+            component.tailEnabled = true;
+            component.searchQuery = 'error';
+
+            component.search();
+
+            expect(component.searchResults).toHaveLength(1);
+            expect(component.currentSearchIndex).toBe(0);
+            // Tail should remain enabled — search doesn't interrupt it
+            expect(component.tailEnabled).toBe(true);
+        });
     });
 
     describe('onSearchChange', () => {
@@ -534,6 +551,20 @@ describe('ServerLogModalComponent', () => {
 
             expect(component.currentSearchIndex).toBe(0);
         });
+
+        it('should disable tail when navigating to next result', () => {
+            component.searchResults = [
+                { lineIndex: 5, text: 'a' },
+                { lineIndex: 10, text: 'b' }
+            ];
+            component.currentSearchIndex = 0;
+            component.tailEnabled = true;
+
+            component.searchNext();
+
+            expect(component.tailEnabled).toBe(false);
+            expect(component.currentSearchIndex).toBe(1);
+        });
     });
 
     describe('searchPrev', () => {
@@ -570,6 +601,20 @@ describe('ServerLogModalComponent', () => {
             component.searchPrev();
 
             expect(component.currentSearchIndex).toBe(2);
+        });
+
+        it('should disable tail when navigating to previous result', () => {
+            component.searchResults = [
+                { lineIndex: 5, text: 'a' },
+                { lineIndex: 10, text: 'b' }
+            ];
+            component.currentSearchIndex = 1;
+            component.tailEnabled = true;
+
+            component.searchPrev();
+
+            expect(component.tailEnabled).toBe(false);
+            expect(component.currentSearchIndex).toBe(0);
         });
     });
 
