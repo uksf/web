@@ -78,7 +78,7 @@
                                             } @if (server.status.mission) {
                                             <span><b>Mission:</b> {{ server.status.mission }}</span>
                                             } @if (server.status.parsedUptime !== '00:00:00') {
-                                            <span><b>Players:</b> {{ server.status.players }}</span>
+                                            <span><b>Players:</b> {{ server.status.players.length }}</span>
                                             } @if (server.status.parsedUptime !== '00:00:00') {
                                             <span><b>Max Players:</b> {{ server.status.maxPlayers }}</span>
                                             } @if (server.status.parsedUptime !== '00:00:00') {

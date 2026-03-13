@@ -57,7 +57,7 @@ describe('GameServersService', () => {
 
     it('getServerStatus calls GET /gameservers/status/:id', () => {
         const mockResponse: ServerStatusResponse = {
-            gameServer: { id: 'server1', name: 'Test', status: { parsedUptime: '00:00:00', stopping: false, started: false, running: false, mission: '', players: 0 } },
+            gameServer: { id: 'server1', name: 'Test', status: { parsedUptime: '00:00:00', stopping: false, started: false, running: false, mission: '', players: [] } },
             instanceCount: 1
         };
         mockHttpClient.get.mockReturnValue(of(mockResponse));

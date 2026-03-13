@@ -7,7 +7,7 @@ export interface GameServerStatus {
     started: boolean;
     running: boolean;
     mission: string;
-    players: number;
+    players: string[];
 }
 
 export interface GameServer {

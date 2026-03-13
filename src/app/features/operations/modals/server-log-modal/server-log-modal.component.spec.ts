@@ -32,7 +32,7 @@ describe('ServerLogModalComponent', () => {
             started: true,
             running: true,
             mission: 'test_mission',
-            players: 5
+            players: ['uid1', 'uid2', 'uid3', 'uid4', 'uid5']
         }
     };
 

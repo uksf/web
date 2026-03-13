@@ -445,10 +445,10 @@ export class OperationsServersComponent extends DestroyableComponent implements 
     }
 
     stop(server) {
-        if (server.status.players > 0) {
+        if (server.status.players.length > 0) {
             this.dialog
                 .open(ConfirmationModalComponent, {
-                    data: { message: `There are still ${server.status.players} players on '${server.name}'. Are you sure you want to stop the server?` }
+                    data: { message: `There are still ${server.status.players.length} players on '${server.name}'. Are you sure you want to stop the server?` }
                 })
                 .afterClosed()
                 .pipe(first())

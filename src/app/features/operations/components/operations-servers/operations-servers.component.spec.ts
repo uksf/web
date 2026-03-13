@@ -25,7 +25,7 @@ describe('OperationsServersComponent', () => {
             started: false,
             running: true,
             mission: 'test_mission',
-            players: 0
+            players: []
         },
         updating: false,
         request: null,
@@ -390,7 +390,7 @@ describe('OperationsServersComponent', () => {
 
     describe('stop', () => {
         it('runs stop directly when no players', () => {
-            const server = makeServer({ status: { ...makeServer().status, players: 0 } });
+            const server = makeServer({ status: { ...makeServer().status, players: [] } });
             component.ngOnInit();
 
             component.stop(server);
@@ -399,7 +399,7 @@ describe('OperationsServersComponent', () => {
         });
 
         it('shows confirmation when players are on server', () => {
-            const server = makeServer({ status: { ...makeServer().status, players: 5 } });
+            const server = makeServer({ status: { ...makeServer().status, players: ['uid1', 'uid2', 'uid3', 'uid4', 'uid5'] } });
             component.ngOnInit();
 
             component.stop(server);
