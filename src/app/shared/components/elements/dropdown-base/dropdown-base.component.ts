@@ -48,6 +48,7 @@ export class DropdownBaseComponent extends DestroyableComponent implements OnIni
     };
     @Output() selectionChanged = new EventEmitter<IDropdownElement>();
     _model: IDropdownElement = null;
+    _justSelected = false;
     allElements: IDropdownElement[];
     filteredElements: Observable<IDropdownElement[]>;
     focused = false;
@@ -194,6 +195,11 @@ export class DropdownBaseComponent extends DestroyableComponent implements OnIni
     }
 
     openPanel(): void {
+        if (this._justSelected) {
+            this._justSelected = false;
+            return;
+        }
+
         if (!this.disabled && this.autocompleteTrigger) {
             this.filteredElements = of(this.allElements);
             this.cachedFilteredElements = this.allElements;
@@ -226,6 +232,7 @@ export class DropdownBaseComponent extends DestroyableComponent implements OnIni
 
         if (!this.autocomplete) {
             this.textModel = this.displayWith(event.option.value);
+            this._justSelected = true;
         }
 
         if (this.clearOnSelect) {
