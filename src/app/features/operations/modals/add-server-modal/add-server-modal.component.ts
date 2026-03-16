@@ -73,7 +73,6 @@ export class AddServerModalComponent implements OnDestroy {
     changes = new Set<string>();
     server;
     submitting = false;
-    private connectionId: string = '';
 
     constructor() {
         const data = this.data;
@@ -81,7 +80,6 @@ export class AddServerModalComponent implements OnDestroy {
         if (data) {
             this.edit = true;
             this.server = data.server;
-            this.connectionId = data.connectionId;
             this.form.patchValue({
                 name: this.server.name,
                 port: this.server.port,
@@ -135,7 +133,7 @@ export class AddServerModalComponent implements OnDestroy {
             this.server.environment = Number(this.form.controls.environment.value?.value);
             this.server.serverOption = Number(this.form.controls.serverOption.value?.value);
             this.gameServersService
-                .editServer(this.server, this.connectionId)
+                .editServer(this.server)
                 .pipe(first())
                 .subscribe({
                     next: (environmentChanged: boolean) => {
@@ -148,7 +146,7 @@ export class AddServerModalComponent implements OnDestroy {
         } else {
             const payload = this.getFormRawValues();
             this.gameServersService
-                .addServer(JSON.stringify(payload), this.connectionId)
+                .addServer(JSON.stringify(payload))
                 .pipe(first())
                 .subscribe({
                     next: () => {
@@ -168,7 +166,7 @@ export class AddServerModalComponent implements OnDestroy {
                     return of(null);
                 }
                 const body = this.edit ? this.server : {};
-                return this.gameServersService.checkServerExists(control.value, body, this.connectionId).pipe(map((response) => (response ? { serverTaken: true } : null)));
+                return this.gameServersService.checkServerExists(control.value, body).pipe(map((response) => (response ? { serverTaken: true } : null)));
             })
         );
     }
@@ -185,5 +183,4 @@ export class AddServerModalComponent implements OnDestroy {
 
 interface AddServerModalData {
     server?: Record<string, unknown>;
-    connectionId?: string;
 }

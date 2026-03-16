@@ -22,13 +22,11 @@ describe('OperationsServersComponent', () => {
         status: {
             parsedUptime: '01:30:45',
             stopping: false,
-            started: false,
+            launching: false,
             running: true,
             mission: 'test_mission',
             players: []
         },
-        updating: false,
-        request: null,
         ...overrides
     });
 
@@ -38,14 +36,13 @@ describe('OperationsServersComponent', () => {
         mockGameServersService = {
             getServers: vi.fn().mockReturnValue(of({ servers: [], instanceCount: 0, missions: [] })),
             getDisabledState: vi.fn().mockReturnValue(of(false)),
-            getServerStatus: vi.fn().mockReturnValue(of({ gameServer: makeServer(), instanceCount: 1 })),
             toggleDisabledState: vi.fn().mockReturnValue(of(undefined)),
-            deleteServer: vi.fn().mockReturnValue(of([])),
-            updateServerOrder: vi.fn().mockReturnValue(of([])),
+            deleteServer: vi.fn().mockReturnValue(of(undefined)),
+            updateServerOrder: vi.fn().mockReturnValue(of(undefined)),
             uploadMission: vi.fn().mockReturnValue(of({ missions: [], missionReports: [] })),
             launchServer: vi.fn().mockReturnValue(of(undefined)),
-            stopServer: vi.fn().mockReturnValue(of({ gameServer: makeServer(), instanceCount: 1 })),
-            killServer: vi.fn().mockReturnValue(of({ gameServer: makeServer(), instanceCount: 1 })),
+            stopServer: vi.fn().mockReturnValue(of(undefined)),
+            killServer: vi.fn().mockReturnValue(of(undefined)),
             killAllServers: vi.fn().mockReturnValue(of(undefined)),
         };
         mockDialog = {
@@ -56,7 +53,6 @@ describe('OperationsServersComponent', () => {
             disconnect: vi.fn(),
             on: vi.fn(),
             off: vi.fn(),
-            connectionId: 'conn-123',
             reconnected$: new Subject<void>().asObservable()
         };
         mockPermissions = {
@@ -81,29 +77,19 @@ describe('OperationsServersComponent', () => {
     });
 
     describe('getServerStatus', () => {
-        it('returns "Updating Status" when server is updating', () => {
-            const server = makeServer({ updating: true });
-            expect(component.getServerStatus(server)).toBe('Updating Status');
-        });
-
         it('returns "Stopping" when server is stopping', () => {
             const server = makeServer({ status: { ...makeServer().status, stopping: true } });
             expect(component.getServerStatus(server)).toBe('Stopping');
         });
 
-        it('returns "Started" when server has started flag', () => {
-            const server = makeServer({ status: { ...makeServer().status, started: true } });
-            expect(component.getServerStatus(server)).toBe('Started');
+        it('returns "Launching" when launching flag is set', () => {
+            const server = makeServer({ status: { ...makeServer().status, launching: true, running: false, stopping: false } });
+            expect(component.getServerStatus(server)).toBe('Launching');
         });
 
         it('returns "Offline" when server is not running', () => {
             const server = makeServer({ status: { ...makeServer().status, running: false } });
             expect(component.getServerStatus(server)).toBe('Offline');
-        });
-
-        it('returns "Launching" when running but no mission', () => {
-            const server = makeServer({ status: { ...makeServer().status, mission: '' } });
-            expect(component.getServerStatus(server)).toBe('Launching');
         });
 
         it('returns "Waiting" when uptime is 00:00:00', () => {
@@ -380,11 +366,10 @@ describe('OperationsServersComponent', () => {
                 missions: [{ path: '/p', name: 'test', map: 'Altis' }]
             }));
 
-            component.getServers(true);
+            component.getServers();
 
             expect(component.servers).toBe(servers);
             expect(component.instanceCount).toBe(2);
-            expect(component.updating).toBe(false);
         });
     });
 
@@ -395,7 +380,7 @@ describe('OperationsServersComponent', () => {
 
             component.stop(server);
 
-            expect(mockGameServersService.stopServer).toHaveBeenCalledWith('server1', 'conn-123');
+            expect(mockGameServersService.stopServer).toHaveBeenCalledWith('server1');
         });
 
         it('shows confirmation when players are on server', () => {
@@ -425,7 +410,7 @@ describe('OperationsServersComponent', () => {
             component.kill(server);
             dialogAfterClosed$.next(true);
 
-            expect(mockGameServersService.killServer).toHaveBeenCalledWith('server1', 'conn-123');
+            expect(mockGameServersService.killServer).toHaveBeenCalledWith('server1');
         });
 
         it('does not call killServer when confirmation is rejected', () => {
@@ -458,13 +443,13 @@ describe('OperationsServersComponent', () => {
     describe('updateServerStatusTexts', () => {
         it('should set statusText on each server', () => {
             component.servers = [
-                makeServer({ id: 's1', updating: true }),
+                makeServer({ id: 's1', status: { ...makeServer().status, launching: true, running: false } }),
                 makeServer({ id: 's2', status: { ...makeServer().status, running: false } })
             ];
 
             component.updateServerStatusTexts();
 
-            expect(component.servers[0].statusText).toBe('Updating Status');
+            expect(component.servers[0].statusText).toBe('Launching');
             expect(component.servers[1].statusText).toBe('Offline');
         });
     });

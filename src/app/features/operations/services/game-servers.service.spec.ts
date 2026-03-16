@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { GameServersService } from './game-servers.service';
 import { UrlService } from '@app/core/services/url.service';
 import { of } from 'rxjs';
-import { GameServersResponse, MissionUploadResponse, ServerStatusResponse } from '../models/game-server';
+import { GameServersUpdate, MissionUploadResponse } from '../models/game-server';
 
 describe('GameServersService', () => {
     let service: GameServersService;
@@ -31,7 +31,7 @@ describe('GameServersService', () => {
     });
 
     it('getServers calls GET /gameservers', () => {
-        const mockResponse: GameServersResponse = { servers: [], instanceCount: 0, missions: [] };
+        const mockResponse: GameServersUpdate = { servers: [], instanceCount: 0, missions: [] };
         mockHttpClient.get.mockReturnValue(of(mockResponse));
 
         service.getServers().subscribe({
@@ -55,47 +55,20 @@ describe('GameServersService', () => {
         expect(mockHttpClient.get).toHaveBeenCalledWith('http://localhost:5500/gameservers/disabled');
     });
 
-    it('getServerStatus calls GET /gameservers/status/:id', () => {
-        const mockResponse: ServerStatusResponse = {
-            gameServer: { id: 'server1', name: 'Test', status: { parsedUptime: '00:00:00', stopping: false, started: false, running: false, mission: '', players: [] } },
-            instanceCount: 1
-        };
-        mockHttpClient.get.mockReturnValue(of(mockResponse));
-
-        service.getServerStatus('server1').subscribe({
-            next: (response) => {
-                expect(response.gameServer.id).toBe('server1');
-            }
-        });
-
-        expect(mockHttpClient.get).toHaveBeenCalledWith('http://localhost:5500/gameservers/status/server1');
-    });
-
-    it('toggleDisabledState calls POST /gameservers/disabled with Hub-Connection-Id header', () => {
-        service.toggleDisabledState(false, 'conn-123').subscribe();
+    it('toggleDisabledState calls POST /gameservers/disabled', () => {
+        service.toggleDisabledState(false).subscribe();
 
         expect(mockHttpClient.post).toHaveBeenCalledWith(
             'http://localhost:5500/gameservers/disabled',
-            { state: true },
-            expect.objectContaining({ headers: expect.any(Object) })
+            { state: true }
         );
-
-        const headers = mockHttpClient.post.mock.calls[0][2].headers;
-        expect(headers.get('Hub-Connection-Id')).toBe('conn-123');
     });
 
-    it('deleteServer calls DELETE /gameservers/:id with Hub-Connection-Id header', () => {
-        mockHttpClient.delete.mockReturnValue(of([]));
-
-        service.deleteServer('server1', 'conn-123').subscribe({
-            next: (response) => {
-                expect(response).toEqual([]);
-            }
-        });
+    it('deleteServer calls DELETE /gameservers/:id', () => {
+        service.deleteServer('server1').subscribe();
 
         expect(mockHttpClient.delete).toHaveBeenCalledWith(
-            'http://localhost:5500/gameservers/server1',
-            expect.objectContaining({ headers: expect.any(Object) })
+            'http://localhost:5500/gameservers/server1'
         );
     });
 
@@ -103,12 +76,11 @@ describe('GameServersService', () => {
         const body = { previousIndex: 0, newIndex: 1 };
         mockHttpClient.patch.mockReturnValue(of([]));
 
-        service.updateServerOrder(body, 'conn-123').subscribe();
+        service.updateServerOrder(body).subscribe();
 
         expect(mockHttpClient.patch).toHaveBeenCalledWith(
             'http://localhost:5500/gameservers/order',
-            body,
-            expect.objectContaining({ headers: expect.any(Object) })
+            body
         );
     });
 
@@ -117,7 +89,7 @@ describe('GameServersService', () => {
         const mockResponse: MissionUploadResponse = { missions: [], missionReports: [] };
         mockHttpClient.post.mockReturnValue(of(mockResponse));
 
-        service.uploadMission(formData, 'conn-123').subscribe({
+        service.uploadMission(formData).subscribe({
             next: (response) => {
                 expect(response).toEqual(mockResponse);
             }
@@ -126,53 +98,49 @@ describe('GameServersService', () => {
         expect(mockHttpClient.post).toHaveBeenCalledWith(
             'http://localhost:5500/missions/upload',
             formData,
-            expect.objectContaining({ reportProgress: true, headers: expect.any(Object) })
+            expect.objectContaining({ reportProgress: true })
         );
     });
 
     it('launchServer calls POST /gameservers/launch/:id', () => {
-        service.launchServer('server1', 'mission.pbo', 'conn-123').subscribe();
+        service.launchServer('server1', 'mission.pbo').subscribe();
 
         expect(mockHttpClient.post).toHaveBeenCalledWith(
             'http://localhost:5500/gameservers/launch/server1',
-            { missionName: 'mission.pbo' },
-            expect.objectContaining({ headers: expect.any(Object) })
+            { missionName: 'mission.pbo' }
         );
     });
 
     it('stopServer calls POST /gameservers/stop/:id', () => {
-        service.stopServer('server1', 'conn-123').subscribe();
+        service.stopServer('server1').subscribe();
 
         expect(mockHttpClient.post).toHaveBeenCalledWith(
             'http://localhost:5500/gameservers/stop/server1',
-            null,
-            expect.objectContaining({ headers: expect.any(Object) })
+            null
         );
     });
 
     it('killServer calls POST /gameservers/kill/:id', () => {
-        service.killServer('server1', 'conn-123').subscribe();
+        service.killServer('server1').subscribe();
 
         expect(mockHttpClient.post).toHaveBeenCalledWith(
             'http://localhost:5500/gameservers/kill/server1',
-            null,
-            expect.objectContaining({ headers: expect.any(Object) })
+            null
         );
     });
 
     it('killAllServers calls POST /gameservers/killall', () => {
-        service.killAllServers('conn-123').subscribe();
+        service.killAllServers().subscribe();
 
         expect(mockHttpClient.post).toHaveBeenCalledWith(
             'http://localhost:5500/gameservers/killall',
-            null,
-            expect.objectContaining({ headers: expect.any(Object) })
+            null
         );
     });
 
-    it('addServer calls PUT /gameservers with JSON and Hub-Connection-Id headers', () => {
+    it('addServer calls PUT /gameservers with JSON Content-Type header', () => {
         const body = JSON.stringify({ name: 'Test' });
-        service.addServer(body, 'conn-123').subscribe();
+        service.addServer(body).subscribe();
 
         expect(mockHttpClient.put).toHaveBeenCalledWith(
             'http://localhost:5500/gameservers',
@@ -180,13 +148,12 @@ describe('GameServersService', () => {
             expect.objectContaining({ headers: expect.any(Object) })
         );
         const headers = mockHttpClient.put.mock.calls[0][2].headers;
-        expect(headers.get('Hub-Connection-Id')).toBe('conn-123');
         expect(headers.get('Content-Type')).toBe('application/json');
     });
 
-    it('editServer calls PATCH /gameservers with JSON and Hub-Connection-Id headers', () => {
+    it('editServer calls PATCH /gameservers with JSON Content-Type header', () => {
         const server = { id: 'server1', name: 'Test' };
-        service.editServer(server, 'conn-123').subscribe();
+        service.editServer(server).subscribe();
 
         expect(mockHttpClient.patch).toHaveBeenCalledWith(
             'http://localhost:5500/gameservers',
@@ -194,17 +161,16 @@ describe('GameServersService', () => {
             expect.objectContaining({ headers: expect.any(Object) })
         );
         const headers = mockHttpClient.patch.mock.calls[0][2].headers;
-        expect(headers.get('Hub-Connection-Id')).toBe('conn-123');
+        expect(headers.get('Content-Type')).toBe('application/json');
     });
 
-    it('checkServerExists calls POST /gameservers/:value with Hub-Connection-Id header', () => {
+    it('checkServerExists calls POST /gameservers/:value', () => {
         const server = { id: 'server1' };
-        service.checkServerExists('testName', server, 'conn-123').subscribe();
+        service.checkServerExists('testName', server).subscribe();
 
         expect(mockHttpClient.post).toHaveBeenCalledWith(
             'http://localhost:5500/gameservers/testName',
-            server,
-            expect.objectContaining({ headers: expect.any(Object) })
+            server
         );
     });
 

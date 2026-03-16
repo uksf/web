@@ -34,7 +34,6 @@ const ITEM_SIZE = 20;
     selector: 'app-server-log-modal',
     templateUrl: './server-log-modal.component.html',
     styleUrls: ['./server-log-modal.component.scss'],
-    standalone: true,
     imports: [
         FormsModule,
         MatButtonModule,
@@ -163,7 +162,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (!status) {
             return false;
         }
-        return status.running || status.started || status.stopping;
+        return status.running || status.launching || status.stopping;
     }
 
     ngOnInit(): void {

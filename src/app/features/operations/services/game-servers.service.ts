@@ -3,80 +3,69 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UrlService } from '@app/core/services/url.service';
 import { OrderUpdateRequest } from '@app/shared/models/order-update-request';
-import { GameServer, GameServersResponse, MissionUploadResponse, ServerMod, ServerModsResetResponse, ServerStatusResponse } from '../models/game-server';
+import { GameServersUpdate, MissionUploadResponse, ServerMod, ServerModsResetResponse } from '../models/game-server';
 
 @Injectable({ providedIn: 'root' })
 export class GameServersService {
     private httpClient = inject(HttpClient);
     private urls = inject(UrlService);
 
-    private buildHeaders(connectionId: string): HttpHeaders {
-        return new HttpHeaders({ 'Hub-Connection-Id': connectionId });
-    }
-
-    getServers(): Observable<GameServersResponse> {
-        return this.httpClient.get<GameServersResponse>(`${this.urls.apiUrl}/gameservers`);
+    getServers(): Observable<GameServersUpdate> {
+        return this.httpClient.get<GameServersUpdate>(`${this.urls.apiUrl}/gameservers`);
     }
 
     getDisabledState(): Observable<boolean> {
         return this.httpClient.get<boolean>(`${this.urls.apiUrl}/gameservers/disabled`);
     }
 
-    getServerStatus(serverId: string): Observable<ServerStatusResponse> {
-        return this.httpClient.get<ServerStatusResponse>(`${this.urls.apiUrl}/gameservers/status/${serverId}`);
+    toggleDisabledState(disabled: boolean): Observable<void> {
+        return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/disabled`, { state: !disabled });
     }
 
-    toggleDisabledState(disabled: boolean, connectionId: string): Observable<void> {
-        return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/disabled`, { state: !disabled }, { headers: this.buildHeaders(connectionId) });
+    deleteServer(serverId: string): Observable<void> {
+        return this.httpClient.delete<void>(`${this.urls.apiUrl}/gameservers/${serverId}`);
     }
 
-    deleteServer(serverId: string, connectionId: string): Observable<GameServer[]> {
-        return this.httpClient.delete<GameServer[]>(`${this.urls.apiUrl}/gameservers/${serverId}`, { headers: this.buildHeaders(connectionId) });
+    updateServerOrder(body: OrderUpdateRequest): Observable<void> {
+        return this.httpClient.patch<void>(`${this.urls.apiUrl}/gameservers/order`, body);
     }
 
-    updateServerOrder(body: OrderUpdateRequest, connectionId: string): Observable<GameServer[]> {
-        return this.httpClient.patch<GameServer[]>(`${this.urls.apiUrl}/gameservers/order`, body, { headers: this.buildHeaders(connectionId) });
-    }
-
-    uploadMission(formData: FormData, connectionId: string): Observable<MissionUploadResponse> {
+    uploadMission(formData: FormData): Observable<MissionUploadResponse> {
         return this.httpClient.post<MissionUploadResponse>(`${this.urls.apiUrl}/missions/upload`, formData, {
-            reportProgress: true,
-            headers: this.buildHeaders(connectionId)
+            reportProgress: true
         });
     }
 
-    launchServer(serverId: string, missionName: string, connectionId: string): Observable<void> {
-        return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/launch/${serverId}`, { missionName }, { headers: this.buildHeaders(connectionId) });
+    launchServer(serverId: string, missionName: string): Observable<void> {
+        return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/launch/${serverId}`, { missionName });
     }
 
-    stopServer(serverId: string, connectionId: string): Observable<ServerStatusResponse> {
-        return this.httpClient.post<ServerStatusResponse>(`${this.urls.apiUrl}/gameservers/stop/${serverId}`, null, { headers: this.buildHeaders(connectionId) });
+    stopServer(serverId: string): Observable<void> {
+        return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/stop/${serverId}`, null);
     }
 
-    killServer(serverId: string, connectionId: string): Observable<ServerStatusResponse> {
-        return this.httpClient.post<ServerStatusResponse>(`${this.urls.apiUrl}/gameservers/kill/${serverId}`, null, { headers: this.buildHeaders(connectionId) });
+    killServer(serverId: string): Observable<void> {
+        return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/kill/${serverId}`, null);
     }
 
-    killAllServers(connectionId: string): Observable<void> {
-        return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/killall`, null, { headers: this.buildHeaders(connectionId) });
+    killAllServers(): Observable<void> {
+        return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/killall`, null);
     }
 
-    addServer(body: string, connectionId: string): Observable<unknown> {
+    addServer(body: string): Observable<unknown> {
         return this.httpClient.put(`${this.urls.apiUrl}/gameservers`, body, {
-            headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Hub-Connection-Id': connectionId })
+            headers: new HttpHeaders({ 'Content-Type': 'application/json' })
         });
     }
 
-    editServer(server: unknown, connectionId: string): Observable<boolean> {
+    editServer(server: unknown): Observable<boolean> {
         return this.httpClient.patch<boolean>(`${this.urls.apiUrl}/gameservers`, server, {
-            headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Hub-Connection-Id': connectionId })
+            headers: new HttpHeaders({ 'Content-Type': 'application/json' })
         });
     }
 
-    checkServerExists(value: unknown, server: unknown, connectionId: string): Observable<boolean> {
-        return this.httpClient.post<boolean>(`${this.urls.apiUrl}/gameservers/${value}`, server, {
-            headers: this.buildHeaders(connectionId)
-        });
+    checkServerExists(value: unknown, server: unknown): Observable<boolean> {
+        return this.httpClient.post<boolean>(`${this.urls.apiUrl}/gameservers/${value}`, server);
     }
 
     getServerMods(serverId: string): Observable<ServerMod[]> {

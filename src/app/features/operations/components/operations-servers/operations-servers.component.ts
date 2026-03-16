@@ -16,7 +16,7 @@ import { PermissionsService } from '@app/core/services/permissions.service';
 import { UksfError } from '@app/shared/models/response';
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { OrderUpdateRequest } from '@app/shared/models/order-update-request';
-import { GameServer, Mission, MissionReport } from '../../models/game-server';
+import { GameServer, GameServersUpdate, GameServerUpdate, Mission, MissionReport } from '../../models/game-server';
 import { GameServersService } from '../../services/game-servers.service';
 import { DestroyableComponent } from '@app/shared/components';
 import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
@@ -74,42 +74,39 @@ export class OperationsServersComponent extends DestroyableComponent implements 
     disabled = false;
     updatingOrder = false;
     uploadingFile: boolean;
-    updating: boolean;
     progress: number;
     message: string;
     instanceCount: number;
-    updateRequest: { unsubscribe: () => void };
+    pendingActions = new Set<string>();
     fileDragging;
     dropZoneHeight = 0;
     dropZoneWidth = 0;
     private uptimeInterval: number;
 
-    private onReceiveDisabledState = (state) => {
-        this.disabled = state as boolean;
+    private onReceiveDisabledState = (state: boolean) => {
+        this.disabled = state;
     };
 
-    private onReceiveAnyUpdate = (connectionId: string, skipRefresh: boolean) => {
-        if (connectionId !== this.serversHub.connectionId) {
-            this.getServers(skipRefresh);
+    private onReceiveServersUpdate = (update: GameServersUpdate) => {
+        this.servers = update.servers;
+        this.instanceCount = update.instanceCount;
+        this.missions.next(update.missions.map(this.mapMissionElement));
+        this.updateServerStatusTexts();
+    };
+
+    private onReceiveServerUpdate = (update: GameServerUpdate) => {
+        if (!this.servers) return;
+        const index = this.servers.findIndex(s => s.id === update.server.id);
+        if (index >= 0) {
+            this.servers[index] = update.server;
         }
+        this.instanceCount = update.instanceCount;
+        this.updateServerStatusTexts();
     };
 
-    private onReceiveServerUpdate = (connectionId: string, serverId: string) => {
-        if (connectionId !== this.serversHub.connectionId) {
-            const server = this.servers.find((server) => server.id === serverId);
-            this.refreshServerStatus(server);
-        }
+    private onReceiveMissionsUpdate = (missions: Mission[]) => {
+        this.missions.next(missions.map(this.mapMissionElement));
     };
-
-    private onReceiveMissionsUpdate = (connectionId: string, missions: Mission[]) => {
-        if (connectionId !== this.serversHub.connectionId) {
-            this.missions.next(missions.map(this.mapMissionElement));
-        }
-    };
-
-    private get connectionId(): string {
-        return this.serversHub.connectionId;
-    }
 
     ngOnInit() {
         this.admin = this.permissions.hasPermission(Permissions.ADMIN);
@@ -117,9 +114,9 @@ export class OperationsServersComponent extends DestroyableComponent implements 
         this.serversHub.connect();
 
         this.serversHub.on('ReceiveDisabledState', this.onReceiveDisabledState);
-        this.serversHub.on('ReceiveAnyUpdateIfNotCaller', this.onReceiveAnyUpdate);
-        this.serversHub.on('ReceiveServerUpdateIfNotCaller', this.onReceiveServerUpdate);
-        this.serversHub.on('ReceiveMissionsUpdateIfNotCaller', this.onReceiveMissionsUpdate);
+        this.serversHub.on('ReceiveServersUpdate', this.onReceiveServersUpdate);
+        this.serversHub.on('ReceiveServerUpdate', this.onReceiveServerUpdate);
+        this.serversHub.on('ReceiveMissionsUpdate', this.onReceiveMissionsUpdate);
         this.serversHub.reconnected$.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.getServers();
@@ -140,46 +137,21 @@ export class OperationsServersComponent extends DestroyableComponent implements 
         if (this.uptimeInterval) {
             clearInterval(this.uptimeInterval);
         }
-        if (this.updateRequest) {
-            this.updateRequest.unsubscribe();
-        }
-        if (this.servers) {
-            this.servers.forEach((server) => {
-                if (server.request) {
-                    server.request.unsubscribe();
-                }
-            });
-        }
         this.serversHub.off('ReceiveDisabledState', this.onReceiveDisabledState);
-        this.serversHub.off('ReceiveAnyUpdateIfNotCaller', this.onReceiveAnyUpdate);
-        this.serversHub.off('ReceiveServerUpdateIfNotCaller', this.onReceiveServerUpdate);
-        this.serversHub.off('ReceiveMissionsUpdateIfNotCaller', this.onReceiveMissionsUpdate);
+        this.serversHub.off('ReceiveServersUpdate', this.onReceiveServersUpdate);
+        this.serversHub.off('ReceiveServerUpdate', this.onReceiveServerUpdate);
+        this.serversHub.off('ReceiveMissionsUpdate', this.onReceiveMissionsUpdate);
         this.serversHub.disconnect();
     }
 
-    getServers(skip = false) {
-        if (this.updateRequest) {
-            this.updateRequest.unsubscribe();
-        }
-        this.updating = true;
-        this.updateRequest = this.gameServersService.getServers().subscribe({
+    getServers() {
+        this.gameServersService.getServers().pipe(first()).subscribe({
             next: (response) => {
                 this.servers = response.servers;
                 this.instanceCount = response.instanceCount;
                 this.missions.next(response.missions.map(this.mapMissionElement));
                 this.updateServerStatusTexts();
-
-                if (skip) {
-                    this.updating = false;
-                    return;
-                }
-                this.servers.forEach((server) => {
-                    this.refreshServerStatus(server);
-                });
                 this.checkDeepLink();
-            },
-            error: () => {
-                this.updating = false;
             }
         });
     }
@@ -207,26 +179,16 @@ export class OperationsServersComponent extends DestroyableComponent implements 
         }
     }
 
-    getServerStatus(server) {
-        if (server.updating) {
-            return 'Updating Status';
-        }
-        if (server.status.stopping) {
-            return 'Stopping';
-        }
-        if (server.status.started) {
-            return 'Started';
-        }
-        if (!server.status.running) {
-            return 'Offline';
-        }
-        if (!server.status.mission) {
-            return 'Launching';
-        }
-        if (server.status.parsedUptime === '00:00:00') {
-            return 'Waiting';
-        }
+    getServerStatus(server: GameServer): string {
+        if (server.status.stopping) return 'Stopping';
+        if (server.status.launching) return 'Launching';
+        if (!server.status.running) return 'Offline';
+        if (server.status.parsedUptime === '00:00:00') return 'Waiting';
         return 'Running';
+    }
+
+    isPending(serverId: string): boolean {
+        return this.pendingActions.has(serverId);
     }
 
     getDisabledState() {
@@ -238,29 +200,6 @@ export class OperationsServersComponent extends DestroyableComponent implements 
                     this.disabled = state;
                 }
             });
-    }
-
-    refreshServerStatus(server) {
-        if (server.request) {
-            server.request.unsubscribe();
-        }
-        this.updating = true;
-        server.updating = true;
-        server.statusText = this.getServerStatus(server);
-        server.request = this.gameServersService.getServerStatus(server.id).subscribe({
-            next: (response) => {
-                const serverIndex = this.servers.findIndex((x) => x.id === response.gameServer.id);
-                this.servers[serverIndex] = response.gameServer;
-                this.instanceCount = response.instanceCount;
-                this.updating = false;
-                this.updateServerStatusTexts();
-            },
-            error: () => {
-                server.updating = false;
-                this.updating = false;
-                this.updateServerStatusTexts();
-            }
-        });
     }
 
     openServerLog(server: GameServer, scrollToLine?: number): void {
@@ -291,88 +230,47 @@ export class OperationsServersComponent extends DestroyableComponent implements 
     }
 
     addServer() {
-        this.dialog
-            .open(AddServerModalComponent, { panelClass: 'no-max-height-dialog' })
-            .afterClosed()
-            .pipe(first())
-            .subscribe({
-                next: () => {
-                    this.getServers(true);
-                }
-            });
+        this.dialog.open(AddServerModalComponent, { panelClass: 'no-max-height-dialog' })
+            .afterClosed().pipe(first()).subscribe();
     }
 
     toggleDisabledState() {
-        this.gameServersService.toggleDisabledState(this.disabled, this.connectionId).pipe(first()).subscribe();
+        this.gameServersService.toggleDisabledState(this.disabled).pipe(first()).subscribe();
     }
 
-    editServer(event, server) {
+    editServer(event: Event, server: GameServer) {
         event.stopPropagation();
-        this.dialog
-            .open(AddServerModalComponent, {
-                data: {
-                    server: server,
-                    connectionId: this.connectionId
-                },
-                panelClass: 'no-max-height-dialog'
-            })
-            .afterClosed()
-            .pipe(first())
-            .subscribe({
+        this.dialog.open(AddServerModalComponent, { data: { server }, panelClass: 'no-max-height-dialog' })
+            .afterClosed().pipe(first()).subscribe({
                 next: (environmentChanged: boolean) => {
                     if (environmentChanged) {
                         this.dialog.open(MessageModalComponent, { data: { message: 'Server environment was changed. Selected mods for the server have been reset' } });
                     }
-
-                    this.getServers(true);
                 }
             });
     }
 
-    deleteServer(event, server) {
+    deleteServer(event: Event, server: GameServer) {
         event.stopPropagation();
-        this.dialog
-            .open(ConfirmationModalComponent, {
-                data: { message: `Are you sure you want to delete '${server.name}'?` }
-            })
-            .afterClosed()
-            .pipe(first())
-            .subscribe({
+        this.dialog.open(ConfirmationModalComponent, { data: { message: `Are you sure you want to delete '${server.name}'?` } })
+            .afterClosed().pipe(first()).subscribe({
                 next: (result) => {
                     if (result) {
-                        this.gameServersService
-                            .deleteServer(server.id, this.connectionId)
-                            .pipe(first())
-                            .subscribe({
-                                next: (response) => {
-                                    this.servers = response;
-                                    this.updateServerStatusTexts();
-                                }
-                            });
+                        this.gameServersService.deleteServer(server.id).pipe(first()).subscribe();
                     }
                 }
             });
     }
 
     onMove(event: CdkDragDrop<string[]>) {
-        if (event.previousIndex === event.currentIndex) {
-            return;
-        }
-
+        if (event.previousIndex === event.currentIndex) return;
         this.updatingOrder = true;
         moveItemInArray(this.servers, event.previousIndex, event.currentIndex);
-
         const body: OrderUpdateRequest = { previousIndex: event.previousIndex, newIndex: event.currentIndex };
-        this.gameServersService
-            .updateServerOrder(body, this.connectionId)
-            .pipe(first())
-            .subscribe({
-                next: (response) => {
-                    this.servers = response;
-                    this.updateServerStatusTexts();
-                    this.updatingOrder = false;
-                }
-            });
+        this.gameServersService.updateServerOrder(body).pipe(first()).subscribe({
+            next: () => { this.updatingOrder = false; },
+            error: () => { this.updatingOrder = false; }
+        });
     }
 
     showMissionReport(missionReports: MissionReport[]) {
@@ -412,7 +310,7 @@ export class OperationsServersComponent extends DestroyableComponent implements 
 
         this.uploadingFile = true;
         this.gameServersService
-            .uploadMission(formData, this.connectionId)
+            .uploadMission(formData)
             .pipe(first())
             .subscribe({
                 next: (response) => {
@@ -444,7 +342,7 @@ export class OperationsServersComponent extends DestroyableComponent implements 
         });
     }
 
-    stop(server) {
+    stop(server: GameServer) {
         if (server.status.players.length > 0) {
             this.dialog
                 .open(ConfirmationModalComponent, {
@@ -464,33 +362,22 @@ export class OperationsServersComponent extends DestroyableComponent implements 
         }
     }
 
-    launch(server) {
-        server.updating = true;
-        this.gameServersService
-            .launchServer(server.id, server.missionSelection.value, this.connectionId)
-            .pipe(first())
-            .subscribe({
-                next: () => {
-                    server.updating = false;
-                    this.refreshServerStatus(server);
-                },
-                error: (error: UksfError) => {
-                    if (error.statusCode === 400 && error.detailCode === 1 && error.validation != null) {
-                        this.dialog.open(ValidationReportModalComponent, {
-                            data: { title: error.error, messages: error.validation.reports }
-                        });
-                    } else {
-                        this.dialog.open(MessageModalComponent, {
-                            data: { message: error.error }
-                        });
-                    }
-                    server.updating = false;
-                    this.refreshServerStatus(server);
+    launch(server: GameServer) {
+        this.pendingActions.add(server.id);
+        this.gameServersService.launchServer(server.id, server.missionSelection.value).pipe(first()).subscribe({
+            next: () => { this.pendingActions.delete(server.id); },
+            error: (error: UksfError) => {
+                this.pendingActions.delete(server.id);
+                if (error.statusCode === 400 && error.detailCode === 1 && error.validation != null) {
+                    this.dialog.open(ValidationReportModalComponent, { data: { title: error.error, messages: error.validation.reports } });
+                } else {
+                    this.dialog.open(MessageModalComponent, { data: { message: error.error } });
                 }
-            });
+            }
+        });
     }
 
-    kill(server) {
+    kill(server: GameServer) {
         this.dialog
             .open(ConfirmationModalComponent, {
                 data: { message: `Are you sure you want to kill '${server.name}'? This could have unexpected effects on the server` }
@@ -506,62 +393,26 @@ export class OperationsServersComponent extends DestroyableComponent implements 
             });
     }
 
-    runStop(server) {
-        server.updating = true;
-        this.gameServersService
-            .stopServer(server.id, this.connectionId)
-            .pipe(first())
-            .subscribe({
-                next: (response) => {
-                    const serverIndex = this.servers.findIndex((x) => x.id === response.gameServer.id);
-                    this.servers[serverIndex] = response.gameServer;
-                    this.instanceCount = response.instanceCount;
-                    this.servers[serverIndex].status.stopping = true;
-                },
-                error: (error) => {
-                    this.showError(error);
-                    server.updating = false;
-                    server.status.stopping = false;
-                    this.refreshServerStatus(server);
-                }
-            });
+    runStop(server: GameServer) {
+        this.pendingActions.add(server.id);
+        this.gameServersService.stopServer(server.id).pipe(first()).subscribe({
+            next: () => { this.pendingActions.delete(server.id); },
+            error: (error) => { this.pendingActions.delete(server.id); this.showError(error); }
+        });
     }
 
-    runKill(server) {
-        server.updating = true;
-        this.gameServersService
-            .killServer(server.id, this.connectionId)
-            .pipe(first())
-            .subscribe({
-                next: (response) => {
-                    const serverIndex = this.servers.findIndex((x) => x.id === response.gameServer.id);
-                    this.servers[serverIndex] = response.gameServer;
-                    this.instanceCount = response.instanceCount;
-                },
-                error: (error) => {
-                    this.showError(error);
-                    server.updating = false;
-                    this.refreshServerStatus(server);
-                }
-            });
+    runKill(server: GameServer) {
+        this.pendingActions.add(server.id);
+        this.gameServersService.killServer(server.id).pipe(first()).subscribe({
+            next: () => { this.pendingActions.delete(server.id); },
+            error: (error) => { this.pendingActions.delete(server.id); this.showError(error); }
+        });
     }
 
-    editServerMods(event, server) {
+    editServerMods(event: Event, server: GameServer) {
         event.stopPropagation();
-        this.dialog
-            .open(EditServerModsModalComponent, {
-                data: {
-                    server: server
-                },
-                panelClass: 'overflow-hidden-dialog'
-            })
-            .afterClosed()
-            .pipe(first())
-            .subscribe({
-                next: () => {
-                    this.getServers(true);
-                }
-            });
+        this.dialog.open(EditServerModsModalComponent, { data: { server }, panelClass: 'overflow-hidden-dialog' })
+            .afterClosed().pipe(first()).subscribe();
     }
 
     onFileOver() {
@@ -655,18 +506,9 @@ export class OperationsServersComponent extends DestroyableComponent implements 
             .subscribe({
                 next: (result) => {
                     if (result) {
-                        this.gameServersService
-                            .killAllServers(this.connectionId)
-                            .pipe(first())
-                            .subscribe({
-                                next: () => {
-                                    this.getServers();
-                                },
-                                error: (error) => {
-                                    this.showError(error);
-                                    this.getServers();
-                                }
-                            });
+                        this.gameServersService.killAllServers().pipe(first()).subscribe({
+                            error: (error) => { this.showError(error); }
+                        });
                     }
                 }
             });

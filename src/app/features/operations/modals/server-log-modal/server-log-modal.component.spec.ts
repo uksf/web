@@ -29,7 +29,7 @@ describe('ServerLogModalComponent', () => {
         status: {
             parsedUptime: '00:00:00',
             stopping: false,
-            started: true,
+            launching: false,
             running: true,
             mission: 'test_mission',
             players: ['uid1', 'uid2', 'uid3', 'uid4', 'uid5']
@@ -107,19 +107,19 @@ describe('ServerLogModalComponent', () => {
         });
 
         it('should disable tail for offline server', () => {
-            component.server = { ...testServer, status: { ...testServer.status, running: false, started: false, stopping: false } };
+            component.server = { ...testServer, status: { ...testServer.status, running: false, launching: false, stopping: false } };
             component.tailEnabled = (component as any).isServerActive();
             expect(component.tailEnabled).toBe(false);
         });
 
-        it('should enable tail when server is started but not yet running', () => {
-            component.server = { ...testServer, status: { ...testServer.status, running: false, started: true, stopping: false } };
+        it('should enable tail when server is launching but not yet running', () => {
+            component.server = { ...testServer, status: { ...testServer.status, running: false, launching: true, stopping: false } };
             component.tailEnabled = (component as any).isServerActive();
             expect(component.tailEnabled).toBe(true);
         });
 
         it('should enable tail when server is stopping', () => {
-            component.server = { ...testServer, status: { ...testServer.status, running: false, started: false, stopping: true } };
+            component.server = { ...testServer, status: { ...testServer.status, running: false, launching: false, stopping: true } };
             component.tailEnabled = (component as any).isServerActive();
             expect(component.tailEnabled).toBe(true);
         });

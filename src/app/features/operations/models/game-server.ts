@@ -2,9 +2,11 @@ import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/
 import { ValidationReport } from '@app/shared/models/response';
 
 export interface GameServerStatus {
+    map: string;
+    maxPlayers: string;
     parsedUptime: string;
+    launching: boolean;
     stopping: boolean;
-    started: boolean;
     running: boolean;
     mission: string;
     players: string[];
@@ -13,23 +15,21 @@ export interface GameServerStatus {
 export interface GameServer {
     id: string;
     name: string;
+    launchedBy: string;
     status: GameServerStatus;
     logSources?: RptLogSource[];
     missionSelection?: IDropdownElement;
-    // Frontend-only properties set during runtime
-    updating?: boolean;
-    request?: { unsubscribe: () => void };
     statusText?: string;
 }
 
-export interface GameServersResponse {
+export interface GameServersUpdate {
     servers: GameServer[];
     instanceCount: number;
     missions: Mission[];
 }
 
-export interface ServerStatusResponse {
-    gameServer: GameServer;
+export interface GameServerUpdate {
+    server: GameServer;
     instanceCount: number;
 }
 
@@ -73,4 +73,3 @@ export interface RptLogSearchResult {
     lineIndex: number;
     text: string;
 }
-
