@@ -71,7 +71,7 @@ stages:
 
                 try {
                     $loginBody = @{ email = $email; password = $password } | ConvertTo-Json
-                    $loginResponse = Invoke-WebRequest -Uri "$apiUrl/auth/login" -Method Post -Body $loginBody -ContentType "application/json" -TimeoutSec 10
+                    $loginResponse = Invoke-WebRequest -Uri "$apiUrl/auth/login" -Method Post -Body $loginBody -ContentType "application/json" -UseBasicParsing -TimeoutSec 10
                     $token = ($loginResponse.Content | ConvertFrom-Json).token
 
                     if (-not $token) {
@@ -80,7 +80,7 @@ stages:
                     }
 
                     $headers = @{ Authorization = "Bearer $token" }
-                    Invoke-WebRequest -Uri "$apiUrl/version/update" -Method Get -Headers $headers -ContentType "application/json" -TimeoutSec 10
+                    Invoke-WebRequest -Uri "$apiUrl/version/update" -Method Get -Headers $headers -ContentType "application/json" -UseBasicParsing -TimeoutSec 10
                     Write-Host "Version incremented successfully"
                 }
                 catch {
