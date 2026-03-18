@@ -1,8 +1,18 @@
 import { Injectable, inject } from '@angular/core';
 import { UrlService } from './url.service';
-import { HubConnectionBuilder, HubConnectionState, HttpTransportType, LogLevel, HubConnection } from '@microsoft/signalr';
+import { HubConnectionBuilder, HubConnectionState, HttpTransportType, LogLevel, HubConnection, IRetryPolicy, RetryContext } from '@microsoft/signalr';
 import { SessionService } from './authentication/session.service';
 import { Subject } from 'rxjs';
+
+const RETRY_DELAYS_MS = [0, 1000, 2000, 5000, 5000, 10000, 10000, 30000];
+const MAX_RETRY_DELAY_MS = 30000;
+const FALLBACK_RECONNECT_INTERVAL_MS = 5000;
+
+class IndefiniteRetryPolicy implements IRetryPolicy {
+    nextRetryDelayInMilliseconds(retryContext: RetryContext): number {
+        return RETRY_DELAYS_MS[retryContext.previousRetryCount] ?? MAX_RETRY_DELAY_MS;
+    }
+}
 
 @Injectable()
 export class SignalRService {
@@ -19,7 +29,7 @@ export class SignalRService {
                 transport: HttpTransportType.WebSockets,
                 logger: LogLevel.None
             })
-            .withAutomaticReconnect()
+            .withAutomaticReconnect(new IndefiniteRetryPolicy())
             .build();
         const container = new ConnectionContainer(connection, reconnectEvent);
         connection.onreconnected(() => {
@@ -27,25 +37,23 @@ export class SignalRService {
         });
         container.connected = this.startConnection(container);
         container.connected.then(() => {
-            connection.onclose((error) => {
-                if (error) {
-                    container.reconnectIntervalId = setInterval(() => {
-                        if (connection.state === HubConnectionState.Connected) {
+            connection.onclose(() => {
+                container.reconnectIntervalId = setInterval(() => {
+                    if (connection.state === HubConnectionState.Connected) {
+                        clearInterval(container.reconnectIntervalId);
+                        container.reconnectIntervalId = undefined;
+                        reconnectEvent.next();
+                        return;
+                    }
+                    connection
+                        .start()
+                        .then(() => {
                             clearInterval(container.reconnectIntervalId);
                             container.reconnectIntervalId = undefined;
                             reconnectEvent.next();
-                            return;
-                        }
-                        connection
-                            .start()
-                            .then(() => {
-                                clearInterval(container.reconnectIntervalId);
-                                container.reconnectIntervalId = undefined;
-                                reconnectEvent.next();
-                            })
-                            .catch(() => {});
-                    }, 5000);
-                }
+                        })
+                        .catch(() => {});
+                }, FALLBACK_RECONNECT_INTERVAL_MS);
             });
         });
         return container;
@@ -62,7 +70,7 @@ export class SignalRService {
                         resolve();
                     })
                     .catch(() => {
-                        container.connectTimeoutId = setTimeout(connectFunction, 5000);
+                        container.connectTimeoutId = setTimeout(connectFunction, FALLBACK_RECONNECT_INTERVAL_MS);
                     });
             };
             container.connectTimeoutId = setTimeout(connectFunction, 0);

@@ -4,6 +4,9 @@ import { SignalRService, ConnectionContainer } from './signalr.service';
 import { UrlService } from './url.service';
 import { SessionService } from './authentication/session.service';
 
+// Access the IndefiniteRetryPolicy via the module internals is not possible since it's not exported.
+// We test its behaviour indirectly through the retry delay constants.
+
 describe('SignalRService', () => {
     let service: SignalRService;
     let mockUrls: any;
@@ -53,7 +56,6 @@ describe('SignalRService', () => {
             const mockEvent = { complete: vi.fn() } as any;
             const container = new ConnectionContainer(mockConnection, mockEvent);
 
-            // Simulate a reconnection interval being set
             container.reconnectIntervalId = setInterval(() => {}, 5000);
             expect(container.reconnectIntervalId).toBeDefined();
 
