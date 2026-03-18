@@ -51,6 +51,7 @@ export class ApplicationPageComponent implements OnInit {
 
     checkStep() {
         if (this.accountService.account) {
+            const previousStep = this.step;
             if (this.accountService.account.application && this.accountService.account.application.state !== ApplicationState.WAITING) {
                 this.step = 6;
             } else if (this.accountService.account.membershipState === MembershipState.UNCONFIRMED) {
@@ -61,6 +62,10 @@ export class ApplicationPageComponent implements OnInit {
                 this.step = 5;
             } else {
                 this.step = 6;
+            }
+
+            if (previousStep === 3 && this.step > 3) {
+                this.analytics.trackEvent('email_confirmed');
             }
         }
     }
@@ -101,7 +106,6 @@ export class ApplicationPageComponent implements OnInit {
     private trackStepCompletion(completedStep: number) {
         switch (completedStep) {
             case 2: this.analytics.trackEvent('account_created'); break;
-            case 3: this.analytics.trackEvent('email_confirmed'); break;
             case 4: this.analytics.trackEvent('comms_linked'); break;
         }
     }
