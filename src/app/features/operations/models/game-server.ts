@@ -10,6 +10,7 @@ export interface GameServerStatus {
     running: boolean;
     mission: string;
     players: string[];
+    startedAt: string | null;
 }
 
 export interface GameServer {

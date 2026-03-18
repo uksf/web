@@ -127,9 +127,7 @@ export class OperationsServersComponent extends DestroyableComponent implements 
         this.getServers();
         this.getDisabledState();
 
-        this.uptimeInterval = window.setInterval(() => {
-            this.refreshUptimes();
-        }, 1000);
+        this.uptimeInterval = window.setInterval(() => this.tickUptimes(), 1000);
     }
 
     override ngOnDestroy() {
@@ -156,17 +154,25 @@ export class OperationsServersComponent extends DestroyableComponent implements 
         });
     }
 
-    refreshUptimes() {
-        if (this.servers) {
-            this.servers.forEach((server) => {
-                if (server.status.parsedUptime && server.status.parsedUptime !== '00:00:00') {
-                    const time = server.status.parsedUptime.split(':');
-                    const seconds = time[2] === '59' ? 0 : parseInt(time[2], 10) + 1;
-                    const minutes = time[1] === '59' && seconds === 0 ? 0 : seconds === 0 ? parseInt(time[1], 10) + 1 : parseInt(time[1], 10);
-                    const hours = time[0] === '59' && minutes === 0 && seconds === 0 ? 0 : minutes === 0 && seconds === 0 ? parseInt(time[0], 10) + 1 : parseInt(time[0], 10);
-                    server.status.parsedUptime = `${hours < 10 ? `0${hours}` : hours}:${minutes < 10 ? `0${minutes}` : minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
-                }
-            });
+    private tickUptimes() {
+        if (!this.servers) return;
+
+        const now = Date.now();
+        let changed = false;
+        this.servers.forEach((server) => {
+            if (!server.status.startedAt || !server.status.running) return;
+            const elapsed = Math.floor((now - new Date(server.status.startedAt).getTime()) / 1000);
+            if (elapsed < 0) return;
+            const h = Math.floor(elapsed / 3600);
+            const m = Math.floor((elapsed % 3600) / 60);
+            const s = elapsed % 60;
+            const uptime = `${h < 10 ? '0' : ''}${h}:${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+            if (server.status.parsedUptime !== uptime) {
+                server.status.parsedUptime = uptime;
+                changed = true;
+            }
+        });
+        if (changed) {
             this.updateServerStatusTexts();
         }
     }

@@ -103,43 +103,37 @@ describe('OperationsServersComponent', () => {
         });
     });
 
-    describe('refreshUptimes', () => {
-        it('increments seconds by 1', () => {
-            component.servers = [makeServer({ status: { ...makeServer().status, parsedUptime: '01:30:45' } })];
+    describe('uptime from startedAt', () => {
+        it('computes uptime from startedAt for running server', () => {
+            const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+            component.servers = [makeServer({ status: { ...makeServer().status, running: true, startedAt: twoHoursAgo } })];
 
-            component.refreshUptimes();
+            (component as any).tickUptimes();
 
-            expect(component.servers[0].status.parsedUptime).toBe('01:30:46');
+            expect(component.servers[0].status.parsedUptime).toMatch(/^02:00:0\d$/);
         });
 
-        it('rolls over seconds to minutes', () => {
-            component.servers = [makeServer({ status: { ...makeServer().status, parsedUptime: '01:30:59' } })];
+        it('does not update when startedAt is null', () => {
+            component.servers = [makeServer({ status: { ...makeServer().status, running: true, startedAt: null, parsedUptime: '00:00:00' } })];
 
-            component.refreshUptimes();
-
-            expect(component.servers[0].status.parsedUptime).toBe('01:31:00');
-        });
-
-        it('rolls over minutes to hours', () => {
-            component.servers = [makeServer({ status: { ...makeServer().status, parsedUptime: '01:59:59' } })];
-
-            component.refreshUptimes();
-
-            expect(component.servers[0].status.parsedUptime).toBe('02:00:00');
-        });
-
-        it('does not update when uptime is 00:00:00', () => {
-            component.servers = [makeServer({ status: { ...makeServer().status, parsedUptime: '00:00:00' } })];
-
-            component.refreshUptimes();
+            (component as any).tickUptimes();
 
             expect(component.servers[0].status.parsedUptime).toBe('00:00:00');
+        });
+
+        it('does not update when server is not running', () => {
+            const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+            component.servers = [makeServer({ status: { ...makeServer().status, running: false, startedAt: oneHourAgo, parsedUptime: '00:05:00' } })];
+
+            (component as any).tickUptimes();
+
+            expect(component.servers[0].status.parsedUptime).toBe('00:05:00');
         });
 
         it('does nothing when servers is null', () => {
             component.servers = null;
 
-            expect(() => component.refreshUptimes()).not.toThrow();
+            expect(() => (component as any).tickUptimes()).not.toThrow();
         });
     });
 
