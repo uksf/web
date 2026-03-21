@@ -16,6 +16,7 @@ describe('ServerLogModalComponent', () => {
     let mockServersHub: any;
     let mockSanitizer: any;
     let signalRCallbacks: Record<string, Function>;
+    let reconnectedSubject: Subject<void>;
 
     const testSources: RptLogSource[] = [
         { name: 'Server', isServer: true },
@@ -38,6 +39,7 @@ describe('ServerLogModalComponent', () => {
 
     beforeEach(() => {
         signalRCallbacks = {};
+        reconnectedSubject = new Subject<void>();
 
         mockDialogRef = { close: vi.fn() };
 
@@ -54,7 +56,7 @@ describe('ServerLogModalComponent', () => {
             off: vi.fn(),
             invoke: vi.fn().mockResolvedValue(undefined),
             connected: Promise.resolve(),
-            reconnected$: new Subject<void>().asObservable()
+            reconnected$: reconnectedSubject.asObservable()
         };
 
         mockSanitizer = {
@@ -1028,6 +1030,62 @@ describe('ServerLogModalComponent', () => {
     describe('trackByIndex', () => {
         it('should return the index', () => {
             expect(component.trackByIndex(42)).toBe(42);
+        });
+    });
+
+    describe('reconnection', () => {
+        beforeEach(async () => {
+            component.ngOnInit();
+            await mockServersHub.connected;
+        });
+
+        it('should re-subscribe to the active source on reconnect', () => {
+            mockServersHub.invoke.mockClear();
+
+            reconnectedSubject.next();
+
+            expect(mockServersHub.invoke).toHaveBeenCalledWith('SubscribeToLog', 'server1', 'Server');
+        });
+
+        it('should re-subscribe to the current source after switching', async () => {
+            await component.switchSource('HC1');
+            mockServersHub.invoke.mockClear();
+
+            reconnectedSubject.next();
+
+            expect(mockServersHub.invoke).toHaveBeenCalledWith('SubscribeToLog', 'server1', 'HC1');
+        });
+
+        it('should reset log state on reconnect', () => {
+            signalRCallbacks['ReceiveLogContent']('server1', 'Server', ['line1', 'line2'], 0, true);
+            expect(component.logLines.length).toBe(2);
+            expect(component.isLoading).toBe(false);
+
+            reconnectedSubject.next();
+
+            expect(component.logLines).toEqual([]);
+            expect(component.highlightedLines).toEqual([]);
+            expect(component.isLoading).toBe(true);
+            expect(component.searchResults).toEqual([]);
+            expect(component.searchMatchLines.size).toBe(0);
+            expect(component.currentSearchIndex).toBe(-1);
+            expect(component.linkedLineIndex).toBe(-1);
+        });
+
+        it('should preserve tail mode on reconnect', () => {
+            component.tailEnabled = true;
+
+            reconnectedSubject.next();
+
+            expect((component as any).scrollToBottomOnLoad).toBe(true);
+        });
+
+        it('should not set scrollToBottomOnLoad when tail is disabled', () => {
+            component.tailEnabled = false;
+
+            reconnectedSubject.next();
+
+            expect((component as any).scrollToBottomOnLoad).toBe(false);
         });
     });
 

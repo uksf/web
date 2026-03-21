@@ -181,6 +181,33 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         this.serversHub.connected.then(() => {
             this.serversHub.invoke('SubscribeToLog', this.server.id, 'Server');
         });
+
+        this.serversHub.reconnected$.pipe(takeUntil(this.destroy$)).subscribe({
+            next: () => this.resubscribeToLog()
+        });
+    }
+
+    private resubscribeToLog(): void {
+        this.logLines = [];
+        this.highlightedLines = [];
+        this.viewLineEntries = [];
+        this.projection = null;
+        this.baseHtml = [];
+        this.baseHighlightedLines = [];
+        this.pendingAppendLines = [];
+        if (this.appendRafId !== null) {
+            cancelAnimationFrame(this.appendRafId);
+            this.appendRafId = null;
+        }
+        this._viewport = undefined;
+        this.isLoading = true;
+        this.searchResults = [];
+        this.searchMatchLines = new Set();
+        this.totalMatches = 0;
+        this.currentSearchIndex = -1;
+        this.linkedLineIndex = -1;
+        this.scrollToBottomOnLoad = this.tailEnabled;
+        this.serversHub.invoke('SubscribeToLog', this.server.id, this.activeSource);
     }
 
     private onReceiveLogContent = (serverId: string, source: string, lines: string[], _startLineIndex: number, isComplete: boolean) => {
