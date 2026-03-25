@@ -311,14 +311,25 @@ describe('PermissionsService', () => {
             expect(mockNgxPermissionsService.addPermission).toHaveBeenCalledWith('UNLOGGED');
         });
 
-        it('redirects to login when API is unreachable even if token exists', async () => {
+        it('does not redirect to login on network error during token refresh', async () => {
             mockSessionService.hasToken.mockReturnValue(true);
             mockAuthenticationService.refresh.mockReturnValue(throwError(() => ({ statusCode: 0 })));
 
             await service.refresh();
 
-            expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
-            expect(mockNgxPermissionsService.addPermission).toHaveBeenCalledWith('UNLOGGED');
+            expect(mockRouter.navigate).not.toHaveBeenCalled();
+            expect(mockNgxPermissionsService.addPermission).not.toHaveBeenCalledWith('UNLOGGED');
+        });
+
+        it('does not redirect to login on network error during account fetch', async () => {
+            mockSessionService.hasToken.mockReturnValue(true);
+            mockAuthenticationService.refresh.mockReturnValue(of({ token: 'new-token' }));
+            mockAccountService.getAccount.mockReturnValue(throwError(() => ({ statusCode: 0 })));
+
+            await service.refresh();
+
+            expect(mockRouter.navigate).not.toHaveBeenCalled();
+            expect(mockNgxPermissionsService.addPermission).not.toHaveBeenCalledWith('UNLOGGED');
         });
 
         it('sets unlogged when getAccount returns null', async () => {

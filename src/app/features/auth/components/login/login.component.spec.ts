@@ -16,7 +16,8 @@ describe('LoginComponent', () => {
 
     beforeEach(() => {
         mockAuth = {
-            login: vi.fn()
+            login: vi.fn(),
+            logout: vi.fn()
         };
         mockRouter = {
             navigate: vi.fn().mockResolvedValue(true),
@@ -43,6 +44,14 @@ describe('LoginComponent', () => {
         component = TestBed.inject(LoginComponent);
         // Mock the form ViewChild
         (component as any).form = { valid: true };
+    });
+
+    describe('ngOnInit', () => {
+        it('clears any existing session on init', () => {
+            component.ngOnInit();
+
+            expect(mockAuth.logout).toHaveBeenCalled();
+        });
     });
 
     describe('submit', () => {

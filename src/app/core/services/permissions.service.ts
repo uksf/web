@@ -119,7 +119,12 @@ export class PermissionsService {
             await firstValueFrom(this.authenticationService.refresh());
         } catch (refreshError: unknown) {
             this.logger.warn('PermissionsService', 'Token refresh failed', refreshError);
-            if (this.isNetworkError(refreshError) || !this.sessionService.hasToken()) {
+            if (this.isNetworkError(refreshError)) {
+                // Network is temporarily down but token may still be valid.
+                // Don't kick user to login — the next reconnect or API call will retry.
+                return;
+            }
+            if (!this.sessionService.hasToken()) {
                 this.setUnlogged();
                 this.router.navigate(['/login']);
                 return;
@@ -142,7 +147,11 @@ export class PermissionsService {
             this.accountUpdateEvent.next();
         } catch (accountError: unknown) {
             this.logger.warn('PermissionsService', 'Account fetch failed', accountError);
-            if (this.isNetworkError(accountError) || !this.sessionService.hasToken()) {
+            if (this.isNetworkError(accountError)) {
+                // Network is temporarily down — don't disrupt the user's session.
+                return;
+            }
+            if (!this.sessionService.hasToken()) {
                 this.setUnlogged();
                 this.router.navigate(['/login']);
             }
