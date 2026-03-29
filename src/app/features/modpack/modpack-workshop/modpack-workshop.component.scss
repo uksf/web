@@ -1,20 +1,33 @@
+@use 'styles/variables' as v;
+
 .flex-container {
     flex-direction: column;
 
     .mods-header {
         display: flex;
         flex-direction: row;
-        padding: 16px 0;
+        padding: v.$spacing-16px 0;
         width: 100%;
         justify-content: space-between;
+        align-items: center;
 
         h1 {
             margin: 0;
         }
 
-        .mat-mdc-raised-button {
-            margin-left: 5px;
-            align-self: center;
+        .mods-header-actions {
+            display: flex;
+            align-items: center;
+            gap: v.$spacing-12px;
+        }
+
+        .search-field {
+            width: 240px;
+
+            .mat-icon {
+                font-size: 18px;
+                margin-right: v.$spacing-4px;
+            }
         }
     }
 
@@ -22,90 +35,123 @@
         overflow-y: auto;
         display: flex;
         flex-direction: column;
-        gap: 8px;
-        padding-bottom: 16px;
+        gap: v.$spacing-12px;
+        padding-bottom: v.$spacing-16px;
+    }
+}
 
-        .mod-card {
-            display: flex;
-            flex-direction: column;
-            padding: 10px;
+.mod-section {
+    .mod-section-header {
+        display: flex;
+        align-items: center;
+        gap: v.$spacing-8px;
+        padding: v.$spacing-8px v.$spacing-16px;
+        border-left: 3px solid;
+    }
 
-            .mod-card-section {
-                display: flex;
-                flex-direction: row;
-                gap: 4px;
+    .mod-section-title {
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+    }
 
-                &:first-child {
-                    margin-bottom: 8px;
-                }
+    .mod-section-count {
+        font-size: 11px;
+        opacity: 0.7;
+    }
+}
 
-                h3 {
-                    margin: auto;
-                }
+.mod-row {
+    display: flex;
+    align-items: center;
+    height: 44px;
+    padding: 0 v.$spacing-16px;
+    gap: v.$spacing-12px;
 
-                span {
-                    margin: auto;
-                }
+    .mod-name {
+        flex: 1;
+        font-size: 14px;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 
-                .mod-badge {
-                    color: white;
-                    padding: 2px 8px;
-                    border-radius: 4px;
-                    font-size: 12px;
-                    font-weight: 500;
-                    margin: auto 8px;
+    .mod-badge {
+        font-size: 10px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1px 6px;
+        border-radius: 2px;
+        flex-shrink: 0;
+    }
 
-                    &.root-mod {
-                        background-color: #4a148c;
-                    }
-                }
+    .mod-steam-id {
+        width: 120px;
+        flex-shrink: 0;
+        font-size: 13px;
+        text-decoration: none;
+        white-space: nowrap;
+    }
 
-                .mod-links {
-                    display: flex;
-                    flex-direction: row;
-                    gap: 8px;
-                    align-self: flex-end;
+    .mod-status {
+        width: 200px;
+        flex-shrink: 0;
+        font-size: 12px;
+        text-align: right;
+    }
 
-                    span {
-                        margin: 0;
-                        white-space: nowrap;
-                    }
+    .mod-actions {
+        display: flex;
+        gap: v.$spacing-4px;
+        flex-shrink: 0;
 
-                    .mod-link-steam {
-                        width: 150px;
-                        flex-shrink: 0;
-                    }
+        button {
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
 
-                    .mod-link-added {
-                        width: 130px;
-                        flex-shrink: 0;
-                    }
-
-                    .mod-link-updated {
-                        width: 175px;
-                        flex-shrink: 0;
-                    }
-                }
-
-                .mod-card-buttons {
-                    display: flex;
-                    flex-direction: row;
-                    gap: 4px;
-                    min-height: 36px;
-
-                    .icon {
-                        line-height: 36px;
-                        height: 36px;
-                        padding: 0;
-                        min-width: 36px;
-                        align-self: center;
-                    }
-
-                    button {
-                        background-color: transparent;
-                    }
-                }
+            .mat-icon {
+                font-size: 18px;
             }
+        }
+    }
+
+    .mod-overflow {
+        width: 32px;
+        height: 32px;
+        line-height: 32px;
+        flex-shrink: 0;
+
+        .mat-icon {
+            font-size: 18px;
+        }
+    }
+}
+
+// Responsive breakpoints — these will be replaced by template conditionals in Task 6
+@include v.below(v.$layout-standard) {
+    .mod-row {
+        .mod-steam-id {
+            display: none;
+        }
+    }
+}
+
+@include v.below(v.$layout-medium) {
+    .mod-row {
+        .mod-status {
+            display: none;
+        }
+    }
+}
+
+@include v.below(v.$layout-narrow) {
+    .mod-row {
+        .mod-actions {
+            display: none;
         }
     }
 }
@@ -113,130 +159,4 @@
 ::-webkit-scrollbar {
     width: 7px;
     height: 5px;
-}
-
-@media only screen and (max-width: 1360px) {
-    .flex-container {
-        .release-history-container {
-            left: 200px;
-        }
-
-        .release-container {
-            left: 360px;
-        }
-    }
-}
-
-@media only screen and (max-width: 1024px) {
-    .flex-container {
-        .release-history-container {
-            left: 0;
-            top: 175px;
-            bottom: 30px;
-        }
-
-        .release-container {
-            left: 160px;
-            top: 175px;
-            bottom: 30px;
-        }
-    }
-}
-
-@media only screen and (max-width: 768px) {
-    .flex-container {
-        .release-history-container {
-            top: 138px;
-        }
-
-        .release-container {
-            top: 138px;
-
-            .release-header {
-                flex-direction: column-reverse;
-
-                .release-date {
-                    display: none;
-                }
-
-                .buttons {
-                    flex-direction: row;
-                    padding-top: 12px;
-                    justify-content: center;
-                    flex-wrap: wrap;
-
-                    app-button {
-                        margin: 0 2.5px;
-                    }
-                }
-            }
-
-            .release-content {
-                .release-date {
-                    &.released {
-                        display: block;
-                    }
-                }
-            }
-        }
-    }
-}
-
-@media only screen and (max-width: 600px) {
-    .flex-container {
-        flex-direction: row;
-
-        .release-history-container {
-            flex-direction: row;
-            width: 100%;
-            height: 35px;
-            overflow-y: auto;
-            overflow-x: auto;
-
-            .release-history-item {
-                height: 30px;
-                min-width: 75px;
-                font-size: 14px;
-                line-height: 30px;
-                padding: 1px 10px;
-            }
-        }
-
-        .release-container {
-            top: 173px;
-            left: 0;
-
-            .release-header {
-                .release-title {
-                    font-size: 26px;
-                }
-            }
-        }
-    }
-}
-
-@media only screen and (max-width: 500px) {
-    .flex-container {
-        .release-container {
-            .release-header {
-                .buttons {
-                    app-button {
-                        margin-top: 5px;
-                    }
-                }
-            }
-        }
-    }
-}
-
-@media only screen and (max-width: 375px) {
-    .flex-container {
-        .release-history-container {
-            top: 124px;
-        }
-
-        .release-container {
-            top: 159px;
-        }
-    }
 }

@@ -6,29 +6,47 @@
             color: th.primary($theme);
         }
 
-        .flex-container {
-            .mods-container {
-                .mod-card {
-                    .mod-card-section {
-                        .mod-card-buttons {
-                            button {
-                                background-color: transparent;
+        .mod-section-header {
+            background-color: var(--uksf-side-bar);
+        }
 
-                                &:not(:disabled) {
-                                    color: white;
-                                }
+        .mod-section-rows {
+            background-color: var(--uksf-dark-card);
+        }
 
-                                --mat-button-text-state-layer-color: white;
-                                --mat-button-text-ripple-color: rgba(255, 255, 255, 0.12);
+        .mod-row {
+            border-bottom: 1px solid var(--uksf-side-bar);
 
-                                &.delete:not(:disabled) {
-                                    color: red;
-                                }
-                            }
-                        }
-                    }
+            &:last-child {
+                border-bottom: none;
+            }
+        }
+
+        .mod-badge.root-mod {
+            color: #ce93d8;
+            background-color: rgba(156, 39, 176, 0.15);
+        }
+
+        .mod-actions {
+            button {
+                background-color: transparent;
+
+                &:not(:disabled) {
+                    color: white;
+                }
+
+                --mat-icon-button-state-layer-color: white;
+                --mat-icon-button-ripple-color: rgba(255, 255, 255, 0.12);
+
+                &.delete:not(:disabled) {
+                    color: red;
                 }
             }
+        }
+
+        .mod-overflow {
+            background-color: transparent;
+            color: rgba(255, 255, 255, 0.5);
         }
 
         ::-webkit-scrollbar-track {
@@ -38,11 +56,5 @@
         ::-webkit-scrollbar-thumb {
             background-color: var(--uksf-scroll-thumb);
         }
-
-        //@media only screen and (max-width: 600px) {
-        //    .flex-container {
-        //
-        //    }
-        //}
     }
 }
