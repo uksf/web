@@ -29,58 +29,101 @@
                                         @if (mod.rootMod) {
                                             <span class="mod-badge root-mod">Root</span>
                                         }
-                                        <a class="mod-steam-id" target="_blank" rel="nofollow" href="https://steamcommunity.com/sharedfiles/filedetails/?id={{ mod.steamId }}">
-                                            {{ mod.steamId }}
-                                        </a>
-                                        @if (section.key !== 'installed') {
+                                        @if (showSteamId) {
+                                            <a class="mod-steam-id" target="_blank" rel="nofollow" href="https://steamcommunity.com/sharedfiles/filedetails/?id={{ mod.steamId }}">
+                                                {{ mod.steamId }}
+                                            </a>
+                                        }
+                                        @if (section.key !== 'installed' && showStatusText) {
                                             <span class="mod-status" [style.color]="section.accentColor">{{ mod.statusMessage }}</span>
                                         }
                                         <ng-template [ngxPermissionsOnly]="['ADMIN']">
-                                            <div class="mod-actions">
-                                                @if (mod._hasError) {
-                                                    <button mat-icon-button class="delete" (click)="showError(mod)" matTooltip="View error">
-                                                        <mat-icon>error_outline</mat-icon>
-                                                    </button>
-                                                }
-                                                @if (mod._interventionRequired) {
-                                                    <button mat-icon-button (click)="resolveIntervention(mod)" matTooltip="Resolve Intervention">
-                                                        <mat-icon>construction</mat-icon>
-                                                    </button>
-                                                }
-                                                @if (mod._updateAvailable) {
-                                                    <button mat-icon-button (click)="update(mod)" matTooltip="Update">
-                                                        <mat-icon>download</mat-icon>
-                                                    </button>
-                                                }
-                                                @if (mod._canUninstall) {
-                                                    <button mat-icon-button (click)="uninstall(mod)" matTooltip="Uninstall">
-                                                        <mat-icon>eject</mat-icon>
-                                                    </button>
-                                                }
-                                                @if (mod._canDelete) {
-                                                    <button mat-icon-button class="delete" (click)="delete(mod)" matTooltip="Delete">
-                                                        <mat-icon>delete</mat-icon>
-                                                    </button>
-                                                }
-                                            </div>
+                                            @if (showInlineActions) {
+                                                <div class="mod-actions">
+                                                    @if (mod._hasError) {
+                                                        <button mat-icon-button class="delete" (click)="showError(mod)" matTooltip="View error">
+                                                            <mat-icon>error_outline</mat-icon>
+                                                        </button>
+                                                    }
+                                                    @if (mod._interventionRequired) {
+                                                        <button mat-icon-button (click)="resolveIntervention(mod)" matTooltip="Resolve Intervention">
+                                                            <mat-icon>construction</mat-icon>
+                                                        </button>
+                                                    }
+                                                    @if (mod._updateAvailable) {
+                                                        <button mat-icon-button (click)="update(mod)" matTooltip="Update">
+                                                            <mat-icon>download</mat-icon>
+                                                        </button>
+                                                    }
+                                                    @if (mod._canUninstall) {
+                                                        <button mat-icon-button (click)="uninstall(mod)" matTooltip="Uninstall">
+                                                            <mat-icon>eject</mat-icon>
+                                                        </button>
+                                                    }
+                                                    @if (mod._canDelete) {
+                                                        <button mat-icon-button class="delete" (click)="delete(mod)" matTooltip="Delete">
+                                                            <mat-icon>delete</mat-icon>
+                                                        </button>
+                                                    }
+                                                </div>
+                                            }
                                         </ng-template>
-                                        @if (mod.modpackVersionFirstAdded || mod.modpackVersionLastUpdated) {
-                                            <button mat-icon-button [matMenuTriggerFor]="modMenu" class="mod-overflow" matTooltip="Version info">
-                                                <mat-icon>more_vert</mat-icon>
-                                            </button>
-                                            <mat-menu #modMenu="matMenu">
-                                                @if (mod.modpackVersionFirstAdded) {
-                                                    <a mat-menu-item [href]="'/modpack/releases?version=' + mod.modpackVersionFirstAdded" target="_blank">
-                                                        Added with: {{ mod.modpackVersionFirstAdded }}
-                                                    </a>
+                                        <button mat-icon-button [matMenuTriggerFor]="modMenu" class="mod-overflow" matTooltip="More">
+                                            <mat-icon>more_vert</mat-icon>
+                                        </button>
+                                        <mat-menu #modMenu="matMenu">
+                                            <ng-template [ngxPermissionsOnly]="['ADMIN']">
+                                                @if (!showInlineActions && (mod._hasError || mod._interventionRequired || mod._updateAvailable || mod._canUninstall || mod._canDelete)) {
+                                                    @if (mod._hasError) {
+                                                        <button mat-menu-item (click)="showError(mod)">
+                                                            <mat-icon>error_outline</mat-icon>
+                                                            View error
+                                                        </button>
+                                                    }
+                                                    @if (mod._interventionRequired) {
+                                                        <button mat-menu-item (click)="resolveIntervention(mod)">
+                                                            <mat-icon>construction</mat-icon>
+                                                            Resolve Intervention
+                                                        </button>
+                                                    }
+                                                    @if (mod._updateAvailable) {
+                                                        <button mat-menu-item (click)="update(mod)">
+                                                            <mat-icon>download</mat-icon>
+                                                            Update
+                                                        </button>
+                                                    }
+                                                    @if (mod._canUninstall) {
+                                                        <button mat-menu-item (click)="uninstall(mod)">
+                                                            <mat-icon>eject</mat-icon>
+                                                            Uninstall
+                                                        </button>
+                                                    }
+                                                    @if (mod._canDelete) {
+                                                        <button mat-menu-item class="delete" (click)="delete(mod)">
+                                                            <mat-icon>delete</mat-icon>
+                                                            Delete
+                                                        </button>
+                                                    }
+                                                    <mat-divider></mat-divider>
                                                 }
-                                                @if (mod.modpackVersionLastUpdated) {
-                                                    <a mat-menu-item [href]="'/modpack/releases?version=' + mod.modpackVersionLastUpdated" target="_blank">
-                                                        Last updated with: {{ mod.modpackVersionLastUpdated }}
-                                                    </a>
-                                                }
-                                            </mat-menu>
-                                        }
+                                            </ng-template>
+                                            @if (!showSteamId) {
+                                                <a mat-menu-item target="_blank" rel="nofollow" href="https://steamcommunity.com/sharedfiles/filedetails/?id={{ mod.steamId }}">
+                                                    <mat-icon>open_in_new</mat-icon>
+                                                    Open on Steam Workshop
+                                                </a>
+                                            }
+                                            @if (mod.modpackVersionFirstAdded) {
+                                                <a mat-menu-item [href]="'/modpack/releases?version=' + mod.modpackVersionFirstAdded" target="_blank">
+                                                    Added with: {{ mod.modpackVersionFirstAdded }}
+                                                </a>
+                                            }
+                                            @if (mod.modpackVersionLastUpdated) {
+                                                <a mat-menu-item [href]="'/modpack/releases?version=' + mod.modpackVersionLastUpdated" target="_blank">
+                                                    Last updated with: {{ mod.modpackVersionLastUpdated }}
+                                                </a>
+                                            }
+                                        </mat-menu>
                                     </div>
                                 }
                             </div>

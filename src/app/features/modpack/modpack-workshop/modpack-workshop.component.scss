@@ -131,31 +131,6 @@
     }
 }
 
-// Responsive breakpoints — these will be replaced by template conditionals in Task 6
-@include v.below(v.$layout-standard) {
-    .mod-row {
-        .mod-steam-id {
-            display: none;
-        }
-    }
-}
-
-@include v.below(v.$layout-medium) {
-    .mod-row {
-        .mod-status {
-            display: none;
-        }
-    }
-}
-
-@include v.below(v.$layout-narrow) {
-    .mod-row {
-        .mod-actions {
-            display: none;
-        }
-    }
-}
-
 ::-webkit-scrollbar {
     width: 7px;
     height: 5px;

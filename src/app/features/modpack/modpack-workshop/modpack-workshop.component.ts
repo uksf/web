@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, first, takeUntil } from 'rxjs/operators';
 import { ModpackHubService } from '../services/modpack-hub.service';
@@ -15,6 +15,7 @@ import { FullContentAreaComponent } from '../../../shared/components/content-are
 import { ModpackPageComponent } from '../modpack-page/modpack-page.component';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatDivider } from '@angular/material/divider';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { MatFormField } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
@@ -25,7 +26,7 @@ import { MatIcon } from '@angular/material/icon';
     selector: 'app-modpack-workshop',
     templateUrl: './modpack-workshop.component.html',
     styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-workshop.component.scss', './modpack-workshop.component.scss-theme.scss'],
-    imports: [DefaultContentAreasComponent, FullContentAreaComponent, ModpackPageComponent, NgxPermissionsModule, MatButton, MatIconButton, MatMenu, MatMenuItem, MatMenuTrigger, MatFormField, MatInput, MatTooltip, MatIcon, ReactiveFormsModule]
+    imports: [DefaultContentAreasComponent, FullContentAreaComponent, ModpackPageComponent, NgxPermissionsModule, MatButton, MatIconButton, MatDivider, MatMenu, MatMenuItem, MatMenuTrigger, MatFormField, MatInput, MatTooltip, MatIcon, ReactiveFormsModule]
 })
 export class ModpackWorkshopComponent extends DestroyableComponent implements OnInit, OnDestroy {
     private workshopService = inject(WorkshopService);
@@ -38,6 +39,10 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
     sections: WorkshopModSection[] = [];
     searchControl = new FormControl('');
     private searchTerm = '';
+    viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
+    showSteamId = true;
+    showStatusText = true;
+    showInlineActions = true;
 
     ngOnInit() {
         this.getData(() => {
@@ -56,6 +61,19 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
         this.searchControl.valueChanges
             .pipe(debounceTime(150), takeUntil(this.destroy$))
             .subscribe({ next: (term) => this.applySearch(term ?? '') });
+        this.updateResponsiveState();
+    }
+
+    @HostListener('window:resize')
+    onResize() {
+        this.viewportWidth = window.innerWidth;
+        this.updateResponsiveState();
+    }
+
+    updateResponsiveState() {
+        this.showSteamId = this.viewportWidth >= 1024;
+        this.showStatusText = this.viewportWidth >= 768;
+        this.showInlineActions = this.viewportWidth >= 600;
     }
 
     override ngOnDestroy() {

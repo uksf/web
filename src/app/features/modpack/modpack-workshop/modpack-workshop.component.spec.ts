@@ -360,6 +360,45 @@ describe('ModpackWorkshopComponent', () => {
         });
     });
 
+    describe('responsive breakpoints', () => {
+        it('hides steam ID below 1024px', () => {
+            component.viewportWidth = 900;
+            component.updateResponsiveState();
+
+            expect(component.showSteamId).toBe(false);
+        });
+
+        it('shows steam ID at 1024px and above', () => {
+            component.viewportWidth = 1024;
+            component.updateResponsiveState();
+
+            expect(component.showSteamId).toBe(true);
+        });
+
+        it('hides status text below 768px', () => {
+            component.viewportWidth = 700;
+            component.updateResponsiveState();
+
+            expect(component.showStatusText).toBe(false);
+        });
+
+        it('hides inline actions below 600px', () => {
+            component.viewportWidth = 500;
+            component.updateResponsiveState();
+
+            expect(component.showInlineActions).toBe(false);
+        });
+
+        it('shows all elements at wide viewport', () => {
+            component.viewportWidth = 1400;
+            component.updateResponsiveState();
+
+            expect(component.showSteamId).toBe(true);
+            expect(component.showStatusText).toBe(true);
+            expect(component.showInlineActions).toBe(true);
+        });
+    });
+
     describe('groupMods', () => {
         it('places Error mods in needsAttention section', () => {
             component.mods = [makeMod({ status: 'Error', name: 'ErrorMod' })];
