@@ -14,9 +14,10 @@ import { DefaultContentAreasComponent } from '../../../shared/components/content
 import { FullContentAreaComponent } from '../../../shared/components/content-areas/full-content-area/full-content-area.component';
 import { ModpackPageComponent } from '../modpack-page/modpack-page.component';
 import { NgxPermissionsModule } from 'ngx-permissions';
-import { MatButton } from '@angular/material/button';
-import { MatCard } from '@angular/material/card';
-import { FlexFillerComponent } from '../../../shared/components/elements/flex-filler/flex-filler.component';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
+import { MatFormField } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatIcon } from '@angular/material/icon';
 
@@ -24,7 +25,7 @@ import { MatIcon } from '@angular/material/icon';
     selector: 'app-modpack-workshop',
     templateUrl: './modpack-workshop.component.html',
     styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-workshop.component.scss', './modpack-workshop.component.scss-theme.scss'],
-    imports: [DefaultContentAreasComponent, FullContentAreaComponent, ModpackPageComponent, NgxPermissionsModule, MatButton, MatCard, FlexFillerComponent, MatTooltip, MatIcon, ReactiveFormsModule]
+    imports: [DefaultContentAreasComponent, FullContentAreaComponent, ModpackPageComponent, NgxPermissionsModule, MatButton, MatIconButton, MatMenu, MatMenuItem, MatMenuTrigger, MatFormField, MatInput, MatTooltip, MatIcon, ReactiveFormsModule]
 })
 export class ModpackWorkshopComponent extends DestroyableComponent implements OnInit, OnDestroy {
     private workshopService = inject(WorkshopService);

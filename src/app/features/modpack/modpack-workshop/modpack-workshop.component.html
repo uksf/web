@@ -4,76 +4,88 @@
         <div class="flex-container">
             <div class="mods-header">
                 <h1>Workshop Mods</h1>
-                <ng-template [ngxPermissionsOnly]="['ADMIN']">
-                    <button mat-raised-button color="primary" (click)="install()">Install</button>
-                </ng-template>
+                <div class="mods-header-actions">
+                    <mat-form-field class="search-field" subscriptSizing="dynamic">
+                        <mat-icon matPrefix>search</mat-icon>
+                        <input matInput placeholder="Search mods..." [formControl]="searchControl">
+                    </mat-form-field>
+                    <ng-template [ngxPermissionsOnly]="['ADMIN']">
+                        <button mat-raised-button color="primary" (click)="install()">Install</button>
+                    </ng-template>
+                </div>
             </div>
             <div class="mods-container">
-                @for (mod of mods; track trackBySteamId($index, mod)) {
-                <mat-card class="mod-card">
-                    <div class="mod-card-section">
-                        <h3>{{ mod.name }}</h3>
-                        @if (mod.rootMod) {
-                        <span class="mod-badge root-mod">Root Mod</span>
-                        }
-                        <app-flex-filler></app-flex-filler>
-                        <span>{{ mod.statusMessage }}</span>
-                    </div>
-                    <div class="mod-card-section">
-                        <div class="mod-links">
-                            <span class="mod-link-steam">
-                                Steam ID:
-                                <a target="_blank" rel="nofollow" href="https://steamcommunity.com/sharedfiles/filedetails/?id={{ mod.steamId }}">
-                                    {{ mod.steamId }}
-                                </a>
-                            </span>
-                            @if (mod.modpackVersionFirstAdded) {
-                            <span class="mod-link-added">
-                                Added with:
-                                <a target="_blank" [href]="'/modpack/releases?version=' + mod.modpackVersionFirstAdded">
-                                    {{ mod.modpackVersionFirstAdded }}
-                                </a>
-                            </span>
-                            } @if (mod.modpackVersionLastUpdated) {
-                            <span class="mod-link-updated">
-                                Last updated with:
-                                <a target="_blank" [href]="'/modpack/releases?version=' + mod.modpackVersionLastUpdated">
-                                    {{ mod.modpackVersionLastUpdated }}
-                                </a>
-                            </span>
-                            }
-                        </div>
-                        <app-flex-filler></app-flex-filler>
-                        @if (mod._updateAvailable) {
-                        <span>Update available</span>
-                        }
-                        <ng-template [ngxPermissionsOnly]="['ADMIN']">
-                            <div class="mod-card-buttons">
-                                @if (mod._hasError) {
-                                <button mat-button class="icon delete" (click)="showError(mod)" matTooltip="View error">
-                                    <mat-icon>error_outline</mat-icon>
-                                </button>
-                                } @if (mod._interventionRequired) {
-                                <button mat-button class="icon" (click)="resolveIntervention(mod)" matTooltip="Resolve Intervention">
-                                    <mat-icon>construction</mat-icon>
-                                </button>
-                                } @if (mod._updateAvailable) {
-                                <button mat-button class="icon" (click)="update(mod)" matTooltip="Update">
-                                    <mat-icon>download</mat-icon>
-                                </button>
-                                } @if (mod._canUninstall) {
-                                <button mat-button class="icon" (click)="uninstall(mod)" matTooltip="Uninstall">
-                                    <mat-icon>eject</mat-icon>
-                                </button>
-                                } @if (mod._canDelete) {
-                                <button mat-button class="icon delete" (click)="delete(mod)" matTooltip="Delete">
-                                    <mat-icon>delete</mat-icon>
-                                </button>
+                @for (section of sections; track section.key) {
+                    @if (section.mods.length > 0) {
+                        <div class="mod-section">
+                            <div class="mod-section-header" [style.border-left-color]="section.accentColor">
+                                <span class="mod-section-title" [style.color]="section.accentColor">{{ section.label }}</span>
+                                <span class="mod-section-count" [style.color]="section.accentColor">{{ section.mods.length }}</span>
+                            </div>
+                            <div class="mod-section-rows">
+                                @for (mod of section.mods; track trackBySteamId($index, mod)) {
+                                    <div class="mod-row">
+                                        <span class="mod-name">{{ mod.name }}</span>
+                                        @if (mod.rootMod) {
+                                            <span class="mod-badge root-mod">Root</span>
+                                        }
+                                        <a class="mod-steam-id" target="_blank" rel="nofollow" href="https://steamcommunity.com/sharedfiles/filedetails/?id={{ mod.steamId }}">
+                                            {{ mod.steamId }}
+                                        </a>
+                                        @if (section.key !== 'installed') {
+                                            <span class="mod-status" [style.color]="section.accentColor">{{ mod.statusMessage }}</span>
+                                        }
+                                        <ng-template [ngxPermissionsOnly]="['ADMIN']">
+                                            <div class="mod-actions">
+                                                @if (mod._hasError) {
+                                                    <button mat-icon-button class="delete" (click)="showError(mod)" matTooltip="View error">
+                                                        <mat-icon>error_outline</mat-icon>
+                                                    </button>
+                                                }
+                                                @if (mod._interventionRequired) {
+                                                    <button mat-icon-button (click)="resolveIntervention(mod)" matTooltip="Resolve Intervention">
+                                                        <mat-icon>construction</mat-icon>
+                                                    </button>
+                                                }
+                                                @if (mod._updateAvailable) {
+                                                    <button mat-icon-button (click)="update(mod)" matTooltip="Update">
+                                                        <mat-icon>download</mat-icon>
+                                                    </button>
+                                                }
+                                                @if (mod._canUninstall) {
+                                                    <button mat-icon-button (click)="uninstall(mod)" matTooltip="Uninstall">
+                                                        <mat-icon>eject</mat-icon>
+                                                    </button>
+                                                }
+                                                @if (mod._canDelete) {
+                                                    <button mat-icon-button class="delete" (click)="delete(mod)" matTooltip="Delete">
+                                                        <mat-icon>delete</mat-icon>
+                                                    </button>
+                                                }
+                                            </div>
+                                        </ng-template>
+                                        @if (mod.modpackVersionFirstAdded || mod.modpackVersionLastUpdated) {
+                                            <button mat-icon-button [matMenuTriggerFor]="modMenu" class="mod-overflow" matTooltip="Version info">
+                                                <mat-icon>more_vert</mat-icon>
+                                            </button>
+                                            <mat-menu #modMenu="matMenu">
+                                                @if (mod.modpackVersionFirstAdded) {
+                                                    <a mat-menu-item [href]="'/modpack/releases?version=' + mod.modpackVersionFirstAdded" target="_blank">
+                                                        Added with: {{ mod.modpackVersionFirstAdded }}
+                                                    </a>
+                                                }
+                                                @if (mod.modpackVersionLastUpdated) {
+                                                    <a mat-menu-item [href]="'/modpack/releases?version=' + mod.modpackVersionLastUpdated" target="_blank">
+                                                        Last updated with: {{ mod.modpackVersionLastUpdated }}
+                                                    </a>
+                                                }
+                                            </mat-menu>
+                                        }
+                                    </div>
                                 }
                             </div>
-                        </ng-template>
-                    </div>
-                </mat-card>
+                        </div>
+                    }
                 }
             </div>
         </div>
