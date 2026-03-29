@@ -6,47 +6,21 @@
             color: th.primary($theme);
         }
 
-        .mod-section-header {
-            background-color: var(--uksf-side-bar);
-        }
-
-        .mod-section-rows {
-            background-color: var(--uksf-dark-card);
-        }
-
         .mod-row {
-            border-bottom: 1px solid var(--uksf-side-bar);
-
-            &:last-child {
-                border-bottom: none;
-            }
-        }
-
-        .mod-badge.root-mod {
-            color: #ce93d8;
-            background-color: rgba(156, 39, 176, 0.15);
-        }
-
-        .mod-actions {
-            button {
+            button.icon {
                 background-color: transparent;
 
                 &:not(:disabled) {
                     color: white;
                 }
 
-                --mat-icon-button-state-layer-color: white;
-                --mat-icon-button-ripple-color: rgba(255, 255, 255, 0.12);
+                --mat-button-text-state-layer-color: white;
+                --mat-button-text-ripple-color: rgba(255, 255, 255, 0.12);
 
                 &.delete:not(:disabled) {
                     color: red;
                 }
             }
-        }
-
-        .mod-overflow {
-            background-color: transparent;
-            color: rgba(255, 255, 255, 0.5);
         }
 
         ::-webkit-scrollbar-track {
@@ -56,5 +30,10 @@
         ::-webkit-scrollbar-thumb {
             background-color: var(--uksf-scroll-thumb);
         }
+    }
+
+    // mat-menu renders in CDK overlay outside the component DOM
+    .workshop-mod-menu .primary {
+        color: th.primary($theme);
     }
 }

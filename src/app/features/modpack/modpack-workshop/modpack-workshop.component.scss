@@ -23,11 +23,11 @@
 
         .search-field {
             width: 240px;
+        }
 
-            .mat-icon {
-                font-size: 18px;
-                margin-right: v.$spacing-4px;
-            }
+        .mat-mdc-raised-button {
+            margin-left: v.$spacing-4px;
+            align-self: center;
         }
     }
 
@@ -35,99 +35,81 @@
         overflow-y: auto;
         display: flex;
         flex-direction: column;
-        gap: v.$spacing-12px;
         padding-bottom: v.$spacing-16px;
     }
 }
 
 .mod-section {
     .mod-section-header {
-        display: flex;
-        align-items: center;
-        gap: v.$spacing-8px;
-        padding: v.$spacing-8px v.$spacing-16px;
-        border-left: 3px solid;
+        margin: v.$spacing-12px 0 v.$spacing-4px;
+
+        small {
+            opacity: 0.5;
+            margin-left: v.$spacing-4px;
+        }
     }
 
-    .mod-section-title {
-        font-size: 12px;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-    }
-
-    .mod-section-count {
-        font-size: 11px;
-        opacity: 0.7;
+    &:first-child .mod-section-header {
+        margin-top: 0;
     }
 }
 
 .mod-row {
     display: flex;
+    flex-direction: row;
     align-items: center;
-    height: 44px;
-    padding: 0 v.$spacing-16px;
-    gap: v.$spacing-12px;
+    width: 100%;
+    margin-bottom: 3px;
+    padding: v.$spacing-4px v.$spacing-8px;
+    cursor: default;
 
     .mod-name {
         flex: 1;
-        font-size: 14px;
+        padding: 2px v.$spacing-8px;
+        margin: auto 0;
+        display: flex;
+        align-items: center;
+        gap: v.$spacing-8px;
         min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
 
-    .mod-badge {
-        font-size: 10px;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding: 1px 6px;
-        border-radius: 2px;
-        flex-shrink: 0;
-    }
-
-    .mod-steam-id {
-        width: 120px;
-        flex-shrink: 0;
-        font-size: 13px;
-        text-decoration: none;
-        white-space: nowrap;
+        > span:first-child {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
     }
 
     .mod-status {
-        width: 200px;
         flex-shrink: 0;
-        font-size: 12px;
-        text-align: right;
+        padding: 2px v.$spacing-8px;
     }
 
     .mod-actions {
         display: flex;
+        flex-direction: row;
         gap: v.$spacing-4px;
-        flex-shrink: 0;
+        min-height: 36px;
+
+        .icon {
+            line-height: 36px;
+            height: 36px;
+            padding: 0;
+            min-width: 36px;
+            align-self: center;
+        }
 
         button {
-            width: 32px;
-            height: 32px;
-            line-height: 32px;
-
-            .mat-icon {
-                font-size: 18px;
-            }
+            background-color: transparent;
         }
     }
 
-    .mod-overflow {
-        width: 32px;
-        height: 32px;
-        line-height: 32px;
-        flex-shrink: 0;
-
-        .mat-icon {
-            font-size: 18px;
-        }
+    .icon {
+        line-height: 36px;
+        height: 36px;
+        padding: 0;
+        min-width: 36px;
+        align-self: center;
+        background-color: transparent;
     }
 }
 

@@ -14,19 +14,20 @@ import { DefaultContentAreasComponent } from '../../../shared/components/content
 import { FullContentAreaComponent } from '../../../shared/components/content-areas/full-content-area/full-content-area.component';
 import { ModpackPageComponent } from '../modpack-page/modpack-page.component';
 import { NgxPermissionsModule } from 'ngx-permissions';
-import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatButton } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { MatFormField } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatIcon } from '@angular/material/icon';
+import { MatCard } from '@angular/material/card';
 
 @Component({
     selector: 'app-modpack-workshop',
     templateUrl: './modpack-workshop.component.html',
     styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-workshop.component.scss', './modpack-workshop.component.scss-theme.scss'],
-    imports: [DefaultContentAreasComponent, FullContentAreaComponent, ModpackPageComponent, NgxPermissionsModule, MatButton, MatIconButton, MatDivider, MatMenu, MatMenuItem, MatMenuTrigger, MatFormField, MatInput, MatTooltip, MatIcon, ReactiveFormsModule]
+    imports: [DefaultContentAreasComponent, FullContentAreaComponent, ModpackPageComponent, NgxPermissionsModule, MatButton, MatCard, MatDivider, MatMenu, MatMenuItem, MatMenuTrigger, MatFormField, MatInput, MatTooltip, MatIcon, ReactiveFormsModule]
 })
 export class ModpackWorkshopComponent extends DestroyableComponent implements OnInit, OnDestroy {
     private workshopService = inject(WorkshopService);
@@ -40,8 +41,6 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
     searchControl = new FormControl('');
     private searchTerm = '';
     viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
-    showSteamId = true;
-    showStatusText = true;
     showInlineActions = true;
 
     ngOnInit() {
@@ -71,8 +70,6 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
     }
 
     updateResponsiveState() {
-        this.showSteamId = this.viewportWidth >= 1024;
-        this.showStatusText = this.viewportWidth >= 768;
         this.showInlineActions = this.viewportWidth >= 600;
     }
 
