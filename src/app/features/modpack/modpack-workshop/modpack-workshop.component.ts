@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { first, takeUntil } from 'rxjs/operators';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime, first, takeUntil } from 'rxjs/operators';
 import { ModpackHubService } from '../services/modpack-hub.service';
 import { InstallWorkshopModData, WorkshopMod, WorkshopModSection, WORKSHOP_SECTION_DEFINITIONS, WorkshopModSectionKey } from '../models/workshop-mod';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
@@ -23,7 +24,7 @@ import { MatIcon } from '@angular/material/icon';
     selector: 'app-modpack-workshop',
     templateUrl: './modpack-workshop.component.html',
     styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-workshop.component.scss', './modpack-workshop.component.scss-theme.scss'],
-    imports: [DefaultContentAreasComponent, FullContentAreaComponent, ModpackPageComponent, NgxPermissionsModule, MatButton, MatCard, FlexFillerComponent, MatTooltip, MatIcon]
+    imports: [DefaultContentAreasComponent, FullContentAreaComponent, ModpackPageComponent, NgxPermissionsModule, MatButton, MatCard, FlexFillerComponent, MatTooltip, MatIcon, ReactiveFormsModule]
 })
 export class ModpackWorkshopComponent extends DestroyableComponent implements OnInit, OnDestroy {
     private workshopService = inject(WorkshopService);
@@ -34,6 +35,8 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
     private onReceiveWorkshopModUpdate = (id: string) => this.getDataForMod(id);
     mods: WorkshopMod[] = [];
     sections: WorkshopModSection[] = [];
+    searchControl = new FormControl('');
+    private searchTerm = '';
 
     ngOnInit() {
         this.getData(() => {
@@ -49,6 +52,9 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
                 this.getData();
             }
         });
+        this.searchControl.valueChanges
+            .pipe(debounceTime(150), takeUntil(this.destroy$))
+            .subscribe({ next: (term) => this.applySearch(term ?? '') });
     }
 
     override ngOnDestroy() {
@@ -113,13 +119,22 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
         this.groupMods();
     }
 
+    applySearch(term: string) {
+        this.searchTerm = term.toLowerCase();
+        this.groupMods();
+    }
+
     groupMods() {
         const sectionMap = new Map<WorkshopModSectionKey, WorkshopMod[]>();
         for (const def of WORKSHOP_SECTION_DEFINITIONS) {
             sectionMap.set(def.key, []);
         }
 
-        for (const mod of this.mods) {
+        const filteredMods = this.searchTerm
+            ? this.mods.filter(mod => mod.name.toLowerCase().includes(this.searchTerm))
+            : this.mods;
+
+        for (const mod of filteredMods) {
             const key = this.getSectionKey(mod);
             sectionMap.get(key).push(mod);
         }

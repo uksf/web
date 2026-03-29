@@ -315,6 +315,51 @@ describe('ModpackWorkshopComponent', () => {
         });
     });
 
+    describe('search filtering', () => {
+        it('filters sections by mod name (case-insensitive)', () => {
+            component.mods = [
+                makeMod({ id: '1', status: 'Installed', name: 'ACE' }),
+                makeMod({ id: '2', status: 'Installed', name: 'CBA_A3' }),
+                makeMod({ id: '3', status: 'Installed', name: 'ACE_Compat' }),
+            ];
+            component.updateModComputedProperties();
+
+            component.applySearch('ace');
+
+            const installed = component.sections.find(s => s.key === 'installed');
+            expect(installed.mods.map(m => m.name)).toEqual(['ACE', 'ACE_Compat']);
+        });
+
+        it('shows all mods when search is empty', () => {
+            component.mods = [
+                makeMod({ id: '1', status: 'Installed', name: 'ACE' }),
+                makeMod({ id: '2', status: 'Installed', name: 'CBA_A3' }),
+            ];
+            component.updateModComputedProperties();
+
+            component.applySearch('');
+
+            const installed = component.sections.find(s => s.key === 'installed');
+            expect(installed.mods).toHaveLength(2);
+        });
+
+        it('filters across all sections', () => {
+            component.mods = [
+                makeMod({ id: '1', status: 'Error', name: 'ACE Error' }),
+                makeMod({ id: '2', status: 'Installed', name: 'ACE Compat' }),
+                makeMod({ id: '3', status: 'Installed', name: 'CBA_A3' }),
+            ];
+            component.updateModComputedProperties();
+
+            component.applySearch('ace');
+
+            const attention = component.sections.find(s => s.key === 'needsAttention');
+            expect(attention.mods).toHaveLength(1);
+            const installed = component.sections.find(s => s.key === 'installed');
+            expect(installed.mods).toHaveLength(1);
+        });
+    });
+
     describe('groupMods', () => {
         it('places Error mods in needsAttention section', () => {
             component.mods = [makeMod({ status: 'Error', name: 'ErrorMod' })];
