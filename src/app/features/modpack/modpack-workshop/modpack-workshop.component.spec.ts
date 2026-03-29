@@ -314,4 +314,134 @@ describe('ModpackWorkshopComponent', () => {
             });
         });
     });
+
+    describe('groupMods', () => {
+        it('places Error mods in needsAttention section', () => {
+            component.mods = [makeMod({ status: 'Error', name: 'ErrorMod' })];
+            component.updateModComputedProperties();
+
+            component.groupMods();
+
+            const section = component.sections.find(s => s.key === 'needsAttention');
+            expect(section.mods).toHaveLength(1);
+            expect(section.mods[0].name).toBe('ErrorMod');
+        });
+
+        it('places InterventionRequired mods in needsAttention section', () => {
+            component.mods = [makeMod({ status: 'InterventionRequired', name: 'BrokenMod' })];
+            component.updateModComputedProperties();
+
+            component.groupMods();
+
+            const section = component.sections.find(s => s.key === 'needsAttention');
+            expect(section.mods).toHaveLength(1);
+        });
+
+        it('places Installing/Updating/Uninstalling mods in inProgress section', () => {
+            component.mods = [
+                makeMod({ id: '1', status: 'Installing', name: 'Mod A' }),
+                makeMod({ id: '2', status: 'Updating', name: 'Mod B' }),
+                makeMod({ id: '3', status: 'Uninstalling', name: 'Mod C' }),
+            ];
+            component.updateModComputedProperties();
+
+            component.groupMods();
+
+            const section = component.sections.find(s => s.key === 'inProgress');
+            expect(section.mods).toHaveLength(3);
+        });
+
+        it('places mods with _updateAvailable in updatesAvailable section', () => {
+            component.mods = [makeMod({
+                status: 'Installed',
+                name: 'UpdateMe',
+                updatedDate: '2026-02-01T00:00:00Z',
+                lastUpdatedLocally: '2026-01-01T00:00:00Z'
+            })];
+            component.updateModComputedProperties();
+
+            component.groupMods();
+
+            const section = component.sections.find(s => s.key === 'updatesAvailable');
+            expect(section.mods).toHaveLength(1);
+            const installed = component.sections.find(s => s.key === 'installed');
+            expect(installed.mods).toHaveLength(0);
+        });
+
+        it('places PendingRelease mods in pendingRelease section', () => {
+            component.mods = [
+                makeMod({ id: '1', status: 'InstalledPendingRelease', name: 'Pending A' }),
+                makeMod({ id: '2', status: 'UpdatedPendingRelease', name: 'Pending B' }),
+                makeMod({ id: '3', status: 'UninstalledPendingRelease', name: 'Pending C' }),
+            ];
+            component.updateModComputedProperties();
+
+            component.groupMods();
+
+            const section = component.sections.find(s => s.key === 'pendingRelease');
+            expect(section.mods).toHaveLength(3);
+        });
+
+        it('places Installed mods without updates in installed section', () => {
+            component.mods = [makeMod({ status: 'Installed', name: 'StableMod' })];
+            component.updateModComputedProperties();
+
+            component.groupMods();
+
+            const section = component.sections.find(s => s.key === 'installed');
+            expect(section.mods).toHaveLength(1);
+        });
+
+        it('places Uninstalled mods in uninstalled section', () => {
+            component.mods = [makeMod({ status: 'Uninstalled', name: 'OldMod' })];
+            component.updateModComputedProperties();
+
+            component.groupMods();
+
+            const section = component.sections.find(s => s.key === 'uninstalled');
+            expect(section.mods).toHaveLength(1);
+        });
+
+        it('sorts mods alphabetically within each section', () => {
+            component.mods = [
+                makeMod({ id: '1', status: 'Installed', name: 'Zebra' }),
+                makeMod({ id: '2', status: 'Installed', name: 'Alpha' }),
+                makeMod({ id: '3', status: 'Installed', name: 'Middle' }),
+            ];
+            component.updateModComputedProperties();
+
+            component.groupMods();
+
+            const section = component.sections.find(s => s.key === 'installed');
+            expect(section.mods.map(m => m.name)).toEqual(['Alpha', 'Middle', 'Zebra']);
+        });
+
+        it('omits sections with zero mods', () => {
+            component.mods = [makeMod({ status: 'Installed', name: 'OnlyInstalled' })];
+            component.updateModComputedProperties();
+
+            component.groupMods();
+
+            const nonEmptySections = component.sections.filter(s => s.mods.length > 0);
+            expect(nonEmptySections).toHaveLength(1);
+            expect(nonEmptySections[0].key).toBe('installed');
+        });
+
+        it('assigns each mod to exactly one section based on priority', () => {
+            component.mods = [makeMod({
+                status: 'Error',
+                name: 'ErrorWithUpdate',
+                updatedDate: '2026-02-01T00:00:00Z',
+                lastUpdatedLocally: '2026-01-01T00:00:00Z'
+            })];
+            component.updateModComputedProperties();
+
+            component.groupMods();
+
+            const allMods = component.sections.flatMap(s => s.mods);
+            expect(allMods).toHaveLength(1);
+            const section = component.sections.find(s => s.key === 'needsAttention');
+            expect(section.mods).toHaveLength(1);
+        });
+    });
 });

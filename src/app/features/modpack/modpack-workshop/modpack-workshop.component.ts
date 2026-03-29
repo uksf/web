@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { first, takeUntil } from 'rxjs/operators';
 import { ModpackHubService } from '../services/modpack-hub.service';
-import { InstallWorkshopModData, WorkshopMod } from '../models/workshop-mod';
+import { InstallWorkshopModData, WorkshopMod, WorkshopModSection, WORKSHOP_SECTION_DEFINITIONS, WorkshopModSectionKey } from '../models/workshop-mod';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { UksfError } from '@app/shared/models/response';
 import { MatDialog } from '@angular/material/dialog';
@@ -33,6 +33,7 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
     private onReceiveWorkshopModAdded = () => this.getData();
     private onReceiveWorkshopModUpdate = (id: string) => this.getDataForMod(id);
     mods: WorkshopMod[] = [];
+    sections: WorkshopModSection[] = [];
 
     ngOnInit() {
         this.getData(() => {
@@ -109,6 +110,24 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
             mod._updateAvailable = this.updateAvailable(mod);
             mod._interventionRequired = this.interventionRequired(mod);
         });
+        this.groupMods();
+    }
+
+    groupMods() {
+        const sectionMap = new Map<WorkshopModSectionKey, WorkshopMod[]>();
+        for (const def of WORKSHOP_SECTION_DEFINITIONS) {
+            sectionMap.set(def.key, []);
+        }
+
+        for (const mod of this.mods) {
+            const key = this.getSectionKey(mod);
+            sectionMap.get(key).push(mod);
+        }
+
+        this.sections = WORKSHOP_SECTION_DEFINITIONS.map(def => ({
+            ...def,
+            mods: sectionMap.get(def.key).sort((a, b) => a.name.localeCompare(b.name)),
+        }));
     }
 
     interventionRequired(mod: WorkshopMod) {
@@ -218,6 +237,25 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
 
     trackBySteamId(_: number, mod: WorkshopMod) {
         return mod.steamId;
+    }
+
+    private getSectionKey(mod: WorkshopMod): WorkshopModSectionKey {
+        if (mod.status === 'Error' || mod.status === 'InterventionRequired') {
+            return 'needsAttention';
+        }
+        if (mod.status === 'Installing' || mod.status === 'Updating' || mod.status === 'Uninstalling') {
+            return 'inProgress';
+        }
+        if (mod._updateAvailable) {
+            return 'updatesAvailable';
+        }
+        if (mod.status === 'InstalledPendingRelease' || mod.status === 'UpdatedPendingRelease' || mod.status === 'UninstalledPendingRelease') {
+            return 'pendingRelease';
+        }
+        if (mod.status === 'Uninstalled') {
+            return 'uninstalled';
+        }
+        return 'installed';
     }
 
     private isValidDate(date: string) {
