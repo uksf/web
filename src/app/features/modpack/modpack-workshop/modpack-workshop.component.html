@@ -18,11 +18,14 @@
                 @for (section of sections; track section.key) {
                     @if (section.mods.length > 0) {
                         <div class="mod-section">
-                            <h4 class="mod-section-header">{{ section.label }} <small>{{ section.mods.length }}</small></h4>
+                            <h3 class="mod-section-header">{{ section.label }} <small>{{ section.mods.length }}</small></h3>
                             @for (mod of section.mods; track trackBySteamId($index, mod)) {
-                                <mat-card class="mod-row">
+                                <mat-card class="mod-row" [style.border-left-color]="section.accentColor">
                                     <div class="mod-name">
-                                        <span>{{ mod.rootMod ? '@' : '' }}{{ mod.name }}</span>
+                                        @if (mod.rootMod) {
+                                            <span class="mod-prefix">@</span>
+                                        }
+                                        <span class="mod-label">{{ mod.name }}</span>
                                     </div>
                                     @if (section.key !== 'installed') {
                                         <div class="mod-status">

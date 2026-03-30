@@ -41,11 +41,13 @@
 
 .mod-section {
     .mod-section-header {
-        margin: v.$spacing-12px 0 v.$spacing-4px;
+        display: flex;
+        align-items: baseline;
+        margin: v.$spacing-12px 0 v.$spacing-6px;
 
         small {
             opacity: 0.5;
-            margin-left: v.$spacing-4px;
+            margin-left: auto;
         }
     }
 
@@ -61,18 +63,25 @@
     width: 100%;
     margin-bottom: 3px;
     padding: v.$spacing-4px v.$spacing-8px;
+    border-left: 3px solid transparent;
     cursor: default;
 
     .mod-name {
         flex: 1;
-        padding: 2px v.$spacing-8px;
-        margin: auto 0;
+        padding: 0 v.$spacing-8px;
         display: flex;
         align-items: center;
-        gap: v.$spacing-8px;
+        gap: 2px;
         min-width: 0;
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 1;
 
-        > span:first-child {
+        .mod-prefix {
+            flex-shrink: 0;
+        }
+
+        .mod-label {
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
