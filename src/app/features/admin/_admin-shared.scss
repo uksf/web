@@ -133,6 +133,30 @@
     }
 }
 
+// Chip filter styling for log views
+@mixin chip-filter {
+    mat-chip-listbox {
+        margin-left: 16px;
+        align-self: center;
+        --mat-sys-secondary-container: transparent;
+        --mat-sys-on-secondary-container: var(--mat-sys-primary);
+
+        ::ng-deep .mat-mdc-chip-selected {
+            border: 1px solid var(--mat-sys-primary);
+        }
+
+        // No built-in option to hide checkmarks in multi-select chip listbox;
+        // hide the graphic container entirely and prevent the layout shift
+        ::ng-deep .mdc-evolution-chip__graphic {
+            display: none !important;
+        }
+
+        ::ng-deep .mdc-evolution-chip--with-primary-graphic .mdc-evolution-chip__action--primary {
+            padding-left: 12px;
+        }
+    }
+}
+
 // Sizing for app-button elements in admin pages
 @mixin admin-button {
     app-button {

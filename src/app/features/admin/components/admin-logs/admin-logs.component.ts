@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, OnInit, ViewChild, inject } from '@angular/core';
+import { MatChipListbox, MatChipOption, MatChipListboxChange } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { MatTableDataSource, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';
@@ -34,6 +35,8 @@ import { NgClass, DatePipe } from '@angular/common';
         TextInputComponent,
         FormsModule,
         FlexFillerComponent,
+        MatChipListbox,
+        MatChipOption,
         MatProgressSpinner,
         MatTable,
         MatSort,
@@ -68,6 +71,8 @@ export class AdminLogsComponent extends DestroyableComponent implements OnInit, 
     filter = '';
     dataLoaded = false;
     logDisplayedColumns = ['timestamp', 'level', 'message'];
+    allLevels = [LogLevel.DEBUG, LogLevel.INFO, LogLevel.WARNING, LogLevel.ERROR];
+    selectedLevels: LogLevel[] = [];
     datasource: MatTableDataSource<BasicLog> = new MatTableDataSource<BasicLog>();
 
     constructor() {
@@ -135,6 +140,12 @@ export class AdminLogsComponent extends DestroyableComponent implements OnInit, 
         this.filterSubject.next(this.filter);
     }
 
+    onLevelSelectionChange(change: MatChipListboxChange) {
+        this.selectedLevels = change.value;
+        this.paginator.pageIndex = 0;
+        this.refreshData();
+    }
+
     openMessageDialog(message) {
         this.dialog.open(MessageModalComponent, {
             data: { message: message }
@@ -146,12 +157,18 @@ export class AdminLogsComponent extends DestroyableComponent implements OnInit, 
     }
 
     buildParams(): HttpParams {
-        return new HttpParams()
+        let params = new HttpParams()
             .set('page', String(this.paginator.pageIndex + 1))
             .set('pageSize', String(this.paginator.pageSize))
             .set('sortDirection', String(this.sort.direction === 'asc' ? SortDirection.ASCENDING : SortDirection.DESCENDING))
             .set('sortField', this.sort.active === undefined ? 'timestamp' : this.sort.active)
             .set('filter', this.filter);
+
+        if (this.selectedLevels.length > 0 && this.selectedLevels.length < this.allLevels.length) {
+            params = params.set('levels', this.selectedLevels.map(l => this.levelToString(l)).join(','));
+        }
+
+        return params;
     }
 
     levelToString(level: LogLevel) {

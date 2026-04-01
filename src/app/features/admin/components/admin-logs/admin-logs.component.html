@@ -5,6 +5,13 @@
             <div class="table-header">
                 <app-text-input class="filter-input" label="Filter" [(ngModel)]="filter" [clearable]="true" [reserveErrorSpace]="false" (input)="applyFilter(filter)" (cleared)="applyFilter('')">
                 </app-text-input>
+                <mat-chip-listbox [multiple]="true" [value]="selectedLevels" (change)="onLevelSelectionChange($event)">
+                    @for (level of allLevels; track level) {
+                        <mat-chip-option [value]="level" [class]="'log-chip-' + levelToString(level).toLowerCase()">
+                            {{ levelToString(level) }}
+                        </mat-chip-option>
+                    }
+                </mat-chip-listbox>
                 <app-flex-filler></app-flex-filler>
                 <span class="expand-hint">Some columns can be expanding by clicking on the data cell</span>
             </div>

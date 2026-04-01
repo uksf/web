@@ -5,6 +5,13 @@
             <div class="table-header">
                 <app-text-input class="filter-input" label="Filter" [(ngModel)]="filter" [clearable]="true" [reserveErrorSpace]="false" (input)="applyFilter(filter)" (cleared)="applyFilter('')">
                 </app-text-input>
+                <mat-chip-listbox [multiple]="true" [value]="selectedEventTypes" (change)="onEventTypeSelectionChange($event)">
+                    @for (eventType of allEventTypes; track eventType) {
+                        <mat-chip-option [value]="eventType" color="primary">
+                            {{ eventTypeToString(eventType) }}
+                        </mat-chip-option>
+                    }
+                </mat-chip-listbox>
                 <app-flex-filler></app-flex-filler>
                 <span class="expand-hint">Some columns can be expanding by clicking on the data cell</span>
             </div>

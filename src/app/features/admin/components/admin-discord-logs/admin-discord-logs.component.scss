@@ -18,3 +18,5 @@
 .mat-column-channelName {
     flex: 0 0 100px;
 }
+
+@include admin.chip-filter;

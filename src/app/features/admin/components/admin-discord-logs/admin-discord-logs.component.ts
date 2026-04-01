@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatTableDataSource, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';
+import { MatChipListbox, MatChipOption, MatChipListboxChange } from '@angular/material/chips';
 import { DiscordLog, DiscordUserEventType } from '@app/features/admin/models/logging';
 import { AdminLogsComponent } from '../admin-logs/admin-logs.component';
 import { PagedResult } from '@app/shared/models/paged-result';
@@ -26,6 +27,8 @@ import { DatePipe } from '@angular/common';
         TextInputComponent,
         FormsModule,
         FlexFillerComponent,
+        MatChipListbox,
+        MatChipOption,
         MatProgressSpinner,
         MatTable,
         MatSort,
@@ -46,6 +49,14 @@ import { DatePipe } from '@angular/common';
 export class AdminDiscordLogsComponent extends AdminLogsComponent implements OnInit, OnDestroy {
     launcherLogDisplayedColumns = ['timestamp', 'discordUserEventType', 'instigatorId', 'instigatorName', 'channelName', 'name', 'message'];
     datasource: MatTableDataSource<DiscordLog> = new MatTableDataSource<DiscordLog>();
+    allEventTypes = [
+        DiscordUserEventType.JOINED,
+        DiscordUserEventType.LEFT,
+        DiscordUserEventType.BANNED,
+        DiscordUserEventType.UNBANNED,
+        DiscordUserEventType.MESSAGE_DELETED,
+    ];
+    selectedEventTypes: DiscordUserEventType[] = [];
 
     constructor() {
         super();
@@ -65,6 +76,22 @@ export class AdminDiscordLogsComponent extends AdminLogsComponent implements OnI
             });
     }
 
+    onEventTypeSelectionChange(change: MatChipListboxChange) {
+        this.selectedEventTypes = change.value;
+        this.paginator.pageIndex = 0;
+        this.refreshData();
+    }
+
+    override buildParams() {
+        let params = super.buildParams();
+
+        if (this.selectedEventTypes.length > 0 && this.selectedEventTypes.length < this.allEventTypes.length) {
+            params = params.set('eventTypes', this.selectedEventTypes.map(e => this.eventTypeToApiString(e)).join(','));
+        }
+
+        return params;
+    }
+
     eventTypeToString(eventType: DiscordUserEventType) {
         switch (eventType) {
             case DiscordUserEventType.JOINED:
@@ -77,6 +104,21 @@ export class AdminDiscordLogsComponent extends AdminLogsComponent implements OnI
                 return 'UNBANNED';
             case DiscordUserEventType.MESSAGE_DELETED:
                 return 'MESSAGE DELETED';
+        }
+    }
+
+    private eventTypeToApiString(eventType: DiscordUserEventType): string {
+        switch (eventType) {
+            case DiscordUserEventType.JOINED:
+                return 'Joined';
+            case DiscordUserEventType.LEFT:
+                return 'Left';
+            case DiscordUserEventType.BANNED:
+                return 'Banned';
+            case DiscordUserEventType.UNBANNED:
+                return 'Unbanned';
+            case DiscordUserEventType.MESSAGE_DELETED:
+                return 'Message_Deleted';
         }
     }
 }

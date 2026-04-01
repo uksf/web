@@ -29,3 +29,17 @@
 .log-level-warning {
     color: goldenrod;
 }
+
+@include admin.chip-filter;
+
+::ng-deep mat-chip-option.log-chip-error.mat-mdc-chip-selected {
+    --mat-sys-secondary-container: red;
+    --mat-sys-on-secondary-container: #ffffff;
+    border: none;
+}
+
+::ng-deep mat-chip-option.log-chip-warning.mat-mdc-chip-selected {
+    --mat-sys-secondary-container: goldenrod;
+    --mat-sys-on-secondary-container: #000000;
+    border: none;
+}
