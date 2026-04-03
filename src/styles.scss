@@ -71,6 +71,10 @@
 @use 'app/shared/modals/message-modal/message-model.component.scss-theme' as *;
 @use 'app/shared/modals/validation-report-modal/validation-report-modal.scss-theme' as *;
 
+// Information - Boards
+@use 'app/features/information/components/boards-list/boards-list.component.scss-theme' as boardsList;
+@use 'app/features/information/modals/board-card-detail-modal/board-card-detail-modal.component.scss-theme' as boardCardDetail;
+
 // Modpack
 @use 'app/features/modpack/modpack-builds-dev/modpack-builds-dev.component.scss-theme' as *;
 @use 'app/features/modpack/modpack-builds-rc/modpack-builds-rc.component.scss-theme' as *;
@@ -149,6 +153,10 @@
     @include request-loa-modal-component-theme($theme);
     @include validation-report-modal-component-theme($theme);
     @include message-modal-component-theme($theme);
+
+    // Information - Boards
+    @include boardsList.theme($theme);
+    @include boardCardDetail.theme($theme);
 
     // Modpack
     @include modpack-builds-dev-component-theme($theme);

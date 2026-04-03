@@ -1,0 +1,100 @@
+@use 'styles/variables' as v;
+
+:host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 0 v.$spacing-16px;
+}
+
+.board-page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.board-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: v.$spacing-8px 0;
+    flex-shrink: 0;
+
+    h1 {
+        margin: 0;
+        font-size: 22px;
+    }
+}
+
+.board-header-left {
+    display: flex;
+    align-items: center;
+    gap: v.$spacing-8px;
+}
+
+.board-header-actions {
+    display: flex;
+    align-items: center;
+    gap: v.$spacing-8px;
+}
+
+.new-card-field {
+    width: 220px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: v.$spacing-6px v.$spacing-12px;
+    transition: border-color v.$transition-fast v.$ease-standard,
+                box-shadow v.$transition-fast v.$ease-standard;
+
+    &:hover {
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    &:focus-within {
+        border-color: rgba(254, 196, 0, 0.5);
+        box-shadow: 0 0 0 3px rgba(254, 196, 0, 0.08);
+    }
+
+    ::ng-deep {
+        .form-field {
+            height: auto;
+            align-items: center;
+        }
+
+        input {
+            padding-bottom: 0 !important;
+            border-bottom: none !important;
+            font-size: 13px;
+        }
+    }
+}
+
+.board-columns {
+    display: flex;
+    gap: v.$spacing-8px;
+    flex: 1;
+    min-height: 0;
+    padding-bottom: v.$spacing-8px;
+}
+
+.access-denied {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: v.$spacing-16px;
+    padding: v.$spacing-40px;
+    text-align: center;
+    opacity: 0.7;
+    flex: 1;
+
+    mat-icon {
+        font-size: 64px;
+        width: 64px;
+        height: 64px;
+    }
+
+    h2 {
+        margin: 0;
+    }
+}

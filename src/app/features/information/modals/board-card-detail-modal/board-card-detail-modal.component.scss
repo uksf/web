@@ -1,0 +1,277 @@
+@use 'styles/variables' as v;
+@use 'styles/form-field' as ff;
+
+@mixin editable-field {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    background: transparent;
+    transition: border-color v.$transition-fast v.$ease-standard,
+                box-shadow v.$transition-fast v.$ease-standard;
+
+    &:hover {
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    &:focus-within {
+        border-color: rgba(254, 196, 0, 0.5);
+        box-shadow: 0 0 0 3px rgba(254, 196, 0, 0.08);
+    }
+
+    ::ng-deep input,
+    ::ng-deep textarea {
+        padding-bottom: 0 !important;
+        border-bottom: none !important;
+    }
+}
+
+// Layout
+
+.card-detail-layout {
+    display: grid;
+    grid-template-columns: 1fr 240px;
+    gap: v.$spacing-24px;
+    min-height: 0;
+
+    @include v.below(v.$layout-medium) {
+        grid-template-columns: 1fr;
+        gap: v.$spacing-16px;
+        min-height: auto;
+    }
+}
+
+.card-main {
+    display: flex;
+    flex-direction: column;
+    gap: v.$spacing-20px;
+    min-width: 0;
+}
+
+.card-section {
+    display: flex;
+    flex-direction: column;
+    gap: v.$spacing-8px;
+}
+
+.title-container {
+    @include editable-field;
+    padding: v.$spacing-8px v.$spacing-16px;
+}
+
+.card-title-field {
+    width: 100%;
+
+    ::ng-deep {
+        .form-field {
+            height: auto;
+        }
+
+        input {
+            font-size: 22px;
+            font-weight: 600;
+        }
+    }
+}
+
+.main-label {
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0.7;
+}
+
+.description-container {
+    @include editable-field;
+    padding: v.$spacing-12px v.$spacing-16px;
+
+    ::ng-deep {
+        .form-field-multiline .form-field {
+            padding-top: 0;
+        }
+
+        textarea {
+            overflow: hidden !important;
+            max-height: none !important;
+        }
+    }
+}
+
+// Tabs
+
+.card-tabs-full {
+    display: flex;
+    flex-direction: column;
+    min-height: 200px;
+    padding-top: v.$spacing-16px;
+}
+
+.tab-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+    margin-right: v.$spacing-6px;
+}
+
+.tab-content {
+    padding: v.$spacing-16px 0;
+}
+
+.tab-content-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+}
+
+.empty-state {
+    font-size: 13px;
+    opacity: 0.4;
+    font-style: italic;
+}
+
+// Activity
+
+.activity-entry {
+    display: flex;
+    align-items: flex-start;
+    gap: v.$spacing-8px;
+    padding: v.$spacing-8px 0;
+
+    & + & {
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+}
+
+.activity-dot {
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-top: 6px;
+    opacity: 0.4;
+}
+
+.activity-body {
+    flex: 1;
+    font-size: 13px;
+    line-height: 1.5;
+    min-width: 0;
+}
+
+.activity-user {
+    font-weight: 600;
+    margin-right: v.$spacing-4px;
+}
+
+.activity-description {
+    opacity: 0.7;
+}
+
+.activity-time {
+    flex-shrink: 0;
+    font-size: 11px;
+    opacity: 0.4;
+    margin-top: 1px;
+    white-space: nowrap;
+}
+
+// Sidebar
+
+.card-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: v.$spacing-20px;
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    padding-left: v.$spacing-24px;
+
+    @include v.below(v.$layout-medium) {
+        border-left: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        padding-left: 0;
+        padding-top: v.$spacing-16px;
+    }
+}
+
+.sidebar-section {
+    display: flex;
+    flex-direction: column;
+    gap: v.$spacing-8px;
+}
+
+.section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    opacity: 0.5;
+}
+
+.assignee-field {
+    @include editable-field;
+    padding: v.$spacing-8px v.$spacing-16px;
+    cursor: pointer;
+
+    ::ng-deep {
+        .form-field {
+            height: auto;
+            align-items: center;
+        }
+
+        input {
+            font-size: 14px;
+            line-height: 20px;
+        }
+
+        .form-field-arrow {
+            position: static;
+            flex-shrink: 0;
+        }
+    }
+}
+
+.label-input-field {
+    @include editable-field;
+    padding: v.$spacing-8px v.$spacing-16px;
+
+    ::ng-deep {
+        .form-field {
+            height: auto;
+            align-items: center;
+        }
+
+        input {
+            font-size: 14px;
+            line-height: 20px;
+        }
+
+        .form-field-clear {
+            position: static;
+            flex-shrink: 0;
+        }
+    }
+}
+
+// Metadata
+
+.sidebar-meta {
+    display: flex;
+    flex-direction: column;
+    gap: v.$spacing-8px;
+    padding-top: v.$spacing-4px;
+}
+
+.meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 13px;
+}
+
+.meta-label {
+    opacity: 0.4;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.meta-value {
+    opacity: 0.8;
+}

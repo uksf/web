@@ -1,0 +1,29 @@
+@use 'styles/variables' as v;
+
+.card-tile {
+    display: flex;
+    flex-direction: column;
+    gap: v.$spacing-4px;
+    padding: v.$spacing-8px v.$spacing-12px;
+    cursor: pointer;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.06);
+    }
+}
+
+.card-title {
+    font-size: 14px;
+    font-weight: 500;
+    word-break: break-word;
+}
+
+.card-label {
+    font-size: 11px;
+}
+
+.card-assignee {
+    font-size: 12px;
+    opacity: 0.7;
+    text-align: right;
+}

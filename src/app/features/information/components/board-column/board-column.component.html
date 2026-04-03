@@ -1,0 +1,23 @@
+<div class="column">
+    <div class="column-header">
+        <span class="column-name">{{ column.name }}</span>
+        <span class="column-count">{{ column.totalCards }}</span>
+    </div>
+    <div class="column-cards"
+         cdkDropList
+         [id]="dropListId"
+         [cdkDropListData]="column"
+         [cdkDropListConnectedTo]="connectedLists"
+         (cdkDropListDropped)="dropped.emit($event)">
+        @for (card of column.cards; track card.id) {
+            <div cdkDrag [cdkDragData]="card">
+                <app-board-card [card]="card" (openCard)="onOpenCard($event)"></app-board-card>
+            </div>
+        }
+    </div>
+    @if (showLoadMore) {
+        <button mat-button class="load-more" (click)="onLoadMore()">
+            <mat-icon>expand_more</mat-icon> Load More
+        </button>
+    }
+</div>

@@ -1,0 +1,13 @@
+<mat-card class="card-tile" (click)="onClick()">
+    <div class="card-title">{{ card.title }}</div>
+    @if (card.labels.length > 0) {
+        <mat-chip-set class="card-labels">
+            @for (label of card.labels; track label) {
+                <mat-chip class="card-label">{{ label }}</mat-chip>
+            }
+        </mat-chip-set>
+    }
+    @if (card.assigneeName) {
+        <div class="card-assignee">{{ card.assigneeName }}</div>
+    }
+</mat-card>

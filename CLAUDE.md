@@ -235,6 +235,7 @@ Angular Material theming with custom palettes:
 - Never hardcode colors - use theme palette functions
 - `::ng-deep` is deprecated but has no replacement - use sparingly for third-party components
 - Components with theming support have a `*.scss-theme.scss` file imported in `styles.scss`
+- Prefer `gap` (on flex/grid containers) or `padding` over `margin` for spacing between elements
 
 ### Shared Form Field Styles
 

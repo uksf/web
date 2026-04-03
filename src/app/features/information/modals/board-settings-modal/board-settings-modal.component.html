@@ -1,0 +1,54 @@
+<app-autofocus-stop></app-autofocus-stop>
+<h2 mat-dialog-title>{{ mode === 'create' ? 'Create Board' : 'Board Settings' }}</h2>
+<mat-dialog-content>
+    <form [formGroup]="form">
+        <mat-form-field class="full-width">
+            <mat-label>Board Name</mat-label>
+            <input matInput formControlName="name">
+        </mat-form-field>
+    </form>
+
+    <div class="permissions-section">
+        <h3>Permissions</h3>
+        <p class="permissions-hint">Select units and/or individual members who can use this board. Admins always have access.</p>
+
+        <div class="permissions-controls">
+            <app-selection-list
+                [(ngModel)]="selectedUnits"
+                [elements]="units"
+                [clearOnSelect]="true"
+                [elementName]="'Unit'"
+                [placeholder]="'Select units'"
+                [isRequired]="false"
+                [listPosition]="'bottom'"
+            >
+                <ng-template #element let-element>
+                    <span>{{ element.displayValue }}</span>
+                </ng-template>
+            </app-selection-list>
+
+            <mat-checkbox [(ngModel)]="expandToSubUnits">Include sub-units</mat-checkbox>
+
+            <app-selection-list
+                [(ngModel)]="selectedMembers"
+                [elements]="members"
+                [clearOnSelect]="true"
+                [elementName]="'Member'"
+                [placeholder]="'Select members'"
+                [isRequired]="false"
+                [listPosition]="'bottom'"
+            >
+                <ng-template #element let-element>
+                    <span>{{ element.displayValue }}</span>
+                </ng-template>
+            </app-selection-list>
+        </div>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-raised-button (click)="cancel()" color="warn">Cancel</button>
+    <app-flex-filler></app-flex-filler>
+    <button mat-raised-button (click)="save()" color="primary" [disabled]="form.invalid">
+        {{ mode === 'create' ? 'Create' : 'Save' }}
+    </button>
+</mat-dialog-actions>

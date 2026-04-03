@@ -1,0 +1,36 @@
+<div class="boards-page">
+    <div class="boards-header">
+        <h1>Boards</h1>
+        <ng-template [ngxPermissionsOnly]="['ADMIN']">
+            <button mat-raised-button color="primary" (click)="createBoard()">Create Board</button>
+        </ng-template>
+    </div>
+    <div class="boards-grid">
+        @for (board of boards; track board.id) {
+            <mat-card class="board-card" (click)="openBoard(board)">
+                <div class="board-card-content">
+                    <mat-icon class="board-icon">view_kanban</mat-icon>
+                    <div class="board-info">
+                        <h3>{{ board.name }}</h3>
+                        <span class="member-count">{{ board.memberCount }} members</span>
+                    </div>
+                </div>
+                <ng-template [ngxPermissionsOnly]="['ADMIN']">
+                    <button mat-icon-button [matMenuTriggerFor]="boardMenu" (click)="$event.stopPropagation()" matTooltip="Options">
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #boardMenu="matMenu">
+                        <button mat-menu-item (click)="editBoard($event, board)">
+                            <mat-icon>settings</mat-icon> Settings
+                        </button>
+                        <button mat-menu-item class="delete" (click)="deleteBoard($event, board)">
+                            <mat-icon>delete</mat-icon> Delete
+                        </button>
+                    </mat-menu>
+                </ng-template>
+            </mat-card>
+        } @empty {
+            <p class="empty-message">No boards available</p>
+        }
+    </div>
+</div>

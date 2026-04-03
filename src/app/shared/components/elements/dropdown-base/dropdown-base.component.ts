@@ -18,6 +18,7 @@ export class DropdownBaseComponent extends DestroyableComponent implements OnIni
     @ViewChild('textInput', { read: MatAutocompleteTrigger }) autocompleteTrigger: MatAutocompleteTrigger;
     @ContentChild('element', { static: false }) elementTemplateRef: TemplateRef<IDropdownElement>;
     @Input('placeholder') placeholder: string;
+    @Input() inputPlaceholder: string = '';
     @Input('isRequired') required: boolean = false;
     @Input('isDisabled') disabled: boolean = false;
     @Input('showErrors') showErrors: boolean = true;
@@ -33,6 +34,7 @@ export class DropdownBaseComponent extends DestroyableComponent implements OnIni
     @Input('optionClass') optionClass: string;
     @Input('autocomplete') autocomplete: boolean = true;
     @Input('clearOnSelect') clearOnSelect: boolean = false;
+    @Input() allowFreeText: boolean = false;
     @Input('reserveErrorSpace') reserveErrorSpace: boolean = true;
     @Input('textModel') textModel: string = '';
 
@@ -47,6 +49,7 @@ export class DropdownBaseComponent extends DestroyableComponent implements OnIni
         return this.displayWith(value);
     };
     @Output() selectionChanged = new EventEmitter<IDropdownElement>();
+    @Output() freeTextSubmitted = new EventEmitter<string>();
     _model: IDropdownElement = null;
     _justSelected = false;
     allElements: IDropdownElement[];
@@ -176,6 +179,17 @@ export class DropdownBaseComponent extends DestroyableComponent implements OnIni
 
         const element = this.allElements.find((element: IDropdownElement) => this.elementMatcher(element, filterValueLower));
         this.model = element ? element : null;
+    }
+
+    onFreeTextEnter(event: KeyboardEvent) {
+        const value = this.textModel?.trim();
+        if (value) {
+            this.freeTextSubmitted.emit(value);
+            this.textModel = '';
+            this.onTextModelChange('');
+            this.autocompleteTrigger?.closePanel();
+            event.preventDefault();
+        }
     }
 
     clear() {

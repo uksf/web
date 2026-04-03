@@ -1,0 +1,28 @@
+@use 'styles/variables' as v;
+
+.full-width {
+    width: 100%;
+}
+
+.permissions-section {
+    display: flex;
+    flex-direction: column;
+    gap: v.$spacing-4px;
+    padding-top: v.$spacing-8px;
+
+    h3 {
+        margin: 0;
+    }
+}
+
+.permissions-hint {
+    font-size: 13px;
+    opacity: 0.6;
+}
+
+.permissions-controls {
+    display: flex;
+    flex-direction: column;
+    gap: v.$spacing-12px;
+    padding-top: v.$spacing-8px;
+}

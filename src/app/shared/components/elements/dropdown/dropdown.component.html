@@ -4,7 +4,7 @@
         <div class="form-field" [class.form-field-simple]="!autocomplete" (click)="!autocomplete && !disabled ? openPanel() : null">
             @if (placeholder) {
             <label class="form-field-label" [class.required]="required" [class.floating]="labelFloating" [attr.for]="inputId">{{ placeholder }}</label>
-            } @if (autocomplete) {
+            } @if (autocomplete && !allowFreeText) {
             <input
                 #textInput="ngModel"
                 [id]="inputId"
@@ -17,6 +17,7 @@
                 [mustSelectFromDropdownElementMatcher]="elementMatcher"
                 [mustSelectFromDropdownElements]="allElements"
                 [required]="required"
+                [placeholder]="inputPlaceholder"
                 mustSelectFromDropdown
                 spellcheck="false"
                 type="text"
@@ -24,6 +25,23 @@
                 autocomplete="off"
                 (focus)="onInputFocus()"
                 (blur)="onInputBlur()"
+            />
+            } @else if (autocomplete && allowFreeText) {
+            <input
+                #textInput="ngModel"
+                [id]="inputId"
+                (ngModelChange)="onTextModelChange($event)"
+                [(ngModel)]="textModel"
+                [disabled]="disabled"
+                [matAutocomplete]="auto"
+                [placeholder]="inputPlaceholder"
+                spellcheck="false"
+                type="text"
+                name="textInput"
+                autocomplete="off"
+                (focus)="onInputFocus()"
+                (blur)="onInputBlur()"
+                (keydown.enter)="onFreeTextEnter($event)"
             />
             } @else {
             <input

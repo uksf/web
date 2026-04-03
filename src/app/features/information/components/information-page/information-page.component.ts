@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
-import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
-import { MatCard } from '@angular/material/card';
 import { RouterLink } from '@angular/router';
+import { MatCard } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
+import { DefaultContentAreasComponent } from '@app/shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { MainContentAreaComponent } from '@app/shared/components/content-areas/main-content-area/main-content-area.component';
 
 @Component({
     selector: 'app-information-page',
@@ -11,6 +11,4 @@ import { MatIcon } from '@angular/material/icon';
     styleUrls: ['./information-page.component.scss', './information-page.component.scss-theme.scss'],
     imports: [DefaultContentAreasComponent, MainContentAreaComponent, MatCard, RouterLink, MatIcon]
 })
-export class InformationPageComponent {
-    constructor() {}
-}
+export class InformationPageComponent {}

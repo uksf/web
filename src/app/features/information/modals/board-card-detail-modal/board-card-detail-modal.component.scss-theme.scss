@@ -1,0 +1,14 @@
+@use '@angular/material' as mat;
+@use 'styles/theme-helpers' as th;
+
+@mixin theme($theme) {
+    app-board-card-detail-modal {
+        .activity-user {
+            color: mat.get-theme-color($theme, primary);
+        }
+
+        .activity-dot {
+            background-color: mat.get-theme-color($theme, primary);
+        }
+    }
+}
