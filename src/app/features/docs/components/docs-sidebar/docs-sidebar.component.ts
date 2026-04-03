@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { first } from 'rxjs/operators';
 import { FolderMetadata } from '@app/features/docs/models/documents';
 import { MatDialog } from '@angular/material/dialog';
@@ -13,19 +13,16 @@ import { DocsFolderComponent } from './docs-folder/docs-folder.component';
     selector: 'app-docs-sidebar',
     templateUrl: './docs-sidebar.component.html',
     styleUrls: ['./docs-sidebar.component.scss'],
-    animations: [collapseAnimations.buttonExpansion, collapseAnimations.indicatorRotate, collapseAnimations.collapsed],
+    animations: [collapseAnimations.collapsed],
     imports: [MatIcon, FlexFillerComponent, MatTooltip, DocsFolderComponent]
 })
-export class DocsSidebarComponent implements OnInit {
+export class DocsSidebarComponent {
     private dialog = inject(MatDialog);
 
     @Input('allDocumentMetadata') allFolderMetadata: FolderMetadata[];
     @Input() expandedFolderIds: Set<string> = new Set();
     @Output() refresh = new EventEmitter();
-    collapseHoverState: string = 'collapsed';
-    collapsedState: string = 'expanded';
-
-    ngOnInit(): void {}
+    collapsed = false;
 
     addFolder() {
         this.dialog
@@ -51,16 +48,8 @@ export class DocsSidebarComponent implements OnInit {
         return this.allFolderMetadata.filter((x) => x.parent === '000000000000000000000000');
     }
 
-    onMouseOver() {
-        this.collapseHoverState = 'expanded';
-    }
-
-    onMouseLeave() {
-        this.collapseHoverState = 'collapsed';
-    }
-
     toggleCollapse() {
-        this.collapsedState = this.collapsedState === 'collapsed' ? 'expanded' : 'collapsed';
+        this.collapsed = !this.collapsed;
     }
 
     trackById(_: number, folderMetadata: FolderMetadata) {
@@ -68,6 +57,6 @@ export class DocsSidebarComponent implements OnInit {
     }
 
     get tooltip(): string {
-        return this.collapsedState === 'expanded' ? 'Hide sidebar' : 'Show sidebar';
+        return this.collapsed ? 'Show sidebar' : 'Hide sidebar';
     }
 }

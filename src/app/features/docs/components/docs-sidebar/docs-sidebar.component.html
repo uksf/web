@@ -1,5 +1,5 @@
 <div class="sidebar-layout">
-    <div [@collapsed]="collapsedState" class="sidebar-container">
+    <div [@collapsed]="collapsed ? 'collapsed' : 'expanded'" class="sidebar-container">
         <div class="sidebar-header">
             <div class="icon-container">
                 <mat-icon color="primary">article_outline</mat-icon>
@@ -17,9 +17,9 @@
         </div>
     </div>
     <div class="sidebar-collapse-container">
-        <div (click)="toggleCollapse()" (mouseenter)="onMouseOver()" (mouseleave)="onMouseLeave()" [matTooltip]="tooltip" class="sidebar-collapse-button">
-            <div [@buttonExpansion]="collapseHoverState" class="sidebar-collapse-icon">
-                <mat-icon [@indicatorRotate]="collapsedState">expand_more</mat-icon>
+        <div class="sidebar-collapse-button">
+            <div (click)="toggleCollapse()" [matTooltip]="tooltip" class="sidebar-collapse-icon" [class.collapsed]="collapsed">
+                <mat-icon>expand_more</mat-icon>
             </div>
         </div>
     </div>

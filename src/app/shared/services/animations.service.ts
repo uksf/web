@@ -69,34 +69,8 @@ export const folderAnimations: {
 };
 
 export const collapseAnimations: {
-    readonly indicatorRotate: AnimationTriggerMetadata;
-    readonly buttonExpansion: AnimationTriggerMetadata;
     readonly collapsed: AnimationTriggerMetadata;
 } = {
-    /** Animation that rotates the indicator arrow. */
-    indicatorRotate: trigger('indicatorRotate', [
-        state('collapsed', style({ transform: 'rotateZ(270deg)' })),
-        state('expanded', style({ transform: 'rotateZ(90deg)' })),
-        transition('expanded <=> collapsed', animate('150ms'))
-    ]),
-
-    /** Animation that expands and collapses the button. */
-    buttonExpansion: trigger('buttonExpansion', [
-        state(
-            'expanded',
-            style({
-                width: '48px'
-            })
-        ),
-        state(
-            'collapsed',
-            style({
-                width: '24px'
-            })
-        ),
-        transition('expanded <=> collapsed', [animate('100ms')])
-    ]),
-
     /** Animation that expands and collapses the sidebar. */
     collapsed: trigger('collapsed', [
         state(
