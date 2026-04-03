@@ -28,12 +28,11 @@
                             "./node_modules/quill/dist/quill.snow.css"
                         ],
                         "scripts": [
-                            "./node_modules/quill/dist/quill.min.js",
                             "./node_modules/prismjs/prism.js",
                             "./node_modules/prismjs/components/prism-markdown.min.js",
                             "./node_modules/chart.js/dist/Chart.js"
                         ],
-                        "allowedCommonJsDependencies": ["quill", "moment", "moment-timezone", "chart.js", "mobx", "ansi-to-html"],
+                        "allowedCommonJsDependencies": ["quill-delta", "moment", "moment-timezone", "chart.js", "mobx", "ansi-to-html"],
                         "extractLicenses": false,
                         "sourceMap": true,
                         "optimization": false,

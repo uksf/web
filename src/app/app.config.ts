@@ -6,7 +6,7 @@ import { importProvidersFrom } from '@angular/core';
 import { JwtModule } from '@auth0/angular-jwt';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { MarkdownModule } from 'ngx-markdown';
-import { QuillModule } from 'ngx-quill';
+import { provideQuillConfig } from 'ngx-quill/config';
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
@@ -74,9 +74,9 @@ export const appConfig: ApplicationConfig = {
                 }
             }),
             NgxPermissionsModule.forRoot(),
-            MarkdownModule.forRoot(),
-            QuillModule.forRoot()
+            MarkdownModule.forRoot()
         ),
+        provideQuillConfig({}),
         // Core services
         AppSettingsService,
         SessionService,

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, inject } from '@angular/core';
 import { DocumentMetadata, FolderMetadata } from '@app/features/docs/models/documents';
 import { folderAnimations } from '@app/shared/services/animations.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -22,15 +22,22 @@ import { DocsDocumentComponent } from '../docs-document/docs-document.component'
     animations: [folderAnimations.indicatorRotate, folderAnimations.folderExpansion],
     imports: [NgClass, MatIcon, MatTooltip, MatMenuTrigger, MatMenu, MatMenuItem, DocsDocumentComponent]
 })
-export class DocsFolderComponent {
+export class DocsFolderComponent implements OnChanges {
     private docsService = inject(DocsService);
     private dialog = inject(MatDialog);
 
     @Input('allDocumentMetadata') allFolderMetadata: FolderMetadata[];
     @Input('folderMetadata') folderMetadata: FolderMetadata;
+    @Input() expandedFolderIds: Set<string> = new Set();
     @Output() refresh = new EventEmitter();
     @Output() expandFolder = new EventEmitter();
     expanded: boolean = false;
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.expandedFolderIds && this.expandedFolderIds?.has(this.folderMetadata?.id)) {
+            this.expanded = true;
+        }
+    }
     hover: boolean = false;
     menuOpen: boolean = false;
 

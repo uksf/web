@@ -49,7 +49,7 @@
     </div>
     <div class="folder-panel-body">
         @for (childFolder of getFolderChildren; track trackByFolderId($index, childFolder)) {
-        <app-docs-folder (refresh)="refresh.emit()" [allDocumentMetadata]="allFolderMetadata" [folderMetadata]="childFolder" (expandFolder)="expandSelf()"></app-docs-folder>
+        <app-docs-folder (refresh)="refresh.emit()" [allDocumentMetadata]="allFolderMetadata" [folderMetadata]="childFolder" [expandedFolderIds]="expandedFolderIds" (expandFolder)="expandSelf()"></app-docs-folder>
         } @for (document of folderMetadata.documents; track trackByDocumentId($index, document)) {
         <app-docs-document
             (refresh)="refresh.emit()"

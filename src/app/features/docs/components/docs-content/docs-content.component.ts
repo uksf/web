@@ -30,6 +30,9 @@ export class DocsContentComponent implements OnChanges {
             return;
         }
 
+        this.documentContent = null;
+        this.editing = false;
+
         this.docsService
             .getDocumentContent(this.documentMetadata.folder, this.documentMetadata.id)
             .pipe(first())

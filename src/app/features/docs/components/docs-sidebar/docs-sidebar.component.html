@@ -12,7 +12,7 @@
         </div>
         <div class="sidebar-content">
             @for (rootFolder of getRootFolders; track trackById($index, rootFolder)) {
-            <app-docs-folder (refresh)="refresh.emit()" [allDocumentMetadata]="allFolderMetadata" [folderMetadata]="rootFolder"></app-docs-folder>
+            <app-docs-folder (refresh)="refresh.emit()" [allDocumentMetadata]="allFolderMetadata" [folderMetadata]="rootFolder" [expandedFolderIds]="expandedFolderIds"></app-docs-folder>
             }
         </div>
     </div>

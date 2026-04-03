@@ -2,10 +2,13 @@
     ::ng-deep .ngx-quill-view {
         padding: 0;
         border-radius: 0;
+        height: auto;
 
         .ql-editor {
             padding: 32px;
             word-break: break-word;
+            overflow-y: visible;
+            height: auto;
         }
     }
 }
@@ -21,11 +24,14 @@
         border: 0;
         padding: 0;
         flex-grow: 1;
-        overflow-y: hidden;
+        overflow-y: visible;
+        height: auto;
 
         .ql-editor {
             padding: 32px;
             word-break: break-word;
+            overflow-y: visible;
+            height: auto;
         }
 
         .ql-tooltip {
@@ -49,18 +55,12 @@
             margin-bottom: 0;
         }
 
-        ul {
-            padding-left: 0.5em;
-
-            li {
-                &::before {
-                    content: '-';
-                }
-            }
-        }
-
         ol {
             padding-left: 0.5em;
+        }
+
+        li[data-list='bullet'] > .ql-ui:before {
+            content: '-';
         }
     }
 

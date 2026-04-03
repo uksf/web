@@ -20,6 +20,7 @@ export class DocsSidebarComponent implements OnInit {
     private dialog = inject(MatDialog);
 
     @Input('allDocumentMetadata') allFolderMetadata: FolderMetadata[];
+    @Input() expandedFolderIds: Set<string> = new Set();
     @Output() refresh = new EventEmitter();
     collapseHoverState: string = 'collapsed';
     collapsedState: string = 'expanded';

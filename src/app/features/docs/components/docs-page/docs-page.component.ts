@@ -24,6 +24,7 @@ export class DocsPageComponent extends DestroyableComponent implements OnInit {
 
     allFolderMetadata: FolderMetadata[] = [];
     selectedDocumentMetadata: DocumentMetadata;
+    expandedFolderIds: Set<string> = new Set();
 
     ngOnInit(): void {
         this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe({
@@ -60,6 +61,7 @@ export class DocsPageComponent extends DestroyableComponent implements OnInit {
                 .subscribe({
                     next: (documentMetadata: DocumentMetadata) => {
                         this.selectedDocumentMetadata = documentMetadata;
+                        this.expandedFolderIds = this.getAncestorFolderIds(documentMetadata.folder);
                     },
                     error: (error: UksfError) => {
                         this.dialog.open(MessageModalComponent, {
@@ -74,8 +76,22 @@ export class DocsPageComponent extends DestroyableComponent implements OnInit {
         }
     }
 
+    private getAncestorFolderIds(folderId: string): Set<string> {
+        const ids = new Set<string>();
+        let currentId = folderId;
+        const folderMap = new Map(this.allFolderMetadata.map(f => [f.id, f]));
+        while (currentId && currentId !== '000000000000000000000000') {
+            ids.add(currentId);
+            const folder = folderMap.get(currentId);
+            if (!folder) break;
+            currentId = folder.parent;
+        }
+        return ids;
+    }
+
     resetSelectedDocument() {
         this.selectedDocumentMetadata = null;
+        this.expandedFolderIds = new Set();
         this.router
             .navigate([], {
                 relativeTo: this.route,
