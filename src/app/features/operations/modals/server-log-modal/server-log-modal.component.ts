@@ -17,6 +17,7 @@ import { GameServer, RptLogSource, RptLogSearchResult } from '../../models/game-
 import { highlightRptLine } from '../../utils/rpt-syntax-highlighter';
 import { LogMinimapComponent } from '../../components/log-minimap/log-minimap.component';
 import { createLineProjection, type LineProjection } from '../../components/log-minimap/line-projection';
+import { VirtualScrollSelection } from '../../utils/virtual-scroll-selection';
 
 interface ServerLogDialogData {
     server: GameServer;
@@ -83,10 +84,16 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     private resizeObserver: ResizeObserver | null = null;
     private pendingAppendLines: string[] = [];
     private appendRafId: number | null = null;
+    private selectionPreserver = new VirtualScrollSelection();
 
     @HostListener('window:keydown', ['$event'])
     handleKeydown(event: KeyboardEvent) {
         this.onKeydown(event);
+    }
+
+    @HostListener('document:copy', ['$event'])
+    handleCopy(event: ClipboardEvent) {
+        this.onCopy(event);
     }
 
     @ViewChild(CdkVirtualScrollViewport)
@@ -102,6 +109,10 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
             // Wheel events only fire from user interaction, never from programmatic scrolling.
             // This eliminates race conditions between scroll events and content updates.
             vp.elementRef.nativeElement.addEventListener('wheel', this.onWheel, { passive: true });
+
+            // Attach selection preserver after first render so gap elements and
+            // MutationObserver are wired up before any scroll occurs.
+            setTimeout(() => this.selectionPreserver.attach(vp.elementRef.nativeElement));
 
             // Measure char width and content width after first render
             if (!this.charWidthPx) {
@@ -279,6 +290,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         const lines = this.pendingAppendLines;
         if (!lines.length) return;
         this.pendingAppendLines = [];
+        this.selectionPreserver.saveBeforeUpdate();
 
         this.logLines = this.logLines.concat(lines);
         const htmls = lines.map(l => highlightRptLine(l));
@@ -353,6 +365,72 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
             event.preventDefault();
             this.scrollToBottom();
         }
+    }
+
+    private onCopy(event: ClipboardEvent): void {
+        if (!this.viewport) return;
+
+        const selection = document.getSelection();
+        if (!selection || selection.isCollapsed) return;
+
+        const viewportEl = this.viewport.elementRef.nativeElement;
+        if (!viewportEl.contains(selection.anchorNode) && !viewportEl.contains(selection.focusNode)) return;
+
+        // Use the selection preserver's saved logical range to determine the full
+        // line range (including lines that scrolled out of view).
+        const saved = this.selectionPreserver.getSelectionRange();
+        if (saved) {
+            const anchorLogLine = this.viewLineEntries[saved.anchor.viewLineIndex]?.logLineIndex ?? 0;
+            const focusLogLine = this.viewLineEntries[saved.focus.viewLineIndex]?.logLineIndex ?? 0;
+
+            const isAnchorFirst = anchorLogLine < focusLogLine
+                || (anchorLogLine === focusLogLine && saved.anchor.charOffset <= saved.focus.charOffset);
+            const startLogLine = isAnchorFirst ? anchorLogLine : focusLogLine;
+            const endLogLine = isAnchorFirst ? focusLogLine : anchorLogLine;
+            const startChar = isAnchorFirst ? saved.anchor.charOffset : saved.focus.charOffset;
+            const endChar = isAnchorFirst ? saved.focus.charOffset : saved.anchor.charOffset;
+
+            if (startLogLine === endLogLine) {
+                const text = this.logLines[startLogLine]?.substring(startChar, endChar) ?? '';
+                event.clipboardData?.setData('text/plain', text);
+            } else {
+                const lines = this.logLines.slice(startLogLine, endLogLine + 1);
+                lines[0] = lines[0].substring(startChar);
+                lines[lines.length - 1] = lines[lines.length - 1].substring(0, endChar);
+                event.clipboardData?.setData('text/plain', lines.join('\n'));
+            }
+            event.preventDefault();
+            return;
+        }
+
+        // Fallback: no saved range — scan visible DOM to deduplicate wrapped lines
+        const range = selection.getRangeAt(0);
+        const logLineElements = viewportEl.querySelectorAll('.log-line[data-log-line]');
+        let minLine = Infinity;
+        let maxLine = -Infinity;
+
+        for (const el of logLineElements) {
+            if (range.intersectsNode(el)) {
+                const idx = parseInt(el.getAttribute('data-log-line')!, 10);
+                minLine = Math.min(minLine, idx);
+                maxLine = Math.max(maxLine, idx);
+            }
+        }
+
+        if (minLine > maxLine) return;
+
+        // Single non-wrapped line — let native copy handle it
+        if (minLine === maxLine) {
+            let matchCount = 0;
+            for (const el of logLineElements) {
+                if (range.intersectsNode(el)) matchCount++;
+            }
+            if (matchCount <= 1) return;
+        }
+
+        const text = this.logLines.slice(minLine, maxLine + 1).join('\n');
+        event.clipboardData?.setData('text/plain', text);
+        event.preventDefault();
     }
 
     onSearchChange(): void {
@@ -496,6 +574,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
             cancelAnimationFrame(this.appendRafId);
         }
         this._viewport?.elementRef.nativeElement.removeEventListener('wheel', this.onWheel);
+        this.selectionPreserver.detach();
         this.resizeObserver?.disconnect();
         this.serversHub.off('ReceiveLogContent', this.onReceiveLogContent);
         this.serversHub.off('ReceiveLogAppend', this.onReceiveLogAppend);

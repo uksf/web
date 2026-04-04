@@ -1245,6 +1245,182 @@ describe('ServerLogModalComponent', () => {
         });
     });
 
+    describe('copy handler', () => {
+        let mockViewportEl: any;
+        let mockViewport: any;
+        let mockGetSelection: ReturnType<typeof vi.fn>;
+
+        beforeEach(() => {
+            component.ngOnInit();
+            signalRCallbacks['ReceiveLogContent']('server1', 'Server', [
+                'Line A',
+                'Line B is a very long line that wraps',
+                'Line C',
+                'Line D',
+                'Line E'
+            ], 0, true);
+
+            mockViewportEl = {
+                contains: vi.fn().mockReturnValue(true),
+                querySelectorAll: vi.fn().mockReturnValue([]),
+                querySelector: vi.fn().mockReturnValue(null)
+            };
+            mockViewport = {
+                elementRef: { nativeElement: mockViewportEl },
+                scrollToIndex: vi.fn(),
+                scrollTo: vi.fn(),
+                scrollToOffset: vi.fn(),
+                getViewportSize: vi.fn().mockReturnValue(400),
+                elementScrolled: vi.fn().mockReturnValue(of())
+            };
+            (component as any)._viewport = mockViewport;
+
+            mockGetSelection = vi.fn().mockReturnValue(null);
+            (document as any).getSelection = mockGetSelection;
+        });
+
+        afterEach(() => {
+            delete (document as any).getSelection;
+        });
+
+        function createCopyEvent(): ClipboardEvent {
+            const clipboardData = { setData: vi.fn() };
+            return {
+                clipboardData,
+                preventDefault: vi.fn()
+            } as unknown as ClipboardEvent;
+        }
+
+        function createMockSelection(anchorNode: any, focusNode: any, intersectingElements: any[]) {
+            const intersectSet = new Set(intersectingElements);
+            return {
+                isCollapsed: false,
+                anchorNode,
+                focusNode,
+                focusOffset: 0,
+                getRangeAt: vi.fn().mockReturnValue({
+                    intersectsNode: (el: any) => intersectSet.has(el)
+                })
+            };
+        }
+
+        it('should not intercept copy when no selection exists', () => {
+            const event = createCopyEvent();
+            component.handleCopy(event);
+            expect(event.preventDefault).not.toHaveBeenCalled();
+        });
+
+        it('should deduplicate wrapped lines when copying', () => {
+            const insideNode = {};
+            const el0 = { getAttribute: vi.fn().mockReturnValue('0') };
+            const el1a = { getAttribute: vi.fn().mockReturnValue('1') };
+            const el1b = { getAttribute: vi.fn().mockReturnValue('1') };
+            const el2 = { getAttribute: vi.fn().mockReturnValue('2') };
+            const allEls = [el0, el1a, el1b, el2];
+            mockViewportEl.querySelectorAll.mockReturnValue(allEls);
+            mockGetSelection.mockReturnValue(createMockSelection(insideNode, insideNode, allEls));
+
+            const event = createCopyEvent();
+            component.handleCopy(event);
+
+            expect(event.preventDefault).toHaveBeenCalled();
+            expect(event.clipboardData!.setData).toHaveBeenCalledWith(
+                'text/plain',
+                'Line A\nLine B is a very long line that wraps\nLine C'
+            );
+        });
+
+        it('should use saved selection range to include lines that scrolled out of view', () => {
+            // Simulate: user selected from line 1 to line 3, then scrolled so only lines 2-4 visible
+            const mockPreserver = (component as any).selectionPreserver;
+            vi.spyOn(mockPreserver, 'getSelectionRange').mockReturnValue({
+                anchor: { viewLineIndex: 1, charOffset: 0 },
+                focus: { viewLineIndex: 3, charOffset: 6 }
+            });
+
+            const insideNode = {};
+            const el2 = { getAttribute: vi.fn().mockReturnValue('2') };
+            const el3 = { getAttribute: vi.fn().mockReturnValue('3') };
+            mockViewportEl.querySelectorAll.mockReturnValue([el2, el3]);
+            mockGetSelection.mockReturnValue(createMockSelection(insideNode, insideNode, [el2, el3]));
+
+            const event = createCopyEvent();
+            component.handleCopy(event);
+
+            // viewLineIndex maps 1:1 to logLineIndex in this test (no wrapping measured)
+            // Should copy full lines 1-3
+            expect(event.clipboardData!.setData).toHaveBeenCalledWith(
+                'text/plain',
+                'Line B is a very long line that wraps\nLine C\nLine D'
+            );
+        });
+
+        it('should use charOffset for partial first and last lines when copying', () => {
+            const mockPreserver = (component as any).selectionPreserver;
+            // Select from char 5 of line 0 ("A") to char 6 of line 2 ("Line C")
+            // Line 0 = "Line A", line 1 = "Line B is a very long line that wraps", line 2 = "Line C"
+            vi.spyOn(mockPreserver, 'getSelectionRange').mockReturnValue({
+                anchor: { viewLineIndex: 0, charOffset: 5 },
+                focus: { viewLineIndex: 2, charOffset: 4 }
+            });
+
+            const insideNode = {};
+            mockViewportEl.querySelectorAll.mockReturnValue([]);
+            mockGetSelection.mockReturnValue(createMockSelection(insideNode, insideNode, []));
+
+            const event = createCopyEvent();
+            component.handleCopy(event);
+
+            // "Line A".substring(5) = "A", middle line full, "Line C".substring(0, 4) = "Line"
+            expect(event.clipboardData!.setData).toHaveBeenCalledWith(
+                'text/plain',
+                'A\nLine B is a very long line that wraps\nLine'
+            );
+        });
+
+        it('should handle single-line partial selection with charOffset', () => {
+            const mockPreserver = (component as any).selectionPreserver;
+            vi.spyOn(mockPreserver, 'getSelectionRange').mockReturnValue({
+                anchor: { viewLineIndex: 1, charOffset: 5 },
+                focus: { viewLineIndex: 1, charOffset: 10 }
+            });
+
+            const insideNode = {};
+            mockViewportEl.querySelectorAll.mockReturnValue([]);
+            mockGetSelection.mockReturnValue(createMockSelection(insideNode, insideNode, []));
+
+            const event = createCopyEvent();
+            component.handleCopy(event);
+
+            // "Line B is a very long line that wraps".substring(5, 10) = "B is "
+            expect(event.clipboardData!.setData).toHaveBeenCalledWith(
+                'text/plain',
+                'B is '
+            );
+        });
+
+        it('should copy only selected lines, not all lines', () => {
+            const insideNode = {};
+            const el1 = { getAttribute: vi.fn().mockReturnValue('1') };
+            const el2 = { getAttribute: vi.fn().mockReturnValue('2') };
+            mockViewportEl.querySelectorAll.mockReturnValue([
+                { getAttribute: vi.fn().mockReturnValue('0') },
+                el1,
+                el2,
+                { getAttribute: vi.fn().mockReturnValue('3') }
+            ]);
+            mockGetSelection.mockReturnValue(createMockSelection(insideNode, insideNode, [el1, el2]));
+
+            const event = createCopyEvent();
+            component.handleCopy(event);
+
+            expect(event.clipboardData!.setData).toHaveBeenCalledWith(
+                'text/plain',
+                'Line B is a very long line that wraps\nLine C'
+            );
+        });
+    });
+
     describe('search highlighting', () => {
         beforeEach(() => {
             component.ngOnInit();

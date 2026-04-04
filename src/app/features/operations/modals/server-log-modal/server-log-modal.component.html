@@ -52,8 +52,10 @@
     } @else {
         <div class="log-viewport-wrapper">
             <cdk-virtual-scroll-viewport [itemSize]="20" class="log-viewport">
-                <div *cdkVirtualFor="let vl of viewLineEntries; trackBy: trackByIndex"
+                <div *cdkVirtualFor="let vl of viewLineEntries; let i = index; trackBy: trackByIndex"
                      class="log-line"
+                     [attr.data-log-line]="vl.logLineIndex"
+                     [attr.data-view-index]="i"
                      [class.search-highlight]="isSearchMatch(vl.logLineIndex)"
                      [class.search-active]="isActiveSearchMatch(vl.logLineIndex)"
                      [class.linked-line]="vl.logLineIndex === linkedLineIndex"
