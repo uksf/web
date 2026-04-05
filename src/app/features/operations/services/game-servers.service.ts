@@ -37,15 +37,15 @@ export class GameServersService {
     }
 
     launchServer(serverId: string, missionName: string): Observable<void> {
-        return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/launch/${serverId}`, { missionName });
+        return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/${serverId}/launch`, { missionName });
     }
 
     stopServer(serverId: string): Observable<void> {
-        return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/stop/${serverId}`, null);
+        return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/${serverId}/stop`, null);
     }
 
     killServer(serverId: string): Observable<void> {
-        return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/kill/${serverId}`, null);
+        return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/${serverId}/kill`, null);
     }
 
     killAllServers(): Observable<void> {

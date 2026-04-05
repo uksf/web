@@ -104,6 +104,10 @@ export class OperationsServersComponent extends DestroyableComponent implements 
         this.updateServerStatusTexts();
     };
 
+    private onReceiveInstanceCount = (instanceCount: number) => {
+        this.instanceCount = instanceCount;
+    };
+
     private onReceiveMissionsUpdate = (missions: Mission[]) => {
         this.missions.next(missions.map(this.mapMissionElement));
     };
@@ -116,6 +120,7 @@ export class OperationsServersComponent extends DestroyableComponent implements 
         this.serversHub.on('ReceiveDisabledState', this.onReceiveDisabledState);
         this.serversHub.on('ReceiveServersUpdate', this.onReceiveServersUpdate);
         this.serversHub.on('ReceiveServerUpdate', this.onReceiveServerUpdate);
+        this.serversHub.on('ReceiveInstanceCount', this.onReceiveInstanceCount);
         this.serversHub.on('ReceiveMissionsUpdate', this.onReceiveMissionsUpdate);
         this.serversHub.reconnected$.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
@@ -138,6 +143,7 @@ export class OperationsServersComponent extends DestroyableComponent implements 
         this.serversHub.off('ReceiveDisabledState', this.onReceiveDisabledState);
         this.serversHub.off('ReceiveServersUpdate', this.onReceiveServersUpdate);
         this.serversHub.off('ReceiveServerUpdate', this.onReceiveServerUpdate);
+        this.serversHub.off('ReceiveInstanceCount', this.onReceiveInstanceCount);
         this.serversHub.off('ReceiveMissionsUpdate', this.onReceiveMissionsUpdate);
         this.serversHub.disconnect();
     }

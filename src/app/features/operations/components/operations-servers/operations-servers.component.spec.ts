@@ -338,8 +338,20 @@ describe('OperationsServersComponent', () => {
 
             component.ngOnDestroy();
 
-            expect(mockServersHub.off).toHaveBeenCalledTimes(4);
+            expect(mockServersHub.off).toHaveBeenCalledTimes(5);
             expect(mockServersHub.disconnect).toHaveBeenCalled();
+        });
+    });
+
+    describe('onReceiveInstanceCount', () => {
+        it('updates instanceCount when ReceiveInstanceCount fires', () => {
+            component.ngOnInit();
+            component.instanceCount = 5;
+
+            const handler = mockServersHub.on.mock.calls.find((c: any) => c[0] === 'ReceiveInstanceCount')[1];
+            handler(0);
+
+            expect(component.instanceCount).toBe(0);
         });
     });
 

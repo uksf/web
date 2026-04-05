@@ -102,29 +102,29 @@ describe('GameServersService', () => {
         );
     });
 
-    it('launchServer calls POST /gameservers/launch/:id', () => {
+    it('launchServer calls POST /gameservers/:id/launch', () => {
         service.launchServer('server1', 'mission.pbo').subscribe();
 
         expect(mockHttpClient.post).toHaveBeenCalledWith(
-            'http://localhost:5500/gameservers/launch/server1',
+            'http://localhost:5500/gameservers/server1/launch',
             { missionName: 'mission.pbo' }
         );
     });
 
-    it('stopServer calls POST /gameservers/stop/:id', () => {
+    it('stopServer calls POST /gameservers/:id/stop', () => {
         service.stopServer('server1').subscribe();
 
         expect(mockHttpClient.post).toHaveBeenCalledWith(
-            'http://localhost:5500/gameservers/stop/server1',
+            'http://localhost:5500/gameservers/server1/stop',
             null
         );
     });
 
-    it('killServer calls POST /gameservers/kill/:id', () => {
+    it('killServer calls POST /gameservers/:id/kill', () => {
         service.killServer('server1').subscribe();
 
         expect(mockHttpClient.post).toHaveBeenCalledWith(
-            'http://localhost:5500/gameservers/kill/server1',
+            'http://localhost:5500/gameservers/server1/kill',
             null
         );
     });
