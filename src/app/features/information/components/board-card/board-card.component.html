@@ -1,4 +1,4 @@
-<mat-card class="card-tile" (click)="onClick()">
+<mat-card class="card-tile" [style.border-left-color]="accentColor" (click)="onClick()">
     <div class="card-title">{{ card.title }}</div>
     @if (card.labels.length > 0) {
         <mat-chip-set class="card-labels">

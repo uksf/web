@@ -1,9 +1,11 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { MatButton } from '@angular/material/button';
 import { MatChipGrid, MatChipRow, MatChipRemove } from '@angular/material/chips';
 import { MatIcon } from '@angular/material/icon';
+import { MatTooltip } from '@angular/material/tooltip';
 import { MatTabGroup, MatTab, MatTabLabel } from '@angular/material/tabs';
 import { BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
@@ -29,9 +31,9 @@ export interface BoardCardDetailModalData {
     styleUrls: ['./board-card-detail-modal.component.scss', './board-card-detail-modal.component.scss-theme.scss'],
     imports: [
         AutofocusStopComponent, MatDialogTitle, MatDialogContent, MatDialogActions, MatButton,
-        FlexFillerComponent, MatChipGrid, MatChipRow, MatChipRemove, MatIcon,
+        FlexFillerComponent, MatChipGrid, MatChipRow, MatChipRemove, MatIcon, MatTooltip,
         MatTabGroup, MatTab, MatTabLabel, FormsModule, ReactiveFormsModule,
-        TextInputComponent, DropdownComponent, CommentDisplayComponent, TimeAgoPipe
+        TextInputComponent, DropdownComponent, CommentDisplayComponent, TimeAgoPipe, DatePipe
     ]
 })
 export class BoardCardDetailModalComponent implements OnInit {
@@ -130,6 +132,16 @@ export class BoardCardDetailModalComponent implements OnInit {
 
     get reversedActivity() {
         return [...this.card.activity].reverse();
+    }
+
+    get hasChanges(): boolean {
+        if (this.form.value.title !== this.card.title) return true;
+        if ((this.form.value.detail || '') !== (this.card.detail || '')) return true;
+        if ((this.selectedAssignee?.value || '') !== (this.card.assigneeId || '')) return true;
+        const currentLabels = [...this.labels].sort();
+        const originalLabels = [...this.card.labels].sort();
+        if (currentLabels.length !== originalLabels.length) return true;
+        return currentLabels.some((l, i) => l !== originalLabels[i]);
     }
 
     cancel() {

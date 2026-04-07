@@ -1,4 +1,5 @@
 import { Component, OnInit, ElementRef, HostListener, inject } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { first, takeUntil } from 'rxjs/operators';
 import { Router, NavigationEnd } from '@angular/router';
 import { HubConnectionFactory } from '@app/core/services/hub-connection-factory';
@@ -15,7 +16,7 @@ import { TimeAgoPipe } from '../../../shared/pipes/time.pipe';
     selector: 'app-notifications',
     templateUrl: './notifications.component.html',
     styleUrls: ['./notifications.component.scss'],
-    imports: [MatIcon, MatBadge, MatTooltip, TimeAgoPipe]
+    imports: [MatIcon, MatBadge, MatTooltip, TimeAgoPipe, DatePipe]
 })
 export class NotificationsComponent extends DestroyableComponent implements OnInit {
     private router = inject(Router);

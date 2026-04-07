@@ -11,7 +11,7 @@
          (cdkDropListDropped)="dropped.emit($event)">
         @for (card of column.cards; track card.id) {
             <div cdkDrag [cdkDragData]="card">
-                <app-board-card [card]="card" (openCard)="onOpenCard($event)"></app-board-card>
+                <app-board-card [card]="card" [columnKey]="column.key" (openCard)="onOpenCard($event)"></app-board-card>
             </div>
         }
     </div>

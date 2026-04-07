@@ -9,6 +9,7 @@ import { MatTooltip } from '@angular/material/tooltip';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { ConfirmationModalComponent, ConfirmationModalData } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
+import { SpotlightDirective } from '@app/shared/directives/spotlight.directive';
 import { BoardService } from '../../services/board.service';
 import { BoardListItem } from '../../models/board';
 import { BoardSettingsModalComponent } from '../../modals/board-settings-modal/board-settings-modal.component';
@@ -19,7 +20,8 @@ import { BoardSettingsModalComponent } from '../../modals/board-settings-modal/b
     styleUrls: ['./boards-list.component.scss', './boards-list.component.scss-theme.scss'],
     imports: [
         MatCard, MatIcon, MatButton, MatIconButton,
-        MatTooltip, MatMenu, MatMenuItem, MatMenuTrigger, NgxPermissionsModule
+        MatTooltip, MatMenu, MatMenuItem, MatMenuTrigger, NgxPermissionsModule,
+        SpotlightDirective
     ]
 })
 export class BoardsListComponent implements OnInit {

@@ -1,54 +1,83 @@
 <app-autofocus-stop></app-autofocus-stop>
 <h2 mat-dialog-title>{{ mode === 'create' ? 'Create Board' : 'Board Settings' }}</h2>
 <mat-dialog-content>
-    <form [formGroup]="form">
+    <form [formGroup]="form" class="settings-form">
         <mat-form-field class="full-width">
             <mat-label>Board Name</mat-label>
             <input matInput formControlName="name">
         </mat-form-field>
+        <div class="color-section">
+            <span class="color-label">Color</span>
+            <div class="color-swatches">
+                @for (color of colors; track color) {
+                    <button type="button"
+                            class="color-swatch"
+                            [class.selected]="form.value.color === color"
+                            [style.background-color]="color"
+                            (click)="selectColor(color)"
+                            [attr.aria-label]="'Select color ' + color">
+                    </button>
+                }
+            </div>
+        </div>
     </form>
 
-    <div class="permissions-section">
-        <h3>Permissions</h3>
+    <mat-expansion-panel class="permissions-panel" [expanded]="true">
+        <mat-expansion-panel-header appSpotlight>
+            <h4 class="permissions-title">Permissions</h4>
+        </mat-expansion-panel-header>
+
         <p class="permissions-hint">Select units and/or individual members who can use this board. Admins always have access.</p>
 
-        <div class="permissions-controls">
-            <app-selection-list
-                [(ngModel)]="selectedUnits"
-                [elements]="units"
-                [clearOnSelect]="true"
-                [elementName]="'Unit'"
-                [placeholder]="'Select units'"
-                [isRequired]="false"
-                [listPosition]="'bottom'"
-            >
-                <ng-template #element let-element>
-                    <span>{{ element.displayValue }}</span>
-                </ng-template>
-            </app-selection-list>
-
-            <mat-checkbox [(ngModel)]="expandToSubUnits">Include sub-units</mat-checkbox>
-
-            <app-selection-list
-                [(ngModel)]="selectedMembers"
-                [elements]="members"
-                [clearOnSelect]="true"
-                [elementName]="'Member'"
-                [placeholder]="'Select members'"
-                [isRequired]="false"
-                [listPosition]="'bottom'"
-            >
-                <ng-template #element let-element>
-                    <span>{{ element.displayValue }}</span>
-                </ng-template>
-            </app-selection-list>
+        <div class="permissions-section-container">
+            <div class="permissions-section">
+                <app-selection-list
+                    [(ngModel)]="selectedUnits"
+                    [ngModelOptions]="{ standalone: true }"
+                    [elements]="units"
+                    [clearOnSelect]="true"
+                    [elementName]="'Unit'"
+                    [placeholder]="'Select units'"
+                    [isRequired]="false"
+                    [listPosition]="'bottom'"
+                >
+                    <ng-template #element let-element>
+                        <span>{{ element.displayValue }}</span>
+                    </ng-template>
+                </app-selection-list>
+                <mat-checkbox
+                    [(ngModel)]="expandToSubUnits"
+                    [ngModelOptions]="{ standalone: true }"
+                    color="primary"
+                    matTooltip="When enabled, permissions will also apply to all sub-units of the selected units"
+                >
+                    Expand to sub-units
+                </mat-checkbox>
+            </div>
+            <mat-divider [vertical]="true"></mat-divider>
+            <div class="permissions-section">
+                <app-selection-list
+                    [(ngModel)]="selectedMembers"
+                    [ngModelOptions]="{ standalone: true }"
+                    [elements]="members"
+                    [clearOnSelect]="true"
+                    [elementName]="'Member'"
+                    [placeholder]="'Select members'"
+                    [isRequired]="false"
+                    [listPosition]="'bottom'"
+                >
+                    <ng-template #element let-element>
+                        <span>{{ element.displayValue }}</span>
+                    </ng-template>
+                </app-selection-list>
+            </div>
         </div>
-    </div>
+    </mat-expansion-panel>
 </mat-dialog-content>
 <mat-dialog-actions>
     <button mat-raised-button (click)="cancel()" color="warn">Cancel</button>
     <app-flex-filler></app-flex-filler>
-    <button mat-raised-button (click)="save()" color="primary" [disabled]="form.invalid">
+    <button mat-raised-button (click)="save()" color="primary" [disabled]="form.invalid || !hasChanges">
         {{ mode === 'create' ? 'Create' : 'Save' }}
     </button>
 </mat-dialog-actions>

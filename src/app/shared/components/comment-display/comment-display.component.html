@@ -21,7 +21,8 @@
     <div class="comment-wrapper">
         <div class="author">
             <span class="author-string">{{ getAuthorDisplayName(comment.displayName) }}</span>
-            <span class="date-string">{{ comment.timestamp | timeAgo }}</span>
+            <span class="date-string" [matTooltip]="comment.timestamp | date:'medium'">{{ comment.timestamp | timeAgo }}</span>
+            <app-flex-filler></app-flex-filler>
             @if (canDelete(comment)) {
             <button class="delete-button" mat-icon-button (click)="deleteComment(comment)" matTooltip="Delete comment">
                 <mat-icon>delete</mat-icon>

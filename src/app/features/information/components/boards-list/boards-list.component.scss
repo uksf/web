@@ -18,7 +18,7 @@
 
 .boards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
     gap: v.$spacing-16px;
     padding-bottom: v.$spacing-16px;
 }
@@ -30,6 +30,7 @@
     align-items: center;
     justify-content: space-between;
     padding: v.$spacing-12px v.$spacing-16px;
+    border-left: 3px solid transparent;
 }
 
 .board-card-content {
@@ -49,12 +50,12 @@
 
 .board-info {
     min-width: 0;
+    flex: 1;
 
     h3 {
         margin: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        overflow-wrap: anywhere;
+        word-break: break-word;
     }
 
     .member-count {

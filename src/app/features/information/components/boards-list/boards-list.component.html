@@ -7,7 +7,7 @@
     </div>
     <div class="boards-grid">
         @for (board of boards; track board.id) {
-            <mat-card class="board-card" (click)="openBoard(board)">
+            <mat-card class="board-card" appSpotlight [style.border-left-color]="board.color" (click)="openBoard(board)">
                 <div class="board-card-content">
                     <mat-icon class="board-icon">view_kanban</mat-icon>
                     <div class="board-info">

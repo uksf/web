@@ -2,10 +2,6 @@
 
 @mixin theme($theme) {
     app-boards-list {
-        .mat-mdc-card:hover {
-            background-color: var(--uksf-hover);
-        }
-
         .delete {
             color: mat.get-theme-color($theme, error);
         }

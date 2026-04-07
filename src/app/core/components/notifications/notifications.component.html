@@ -31,7 +31,7 @@
                 </div>
                 <div class="notification-text-container">
                     <span class="notification-text">{{ notification.message }}</span>
-                    <span class="notification-text-timestamp">{{ notification.timestamp | timeAgo }}</span>
+                    <span class="notification-text-timestamp" [matTooltip]="notification.timestamp | date:'medium'">{{ notification.timestamp | timeAgo }}</span>
                 </div>
                 <mat-icon class="clear-single" matTooltip="Clear notification" (click)="clear(notification)">clear</mat-icon>
             </div>

@@ -4,25 +4,100 @@
     width: 100%;
 }
 
-.permissions-section {
+.settings-form {
     display: flex;
     flex-direction: column;
-    gap: v.$spacing-4px;
-    padding-top: v.$spacing-8px;
-
-    h3 {
-        margin: 0;
-    }
+    gap: v.$spacing-16px;
+    padding-bottom: v.$spacing-16px;
 }
 
-.permissions-hint {
+.color-section {
+    display: flex;
+    flex-direction: column;
+    gap: v.$spacing-8px;
+}
+
+.color-label {
     font-size: 13px;
     opacity: 0.6;
 }
 
-.permissions-controls {
+.color-swatches {
     display: flex;
-    flex-direction: column;
-    gap: v.$spacing-12px;
-    padding-top: v.$spacing-8px;
+    flex-wrap: wrap;
+    gap: v.$spacing-8px;
+}
+
+.color-swatch {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    padding: 0;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+
+    &:hover {
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    &.selected {
+        border-color: #ffffff;
+    }
+}
+
+.permissions-panel {
+    min-width: 700px;
+    background-color: var(--uksf-gray-450);
+
+    .mat-expansion-panel-header {
+        &:hover {
+            background: none !important;
+        }
+
+        &.mat-expanded {
+            height: 48px;
+        }
+    }
+
+    .permissions-title {
+        margin: 0;
+    }
+
+    .permissions-hint {
+        font-size: 13px;
+        opacity: 0.6;
+        padding-bottom: v.$spacing-8px;
+    }
+
+    .permissions-section-container {
+        display: flex;
+        flex-direction: row;
+        gap: v.$spacing-8px;
+
+        .permissions-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: v.$spacing-8px;
+        }
+
+        .mat-divider {
+            margin: 0 v.$spacing-16px;
+        }
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .permissions-panel {
+        min-width: 300px;
+
+        .permissions-section-container {
+            flex-direction: column;
+
+            .mat-divider {
+                display: none;
+            }
+        }
+    }
 }

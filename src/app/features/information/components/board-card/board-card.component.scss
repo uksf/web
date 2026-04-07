@@ -5,6 +5,7 @@
     flex-direction: column;
     gap: v.$spacing-4px;
     padding: v.$spacing-8px v.$spacing-12px;
+    border-left: 3px solid transparent;
     cursor: pointer;
 
     &:hover {

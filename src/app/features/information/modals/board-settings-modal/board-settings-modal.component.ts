@@ -5,6 +5,10 @@ import { MatButton } from '@angular/material/button';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatCheckbox } from '@angular/material/checkbox';
+import { MatDivider } from '@angular/material/divider';
+import { MatExpansionPanel, MatExpansionPanelHeader } from '@angular/material/expansion';
+import { MatTooltip } from '@angular/material/tooltip';
+import { SpotlightDirective } from '@app/shared/directives/spotlight.directive';
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { BehaviorSubject, forkJoin } from 'rxjs';
 import { first } from 'rxjs/operators';
@@ -15,7 +19,7 @@ import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/
 import { UnitsService } from '@app/features/command/services/units.service';
 import { MembersService } from '@app/shared/services/members.service';
 import { BoardService } from '../../services/board.service';
-import { Board, BoardPermissions } from '../../models/board';
+import { Board, BoardPermissions, BOARD_COLOR_PALETTE } from '../../models/board';
 
 export interface BoardSettingsModalData {
     mode: 'create' | 'edit';
@@ -28,8 +32,9 @@ export interface BoardSettingsModalData {
     styleUrls: ['./board-settings-modal.component.scss'],
     imports: [
         AutofocusStopComponent, MatDialogTitle, CdkScrollable, MatDialogContent, MatDialogActions, MatButton,
-        FlexFillerComponent, MatFormField, MatLabel, MatInput, MatCheckbox, ReactiveFormsModule, FormsModule,
-        SelectionListComponent
+        FlexFillerComponent, MatFormField, MatLabel, MatInput, MatCheckbox, MatDivider,
+        MatExpansionPanel, MatExpansionPanelHeader, MatTooltip, SpotlightDirective,
+        ReactiveFormsModule, FormsModule, SelectionListComponent
     ]
 })
 export class BoardSettingsModalComponent implements OnInit {
@@ -42,9 +47,11 @@ export class BoardSettingsModalComponent implements OnInit {
 
     mode: 'create' | 'edit';
     board: Board;
+    colors = BOARD_COLOR_PALETTE;
 
     form = this.fb.group({
-        name: ['', Validators.required]
+        name: ['', Validators.required],
+        color: [BOARD_COLOR_PALETTE[4], Validators.required]
     });
 
     units = new BehaviorSubject<IDropdownElement[]>([]);
@@ -61,7 +68,7 @@ export class BoardSettingsModalComponent implements OnInit {
             this.boardService.getBoard(this.data.boardId).pipe(first()).subscribe({
                 next: (board) => {
                     this.board = board;
-                    this.form.patchValue({ name: board.name });
+                    this.form.patchValue({ name: board.name, color: board.color ?? BOARD_COLOR_PALETTE[4] });
                     this.expandToSubUnits = board.permissions.expandToSubUnits;
                     this.preSelectPermissions(board);
                 }
@@ -79,18 +86,45 @@ export class BoardSettingsModalComponent implements OnInit {
         };
 
         if (this.mode === 'create') {
-            this.boardService.createBoard({ name: this.form.value.name, permissions }).pipe(first()).subscribe({
+            this.boardService.createBoard({
+                name: this.form.value.name,
+                color: this.form.value.color,
+                permissions
+            }).pipe(first()).subscribe({
                 next: () => this.dialogRef.close(true)
             });
         } else {
             this.boardService.updateBoard(this.data.boardId, {
                 name: this.form.value.name,
+                color: this.form.value.color,
                 permissions,
                 labels: this.board?.labels ?? []
             }).pipe(first()).subscribe({
                 next: () => this.dialogRef.close(true)
             });
         }
+    }
+
+    selectColor(color: string) {
+        this.form.patchValue({ color });
+    }
+
+    get hasChanges(): boolean {
+        if (this.mode === 'create') return true;
+        if (!this.board) return false;
+        if (this.form.value.name !== this.board.name) return true;
+        if (this.form.value.color !== (this.board.color ?? BOARD_COLOR_PALETTE[4])) return true;
+        if (this.expandToSubUnits !== this.board.permissions.expandToSubUnits) return true;
+        if (!this.arraysEqual(this.selectedUnits.map(u => u.value), this.board.permissions.units)) return true;
+        if (!this.arraysEqual(this.selectedMembers.map(m => m.value), this.board.permissions.members)) return true;
+        return false;
+    }
+
+    private arraysEqual(a: string[], b: string[]): boolean {
+        if (a.length !== b.length) return false;
+        const sortedA = [...a].sort();
+        const sortedB = [...b].sort();
+        return sortedA.every((v, i) => v === sortedB[i]);
     }
 
     cancel() {

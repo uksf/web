@@ -71,12 +71,12 @@
                 </div>
                 <div class="meta-row">
                     <span class="meta-label">Created</span>
-                    <span class="meta-value">{{ card.createdAt | timeAgo }}</span>
+                    <span class="meta-value" [matTooltip]="card.createdAt | date:'medium'">{{ card.createdAt | timeAgo }}</span>
                 </div>
                 @if (card.closedAt) {
                     <div class="meta-row">
                         <span class="meta-label">Closed</span>
-                        <span class="meta-value">{{ card.closedAt | timeAgo }}</span>
+                        <span class="meta-value" [matTooltip]="card.closedAt | date:'medium'">{{ card.closedAt | timeAgo }}</span>
                     </div>
                 }
             </div>
@@ -114,7 +114,7 @@
                                     <span class="activity-user">{{ entry.userName }}</span>
                                     <span class="activity-description">{{ entry.description }}</span>
                                 </div>
-                                <span class="activity-time">{{ entry.timestamp | timeAgo }}</span>
+                                <span class="activity-time" [matTooltip]="entry.timestamp | date:'medium'">{{ entry.timestamp | timeAgo }}</span>
                             </div>
                         }
                     } @else {
@@ -128,5 +128,5 @@
 <mat-dialog-actions>
     <button mat-raised-button (click)="cancel()" color="warn">Cancel</button>
     <app-flex-filler></app-flex-filler>
-    <button mat-raised-button (click)="save()" color="primary">Save</button>
+    <button mat-raised-button (click)="save()" color="primary" [disabled]="form.invalid || !hasChanges">Save</button>
 </mat-dialog-actions>

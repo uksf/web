@@ -39,7 +39,7 @@ describe('BoardService', () => {
     });
 
     it('should create a board', () => {
-        const request = { name: 'Test', permissions: { units: [], members: [], expandToSubUnits: true } };
+        const request = { name: 'Test', color: '#2196f3', permissions: { units: [], members: [], expandToSubUnits: true } };
         service.createBoard(request).subscribe();
         expect(mockHttp.post).toHaveBeenCalledWith('http://localhost:5500/api/boards', request);
     });

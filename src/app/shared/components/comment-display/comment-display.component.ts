@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, OnDestroy, inject } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { first, takeUntil } from 'rxjs/operators';
 import { AccountService } from '@app/core/services/account.service';
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -11,6 +12,7 @@ import type { Comment } from '@app/shared/services/comment-thread.service';
 import { DestroyableComponent } from '@app/shared/components';
 import { TextInputComponent } from '../elements/text-input/text-input.component';
 import { ButtonComponent } from '../elements/button-pending/button.component';
+import { FlexFillerComponent } from '../elements/flex-filler/flex-filler.component';
 import { MatIconButton } from '@angular/material/button';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatIcon } from '@angular/material/icon';
@@ -21,7 +23,7 @@ import { TimeAgoPipe as TimeAgoPipe_1 } from '../../pipes/time.pipe';
     templateUrl: './comment-display.component.html',
     styleUrls: ['./comment-display.component.scss'],
     providers: [TimeAgoPipe],
-    imports: [FormsModule, ReactiveFormsModule, TextInputComponent, ButtonComponent, MatIconButton, MatTooltip, MatIcon, TimeAgoPipe_1]
+    imports: [FormsModule, ReactiveFormsModule, TextInputComponent, ButtonComponent, FlexFillerComponent, MatIconButton, MatTooltip, MatIcon, TimeAgoPipe_1, DatePipe]
 })
 export class CommentDisplayComponent extends DestroyableComponent implements OnInit, OnDestroy {
     private commentThreadService = inject(CommentThreadService);
