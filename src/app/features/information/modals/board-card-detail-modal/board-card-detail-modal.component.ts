@@ -1,12 +1,13 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
-import { MatButton } from '@angular/material/button';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatChipGrid, MatChipRow, MatChipRemove } from '@angular/material/chips';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatTabGroup, MatTab, MatTabLabel } from '@angular/material/tabs';
+import { MarkdownComponent } from 'ngx-markdown';
 import { BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { TextInputComponent } from '@app/shared/components/elements/text-input/text-input.component';
@@ -16,6 +17,7 @@ import { AutofocusStopComponent } from '@app/shared/components/elements/autofocu
 import { FlexFillerComponent } from '@app/shared/components/elements/flex-filler/flex-filler.component';
 import { CommentDisplayComponent } from '@app/shared/components/comment-display/comment-display.component';
 import { TimeAgoPipe } from '@app/shared/pipes/time.pipe';
+import { ConfirmationModalComponent, ConfirmationModalData } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { BoardService } from '../../services/board.service';
 import { Board, BoardCard, UpdateCardRequest } from '../../models/board';
 
@@ -30,15 +32,16 @@ export interface BoardCardDetailModalData {
     templateUrl: './board-card-detail-modal.component.html',
     styleUrls: ['./board-card-detail-modal.component.scss', './board-card-detail-modal.component.scss-theme.scss'],
     imports: [
-        AutofocusStopComponent, MatDialogTitle, MatDialogContent, MatDialogActions, MatButton,
+        AutofocusStopComponent, MatDialogTitle, MatDialogContent, MatDialogActions, MatButton, MatIconButton,
         FlexFillerComponent, MatChipGrid, MatChipRow, MatChipRemove, MatIcon, MatTooltip,
-        MatTabGroup, MatTab, MatTabLabel, FormsModule, ReactiveFormsModule,
+        MatTabGroup, MatTab, MatTabLabel, FormsModule, ReactiveFormsModule, MarkdownComponent,
         TextInputComponent, DropdownComponent, CommentDisplayComponent, TimeAgoPipe, DatePipe
     ]
 })
 export class BoardCardDetailModalComponent implements OnInit {
     private dialogRef = inject<MatDialogRef<BoardCardDetailModalComponent>>(MatDialogRef);
     private data = inject<BoardCardDetailModalData>(MAT_DIALOG_DATA);
+    private dialog = inject(MatDialog);
     private boardService = inject(BoardService);
     private fb = inject(FormBuilder);
 
@@ -57,6 +60,10 @@ export class BoardCardDetailModalComponent implements OnInit {
     selectedAssignee: IDropdownElement = null;
 
     labels: string[] = [];
+
+    descriptionEditing = false;
+
+    @ViewChild('detailInput') detailInput?: TextInputComponent;
 
     ngOnInit() {
         this.card = this.data.card;
@@ -142,6 +149,48 @@ export class BoardCardDetailModalComponent implements OnInit {
         const originalLabels = [...this.card.labels].sort();
         if (currentLabels.length !== originalLabels.length) return true;
         return currentLabels.some((l, i) => l !== originalLabels[i]);
+    }
+
+    startEditingDescription() {
+        if (this.descriptionEditing) return;
+        this.descriptionEditing = true;
+        setTimeout(() => this.detailInput?.focus(), 0);
+    }
+
+    onDescriptionMouseDown(event: MouseEvent) {
+        // Any click outside the actual textarea would blur it — capture and redirect focus instead.
+        const target = event.target as HTMLElement;
+        if (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT') return;
+        event.preventDefault();
+        if (!this.descriptionEditing) {
+            this.startEditingDescription();
+        } else {
+            this.detailInput?.focus();
+        }
+    }
+
+    onDescriptionFocusOut(event: FocusEvent) {
+        const next = event.relatedTarget as Node | null;
+        const container = event.currentTarget as Node;
+        if (next && container.contains(next)) return;
+        this.descriptionEditing = false;
+    }
+
+    delete() {
+        this.dialog.open(ConfirmationModalComponent, {
+            data: { message: `Are you sure you want to delete "${this.card.title}"?`, button: 'Delete' } as ConfirmationModalData
+        })
+        .afterClosed()
+        .pipe(first())
+        .subscribe({
+            next: (confirmed) => {
+                if (confirmed) {
+                    this.boardService.deleteCard(this.boardId, this.card.id).pipe(first()).subscribe({
+                        next: () => this.dialogRef.close(true)
+                    });
+                }
+            }
+        });
     }
 
     cancel() {
