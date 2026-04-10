@@ -135,9 +135,12 @@ function escapeHtml(text: string): string {
     return text.replace(/[&<>"]/g, (char) => ESCAPE_MAP[char]);
 }
 
+export type RptLogLevel = 'error' | 'warning' | 'info' | 'trace';
+
 export interface RptLineTags {
     mods: string[];
     components: string[];
+    level: RptLogLevel | null;
 }
 
 /**
@@ -152,7 +155,7 @@ export interface RptLineTags {
 export function extractRptTags(line: string): RptLineTags {
     const mods: string[] = [];
     const components: string[] = [];
-    if (!line) return { mods, components };
+    if (!line) return { mods, components, level: null };
 
     const pairRe = /\[([A-Za-z][\w]*)\]\s*\(([A-Za-z][\w]*)\)/g;
     let m: RegExpExecArray | null;
@@ -162,7 +165,25 @@ export function extractRptTags(line: string): RptLineTags {
         if (!mods.includes(mod)) mods.push(mod);
         if (!components.includes(component)) components.push(component);
     }
-    return { mods, components };
+
+    const level = classifyLogLevel(line);
+    return { mods, components, level };
+}
+
+function classifyLogLevel(line: string): RptLogLevel | null {
+    if (line.startsWith('Error ') || line.startsWith('Error:') || /\bERROR\b/.test(line) || /\bError\b/.test(line)) {
+        return 'error';
+    }
+    if (/\bWARNING\b/.test(line) || /\bWarning\b/.test(line)) {
+        return 'warning';
+    }
+    if (/\bINFO\b/.test(line)) {
+        return 'info';
+    }
+    if (/\bTRACE\b/.test(line)) {
+        return 'trace';
+    }
+    return null;
 }
 
 export function highlightRptLine(line: string): string {

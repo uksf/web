@@ -39,33 +39,33 @@
         <div class="filter-group">
             <button mat-flat-button
                     class="filter-trigger"
-                    [class.filter-active]="selectedMods.size > 0"
-                    [disabled]="!availableMods.length"
-                    [matMenuTriggerFor]="modMenu"
-                    matTooltip="Filter by mod">
-                <mat-icon>extension</mat-icon>
-                Mods
+                    [class.filter-active]="selectedLevels.size > 0"
+                    [disabled]="!availableLevels.length"
+                    [matMenuTriggerFor]="levelMenu"
+                    matTooltip="Filter by log level">
+                <mat-icon>tune</mat-icon>
+                Level
             </button>
-            <mat-menu #modMenu="matMenu" xPosition="before" [overlapTrigger]="false" [class]="'rpt-filter-menu-panel'">
+            <mat-menu #levelMenu="matMenu" xPosition="before" [overlapTrigger]="false" [class]="'rpt-filter-menu-panel'">
                 <div class="filter-menu-panel">
                     <div class="filter-menu-header">
-                        <span>Mods</span>
+                        <span>Level</span>
                         <button mat-button
-                                [disabled]="!selectedMods.size"
-                                (click)="clearModFilter()">Clear</button>
+                                [disabled]="!selectedLevels.size"
+                                (click)="clearLevelFilter()">Clear</button>
                     </div>
                     <div class="filter-menu-items">
-                        @for (mod of availableMods; track mod) {
+                        @for (level of availableLevels; track level) {
                             <button type="button"
                                     class="filter-menu-item"
-                                    [class.checked]="selectedMods.has(mod)"
-                                    (click)="toggleModFilter(mod); $event.stopPropagation()">
-                                <mat-icon class="filter-menu-check">{{ selectedMods.has(mod) ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
-                                <span class="filter-menu-label rpt-mod-tag">[{{ mod }}]</span>
+                                    [class.checked]="selectedLevels.has(level)"
+                                    (click)="toggleLevelFilter(level); $event.stopPropagation()">
+                                <mat-icon class="filter-menu-check">{{ selectedLevels.has(level) ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
+                                <span class="filter-menu-label" [ngClass]="'rpt-level-' + level">{{ level | uppercase }}</span>
                             </button>
                         }
-                        @if (!availableMods.length) {
-                            <div class="filter-menu-empty">No mods detected</div>
+                        @if (!availableLevels.length) {
+                            <div class="filter-menu-empty">No levels detected</div>
                         }
                     </div>
                 </div>
@@ -99,6 +99,39 @@
                         }
                         @if (!availableComponents.length) {
                             <div class="filter-menu-empty">No components detected</div>
+                        }
+                    </div>
+                </div>
+            </mat-menu>
+            <button mat-flat-button
+                    class="filter-trigger"
+                    [class.filter-active]="selectedMods.size > 0"
+                    [disabled]="!availableMods.length"
+                    [matMenuTriggerFor]="modMenu"
+                    matTooltip="Filter by mod">
+                <mat-icon>extension</mat-icon>
+                Mods
+            </button>
+            <mat-menu #modMenu="matMenu" xPosition="before" [overlapTrigger]="false" [class]="'rpt-filter-menu-panel'">
+                <div class="filter-menu-panel">
+                    <div class="filter-menu-header">
+                        <span>Mods</span>
+                        <button mat-button
+                                [disabled]="!selectedMods.size"
+                                (click)="clearModFilter()">Clear</button>
+                    </div>
+                    <div class="filter-menu-items">
+                        @for (mod of availableMods; track mod) {
+                            <button type="button"
+                                    class="filter-menu-item"
+                                    [class.checked]="selectedMods.has(mod)"
+                                    (click)="toggleModFilter(mod); $event.stopPropagation()">
+                                <mat-icon class="filter-menu-check">{{ selectedMods.has(mod) ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
+                                <span class="filter-menu-label rpt-mod-tag">[{{ mod }}]</span>
+                            </button>
+                        }
+                        @if (!availableMods.length) {
+                            <div class="filter-menu-empty">No mods detected</div>
                         }
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { highlightRptLine, RPT_COLORS, classifyRptLine, extractRptTags } from './rpt-syntax-highlighter';
+import { highlightRptLine, RPT_COLORS, classifyRptLine, extractRptTags, type RptLogLevel } from './rpt-syntax-highlighter';
 
 describe('highlightRptLine', () => {
     it('highlights timestamp at start of line', () => {
@@ -197,7 +197,7 @@ describe('classifyRptLine', () => {
 
 describe('extractRptTags', () => {
     it('returns empty arrays for empty line', () => {
-        expect(extractRptTags('')).toEqual({ mods: [], components: [] });
+        expect(extractRptTags('')).toEqual({ mods: [], components: [], level: null });
     });
 
     it('extracts paired mod tag + component', () => {
@@ -246,5 +246,41 @@ describe('extractRptTags', () => {
         const tags = extractRptTags('[UKSF] (5) count');
         expect(tags.mods).toEqual([]);
         expect(tags.components).toEqual([]);
+    });
+
+    it('classifies error level from Error prefix', () => {
+        expect(extractRptTags('Error in expression').level).toBe('error');
+    });
+
+    it('classifies error level from ERROR keyword', () => {
+        expect(extractRptTags('12:00:00 ERROR something failed').level).toBe('error');
+    });
+
+    it('classifies error level from Error keyword', () => {
+        expect(extractRptTags('12:00:00 Error: something broke').level).toBe('error');
+    });
+
+    it('classifies warning level from WARNING keyword', () => {
+        expect(extractRptTags('12:00:00 WARNING something happened').level).toBe('warning');
+    });
+
+    it('classifies warning level from Warning keyword', () => {
+        expect(extractRptTags('Warning message here').level).toBe('warning');
+    });
+
+    it('classifies info level from INFO keyword', () => {
+        expect(extractRptTags('12:00:00 INFO server started').level).toBe('info');
+    });
+
+    it('classifies trace level from TRACE keyword', () => {
+        expect(extractRptTags('12:00:00 TRACE some details').level).toBe('trace');
+    });
+
+    it('returns null level for plain lines', () => {
+        expect(extractRptTags('just a plain log line').level).toBeNull();
+    });
+
+    it('returns null level for noise lines', () => {
+        expect(extractRptTags('Skipped loading of addon some_addon').level).toBeNull();
     });
 });

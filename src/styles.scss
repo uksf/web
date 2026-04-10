@@ -1016,6 +1016,10 @@ mat-dialog-actions, .mat-mdc-dialog-actions {
 
     .filter-menu-label.rpt-mod-tag { color: #79b8ff; }
     .filter-menu-label.rpt-mod-component { color: #b392f0; }
+    .filter-menu-label.rpt-level-error { color: #f97583; }
+    .filter-menu-label.rpt-level-warning { color: #ffab70; }
+    .filter-menu-label.rpt-level-info { color: #85e89d; }
+    .filter-menu-label.rpt-level-trace { color: #56d6db; }
 
     .filter-menu-empty {
         padding: 16px 12px;

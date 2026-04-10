@@ -1,4 +1,5 @@
 import { Component, HostListener, OnInit, ViewChild, inject, NgZone } from '@angular/core';
+import { NgClass, UpperCasePipe } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { first, takeUntil } from 'rxjs/operators';
@@ -15,7 +16,7 @@ import { DebouncedCallback } from '@app/shared/utils/debounce-callback';
 import { ServersHubService } from '../../services/servers-hub.service';
 import { GameServersService } from '../../services/game-servers.service';
 import { GameServer, RptLogSource, RptLogSearchResult } from '../../models/game-server';
-import { highlightRptLine, extractRptTags, type RptLineTags } from '../../utils/rpt-syntax-highlighter';
+import { highlightRptLine, extractRptTags, type RptLineTags, type RptLogLevel } from '../../utils/rpt-syntax-highlighter';
 import { LogMinimapComponent } from '../../components/log-minimap/log-minimap.component';
 import { createLineProjection, type LineProjection } from '../../components/log-minimap/line-projection';
 import { VirtualScrollSelection } from '../../utils/virtual-scroll-selection';
@@ -43,6 +44,8 @@ const ITEM_SIZE = 20;
         MatTooltipModule,
         MatMenuModule,
         ScrollingModule,
+        NgClass,
+        UpperCasePipe,
         TextInputComponent,
         LogMinimapComponent
     ]
@@ -68,8 +71,10 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     // Filter state + available options (computed per the "opposite filter")
     selectedMods = new Set<string>();
     selectedComponents = new Set<string>();
+    selectedLevels = new Set<RptLogLevel>();
     availableMods: string[] = [];
     availableComponents: string[] = [];
+    availableLevels: RptLogLevel[] = [];
     isLoading = true;
     tailEnabled = false;
     searchQuery = '';
@@ -225,8 +230,10 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         this.displayedIndices = [];
         this.selectedMods.clear();
         this.selectedComponents.clear();
+        this.selectedLevels.clear();
         this.availableMods = [];
         this.availableComponents = [];
+        this.availableLevels = [];
         this.projection = null;
         this.baseHtml = [];
         this.baseHighlightedLines = [];
@@ -374,7 +381,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     }
 
     private hasActiveFilter(): boolean {
-        return this.selectedMods.size > 0 || this.selectedComponents.size > 0;
+        return this.selectedMods.size > 0 || this.selectedComponents.size > 0 || this.selectedLevels.size > 0;
     }
 
     private lineMatchesFilter(rawIdx: number): boolean {
@@ -385,6 +392,9 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         }
         if (this.selectedComponents.size > 0) {
             if (!tags.components.some(c => this.selectedComponents.has(c))) return false;
+        }
+        if (this.selectedLevels.size > 0) {
+            if (!tags.level || !this.selectedLevels.has(tags.level)) return false;
         }
         return true;
     }
@@ -412,26 +422,37 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     private recomputeAvailableFilters(): void {
         const modSet = new Set<string>();
         const compSet = new Set<string>();
+        const levelSet = new Set<RptLogLevel>();
         for (let i = 0; i < this.rawLines.length; i++) {
             const tags = this.rawLineTags[i];
             if (!tags) continue;
 
-            // Mods: include if line passes the component filter (ignore mod filter)
+            const passesMods = this.selectedMods.size === 0
+                || tags.mods.some(m => this.selectedMods.has(m));
             const passesComps = this.selectedComponents.size === 0
                 || tags.components.some(c => this.selectedComponents.has(c));
-            if (passesComps) {
+            const passesLevels = this.selectedLevels.size === 0
+                || (tags.level !== null && this.selectedLevels.has(tags.level));
+
+            // Mods: include if line passes the component + level filters (ignore mod filter)
+            if (passesComps && passesLevels) {
                 for (const m of tags.mods) modSet.add(m);
             }
 
-            // Components: include if line passes the mod filter (ignore comp filter)
-            const passesMods = this.selectedMods.size === 0
-                || tags.mods.some(m => this.selectedMods.has(m));
-            if (passesMods) {
+            // Components: include if line passes the mod + level filters (ignore comp filter)
+            if (passesMods && passesLevels) {
                 for (const c of tags.components) compSet.add(c);
+            }
+
+            // Levels: include if line passes the mod + component filters (ignore level filter)
+            if (passesMods && passesComps && tags.level) {
+                levelSet.add(tags.level);
             }
         }
         this.availableMods = Array.from(modSet).sort((a, b) => a.localeCompare(b));
         this.availableComponents = Array.from(compSet).sort((a, b) => a.localeCompare(b));
+        const levelOrder: RptLogLevel[] = ['error', 'warning', 'info', 'trace'];
+        this.availableLevels = levelOrder.filter(l => levelSet.has(l));
     }
 
     toggleModFilter(mod: string): void {
@@ -461,6 +482,21 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     clearComponentFilter(): void {
         if (!this.selectedComponents.size) return;
         this.selectedComponents.clear();
+        this.onFilterChange();
+    }
+
+    toggleLevelFilter(level: RptLogLevel): void {
+        if (this.selectedLevels.has(level)) {
+            this.selectedLevels.delete(level);
+        } else {
+            this.selectedLevels.add(level);
+        }
+        this.onFilterChange();
+    }
+
+    clearLevelFilter(): void {
+        if (!this.selectedLevels.size) return;
+        this.selectedLevels.clear();
         this.onFilterChange();
     }
 
