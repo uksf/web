@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
 import { ScrollingModule, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 
 import { DestroyableComponent } from '@app/shared/components/destroyable/destroyable.component';
@@ -14,7 +15,7 @@ import { DebouncedCallback } from '@app/shared/utils/debounce-callback';
 import { ServersHubService } from '../../services/servers-hub.service';
 import { GameServersService } from '../../services/game-servers.service';
 import { GameServer, RptLogSource, RptLogSearchResult } from '../../models/game-server';
-import { highlightRptLine } from '../../utils/rpt-syntax-highlighter';
+import { highlightRptLine, extractRptTags, type RptLineTags } from '../../utils/rpt-syntax-highlighter';
 import { LogMinimapComponent } from '../../components/log-minimap/log-minimap.component';
 import { createLineProjection, type LineProjection } from '../../components/log-minimap/line-projection';
 import { VirtualScrollSelection } from '../../utils/virtual-scroll-selection';
@@ -40,6 +41,7 @@ const ITEM_SIZE = 20;
         MatButtonModule,
         MatIconModule,
         MatTooltipModule,
+        MatMenuModule,
         ScrollingModule,
         TextInputComponent,
         LogMinimapComponent
@@ -56,14 +58,23 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     server: GameServer;
     sources: RptLogSource[] = [];
     activeSource = 'Server';
+    // Displayed (filtered) views — what the virtual scroll renders.
     logLines: string[] = [];
     highlightedLines: SafeHtml[] = [];
     viewLineEntries: ViewLineEntry[] = [];
+    // Raw index (into rawLines) for each displayed line. Used for line-number
+    // gutter and copyLineLink so users always see the real log line number.
+    displayedIndices: number[] = [];
+    // Filter state + available options (computed per the "opposite filter")
+    selectedMods = new Set<string>();
+    selectedComponents = new Set<string>();
+    availableMods: string[] = [];
+    availableComponents: string[] = [];
     isLoading = true;
     tailEnabled = false;
     searchQuery = '';
     searchResults: RptLogSearchResult[] = [];
-    searchMatchLines: Set<number> = new Set();
+    searchMatchLines = new Set<number>();
     totalMatches = 0;
     currentSearchIndex = -1;
     isDownloading = false;
@@ -73,6 +84,11 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     logContentWidth = 0;
     linkedLineIndex = -1;
 
+    // Raw log data (unfiltered). Displayed views above are derived from these.
+    private rawLines: string[] = [];
+    private rawBaseHtml: string[] = [];
+    private rawBaseHighlightedLines: SafeHtml[] = [];
+    private rawLineTags: RptLineTags[] = [];
     private baseHtml: string[] = [];
     private baseHighlightedLines: SafeHtml[] = [];
     private _viewport: CdkVirtualScrollViewport | undefined;
@@ -141,7 +157,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
                 } else if (this.pendingScrollToLine !== undefined) {
                     const line = this.pendingScrollToLine;
                     this.pendingScrollToLine = undefined;
-                    this.linkedLineIndex = Math.max(0, line - 1);
+                    this.linkedLineIndex = this.rawLineToDisplayedIndex(line);
                     setTimeout(() => this.scrollToLineIndex(line));
                 }
             });
@@ -199,9 +215,18 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
     }
 
     private resubscribeToLog(): void {
+        this.rawLines = [];
+        this.rawBaseHtml = [];
+        this.rawBaseHighlightedLines = [];
+        this.rawLineTags = [];
         this.logLines = [];
         this.highlightedLines = [];
         this.viewLineEntries = [];
+        this.displayedIndices = [];
+        this.selectedMods.clear();
+        this.selectedComponents.clear();
+        this.availableMods = [];
+        this.availableComponents = [];
         this.projection = null;
         this.baseHtml = [];
         this.baseHighlightedLines = [];
@@ -225,19 +250,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (serverId !== this.server.id || source !== this.activeSource) {
             return;
         }
-        this.logLines = this.logLines.concat(lines);
-        const htmls = lines.map(l => highlightRptLine(l));
-        this.baseHtml.push(...htmls);
-        const baseSafe = htmls.map(html => this.sanitizer.bypassSecurityTrustHtml(html));
-        this.baseHighlightedLines.push(...baseSafe);
-        if (this.searchQuery.trim()) {
-            const highlighted = htmls.map(html =>
-                this.sanitizer.bypassSecurityTrustHtml(this.addSearchHighlights(html, this.searchQuery))
-            );
-            this.highlightedLines.push(...highlighted);
-        } else {
-            this.highlightedLines.push(...baseSafe);
-        }
+        this.ingestRawLines(lines);
         this.rebuildViewLines();
         if (isComplete) {
             this.isLoading = false;
@@ -250,7 +263,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
                 if (this.viewport) {
                     const line = this.pendingScrollToLine;
                     this.pendingScrollToLine = undefined;
-                    this.linkedLineIndex = Math.max(0, line - 1);
+                    this.linkedLineIndex = this.rawLineToDisplayedIndex(line);
                     setTimeout(() => this.scrollToLineIndex(line));
                 }
                 // else: viewport setter will handle it when viewport appears
@@ -292,19 +305,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         this.pendingAppendLines = [];
         this.selectionPreserver.saveBeforeUpdate();
 
-        this.logLines = this.logLines.concat(lines);
-        const htmls = lines.map(l => highlightRptLine(l));
-        this.baseHtml.push(...htmls);
-        const baseSafe = htmls.map(html => this.sanitizer.bypassSecurityTrustHtml(html));
-        this.baseHighlightedLines.push(...baseSafe);
-        if (this.searchQuery.trim()) {
-            const highlighted = htmls.map(html =>
-                this.sanitizer.bypassSecurityTrustHtml(this.addSearchHighlights(html, this.searchQuery))
-            );
-            this.highlightedLines.push(...highlighted);
-        } else {
-            this.highlightedLines.push(...baseSafe);
-        }
+        this.ingestRawLines(lines);
         this.rebuildViewLines();
         if (this.tailEnabled) {
             // Scroll using the known data dimensions rather than relying on CDK's
@@ -315,14 +316,200 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         this.scheduleMetricsUpdate();
     }
 
+    private ingestRawLines(lines: string[]): void {
+        const startRaw = this.rawLines.length;
+        const startDisplayed = this.logLines.length;
+
+        for (const line of lines) {
+            const html = highlightRptLine(line);
+            const safe = this.sanitizer.bypassSecurityTrustHtml(html);
+            const tags = extractRptTags(line);
+            this.rawLines.push(line);
+            this.rawBaseHtml.push(html);
+            this.rawBaseHighlightedLines.push(safe);
+            this.rawLineTags.push(tags);
+        }
+
+        const filtered = this.hasActiveFilter();
+        for (let i = startRaw; i < this.rawLines.length; i++) {
+            if (!filtered || this.lineMatchesFilter(i)) {
+                this.appendDisplayed(i);
+            }
+        }
+
+        this.recomputeAvailableFilters();
+
+        // Incrementally extend search matches for newly displayed lines, so new
+        // matches count in the result tally without forcing a scroll-reset that
+        // would fight with tail-follow.
+        const query = this.searchQuery.trim();
+        if (query) {
+            const lower = query.toLowerCase();
+            for (let d = startDisplayed; d < this.logLines.length; d++) {
+                if (this.logLines[d].toLowerCase().includes(lower)) {
+                    this.searchResults.push({ lineIndex: d, text: this.logLines[d] });
+                    this.searchMatchLines.add(d);
+                    this.totalMatches++;
+                    if (this.currentSearchIndex < 0) {
+                        this.currentSearchIndex = this.searchResults.length - 1;
+                    }
+                }
+            }
+        }
+    }
+
+    private appendDisplayed(rawIdx: number): void {
+        this.displayedIndices.push(rawIdx);
+        this.logLines.push(this.rawLines[rawIdx]);
+        this.baseHtml.push(this.rawBaseHtml[rawIdx]);
+        const baseSafe = this.rawBaseHighlightedLines[rawIdx];
+        this.baseHighlightedLines.push(baseSafe);
+        if (this.searchQuery.trim()) {
+            this.highlightedLines.push(this.sanitizer.bypassSecurityTrustHtml(
+                this.addSearchHighlights(this.rawBaseHtml[rawIdx], this.searchQuery)
+            ));
+        } else {
+            this.highlightedLines.push(baseSafe);
+        }
+    }
+
+    private hasActiveFilter(): boolean {
+        return this.selectedMods.size > 0 || this.selectedComponents.size > 0;
+    }
+
+    private lineMatchesFilter(rawIdx: number): boolean {
+        const tags = this.rawLineTags[rawIdx];
+        if (!tags) return true;
+        if (this.selectedMods.size > 0) {
+            if (!tags.mods.some(m => this.selectedMods.has(m))) return false;
+        }
+        if (this.selectedComponents.size > 0) {
+            if (!tags.components.some(c => this.selectedComponents.has(c))) return false;
+        }
+        return true;
+    }
+
+    private rebuildDisplayedFromRaw(): void {
+        this.displayedIndices = [];
+        this.logLines = [];
+        this.baseHtml = [];
+        this.baseHighlightedLines = [];
+        this.highlightedLines = [];
+        for (let i = 0; i < this.rawLines.length; i++) {
+            if (!this.hasActiveFilter() || this.lineMatchesFilter(i)) {
+                this.appendDisplayed(i);
+            }
+        }
+    }
+
+    /**
+     * Recomputes `availableMods` and `availableComponents` using opposite-filter
+     * semantics: a mod is available if it appears in any line passing the current
+     * component filter; a component is available if it appears in any line passing
+     * the current mod filter. This keeps both lists responsive to the other filter
+     * without collapsing to empty when both are applied.
+     */
+    private recomputeAvailableFilters(): void {
+        const modSet = new Set<string>();
+        const compSet = new Set<string>();
+        for (let i = 0; i < this.rawLines.length; i++) {
+            const tags = this.rawLineTags[i];
+            if (!tags) continue;
+
+            // Mods: include if line passes the component filter (ignore mod filter)
+            const passesComps = this.selectedComponents.size === 0
+                || tags.components.some(c => this.selectedComponents.has(c));
+            if (passesComps) {
+                for (const m of tags.mods) modSet.add(m);
+            }
+
+            // Components: include if line passes the mod filter (ignore comp filter)
+            const passesMods = this.selectedMods.size === 0
+                || tags.mods.some(m => this.selectedMods.has(m));
+            if (passesMods) {
+                for (const c of tags.components) compSet.add(c);
+            }
+        }
+        this.availableMods = Array.from(modSet).sort((a, b) => a.localeCompare(b));
+        this.availableComponents = Array.from(compSet).sort((a, b) => a.localeCompare(b));
+    }
+
+    toggleModFilter(mod: string): void {
+        if (this.selectedMods.has(mod)) {
+            this.selectedMods.delete(mod);
+        } else {
+            this.selectedMods.add(mod);
+        }
+        this.onFilterChange();
+    }
+
+    toggleComponentFilter(comp: string): void {
+        if (this.selectedComponents.has(comp)) {
+            this.selectedComponents.delete(comp);
+        } else {
+            this.selectedComponents.add(comp);
+        }
+        this.onFilterChange();
+    }
+
+    clearModFilter(): void {
+        if (!this.selectedMods.size) return;
+        this.selectedMods.clear();
+        this.onFilterChange();
+    }
+
+    clearComponentFilter(): void {
+        if (!this.selectedComponents.size) return;
+        this.selectedComponents.clear();
+        this.onFilterChange();
+    }
+
+    private onFilterChange(): void {
+        this.rebuildDisplayedFromRaw();
+        this.recomputeAvailableFilters();
+        this.linkedLineIndex = -1; // raw→displayed mapping invalidated
+        if (this.searchQuery.trim()) {
+            this.search();
+        } else {
+            this.searchResults = [];
+            this.searchMatchLines = new Set();
+            this.totalMatches = 0;
+            this.currentSearchIndex = -1;
+        }
+        this.rebuildViewLines();
+        this.scheduleMetricsUpdate();
+        if (this.tailEnabled) {
+            setTimeout(() => this.scrollToBottom());
+        }
+    }
+
+    private rawLineToDisplayedIndex(rawLineNumber: number): number {
+        const rawIdx = Math.max(0, rawLineNumber - 1);
+        // displayedIndices is ascending; linear scan is fine for typical log sizes
+        for (let i = 0; i < this.displayedIndices.length; i++) {
+            if (this.displayedIndices[i] >= rawIdx) return i;
+        }
+        return this.displayedIndices.length - 1;
+    }
+
+    displayedLineNumber(displayedIdx: number): number {
+        const raw = this.displayedIndices[displayedIdx];
+        return (raw ?? displayedIdx) + 1;
+    }
+
     async switchSource(sourceName: string): Promise<void> {
         if (!sourceName || sourceName === this.activeSource) {
             return;
         }
         await this.serversHub.invoke('UnsubscribeFromLog', this.server.id, this.activeSource);
+        this.rawLines = [];
+        this.rawBaseHtml = [];
+        this.rawBaseHighlightedLines = [];
+        this.rawLineTags = [];
         this.logLines = [];
         this.highlightedLines = [];
         this.viewLineEntries = [];
+        this.displayedIndices = [];
         this.projection = null;
         this.baseHtml = [];
         this.baseHighlightedLines = [];
@@ -539,9 +726,10 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         });
     }
 
-    copyLineLink(event: MouseEvent, lineIndex: number): void {
+    copyLineLink(event: MouseEvent, displayedIndex: number): void {
         event.stopPropagation();
-        const lineNumber = lineIndex + 1;
+        const rawIdx = this.displayedIndices[displayedIndex] ?? displayedIndex;
+        const lineNumber = rawIdx + 1;
         const url = `${window.location.origin}/operations/servers?log=${this.server.id}&line=${lineNumber}`;
         navigator.clipboard.writeText(url).catch(() => {});
     }
@@ -684,8 +872,11 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
 
     private scrollToLineIndex(lineNumber: number): void {
         if (!this.viewport) return;
-        const logIndex = Math.max(0, lineNumber - 1);
-        const viewLineIndex = this.projection ? this.projection.logLineToViewLine(logIndex) : logIndex;
+        // Translate raw (1-based) line number to displayed index, since the
+        // projection indexes over the displayed (possibly filtered) view.
+        const displayedIndex = this.rawLineToDisplayedIndex(lineNumber);
+        if (displayedIndex < 0) return;
+        const viewLineIndex = this.projection ? this.projection.logLineToViewLine(displayedIndex) : displayedIndex;
         const viewportSize = this.viewport.getViewportSize();
         const offset = viewLineIndex * ITEM_SIZE;
         const centeredOffset = Math.max(0, offset - (viewportSize / 2) + (ITEM_SIZE / 2));

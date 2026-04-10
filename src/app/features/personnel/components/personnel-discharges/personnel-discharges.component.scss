@@ -81,6 +81,15 @@
         padding: 0;
         overflow: hidden;
 
+        button.header-container {
+            background: none;
+            border: none;
+            color: inherit;
+            font: inherit;
+            width: 100%;
+            text-align: left;
+        }
+
         .header-container {
             display: flex;
             flex-direction: row;

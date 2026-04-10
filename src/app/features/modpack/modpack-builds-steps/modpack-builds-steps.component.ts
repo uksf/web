@@ -41,8 +41,8 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
     scrollView: CdkVirtualScrollViewport;
     @Input() build: ModpackBuild;
     @Input() rebuildCondition: () => boolean;
-    @Output() onRebuild = new EventEmitter();
-    @Output() onCloseLog = new EventEmitter();
+    @Output() rebuildEvent = new EventEmitter();
+    @Output() closeLogEvent = new EventEmitter();
     modpackBuildResult = ModpackBuildResult;
     selectedStepIndex = 0;
     selectedLogIndex = -1;
@@ -252,7 +252,7 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
     }
 
     closeLog() {
-        this.onCloseLog.emit();
+        this.closeLogEvent.emit();
         this.disconnect();
     }
 
@@ -265,7 +265,7 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
 
     rebuild() {
         this.modpackBuildProcessService.rebuild(this.build, () => {
-            this.onRebuild.emit();
+            this.rebuildEvent.emit();
         });
     }
 

@@ -28,7 +28,7 @@ export class DocsFolderComponent implements OnChanges {
 
     @Input('allDocumentMetadata') allFolderMetadata: FolderMetadata[];
     @Input('folderMetadata') folderMetadata: FolderMetadata;
-    @Input() expandedFolderIds: Set<string> = new Set();
+    @Input() expandedFolderIds = new Set<string>();
     @Output() refresh = new EventEmitter();
     @Output() expandFolder = new EventEmitter();
     expanded: boolean = false;

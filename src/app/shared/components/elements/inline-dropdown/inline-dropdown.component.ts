@@ -1,4 +1,4 @@
-import { Component, EventEmitter, forwardRef, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, forwardRef, HostListener, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { IDropdownElement } from '../dropdown-base/dropdown-base.component';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
@@ -18,7 +18,7 @@ import { FlexFillerComponent } from '../flex-filler/flex-filler.component';
     ],
     imports: [DropdownComponent, FormsModule, FlexFillerComponent]
 })
-export class InlineDropdownComponent implements ControlValueAccessor, OnInit, OnDestroy {
+export class InlineDropdownComponent implements ControlValueAccessor, OnDestroy {
     @Input('placeholder') placeholder: string;
     @Input('isRequired') required: boolean = false;
     @Input('isDisabled') disabled: boolean = false;
@@ -29,7 +29,7 @@ export class InlineDropdownComponent implements ControlValueAccessor, OnInit, On
     @Input('formFieldClass') formFieldClass: string;
     @Input('optionClass') optionClass: string;
     @Input('mapElementName') mapElementName: (element: IDropdownElement) => string;
-    @Output() onSelectionChange = new EventEmitter<IDropdownElement>();
+    @Output() selectionChange = new EventEmitter<IDropdownElement>();
     @Input() textModel = '';
     model: Model = {
         dropdownValue: null
@@ -67,10 +67,6 @@ export class InlineDropdownComponent implements ControlValueAccessor, OnInit, On
         }
     }
 
-    constructor() {}
-
-    ngOnInit(): void {}
-
     ngOnDestroy(): void {
         this.validatorSubscription?.unsubscribe();
     }
@@ -83,7 +79,7 @@ export class InlineDropdownComponent implements ControlValueAccessor, OnInit, On
         this.onChange = fn;
     }
 
-    public registerOnTouched(fn: () => {}): void {
+    public registerOnTouched(fn: () => void): void {
         this.onTouched = fn;
     }
 

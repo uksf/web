@@ -6,7 +6,7 @@
                 <mat-spinner></mat-spinner>
             </div>
             }
-            <app-file-drop (onFileOver)="onFileOver()" (onFileLeave)="onFileLeave()" (onFileDrop)="onFileDrop($event)">
+            <app-file-drop (fileOver)="onFileOver()" (fileLeave)="onFileLeave()" (fileDrop)="onFileDrop($event)">
                 <div #serversContainer [ngClass]="{ fileDragging: fileDragging }">
                     <div class="admin-container">
                         <ng-template [ngxPermissionsOnly]="['ADMIN']">
@@ -39,7 +39,7 @@
                     </div>
                     @if (servers) {
                     <div>
-                        @if (servers.length == 0) {
+                        @if (servers.length === 0) {
                         <div class="servers-container">
                             <h3>There are no game servers defined</h3>
                         </div>

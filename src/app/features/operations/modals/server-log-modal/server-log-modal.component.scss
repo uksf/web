@@ -45,6 +45,39 @@
             margin: 0;
         }
     }
+
+    .filter-group {
+        display: inline-flex;
+        align-items: center;
+        gap: v.$spacing-4px;
+        margin-left: v.$spacing-16px;
+    }
+
+    .filter-trigger {
+        min-width: 0;
+        gap: v.$spacing-4px;
+        background-color: rgba(255, 255, 255, 0.12) !important;
+        color: rgba(255, 255, 255, 0.7) !important;
+
+        mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+        }
+
+        &.filter-active {
+            color: var(--mat-sys-primary) !important;
+
+            mat-icon {
+                color: rgba(255, 255, 255, 0.7);
+            }
+        }
+
+        &:disabled {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            color: rgba(255, 255, 255, 0.3) !important;
+        }
+    }
 }
 
 .search-count {
@@ -145,16 +178,26 @@ button.tail-active {
 
 .line-number {
     min-width: 60px;
+    height: 20px;
+    line-height: 20px;
     text-align: right;
     color: #555;
-    padding-right: v.$spacing-8px;
+    padding: 0 v.$spacing-8px 0 0;
+    border: 0;
     border-right: 1px solid #333;
     user-select: none;
     flex-shrink: 0;
     cursor: pointer;
+    background: transparent;
+    font: inherit;
+    outline: 0;
 
     &:hover {
         color: #999;
+    }
+
+    &:focus-visible {
+        color: #ccc;
     }
 }
 
@@ -194,6 +237,7 @@ button.tail-active {
     .rpt-error { color: #f97583; }
     .rpt-warning { color: #ffab70; }
     .rpt-info { color: #85e89d; }
+    .rpt-trace { color: #56d6db; }
     .rpt-mod-tag { color: #79b8ff; font-weight: 500; }
     .rpt-mod-component { color: #b392f0; }
     .rpt-string { color: #9ecbff; }

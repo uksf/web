@@ -14,7 +14,7 @@ import { UrlService } from '@app/core/services/url.service';
 import { of } from 'rxjs';
 
 const dialogData: DocumentModalData = {
-    folderMetadata: { id: 'folder-1', name: 'Test Folder', documents: [], folders: [] } as any,
+    folderMetadata: { id: 'folder-1', name: 'Test Folder', documents: [], folders: [] } as unknown as DocumentModalData['folderMetadata'],
     inheritedPermissions: undefined
 };
 

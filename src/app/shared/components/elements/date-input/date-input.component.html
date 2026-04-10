@@ -1,5 +1,5 @@
 <div class="form-field-wrapper" [class.form-field-focused]="focused" [class.form-field-has-error]="hasError" [class.form-field-disabled]="disabled">
-    <div class="form-field form-field-date" (click)="onInputClick()">
+    <div class="form-field form-field-date">
         @if (label) {
         <label class="form-field-label" [class.required]="required" [class.floating]="labelFloating" [attr.for]="inputId">{{ label }}</label>
         }
@@ -13,6 +13,7 @@
             readonly
             type="text"
             autocomplete="off"
+            (click)="onInputClick()"
             (focus)="onFocus()"
             (blur)="onBlur()"
         />

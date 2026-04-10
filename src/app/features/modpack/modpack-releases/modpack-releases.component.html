@@ -12,13 +12,13 @@
                     </div>
                 </ng-template>
                 @for (release of publicReleases; track release) {
-                <div (click)="selectRelease(release.version)" [ngClass]="{ selected: selectedReleaseVersion === release.version }" class="release-history-item">
+                <button type="button" (click)="selectRelease(release.version)" [ngClass]="{ selected: selectedReleaseVersion === release.version }" class="release-history-item">
                     @if (release.isDraft) {
                     <i>{{ release.version }}</i>
                     } @else {
                     <span>{{ release.version }}</span>
                     }
-                </div>
+                </button>
                 }
             </div>
             @if (selectedRelease && !selectedRelease.isDraft) {

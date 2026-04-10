@@ -10,7 +10,7 @@ describe('LogMinimapComponent', () => {
         // totalHeight includes ~525px bottom padding (42vh of ~1250px window)
         const itemSize = 20;
         const totalLines = 343;
-        const contentHeight = totalLines * itemSize; // 6860
+        const _contentHeight = totalLines * itemSize; // 6860
         const totalHeight = 7385; // contentHeight + bottom padding
         const viewportSize = 1053;
         const canvasHeight = 347;

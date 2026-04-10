@@ -6,9 +6,9 @@
         <div class="flex-container no-padding-left">
             <div class="history-container">
                 @for (rc of rcs; track rc) {
-                <div class="history-item release" [ngClass]="{ selected: selectedRcVersion === rc.version }" (click)="selectRc(rc.version)">
+                <button type="button" class="history-item release" [ngClass]="{ selected: selectedRcVersion === rc.version }" (click)="selectRc(rc.version)">
                     {{ rc.version }}
-                </div>
+                </button>
                 }
             </div>
             @if (rcs.length === 0) {
@@ -23,13 +23,13 @@
             <div class="release-container">
                 <div class="history-container builds">
                     @for (build of selectedRc.builds; track build) {
-                    <div class="history-item" [ngClass]="{ selected: selectedBuildId === build.id }" [ngStyle]="getBuildColour(build)" (click)="selectBuild(build.id)">
+                    <button type="button" class="history-item" [ngClass]="{ selected: selectedBuildId === build.id }" [ngStyle]="getBuildColour(build)" (click)="selectBuild(build.id)">
                         @if (build.environment === gameEnvironment.RC) {
                         <span>RC #{{ build.buildNumber }}</span>
                         } @else if (build.environment === gameEnvironment.RELEASE) {
                         <span>Release</span>
                         }
-                    </div>
+                    </button>
                     }
                 </div>
                 @if (selectedBuild === undefined) {
@@ -86,7 +86,7 @@
                     </div>
                 </div>
                 } @else {
-                <app-modpack-builds-steps [rebuildCondition]="canRebuild" [build]="selectedBuild" (onCloseLog)="closeLog()" (onRebuild)="selectIncomingBuild = true"></app-modpack-builds-steps>
+                <app-modpack-builds-steps [rebuildCondition]="canRebuild" [build]="selectedBuild" (closeLogEvent)="closeLog()" (rebuildEvent)="selectIncomingBuild = true"></app-modpack-builds-steps>
                 }
                 <app-flex-filler></app-flex-filler>
                 @if (selectedBuild) {

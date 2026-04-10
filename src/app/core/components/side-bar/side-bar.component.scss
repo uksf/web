@@ -1,6 +1,15 @@
 @use 'styles/variables' as v;
 
 .sideNav {
+    button.sideNavItem {
+        background: none;
+        border: none;
+        color: inherit;
+        font: inherit;
+        width: 100%;
+        text-align: left;
+    }
+
     .sideNavItem {
         padding-left: 30px;
         display: flex;

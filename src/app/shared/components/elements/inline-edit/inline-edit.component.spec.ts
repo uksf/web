@@ -52,7 +52,7 @@ describe('InlineEditComponent', () => {
     });
 
     it('does not accumulate subscriptions on repeated value changes', () => {
-      const callCount = 0;
+      const _callCount = 0;
       // Use a custom validator that counts how many times it delivers
       const countingSubject = new Subject<boolean>();
       component.validator = countingSubject.asObservable();
@@ -62,7 +62,7 @@ describe('InlineEditComponent', () => {
       component.value = 'c';
 
       // Track how many times invalid gets set by emissions
-      const originalDescriptor = Object.getOwnPropertyDescriptor(component, 'invalid');
+      const _originalDescriptor = Object.getOwnPropertyDescriptor(component, 'invalid');
       let setCount = 0;
       Object.defineProperty(component, 'invalid', {
         get() { return this._testInvalid; },

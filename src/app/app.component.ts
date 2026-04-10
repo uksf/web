@@ -10,7 +10,7 @@ import { SideBarComponent } from '@app/core/components/side-bar/side-bar.compone
 import { FooterBarComponent } from '@app/core/components/footer-bar/footer-bar.component';
 
 @Component({
-    selector: 'app',
+    selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     imports: [RouterOutlet, HeaderBarComponent, SideBarComponent, FooterBarComponent]

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { of } from 'rxjs';
 import { MembersService } from './members.service';
 import { UrlService } from '@app/core/services/url.service';
@@ -68,7 +68,6 @@ describe('MembersService', () => {
     });
 
     it('should get command members with params', () => {
-        const { HttpParams } = require('@angular/common/http');
         const params = new HttpParams().set('page', '1').set('pageSize', '15');
         const pagedResult = { data: [], totalCount: 0 };
         httpClient.get.mockReturnValue(of(pagedResult));

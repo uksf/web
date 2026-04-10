@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { highlightRptLine, RPT_COLORS, classifyRptLine } from './rpt-syntax-highlighter';
+import { highlightRptLine, RPT_COLORS, classifyRptLine, extractRptTags } from './rpt-syntax-highlighter';
 
 describe('highlightRptLine', () => {
     it('highlights timestamp at start of line', () => {
@@ -22,6 +22,11 @@ describe('highlightRptLine', () => {
     it('highlights Error position lines', () => {
         const result = highlightRptLine('Error position: <something>');
         expect(result).toContain('<span class="rpt-error">');
+    });
+
+    it('highlights Error keyword in timestamped lines', () => {
+        const result = highlightRptLine("13:35:25 Error: Bone lip_lwrf doesn't exist in skeleton OFP2_ManSkeleton");
+        expect(result).toContain('<span class="rpt-error">Error</span>');
     });
 
     it('highlights warning lines', () => {
@@ -99,6 +104,11 @@ describe('highlightRptLine', () => {
         const result = highlightRptLine('12:00:00 ERROR something failed');
         expect(result).toContain('<span class="rpt-error">ERROR</span>');
     });
+
+    it('highlights TRACE keyword with distinct class', () => {
+        const result = highlightRptLine('12:00:00 TRACE some details');
+        expect(result).toContain('<span class="rpt-trace">TRACE</span>');
+    });
 });
 
 describe('RPT_COLORS', () => {
@@ -107,6 +117,7 @@ describe('RPT_COLORS', () => {
         expect(RPT_COLORS.error).toBe('#f97583');
         expect(RPT_COLORS.warning).toBe('#ffab70');
         expect(RPT_COLORS.info).toBe('#85e89d');
+        expect(RPT_COLORS.trace).toBe('#56d6db');
         expect(RPT_COLORS.modTag).toBe('#79b8ff');
         expect(RPT_COLORS.modComponent).toBe('#b392f0');
         expect(RPT_COLORS.string).toBe('#9ecbff');
@@ -133,6 +144,13 @@ describe('classifyRptLine', () => {
     it('should classify an error line', () => {
         const result = classifyRptLine('Error in expression <something>');
         expect(result).toEqual([{ color: '#f97583', cssClass: 'rpt-error', start: 0, end: 1 }]);
+    });
+
+    it('should classify Error: as inline keyword in timestamped line', () => {
+        const result = classifyRptLine("13:35:25 Error: Bone lip_lwrf doesn't exist in skeleton OFP2_ManSkeleton");
+        const errorSeg = result.find(s => s.cssClass === 'rpt-error');
+        expect(errorSeg).toBeDefined();
+        expect(errorSeg!.start).toBeGreaterThan(0);
     });
 
     it('should classify a mission line', () => {
@@ -174,5 +192,59 @@ describe('classifyRptLine', () => {
     it('should return empty array for empty line', () => {
         const result = classifyRptLine('');
         expect(result).toEqual([]);
+    });
+});
+
+describe('extractRptTags', () => {
+    it('returns empty arrays for empty line', () => {
+        expect(extractRptTags('')).toEqual({ mods: [], components: [] });
+    });
+
+    it('extracts paired mod tag + component', () => {
+        const tags = extractRptTags('12:34:56 [UKSF] (statistics) Player killed');
+        expect(tags.mods).toEqual(['UKSF']);
+        expect(tags.components).toEqual(['statistics']);
+    });
+
+    it('ignores standalone mod tag with no component (avoids false positives)', () => {
+        const tags = extractRptTags('[CBA] Loading config');
+        expect(tags.mods).toEqual([]);
+        expect(tags.components).toEqual([]);
+    });
+
+    it('ignores standalone component without preceding mod', () => {
+        const tags = extractRptTags('(api) server started');
+        expect(tags.mods).toEqual([]);
+        expect(tags.components).toEqual([]);
+    });
+
+    it('ignores unrelated square brackets like version tags', () => {
+        const tags = extractRptTags('Allocator: tbb4malloc_bi_x64.dll [2017.0.0.0] [2017.0.0.0]');
+        expect(tags.mods).toEqual([]);
+        expect(tags.components).toEqual([]);
+    });
+
+    it('ignores numeric-only parens', () => {
+        const tags = extractRptTags('Frame rate drop (5) seconds');
+        expect(tags.components).toEqual([]);
+    });
+
+    it('extracts multiple pairs, deduped in order', () => {
+        const tags = extractRptTags('[ACE] (medical) done, [UKSF] (api) init, [ACE] (medical) again');
+        expect(tags.mods).toEqual(['ACE', 'UKSF']);
+        expect(tags.components).toEqual(['medical', 'api']);
+    });
+
+    it('allows whitespace between mod and component', () => {
+        const tags = extractRptTags('[UKSF]   (garage) spawning');
+        expect(tags.mods).toEqual(['UKSF']);
+        expect(tags.components).toEqual(['garage']);
+    });
+
+    it('ignores mod followed by non-component paren', () => {
+        // `[UKSF] (5)` is not the canonical pattern — (5) isn't a real component
+        const tags = extractRptTags('[UKSF] (5) count');
+        expect(tags.mods).toEqual([]);
+        expect(tags.components).toEqual([]);
     });
 });

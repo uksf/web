@@ -33,6 +33,15 @@
             }
         }
 
+        button.release-history-item {
+            background: none;
+            border: none;
+            color: inherit;
+            font: inherit;
+            width: 100%;
+            display: block;
+        }
+
         .release-history-item {
             height: 50px;
             font-size: 20px;

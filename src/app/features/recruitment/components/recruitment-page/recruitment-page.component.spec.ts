@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { RecruitmentPageComponent } from './recruitment-page.component';
-import { of, Subject } from 'rxjs';
+import { of } from 'rxjs';
 import { AccountService } from '@app/core/services/account.service';
 import { RecruitmentService } from '../../services/recruitment.service';
 import { ProfileService } from '@app/features/profile/services/profile.service';

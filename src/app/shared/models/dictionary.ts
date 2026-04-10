@@ -14,7 +14,7 @@ export class Dictionary<T> implements IDictionary<T> {
     private count: number = 0;
 
     public ContainsKey(key: string): boolean {
-        return this.items.hasOwnProperty(key);
+        return Object.prototype.hasOwnProperty.call(this.items, key);
     }
 
     public Count(): number {
@@ -22,7 +22,7 @@ export class Dictionary<T> implements IDictionary<T> {
     }
 
     public Add(key: string, value: T) {
-        if (!this.items.hasOwnProperty(key)) this.count++;
+        if (!Object.prototype.hasOwnProperty.call(this.items, key)) this.count++;
 
         this.items[key] = value;
     }
@@ -42,7 +42,7 @@ export class Dictionary<T> implements IDictionary<T> {
         const keySet: string[] = [];
 
         for (const prop in this.items) {
-            if (this.items.hasOwnProperty(prop)) {
+            if (Object.prototype.hasOwnProperty.call(this.items, prop)) {
                 keySet.push(prop);
             }
         }
@@ -54,7 +54,7 @@ export class Dictionary<T> implements IDictionary<T> {
         const values: T[] = [];
 
         for (const prop in this.items) {
-            if (this.items.hasOwnProperty(prop)) {
+            if (Object.prototype.hasOwnProperty.call(this.items, prop)) {
                 values.push(this.items[prop]);
             }
         }

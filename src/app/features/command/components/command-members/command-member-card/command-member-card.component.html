@@ -1,24 +1,24 @@
 <mat-card class="member-panel">
     <div class="header-panel" appSpotlight>
         <div class="header-title-container">
-            <div class="toggle" [@indicatorRotate]="toggleState" (click)="toggle($event)">
+            <button type="button" class="toggle" [@indicatorRotate]="toggleState" (click)="toggle($event)">
                 <mat-icon color="primary">expand_more</mat-icon>
-            </div>
-            <div class="header-title hover" (click)="toggle($event)">
+            </button>
+            <button type="button" class="header-title hover" (click)="toggle($event)">
                 <span>{{ displayName }}</span>
-            </div>
-            <div class="header-title edit" (click)="editRank(); $event.stopPropagation()" matTooltip="Click to edit rank">
+            </button>
+            <button type="button" class="header-title edit" (click)="editRank(); $event.stopPropagation()" matTooltip="Click to edit rank">
                 <span>{{ member.rankObject.name }}</span>
                 <div class="underline"></div>
-            </div>
-            <div class="header-title edit" (click)="editRole(); $event.stopPropagation()" matTooltip="Click to edit role">
+            </button>
+            <button type="button" class="header-title edit" (click)="editRole(); $event.stopPropagation()" matTooltip="Click to edit role">
                 <span>{{ member.roleObject.name }}</span>
                 <div class="underline"></div>
-            </div>
-            <div class="header-title edit" (click)="editUnit(); $event.stopPropagation()" matTooltip="Click to edit unit">
+            </button>
+            <button type="button" class="header-title edit" (click)="editUnit(); $event.stopPropagation()" matTooltip="Click to edit unit">
                 <span>{{ member.unitObject.name }}</span>
                 <div class="underline"></div>
-            </div>
+            </button>
         </div>
         <!--        <div class="header-button-container">-->
         <!--            <mat-icon>more_horiz</mat-icon>-->
@@ -46,9 +46,9 @@
                     </div>
                     }
                 </div>
-                <div (click)="editTraining()" class="member-panel-content-element edit">
+                <button type="button" (click)="editTraining()" class="member-panel-content-element edit">
                     <span>Add / Remove</span>
-                </div>
+                </button>
             </div>
             <div class="member-panel-content-item right small">
                 <h4>Qualifications</h4>

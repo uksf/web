@@ -3,6 +3,7 @@ export const RPT_COLORS = {
     error: '#f97583',
     warning: '#ffab70',
     info: '#85e89d',
+    trace: '#56d6db',
     modTag: '#79b8ff',
     modComponent: '#b392f0',
     string: '#9ecbff',
@@ -36,7 +37,7 @@ export function classifyRptLine(line: string): RptColorSegment[] {
     if (/^====/.test(line) || /^----/.test(line)) {
         return [seg('rpt-separator', RPT_COLORS.separator, 0, 1)];
     }
-    if (line.includes('Error in expression') || line.includes('Error position:') || /Error \w+:/.test(line)) {
+    if (line.startsWith('Error ') || line.startsWith('Error:')) {
         return [seg('rpt-error', RPT_COLORS.error, 0, 1)];
     }
     if (line.includes('Mission file:') || line.includes('Mission world:') || line.includes('Mission id:')) {
@@ -82,9 +83,11 @@ export function classifyRptLine(line: string): RptColorSegment[] {
     // Keywords
     const keywords: { pattern: RegExp; cssClass: string; color: string }[] = [
         { pattern: /\bERROR\b/g, cssClass: 'rpt-error', color: RPT_COLORS.error },
+        { pattern: /\bError\b/g, cssClass: 'rpt-error', color: RPT_COLORS.error },
         { pattern: /\bWARNING\b/g, cssClass: 'rpt-warning', color: RPT_COLORS.warning },
         { pattern: /\bWarning\b/g, cssClass: 'rpt-warning', color: RPT_COLORS.warning },
-        { pattern: /\bINFO\b/g, cssClass: 'rpt-info', color: RPT_COLORS.info }
+        { pattern: /\bINFO\b/g, cssClass: 'rpt-info', color: RPT_COLORS.info },
+        { pattern: /\bTRACE\b/g, cssClass: 'rpt-trace', color: RPT_COLORS.trace }
     ];
     for (const kw of keywords) {
         while ((m = kw.pattern.exec(line)) !== null) {
@@ -130,6 +133,36 @@ const ESCAPE_MAP: Record<string, string> = {
 
 function escapeHtml(text: string): string {
     return text.replace(/[&<>"]/g, (char) => ESCAPE_MAP[char]);
+}
+
+export interface RptLineTags {
+    mods: string[];
+    components: string[];
+}
+
+/**
+ * Extracts mod+component pairs from an RPT log line, matching the canonical
+ * mod logging pattern `[MOD] (COMPONENT)` (e.g. `[UKSF] (api)`, `[ACE] (medical)`).
+ *
+ * Only paired occurrences qualify — standalone `[TEXT]` or `(TEXT)` is ignored
+ * because raw RPT logs include unrelated bracketed content (DLL versions,
+ * timestamps, error tags, etc.) that would create false-positive filter options.
+ * Returns unique values per line in order of first occurrence.
+ */
+export function extractRptTags(line: string): RptLineTags {
+    const mods: string[] = [];
+    const components: string[] = [];
+    if (!line) return { mods, components };
+
+    const pairRe = /\[([A-Za-z][\w]*)\]\s*\(([A-Za-z][\w]*)\)/g;
+    let m: RegExpExecArray | null;
+    while ((m = pairRe.exec(line)) !== null) {
+        const mod = m[1];
+        const component = m[2];
+        if (!mods.includes(mod)) mods.push(mod);
+        if (!components.includes(component)) components.push(component);
+    }
+    return { mods, components };
 }
 
 export function highlightRptLine(line: string): string {

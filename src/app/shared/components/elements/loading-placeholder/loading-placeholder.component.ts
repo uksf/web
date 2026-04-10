@@ -11,7 +11,7 @@ export class LoadingPlaceholderComponent {
     @Input('width') width: string = '64px';
     @Input('height') height: string = '16px';
     @Input('loading') loading: boolean = true;
-    @ContentChild('element', { static: false }) elementTemplateRef: TemplateRef<any>;
+    @ContentChild('element', { static: false }) elementTemplateRef: TemplateRef<unknown>;
 
     constructor() {}
 }

@@ -8,7 +8,6 @@ import { SessionService } from './authentication/session.service';
 // We test its behaviour indirectly through the retry delay constants.
 
 describe('SignalRService', () => {
-    let service: SignalRService;
     let mockUrls: any;
     let mockSessionService: any;
 
@@ -26,7 +25,7 @@ describe('SignalRService', () => {
                 { provide: SessionService, useValue: mockSessionService },
             ]
         });
-        service = TestBed.inject(SignalRService);
+        TestBed.inject(SignalRService);
     });
 
     afterEach(() => {

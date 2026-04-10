@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { RecruitmentService, RecruiterActivity, RecruitmentStats, RecruitmentStatsResponse } from '../../services/recruitment.service';
+import { RecruitmentService, RecruiterActivity, RecruitmentStats } from '../../services/recruitment.service';
 import { ProfileService } from '@app/features/profile/services/profile.service';
 import { AccountService } from '@app/core/services/account.service';
 import { AccountSettings, MembershipState } from '@app/shared/models/account';

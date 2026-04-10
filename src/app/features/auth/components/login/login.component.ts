@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit {
     private redirectService = inject(RedirectService);
 
     @ViewChild(NgForm) form!: NgForm;
-    @Output() onRequestPasswordReset = new EventEmitter();
+    @Output() requestPasswordReset = new EventEmitter();
     pending = false;
     stayLogged = true;
     loginError = '';
@@ -78,8 +78,8 @@ export class LoginComponent implements OnInit {
             });
     }
 
-    requestPasswordReset() {
-        this.onRequestPasswordReset.emit();
+    emitRequestPasswordReset() {
+        this.requestPasswordReset.emit();
     }
 }
 

@@ -15,9 +15,9 @@
                 </ng-template>
                 <div class="build-history-container">
                     @for (build of builds; track build) {
-                    <div class="history-item" [ngClass]="{ selected: selectedBuildId === build.id }" [ngStyle]="getBuildColour(build)" (click)="selectBuild(build.id)">
+                    <button type="button" class="history-item" [ngClass]="{ selected: selectedBuildId === build.id }" [ngStyle]="getBuildColour(build)" (click)="selectBuild(build.id)">
                         <span>#{{ build.buildNumber }}</span>
-                    </div>
+                    </button>
                     }
                 </div>
             </div>
@@ -73,7 +73,7 @@
                 </div>
             </div>
             } @if (selectedBuild && logOpen) {
-            <app-modpack-builds-steps [build]="selectedBuild" [rebuildCondition]="canRebuild" (onCloseLog)="closeLog()" (onRebuild)="selectIncomingBuild = true"></app-modpack-builds-steps>
+            <app-modpack-builds-steps [build]="selectedBuild" [rebuildCondition]="canRebuild" (closeLogEvent)="closeLog()" (rebuildEvent)="selectIncomingBuild = true"></app-modpack-builds-steps>
             }
             <app-flex-filler></app-flex-filler>
             @if (selectedBuild) {

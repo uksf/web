@@ -18,9 +18,9 @@
     </div>
     <div class="sidebar-collapse-container">
         <div class="sidebar-collapse-button">
-            <div (click)="toggleCollapse()" [matTooltip]="tooltip" class="sidebar-collapse-icon" [class.collapsed]="collapsed">
+            <button type="button" (click)="toggleCollapse()" [matTooltip]="tooltip" class="sidebar-collapse-icon" [class.collapsed]="collapsed">
                 <mat-icon>expand_more</mat-icon>
-            </div>
+            </button>
         </div>
     </div>
 </div>

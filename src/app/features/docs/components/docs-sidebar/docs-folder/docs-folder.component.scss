@@ -45,6 +45,13 @@
             }
         }
 
+        button.folder-toggle {
+            background: none;
+            border: none;
+            color: inherit;
+            font: inherit;
+        }
+
         .folder-toggle {
             display: flex;
             padding-right: 2px;

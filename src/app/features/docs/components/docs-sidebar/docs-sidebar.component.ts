@@ -20,7 +20,7 @@ export class DocsSidebarComponent {
     private dialog = inject(MatDialog);
 
     @Input('allDocumentMetadata') allFolderMetadata: FolderMetadata[];
-    @Input() expandedFolderIds: Set<string> = new Set();
+    @Input() expandedFolderIds = new Set<string>();
     @Output() refresh = new EventEmitter();
     collapsed = false;
 

@@ -24,7 +24,7 @@ export class DocsPageComponent extends DestroyableComponent implements OnInit {
 
     allFolderMetadata: FolderMetadata[] = [];
     selectedDocumentMetadata: DocumentMetadata;
-    expandedFolderIds: Set<string> = new Set();
+    expandedFolderIds = new Set<string>();
 
     ngOnInit(): void {
         this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe({

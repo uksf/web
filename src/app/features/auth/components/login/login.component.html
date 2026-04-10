@@ -33,7 +33,7 @@
     <div class="options-container">
         <mat-checkbox color="primary" [(ngModel)]="stayLogged">Stay logged in</mat-checkbox>
         <app-flex-filler></app-flex-filler>
-        <a class="option-link" (click)="requestPasswordReset()">Reset Password</a>
+        <button type="button" class="option-link" (click)="emitRequestPasswordReset()">Reset Password</button>
     </div>
     @if (loginError !== '') {
     <div class="invalid-message">

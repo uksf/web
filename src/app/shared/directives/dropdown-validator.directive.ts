@@ -3,7 +3,7 @@ import { Directive, Input } from '@angular/core';
 import { AbstractControl, NG_VALIDATORS, Validator } from '@angular/forms';
 
 @Directive({
-    selector: '[mustSelectFromDropdown]',
+    selector: '[appMustSelectFromDropdown]',
     providers: [{ provide: NG_VALIDATORS, useExisting: MustSelectFromDropdownValidatorDirective, multi: true }]
 })
 export class MustSelectFromDropdownValidatorDirective implements Validator {

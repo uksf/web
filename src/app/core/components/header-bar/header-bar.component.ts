@@ -57,7 +57,7 @@ export class HeaderBarComponent implements OnInit {
     get getName() {
         try {
             return this.accountService.account.displayName;
-        } catch (err) {
+        } catch {
             return undefined;
         }
     }

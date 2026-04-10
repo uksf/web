@@ -120,7 +120,7 @@ export class DropdownComponent extends DropdownBaseComponent implements ControlV
 
     onChange = (_: IDropdownElement | null) => {};
 
-    validate(control: AbstractControl) {
+    validate(_control: AbstractControl) {
         if (!this.autocomplete) {
             return !this._model && this.required ? { required: true } : null;
         }

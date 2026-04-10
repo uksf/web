@@ -15,7 +15,7 @@ describe('ServerLogModalComponent', () => {
     let mockGameServersService: any;
     let mockServersHub: any;
     let mockSanitizer: any;
-    let signalRCallbacks: Record<string, Function>;
+    let signalRCallbacks: Record<string, (...args: unknown[]) => void>;
     let reconnectedSubject: Subject<void>;
 
     const testSources: RptLogSource[] = [
@@ -50,7 +50,7 @@ describe('ServerLogModalComponent', () => {
         mockServersHub = {
             connect: vi.fn(),
             disconnect: vi.fn(),
-            on: vi.fn((event: string, callback: Function) => {
+            on: vi.fn((event: string, callback: (...args: unknown[]) => void) => {
                 signalRCallbacks[event] = callback;
             }),
             off: vi.fn(),

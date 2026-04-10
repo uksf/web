@@ -59,7 +59,7 @@ export function extractRolePreferences(formGroup: UntypedFormGroup): Record<stri
     const rolePreferences: string[] = [];
     const rolePreferencesGroup = formGroup.controls['rolePreferences'] as UntypedFormGroup;
     for (const key in rolePreferencesGroup.controls) {
-        if (rolePreferencesGroup.controls.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(rolePreferencesGroup.controls, key)) {
             if (rolePreferencesGroup.controls[key].value) {
                 rolePreferences.push(key);
             }

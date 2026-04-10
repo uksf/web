@@ -16,6 +16,16 @@
     border-top-width: 1px;
 }
 
+button.document-title {
+    background: none;
+    border: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+}
+
 .document-title {
     flex: 1;
     display: flex;

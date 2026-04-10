@@ -36,6 +36,74 @@
         <button mat-icon-button color="primary" (click)="searchNext()" [disabled]="!searchResults.length" matTooltip="Next match">
             <mat-icon>keyboard_arrow_down</mat-icon>
         </button>
+        <div class="filter-group">
+            <button mat-flat-button
+                    class="filter-trigger"
+                    [class.filter-active]="selectedMods.size > 0"
+                    [disabled]="!availableMods.length"
+                    [matMenuTriggerFor]="modMenu"
+                    matTooltip="Filter by mod">
+                <mat-icon>extension</mat-icon>
+                Mods
+            </button>
+            <mat-menu #modMenu="matMenu" xPosition="before" [overlapTrigger]="false" [class]="'rpt-filter-menu-panel'">
+                <div class="filter-menu-panel">
+                    <div class="filter-menu-header">
+                        <span>Mods</span>
+                        <button mat-button
+                                [disabled]="!selectedMods.size"
+                                (click)="clearModFilter()">Clear</button>
+                    </div>
+                    <div class="filter-menu-items">
+                        @for (mod of availableMods; track mod) {
+                            <button type="button"
+                                    class="filter-menu-item"
+                                    [class.checked]="selectedMods.has(mod)"
+                                    (click)="toggleModFilter(mod); $event.stopPropagation()">
+                                <mat-icon class="filter-menu-check">{{ selectedMods.has(mod) ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
+                                <span class="filter-menu-label rpt-mod-tag">[{{ mod }}]</span>
+                            </button>
+                        }
+                        @if (!availableMods.length) {
+                            <div class="filter-menu-empty">No mods detected</div>
+                        }
+                    </div>
+                </div>
+            </mat-menu>
+            <button mat-flat-button
+                    class="filter-trigger"
+                    [class.filter-active]="selectedComponents.size > 0"
+                    [disabled]="!availableComponents.length"
+                    [matMenuTriggerFor]="compMenu"
+                    matTooltip="Filter by component">
+                <mat-icon>category</mat-icon>
+                Components
+            </button>
+            <mat-menu #compMenu="matMenu" xPosition="before" [overlapTrigger]="false" [class]="'rpt-filter-menu-panel'">
+                <div class="filter-menu-panel">
+                    <div class="filter-menu-header">
+                        <span>Components</span>
+                        <button mat-button
+                                [disabled]="!selectedComponents.size"
+                                (click)="clearComponentFilter()">Clear</button>
+                    </div>
+                    <div class="filter-menu-items">
+                        @for (comp of availableComponents; track comp) {
+                            <button type="button"
+                                    class="filter-menu-item"
+                                    [class.checked]="selectedComponents.has(comp)"
+                                    (click)="toggleComponentFilter(comp); $event.stopPropagation()">
+                                <mat-icon class="filter-menu-check">{{ selectedComponents.has(comp) ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
+                                <span class="filter-menu-label rpt-mod-component">({{ comp }})</span>
+                            </button>
+                        }
+                        @if (!availableComponents.length) {
+                            <div class="filter-menu-empty">No components detected</div>
+                        }
+                    </div>
+                </div>
+            </mat-menu>
+        </div>
     </div>
     <button mat-icon-button (click)="downloadLog()" [disabled]="isDownloading" matTooltip="Download log file">
         <mat-icon>download</mat-icon>
@@ -58,11 +126,12 @@
                      [attr.data-view-index]="i"
                      [class.search-highlight]="isSearchMatch(vl.logLineIndex)"
                      [class.search-active]="isActiveSearchMatch(vl.logLineIndex)"
-                     [class.linked-line]="vl.logLineIndex === linkedLineIndex"
-                     (click)="onLineClick(vl.logLineIndex)">
-                    <span class="line-number"
-                          (click)="copyLineLink($event, vl.logLineIndex)"
-                          matTooltip="Copy link to line">@if (vl.subLineIndex === 0) {{{ vl.logLineIndex + 1 }}}</span>
+                     [class.linked-line]="vl.logLineIndex === linkedLineIndex">
+                    <button type="button"
+                            class="line-number"
+                            (click)="copyLineLink($event, vl.logLineIndex)"
+                            matTooltip="Copy link to line"
+                            tabindex="-1">@if (vl.subLineIndex === 0) {{{ displayedLineNumber(vl.logLineIndex) }}}</button>
                     <span class="line-content-clip">
                         <span class="line-content"
                               [innerHTML]="highlightedLines[vl.logLineIndex]"

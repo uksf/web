@@ -22,11 +22,11 @@ export class HubConnectionHandle {
         return this.container?.connection.connectionId ?? null;
     }
 
-    on(event: string, callback: (...args: any[]) => void): void {
+    on(event: string, callback: (...args: unknown[]) => void): void {
         this.container?.connection.on(event, callback);
     }
 
-    off(event: string, callback?: (...args: any[]) => void): void {
+    off(event: string, callback?: (...args: unknown[]) => void): void {
         if (callback) {
             this.container?.connection.off(event, callback);
         } else {
@@ -34,7 +34,7 @@ export class HubConnectionHandle {
         }
     }
 
-    invoke(method: string, ...args: any[]): Promise<any> {
+    invoke(method: string, ...args: unknown[]): Promise<unknown> {
         if (!this.container) {
             return Promise.reject(new Error('Connection is disconnected'));
         }

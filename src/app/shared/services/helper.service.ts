@@ -15,12 +15,12 @@ export function debounce<T extends unknown[], U>(callback: (...args: T) => Promi
     };
 }
 
-export function any<T = any>(arr: T[], predicate: (t: T) => boolean = Boolean) {
-    return arr.some(predicate);
+export function any<T = unknown>(arr: T[] | null | undefined, predicate: (t: T) => boolean = Boolean) {
+    return !!arr && arr.some(predicate);
 }
 
-export function all<T = any>(arr: T[], predicate: (t: T) => boolean = Boolean) {
-    return arr.every(predicate);
+export function all<T = unknown>(arr: T[] | null | undefined, predicate: (t: T) => boolean = Boolean) {
+    return !arr || arr.every(predicate);
 }
 
 export function buildQuery(filter: string): string {
@@ -47,17 +47,17 @@ export function nameCase(string: string) {
         const chunks = [];
         let buffer = '';
         let isFirstChunk = true;
-        for (let x = 0; x < string.length; x++) {
-            if (string[x].match(/[\s]+/) || string[x] == '-' || string[x] == '.' || string[x] == ',') {
-                chunks.push(processChunk(`${buffer}${string[x]}`, isFirstChunk));
+        for (const ch of string) {
+            if (ch.match(/[\s]+/) || ch === '-' || ch === '.' || ch === ',') {
+                chunks.push(processChunk(`${buffer}${ch}`, isFirstChunk));
                 isFirstChunk = false;
                 buffer = '';
             } else {
-                buffer += string[x];
+                buffer += ch;
             }
         }
 
-        if (buffer != '') {
+        if (buffer !== '') {
             chunks.push(processChunk(buffer, isFirstChunk));
         }
 

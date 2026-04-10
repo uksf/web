@@ -20,7 +20,7 @@ export class PaginatorComponent implements OnChanges {
 
     constructor() {}
 
-    ngOnChanges(changes: SimpleChanges): void {
+    ngOnChanges(_changes: SimpleChanges): void {
         if (this.total > 0 && (this.pageIndex + 1) * this.pageSize > this.total) {
             this.pageIndex = Math.max(Math.ceil(this.total / this.pageSize) - 1, 0);
 

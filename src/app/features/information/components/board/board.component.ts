@@ -43,7 +43,7 @@ export class BoardComponent extends DestroyableComponent implements OnInit {
     private hubConnection: HubConnectionHandle;
 
     private onBoardChanged = () => this.loadBoard();
-    private onBoardUpdated = (data: any) => {
+    private onBoardUpdated = (data: Partial<Board>) => {
         if (data.name) this.board.name = data.name;
         if (data.labels) this.board.labels = data.labels;
         if (data.members) this.board.members = data.members;

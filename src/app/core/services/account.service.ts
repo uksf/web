@@ -17,7 +17,7 @@ export class AccountService {
 
     public accountChange$ = new Subject<Account>();
     public account: Account;
-    private openDialog: MatDialogRef<ConfirmationModalComponent, any> = undefined;
+    private openDialog: MatDialogRef<ConfirmationModalComponent, unknown> = undefined;
 
     public getAccount(): Observable<Account> | undefined {
         if (this.sessionService.hasToken()) {

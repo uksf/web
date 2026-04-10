@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, Input, ViewChild, ViewChildren, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, Input, QueryList, ViewChild, ViewChildren, inject } from '@angular/core';
 import { Unit } from '@app/features/units/models/units';
 import { MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
 import { all, any } from '@app/shared/services/helper.service';
@@ -15,7 +15,7 @@ export class CommandUnitGroupCardComponent implements AfterViewInit {
     private cdr = inject(ChangeDetectorRef);
 
     @ViewChild(MatAccordion) accordion: MatAccordion;
-    @ViewChildren(CommandUnitGroupCardComponent) children;
+    @ViewChildren(CommandUnitGroupCardComponent) children: QueryList<CommandUnitGroupCardComponent>;
     @Input('unit') unit: Unit;
     @Input('hideEmpty') hideEmpty: boolean = false;
 

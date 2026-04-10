@@ -9,15 +9,15 @@
                 <button mat-raised-button color="primary" (click)="unitRemovalRequest()">Unit Removal</button>
                 <button mat-raised-button color="primary" (click)="dischargeRequest()">Discharge</button>
             </div>
-            @if (myRequests.length == 0 && otherRequests.length > 0) {
+            @if (myRequests.length === 0 && otherRequests.length > 0) {
             <div class="requests-container">
                 <h3>You have no pending command requests</h3>
             </div>
-            } @if (myRequests.length == 0 && otherRequests.length == 0) {
+            } @if (myRequests.length === 0 && otherRequests.length === 0) {
             <div class="requests-container">
                 <h3>There are no pending command requests</h3>
             </div>
-            } @if (otherRequests.length == 0) {
+            } @if (otherRequests.length === 0) {
             <div class="requests-container"></div>
             } @if (myRequests.length > 0) {
             <div class="requests-container">
@@ -66,7 +66,7 @@
                                         @for (review of request.reviews; track trackByReviewId($index, review)) {
                                         <p class="review-container">
                                             <mat-icon class="review-state-icon">{{
-                                                review.state == reviewState.APPROVED ? 'done' : review.state == reviewState.REJECTED ? 'clear' : 'hourglass_empty'
+                                                review.state === reviewState.APPROVED ? 'done' : review.state === reviewState.REJECTED ? 'clear' : 'hourglass_empty'
                                             }}</mat-icon>
                                             <span class="review-label">{{ review.name }}</span>
                                         </p>
@@ -78,9 +78,9 @@
                                     <div class="request-button-sub-container">
                                         @if (canReview(request)) {
                                         <button mat-button style="color: green" (click)="setReview(request, reviewState.APPROVED, false)" matTooltip="Accept" [disabled]="request.updating">
-                                            @if (!request.updating || request.reviewState != 0 || request.reviewOverriden) {
+                                            @if (!request.updating || request.reviewState !== 0 || request.reviewOverriden) {
                                             <mat-icon class="approval-icon">done</mat-icon>
-                                            } @if (request.updating && request.reviewState == 0 && !request.reviewOverriden) {
+                                            } @if (request.updating && request.reviewState === 0 && !request.reviewOverriden) {
                                             <mat-spinner class="approval-updating" [diameter]="30"></mat-spinner>
                                             }
                                         </button>
@@ -93,9 +93,9 @@
                                             matTooltip="Override accept"
                                             [disabled]="request.updating"
                                         >
-                                            @if (!request.updating || request.reviewState != 0 || !request.reviewOverriden) {
+                                            @if (!request.updating || request.reviewState !== 0 || !request.reviewOverriden) {
                                             <mat-icon class="approval-icon">report_problem</mat-icon>
-                                            } @if (request.updating && request.reviewState == 0 && request.reviewOverriden) {
+                                            } @if (request.updating && request.reviewState === 0 && request.reviewOverriden) {
                                             <mat-spinner class="approval-updating" [diameter]="30"></mat-spinner>
                                             }
                                         </button>
@@ -104,9 +104,9 @@
                                     <div class="request-button-sub-container">
                                         @if (canReview(request)) {
                                         <button mat-button style="color: red" (click)="setReview(request, reviewState.REJECTED, false)" matTooltip="Reject" [disabled]="request.updating">
-                                            @if (!request.updating || request.reviewState != 1 || request.reviewOverriden) {
+                                            @if (!request.updating || request.reviewState !== 1 || request.reviewOverriden) {
                                             <mat-icon class="approval-icon">clear</mat-icon>
-                                            } @if (request.updating && request.reviewState == 1 && !request.reviewOverriden) {
+                                            } @if (request.updating && request.reviewState === 1 && !request.reviewOverriden) {
                                             <mat-spinner class="approval-updating" [diameter]="30"></mat-spinner>
                                             }
                                         </button>
@@ -119,9 +119,9 @@
                                             matTooltip="Override reject"
                                             [disabled]="request.updating"
                                         >
-                                            @if (!request.updating || request.reviewState != 1 || !request.reviewOverriden) {
+                                            @if (!request.updating || request.reviewState !== 1 || !request.reviewOverriden) {
                                             <mat-icon class="approval-icon">report</mat-icon>
-                                            } @if (request.updating && request.reviewState == 1 && request.reviewOverriden) {
+                                            } @if (request.updating && request.reviewState === 1 && request.reviewOverriden) {
                                             <mat-spinner class="approval-updating" [diameter]="30"></mat-spinner>
                                             }
                                         </button>
@@ -182,7 +182,7 @@
                                         @for (review of request.reviews; track trackByReviewId($index, review)) {
                                         <p class="review-container">
                                             <mat-icon class="review-state-icon">{{
-                                                review.state == reviewState.APPROVED ? 'done' : review.state == reviewState.REJECTED ? 'clear' : 'hourglass_empty'
+                                                review.state === reviewState.APPROVED ? 'done' : review.state === reviewState.REJECTED ? 'clear' : 'hourglass_empty'
                                             }}</mat-icon>
                                             <span class="review-label">{{ review.name }}</span>
                                         </p>
@@ -201,9 +201,9 @@
                                             matTooltip="Override accept"
                                             [disabled]="request.updating"
                                         >
-                                            @if (!request.updating || request.reviewState != 0 || !request.reviewOverriden) {
+                                            @if (!request.updating || request.reviewState !== 0 || !request.reviewOverriden) {
                                             <mat-icon class="approval-icon">report_problem</mat-icon>
-                                            } @if (request.updating && request.reviewState == 0 && request.reviewOverriden) {
+                                            } @if (request.updating && request.reviewState === 0 && request.reviewOverriden) {
                                             <mat-spinner class="approval-updating" [diameter]="30"></mat-spinner>
                                             }
                                         </button>
@@ -217,9 +217,9 @@
                                             matTooltip="Override reject"
                                             [disabled]="request.updating"
                                         >
-                                            @if (!request.updating || request.reviewState != 1 || !request.reviewOverriden) {
+                                            @if (!request.updating || request.reviewState !== 1 || !request.reviewOverriden) {
                                             <mat-icon class="approval-icon">report</mat-icon>
-                                            } @if (request.updating && request.reviewState == 1 && request.reviewOverriden) {
+                                            } @if (request.updating && request.reviewState === 1 && request.reviewOverriden) {
                                             <mat-spinner class="approval-updating" [diameter]="30"></mat-spinner>
                                             }
                                         </button>

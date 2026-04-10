@@ -13,7 +13,7 @@ export class AccountHubService implements OnDestroy {
     private handle: HubConnectionHandle | null = null;
     private reconnectSubscription: Subscription | null = null;
     private connectGeneration = 0;
-    private pendingHandlers: Array<{ event: string; callback: (...args: any[]) => void }> = [];
+    private pendingHandlers: { event: string; callback: (...args: unknown[]) => void }[] = [];
 
     private readonly _reconnected$ = new Subject<void>();
     readonly reconnected$: Observable<void> = this._reconnected$.asObservable();
@@ -43,7 +43,7 @@ export class AccountHubService implements OnDestroy {
         this.cleanupConnection();
     }
 
-    on(event: string, callback: (...args: any[]) => void): void {
+    on(event: string, callback: (...args: unknown[]) => void): void {
         if (this.handle) {
             this.handle.on(event, callback);
         } else {
@@ -51,7 +51,7 @@ export class AccountHubService implements OnDestroy {
         }
     }
 
-    off(event: string, callback?: (...args: any[]) => void): void {
+    off(event: string, callback?: (...args: unknown[]) => void): void {
         this.handle?.off(event, callback);
         this.pendingHandlers = this.pendingHandlers.filter(
             (h) => !(h.event === event && (!callback || h.callback === callback))

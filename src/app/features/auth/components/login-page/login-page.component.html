@@ -1,10 +1,10 @@
 <app-centre-wrapper>
     <mat-card class="container">
-        @if (mode == 0) {
-        <app-login (onRequestPasswordReset)="setMode(1)"></app-login>
-        } @if (mode == 1) {
-        <app-request-password-reset (onReturnToLogin)="setMode(0)"></app-request-password-reset>
-        } @if (mode == 2) {
+        @if (mode === 0) {
+        <app-login (requestPasswordReset)="setMode(1)"></app-login>
+        } @if (mode === 1) {
+        <app-request-password-reset (returnToLogin)="setMode(0)"></app-request-password-reset>
+        } @if (mode === 2) {
         <app-password-reset [resetPasswordCode]="resetPasswordCode"></app-password-reset>
         }
     </mat-card>

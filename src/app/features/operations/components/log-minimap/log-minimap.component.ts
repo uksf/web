@@ -547,7 +547,7 @@ export class LogMinimapComponent implements AfterViewInit, OnDestroy {
 
     private drawSearchMarkers(
         ctx: CanvasRenderingContext2D, width: number,
-        startLine: number, visibleLines: number, totalLines: number
+        startLine: number, visibleLines: number, _totalLines: number
     ): void {
         const results = this.searchResults();
         if (!results.length) return;

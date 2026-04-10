@@ -6,7 +6,7 @@
                 @if (userActiveApplications.length > 0 || allOtherActiveApplications.length > 0) {
                 <h3>Active Applications</h3>
                 }
-                @if (userActiveApplications.length == 0 && allOtherActiveApplications.length > 0) {
+                @if (userActiveApplications.length === 0 && allOtherActiveApplications.length > 0) {
                 <div>
                     <h4>You have no active applications</h4>
                 </div>
@@ -42,12 +42,12 @@
                                 </div>
                             </div>
                             <div class="row bottom">
-                                <div class="item email" (click)="$event.stopPropagation()">
+                                <button type="button" class="item email inline-click-shield" (click)="$event.stopPropagation()">
                                     <b>Email: </b>
                                     <small
                                         ><a [attr.href]="'mailto:' + application.account.email" target="_blank">{{ application.account.email }}</a></small
                                     >
-                                </div>
+                                </button>
                                 <div class="item steam">
                                     <b>Steam: </b>
                                     <small>
@@ -60,7 +60,7 @@
                                     </span>
                                     <small [ngStyle]="{ color: application._colour }">
                                         {{ application.daysProcessing }}
-                                        @if (application.daysProcessing == 1) {
+                                        @if (application.daysProcessing === 1) {
                                         <span>Day</span>
                                         } @else {
                                         <span>Days</span>
@@ -74,7 +74,7 @@
                 </div>
                 }
                 <br />
-                @if (userActiveApplications.length == 0 && allOtherActiveApplications.length == 0) {
+                @if (userActiveApplications.length === 0 && allOtherActiveApplications.length === 0) {
                 <div>
                     <h4>There are no active applications</h4>
                 </div>
@@ -111,12 +111,12 @@
                                 </div>
                             </div>
                             <div class="row bottom">
-                                <div class="item email" (click)="$event.stopPropagation()">
+                                <button type="button" class="item email inline-click-shield" (click)="$event.stopPropagation()">
                                     <b>Email: </b>
                                     <small
                                         ><a [attr.href]="'mailto:' + application.account.email" target="_blank">{{ application.account.email }}</a></small
                                     >
-                                </div>
+                                </button>
                                 <div class="item steam">
                                     <b>Steam: </b>
                                     <small>
@@ -129,7 +129,7 @@
                                     </span>
                                     <small [ngStyle]="{ color: application._colour }">
                                         {{ application.daysProcessing }}
-                                        @if (application.daysProcessing == 1) {
+                                        @if (application.daysProcessing === 1) {
                                         <span>Day</span>
                                         } @else {
                                         <span>Days</span>
@@ -207,7 +207,7 @@
                                 <small>{{ application.account.application.dateCreated | date: 'mediumDate':'Europe/London' }}</small>
                             </div>
                             <div class="item accepted">
-                                @if (application.account.application.state == applicationState.ACCEPTED) {
+                                @if (application.account.application.state === applicationState.ACCEPTED) {
                                 <span>
                                     <b>Accepted: </b>
                                 </span>
@@ -220,7 +220,7 @@
                                 <b>Processed: </b>
                                 <small
                                     >{{ application.daysProcessed }}
-                                    @if (application.daysProcessed == 1) {
+                                    @if (application.daysProcessed === 1) {
                                     <span>Day</span>
                                     } @else {
                                     <span>Days</span>

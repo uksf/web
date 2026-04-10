@@ -16,7 +16,6 @@
             [elementName]="elementName"
             [formFieldClass]="formFieldClass"
             [optionClass]="optionClass"
-            (onSelectionChange)="onSelectionChange.emit($event)"
             id="dropdownValue"
             name="formDropdownValue"
         >
@@ -28,7 +27,7 @@
     } @else {
     <div>
         <span class="bold">{{ label }}</span>
-        <div class="inline-edit" title="Click to edit" (click)="edit(value); $event.stopPropagation()" (focus)="edit(value); $event.stopPropagation()" tabindex="0">{{ value }}</div>
+        <button type="button" class="inline-edit" title="Click to edit" (click)="edit(value); $event.stopPropagation()" (focus)="edit(value); $event.stopPropagation()">{{ value }}</button>
     </div>
     }
 </div>

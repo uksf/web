@@ -1,5 +1,5 @@
 <div class="document-container-line"></div>
-<div (click)="selectDocument()" (mouseenter)="onMouseOver()" (mouseleave)="onMouseLeave()" [ngClass]="{ hover: hover || menuOpen, selected: selected && !(hover || menuOpen) }" class="document-title">
+<button type="button" (click)="selectDocument()" (mouseenter)="onMouseOver()" (mouseleave)="onMouseLeave()" [ngClass]="{ hover: hover || menuOpen, selected: selected && !(hover || menuOpen) }" class="document-title">
     <mat-icon>description</mat-icon>
     <span class="document-name">{{ documentMetadata.name }}</span>
     @if (documentMetadata.canWrite) {
@@ -19,4 +19,4 @@
         </mat-menu>
     </div>
     }
-</div>
+</button>

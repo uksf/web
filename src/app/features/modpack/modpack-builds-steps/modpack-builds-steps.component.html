@@ -5,7 +5,7 @@
         <h3>Steps</h3>
         <div class="steps-container">
             @for (step of build.steps; track stepTrackBy(stepIndex, step); let stepIndex = $index) {
-            <div class="log-step-item" [ngClass]="{ selected: selectedStepIndex === stepIndex }" (click)="selectStep(stepIndex, true)">
+            <button type="button" class="log-step-item" [ngClass]="{ selected: selectedStepIndex === stepIndex }" (click)="selectStep(stepIndex, true)">
                 @if (!step.running && !step.finished) {
                 <i class="far fa-circle"></i>
                 } @if (step.running && step.buildResult !== modpackBuildResult.WARNING) {
@@ -23,7 +23,7 @@
                 }
                 <span class="wide">{{ step.name }}</span>
                 <span class="narrow">{{ step.index + 1 }}</span>
-            </div>
+            </button>
             }
         </div>
     </div>

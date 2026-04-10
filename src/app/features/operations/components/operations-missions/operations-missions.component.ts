@@ -256,8 +256,7 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
         if (files.length === 0) return;
 
         const formData = new FormData();
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
+        for (const file of Array.from(files)) {
             formData.append(file.name, file, file.name);
         }
 

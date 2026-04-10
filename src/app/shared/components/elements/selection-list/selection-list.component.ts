@@ -214,7 +214,7 @@ export class SelectionListComponent extends DropdownBaseComponent implements OnI
         this.form.get('list').updateValueAndValidity();
     }
 
-    validate(control: AbstractControl): ValidationErrors | null {
+    validate(_control: AbstractControl): ValidationErrors | null {
         return this.form.get('list').errors;
     }
 

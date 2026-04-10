@@ -18,22 +18,26 @@
         }
     </div>
     <div class="notification-card-container">
-        @if (notifications.length == 0) {
+        @if (notifications.length === 0) {
         <div class="notification-card-nohover">
             <h4 class="notification-none">You have no notifications</h4>
         </div>
         } @for (notification of notifications; track trackById($index, notification)) {
         <div>
-            <div class="notification-card" [class.clickable]="notification.link" (click)="openNotification(notification)">
-                <div class="notification-read" [class.read]="!notification.read"></div>
-                <div class="notification-icon-container">
-                    <mat-icon class="notification-icon">{{ notification.icon }}</mat-icon>
-                </div>
-                <div class="notification-text-container">
-                    <span class="notification-text">{{ notification.message }}</span>
-                    <span class="notification-text-timestamp" [matTooltip]="notification.timestamp | date:'medium'">{{ notification.timestamp | timeAgo }}</span>
-                </div>
-                <mat-icon class="clear-single" matTooltip="Clear notification" (click)="clear(notification)">clear</mat-icon>
+            <div class="notification-card" [class.clickable]="notification.link">
+                <button type="button" class="notification-card-main" (click)="openNotification(notification)">
+                    <div class="notification-read" [class.read]="!notification.read"></div>
+                    <div class="notification-icon-container">
+                        <mat-icon class="notification-icon">{{ notification.icon }}</mat-icon>
+                    </div>
+                    <div class="notification-text-container">
+                        <span class="notification-text">{{ notification.message }}</span>
+                        <span class="notification-text-timestamp" [matTooltip]="notification.timestamp | date:'medium'">{{ notification.timestamp | timeAgo }}</span>
+                    </div>
+                </button>
+                <button type="button" class="clear-single-button" matTooltip="Clear notification" (click)="clear(notification)">
+                    <mat-icon class="clear-single">clear</mat-icon>
+                </button>
             </div>
         </div>
         }

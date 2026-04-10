@@ -5,12 +5,12 @@
     }
     <div (mouseenter)="onMouseOver()" (mouseleave)="onMouseLeave()" [ngClass]="{ hover: hover || menuOpen }" class="folder-header">
         @if (!isEmpty) {
-        <div (click)="toggle($event)" [ngClass]="{ blank: isEmpty }" class="folder-toggle">
+        <button type="button" (click)="toggle($event)" [ngClass]="{ blank: isEmpty }" class="folder-toggle">
             <div [ngClass]="{ hidden: isEmpty }" class="indicator-container">
                 <mat-icon [@indicatorRotate]="toggleState" class="indicator" color="primary">expand_more</mat-icon>
             </div>
             <mat-icon>folder</mat-icon>
-        </div>
+        </button>
         } @if (isEmpty) {
         <mat-icon class="folder-icon">folder</mat-icon>
         }

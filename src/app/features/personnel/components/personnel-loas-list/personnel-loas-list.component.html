@@ -1,19 +1,19 @@
 <div class="list-container">
     <div class="list-header">
         <h3>{{ selectionMode | titlecase }}</h3>
-        <app-paginator [total]="totalLoas" (page)="page($event)" [hidden]="totalLoas == 0"></app-paginator>
+        <app-paginator [total]="totalLoas" (page)="page($event)" [hidden]="totalLoas === 0"></app-paginator>
     </div>
     @if (!loaded) {
     <div class="spinner-container1">
         <mat-spinner></mat-spinner>
     </div>
-    } @if (loaded && totalLoas == 0) {
+    } @if (loaded && totalLoas === 0) {
     <p>No {{ selectionMode }} LOAs</p>
     } @if (loaded && totalLoas > 0) {
     <mat-accordion>
         @for (loa of loas; track loa.id; let loaIndex = $index) {
         <mat-card [ngClass]="{ disable: !loa._canViewReason }">
-            <div class="header-container" appSpotlight (click)="activate(loaIndex)">
+            <button type="button" class="header-container" appSpotlight (click)="activate(loaIndex)">
                 <div class="toggle" [@indicatorRotate]="getExpandedState(loaIndex)" [ngClass]="{ disable: !loa._canViewReason }"></div>
                 <div class="title-container">
                     <div class="date-container">
@@ -46,7 +46,7 @@
                     <div class="description state-icon rejected"><mat-icon>remove_circle_outline</mat-icon></div>
                     }
                 </div>
-            </div>
+            </button>
             @if (loaIndex === selectedIndex && loa._canViewReason) {
             <div class="content-container" [@bodyExpansion]>
                 <div class="content-body">

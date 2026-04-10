@@ -1,4 +1,4 @@
-import { Component, EventEmitter, forwardRef, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, forwardRef, HostListener, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
 
@@ -15,7 +15,7 @@ const INLINE_EDIT_CONTROL_VALUE_ACCESSOR = {
     styleUrls: ['./inline-edit.component.scss'],
     imports: [FormsModule]
 })
-export class InlineEditComponent implements ControlValueAccessor, OnInit, OnDestroy {
+export class InlineEditComponent implements ControlValueAccessor, OnDestroy {
     @ViewChild('inlineEditControl') inlineEditControl;
     @Input() label = '';
     @Input() type = 'text';
@@ -52,8 +52,6 @@ export class InlineEditComponent implements ControlValueAccessor, OnInit, OnDest
 
     constructor() {}
 
-    ngOnInit() {}
-
     ngOnDestroy() {
         this.validatorSubscription?.unsubscribe();
     }
@@ -66,7 +64,7 @@ export class InlineEditComponent implements ControlValueAccessor, OnInit, OnDest
         this.onChange = fn;
     }
 
-    public registerOnTouched(fn: () => {}): void {
+    public registerOnTouched(fn: () => void): void {
         this.onTouched = fn;
     }
 

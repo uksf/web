@@ -4,9 +4,9 @@
         <button mat-icon-button class="back-button" (click)="back()"><mat-icon>arrow_back</mat-icon></button>
         <h3 class="small-centred">
             {{ application.account.firstname }} {{ application.account.lastname }}'s Application
-            {{ application.account.application.state == applicationState.ACCEPTED ? ' - ' : application.account.application.state == applicationState.REJECTED ? ' - ' : '' }}
-            <span [ngClass]="{ green: application.account.application.state == applicationState.ACCEPTED, red: application.account.application.state == applicationState.REJECTED }">
-                {{ application.account.application.state == applicationState.ACCEPTED ? 'Accepted' : application.account.application.state == applicationState.REJECTED ? 'Rejected' : '' }}
+            {{ application.account.application.state === applicationState.ACCEPTED ? ' - ' : application.account.application.state === applicationState.REJECTED ? ' - ' : '' }}
+            <span [ngClass]="{ green: application.account.application.state === applicationState.ACCEPTED, red: application.account.application.state === applicationState.REJECTED }">
+                {{ application.account.application.state === applicationState.ACCEPTED ? 'Accepted' : application.account.application.state === applicationState.REJECTED ? 'Rejected' : '' }}
             </span>
         </h3>
         @if (updating) {
@@ -15,19 +15,19 @@
     </div>
     <div class="flex-container flex-grow flex-row no-padding collapse-tiny">
         <div class="flex-container flex-grow flex-row no-padding controls">
-            @if (application.account.application.state == applicationState.WAITING) {
+            @if (application.account.application.state === applicationState.WAITING) {
             <button mat-button class="green" (click)="updateApplicationState(applicationState.ACCEPTED)" [disabled]="!isAcceptableAge() || updating">
                 <span [matTooltip]="!isAcceptableAge() ? 'Application cannot be accepted due to age requirements' : null">Approve</span>
             </button>
-            } @if (application.account.application.state == applicationState.WAITING) {
+            } @if (application.account.application.state === applicationState.WAITING) {
             <button mat-button class="red" (click)="updateApplicationState(applicationState.REJECTED)" [disabled]="updating">Reject</button>
-            } @if ( application.account.application.state != applicationState.WAITING && application.account.membershipState != membershipState.MEMBER && application.account.membershipState !=
+            } @if ( application.account.application.state !== applicationState.WAITING && application.account.membershipState !== membershipState.MEMBER && application.account.membershipState !==
             membershipState.DISCHARGED ) {
             <button mat-button class="goldenrod" (click)="updateApplicationState(applicationState.WAITING)" [disabled]="updating">Reactivate</button>
-            } @if ( application.account.application.state != applicationState.WAITING && application.account.membershipState != membershipState.MEMBER && application.account.membershipState ==
+            } @if ( application.account.application.state !== applicationState.WAITING && application.account.membershipState !== membershipState.MEMBER && application.account.membershipState ===
             membershipState.DISCHARGED ) {
             <button mat-button class="goldenrod" [routerLink]="['/personnel/discharges']" [queryParams]="{ filter: application.account.lastname }" [disabled]="updating">View Discharge</button>
-            } @if (application.account.application.state == applicationState.ACCEPTED && application.account.membershipState == membershipState.MEMBER) {
+            } @if (application.account.application.state === applicationState.ACCEPTED && application.account.membershipState === membershipState.MEMBER) {
             <button mat-button class="red" (click)="resetApplicationToCandidate()" [disabled]="updating">Reset to Candidate</button>
             }
         </div>
@@ -73,7 +73,7 @@
                         <div class="flex-container flex-row no-padding">
                             <div class="header"><b>Age</b></div>
                             <div [ngStyle]="{ color: getAgeColour() }">
-                                {{ application.age.years }} Years {{ application.age.months > 0 ? application.age.months + (application.age.months == 1 ? ' Month' : ' Months') : '' }}
+                                {{ application.age.years }} Years {{ application.age.months > 0 ? application.age.months + (application.age.months === 1 ? ' Month' : ' Months') : '' }}
                             </div>
                         </div>
                         <div class="flex-container flex-row no-padding">
@@ -150,7 +150,7 @@
                             <div class="header"><b>Date Applied</b></div>
                             <div>{{ application.account.application.dateCreated | date : 'd MMM y' : 'Europe/London' }}</div>
                         </div>
-                        @if (application.account.application.state == applicationState.WAITING) {
+                        @if (application.account.application.state === applicationState.WAITING) {
                         <div class="card-gap">
                             <div class="flex-container flex-row flex-grow no-padding">
                                 <div class="header"><b>Next Candidate Op</b></div>
@@ -158,10 +158,10 @@
                             </div>
                             <div class="flex-container flex-row flex-grow no-padding">
                                 <div class="header"><b>Days Processing</b></div>
-                                <div>{{ application.daysProcessing }} {{ application.daysProcessing == 1 ? 'Day' : 'Days' }}</div>
+                                <div>{{ application.daysProcessing }} {{ application.daysProcessing === 1 ? 'Day' : 'Days' }}</div>
                             </div>
                         </div>
-                        } @if (application.account.application.state != applicationState.WAITING) {
+                        } @if (application.account.application.state !== applicationState.WAITING) {
                         <div class="card-gap">
                             <div class="flex-container flex-row flex-grow no-padding">
                                 <div class="header"><b>Date Processed</b></div>
@@ -169,13 +169,13 @@
                             </div>
                             <div class="flex-container flex-row flex-grow no-padding">
                                 <div class="header"><b>Processing Duration</b></div>
-                                <div>{{ application.daysProcessed }} {{ application.daysProcessed == 1 ? 'Day' : 'Days' }}</div>
+                                <div>{{ application.daysProcessed }} {{ application.daysProcessed === 1 ? 'Day' : 'Days' }}</div>
                             </div>
                         </div>
                         }
                         <div class="flex-container flex-row flex-grow no-padding">
                             <div class="header"><b>Average Processing Duration</b></div>
-                            <div>{{ application.averageProcessingTime }} {{ application.averageProcessingTime == 1 ? 'Day' : 'Days' }}</div>
+                            <div>{{ application.averageProcessingTime }} {{ application.averageProcessingTime === 1 ? 'Day' : 'Days' }}</div>
                         </div>
                     </mat-card>
                 </div>

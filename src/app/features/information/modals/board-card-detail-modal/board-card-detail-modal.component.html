@@ -35,13 +35,13 @@
                                             [reserveErrorSpace]="false">
                             </app-text-input>
                         } @else {
-                            <div class="description-rendered" (click)="startEditingDescription()">
+                            <button type="button" class="description-rendered" (click)="startEditingDescription()">
                                 @if (form.value.detail) {
                                     <markdown ngPreserveWhitespaces [data]="form.value.detail"></markdown>
                                 } @else {
                                     <span class="description-placeholder">Add a more detailed description...</span>
                                 }
-                            </div>
+                            </button>
                         }
                     </div>
                 </div>

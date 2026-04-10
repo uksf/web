@@ -12,12 +12,15 @@ import {
     platformBrowserDynamicTesting
 } from '@angular/platform-browser-dynamic/testing';
 
-// Unfortunately there's no typing for the `__karma__` variable. Just declare it as any.
-declare let __karma__: any;
-declare let require: any;
+// Unfortunately there's no typing for the `__karma__` variable.
+declare let __karma__: { loaded: () => void; start: () => void };
+type RequireContext = ((id: string) => void) & { keys: () => string[] };
+declare let require: { context: (path: string, deep: boolean, filter: RegExp) => RequireContext };
 
 // Prevent Karma from running prematurely.
-__karma__.loaded = function () { };
+__karma__.loaded = function () {
+    // intentional no-op; Karma invokes this after test bootstrap
+};
 
 // First, initialize the Angular testing environment.
 getTestBed().initTestEnvironment(

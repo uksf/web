@@ -94,7 +94,7 @@ export class ApplicationPageComponent implements OnInit {
         }, 1);
     }
 
-    next(event) {
+    next(_event) {
         const completedStep = this.step;
         setTimeout(() => {
             this.step++;

@@ -24,7 +24,7 @@ export class DocsContentComponent implements OnChanges {
     editing: boolean = false;
     pending: boolean = false;
 
-    ngOnChanges(changes: SimpleChanges): void {
+    ngOnChanges(_changes: SimpleChanges): void {
         if (!this.documentMetadata) {
             this.documentContent = null;
             return;

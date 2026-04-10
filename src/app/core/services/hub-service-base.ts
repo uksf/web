@@ -45,15 +45,15 @@ export abstract class HubServiceBase implements OnDestroy {
         this.handle = null;
     }
 
-    on(event: string, callback: (...args: any[]) => void): void {
+    on(event: string, callback: (...args: unknown[]) => void): void {
         this.handle?.on(event, callback);
     }
 
-    off(event: string, callback?: (...args: any[]) => void): void {
+    off(event: string, callback?: (...args: unknown[]) => void): void {
         this.handle?.off(event, callback);
     }
 
-    invoke(method: string, ...args: any[]): Promise<any> {
+    invoke(method: string, ...args: unknown[]): Promise<unknown> {
         if (!this.handle) {
             return Promise.reject(new Error('Not connected'));
         }

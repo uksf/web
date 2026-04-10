@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
@@ -8,14 +8,12 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
     styleUrls: ['./button.component.scss'],
     imports: [MatButton, MatProgressSpinner]
 })
-export class ButtonComponent implements OnInit {
+export class ButtonComponent {
     @Input() pending = false;
     @Input() disabled = false;
     @Output() clicked = new EventEmitter();
 
     constructor() {}
-
-    ngOnInit(): void {}
 
     onClick() {
         this.clicked.emit();

@@ -1,7 +1,7 @@
 <form #form="ngForm">
     <input [(ngModel)]="model" autocomplete="off" hidden tabindex="-1" name="model" />
     <div class="form-field-wrapper" [class.form-field-focused]="focused" [class.form-field-has-error]="hasError" [class.form-field-disabled]="disabled" [ngClass]="formFieldClass">
-        <div class="form-field" [class.form-field-simple]="!autocomplete" (click)="!autocomplete && !disabled ? openPanel() : null">
+        <div class="form-field" [class.form-field-simple]="!autocomplete">
             @if (placeholder) {
             <label class="form-field-label" [class.required]="required" [class.floating]="labelFloating" [attr.for]="inputId">{{ placeholder }}</label>
             } @if (autocomplete && !allowFreeText) {
@@ -18,7 +18,7 @@
                 [mustSelectFromDropdownElements]="allElements"
                 [required]="required"
                 [placeholder]="inputPlaceholder"
-                mustSelectFromDropdown
+                appMustSelectFromDropdown
                 spellcheck="false"
                 type="text"
                 name="textInput"
@@ -57,6 +57,7 @@
                 type="text"
                 name="textInput"
                 autocomplete="off"
+                (click)="!autocomplete && !disabled && openPanel()"
                 (focus)="onInputFocus()"
                 (blur)="onInputBlur()"
             />

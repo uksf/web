@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { SideContentAreaComponent } from '../../../../shared/components/content-areas/side-content-area/side-content-area.component';
 import { MatCard } from '@angular/material/card';
@@ -11,8 +11,6 @@ import { RouterLink } from '@angular/router';
     styleUrls: ['./policy-page.component.scss'],
     imports: [DefaultContentAreasComponent, SideContentAreaComponent, MatCard, MainContentAreaComponent, RouterLink]
 })
-export class PolicyPageComponent implements OnInit {
+export class PolicyPageComponent {
     constructor() {}
-
-    ngOnInit() {}
 }
