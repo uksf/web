@@ -15,9 +15,9 @@ export class FileDropComponent implements OnDestroy {
     @Input() headertext = '';
     @Input() customstyle = null;
     @Input() disableIf = false;
-    @Output() fileDrop = new EventEmitter();
-    @Output() fileOver = new EventEmitter();
-    @Output() fileLeave = new EventEmitter();
+    @Output() onFileDrop = new EventEmitter();
+    @Output() onFileOver = new EventEmitter();
+    @Output() onFileLeave = new EventEmitter();
     stack = [];
     files = [];
     subscription: Subscription;
@@ -37,7 +37,7 @@ export class FileDropComponent implements OnDestroy {
                 const rect: DOMRect = this.dropZone.nativeElement.getBoundingClientRect();
                 if (event.x >= rect.left && event.x <= rect.right && event.y >= rect.top && event.y <= rect.bottom) {
                     this.dragoverflag = true;
-                    this.fileOver.emit(event);
+                    this.onFileOver.emit(event);
                 }
             }
             this.preventAndStop(event);
@@ -50,7 +50,7 @@ export class FileDropComponent implements OnDestroy {
                 const rect: DOMRect = this.dropZone.nativeElement.getBoundingClientRect();
                 if (event.x < rect.left || event.x > rect.right || event.y < rect.top || event.y > rect.bottom) {
                     this.dragoverflag = false;
-                    this.fileLeave.emit(event);
+                    this.onFileLeave.emit(event);
                 }
             }
             this.preventAndStop(event);
@@ -124,7 +124,7 @@ export class FileDropComponent implements OnDestroy {
             this.subscription = timerObservable.subscribe({
                 next: () => {
                     if (this.files.length > 0 && this.numOfActiveReadEntries === 0) {
-                        this.fileDrop.emit(new UploadEvent(this.files));
+                        this.onFileDrop.emit(new UploadEvent(this.files));
                         this.files = [];
                     }
                 }

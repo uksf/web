@@ -1,6 +1,6 @@
 <div class="sideNav">
     @if (newVersion) {
-    <button type="button" class="sideNavItem newVersionNavItem" (click)="updateVersion()" matTooltip="Click to update to latest version"><mat-icon>system_update</mat-icon><span>New version</span></button>
+    <div class="sideNavItem newVersionNavItem" (click)="updateVersion()" matTooltip="Click to update to latest version"><mat-icon>system_update</mat-icon><span>New version</span></div>
     } @for (navigationItem of getSideBarElements; track trackByLink($index, navigationItem)) {
     <div style="text-decoration: none">
         @if (isSelected(navigationItem)) {

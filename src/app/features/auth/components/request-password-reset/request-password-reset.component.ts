@@ -18,7 +18,7 @@ export class RequestPasswordResetComponent {
     private auth = inject(AuthenticationService);
 
     @ViewChild(NgForm) form!: NgForm;
-    @Output() returnToLogin = new EventEmitter();
+    @Output() onReturnToLogin = new EventEmitter();
     pending = false;
     sent = false;
     model: FormModel = {
@@ -50,8 +50,8 @@ export class RequestPasswordResetComponent {
             });
     }
 
-    emitReturnToLogin() {
-        this.returnToLogin.emit();
+    returnToLogin() {
+        this.onReturnToLogin.emit();
     }
 }
 

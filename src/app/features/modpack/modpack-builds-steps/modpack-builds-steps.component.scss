@@ -20,15 +20,6 @@
         .steps-container {
             overflow-y: auto;
 
-            button.log-step-item {
-                background: none;
-                border: none;
-                color: inherit;
-                font: inherit;
-                text-align: left;
-                width: 100%;
-            }
-
             .log-step-item {
                 display: flex;
                 flex-direction: row;

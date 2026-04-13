@@ -6,7 +6,7 @@
                 <mat-spinner></mat-spinner>
             </div>
             }
-            <app-file-drop (fileOver)="onFileOver()" (fileLeave)="onFileLeave()" (fileDrop)="onFileDrop($event)">
+            <app-file-drop (onFileOver)="onFileOver()" (onFileLeave)="onFileLeave()" (onFileDrop)="onFileDrop($event)">
                 <div #serversContainer [ngClass]="{ fileDragging: fileDragging }">
                     <div class="admin-container">
                         <ng-template [ngxPermissionsOnly]="['ADMIN']">
