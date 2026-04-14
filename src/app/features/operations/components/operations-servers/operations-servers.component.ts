@@ -91,6 +91,7 @@ export class OperationsServersComponent extends DestroyableComponent implements 
         this.servers = update.servers;
         this.instanceCount = update.instanceCount;
         this.missions.next(update.missions.map(this.mapMissionElement));
+        this.tickUptimes();
         this.updateServerStatusTexts();
     };
 
@@ -101,6 +102,7 @@ export class OperationsServersComponent extends DestroyableComponent implements 
             this.servers[index] = update.server;
         }
         this.instanceCount = update.instanceCount;
+        this.tickUptimes();
         this.updateServerStatusTexts();
     };
 
@@ -154,6 +156,7 @@ export class OperationsServersComponent extends DestroyableComponent implements 
                 this.servers = response.servers;
                 this.instanceCount = response.instanceCount;
                 this.missions.next(response.missions.map(this.mapMissionElement));
+                this.tickUptimes();
                 this.updateServerStatusTexts();
                 this.checkDeepLink();
             }
@@ -195,7 +198,7 @@ export class OperationsServersComponent extends DestroyableComponent implements 
         if (server.status.stopping) return 'Stopping';
         if (server.status.launching) return 'Launching';
         if (!server.status.running) return 'Offline';
-        if (server.status.parsedUptime === '00:00:00') return 'Waiting';
+        if (!server.status.startedAt) return 'Waiting';
         return 'Running';
     }
 

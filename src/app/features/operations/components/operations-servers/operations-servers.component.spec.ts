@@ -25,7 +25,8 @@ describe('OperationsServersComponent', () => {
             launching: false,
             running: true,
             mission: 'test_mission',
-            players: []
+            players: [],
+            startedAt: new Date(Date.now() - 90 * 60 * 1000).toISOString()
         },
         ...overrides
     });
@@ -92,8 +93,8 @@ describe('OperationsServersComponent', () => {
             expect(component.getServerStatus(server)).toBe('Offline');
         });
 
-        it('returns "Waiting" when uptime is 00:00:00', () => {
-            const server = makeServer({ status: { ...makeServer().status, parsedUptime: '00:00:00' } });
+        it('returns "Waiting" when startedAt is not set', () => {
+            const server = makeServer({ status: { ...makeServer().status, startedAt: null } });
             expect(component.getServerStatus(server)).toBe('Waiting');
         });
 
