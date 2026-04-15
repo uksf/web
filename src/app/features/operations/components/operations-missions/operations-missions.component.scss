@@ -89,15 +89,28 @@
 }
 
 .map-label {
+    position: relative;
     flex: 0 0 100px;
-    font-size: 14px;
     font-weight: 500;
+    line-height: 1.1;
     color: var(--mat-sys-on-surface);
     white-space: normal;
     overflow-wrap: anywhere;
-    line-height: 1.3;
+    word-break: break-word;
     padding-right: v.$spacing-12px;
-    border-right: 1px solid var(--mat-sys-outline-variant);
+    max-height: 2.2em;
+    overflow: hidden;
+
+    &::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 18px;
+        width: 1px;
+        background: var(--mat-sys-outline-variant);
+    }
 }
 
 .mission-info {

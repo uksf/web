@@ -116,6 +116,14 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
         return capitaliseMapName(map);
     }
 
+    mapFontSize(map: string): string {
+        const len = this.capitalise(map).length;
+        if (len <= 10) return '14px';
+        if (len <= 14) return '12px';
+        if (len <= 20) return '10px';
+        return '9px';
+    }
+
     private onReceiveMissionsUpdate = (missions: Mission[]) => {
         this.setActiveMissions(missions);
         this.loadArchivedMissions();
