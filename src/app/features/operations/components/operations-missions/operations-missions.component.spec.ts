@@ -70,7 +70,7 @@ describe('OperationsMissionsComponent', () => {
             component.ngOnInit();
 
             expect(mockServersHub.connect).toHaveBeenCalled();
-            expect(mockServersHub.on).toHaveBeenCalledWith('ReceiveMissionsUpdateIfNotCaller', expect.any(Function));
+            expect(mockServersHub.on).toHaveBeenCalledWith('ReceiveMissionsUpdate', expect.any(Function));
             expect(mockMissionsService.getActiveMissions).toHaveBeenCalled();
             expect(mockMissionsService.getArchivedMissions).toHaveBeenCalled();
         });
@@ -92,7 +92,7 @@ describe('OperationsMissionsComponent', () => {
             component.ngOnInit();
             component.ngOnDestroy();
 
-            expect(mockServersHub.off).toHaveBeenCalledWith('ReceiveMissionsUpdateIfNotCaller', expect.any(Function));
+            expect(mockServersHub.off).toHaveBeenCalledWith('ReceiveMissionsUpdate', expect.any(Function));
             expect(mockServersHub.disconnect).toHaveBeenCalled();
         });
     });
@@ -134,7 +134,7 @@ describe('OperationsMissionsComponent', () => {
         });
     });
 
-    describe('setSort', () => {
+    describe('sort', () => {
         beforeEach(() => {
             component.activeMissions = [
                 makeMission({ name: 'b_mission', map: 'Stratis', lastModified: '2026-01-10T00:00:00Z' }),
@@ -144,7 +144,7 @@ describe('OperationsMissionsComponent', () => {
         });
 
         it('sorts by name ascending', () => {
-            component.setSort('name');
+            component.sort('name', 'asc');
 
             expect(component.sortField).toBe('name');
             expect(component.sortDirection).toBe('asc');
@@ -152,40 +152,28 @@ describe('OperationsMissionsComponent', () => {
             expect(component.activeMissions[1].name).toBe('b_mission');
         });
 
-        it('toggles direction when same field clicked again', () => {
-            component.setSort('name');
-            expect(component.sortDirection).toBe('asc');
+        it('sorts by name descending', () => {
+            component.sort('name', 'desc');
 
-            component.setSort('name');
             expect(component.sortDirection).toBe('desc');
             expect(component.activeMissions[0].name).toBe('b_mission');
         });
 
-        it('resets direction to asc when changing field', () => {
-            component.setSort('name');
-            component.setSort('name'); // now desc
-            component.setSort('date');
-
-            expect(component.sortField).toBe('date');
-            expect(component.sortDirection).toBe('asc');
-        });
-
         it('sorts by date ascending', () => {
-            component.setSort('date');
+            component.sort('date', 'asc');
 
             expect(component.activeMissions[0].lastModified).toBe('2026-01-10T00:00:00Z');
             expect(component.activeMissions[1].lastModified).toBe('2026-01-15T00:00:00Z');
         });
 
         it('sorts by map then name ascending', () => {
-            component.sortField = 'name';
             component.activeMissions = [
                 makeMission({ name: 'z_mission', map: 'Altis' }),
                 makeMission({ name: 'a_mission', map: 'Altis' }),
                 makeMission({ name: 'c_mission', map: 'Stratis' })
             ];
 
-            component.setSort('map');
+            component.sort('map', 'asc');
 
             expect(component.sortDirection).toBe('asc');
             expect(component.activeMissions[0].name).toBe('a_mission');
@@ -199,7 +187,7 @@ describe('OperationsMissionsComponent', () => {
                 makeMission({ name: 'mission2', map: 'Altis' })
             ];
 
-            component.setSort('name');
+            component.sort('name', 'asc');
 
             expect(component.activeGroups).toHaveLength(2);
         });
@@ -468,36 +456,17 @@ describe('OperationsMissionsComponent', () => {
             mockMissionsService.getArchivedMissions.mockClear();
 
             const onCall = mockServersHub.on.mock.calls.find(
-                (c: [string, ...unknown[]]) => c[0] === 'ReceiveMissionsUpdateIfNotCaller'
+                (c: [string, ...unknown[]]) => c[0] === 'ReceiveMissionsUpdate'
             );
             const callback = onCall[1];
 
             const missions = [makeMission({ name: 'updated', map: 'Tanoa' })];
-            callback('different-conn', missions);
+            callback(missions);
 
-            // Active missions set directly from SignalR data
             expect(component.activeMissions).toHaveLength(1);
             expect(component.activeMissions[0].name).toBe('updated');
-            // Archived missions refetched
             expect(mockMissionsService.getArchivedMissions).toHaveBeenCalled();
-            // Active missions NOT refetched (used SignalR data)
             expect(mockMissionsService.getActiveMissions).not.toHaveBeenCalled();
-        });
-
-        it('does not update when signal is from same connection', () => {
-            component.ngOnInit();
-            mockMissionsService.getActiveMissions.mockClear();
-            mockMissionsService.getArchivedMissions.mockClear();
-
-            const onCall = mockServersHub.on.mock.calls.find(
-                (c: [string, ...unknown[]]) => c[0] === 'ReceiveMissionsUpdateIfNotCaller'
-            );
-            const callback = onCall[1];
-
-            callback('conn-123', []);
-
-            expect(mockMissionsService.getActiveMissions).not.toHaveBeenCalled();
-            expect(mockMissionsService.getArchivedMissions).not.toHaveBeenCalled();
         });
     });
 
