@@ -20,7 +20,8 @@ import { MainContentAreaComponent } from '../../../../shared/components/content-
 import { MatCard } from '@angular/material/card';
 import { SpotlightDirective } from '../../../../shared/directives/spotlight.directive';
 import { NgStyle, NgClass, AsyncPipe, DatePipe } from '@angular/common';
-import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { TextInputBoxedComponent } from '../../../../shared/components/elements/text-input-boxed/text-input-boxed.component';
+import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
 import { FormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
@@ -44,7 +45,8 @@ import { ApplicationFunnelComponent } from '../application-funnel/application-fu
         MatCard,
         SpotlightDirective,
         NgStyle,
-        TextInputComponent,
+        TextInputBoxedComponent,
+        FlexFillerComponent,
         FormsModule,
         MatButton,
         MatMenuTrigger,

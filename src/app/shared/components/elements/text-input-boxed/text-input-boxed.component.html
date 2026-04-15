@@ -1,0 +1,62 @@
+<div class="boxed-wrapper" [class.focused]="focused" [class.has-error]="hasError" [class.disabled]="disabled" [class.multiline]="multiline">
+    <div class="boxed-field">
+        @if (leadingIcon) {
+            <mat-icon class="leading-icon">{{ leadingIcon }}</mat-icon>
+        }
+        @if (!multiline) {
+            <input
+                #inputElement
+                [id]="inputId"
+                [type]="type"
+                [value]="value"
+                [placeholder]="placeholder || label"
+                [disabled]="disabled"
+                [autocomplete]="autocomplete"
+                [attr.inputmode]="inputmode"
+                [attr.maxlength]="maxlength"
+                [attr.required]="required || null"
+                [attr.aria-label]="label || null"
+                [attr.aria-describedby]="hasError ? inputId + '-error' : null"
+                [matTooltip]="tooltip"
+                (keypress)="onKeyPress($event)"
+                (input)="onInput($event)"
+                (focus)="onFocus()"
+                (blur)="onBlur()"
+            />
+        } @else {
+            <textarea
+                #inputElement
+                [id]="inputId"
+                cdkTextareaAutosize
+                rows="1"
+                [cdkAutosizeMinRows]="minRows"
+                [cdkAutosizeMaxRows]="maxRows"
+                [value]="value"
+                [placeholder]="placeholder || label"
+                [disabled]="disabled"
+                [attr.maxlength]="maxlength"
+                [attr.required]="required || null"
+                [attr.aria-label]="label || null"
+                [attr.aria-describedby]="hasError ? inputId + '-error' : null"
+                [matTooltip]="tooltip"
+                (keypress)="onKeyPress($event)"
+                (input)="onInput($event)"
+                (focus)="onFocus()"
+                (blur)="onBlur()"
+            ></textarea>
+        }
+        @if (showClearButton) {
+            <button type="button" class="clear-button" aria-label="Clear" (click)="clear(); $event.stopPropagation()">
+                <mat-icon>close</mat-icon>
+            </button>
+        }
+    </div>
+    <div [id]="inputId + '-error'" class="boxed-error" [class.visible]="hasError" [class.reserve-space]="reserveErrorSpace && !hint" role="alert">
+        {{ errorMessage }}
+    </div>
+    @if (hint && !hasError) {
+        <div class="boxed-hint" [class.reserve-space]="reserveErrorSpace">
+            {{ hint }}
+        </div>
+    }
+</div>

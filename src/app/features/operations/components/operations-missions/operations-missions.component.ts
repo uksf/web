@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core'
 import { DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { MatCard } from '@angular/material/card';
-import { MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
+import { MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, MatExpansionPanelContent } from '@angular/material/expansion';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { MatIcon } from '@angular/material/icon';
@@ -23,6 +23,9 @@ import { FileDropComponent } from '@app/shared/components/elements/file-drop/fil
 import { FlexFillerComponent } from '@app/shared/components/elements/flex-filler/flex-filler.component';
 import { FileSizePipe } from '@app/shared/pipes/file-size.pipe';
 import { SpotlightDirective } from '@app/shared/directives/spotlight.directive';
+import { TextInputBoxedComponent } from '@app/shared/components/elements/text-input-boxed/text-input-boxed.component';
+import { FormsModule } from '@angular/forms';
+import { DebouncedCallback } from '@app/shared/utils/debounce-callback';
 import { UksfError } from '@app/shared/models/response';
 import { mapBorderColour as getMapBorderColour, capitaliseMapName } from '../../utils/map-colour';
 
@@ -51,6 +54,7 @@ interface SortDefinition {
         MatExpansionPanel,
         MatExpansionPanelHeader,
         MatExpansionPanelTitle,
+        MatExpansionPanelContent,
         MatButton,
         MatIconButton,
         MatMenu,
@@ -63,7 +67,9 @@ interface SortDefinition {
         FileDropComponent,
         FlexFillerComponent,
         FileSizePipe,
-        SpotlightDirective
+        SpotlightDirective,
+        TextInputBoxedComponent,
+        FormsModule
     ]
 })
 export class OperationsMissionsComponent extends DestroyableComponent implements OnInit {
@@ -72,16 +78,26 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
     private dialog = inject(MatDialog);
 
     @ViewChild('uploader') uploader!: ElementRef;
+    @ViewChild('missionsContainer') missionsContainer!: ElementRef<HTMLElement>;
 
     activeMissions: Mission[] = [];
     archivedMissions: Mission[] = [];
     activeGroups: MissionGroup[] = [];
     archivedGroups: MissionGroup[] = [];
+    filteredActiveMissions: Mission[] = [];
+    filteredArchivedMissions: Mission[] = [];
+    filteredActiveGroups: MissionGroup[] = [];
+    filteredArchivedGroups: MissionGroup[] = [];
+    filterString = '';
     sortField: SortField = 'map';
     sortDirection: SortDirection = 'asc';
     groupByMap = false;
     uploading = false;
     fileDragging = false;
+    dropZoneHeight = 0;
+    dropZoneWidth = 0;
+
+    private filterDebounce = new DebouncedCallback(150);
 
     sortDefinitions: SortDefinition[] = [
         { field: 'name', direction: 'asc', name: 'Name (A - Z)' },
@@ -117,7 +133,21 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
     override ngOnDestroy() {
         this.serversHub.off('ReceiveMissionsUpdate', this.onReceiveMissionsUpdate);
         this.serversHub.disconnect();
+        this.filterDebounce.cancel();
         super.ngOnDestroy();
+    }
+
+    onFilterChanged() {
+        this.filterDebounce.schedule(() => this.applyFilter());
+    }
+
+    private applyFilter() {
+        const needle = this.filterString.trim().toLowerCase();
+        const matches = (m: Mission) => !needle || m.name.toLowerCase().includes(needle) || m.map.toLowerCase().includes(needle);
+        this.filteredActiveMissions = this.activeMissions.filter(matches);
+        this.filteredArchivedMissions = this.archivedMissions.filter(matches);
+        this.filteredActiveGroups = this.computeGroups(this.filteredActiveMissions);
+        this.filteredArchivedGroups = this.computeGroups(this.filteredArchivedMissions);
     }
 
     loadMissions() {
@@ -131,6 +161,7 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
         this.activeMissions = this.sortMissions(this.activeMissions);
         this.archivedMissions = this.sortMissions(this.archivedMissions);
         this.recomputeGroups();
+        this.applyFilter();
     }
 
     toggleGroupByMap() {
@@ -149,15 +180,21 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
     }
 
     onFileOver() {
-        this.fileDragging = true;
+        if (!this.fileDragging) {
+            const rect = this.missionsContainer.nativeElement.getBoundingClientRect();
+            const viewportBottomPadding = 16;
+            this.dropZoneHeight = Math.min(rect.height, window.innerHeight - rect.top - viewportBottomPadding);
+            this.dropZoneWidth = rect.width;
+            this.fileDragging = true;
+        }
     }
 
     onFileLeave() {
-        this.fileDragging = false;
+        this.resetDropZone();
     }
 
     onFileDrop(event: { files: { relativePath: string; fileEntry: { file: (cb: (f: File) => void) => void } }[] }) {
-        this.fileDragging = false;
+        this.resetDropZone();
         const files = event.files;
         if (files.length === 0) return;
 
@@ -179,6 +216,12 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
                 }
             });
         });
+    }
+
+    resetDropZone() {
+        this.fileDragging = false;
+        this.dropZoneHeight = 0;
+        this.dropZoneWidth = 0;
     }
 
     download(mission: Mission) {
@@ -239,6 +282,7 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
             next: (missions) => {
                 this.archivedMissions = this.sortMissions(missions);
                 this.archivedGroups = this.computeGroups(this.archivedMissions);
+                this.applyFilter();
             }
         });
     }
@@ -246,6 +290,7 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
     private setActiveMissions(missions: Mission[]) {
         this.activeMissions = this.sortMissions(missions);
         this.activeGroups = this.computeGroups(this.activeMissions);
+        this.applyFilter();
     }
 
     private recomputeGroups() {

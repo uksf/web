@@ -1,11 +1,12 @@
 <app-default-content-areas>
     <app-main-content-area style="grid-column: span 3">
         <app-file-drop (onFileOver)="onFileOver()" (onFileLeave)="onFileLeave()" (onFileDrop)="onFileDrop($event)">
-            <div class="missions-page" [class.file-dragging]="fileDragging">
+            <div #missionsContainer class="missions-page" [class.fileDragging]="fileDragging">
                 <div class="missions-header">
                     <h2>Missions</h2>
                     <app-flex-filler></app-flex-filler>
                     <div class="header-buttons">
+                        <app-text-input-boxed class="filter-input" placeholder="Filter" leadingIcon="search" [(ngModel)]="filterString" [clearable]="true" [reserveErrorSpace]="false" (input)="onFilterChanged()" (cleared)="onFilterChanged()"></app-text-input-boxed>
                         <button mat-raised-button [matMenuTriggerFor]="sortMenu">
                             <mat-icon class="icon-right">sort</mat-icon>
                             Sort
@@ -35,139 +36,152 @@
                 <mat-accordion class="missions-accordion" multi>
                     <mat-expansion-panel class="section-panel" [togglePosition]="'before'" [expanded]="true">
                         <mat-expansion-panel-header appSpotlight [collapsedHeight]="'36px'" [expandedHeight]="'36px'">
-                            <mat-panel-title>Active <span class="count">({{ activeMissions.length }})</span></mat-panel-title>
+                            <mat-panel-title>Active <span class="count">({{ filteredActiveMissions.length }})</span></mat-panel-title>
                         </mat-expansion-panel-header>
-                        @if (groupByMap) {
-                            <mat-accordion class="map-accordion" multi>
-                                @for (group of activeGroups; track trackByMapGroup($index, group)) {
-                                    <mat-expansion-panel class="map-panel" [togglePosition]="'before'" [expanded]="false" [style.--map-border]="mapBorderColour(group.map)">
-                                        <mat-expansion-panel-header appSpotlight [collapsedHeight]="'36px'" [expandedHeight]="'36px'">
-                                            <mat-panel-title>
-                                                {{ group.map }} <span class="count">({{ group.missions.length }})</span>
-                                            </mat-panel-title>
-                                        </mat-expansion-panel-header>
-                                        @for (mission of group.missions; track trackByMissionPath($index, mission)) {
-                                            <mat-card class="mission-row">
-                                                <div class="mission-info">
-                                                    <span class="mission-name">{{ mission.name }}</span>
-                                                    <span class="mission-size">{{ mission.size | fileSize }}</span>
-                                                    <span class="mission-date" matTooltip="Last modified">{{ mission.lastModified | date:'short' }}</span>
-                                                </div>
-                                                <div class="mission-actions">
-                                                    <button mat-icon-button (click)="download(mission)" matTooltip="Download">
-                                                        <mat-icon>download</mat-icon>
-                                                    </button>
-                                                    <button mat-icon-button (click)="archive(mission)" matTooltip="Archive">
-                                                        <mat-icon>archive</mat-icon>
-                                                    </button>
-                                                    <button mat-icon-button (click)="deleteMission(mission)" matTooltip="Delete">
-                                                        <mat-icon>delete</mat-icon>
-                                                    </button>
-                                                </div>
-                                            </mat-card>
-                                        }
-                                    </mat-expansion-panel>
+                        <ng-template matExpansionPanelContent>
+                            @if (groupByMap) {
+                                <mat-accordion class="map-accordion" multi>
+                                    @for (group of filteredActiveGroups; track trackByMapGroup($index, group)) {
+                                        <mat-expansion-panel class="map-panel" [togglePosition]="'before'" [expanded]="false" [style.--map-border]="mapBorderColour(group.map)">
+                                            <mat-expansion-panel-header appSpotlight [collapsedHeight]="'36px'" [expandedHeight]="'36px'">
+                                                <mat-panel-title>
+                                                    {{ group.map }} <span class="count">({{ group.missions.length }})</span>
+                                                </mat-panel-title>
+                                            </mat-expansion-panel-header>
+                                            <ng-template matExpansionPanelContent>
+                                                @for (mission of group.missions; track trackByMissionPath($index, mission)) {
+                                                    <mat-card class="mission-row">
+                                                        <div class="mission-info">
+                                                            <span class="mission-name">{{ mission.name }}</span>
+                                                            <span class="mission-size">{{ mission.size | fileSize }}</span>
+                                                            <span class="mission-date" matTooltip="Last modified">{{ mission.lastModified | date:'short' }}</span>
+                                                        </div>
+                                                        <div class="mission-actions">
+                                                            <button mat-icon-button (click)="download(mission)" matTooltip="Download">
+                                                                <mat-icon>download</mat-icon>
+                                                            </button>
+                                                            <button mat-icon-button (click)="archive(mission)" matTooltip="Archive">
+                                                                <mat-icon>archive</mat-icon>
+                                                            </button>
+                                                            <button mat-icon-button (click)="deleteMission(mission)" matTooltip="Delete">
+                                                                <mat-icon>delete</mat-icon>
+                                                            </button>
+                                                        </div>
+                                                    </mat-card>
+                                                }
+                                            </ng-template>
+                                        </mat-expansion-panel>
+                                    }
+                                </mat-accordion>
+                                @if (filteredActiveGroups.length === 0) {
+                                    <div class="empty-state">No active missions</div>
                                 }
-                            </mat-accordion>
-                            @if (activeGroups.length === 0) {
-                                <div class="empty-state">No active missions</div>
+                            } @else {
+                                @for (mission of filteredActiveMissions; track trackByMissionPath($index, mission)) {
+                                    <mat-card class="mission-row with-border" [style.border-left-color]="mapBorderColour(mission.map)">
+                                        <span class="map-label">{{ capitalise(mission.map) }}</span>
+                                        <div class="mission-info">
+                                            <span class="mission-name">{{ mission.name }}</span>
+                                            <span class="mission-size">{{ mission.size | fileSize }}</span>
+                                            <span class="mission-date" matTooltip="Last modified">{{ mission.lastModified | date:'short' }}</span>
+                                        </div>
+                                        <div class="mission-actions">
+                                            <button mat-icon-button (click)="download(mission)" matTooltip="Download">
+                                                <mat-icon>download</mat-icon>
+                                            </button>
+                                            <button mat-icon-button (click)="archive(mission)" matTooltip="Archive">
+                                                <mat-icon>archive</mat-icon>
+                                            </button>
+                                            <button mat-icon-button (click)="deleteMission(mission)" matTooltip="Delete">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </div>
+                                    </mat-card>
+                                }
+                                @if (filteredActiveMissions.length === 0) {
+                                    <div class="empty-state">No active missions</div>
+                                }
                             }
-                        } @else {
-                            @for (mission of activeMissions; track trackByMissionPath($index, mission)) {
-                                <mat-card class="mission-row with-border" [style.border-left-color]="mapBorderColour(mission.map)">
-                                    <span class="map-label">{{ capitalise(mission.map) }}</span>
-                                    <div class="mission-info">
-                                        <span class="mission-name">{{ mission.name }}</span>
-                                        <span class="mission-size">{{ mission.size | fileSize }}</span>
-                                        <span class="mission-date" matTooltip="Last modified">{{ mission.lastModified | date:'short' }}</span>
-                                    </div>
-                                    <div class="mission-actions">
-                                        <button mat-icon-button (click)="download(mission)" matTooltip="Download">
-                                            <mat-icon>download</mat-icon>
-                                        </button>
-                                        <button mat-icon-button (click)="archive(mission)" matTooltip="Archive">
-                                            <mat-icon>archive</mat-icon>
-                                        </button>
-                                        <button mat-icon-button (click)="deleteMission(mission)" matTooltip="Delete">
-                                            <mat-icon>delete</mat-icon>
-                                        </button>
-                                    </div>
-                                </mat-card>
-                            }
-                            @if (activeMissions.length === 0) {
-                                <div class="empty-state">No active missions</div>
-                            }
-                        }
+                        </ng-template>
                     </mat-expansion-panel>
 
                     <mat-expansion-panel class="section-panel" [togglePosition]="'before'" [expanded]="false">
                         <mat-expansion-panel-header appSpotlight [collapsedHeight]="'36px'" [expandedHeight]="'36px'">
-                            <mat-panel-title>Archived <span class="count">({{ archivedMissions.length }})</span></mat-panel-title>
+                            <mat-panel-title>Archived <span class="count">({{ filteredArchivedMissions.length }})</span></mat-panel-title>
                         </mat-expansion-panel-header>
-                        @if (groupByMap) {
-                            <mat-accordion class="map-accordion" multi>
-                                @for (group of archivedGroups; track trackByMapGroup($index, group)) {
-                                    <mat-expansion-panel class="map-panel" [togglePosition]="'before'" [expanded]="false" [style.--map-border]="mapBorderColour(group.map)">
-                                        <mat-expansion-panel-header appSpotlight [collapsedHeight]="'36px'" [expandedHeight]="'36px'">
-                                            <mat-panel-title>
-                                                {{ group.map }} <span class="count">({{ group.missions.length }})</span>
-                                            </mat-panel-title>
-                                        </mat-expansion-panel-header>
-                                        @for (mission of group.missions; track trackByMissionPath($index, mission)) {
-                                            <mat-card class="mission-row">
-                                                <div class="mission-info">
-                                                    <span class="mission-name">{{ mission.name }}</span>
-                                                    <span class="mission-size">{{ mission.size | fileSize }}</span>
-                                                    <span class="mission-date" matTooltip="Last modified">{{ mission.lastModified | date:'short' }}</span>
-                                                </div>
-                                                <div class="mission-actions">
-                                                    <button mat-icon-button (click)="download(mission)" matTooltip="Download">
-                                                        <mat-icon>download</mat-icon>
-                                                    </button>
-                                                    <button mat-icon-button (click)="restore(mission)" matTooltip="Restore">
-                                                        <mat-icon>unarchive</mat-icon>
-                                                    </button>
-                                                    <button mat-icon-button (click)="deleteMission(mission)" matTooltip="Delete">
-                                                        <mat-icon>delete</mat-icon>
-                                                    </button>
-                                                </div>
-                                            </mat-card>
-                                        }
-                                    </mat-expansion-panel>
+                        <ng-template matExpansionPanelContent>
+                            @if (groupByMap) {
+                                <mat-accordion class="map-accordion" multi>
+                                    @for (group of filteredArchivedGroups; track trackByMapGroup($index, group)) {
+                                        <mat-expansion-panel class="map-panel" [togglePosition]="'before'" [expanded]="false" [style.--map-border]="mapBorderColour(group.map)">
+                                            <mat-expansion-panel-header appSpotlight [collapsedHeight]="'36px'" [expandedHeight]="'36px'">
+                                                <mat-panel-title>
+                                                    {{ group.map }} <span class="count">({{ group.missions.length }})</span>
+                                                </mat-panel-title>
+                                            </mat-expansion-panel-header>
+                                            <ng-template matExpansionPanelContent>
+                                                @for (mission of group.missions; track trackByMissionPath($index, mission)) {
+                                                    <mat-card class="mission-row">
+                                                        <div class="mission-info">
+                                                            <span class="mission-name">{{ mission.name }}</span>
+                                                            <span class="mission-size">{{ mission.size | fileSize }}</span>
+                                                            <span class="mission-date" matTooltip="Last modified">{{ mission.lastModified | date:'short' }}</span>
+                                                        </div>
+                                                        <div class="mission-actions">
+                                                            <button mat-icon-button (click)="download(mission)" matTooltip="Download">
+                                                                <mat-icon>download</mat-icon>
+                                                            </button>
+                                                            <button mat-icon-button (click)="restore(mission)" matTooltip="Restore">
+                                                                <mat-icon>unarchive</mat-icon>
+                                                            </button>
+                                                            <button mat-icon-button (click)="deleteMission(mission)" matTooltip="Delete">
+                                                                <mat-icon>delete</mat-icon>
+                                                            </button>
+                                                        </div>
+                                                    </mat-card>
+                                                }
+                                            </ng-template>
+                                        </mat-expansion-panel>
+                                    }
+                                </mat-accordion>
+                                @if (filteredArchivedGroups.length === 0) {
+                                    <div class="empty-state">No archived missions</div>
                                 }
-                            </mat-accordion>
-                            @if (archivedGroups.length === 0) {
-                                <div class="empty-state">No archived missions</div>
+                            } @else {
+                                @for (mission of filteredArchivedMissions; track trackByMissionPath($index, mission)) {
+                                    <mat-card class="mission-row with-border" [style.border-left-color]="mapBorderColour(mission.map)">
+                                        <span class="map-label">{{ capitalise(mission.map) }}</span>
+                                        <div class="mission-info">
+                                            <span class="mission-name">{{ mission.name }}</span>
+                                            <span class="mission-size">{{ mission.size | fileSize }}</span>
+                                            <span class="mission-date" matTooltip="Last modified">{{ mission.lastModified | date:'short' }}</span>
+                                        </div>
+                                        <div class="mission-actions">
+                                            <button mat-icon-button (click)="download(mission)" matTooltip="Download">
+                                                <mat-icon>download</mat-icon>
+                                            </button>
+                                            <button mat-icon-button (click)="restore(mission)" matTooltip="Restore">
+                                                <mat-icon>unarchive</mat-icon>
+                                            </button>
+                                            <button mat-icon-button (click)="deleteMission(mission)" matTooltip="Delete">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </div>
+                                    </mat-card>
+                                }
+                                @if (filteredArchivedMissions.length === 0) {
+                                    <div class="empty-state">No archived missions</div>
+                                }
                             }
-                        } @else {
-                            @for (mission of archivedMissions; track trackByMissionPath($index, mission)) {
-                                <mat-card class="mission-row with-border" [style.border-left-color]="mapBorderColour(mission.map)">
-                                    <span class="map-label">{{ capitalise(mission.map) }}</span>
-                                    <div class="mission-info">
-                                        <span class="mission-name">{{ mission.name }}</span>
-                                        <span class="mission-size">{{ mission.size | fileSize }}</span>
-                                        <span class="mission-date" matTooltip="Last modified">{{ mission.lastModified | date:'short' }}</span>
-                                    </div>
-                                    <div class="mission-actions">
-                                        <button mat-icon-button (click)="download(mission)" matTooltip="Download">
-                                            <mat-icon>download</mat-icon>
-                                        </button>
-                                        <button mat-icon-button (click)="restore(mission)" matTooltip="Restore">
-                                            <mat-icon>unarchive</mat-icon>
-                                        </button>
-                                        <button mat-icon-button (click)="deleteMission(mission)" matTooltip="Delete">
-                                            <mat-icon>delete</mat-icon>
-                                        </button>
-                                    </div>
-                                </mat-card>
-                            }
-                            @if (archivedMissions.length === 0) {
-                                <div class="empty-state">No archived missions</div>
-                            }
-                        }
+                        </ng-template>
                     </mat-expansion-panel>
                 </mat-accordion>
             </div>
+            @if (fileDragging) {
+                <div class="dropZone" [style.height.px]="dropZoneHeight">
+                    <span>Drop mission files here to upload them</span>
+                </div>
+            }
         </app-file-drop>
     </app-main-content-area>
 </app-default-content-areas>

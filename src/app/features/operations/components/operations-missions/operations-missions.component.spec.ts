@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { of, Subject } from 'rxjs';
@@ -278,6 +278,17 @@ describe('OperationsMissionsComponent', () => {
     });
 
     describe('onFileOver / onFileLeave', () => {
+        beforeEach(() => {
+            (component as unknown as { missionsContainer: { nativeElement: HTMLElement } }).missionsContainer = {
+                nativeElement: { getBoundingClientRect: () => ({ height: 500, width: 800, top: 0 }) as DOMRect } as unknown as HTMLElement
+            };
+            (globalThis as unknown as { window: { innerHeight: number } }).window = { innerHeight: 1000 };
+        });
+
+        afterEach(() => {
+            delete (globalThis as unknown as { window?: unknown }).window;
+        });
+
         it('sets fileDragging on file over', () => {
             component.onFileOver();
             expect(component.fileDragging).toBe(true);

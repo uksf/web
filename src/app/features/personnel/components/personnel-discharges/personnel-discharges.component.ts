@@ -13,7 +13,7 @@ import { MatButton } from '@angular/material/button';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatIcon } from '@angular/material/icon';
 import { NgClass, DatePipe } from '@angular/common';
-import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { TextInputBoxedComponent } from '../../../../shared/components/elements/text-input-boxed/text-input-boxed.component';
 import { FormsModule } from '@angular/forms';
 import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
 import { MatSelect, MatOption } from '@angular/material/select';
@@ -36,7 +36,7 @@ import { NgxPermissionsModule } from 'ngx-permissions';
         MatTooltip,
         MatIcon,
         NgClass,
-        TextInputComponent,
+        TextInputBoxedComponent,
         FormsModule,
         FlexFillerComponent,
         MatSelect,

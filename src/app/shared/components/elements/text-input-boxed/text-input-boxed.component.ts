@@ -1,0 +1,154 @@
+import { Component, DoCheck, ElementRef, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
+import { AbstractControl, ControlValueAccessor, NgControl } from '@angular/forms';
+import { getValidationError, ValidationMessage } from '@app/shared/services/form-helper.service';
+import { MatTooltip } from '@angular/material/tooltip';
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
+import { MatIcon } from '@angular/material/icon';
+
+let nextId = 0;
+
+@Component({
+    selector: 'app-text-input-boxed',
+    templateUrl: './text-input-boxed.component.html',
+    styleUrls: ['./text-input-boxed.component.scss'],
+    imports: [MatTooltip, CdkTextareaAutosize, MatIcon]
+})
+export class TextInputBoxedComponent implements ControlValueAccessor, DoCheck {
+    ngControl = inject(NgControl, { optional: true, self: true });
+
+    @ViewChild('inputElement') inputElement!: ElementRef<HTMLInputElement | HTMLTextAreaElement>;
+
+    @Input() label = '';
+    @Input() type: 'text' | 'email' | 'password' | 'number' = 'text';
+    @Input() inputmode: string | null = null;
+    @Input() placeholder = '';
+    @Input() disabled = false;
+    @Input() required = false;
+    @Input() multiline = false;
+    @Input() minRows = 1;
+    @Input() maxRows = 10;
+    @Input() autocomplete = 'off';
+    @Input() validationMessages: ValidationMessage[] = [];
+    @Input() reserveErrorSpace = true;
+    @Input() clearable = false;
+    @Input() tooltip = '';
+    @Input() hint = '';
+    @Input() maxlength: number | null = null;
+    @Input() keypressFilter: RegExp | null = null;
+    @Input() errorSource: AbstractControl | null = null;
+    @Input() leadingIcon = '';
+    @Output() cleared = new EventEmitter<void>();
+
+    readonly inputId = `text-input-boxed-${nextId++}`;
+    value = '';
+    focused = false;
+    touched = false;
+    dirty = false;
+    cachedErrorMessage = '';
+
+    private onChange: (value: string | number) => void = () => {};
+    private onTouched: () => void = () => {};
+
+    constructor() {
+        const ngControl = this.ngControl;
+
+        if (ngControl) {
+            ngControl.valueAccessor = this;
+        }
+    }
+
+    ngDoCheck(): void {
+        this.cachedErrorMessage = this.computeErrorMessage();
+    }
+
+    get showClearButton(): boolean {
+        return this.clearable && !this.disabled && this.value.length > 0;
+    }
+
+    get errorMessage(): string {
+        return this.cachedErrorMessage;
+    }
+
+    get hasError(): boolean {
+        return this.cachedErrorMessage.length > 0;
+    }
+
+    private computeErrorMessage(): string {
+        if (!this.ngControl?.control) {
+            return '';
+        }
+        const isTouched = this.touched || this.ngControl.control.touched;
+        const isDirty = this.dirty || this.ngControl.control.dirty;
+        if (!isTouched && !isDirty) {
+            return '';
+        }
+        const ownError = getValidationError(this.ngControl.control, this.validationMessages);
+        if (ownError) {
+            return ownError;
+        }
+        if (this.errorSource) {
+            return getValidationError(this.errorSource, this.validationMessages);
+        }
+        return '';
+    }
+
+    focus(): void {
+        this.inputElement?.nativeElement?.focus();
+    }
+
+    onInput(event: Event): void {
+        const target = event.target as HTMLInputElement | HTMLTextAreaElement;
+        this.value = target.value;
+        this.dirty = true;
+        this.onChange(this.coerceValue(this.value));
+    }
+
+    clear(): void {
+        this.value = '';
+        this.dirty = true;
+        this.onChange(this.coerceValue(this.value));
+        this.cleared.emit();
+        this.inputElement?.nativeElement?.focus();
+    }
+
+    onKeyPress(event: KeyboardEvent): boolean {
+        if (this.keypressFilter) {
+            return this.keypressFilter.test(event.key);
+        }
+        return true;
+    }
+
+    onFocus(): void {
+        this.focused = true;
+    }
+
+    onBlur(): void {
+        this.focused = false;
+        this.touched = true;
+        this.onTouched();
+    }
+
+    writeValue(value: string | number): void {
+        this.value = value != null ? String(value) : '';
+    }
+
+    registerOnChange(fn: (value: string | number) => void): void {
+        this.onChange = fn;
+    }
+
+    registerOnTouched(fn: () => void): void {
+        this.onTouched = fn;
+    }
+
+    setDisabledState(isDisabled: boolean): void {
+        this.disabled = isDisabled;
+    }
+
+    private coerceValue(value: string): string | number {
+        if (this.type === 'number' && value !== '') {
+            const num = Number(value);
+            return isNaN(num) ? value : num;
+        }
+        return value;
+    }
+}

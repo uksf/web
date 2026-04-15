@@ -13,7 +13,7 @@ import { MembersService } from '@app/shared/services/members.service';
 import { UnitsService } from '../../services/units.service';
 import { DestroyableComponent } from '@app/shared/components';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { TextInputBoxedComponent } from '../../../../shared/components/elements/text-input-boxed/text-input-boxed.component';
 import { FormsModule } from '@angular/forms';
 import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
 import { PaginatorComponent as PaginatorComponent_1 } from '../../../../shared/components/elements/paginator/paginator.component';
@@ -30,7 +30,7 @@ import { CommandMemberCardComponent } from './command-member-card/command-member
     styleUrls: ['./command-members.component.scss'],
     imports: [
         MatProgressSpinner,
-        TextInputComponent,
+        TextInputBoxedComponent,
         FormsModule,
         FlexFillerComponent,
         PaginatorComponent_1,

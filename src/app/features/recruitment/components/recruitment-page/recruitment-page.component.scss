@@ -99,11 +99,10 @@ app-side-content-area {
     .icon-right { vertical-align: middle; }
 
     &.search {
-        flex-grow: 1;
+        flex-shrink: 0;
 
-        app-text-input {
-            max-width: 300px;
-            width: 100%;
+        app-text-input-boxed {
+            width: 280px;
         }
     }
 

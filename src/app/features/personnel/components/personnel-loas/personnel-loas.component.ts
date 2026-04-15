@@ -14,7 +14,7 @@ import { DefaultContentAreasComponent } from '../../../../shared/components/cont
 import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
 import { MatButton } from '@angular/material/button';
 import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
-import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
+import { TextInputBoxedComponent } from '../../../../shared/components/elements/text-input-boxed/text-input-boxed.component';
 import { DateInputComponent } from '../../../../shared/components/elements/date-input/date-input.component';
 import { FormsModule } from '@angular/forms';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -45,7 +45,7 @@ export interface DateModeItem {
         MainContentAreaComponent,
         MatButton,
         FlexFillerComponent,
-        TextInputComponent,
+        TextInputBoxedComponent,
         FormsModule,
         MatTooltip,
         MatMenuTrigger,

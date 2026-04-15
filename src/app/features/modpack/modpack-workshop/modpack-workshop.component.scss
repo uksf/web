@@ -18,7 +18,7 @@
         .mods-header-actions {
             display: flex;
             align-items: center;
-            gap: v.$spacing-12px;
+            gap: v.$spacing-8px;
         }
 
         .search-field {
@@ -26,7 +26,6 @@
         }
 
         .mat-mdc-raised-button {
-            margin-left: v.$spacing-4px;
             align-self: center;
         }
     }

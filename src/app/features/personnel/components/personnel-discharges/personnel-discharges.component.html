@@ -5,7 +5,7 @@
                 <button mat-button class="refresh-button" (click)="refresh()" matTooltip="Refresh">
                     <mat-icon [ngClass]="{ updating: updating }">refresh</mat-icon>
                 </button>
-                <app-text-input class="filter-input" label="Filter" [(ngModel)]="filterString" [clearable]="true" [reserveErrorSpace]="false" (input)="filter()" (cleared)="filter()"> </app-text-input>
+                <app-text-input-boxed class="filter-input" placeholder="Filter" leadingIcon="search" [(ngModel)]="filterString" [clearable]="true" [reserveErrorSpace]="false" (input)="filter()" (cleared)="filter()"> </app-text-input-boxed>
                 <app-flex-filler></app-flex-filler>
                 <div class="pagination-container">
                     <span>{{ index + 1 }} - {{ min(index + length, filtered.length) }} of {{ filtered.length }}</span>

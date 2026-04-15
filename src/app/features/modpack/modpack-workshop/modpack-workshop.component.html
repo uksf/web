@@ -5,10 +5,7 @@
             <div class="mods-header">
                 <h1>Workshop Mods</h1>
                 <div class="mods-header-actions">
-                    <mat-form-field class="search-field" subscriptSizing="dynamic">
-                        <mat-icon matPrefix>search</mat-icon>
-                        <input matInput placeholder="Search mods..." [formControl]="searchControl">
-                    </mat-form-field>
+                    <app-text-input-boxed class="search-field" placeholder="Search mods..." leadingIcon="search" [formControl]="searchControl" [clearable]="true" [reserveErrorSpace]="false"></app-text-input-boxed>
                     <ng-template [ngxPermissionsOnly]="['ADMIN']">
                         <button mat-raised-button color="primary" (click)="install()">Install</button>
                     </ng-template>

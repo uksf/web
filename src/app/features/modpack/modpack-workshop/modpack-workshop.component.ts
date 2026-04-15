@@ -17,9 +17,8 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { MatButton } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
-import { MatFormField } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
 import { MatTooltip } from '@angular/material/tooltip';
+import { TextInputBoxedComponent } from '../../../shared/components/elements/text-input-boxed/text-input-boxed.component';
 import { MatIcon } from '@angular/material/icon';
 import { MatCard } from '@angular/material/card';
 
@@ -27,7 +26,7 @@ import { MatCard } from '@angular/material/card';
     selector: 'app-modpack-workshop',
     templateUrl: './modpack-workshop.component.html',
     styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-workshop.component.scss', './modpack-workshop.component.scss-theme.scss'],
-    imports: [DefaultContentAreasComponent, FullContentAreaComponent, ModpackPageComponent, NgxPermissionsModule, MatButton, MatCard, MatDivider, MatMenu, MatMenuItem, MatMenuTrigger, MatFormField, MatInput, MatTooltip, MatIcon, ReactiveFormsModule]
+    imports: [DefaultContentAreasComponent, FullContentAreaComponent, ModpackPageComponent, NgxPermissionsModule, MatButton, MatCard, MatDivider, MatMenu, MatMenuItem, MatMenuTrigger, MatTooltip, MatIcon, ReactiveFormsModule, TextInputBoxedComponent]
 })
 export class ModpackWorkshopComponent extends DestroyableComponent implements OnInit, OnDestroy {
     private workshopService = inject(WorkshopService);

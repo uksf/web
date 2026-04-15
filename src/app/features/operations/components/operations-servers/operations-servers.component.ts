@@ -433,7 +433,8 @@ export class OperationsServersComponent extends DestroyableComponent implements 
     onFileOver() {
         if (!this.fileDragging) {
             const rect: DOMRect = this.serversContainer.nativeElement.getBoundingClientRect();
-            this.dropZoneHeight = rect.height;
+            const viewportBottomPadding = 16;
+            this.dropZoneHeight = Math.min(rect.height, window.innerHeight - rect.top - viewportBottomPadding);
             this.dropZoneWidth = rect.width;
             this.fileDragging = true;
         }

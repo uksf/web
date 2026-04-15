@@ -8,9 +8,10 @@
                             <button mat-raised-button class="new-loa-button" color="primary" (click)="createLoa()">New LOA</button>
                         </div>
                         <app-flex-filler></app-flex-filler>
-                        <app-text-input
+                        <app-text-input-boxed
                             class="loa-filter"
-                            label="Filter"
+                            placeholder="Filter"
+                            leadingIcon="search"
                             [(ngModel)]="filterString"
                             [clearable]="true"
                             [reserveErrorSpace]="false"
@@ -18,7 +19,7 @@
                             (input)="filter()"
                             (cleared)="filter()"
                         >
-                        </app-text-input>
+                        </app-text-input-boxed>
                         <div class="loa-filter-buttons-container">
                             <button [matMenuTriggerFor]="viewModeMenu" mat-raised-button matTooltip="Change view mode to see LOAs for the selected group">
                                 <mat-icon class="icon-right">{{ viewMode.icon }}</mat-icon>
