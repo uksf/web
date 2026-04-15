@@ -65,7 +65,11 @@ Thumbs.db
 
 # Plan documents
 docs/plans/
+docs/superpowers/
 tmp-*.txt
 
 # Worktrees
 .worktrees/
+
+# Superpowers
+.superpowers/

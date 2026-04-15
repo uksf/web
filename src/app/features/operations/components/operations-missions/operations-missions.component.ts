@@ -1,8 +1,10 @@
 import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
-import { DatePipe, NgTemplateOutlet } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
+import { MatCard } from '@angular/material/card';
 import { MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
-import { MatIconButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
 import { Observable } from 'rxjs';
@@ -15,9 +17,14 @@ import { Mission, MissionReport } from '../../models/game-server';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { ValidationReportModalComponent } from '@app/shared/modals/validation-report-modal/validation-report-modal.component';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
+import { DefaultContentAreasComponent } from '@app/shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { MainContentAreaComponent } from '@app/shared/components/content-areas/main-content-area/main-content-area.component';
 import { FileDropComponent } from '@app/shared/components/elements/file-drop/file-drop.component';
+import { FlexFillerComponent } from '@app/shared/components/elements/flex-filler/flex-filler.component';
 import { FileSizePipe } from '@app/shared/pipes/file-size.pipe';
+import { SpotlightDirective } from '@app/shared/directives/spotlight.directive';
 import { UksfError } from '@app/shared/models/response';
+import { mapBorderColour as getMapBorderColour, capitaliseMapName } from '../../utils/map-colour';
 
 type SortField = 'name' | 'date' | 'map';
 type SortDirection = 'asc' | 'desc';
@@ -27,22 +34,36 @@ export interface MissionGroup {
     missions: Mission[];
 }
 
+interface SortDefinition {
+    field: SortField;
+    direction: SortDirection;
+    name: string;
+}
+
 @Component({
     selector: 'app-operations-missions',
     templateUrl: './operations-missions.component.html',
     styleUrls: ['./operations-missions.component.scss'],
     imports: [
         DatePipe,
-        NgTemplateOutlet,
+        MatCard,
         MatAccordion,
         MatExpansionPanel,
         MatExpansionPanelHeader,
         MatExpansionPanelTitle,
+        MatButton,
         MatIconButton,
+        MatMenu,
+        MatMenuItem,
+        MatMenuTrigger,
         MatIcon,
         MatTooltip,
+        DefaultContentAreasComponent,
+        MainContentAreaComponent,
         FileDropComponent,
-        FileSizePipe
+        FlexFillerComponent,
+        FileSizePipe,
+        SpotlightDirective
     ]
 })
 export class OperationsMissionsComponent extends DestroyableComponent implements OnInit {
@@ -62,16 +83,31 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
     uploading = false;
     fileDragging = false;
 
-    private onReceiveMissionsUpdate = (connectionId: string, missions: Mission[]) => {
-        if (connectionId !== this.serversHub.connectionId) {
-            this.setActiveMissions(missions);
-            this.loadArchivedMissions();
-        }
+    sortDefinitions: SortDefinition[] = [
+        { field: 'name', direction: 'asc', name: 'Name (A - Z)' },
+        { field: 'name', direction: 'desc', name: 'Name (Z - A)' },
+        { field: 'date', direction: 'desc', name: 'Date (Newest)' },
+        { field: 'date', direction: 'asc', name: 'Date (Oldest)' },
+        { field: 'map', direction: 'asc', name: 'Map (A - Z)' },
+        { field: 'map', direction: 'desc', name: 'Map (Z - A)' }
+    ];
+
+    mapBorderColour(map: string): string {
+        return getMapBorderColour(map);
+    }
+
+    capitalise(map: string): string {
+        return capitaliseMapName(map);
+    }
+
+    private onReceiveMissionsUpdate = (missions: Mission[]) => {
+        this.setActiveMissions(missions);
+        this.loadArchivedMissions();
     };
 
     ngOnInit() {
         this.serversHub.connect();
-        this.serversHub.on('ReceiveMissionsUpdateIfNotCaller', this.onReceiveMissionsUpdate);
+        this.serversHub.on('ReceiveMissionsUpdate', this.onReceiveMissionsUpdate);
         this.serversHub.reconnected$.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => this.loadMissions()
         });
@@ -79,7 +115,7 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
     }
 
     override ngOnDestroy() {
-        this.serversHub.off('ReceiveMissionsUpdateIfNotCaller', this.onReceiveMissionsUpdate);
+        this.serversHub.off('ReceiveMissionsUpdate', this.onReceiveMissionsUpdate);
         this.serversHub.disconnect();
         super.ngOnDestroy();
     }
@@ -89,13 +125,9 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
         this.loadArchivedMissions();
     }
 
-    setSort(field: SortField) {
-        if (this.sortField === field) {
-            this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            this.sortField = field;
-            this.sortDirection = 'asc';
-        }
+    sort(field: SortField, direction: SortDirection) {
+        this.sortField = field;
+        this.sortDirection = direction;
         this.activeMissions = this.sortMissions(this.activeMissions);
         this.archivedMissions = this.sortMissions(this.archivedMissions);
         this.recomputeGroups();
@@ -103,6 +135,10 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
 
     toggleGroupByMap() {
         this.groupByMap = !this.groupByMap;
+    }
+
+    trackBySortName(_index: number, def: SortDefinition): string {
+        return def.name;
     }
 
     uploadFromButton(event: Event) {
@@ -220,16 +256,17 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
     private computeGroups(missions: Mission[]): MissionGroup[] {
         const groupMap = new Map<string, Mission[]>();
         for (const mission of missions) {
-            const existing = groupMap.get(mission.map);
+            const key = mission.map.toLowerCase();
+            const existing = groupMap.get(key);
             if (existing) {
                 existing.push(mission);
             } else {
-                groupMap.set(mission.map, [mission]);
+                groupMap.set(key, [mission]);
             }
         }
         return Array.from(groupMap.entries())
-            .map(([map, missionList]) => ({ map, missions: missionList }))
-            .sort((a, b) => a.map.localeCompare(b.map));
+            .map(([key, missionList]) => ({ map: capitaliseMapName(key), missions: missionList }))
+            .sort((a, b) => a.map.localeCompare(b.map, undefined, { sensitivity: 'base' }));
     }
 
     private sortMissions(missions: Mission[]): Mission[] {
@@ -238,14 +275,15 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
             let result: number;
             switch (this.sortField) {
                 case 'name':
-                    result = a.name.localeCompare(b.name);
+                    result = a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
                     break;
                 case 'date':
                     result = new Date(a.lastModified).getTime() - new Date(b.lastModified).getTime();
                     break;
                 case 'map':
                 default:
-                    result = a.map.localeCompare(b.map) || a.name.localeCompare(b.name);
+                    result = a.map.localeCompare(b.map, undefined, { sensitivity: 'base' })
+                        || a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
                     break;
             }
             return result * dir;
