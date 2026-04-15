@@ -28,6 +28,7 @@ import { FormsModule } from '@angular/forms';
 import { DebouncedCallback } from '@app/shared/utils/debounce-callback';
 import { UksfError } from '@app/shared/models/response';
 import { mapBorderColour as getMapBorderColour, capitaliseMapName } from '../../utils/map-colour';
+import { prepare, layout } from '@chenglou/pretext';
 
 type SortField = 'name' | 'date' | 'map';
 type SortDirection = 'asc' | 'desc';
@@ -116,12 +117,32 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
         return capitaliseMapName(map);
     }
 
+    private mapFontCache = new Map<string, string>();
+    private readonly mapLabelAvailableWidth = 88;
+    private readonly mapLabelMaxLines = 2;
+    private readonly mapFontSteps = [14, 13, 12, 11, 10, 9];
+
     mapFontSize(map: string): string {
-        const len = this.capitalise(map).length;
-        if (len <= 10) return '14px';
-        if (len <= 14) return '12px';
-        if (len <= 20) return '10px';
-        return '9px';
+        const text = this.capitalise(map);
+        const cached = this.mapFontCache.get(text);
+        if (cached) return cached;
+        const size = this.computeMapFontSize(text);
+        this.mapFontCache.set(text, size);
+        return size;
+    }
+
+    private computeMapFontSize(text: string): string {
+        if (!text || typeof document === 'undefined') return '14px';
+        for (const size of this.mapFontSteps) {
+            try {
+                const prepared = prepare(text, `500 ${size}px Roboto, Helvetica, Arial, sans-serif`);
+                const { lineCount } = layout(prepared, this.mapLabelAvailableWidth, size * 1.1);
+                if (lineCount <= this.mapLabelMaxLines) return `${size}px`;
+            } catch {
+                return '14px';
+            }
+        }
+        return `${this.mapFontSteps[this.mapFontSteps.length - 1]}px`;
     }
 
     private onReceiveMissionsUpdate = (missions: Mission[]) => {
