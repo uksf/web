@@ -90,8 +90,8 @@ export class OperationsMissionsComponent extends DestroyableComponent implements
     filteredActiveGroups: MissionGroup[] = [];
     filteredArchivedGroups: MissionGroup[] = [];
     filterString = '';
-    sortField: SortField = 'map';
-    sortDirection: SortDirection = 'asc';
+    sortField: SortField = 'date';
+    sortDirection: SortDirection = 'desc';
     groupByMap = false;
     uploading = false;
     fileDragging = false;

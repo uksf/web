@@ -98,10 +98,10 @@ describe('OperationsMissionsComponent', () => {
     });
 
     describe('loadMissions', () => {
-        it('populates active and archived missions sorted', () => {
+        it('populates active and archived missions sorted by date desc by default', () => {
             const active: Mission[] = [
-                makeMission({ name: 'b_mission', map: 'Stratis' }),
-                makeMission({ name: 'a_mission', map: 'Altis' })
+                makeMission({ name: 'older_mission', map: 'Stratis', lastModified: '2026-01-10T00:00:00Z' }),
+                makeMission({ name: 'newer_mission', map: 'Altis', lastModified: '2026-01-15T00:00:00Z' })
             ];
             const archived: Mission[] = [
                 makeMission({ name: 'old_mission', map: 'Tanoa' })
@@ -112,8 +112,8 @@ describe('OperationsMissionsComponent', () => {
             component.loadMissions();
 
             expect(component.activeMissions).toHaveLength(2);
-            expect(component.activeMissions[0].map).toBe('Altis');
-            expect(component.activeMissions[1].map).toBe('Stratis');
+            expect(component.activeMissions[0].name).toBe('newer_mission');
+            expect(component.activeMissions[1].name).toBe('older_mission');
             expect(component.archivedMissions).toHaveLength(1);
         });
 
