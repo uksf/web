@@ -6,6 +6,7 @@ export class SpotlightDirective implements OnDestroy {
 
     @Input() spotlightSize = 200;
     @Input() spotlightColor = 'rgba(255, 255, 255, 0.08)';
+    @Input() spotlightContain = false;
 
     private cachedRect: DOMRect | null = null;
 
@@ -28,6 +29,9 @@ export class SpotlightDirective implements OnDestroy {
     onMouseEnter(): void {
         this.cachedRect = this.el.nativeElement.getBoundingClientRect();
         this.el.nativeElement.classList.add('spotlight-active');
+        if (this.spotlightContain) {
+            this.el.nativeElement.classList.add('spotlight-contain');
+        }
         this.el.nativeElement.style.setProperty('--spotlight-size', `${this.spotlightSize}px`);
         this.el.nativeElement.style.setProperty('--spotlight-color', this.spotlightColor);
     }
@@ -36,6 +40,7 @@ export class SpotlightDirective implements OnDestroy {
     onMouseLeave(): void {
         this.cachedRect = null;
         this.el.nativeElement.classList.remove('spotlight-active');
+        this.el.nativeElement.classList.remove('spotlight-contain');
         this.el.nativeElement.style.removeProperty('--spotlight-x');
         this.el.nativeElement.style.removeProperty('--spotlight-y');
         this.el.nativeElement.style.removeProperty('--spotlight-size');

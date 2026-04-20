@@ -121,6 +121,26 @@ describe('SpotlightDirective', () => {
         expect(element.style.getPropertyValue('--spotlight-y')).toBe('50px');
     });
 
+    it('should not add spotlight-contain class when spotlightContain is false', () => {
+        directive.onMouseEnter();
+        expect(element.classList.contains('spotlight-contain')).toBe(false);
+    });
+
+    it('should add spotlight-contain class on mouseenter when spotlightContain is true', () => {
+        directive.spotlightContain = true;
+        directive.onMouseEnter();
+        expect(element.classList.contains('spotlight-contain')).toBe(true);
+    });
+
+    it('should remove spotlight-contain class on mouseleave', () => {
+        directive.spotlightContain = true;
+        directive.onMouseEnter();
+        expect(element.classList.contains('spotlight-contain')).toBe(true);
+
+        directive.onMouseLeave();
+        expect(element.classList.contains('spotlight-contain')).toBe(false);
+    });
+
     it('should invalidate cached rect on mouseleave', () => {
         let callCount = 0;
         const originalGetBoundingClientRect = element.getBoundingClientRect;

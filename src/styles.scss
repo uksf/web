@@ -728,6 +728,47 @@ mat-tab-nav-panel,
         pointer-events: none;
         z-index: 1;
     }
+
+    // Contain mode: adds half-radius spotlights at all four corners alongside the
+    // cursor spotlight. background-blend-mode: lighten prevents alpha doubling
+    // where the cursor overlaps a corner.
+    &.spotlight-contain::after {
+        --_spotlight-corner-size: calc(var(--spotlight-size, 200px) / 2);
+        --_spotlight-color: var(--spotlight-color, rgba(255, 255, 255, 0.08));
+        --_spotlight-corner-color: color-mix(in srgb, var(--_spotlight-color) 50%, transparent);
+        background:
+            radial-gradient(
+                circle var(--spotlight-size, 200px) at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+                var(--_spotlight-color),
+                var(--_spotlight-color) 30%,
+                transparent 100%
+            ),
+            radial-gradient(
+                circle var(--_spotlight-corner-size) at 0 0,
+                var(--_spotlight-corner-color),
+                var(--_spotlight-corner-color) 30%,
+                transparent 100%
+            ),
+            radial-gradient(
+                circle var(--_spotlight-corner-size) at 100% 0,
+                var(--_spotlight-corner-color),
+                var(--_spotlight-corner-color) 30%,
+                transparent 100%
+            ),
+            radial-gradient(
+                circle var(--_spotlight-corner-size) at 0 100%,
+                var(--_spotlight-corner-color),
+                var(--_spotlight-corner-color) 30%,
+                transparent 100%
+            ),
+            radial-gradient(
+                circle var(--_spotlight-corner-size) at 100% 100%,
+                var(--_spotlight-corner-color),
+                var(--_spotlight-corner-color) 30%,
+                transparent 100%
+            );
+        background-blend-mode: lighten;
+    }
 }
 
 // ---------------------------------------------------------------------------

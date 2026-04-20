@@ -35,7 +35,7 @@
 
                 <mat-accordion class="missions-accordion" multi>
                     <mat-expansion-panel class="section-panel" [togglePosition]="'before'" [expanded]="true">
-                        <mat-expansion-panel-header appSpotlight [collapsedHeight]="'36px'" [expandedHeight]="'36px'">
+                        <mat-expansion-panel-header appSpotlight [spotlightContain]="true" [collapsedHeight]="'36px'" [expandedHeight]="'36px'">
                             <mat-panel-title>Active <span class="count">({{ filteredActiveMissions.length }})</span></mat-panel-title>
                         </mat-expansion-panel-header>
                         <ng-template matExpansionPanelContent>
@@ -43,7 +43,7 @@
                                 <mat-accordion class="map-accordion" multi>
                                     @for (group of filteredActiveGroups; track trackByMapGroup($index, group)) {
                                         <mat-expansion-panel class="map-panel" [togglePosition]="'before'" [expanded]="false" [style.--map-border]="mapBorderColour(group.map)">
-                                            <mat-expansion-panel-header appSpotlight [collapsedHeight]="'36px'" [expandedHeight]="'36px'">
+                                            <mat-expansion-panel-header appSpotlight [spotlightContain]="true" [collapsedHeight]="'36px'" [expandedHeight]="'36px'">
                                                 <mat-panel-title>
                                                     {{ group.map }} <span class="count">({{ group.missions.length }})</span>
                                                 </mat-panel-title>
@@ -106,7 +106,7 @@
                     </mat-expansion-panel>
 
                     <mat-expansion-panel class="section-panel" [togglePosition]="'before'" [expanded]="false">
-                        <mat-expansion-panel-header appSpotlight [collapsedHeight]="'36px'" [expandedHeight]="'36px'">
+                        <mat-expansion-panel-header appSpotlight [spotlightContain]="true" [collapsedHeight]="'36px'" [expandedHeight]="'36px'">
                             <mat-panel-title>Archived <span class="count">({{ filteredArchivedMissions.length }})</span></mat-panel-title>
                         </mat-expansion-panel-header>
                         <ng-template matExpansionPanelContent>
@@ -114,7 +114,7 @@
                                 <mat-accordion class="map-accordion" multi>
                                     @for (group of filteredArchivedGroups; track trackByMapGroup($index, group)) {
                                         <mat-expansion-panel class="map-panel" [togglePosition]="'before'" [expanded]="false" [style.--map-border]="mapBorderColour(group.map)">
-                                            <mat-expansion-panel-header appSpotlight [collapsedHeight]="'36px'" [expandedHeight]="'36px'">
+                                            <mat-expansion-panel-header appSpotlight [spotlightContain]="true" [collapsedHeight]="'36px'" [expandedHeight]="'36px'">
                                                 <mat-panel-title>
                                                     {{ group.map }} <span class="count">({{ group.missions.length }})</span>
                                                 </mat-panel-title>
