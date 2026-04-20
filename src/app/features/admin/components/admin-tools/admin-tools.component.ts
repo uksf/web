@@ -15,7 +15,6 @@ import { UksfError } from '@app/shared/models/response';
 import { AdminToolsService } from '../../services/admin-tools.service';
 import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
-import { AdminPageComponent } from '../admin-page/admin-page.component';
 import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { AutofocusStopComponent } from '../../../../shared/components/elements/autofocus-stop/autofocus-stop.component';
@@ -25,7 +24,7 @@ import { DropdownComponent } from '../../../../shared/components/elements/dropdo
     selector: 'app-admin-tools',
     templateUrl: './admin-tools.component.html',
     styleUrls: ['./admin-tools.component.scss'],
-    imports: [DefaultContentAreasComponent, MainContentAreaComponent, AdminPageComponent, ButtonComponent, NgxPermissionsModule, FormsModule, AutofocusStopComponent, DropdownComponent]
+    imports: [DefaultContentAreasComponent, MainContentAreaComponent, ButtonComponent, NgxPermissionsModule, FormsModule, AutofocusStopComponent, DropdownComponent]
 })
 export class AdminToolsComponent implements OnInit {
     private adminToolsService = inject(AdminToolsService);

@@ -7,7 +7,6 @@ import { UksfError } from '@app/shared/models/response';
 import { InfrastructureService } from '../../services/infrastructure.service';
 import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
-import { AdminPageComponent } from '../admin-page/admin-page.component';
 import { LoadingPlaceholderComponent } from '../../../../shared/components/elements/loading-placeholder/loading-placeholder.component';
 import { MatTooltip } from '@angular/material/tooltip';
 import { NgStyle, DatePipe } from '@angular/common';
@@ -18,7 +17,7 @@ import { ButtonComponent } from '../../../../shared/components/elements/button-p
     selector: 'app-admin-servers',
     templateUrl: './admin-servers.component.html',
     styleUrls: ['./admin-servers.component.scss'],
-    imports: [DefaultContentAreasComponent, MainContentAreaComponent, AdminPageComponent, LoadingPlaceholderComponent, MatTooltip, NgStyle, MatIcon, ButtonComponent, DatePipe]
+    imports: [DefaultContentAreasComponent, MainContentAreaComponent, LoadingPlaceholderComponent, MatTooltip, NgStyle, MatIcon, ButtonComponent, DatePipe]
 })
 export class AdminServersComponent implements OnInit {
     private infrastructureService = inject(InfrastructureService);

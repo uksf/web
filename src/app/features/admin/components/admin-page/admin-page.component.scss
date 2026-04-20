@@ -1,3 +1,46 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
+.nav-bar {
+    flex: 0 0 auto;
+    // Override global .nav-bar rule (styles.scss) — page provides its own
+    // top padding so the scrollbar starts flush against the nav.
+    padding: 0;
+    // Sit above the scrolling tab panel so the shadow + fade overlay the content.
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 8px 12px -8px rgba(0, 0, 0, 0.7);
+
+    // Soft gradient fade dropping onto the scrolling content below.
+    &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 100%;
+        height: 12px;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0));
+        pointer-events: none;
+    }
+
+    // Soften the Material tab header bottom border so it doesn't double up
+    // with the shadow + fade.
+    ::ng-deep .mat-mdc-tab-header {
+        border-bottom-color: rgba(255, 255, 255, 0.04);
+    }
+}
+
+mat-tab-nav-panel {
+    display: block;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+}
+
 a {
     text-decoration: none;
     color: rgba(0, 0, 0, 0.87);

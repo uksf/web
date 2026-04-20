@@ -1,8 +1,16 @@
 // Shared styles for admin sub-page components.
 // Import: @use '../../admin-shared' as admin;
 
+@use 'styles/variables' as v;
+
 // Base table styles shared by all admin data table views.
 @mixin admin-table-base {
+    .page-container {
+        display: flex;
+        flex-direction: column;
+        gap: v.$spacing-8px;
+    }
+
     .spinner-container {
         height: 416px;
         position: absolute;
@@ -24,11 +32,16 @@
         display: flex;
         flex-direction: row;
         align-items: center;
-        gap: 8px;
-        margin-bottom: 8px;
+        gap: v.$spacing-8px;
+        // Match the height of mat-chip-listbox so headers without chips
+        // (audit, errors, launcher) stay the same height as the ones with
+        // chips (logs, discord).
+        min-height: 40px;
 
         .filter-input {
-            width: 30%;
+            // flex-basis (not just width) so the chip listbox in some tabs
+            // can't shrink the input below 30% of the page width.
+            flex: 0 0 30%;
         }
     }
 

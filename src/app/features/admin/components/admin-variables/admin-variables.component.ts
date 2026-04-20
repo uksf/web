@@ -9,7 +9,6 @@ import { VariableItem } from '@app/features/admin/models/variable-item';
 import { VariablesService } from '../../services/variables.service';
 import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
-import { AdminPageComponent } from '../admin-page/admin-page.component';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { TextInputComponent } from '../../../../shared/components/elements/text-input/text-input.component';
 import { MatButton, MatIconButton } from '@angular/material/button';
@@ -26,7 +25,6 @@ import { InlineEditComponent } from '../../../../shared/components/elements/inli
     imports: [
         DefaultContentAreasComponent,
         MainContentAreaComponent,
-        AdminPageComponent,
         MatProgressSpinner,
         FormsModule,
         ReactiveFormsModule,

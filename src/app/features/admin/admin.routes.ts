@@ -3,6 +3,7 @@ import { NgxPermissionsGuard } from 'ngx-permissions';
 import { Permissions } from '@app/core/services/permissions';
 import { loginRedirect } from '@app/login-redirect';
 
+import { AdminPageComponent } from './components/admin-page/admin-page.component';
 import { AdminLogsComponent } from './components/admin-logs/admin-logs.component';
 import { AdminErrorLogsComponent } from './components/admin-error-logs/admin-error-logs.component';
 import { AdminAuditLogsComponent } from './components/admin-audit-logs/admin-audit-logs.component';
@@ -29,6 +30,7 @@ const adminPermissions = {
 export const ADMIN_ROUTES: Routes = [
     {
         path: '',
+        component: AdminPageComponent,
         providers: [AdminToolsService, InfrastructureService, LogsService, VariablesService],
         children: [
             {

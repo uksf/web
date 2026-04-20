@@ -6,7 +6,6 @@ import { AdminLogsComponent } from '../admin-logs/admin-logs.component';
 import { first } from 'rxjs/operators';
 import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
-import { AdminPageComponent } from '../admin-page/admin-page.component';
 import { TextInputBoxedComponent } from '../../../../shared/components/elements/text-input-boxed/text-input-boxed.component';
 import { FormsModule } from '@angular/forms';
 import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
@@ -22,7 +21,6 @@ import { DatePipe } from '@angular/common';
     imports: [
         DefaultContentAreasComponent,
         MainContentAreaComponent,
-        AdminPageComponent,
         TextInputBoxedComponent,
         FormsModule,
         FlexFillerComponent,

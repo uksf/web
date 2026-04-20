@@ -10,14 +10,14 @@ import { RouterLinkActive, RouterLink, RouterOutlet } from '@angular/router';
 })
 export class AdminPageComponent {
     tabLinks = [
-        { label: 'Audit', link: '../audit' },
-        { label: 'Errors', link: '../errors' },
-        // { label: 'Launcher', link: '../launcher' },
-        { label: 'Logs', link: '../logs' },
-        { label: 'Discord', link: '../discord' },
-        { label: 'Tools', link: '../tools' },
-        { label: 'Variables', link: '../variables' },
-        { label: 'Servers', link: '../servers' }
+        { label: 'Audit', link: 'audit' },
+        { label: 'Errors', link: 'errors' },
+        // { label: 'Launcher', link: 'launcher' },
+        { label: 'Logs', link: 'logs' },
+        { label: 'Discord', link: 'discord' },
+        { label: 'Tools', link: 'tools' },
+        { label: 'Variables', link: 'variables' },
+        { label: 'Servers', link: 'servers' }
     ];
 
     constructor() {}
