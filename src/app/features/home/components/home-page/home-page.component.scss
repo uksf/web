@@ -1,18 +1,9 @@
 @use 'styles/variables' as v;
 
-app-side-content-area {
-    margin-top: 10px;
-
-    .flex-container {
-        padding-left: 0;
-    }
-}
-
 .timezone-container {
     display: flex;
     flex-direction: row;
     height: 48px;
-    margin-top: 5px;
 
     .timezone {
         display: flex;
@@ -38,19 +29,12 @@ app-side-content-area {
     display: flex;
     flex-direction: column;
     margin-left: 0;
-    padding-left: v.$spacing-16px;
-    padding-right: v.$spacing-16px;
 
     & > * {
         margin-bottom: v.$spacing-16px;
     }
 
-    &.no-padding-left {
-        padding-left: 0;
-    }
-
     &.instagram-feed {
-        padding: v.$spacing-16px;
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
@@ -172,16 +156,6 @@ app-side-content-area {
 @include v.below(v.$layout-medium) {
     app-side-content-area {
         margin-left: 0;
-
-        .flex-container {
-            padding-left: v.$spacing-16px;
-        }
-    }
-
-    .flex-container {
-        &.instagram-feed {
-            padding: v.$spacing-8px;
-        }
     }
 }
 

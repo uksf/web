@@ -6,7 +6,7 @@
     .mods-header {
         display: flex;
         flex-direction: row;
-        padding: v.$spacing-16px 0;
+        padding-bottom: v.$spacing-16px;
         width: 100%;
         justify-content: space-between;
         align-items: center;
@@ -34,7 +34,6 @@
         overflow-y: auto;
         display: flex;
         flex-direction: column;
-        padding-bottom: v.$spacing-16px;
     }
 }
 

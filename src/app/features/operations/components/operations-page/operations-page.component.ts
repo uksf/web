@@ -13,7 +13,7 @@ import { RouterLinkActive, RouterLink, RouterOutlet } from '@angular/router';
 export class OperationsPageComponent {
     private permissions = inject(PermissionsService);
 
-    tabLinks: { label: string; link: string }[] = [{ label: 'AAR', link: './aar' }];
+    tabLinks: { label: string; link: string }[] = [{ label: 'AAR', link: 'aar' }];
 
     trackByLink(index: number, item: { link: string }): string {
         return item.link;
@@ -22,8 +22,8 @@ export class OperationsPageComponent {
     constructor() {
         if (this.permissions.hasPermission(Permissions.SERVERS)) {
             this.tabLinks.unshift(
-                { label: 'Servers', link: './servers' },
-                { label: 'Missions', link: './missions' }
+                { label: 'Servers', link: 'servers' },
+                { label: 'Missions', link: 'missions' }
             );
         }
     }

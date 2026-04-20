@@ -23,12 +23,16 @@ import { MatIcon } from '@angular/material/icon';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 import { MatAccordion } from '@angular/material/expansion';
 import { CommandMemberCardComponent } from './command-member-card/command-member-card.component';
+import { DefaultContentAreasComponent } from '@app/shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { FullContentAreaComponent } from '@app/shared/components/content-areas/full-content-area/full-content-area.component';
 
 @Component({
     selector: 'app-command-members',
     templateUrl: './command-members.component.html',
     styleUrls: ['./command-members.component.scss'],
     imports: [
+        DefaultContentAreasComponent,
+        FullContentAreaComponent,
         MatProgressSpinner,
         TextInputBoxedComponent,
         FormsModule,

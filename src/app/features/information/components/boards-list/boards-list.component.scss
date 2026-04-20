@@ -1,15 +1,10 @@
 @use 'styles/variables' as v;
 
-:host {
-    display: block;
-    padding: 0 v.$spacing-16px;
-}
-
 .boards-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: v.$spacing-16px 0;
+    padding-bottom: v.$spacing-16px;
 
     h1 {
         margin: 0;
@@ -20,7 +15,6 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
     gap: v.$spacing-16px;
-    padding-bottom: v.$spacing-16px;
 }
 
 .mat-mdc-card {

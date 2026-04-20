@@ -8,7 +8,6 @@ import { ModpackReleaseService } from '../modpackRelease.service';
 import { ModpackRelease } from '../models/modpack-release';
 import { DefaultContentAreasComponent } from '../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { FullContentAreaComponent } from '../../../shared/components/content-areas/full-content-area/full-content-area.component';
-import { ModpackPageComponent } from '../modpack-page/modpack-page.component';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -24,7 +23,6 @@ import { FormsModule } from '@angular/forms';
     imports: [
         DefaultContentAreasComponent,
         FullContentAreaComponent,
-        ModpackPageComponent,
         NgxPermissionsModule,
         MatButton,
         MatIconButton,

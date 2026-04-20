@@ -13,12 +13,15 @@ import { SpotlightDirective } from '@app/shared/directives/spotlight.directive';
 import { BoardService } from '../../services/board.service';
 import { BoardListItem } from '../../models/board';
 import { BoardSettingsModalComponent } from '../../modals/board-settings-modal/board-settings-modal.component';
+import { DefaultContentAreasComponent } from '@app/shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { FullContentAreaComponent } from '@app/shared/components/content-areas/full-content-area/full-content-area.component';
 
 @Component({
     selector: 'app-boards-list',
     templateUrl: './boards-list.component.html',
     styleUrls: ['./boards-list.component.scss', './boards-list.component.scss-theme.scss'],
     imports: [
+        DefaultContentAreasComponent, FullContentAreaComponent,
         MatCard, MatIcon, MatButton, MatIconButton,
         MatTooltip, MatMenu, MatMenuItem, MatMenuTrigger, NgxPermissionsModule,
         SpotlightDirective

@@ -791,8 +791,10 @@ mat-tab-nav-panel,
 // ---------------------------------------------------------------------------
 // Page layout utilities
 // ---------------------------------------------------------------------------
+// Page padding now lives on <app-main-content-area> / <app-full-content-area>.
+// .page-container remains as a marker class on admin templates — kept empty.
 .page-container {
-    padding: 16px;
+    padding: 0;
 }
 
 // Mat-paginator: remove outlined border from the "items per page" select

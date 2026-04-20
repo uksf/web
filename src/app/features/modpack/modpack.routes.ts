@@ -3,6 +3,7 @@ import { NgxPermissionsGuard } from 'ngx-permissions';
 import { Permissions } from '@app/core/services/permissions';
 import { loginRedirect } from '@app/login-redirect';
 
+import { ModpackPageComponent } from './modpack-page/modpack-page.component';
 import { ModpackGuideComponent } from './modpack-guide/modpack-guide.component';
 import { ModpackReleasesComponent } from './modpack-releases/modpack-releases.component';
 import { ModpackBuildsDevComponent } from './modpack-builds-dev/modpack-builds-dev.component';
@@ -13,6 +14,7 @@ import { WorkshopService } from './services/workshop.service';
 export const MODPACK_ROUTES: Routes = [
     {
         path: '',
+        component: ModpackPageComponent,
         providers: [WorkshopService],
         children: [
             { path: '', redirectTo: 'guide', pathMatch: 'full' },

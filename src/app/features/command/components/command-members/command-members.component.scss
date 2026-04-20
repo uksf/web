@@ -9,7 +9,6 @@
     display: flex;
     flex-direction: column;
     margin-left: 0;
-    padding: 0 16px 16px;
 
     .spinner-container {
         display: flex;
@@ -65,8 +64,10 @@
             }
         }
 
-        .mat-mdc-card {
-            margin-bottom: 5px;
+        mat-accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
 
         ::ng-deep .mat-expansion-panel-body {

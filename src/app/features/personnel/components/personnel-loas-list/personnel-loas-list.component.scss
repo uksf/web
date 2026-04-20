@@ -5,7 +5,11 @@
 }
 
 .list-container {
-    margin-bottom: 20px;
+    mat-accordion {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
 
     .list-header {
         display: flex;

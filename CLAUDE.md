@@ -55,6 +55,106 @@ src/app/
 - No NgModules for feature routing — use plain `Routes` arrays
 - `SharedModule` exists only for Storybook story compatibility
 
+## Layout & Spacing
+
+**Single source of truth for page structure.** Every routed page wraps in `<app-default-content-areas>` + exactly one content-area shell. Shells own the 16px edge padding — pages never set their own outer padding.
+
+### Shells (own the padding)
+
+```
+<app-default-content-areas>     <!-- 2-column grid (collapses < 768px) -->
+  <app-main-content-area>       <!-- grid-area: main; padding: 16px -->
+  <app-side-content-area>       <!-- grid-area: side; padding: 16px -->
+  <app-full-content-area>       <!-- full-width row 2; padding: 16px -->
+</app-default-content-areas>
+```
+
+Located in `src/app/shared/components/content-areas/`. Pick `main`+`side` for two-column layouts, `full` for single column spanning full width.
+
+### Rules (hard)
+
+- **Never set `:host { padding }` or `.flex-container { padding: 0 16px 16px }` on a page component** — the shell owns it. Adding page-level padding creates double-padding bugs.
+- **Spacing between sibling elements → `gap`** on a flex/grid parent. Never cascading `margin-bottom` down a list (bloats the last item's gap before the shell bottom).
+- **Card lists inside `mat-accordion`**: style the accordion:
+  ```scss
+  mat-accordion {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+  }
+  ```
+  Don't put `margin-bottom` on `.mat-mdc-card` or custom card components (like `<app-command-member-card>`). Accordion gap owns card spacing.
+- **Custom card components** — never set margin on the component's root. Let the parent's gap own inter-item spacing.
+
+### Tab-nav pages (admin / command / personnel / operations / modpack / units)
+
+The route parent component owns the nav bar. Child routes render bare content inside `<mat-tab-nav-panel>`. Required scss pattern:
+
+```scss
+:host {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
+.nav-bar {
+    flex: 0 0 auto;
+    padding: 0;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 0 5px 0 #000;
+}
+
+mat-tab-nav-panel {
+    display: block;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+}
+```
+
+- Drop shadow on the nav bar
+- Scroll is isolated to `mat-tab-nav-panel` — tabs stay fixed, body scrolls
+- Child routes must not re-render `<app-*-page>` or the nav bar
+
+### Full-height pages (kanban boards, dashboards)
+
+When content must fill remaining viewport height (e.g. board columns), add a scoped chain override in the page component:
+
+```scss
+:host {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+
+    ::ng-deep {
+        app-default-content-areas {
+            flex: 1;
+            min-height: 0;
+            grid-template-rows: auto 1fr;
+        }
+
+        app-full-content-area {
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+    }
+}
+```
+
+The shells stay pure (content-sized `auto` rows by default). Fill-height behaviour is opt-in per page.
+
+### Checklist for a new page
+
+- [ ] Root of template is `<app-default-content-areas>` + shell
+- [ ] No `:host { padding }` or outer `.flex-container { padding }` on the page scss
+- [ ] Siblings spaced via `gap` on their flex/grid parent
+- [ ] Card lists use `mat-accordion { gap }`, no `margin-bottom` on cards
+- [ ] Tab-nav pages follow the 3-block pattern above
+- [ ] Don't add `padding-top: 16px` "to match the top" — the shell already has it
+
 ## Component Patterns
 
 ### Dependency Injection
@@ -235,7 +335,7 @@ Angular Material theming with custom palettes:
 - Never hardcode colors - use theme palette functions
 - `::ng-deep` is deprecated but has no replacement - use sparingly for third-party components
 - Components with theming support have a `*.scss-theme.scss` file imported in `styles.scss`
-- Prefer `gap` (on flex/grid containers) or `padding` over `margin` for spacing between elements
+- Prefer `gap` (on flex/grid containers) or `padding` over `margin` for spacing between elements — see **Layout & Spacing** section for the full page-structure ruleset
 
 ### Shared Form Field Styles
 

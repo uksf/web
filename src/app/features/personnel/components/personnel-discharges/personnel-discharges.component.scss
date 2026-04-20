@@ -2,7 +2,6 @@
     display: flex;
     flex-direction: column;
     margin-left: 0;
-    padding: 0 16px 16px;
     gap: 8px;
 
     .list-header {
@@ -75,6 +74,12 @@
                 margin-left: 10px;
             }
         }
+    }
+
+    mat-accordion {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
     }
 
     .mat-mdc-card {

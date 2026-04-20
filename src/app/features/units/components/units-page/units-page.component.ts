@@ -10,9 +10,9 @@ import { RouterLinkActive, RouterLink, RouterOutlet } from '@angular/router';
 })
 export class UnitsPageComponent {
     tabLinks = [
-        { label: 'ORBAT', link: './orbat' },
-        { label: 'Secondary ORBAT', link: './secondary' },
-        { label: 'Auxiliary ORBAT', link: './auxiliary' }
+        { label: 'ORBAT', link: 'orbat' },
+        { label: 'Secondary ORBAT', link: 'secondary' },
+        { label: 'Auxiliary ORBAT', link: 'auxiliary' }
     ];
 
     constructor() {}

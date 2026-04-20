@@ -4,6 +4,12 @@
     flex-direction: column;
 }
 
+.loa-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
 .loa-buttons-container {
     display: flex;
     align-items: center;

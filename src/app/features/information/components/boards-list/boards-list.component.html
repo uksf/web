@@ -1,11 +1,13 @@
-<div class="boards-page">
-    <div class="boards-header">
-        <h1>Boards</h1>
-        <ng-template [ngxPermissionsOnly]="['ADMIN']">
-            <button mat-raised-button color="primary" (click)="createBoard()">Create Board</button>
-        </ng-template>
-    </div>
-    <div class="boards-grid">
+<app-default-content-areas>
+    <app-full-content-area>
+        <div class="boards-page">
+            <div class="boards-header">
+                <h1>Boards</h1>
+                <ng-template [ngxPermissionsOnly]="['ADMIN']">
+                    <button mat-raised-button color="primary" (click)="createBoard()">Create Board</button>
+                </ng-template>
+            </div>
+            <div class="boards-grid">
         @for (board of boards; track board.id) {
             <mat-card class="board-card" appSpotlight [style.border-left-color]="board.color" (click)="openBoard(board)">
                 <div class="board-card-content">
@@ -32,5 +34,7 @@
         } @empty {
             <p class="empty-message">No boards available</p>
         }
-    </div>
-</div>
+            </div>
+        </div>
+    </app-full-content-area>
+</app-default-content-areas>

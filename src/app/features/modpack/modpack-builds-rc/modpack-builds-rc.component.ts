@@ -12,7 +12,6 @@ import { ModpackBuild } from '../models/modpack-build';
 import { DefaultContentAreasComponent } from '../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { ThemeEmitterComponent as ThemeEmitterComponent_1 } from '../../../shared/components/elements/theme-emitter/theme-emitter.component';
 import { FullContentAreaComponent } from '../../../shared/components/content-areas/full-content-area/full-content-area.component';
-import { ModpackPageComponent } from '../modpack-page/modpack-page.component';
 import { NgClass, NgStyle, DatePipe } from '@angular/common';
 import { FlexFillerComponent } from '../../../shared/components/elements/flex-filler/flex-filler.component';
 import { NgxPermissionsModule } from 'ngx-permissions';
@@ -27,7 +26,6 @@ import { ModpackBuildsStepsComponent } from '../modpack-builds-steps/modpack-bui
         DefaultContentAreasComponent,
         ThemeEmitterComponent_1,
         FullContentAreaComponent,
-        ModpackPageComponent,
         NgClass,
         NgStyle,
         FlexFillerComponent,

@@ -13,7 +13,7 @@ import { RouterLinkActive, RouterLink, RouterOutlet } from '@angular/router';
 export class ModpackPageComponent {
     private permissions = inject(PermissionsService);
 
-    tabLinks = [{ label: 'Guide', link: '../guide' }];
+    tabLinks = [{ label: 'Guide', link: 'guide' }];
 
     trackByLink(index: number, item: { link: string }): string {
         return item.link;
@@ -22,11 +22,11 @@ export class ModpackPageComponent {
     constructor() {
         if (this.permissions.hasPermission(Permissions.MEMBER)) {
             this.tabLinks = [
-                { label: 'Guide', link: '../guide' },
-                { label: 'Releases', link: '../releases' },
-                { label: 'Dev Builds', link: '../builds-dev' },
-                { label: 'RC Builds', link: '../builds-rc' },
-                { label: 'Workshop', link: '../workshop' }
+                { label: 'Guide', link: 'guide' },
+                { label: 'Releases', link: 'releases' },
+                { label: 'Dev Builds', link: 'builds-dev' },
+                { label: 'RC Builds', link: 'builds-rc' },
+                { label: 'Workshop', link: 'workshop' }
             ];
         }
     }

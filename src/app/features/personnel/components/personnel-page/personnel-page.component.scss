@@ -1,3 +1,29 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
+.nav-bar {
+    flex: 0 0 auto;
+    padding: 0;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 0 5px 0 #000;
+
+    ::ng-deep .mat-mdc-tab-header {
+        border-bottom-color: rgba(255, 255, 255, 0.04);
+    }
+}
+
+mat-tab-nav-panel {
+    display: block;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+}
+
 a {
     text-decoration: none;
     color: rgba(0, 0, 0, 0.87);
@@ -18,8 +44,6 @@ a {
     display: flex;
     flex-direction: row;
     margin-left: 0;
-    padding-left: 16px;
-    padding-right: 16px;
 }
 
 .flex-container-slim {
@@ -32,29 +56,3 @@ a {
     width: 100%;
 }
 
-.mat-mdc-card {
-    margin-bottom: 5px;
-}
-
-.reports-container {
-    display: flex;
-    width: 100%;
-}
-
-.report-container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-}
-
-.report-section {
-    flex-grow: 1;
-    max-height: 650px;
-    overflow-y: auto;
-}
-
-.report {
-    margin-bottom: 2px;
-    cursor: pointer;
-    padding: 15px;
-}

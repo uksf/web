@@ -14,8 +14,8 @@ export class PersonnelPageComponent {
     private permissions = inject(PermissionsService);
 
     tabLinks = [
-        { label: 'LOAs', link: './loas' }
-        // { label: 'Activity', link: './activity' }
+        { label: 'LOAs', link: 'loas' }
+        // { label: 'Activity', link: 'activity' }
     ];
 
     trackByLink(index: number, item: { link: string }): string {
@@ -25,10 +25,10 @@ export class PersonnelPageComponent {
     constructor() {
         if (this.permissions.hasPermission(Permissions.DISCHARGES)) {
             this.tabLinks = [
-                { label: 'Roster', link: './roster' },
-                { label: 'LOAs', link: './loas' },
-                // { label: 'Activity', link: './activity' },
-                { label: 'Discharges', link: './discharges' }
+                { label: 'Roster', link: 'roster' },
+                { label: 'LOAs', link: 'loas' },
+                // { label: 'Activity', link: 'activity' },
+                { label: 'Discharges', link: 'discharges' }
             ];
         }
     }

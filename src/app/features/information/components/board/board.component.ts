@@ -17,12 +17,15 @@ import { Board, BoardCard, BoardColumn, BoardColumnKey, MoveCardRequest } from '
 import { BoardColumnComponent } from '../board-column/board-column.component';
 import { BoardCardDetailModalComponent } from '../../modals/board-card-detail-modal/board-card-detail-modal.component';
 import { BoardSettingsModalComponent } from '../../modals/board-settings-modal/board-settings-modal.component';
+import { DefaultContentAreasComponent } from '@app/shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { FullContentAreaComponent } from '@app/shared/components/content-areas/full-content-area/full-content-area.component';
 
 @Component({
     selector: 'app-board',
     templateUrl: './board.component.html',
     styleUrls: ['./board.component.scss'],
     imports: [
+        DefaultContentAreasComponent, FullContentAreaComponent,
         MatButton, MatIconButton, MatIcon, MatTooltip, TextInputComponent,
         NgxPermissionsModule, CdkDropListGroup, BoardColumnComponent, FormsModule
     ]

@@ -10,12 +10,12 @@ import { RouterLinkActive, RouterLink, RouterOutlet } from '@angular/router';
 })
 export class CommandPageComponent {
     tabLinks = [
-        { label: 'Requests', link: './requests' },
-        { label: 'Members', link: './members' },
-        { label: 'Units', link: './units' },
-        { label: 'Ranks', link: './ranks' },
-        { label: 'Roles', link: './roles' },
-        { label: 'Training', link: './training' }
+        { label: 'Requests', link: 'requests' },
+        { label: 'Members', link: 'members' },
+        { label: 'Units', link: 'units' },
+        { label: 'Ranks', link: 'ranks' },
+        { label: 'Roles', link: 'roles' },
+        { label: 'Training', link: 'training' }
     ];
 
     constructor() {}
