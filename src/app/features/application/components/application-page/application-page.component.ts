@@ -8,7 +8,7 @@ import { ApplicationState } from '@app/features/application/models/application';
 import { ApplicationService } from '../../services/application.service';
 import { ApplicationAnalyticsService } from '../../services/application-analytics.service';
 import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
-import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
+import { FullContentAreaComponent } from '../../../../shared/components/content-areas/full-content-area/full-content-area.component';
 import { MatCard } from '@angular/material/card';
 import { RouterLink } from '@angular/router';
 import { NgClass } from '@angular/common';
@@ -25,7 +25,7 @@ import { ApplicationEditComponent } from '../application-edit/application-edit.c
     styleUrls: ['./application-page.component.scss'],
     imports: [
         DefaultContentAreasComponent,
-        MainContentAreaComponent,
+        FullContentAreaComponent,
         MatCard,
         RouterLink,
         NgClass,

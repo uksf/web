@@ -1,13 +1,9 @@
 @use 'styles/theme-helpers' as th;
 
-app-default-content-areas {
-    margin-top: 10px;
-}
-
 .flex-container {
     display: flex;
     flex-direction: column;
-    margin-left: 0;
+    gap: 16px;
 
     &.row {
         flex-direction: row;
@@ -17,24 +13,30 @@ app-default-content-areas {
 .progress-container {
     display: flex;
     flex-direction: row;
+    gap: 10px;
     height: 50px;
-    margin: 5px 0;
     text-align: center;
     word-break: break-word;
 
     .box {
         flex: 1;
-        margin-right: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
         border-radius: 4px;
         cursor: default;
         padding: 5px;
+        background-color: var(--uksf-card);
+        color: th.fg-base();
     }
 
-    .box:last-child {
-        margin-right: 0;
+    .enabled {
+        background-color: th.primary();
+        color: th.primary-contrast();
+    }
+
+    .complete {
+        background-color: var(--uksf-gray-550);
     }
 }
 
@@ -63,6 +65,14 @@ app-default-content-areas {
     text-align: right;
 }
 
+a {
+    color: th.primary();
+}
+
+h4 {
+    color: th.primary();
+}
+
 @media screen and (max-width: 800px) {
     .mat-mdc-form-field.large-input,
     .normal,
@@ -75,28 +85,4 @@ app-default-content-areas {
     .progress-container {
         font-size: 12px;
     }
-}
-
-a {
-  color: th.primary();
-}
-
-.progress-container {
-    .box {
-      background-color: var(--uksf-card);
-      color: th.fg-base();
-    }
-
-    .enabled {
-      background-color: th.primary();
-      color: th.primary-contrast();
-    }
-
-    .complete {
-      background-color: var(--uksf-gray-550);
-    }
-}
-
-h4 {
-  color: th.primary();
 }
