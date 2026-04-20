@@ -1,9 +1,0 @@
-@use 'styles/theme-helpers' as th;
-
-@mixin connect-teamspeak-component-theme($theme) {
-    app-teamspeak-connect {
-        a {
-          color: th.primary($theme);
-        }
-    }
-}

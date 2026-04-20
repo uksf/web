@@ -1,3 +1,5 @@
+@use 'styles/theme-helpers' as th;
+
 .mat-expansion-panel {
     min-width: 800px;
     margin-bottom: 0px;
@@ -78,6 +80,16 @@
                     display: none;
                 }
             }
+        }
+    }
+}
+
+.mat-expansion-panel {
+    background-color: var(--uksf-gray-450);
+
+    .permissions-header {
+        span {
+            color: th.primary();
         }
     }
 }

@@ -1,3 +1,5 @@
+@use 'styles/theme-helpers' as th;
+
 .spinner-container {
     height: 152px;
     min-width: 450px;
@@ -55,4 +57,18 @@
             }
         }
     }
+}
+
+.mods-list-item {
+    span {
+        color: th.fg-base();
+    }
+}
+
+::-webkit-scrollbar-track {
+    background-color: var(--uksf-side-bar);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--uksf-scroll-thumb);
 }

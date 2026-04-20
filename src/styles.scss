@@ -7,170 +7,9 @@
 @use 'app/features/command/components/command-ranks/ranks-list-item-layout' as ranks-layout;
 @use 'app/features/operations/components/operations-servers/servers-list-item-layout' as servers-layout;
 
-// Themes
-@use 'darkTheme' as *;
-//@use 'lightTheme' as *;
-
-// Base
-@use 'app/app.component.scss-theme' as *;
-@use 'app/shared/components/teamspeak-connect/teamspeak-connect.component.scss-theme' as *;
-@use 'app/core/components/footer-bar/footer-bar.component.scss-theme' as *;
-@use 'app/core/components/header-bar/header-bar.component.scss-theme' as *;
-@use 'app/core/components/notifications/notifications.component.scss-theme' as *;
-@use 'app/core/components/side-bar/side-bar.component.scss-theme' as *;
-
-// Pages
-@use 'app/features/information/components/about-page/about-page.component.scss-theme' as *;
-@use 'app/features/home/components/home-page/home-page.component.scss-theme' as *;
-@use 'app/features/information/components/information-page/information-page.component.scss-theme' as *;
-@use 'app/features/auth/components/login-page/login-page.component.scss-theme' as *;
-@use 'app/features/modpack/modpack-page/modpack-page.component.scss-theme' as *;
-@use 'app/features/application/components/application-page/application-page.component.scss-theme' as *;
-@use 'app/features/operations/components/operations-page/operations-page.component.scss-theme' as *;
-@use 'app/features/personnel/components/personnel-page/personnel-page.component.scss-theme' as *;
-@use 'app/features/profile/components/profile-page/profile-page.component.scss-theme' as *;
-@use 'app/features/recruitment/components/recruitment-application-page/recruitment-application-page.component.scss-theme' as *;
-@use 'app/features/recruitment/components/recruitment-page/recruitment-page.component.scss-theme' as *;
-@use 'app/features/units/components/unit-page/unit-page.component.scss-theme' as *;
-@use 'app/features/units/components/units-page/units-page.component.scss-theme' as *;
-
-// Components
-@use 'app/features/admin/components/admin-servers/admin-servers.component.scss-theme' as *;
-@use 'app/features/admin/components/admin-variables/admin-variables.component.scss-theme' as *;
-@use 'app/shared/components/comment-display/comment-display.component.scss-theme' as *;
-@use 'app/features/docs/components/docs-content/docs-content.component.scss-theme' as *;
-@use 'app/features/docs/components/docs-content/docs-content.quill.scss-theme' as *;
-@use 'app/features/docs/components/docs-permissions/docs-permissions.component.scss-theme' as *;
-@use 'app/features/docs/components/docs-sidebar/docs-sidebar.component.scss-theme' as *;
-@use 'app/features/docs/components/docs-sidebar/docs-folder/docs-folder.component.scss-theme' as *;
-@use 'app/features/docs/components/docs-sidebar/docs-document/docs-document.component.scss-theme' as *;
-@use 'app/shared/components/elements/file-drop/file-drop.component.scss-theme' as *;
-@use 'app/shared/components/elements/inline-edit/inline-edit.component.scss-theme' as *;
-@use 'app/shared/components/elements/inline-dropdown/inline-dropdown.component.scss-theme' as *;
-@use 'app/shared/components/elements/loading-placeholder/loading-placeholder.component.scss-theme' as *;
-@use 'app/shared/components/elements/selection-list/selection-list.component.scss-theme' as *;
-@use 'app/shared/components/elements/theme-emitter/theme-emitter.component.scss-theme' as *;
-@use 'app/features/command/components/command-requests/command-request.component.scss-theme' as *;
-@use 'app/features/command/components/command-members/command-members.component.scss-theme' as *;
-@use 'app/features/command/components/command-members/command-member-card/command-member-card.component.scss-theme' as *;
-@use 'app/features/command/components/command-ranks/command-ranks.component.scss-theme' as *;
-@use 'app/features/command/components/command-roles/command-roles.component.scss-theme' as *;
-@use 'app/features/command/components/command-units/command-units.component.scss-theme' as *;
-@use 'app/features/operations/components/operations-servers/operations-servers.component.scss-theme' as *;
-@use 'app/features/personnel/components/personnel-discharges/personnel-discharges.component.scss-theme' as *;
-@use 'app/features/personnel/components/personnel-loas-list/personnel-loas-list.component.scss-theme' as *;
-@use 'app/features/personnel/components/personnel-roster/personnel-roster.component.scss-theme' as *;
-@use 'app/features/units/components/units-orbat/units-orbat.component.scss-theme' as *;
-@use 'app/features/units/components/units-orbat-aux/units-orbat-aux.component.scss-theme' as *;
-@use 'app/features/units/components/units-orbat-secondary/units-orbat-secondary.component.scss-theme' as *;
-
-// Modals
-@use 'app/features/command/modals/add-unit-modal/add-unit-modal.component.scss-theme' as *;
-@use 'app/features/operations/modals/edit-server-mods-modal/edit-server-mods-modal.component.scss-theme' as *;
-@use 'app/shared/modals/request-loa-modal/request-loa-modal.component.scss-theme' as *;
-@use 'app/shared/modals/message-modal/message-model.component.scss-theme' as *;
-@use 'app/shared/modals/validation-report-modal/validation-report-modal.scss-theme' as *;
-
-// Information - Boards
-@use 'app/features/information/components/boards-list/boards-list.component.scss-theme' as boardsList;
-@use 'app/features/information/modals/board-card-detail-modal/board-card-detail-modal.component.scss-theme' as boardCardDetail;
-
-// Modpack
-@use 'app/features/modpack/modpack-builds-dev/modpack-builds-dev.component.scss-theme' as *;
-@use 'app/features/modpack/modpack-builds-rc/modpack-builds-rc.component.scss-theme' as *;
-@use 'app/features/modpack/modpack-builds-steps/modpack-builds-steps.component.scss-theme' as *;
-@use 'app/features/modpack/modpack-guide/modpack-guide.component.scss-theme' as *;
-@use 'app/features/modpack/modpack-releases/modpack-releases.component.scss-theme' as *;
-@use 'app/features/modpack/modpack-workshop/modpack-workshop.component.scss-theme' as *;
-@use 'app/features/modpack/new-modpack-release-modal/new-modpack-release-modal.component.scss-theme' as *;
-@use 'app/features/modpack/install-workshop-mod-modal/install-workshop-mod-modal.component.scss-theme' as *;
-@use 'app/features/modpack/workshop-mod-intervention-modal/workshop-mod-intervention-modal.component.scss-theme' as *;
-
 @import '@ali-hm/angular-tree-component/css/angular-tree-component.css';
 
-// Add components themes
-@mixin custom-components-theme($theme) {
-    // Base
-    @include app-component-theme($theme);
-    @include connect-teamspeak-component-theme($theme);
-    @include footer-bar-component-theme($theme);
-    @include header-bar-component-theme($theme);
-    @include notifications-component-theme($theme);
-    @include side-bar-component-theme($theme);
-
-    // Pages
-    @include about-page-component-theme($theme);
-    @include home-page-component-theme($theme);
-    @include information-page-component-theme($theme);
-    @include login-page-component-theme($theme);
-    @include modpack-page-component-theme($theme);
-    @include application-page-component-theme($theme);
-    @include operations-page-component-theme($theme);
-    @include personnel-page-component-theme($theme);
-    @include profile-page-component-theme($theme);
-    @include recruitment-application-page-component-theme($theme);
-    @include recruitment-page-component-theme($theme);
-    @include unit-page-component-theme($theme);
-    @include units-page-component-theme($theme);
-
-    // Components
-    @include admin-servers-component-theme($theme);
-    @include admin-variables-component-theme($theme);
-    @include comment-display-component-theme($theme);
-    @include docs-sidebar-component-theme($theme);
-    @include docs-folder-component-theme($theme);
-    @include docs-document-component-theme($theme);
-    @include docs-content-component-theme($theme);
-    @include docs-content-quill-theme($theme);
-    @include docs-permissions-component-theme($theme);
-    @include file-drop-component-theme($theme);
-    @include inline-edit-component-theme($theme);
-    @include inline-dropdown-component-theme($theme);
-    @include loading-placeholder-component-theme($theme);
-    @include selection-list-component-theme($theme);
-    @include fft.form-field-theme($theme, 'app-text-input');
-    @include fft.form-field-theme($theme, 'app-dropdown');
-    @include fft.form-field-theme($theme, 'app-selection-list');
-    @include fft.form-field-theme($theme, 'app-date-input');
-    @include theme-emitter-component-theme($theme);
-    @include command-request-component-theme($theme);
-    @include command-members-component-theme($theme);
-    @include command-member-card-component-theme($theme);
-    @include command-ranks-component-theme($theme);
-    @include command-roles-component-theme($theme);
-    @include command-units-component-theme($theme);
-    @include operations-servers-component-theme($theme);
-    @include personnel-discharges-component-theme($theme);
-    @include personnel-loas-list-component-theme($theme);
-    @include personnel-roster-component-theme($theme);
-    @include units-orbat-component-theme($theme);
-    @include units-orbat-aux-component-theme($theme);
-    @include units-orbat-secondary-component-theme($theme);
-
-    // Modals
-    @include add-unit-modal-component-theme($theme);
-    @include edit-server-mods-modal-component-theme($theme);
-    @include request-loa-modal-component-theme($theme);
-    @include validation-report-modal-component-theme($theme);
-    @include message-modal-component-theme($theme);
-
-    // Information - Boards
-    @include boardsList.theme($theme);
-    @include boardCardDetail.theme($theme);
-
-    // Modpack
-    @include modpack-builds-dev-component-theme($theme);
-    @include modpack-builds-rc-component-theme($theme);
-    @include modpack-builds-steps-component-theme($theme);
-    @include modpack-guide-component-theme($theme);
-    @include modpack-releases-component-theme($theme);
-    @include modpack-workshop-component-theme($theme);
-    @include install-workshop-mod-modal-component-theme($theme);
-    @include new-modpack-release-modal-component-theme($theme);
-    @include workshop-mod-intervention-modal-component-theme($theme);
-}
-
-.dark-theme {
+.uksf-theme {
     // Emit --mat-sys-* system-level CSS variables.
     // We do NOT include mat.all-component-themes() because it hardcodes
     // component-level tokens (colors, shapes, typography) from the M3 tonal
@@ -181,10 +20,15 @@
     ));
 
     // Emit --uksf-* custom properties
-    @include custom-vars.dark-theme-custom-vars();
+    @include custom-vars.uksf-theme-custom-vars();
 
-    // Custom component themes
-    @include custom-components-theme($dark-theme);
+    // Custom form-field elements (app-text-input, app-dropdown, etc).
+    // These rules target each host selector globally — kept here rather than
+    // per-component so a single mixin call themes all four variants.
+    @include fft.form-field-theme('app-text-input');
+    @include fft.form-field-theme('app-dropdown');
+    @include fft.form-field-theme('app-selection-list');
+    @include fft.form-field-theme('app-date-input');
 
     // -----------------------------------------------------------------------
     // Override M3 system tokens to match M2 dark theme appearance.
@@ -416,10 +260,10 @@
         --mat-tab-inactive-label-text-color: rgba(255, 255, 255, 0.6);
         --mat-tab-inactive-hover-label-text-color: rgba(255, 255, 255, 0.6);
         --mat-tab-inactive-focus-label-text-color: rgba(255, 255, 255, 0.6);
-        --mat-tab-active-label-text-color: #{th.primary($dark-theme)};
-        --mat-tab-active-hover-label-text-color: #{th.primary($dark-theme)};
-        --mat-tab-active-focus-label-text-color: #{th.primary($dark-theme)};
-        --mat-tab-active-indicator-color: #{th.primary($dark-theme)};
+        --mat-tab-active-label-text-color: #{th.primary()};
+        --mat-tab-active-hover-label-text-color: #{th.primary()};
+        --mat-tab-active-focus-label-text-color: #{th.primary()};
+        --mat-tab-active-indicator-color: #{th.primary()};
         --mat-tab-label-text-weight: 500;
     }
 
@@ -463,7 +307,7 @@
     }
 
     input {
-        color: th.fg-base($dark-theme) !important;
+        color: th.fg-base() !important;
         background-color: transparent !important;
     }
 
@@ -477,7 +321,7 @@
     }
 
     // Form field: remove filled background and focus overlay for underline-only appearance
-    @include mffo.form-field-underline($dark-theme);
+    @include mffo.form-field-underline();
 
     .mat-mdc-form-field.mat-form-field-appearance-fill {
         .mat-mdc-form-field-infix {
@@ -528,6 +372,74 @@
 
     .mat-mdc-button-touch-target {
         display: none !important;
+    }
+
+    // Quill rich-text editor / viewer. Rendered in multiple places
+    // (docs-content editor, modpack release changelog view, etc) so
+    // theming lives here rather than scoped to one component.
+    .ql-snow {
+        a {
+            color: th.primary() !important;
+
+            &.ql-action,
+            &.ql-remove {
+                color: white !important;
+
+                &:hover {
+                    color: th.primary() !important;
+                }
+            }
+        }
+
+        .ql-toolbar,
+        &.ql-toolbar {
+            background-color: var(--uksf-gray-600);
+
+            :is(button, .ql-picker-label, .ql-picker-item):is(:hover, :focus, .ql-active, .ql-selected) {
+                color: th.primary() !important;
+
+                .ql-stroke {
+                    stroke: th.primary() !important;
+                }
+
+                .ql-fill {
+                    fill: th.primary() !important;
+                }
+            }
+        }
+
+        .ql-stroke,
+        .ql-stroke-miter {
+            stroke: white;
+        }
+
+        .ql-fill {
+            fill: white;
+        }
+
+        .ql-picker,
+        .ql-tooltip {
+            color: white;
+        }
+
+        .ql-picker-options {
+            background-color: var(--uksf-gray-600);
+            border-color: var(--uksf-gray-600) !important;
+        }
+
+        .ql-tooltip {
+            background-color: var(--uksf-gray-600);
+            border-color: var(--uksf-gray-600);
+            box-shadow: 0 0 2px #000;
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: var(--uksf-side-bar);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: var(--uksf-scroll-thumb);
+        }
     }
 }
 
@@ -615,13 +527,13 @@ mat-tab-nav-panel,
 // CDK drag preview
 // ---------------------------------------------------------------------------
 // CDK drag previews are cloned DOM nodes appended to <body>, outside
-// .dark-theme. They don't inherit --mat-sys-* or --uksf-* variables.
+// .uksf-theme. They don't inherit --mat-sys-* or --uksf-* variables.
 // We set explicit tokens, form field underline, button styles, and
-// layout mixins. Themed colors handled by component scss-theme files
+// layout mixins. Themed colors handled by component .component.scss files
 // via @at-root .cdk-drag-preview.
 .cdk-drag-preview {
-    // Emit --uksf-* custom properties (not inherited from .dark-theme)
-    @include custom-vars.dark-theme-custom-vars();
+    // Emit --uksf-* custom properties (not inherited from .uksf-theme)
+    @include custom-vars.uksf-theme-custom-vars();
 
     // Card and form field tokens needed for drag previews.
     // We set these explicitly instead of using mat.card-theme()/mat.form-field-theme()
@@ -632,17 +544,17 @@ mat-tab-nav-panel,
     box-sizing: border-box;
     overflow: hidden;
 
-    // --- Form field: underline-only appearance (mirrors .dark-theme overrides) ---
-    @include mffo.form-field-underline($dark-theme);
+    // --- Form field: underline-only appearance (mirrors .uksf-theme overrides) ---
+    @include mffo.form-field-underline();
 
     // Custom form field (app-text-input, app-dropdown): set theme CSS variables
-    // that are normally scoped to .dark-theme selectors
-    @include fft.form-field-theme($dark-theme, 'app-text-input');
-    @include fft.form-field-theme($dark-theme, 'app-dropdown');
-    @include fft.form-field-theme($dark-theme, 'app-date-input');
+    // that are normally scoped to .uksf-theme selectors
+    @include fft.form-field-theme('app-text-input');
+    @include fft.form-field-theme('app-dropdown');
+    @include fft.form-field-theme('app-date-input');
 
     input {
-        color: th.fg-base($dark-theme) !important;
+        color: th.fg-base() !important;
         background-color: transparent !important;
     }
 
@@ -653,13 +565,13 @@ mat-tab-nav-panel,
     }
 
     .mat-mdc-raised-button.mat-primary:not(:disabled) {
-        background-color: th.primary($dark-theme);
-        color: th.primary-contrast($dark-theme);
+        background-color: th.primary();
+        color: th.primary-contrast();
     }
 
     .mat-mdc-raised-button:disabled {
-        background-color: th.fg-divider($dark-theme);
-        color: th.fg-disabled-text($dark-theme);
+        background-color: th.fg-divider();
+        color: th.fg-disabled-text();
     }
 
     // --- Ranks list item layout ---
@@ -774,7 +686,7 @@ mat-tab-nav-panel,
 // ---------------------------------------------------------------------------
 // Global scrollbar sizing
 // ---------------------------------------------------------------------------
-// Uniform 9px scrollbar across the site. Theme colors applied in .dark-theme.
+// Uniform 9px scrollbar across the site. Theme colors applied in .uksf-theme.
 ::-webkit-scrollbar {
     width: 9px;
     height: 9px;
@@ -869,7 +781,7 @@ mat-dialog-actions, .mat-mdc-dialog-actions {
     flex-direction: row !important;
     justify-content: flex-end !important;
     gap: 8px;
-    color: white; // CDK overlay renders outside .dark-theme — no theme cascade
+    color: white; // CDK overlay renders outside .uksf-theme — no theme cascade
 }
 
 // MDC checkbox: allow label text to wrap
@@ -905,7 +817,7 @@ mat-dialog-actions, .mat-mdc-dialog-actions {
 
     label {
         margin: 0;
-        color: white; // CDK overlay renders outside .dark-theme — no theme cascade
+        color: white; // CDK overlay renders outside .uksf-theme — no theme cascade
         font-size: 14px;
         line-height: 20px;
         padding-left: 8px !important;

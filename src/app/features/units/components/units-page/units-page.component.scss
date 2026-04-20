@@ -1,3 +1,5 @@
+@use 'styles/theme-helpers' as th;
+
 :host {
     display: flex;
     flex-direction: column;
@@ -128,4 +130,8 @@ a {
 
 :host ::ng-deep .p-organizationchart-table > tbody > tr > td {
     padding: 0 0.5rem;
+}
+
+a {
+  color: th.primary-contrast();
 }

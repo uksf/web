@@ -1,8 +1,8 @@
 @use 'styles/theme-helpers' as th;
 
 /// Shared Material form-field overrides for underline-only appearance.
-/// Used in both .dark-theme and .cdk-drag-preview contexts.
-@mixin form-field-underline($theme) {
+/// Used in both .uksf-theme and .cdk-drag-preview contexts.
+@mixin form-field-underline() {
     .mat-mdc-form-field.mat-form-field-appearance-fill {
         .mdc-text-field--filled {
             background-color: transparent;
@@ -16,7 +16,7 @@
         }
 
         .mdc-line-ripple::before {
-            border-bottom-color: th.fg-divider($theme);
+            border-bottom-color: th.fg-divider();
         }
     }
 }

@@ -1,4 +1,5 @@
 @use 'styles/variables' as v;
+@use 'styles/theme-helpers' as th;
 
 .flex-container {
     flex-direction: column;
@@ -123,4 +124,43 @@
 ::-webkit-scrollbar {
     width: 7px;
     height: 5px;
+}
+
+a {
+    color: th.primary();
+}
+
+// mat-menu-item for the update action — menu is portaled to the CDK overlay
+// but retains our encapsulation attr, so this rule reaches it.
+.mat-mdc-menu-item.update {
+    color: th.primary();
+}
+
+.mod-row {
+    button.icon {
+        background-color: transparent;
+
+        &:not(:disabled) {
+            color: white;
+        }
+
+        --mat-button-text-state-layer-color: white;
+        --mat-button-text-ripple-color: rgba(255, 255, 255, 0.12);
+
+        &.update:not(:disabled) {
+            color: th.primary();
+        }
+
+        &.delete:not(:disabled) {
+            color: red;
+        }
+    }
+}
+
+::-webkit-scrollbar-track {
+    background-color: var(--uksf-side-bar);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--uksf-scroll-thumb);
 }

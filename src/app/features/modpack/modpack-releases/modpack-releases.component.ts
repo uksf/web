@@ -19,7 +19,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
     selector: 'app-modpack-releases',
     templateUrl: './modpack-releases.component.html',
-    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-releases.component.scss', './modpack-releases.component.scss-theme.scss'],
+    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-releases.component.scss'],
     imports: [
         DefaultContentAreasComponent,
         FullContentAreaComponent,

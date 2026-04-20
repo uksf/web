@@ -1,3 +1,5 @@
+@use 'styles/theme-helpers' as th;
+
 .nav-bar {
     padding: 0;
 }
@@ -248,6 +250,70 @@
 
         .release-container {
             top: 159px;
+        }
+    }
+}
+
+// ngx-markdown renders anchor tags as plain HTML (no Angular encapsulation attr),
+// so ::ng-deep is required to pierce through and theme them.
+:host ::ng-deep .release-changelog a {
+    color: th.primary();
+}
+
+a {
+    color: th.primary();
+}
+
+.flex-container {
+    .release-history-container {
+        background-color: var(--uksf-app-bar);
+
+        .release-history-item {
+            border-bottom: 1px solid var(--uksf-selected);
+
+            &.selected {
+                color: th.primary();
+                background-color: var(--uksf-selected);
+            }
+
+            &:hover {
+                background-color: var(--uksf-hover);
+            }
+        }
+    }
+
+    .release-container {
+        .release-content {
+            textarea {
+                background-color: var(--uksf-app-bar);
+            }
+
+            .release-changelog {
+                markdown {
+                    h4 {
+                        color: th.primary();
+                    }
+                }
+            }
+        }
+    }
+}
+
+::-webkit-scrollbar-track {
+    background-color: var(--uksf-side-bar);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--uksf-scroll-thumb);
+}
+
+@media only screen and (max-width: 600px) {
+    .flex-container {
+        .release-history-container {
+            .release-history-item {
+                border-bottom: unset;
+                border-right: 1px solid var(--uksf-selected);
+            }
         }
     }
 }

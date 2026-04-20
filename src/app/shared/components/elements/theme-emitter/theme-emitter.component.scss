@@ -1,3 +1,24 @@
+@use 'styles/theme-helpers' as th;
+
 :host {
     display: none;
+}
+
+.foreground {
+    color: th.fg-base();
+}
+.primary {
+    color: th.primary();
+}
+.primary-contrast {
+    color: th.primary-contrast();
+}
+.accent {
+    color: var(--uksf-accent);
+}
+.warn {
+    color: th.warn();
+}
+.warn-contrast {
+    color: th.warn-contrast();
 }

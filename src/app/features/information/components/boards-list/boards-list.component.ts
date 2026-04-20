@@ -19,7 +19,7 @@ import { FullContentAreaComponent } from '@app/shared/components/content-areas/f
 @Component({
     selector: 'app-boards-list',
     templateUrl: './boards-list.component.html',
-    styleUrls: ['./boards-list.component.scss', './boards-list.component.scss-theme.scss'],
+    styleUrls: ['./boards-list.component.scss'],
     imports: [
         DefaultContentAreasComponent, FullContentAreaComponent,
         MatCard, MatIcon, MatButton, MatIconButton,

@@ -1,9 +1,0 @@
-@use 'styles/theme-helpers' as th;
-
-@mixin unit-page-component-theme($theme) {
-    app-unit-page {
-        a {
-          color: th.primary($theme);
-        }
-    }
-}

@@ -8,7 +8,7 @@ import { MainContentAreaComponent } from '@app/shared/components/content-areas/m
 @Component({
     selector: 'app-information-page',
     templateUrl: './information-page.component.html',
-    styleUrls: ['./information-page.component.scss', './information-page.component.scss-theme.scss'],
+    styleUrls: ['./information-page.component.scss'],
     imports: [DefaultContentAreasComponent, MainContentAreaComponent, MatCard, RouterLink, MatIcon]
 })
 export class InformationPageComponent {}

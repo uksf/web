@@ -1,3 +1,5 @@
+@use 'styles/theme-helpers' as th;
+
 .flex-container {
     display: flex;
     flex-direction: column;
@@ -25,4 +27,13 @@
 
 h4 {
     display: inline;
+}
+
+a {
+    color: th.primary();
+}
+
+.text-container {
+    color: white;
+    background-color: #000000d6;
 }

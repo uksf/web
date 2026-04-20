@@ -1,9 +1,0 @@
-@use 'styles/theme-helpers' as th;
-
-@mixin modpack-guide-component-theme($theme) {
-    app-modpack-guide {
-        a {
-          color: th.primary($theme);
-        }
-    }
-}

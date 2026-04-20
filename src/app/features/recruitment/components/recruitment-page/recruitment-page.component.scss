@@ -1,3 +1,5 @@
+@use 'styles/theme-helpers' as th;
+
 app-side-content-area {
     td.tr-stats {
         margin: 2px 5px;
@@ -314,4 +316,13 @@ app-side-content-area {
     }
 
     .stats-item.statistics ::ng-deep .mat-mdc-tab { padding: 0 12px !important; }
+}
+
+a {
+    color: th.primary();
+}
+.applications-container {
+    .applicationCardOthers {
+        background-color: var(--uksf-dark-card);
+    }
 }

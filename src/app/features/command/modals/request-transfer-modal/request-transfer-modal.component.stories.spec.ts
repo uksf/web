@@ -4,6 +4,6 @@ test.describe('RequestTransferModal', () => {
     test('Default visual regression', async ({ page }) => {
         await page.goto('/iframe.html?id=modals-requesttransfer--default&viewMode=story');
         await page.waitForSelector('app-request-transfer-modal');
-        await expect(page.locator('.dark-theme')).toHaveScreenshot('request-transfer-default.png');
+        await expect(page.locator('.uksf-theme')).toHaveScreenshot('request-transfer-default.png');
     });
 });

@@ -21,7 +21,7 @@ import { ModpackBuildsStepsComponent } from '../modpack-builds-steps/modpack-bui
 @Component({
     selector: 'app-modpack-builds-rc',
     templateUrl: './modpack-builds-rc.component.html',
-    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-builds-rc.component.scss', './modpack-builds-rc.component.scss-theme.scss'],
+    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-builds-rc.component.scss'],
     imports: [
         DefaultContentAreasComponent,
         ThemeEmitterComponent_1,

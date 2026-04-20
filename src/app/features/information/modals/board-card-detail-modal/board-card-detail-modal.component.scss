@@ -1,5 +1,6 @@
 @use 'styles/variables' as v;
 @use 'styles/form-field' as ff;
+@use 'styles/theme-helpers' as th;
 
 @mixin editable-field {
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -352,4 +353,12 @@ $description-total-height: $description-content-height + $description-padding-y 
 
 .meta-value {
     opacity: 0.8;
+}
+
+.activity-user {
+    color: th.primary();
+}
+
+.activity-dot {
+    background-color: th.primary();
 }

@@ -4,18 +4,18 @@ test.describe('HeaderBar', () => {
     test('LoggedIn visual regression', async ({ page }) => {
         await page.goto('/iframe.html?id=layout-headerbar--logged-in&viewMode=story');
         await page.waitForSelector('.header-wrapper');
-        await expect(page.locator('.dark-theme')).toHaveScreenshot('header-bar-logged-in.png');
+        await expect(page.locator('.uksf-theme')).toHaveScreenshot('header-bar-logged-in.png');
     });
 
     test('Development visual regression', async ({ page }) => {
         await page.goto('/iframe.html?id=layout-headerbar--development&viewMode=story');
         await page.waitForSelector('.header-wrapper');
-        await expect(page.locator('.dark-theme')).toHaveScreenshot('header-bar-development.png');
+        await expect(page.locator('.uksf-theme')).toHaveScreenshot('header-bar-development.png');
     });
 
     test('NotLoggedIn visual regression', async ({ page }) => {
         await page.goto('/iframe.html?id=layout-headerbar--not-logged-in&viewMode=story');
         await page.waitForSelector('.header-wrapper');
-        await expect(page.locator('.dark-theme')).toHaveScreenshot('header-bar-not-logged-in.png');
+        await expect(page.locator('.uksf-theme')).toHaveScreenshot('header-bar-not-logged-in.png');
     });
 });

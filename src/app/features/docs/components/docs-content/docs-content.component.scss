@@ -73,3 +73,9 @@ h3 {
     width: 7px;
     height: 5px;
 }
+
+.content-container {
+    .content-header {
+        background-color: var(--uksf-gray-600);
+    }
+}

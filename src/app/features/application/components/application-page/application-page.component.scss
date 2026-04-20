@@ -1,3 +1,5 @@
+@use 'styles/theme-helpers' as th;
+
 app-default-content-areas {
     margin-top: 10px;
 }
@@ -73,4 +75,28 @@ app-default-content-areas {
     .progress-container {
         font-size: 12px;
     }
+}
+
+a {
+  color: th.primary();
+}
+
+.progress-container {
+    .box {
+      background-color: var(--uksf-card);
+      color: th.fg-base();
+    }
+
+    .enabled {
+      background-color: th.primary();
+      color: th.primary-contrast();
+    }
+
+    .complete {
+      background-color: var(--uksf-gray-550);
+    }
+}
+
+h4 {
+  color: th.primary();
 }

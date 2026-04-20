@@ -1,3 +1,5 @@
+@use 'styles/theme-helpers' as th;
+
 .flex-container {
     .mat-mdc-card {
         margin-bottom: 15px;
@@ -18,4 +20,8 @@
             font-weight: bold;
         }
     }
+}
+
+a {
+  color: th.primary();
 }

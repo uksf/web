@@ -7,7 +7,7 @@ import { RouterLinkActive, RouterLink, RouterOutlet } from '@angular/router';
 @Component({
     selector: 'app-modpack-page',
     templateUrl: './modpack-page.component.html',
-    styleUrls: ['./modpack-page.component.scss', './modpack-page.component.scss-theme.scss'],
+    styleUrls: ['./modpack-page.component.scss'],
     imports: [MatTabNav, MatTabLink, RouterLinkActive, RouterLink, MatTabNavPanel, RouterOutlet]
 })
 export class ModpackPageComponent {

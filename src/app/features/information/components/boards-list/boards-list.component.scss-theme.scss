@@ -1,9 +1,0 @@
-@use '@angular/material' as mat;
-
-@mixin theme($theme) {
-    app-boards-list {
-        .delete {
-            color: mat.get-theme-color($theme, error);
-        }
-    }
-}

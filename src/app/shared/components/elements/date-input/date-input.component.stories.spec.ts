@@ -59,6 +59,6 @@ test.describe('DateInput', () => {
     test('Error without reserved space visual regression', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-dateinput--error-without-reserved-space&viewMode=story');
         await page.waitForSelector('app-date-input .form-field-error.visible');
-        await expect(page.locator('.dark-theme')).toHaveScreenshot('date-input-error-no-space.png');
+        await expect(page.locator('.uksf-theme')).toHaveScreenshot('date-input-error-no-space.png');
     });
 });

@@ -1,3 +1,5 @@
+@use 'styles/theme-helpers' as th;
+
 .nav-bar {
     padding: 0;
 }
@@ -382,6 +384,63 @@
 
         app-modpack-builds-steps {
             top: 159px;
+        }
+    }
+}
+
+a {
+    color: th.primary();
+}
+
+.flex-container {
+    .build-item-container {
+        background-color: var(--uksf-app-bar);
+
+        .build-history-container {
+            .history-item {
+                border-bottom: 1px solid var(--uksf-selected);
+
+                &.selected {
+                    background-color: var(--uksf-selected);
+
+                    &.release {
+                        color: th.primary();
+                    }
+                }
+
+                &:hover {
+                    background-color: var(--uksf-hover);
+                }
+
+                &.no-select {
+                    border: unset;
+
+                    &:hover {
+                        background-color: unset;
+                    }
+                }
+            }
+        }
+    }
+
+    .build-footer {
+        background-color: var(--uksf-dark-bar);
+
+        .footer-item {
+            &:nth-child(2) {
+                border-left: 1px solid var(--uksf-selected);
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .flex-container {
+        .build-history-container {
+            .history-item {
+                border-bottom: unset;
+                border-right: 1px solid var(--uksf-selected);
+            }
         }
     }
 }

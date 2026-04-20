@@ -75,3 +75,28 @@
         }
     }
 }
+
+.document-container-line {
+    border-top-color: var(--uksf-gray-200);
+}
+
+.document-title {
+    &.hover {
+        background-color: var(--uksf-app-bar-hover);
+    }
+
+    &.selected {
+        background-color: var(--uksf-selected);
+    }
+
+    .document-title-button-container {
+        .icon-container {
+            &:hover {
+                background-color: var(--uksf-hover);
+            }
+
+            .mat-icon {
+            }
+        }
+    }
+}

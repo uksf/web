@@ -1,3 +1,5 @@
+@use 'styles/theme-helpers' as th;
+
 .mat-mdc-dialog-content {
     overflow: hidden;
     min-width: 450px;
@@ -51,4 +53,22 @@
 
 label {
     margin-bottom: 0;
+}
+
+.pbos-list-item {
+    span {
+        color: th.fg-base();
+
+        &.conflict {
+            color: red;
+        }
+    }
+}
+
+::-webkit-scrollbar-track {
+    background-color: var(--uksf-side-bar);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--uksf-scroll-thumb);
 }

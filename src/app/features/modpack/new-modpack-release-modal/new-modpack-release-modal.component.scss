@@ -1,3 +1,5 @@
+@use 'styles/theme-helpers' as th;
+
 :host {
     display: block;
 }
@@ -28,6 +30,26 @@ span {
             .version-label {
                 line-height: 25px;
                 padding-left: 4px;
+            }
+        }
+    }
+}
+
+.mat-mdc-dialog-content {
+    .previous-version {
+        color: th.primary();
+    }
+
+    .form-container {
+        .versions-container {
+            .mat-mdc-radio-button {
+                .version-label {
+                    color: white;
+
+                    &.selected {
+                        color: th.primary();
+                    }
+                }
             }
         }
     }

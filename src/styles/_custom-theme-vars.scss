@@ -1,6 +1,6 @@
-/// Custom theme CSS variables for UKSF dark theme.
+/// Custom theme CSS variables for the UKSF dark theme.
 /// These replace the M2 background palette keys and accent color that have no M3 equivalent.
-@mixin dark-theme-custom-vars() {
+@mixin uksf-theme-custom-vars() {
     // Background surfaces
     --uksf-background: #121212;
     --uksf-app-bar: #242424;

@@ -1,3 +1,5 @@
+@use 'styles/theme-helpers' as th;
+
 :host {
     display: flex;
     flex-direction: column;
@@ -56,3 +58,11 @@ a {
     width: 100%;
 }
 
+.report {
+  background-color: var(--uksf-card);
+  color: th.fg-base();
+
+  &:hover {
+    background-color: var(--uksf-hover);
+  }
+}

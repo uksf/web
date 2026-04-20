@@ -24,7 +24,7 @@ import { MatCard } from '@angular/material/card';
 @Component({
     selector: 'app-modpack-workshop',
     templateUrl: './modpack-workshop.component.html',
-    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-workshop.component.scss', './modpack-workshop.component.scss-theme.scss'],
+    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-workshop.component.scss'],
     imports: [DefaultContentAreasComponent, FullContentAreaComponent, NgxPermissionsModule, MatButton, MatCard, MatDivider, MatMenu, MatMenuItem, MatMenuTrigger, MatTooltip, MatIcon, ReactiveFormsModule, TextInputBoxedComponent]
 })
 export class ModpackWorkshopComponent extends DestroyableComponent implements OnInit, OnDestroy {

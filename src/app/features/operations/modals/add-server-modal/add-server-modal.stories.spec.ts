@@ -4,6 +4,6 @@ test.describe('AddServerModal', () => {
     test('Default visual regression', async ({ page }) => {
         await page.goto('/iframe.html?id=modals-addserver--default&viewMode=story');
         await page.waitForSelector('app-add-server-modal');
-        await expect(page.locator('.dark-theme')).toHaveScreenshot('add-server-default.png');
+        await expect(page.locator('.uksf-theme')).toHaveScreenshot('add-server-default.png');
     });
 });

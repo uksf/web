@@ -1,4 +1,5 @@
 @use '../../admin-shared' as admin;
+@use 'styles/theme-helpers' as th;
 
 @include admin.admin-table-base;
 @include admin.admin-button;
@@ -29,4 +30,12 @@
 
 app-button {
     margin-top: 6px;
+}
+
+.page-container {
+    .update-info-container {
+        span {
+            color: th.primary();
+        }
+    }
 }

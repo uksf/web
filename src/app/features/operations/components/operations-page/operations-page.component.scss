@@ -1,3 +1,5 @@
+@use 'styles/theme-helpers' as th;
+
 :host {
     display: flex;
     flex-direction: column;
@@ -22,6 +24,14 @@ mat-tab-nav-panel {
     flex: 1 1 auto;
     min-height: 0;
     overflow: auto;
+
+    // AAR hosts an iframe that must fill the panel — switch to a flex
+    // container (and kill scroll) so the iframe can stretch to 100%.
+    &:has(app-operations-aar) {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
 }
 
 a {
@@ -80,4 +90,13 @@ a {
     margin-bottom: 2px;
     cursor: pointer;
     padding: 15px;
+}
+
+.report {
+  background-color: var(--uksf-card);
+  color: th.fg-base();
+
+  &:hover {
+    background-color: var(--uksf-hover);
+  }
 }

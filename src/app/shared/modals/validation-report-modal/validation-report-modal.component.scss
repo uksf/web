@@ -1,3 +1,5 @@
+@use 'styles/theme-helpers' as th;
+
 .flex-container {
     display: flex;
     flex-direction: column;
@@ -13,8 +15,13 @@
     width: 100%;
 }
 
+h3 {
+    color: th.primary();
+}
+
 .error {
     font-weight: bolder;
+    color: th.warn();
 }
 
 span {
@@ -34,4 +41,5 @@ p {
 
 a {
     text-decoration: none;
+    color: th.primary();
 }

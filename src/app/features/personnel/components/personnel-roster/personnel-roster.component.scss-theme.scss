@@ -1,7 +1,0 @@
-@mixin personnel-roster-component-theme($theme) {
-    app-personnel-roster {
-        .mat-mdc-row:hover {
-            background-color: var(--uksf-hover);
-        }
-    }
-}

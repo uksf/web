@@ -86,3 +86,13 @@
         vertical-align: middle;
     }
 }
+
+.flex-container {
+    .members-list-container {
+        .members-list-header {
+            .mat-mdc-paginator {
+                background-color: transparent;
+            }
+        }
+    }
+}

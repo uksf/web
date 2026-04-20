@@ -239,3 +239,18 @@
         }
     }
 }
+
+.discharge-1 {
+    color: green;
+}
+.discharge-2 {
+    color: goldenrod;
+}
+.discharge-limit {
+    color: red;
+}
+.refresh-button:not(:disabled) {
+    color: white;
+    --mat-button-text-state-layer-color: white;
+    --mat-button-text-ripple-color: rgba(255, 255, 255, 0.12);
+}

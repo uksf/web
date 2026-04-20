@@ -30,7 +30,7 @@ export interface BoardCardDetailModalData {
 @Component({
     selector: 'app-board-card-detail-modal',
     templateUrl: './board-card-detail-modal.component.html',
-    styleUrls: ['./board-card-detail-modal.component.scss', './board-card-detail-modal.component.scss-theme.scss'],
+    styleUrls: ['./board-card-detail-modal.component.scss'],
     imports: [
         AutofocusStopComponent, MatDialogTitle, MatDialogContent, MatDialogActions, MatButton, MatIconButton,
         FlexFillerComponent, MatChipGrid, MatChipRow, MatChipRemove, MatIcon, MatTooltip,

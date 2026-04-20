@@ -1,8 +1,65 @@
+@use 'styles/theme-helpers' as th;
+
 :host {
     width: 100%;
     height: 100%;
     max-width: 2560px;
     margin: auto;
+}
+
+.page-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.header-row {
+    display: flex;
+    flex-direction: row;
+
+    &.collapse {
+        // legacy, retained for parity if needed
+    }
+}
+
+.main-section {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+
+    .info-column {
+        display: flex;
+        flex-direction: column;
+        flex: 2;
+        gap: 16px;
+    }
+
+    .side-column {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        gap: 16px;
+    }
+}
+
+.experience-row {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+
+    > * {
+        flex: 1;
+    }
+}
+
+.comments-section {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+
+    > * {
+        flex: 1;
+    }
 }
 
 .flex-container {
@@ -12,10 +69,6 @@
 
     &.flex-row {
         flex-direction: row;
-    }
-
-    &.padding-bottom-thin {
-        padding-bottom: 8px;
     }
 
     &.flex-half {
@@ -146,20 +199,33 @@ img {
     color: red;
 }
 
+a {
+    color: th.primary();
+}
+.p-rating-icon {
+    color: th.primary();
+}
+
+@media screen and (max-width: 900px) {
+    .main-section {
+        flex-direction: column;
+    }
+
+    .experience-row {
+        flex-direction: column;
+    }
+
+    .comments-section {
+        flex-direction: column;
+    }
+}
+
 @media screen and (max-width: 768px) {
+    .header-row {
+        flex-direction: column;
+    }
+
     .flex-container {
-        &.padding-right {
-            padding-right: 8px;
-        }
-
-        &.padding-left {
-            padding-left: 8px;
-        }
-
-        &.padding-top {
-            padding-top: 8px;
-        }
-
         &.collapse {
             flex-direction: column !important;
         }
@@ -184,14 +250,6 @@ img {
 
 @media screen and (max-width: 600px) {
     .flex-container {
-        &.padding-right {
-            padding-right: 0;
-        }
-
-        &.padding-left {
-            padding-left: 0;
-        }
-
         &.collapse-small {
             flex-direction: column !important;
         }

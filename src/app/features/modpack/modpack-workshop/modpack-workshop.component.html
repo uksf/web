@@ -42,7 +42,7 @@
                                                     </button>
                                                 }
                                                 @if (mod._updateAvailable) {
-                                                    <button mat-button class="icon" (click)="update(mod)" matTooltip="Update">
+                                                    <button mat-button class="icon update" (click)="update(mod)" matTooltip="Update">
                                                         <mat-icon>download</mat-icon>
                                                     </button>
                                                 }
@@ -78,7 +78,7 @@
                                                     </button>
                                                 }
                                                 @if (mod._updateAvailable) {
-                                                    <button mat-menu-item (click)="update(mod)">
+                                                    <button mat-menu-item class="update" (click)="update(mod)">
                                                         <mat-icon>download</mat-icon>
                                                         Update
                                                     </button>

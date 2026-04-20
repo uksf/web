@@ -26,6 +26,8 @@ import { FormsModule } from '@angular/forms';
 import { MatCard } from '@angular/material/card';
 import { CommentDisplayComponent as CommentDisplayComponent_1 } from '../../../../shared/components/comment-display/comment-display.component';
 import { CountryImage, CountryName } from '../../../../shared/pipes/country.pipe';
+import { DefaultContentAreasComponent } from '@app/shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { FullContentAreaComponent } from '@app/shared/components/content-areas/full-content-area/full-content-area.component';
 
 @Component({
     selector: 'app-recruitment-application-page',
@@ -33,6 +35,8 @@ import { CountryImage, CountryName } from '../../../../shared/pipes/country.pipe
     styleUrls: ['./recruitment-application-page.component.scss'],
     providers: [DatePipe],
     imports: [
+        DefaultContentAreasComponent,
+        FullContentAreaComponent,
         MatIconButton,
         MatIcon,
         NgClass,

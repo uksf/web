@@ -25,7 +25,7 @@ import { AnsiToHtmlPipe } from '../../../shared/pipes/ansi-to-html.pipe';
 @Component({
     selector: 'app-modpack-builds-steps',
     templateUrl: './modpack-builds-steps.component.html',
-    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-builds-steps.component.scss', './modpack-builds-steps.component.scss-theme.scss'],
+    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-builds-steps.component.scss'],
     imports: [ThemeEmitterComponent_1, NgClass, FlexFillerComponent, MatButton, MatTooltip, MatIcon, CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf, AnsiToHtmlPipe]
 })
 export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges {

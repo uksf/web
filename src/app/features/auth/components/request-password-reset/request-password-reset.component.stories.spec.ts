@@ -4,12 +4,12 @@ test.describe('RequestPasswordReset', () => {
     test('Default visual regression', async ({ page }) => {
         await page.goto('/iframe.html?id=auth-requestpasswordreset--default&viewMode=story');
         await page.waitForSelector('app-request-password-reset');
-        await expect(page.locator('.dark-theme')).toHaveScreenshot('request-password-reset-default.png');
+        await expect(page.locator('.uksf-theme')).toHaveScreenshot('request-password-reset-default.png');
     });
 
     test('Sent visual regression', async ({ page }) => {
         await page.goto('/iframe.html?id=auth-requestpasswordreset--sent&viewMode=story');
         await page.waitForSelector('app-request-password-reset');
-        await expect(page.locator('.dark-theme')).toHaveScreenshot('request-password-reset-sent.png');
+        await expect(page.locator('.uksf-theme')).toHaveScreenshot('request-password-reset-sent.png');
     });
 });

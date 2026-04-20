@@ -40,7 +40,7 @@ test.describe('TextInput', () => {
     test('Inline with button visual regression', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--inline-with-button&viewMode=story');
         await page.waitForSelector('app-text-input');
-        await expect(page.locator('.dark-theme')).toHaveScreenshot('text-input-inline-button.png');
+        await expect(page.locator('.uksf-theme')).toHaveScreenshot('text-input-inline-button.png');
     });
 
     test('Focused visual regression', async ({ page }) => {
@@ -79,7 +79,7 @@ test.describe('TextInput', () => {
     test('Inline multiple inputs visual regression', async ({ page }) => {
         await page.goto('/iframe.html?id=shared-textinput--inline-multiple-inputs-with-button&viewMode=story');
         await page.waitForSelector('app-text-input');
-        await expect(page.locator('.dark-theme')).toHaveScreenshot('text-input-inline-multi.png');
+        await expect(page.locator('.uksf-theme')).toHaveScreenshot('text-input-inline-multi.png');
     });
 
     test('Hint visual regression', async ({ page }) => {

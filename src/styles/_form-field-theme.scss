@@ -4,60 +4,60 @@
 // $host-selector should match the component's element selector (e.g., 'app-text-input').
 // Border color and style use CSS custom properties (--ff-border-color, --ff-border-style)
 // to avoid specificity conflicts with Angular's emulated encapsulation.
-@mixin form-field-theme($theme, $host-selector) {
+@mixin form-field-theme($host-selector) {
     #{$host-selector} {
-        --ff-border-color: #{th.fg-divider($theme)};
+        --ff-border-color: #{th.fg-divider()};
 
         .form-field-label {
-            color: th.fg-secondary-text($theme);
+            color: th.fg-secondary-text();
         }
 
         .form-field input,
         .form-field textarea {
-            color: th.fg-base($theme);
+            color: th.fg-base();
 
             &::placeholder {
-                color: th.fg-hint-text($theme);
+                color: th.fg-hint-text();
             }
         }
 
         .form-field-wrapper:hover:not(.form-field-disabled):not(.form-field-focused):not(.form-field-has-error) {
-            --ff-border-color: #{th.fg-base($theme)};
+            --ff-border-color: #{th.fg-base()};
         }
 
         .form-field-focused {
-            --ff-border-color: #{th.primary($theme)};
+            --ff-border-color: #{th.primary()};
         }
 
         .form-field-focused .form-field-label {
-            color: th.primary($theme);
+            color: th.primary();
         }
 
         // Must come after .form-field-focused so error color wins when both classes apply
         .form-field-has-error {
-            --ff-border-color: #{th.warn($theme)};
+            --ff-border-color: #{th.warn()};
         }
 
         .form-field-has-error .form-field-label {
-            color: th.warn($theme);
+            color: th.warn();
         }
 
         .form-field-error {
-            color: th.warn($theme);
+            color: th.warn();
         }
 
         .form-field-clear {
-            color: th.fg-secondary-text($theme);
+            color: th.fg-secondary-text();
         }
 
         .form-field-disabled {
-            --ff-border-color: #{th.fg-divider($theme)};
+            --ff-border-color: #{th.fg-divider()};
             --ff-border-style: dashed;
         }
 
         .form-field-disabled .form-field input,
         .form-field-disabled .form-field textarea {
-            color: th.fg-disabled-text($theme);
+            color: th.fg-disabled-text();
         }
     }
 }

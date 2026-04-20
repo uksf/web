@@ -1,4 +1,15 @@
 @use 'servers-list-item-layout' as layout;
+@use 'styles/theme-helpers' as th;
+
+@mixin _white-icon-button {
+    background-color: transparent;
+    --mat-button-text-state-layer-color: white;
+    --mat-button-text-ripple-color: rgba(255, 255, 255, 0.12);
+
+    &:not(:disabled) {
+        color: white;
+    }
+}
 
 .column {
     flex-direction: column;
@@ -20,6 +31,11 @@
     margin-right: 5px;
 }
 
+.uploading {
+    color: var(--uksf-accent-contrast) !important;
+    background-color: var(--uksf-accent) !important;
+}
+
 .admin-container {
     display: flex;
     flex-direction: row;
@@ -27,10 +43,12 @@
     .control-disabled {
         line-height: 36px;
         margin-right: 10px;
+        color: red;
     }
 
     .refresh-button {
         margin-right: 10px;
+        @include _white-icon-button;
     }
 }
 
@@ -69,9 +87,36 @@
 .servers-list-item {
     @include layout.servers-list-item-layout;
     margin: 10px 10px 0 0;
+    background-color: var(--uksf-server);
 
-    .server-header h3 {
-        // Status colors defined in operations-servers.component.scss-theme.scss
+    &.server-running {
+        background-color: var(--uksf-server-running);
+    }
+
+    .server-header {
+        button {
+            @include _white-icon-button;
+        }
+
+        h3 {
+            background-color: transparent !important;
+
+            &.title-launching { color: lightseagreen; }
+            &.title-running { color: green; }
+            &.title-stopping { color: red; }
+        }
+    }
+}
+
+.server-buttons {
+    .admin {
+        button {
+            @include _white-icon-button;
+
+            &.delete:not(:disabled) {
+                color: red;
+            }
+        }
     }
 }
 
@@ -113,6 +158,7 @@
     align-items: center;
     width: 100%;
     box-sizing: border-box;
+    border-color: th.primary();
 
     span {
         text-align: center;
@@ -125,5 +171,41 @@
     .server-buttons {
         display: flex;
         flex-direction: column;
+    }
+}
+
+// Drag preview: CDK clones the servers-list-item outside the component tree,
+// so emulated-encapsulation rules above don't apply. Mirror the key theme
+// rules at root so the preview looks the same.
+@at-root .cdk-drag-preview {
+    .servers-list-item {
+        color: th.fg-text();
+        background-color: var(--uksf-server);
+
+        &.server-running {
+            background-color: var(--uksf-server-running);
+        }
+
+        .server-header {
+            button {
+                @include _white-icon-button;
+            }
+
+            h3 {
+                &.title-launching { color: lightseagreen; }
+                &.title-running { color: green; }
+                &.title-stopping { color: red; }
+            }
+        }
+    }
+
+    .server-buttons {
+        .admin button {
+            @include _white-icon-button;
+
+            &.delete:not(:disabled) {
+                color: red;
+            }
+        }
     }
 }

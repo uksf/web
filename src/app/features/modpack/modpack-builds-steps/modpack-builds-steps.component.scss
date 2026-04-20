@@ -1,3 +1,5 @@
+@use 'styles/theme-helpers' as th;
+
 .log-container {
     display: flex;
     flex-direction: column;
@@ -288,5 +290,87 @@
                 }
             }
         }
+    }
+}
+
+a {
+    color: th.primary();
+}
+
+.log-container {
+    .log-steps {
+        border-right: 1px solid var(--uksf-selected);
+
+        h3 {
+            border-bottom: 1px solid var(--uksf-selected);
+        }
+
+        .log-step-item {
+            border-bottom: 1px solid var(--uksf-selected);
+
+            &.selected {
+                color: th.primary();
+                background-color: var(--uksf-selected);
+            }
+
+            &:hover {
+                background-color: var(--uksf-hover);
+            }
+        }
+    }
+
+    .log-output {
+        .log-output-header {
+            .buttons {
+                .mat-mdc-raised-button {
+                    &.scroll {
+                        &.autoScroll {
+                            background-color: var(--uksf-selected);
+                        }
+                    }
+                }
+            }
+        }
+
+        .build-log {
+            color: var(--uksf-contrast);
+            background-color: transparent;
+
+            .log-item {
+                color: th.fg-base();
+
+                &.selected {
+                    background-color: var(--uksf-selected);
+
+                    .link {
+                        color: var(--uksf-contrast);
+                    }
+                }
+
+                &:hover {
+                    background-color: var(--uksf-hover);
+
+                    &.selected {
+                        background-color: var(--uksf-selected);
+                    }
+
+                    .link {
+                        color: th.fg-base();
+                    }
+                }
+
+                .link {
+                    color: transparent;
+
+                    &:hover {
+                        color: th.primary();
+                    }
+                }
+            }
+        }
+    }
+
+    i {
+        color: var(--uksf-contrast);
     }
 }

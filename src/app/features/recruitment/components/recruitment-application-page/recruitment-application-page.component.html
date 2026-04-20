@@ -1,95 +1,95 @@
-@if (application != null) {
-<div class="flex-container flex-row padding-bottom-thin collapse">
-    <div class="flex-container flex-grow flex-row no-padding collapse-tiny">
-        <button mat-icon-button class="back-button" (click)="back()"><mat-icon>arrow_back</mat-icon></button>
-        <h3 class="small-centred">
-            {{ application.account.firstname }} {{ application.account.lastname }}'s Application
-            {{ application.account.application.state == applicationState.ACCEPTED ? ' - ' : application.account.application.state == applicationState.REJECTED ? ' - ' : '' }}
-            <span [ngClass]="{ green: application.account.application.state == applicationState.ACCEPTED, red: application.account.application.state == applicationState.REJECTED }">
-                {{ application.account.application.state == applicationState.ACCEPTED ? 'Accepted' : application.account.application.state == applicationState.REJECTED ? 'Rejected' : '' }}
-            </span>
-        </h3>
-        @if (updating) {
-        <mat-spinner class="updating" [diameter]="30"></mat-spinner>
-        }
-    </div>
-    <div class="flex-container flex-grow flex-row no-padding collapse-tiny">
-        <div class="flex-container flex-grow flex-row no-padding controls">
-            @if (application.account.application.state == applicationState.WAITING) {
-            <button mat-button class="green" (click)="updateApplicationState(applicationState.ACCEPTED)" [disabled]="!isAcceptableAge() || updating">
-                <span [matTooltip]="!isAcceptableAge() ? 'Application cannot be accepted due to age requirements' : null">Approve</span>
-            </button>
-            } @if (application.account.application.state == applicationState.WAITING) {
-            <button mat-button class="red" (click)="updateApplicationState(applicationState.REJECTED)" [disabled]="updating">Reject</button>
-            } @if ( application.account.application.state != applicationState.WAITING && application.account.membershipState != membershipState.MEMBER && application.account.membershipState !=
-            membershipState.DISCHARGED ) {
-            <button mat-button class="goldenrod" (click)="updateApplicationState(applicationState.WAITING)" [disabled]="updating">Reactivate</button>
-            } @if ( application.account.application.state != applicationState.WAITING && application.account.membershipState != membershipState.MEMBER && application.account.membershipState ==
-            membershipState.DISCHARGED ) {
-            <button mat-button class="goldenrod" [routerLink]="['/personnel/discharges']" [queryParams]="{ filter: application.account.lastname }" [disabled]="updating">View Discharge</button>
-            } @if (application.account.application.state == applicationState.ACCEPTED && application.account.membershipState == membershipState.MEMBER) {
-            <button mat-button class="red" (click)="resetApplicationToCandidate()" [disabled]="updating">Reset to Candidate</button>
-            }
-        </div>
-        <ng-template [ngxPermissionsOnly]="['RECRUITER_LEAD']">
-            <div class="flex-container flex-row no-padding recruiter">
-                <app-dropdown
-                    class="recruiter-dropdown"
-                    placeholder="Recruiter"
-                    [autocomplete]="false"
-                    [elements]="recruiterElements$"
-                    [(ngModel)]="selected"
-                    (selectionChanged)="setNewRecruiter($event)"
-                    [disabled]="updating"
-                    elementName="recruiter"
-                    [reserveErrorSpace]="false"
-                >
-                    <ng-template #element let-element>{{ element.displayValue }}</ng-template>
-                </app-dropdown>
-            </div>
-        </ng-template>
-    </div>
-</div>
-} @if (application != null) {
-<div>
-    <div class="flex-container">
-        <div class="flex-container flex-row flex-grow no-padding collapse-small">
-            <div class="flex-container flex-two-thirds no-padding padding-right">
-                <div class="flex-container flex-grow no-padding">
-                    <h4>Candidate Information</h4>
-                    <mat-card class="card-gap">
-                        <div class="flex-container flex-row no-padding">
-                            <div class="header"><b>Name</b></div>
-                            <div>{{ application.account.firstname }} {{ application.account.lastname }}</div>
-                        </div>
-                        <div class="flex-container flex-row no-padding">
-                            <div class="header"><b>Nationality</b></div>
-                            <div><img alt="{{ application.account.nation }} flag" src="{{ application.account.nation | countryImage }}" />{{ application.account.nation | countryName }}</div>
-                        </div>
-                        <div class="flex-container flex-row no-padding">
-                            <div class="header"><b>Date of Birth</b></div>
-                            <div>{{ application.account.dob | date : 'd MMM y' : 'Europe/London' }}</div>
-                        </div>
-                        <div class="flex-container flex-row no-padding">
-                            <div class="header"><b>Age</b></div>
-                            <div [ngStyle]="{ color: getAgeColour() }">
-                                {{ application.age.years }} Years {{ application.age.months > 0 ? application.age.months + (application.age.months == 1 ? ' Month' : ' Months') : '' }}
-                            </div>
-                        </div>
-                        <div class="flex-container flex-row no-padding">
-                            <div class="header"><b>Reference</b></div>
-                            <div>{{ application.account.reference }}</div>
-                        </div>
-                        <div class="flex-container no-padding">
-                            <div class="header"><b>Background</b></div>
-                            <p class="scrollable">
-                                <span>{{ application.account.background }}</span>
-                            </p>
-                        </div>
-                    </mat-card>
+<app-default-content-areas>
+    <app-full-content-area>
+        @if (application != null) {
+        <div class="page-content">
+            <div class="header-row">
+                <div class="flex-container flex-grow flex-row no-padding collapse-tiny">
+                    <button mat-icon-button class="back-button" (click)="back()"><mat-icon>arrow_back</mat-icon></button>
+                    <h3 class="small-centred">
+                        {{ application.account.firstname }} {{ application.account.lastname }}'s Application
+                        {{ application.account.application.state == applicationState.ACCEPTED ? ' - ' : application.account.application.state == applicationState.REJECTED ? ' - ' : '' }}
+                        <span [ngClass]="{ green: application.account.application.state == applicationState.ACCEPTED, red: application.account.application.state == applicationState.REJECTED }">
+                            {{ application.account.application.state == applicationState.ACCEPTED ? 'Accepted' : application.account.application.state == applicationState.REJECTED ? 'Rejected' : '' }}
+                        </span>
+                    </h3>
+                    @if (updating) {
+                    <mat-spinner class="updating" [diameter]="30"></mat-spinner>
+                    }
                 </div>
-                <div class="flex-container flex-two-thirds no-padding collapse-small">
-                    <div class="flex-container flex-row flex-third no-padding">
+                <div class="flex-container flex-grow flex-row no-padding collapse-tiny">
+                    <div class="flex-container flex-grow flex-row no-padding controls">
+                        @if (application.account.application.state == applicationState.WAITING) {
+                        <button mat-button class="green" (click)="updateApplicationState(applicationState.ACCEPTED)" [disabled]="!isAcceptableAge() || updating">
+                            <span [matTooltip]="!isAcceptableAge() ? 'Application cannot be accepted due to age requirements' : null">Approve</span>
+                        </button>
+                        } @if (application.account.application.state == applicationState.WAITING) {
+                        <button mat-button class="red" (click)="updateApplicationState(applicationState.REJECTED)" [disabled]="updating">Reject</button>
+                        } @if ( application.account.application.state != applicationState.WAITING && application.account.membershipState != membershipState.MEMBER && application.account.membershipState !=
+                        membershipState.DISCHARGED ) {
+                        <button mat-button class="goldenrod" (click)="updateApplicationState(applicationState.WAITING)" [disabled]="updating">Reactivate</button>
+                        } @if ( application.account.application.state != applicationState.WAITING && application.account.membershipState != membershipState.MEMBER && application.account.membershipState ==
+                        membershipState.DISCHARGED ) {
+                        <button mat-button class="goldenrod" [routerLink]="['/personnel/discharges']" [queryParams]="{ filter: application.account.lastname }" [disabled]="updating">View Discharge</button>
+                        } @if (application.account.application.state == applicationState.ACCEPTED && application.account.membershipState == membershipState.MEMBER) {
+                        <button mat-button class="red" (click)="resetApplicationToCandidate()" [disabled]="updating">Reset to Candidate</button>
+                        }
+                    </div>
+                    <ng-template [ngxPermissionsOnly]="['RECRUITER_LEAD']">
+                        <div class="flex-container flex-row no-padding recruiter">
+                            <app-dropdown
+                                class="recruiter-dropdown"
+                                placeholder="Recruiter"
+                                [autocomplete]="false"
+                                [elements]="recruiterElements$"
+                                [(ngModel)]="selected"
+                                (selectionChanged)="setNewRecruiter($event)"
+                                [disabled]="updating"
+                                elementName="recruiter"
+                                [reserveErrorSpace]="false"
+                            >
+                                <ng-template #element let-element>{{ element.displayValue }}</ng-template>
+                            </app-dropdown>
+                        </div>
+                    </ng-template>
+                </div>
+            </div>
+
+            <div class="main-section">
+                <div class="info-column">
+                    <div class="flex-container flex-grow no-padding">
+                        <h4>Candidate Information</h4>
+                        <mat-card class="card-gap">
+                            <div class="flex-container flex-row no-padding">
+                                <div class="header"><b>Name</b></div>
+                                <div>{{ application.account.firstname }} {{ application.account.lastname }}</div>
+                            </div>
+                            <div class="flex-container flex-row no-padding">
+                                <div class="header"><b>Nationality</b></div>
+                                <div><img alt="{{ application.account.nation }} flag" src="{{ application.account.nation | countryImage }}" />{{ application.account.nation | countryName }}</div>
+                            </div>
+                            <div class="flex-container flex-row no-padding">
+                                <div class="header"><b>Date of Birth</b></div>
+                                <div>{{ application.account.dob | date : 'd MMM y' : 'Europe/London' }}</div>
+                            </div>
+                            <div class="flex-container flex-row no-padding">
+                                <div class="header"><b>Age</b></div>
+                                <div [ngStyle]="{ color: getAgeColour() }">
+                                    {{ application.age.years }} Years {{ application.age.months > 0 ? application.age.months + (application.age.months == 1 ? ' Month' : ' Months') : '' }}
+                                </div>
+                            </div>
+                            <div class="flex-container flex-row no-padding">
+                                <div class="header"><b>Reference</b></div>
+                                <div>{{ application.account.reference }}</div>
+                            </div>
+                            <div class="flex-container no-padding">
+                                <div class="header"><b>Background</b></div>
+                                <p class="scrollable">
+                                    <span>{{ application.account.background }}</span>
+                                </p>
+                            </div>
+                        </mat-card>
+                    </div>
+                    <div class="experience-row">
                         <div class="flex-container flex-grow no-padding">
                             <h4>Candidate Experience</h4>
                             <mat-card class="card-gap">
@@ -111,7 +111,7 @@
                                 </div>
                             </mat-card>
                         </div>
-                        <div class="flex-container flex-grow no-padding padding-left">
+                        <div class="flex-container flex-grow no-padding">
                             <h4>Specialist Preferences</h4>
                             @if (application.account.rolePreferences.length > 0) {
                             <mat-card class="card-gap-small">
@@ -141,85 +141,85 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="flex-container flex-third no-padding">
-                <div class="flex-container no-padding">
-                    <h4>Application Dates</h4>
-                    <mat-card class="card-gap">
-                        <div class="flex-container flex-row flex-grow no-padding">
-                            <div class="header"><b>Date Applied</b></div>
-                            <div>{{ application.account.application.dateCreated | date : 'd MMM y' : 'Europe/London' }}</div>
-                        </div>
-                        @if (application.account.application.state == applicationState.WAITING) {
-                        <div class="card-gap">
+
+                <div class="side-column">
+                    <div class="flex-container no-padding">
+                        <h4>Application Dates</h4>
+                        <mat-card class="card-gap">
                             <div class="flex-container flex-row flex-grow no-padding">
-                                <div class="header"><b>Next Candidate Op</b></div>
-                                <div>{{ application.nextCandidateOp }}</div>
+                                <div class="header"><b>Date Applied</b></div>
+                                <div>{{ application.account.application.dateCreated | date : 'd MMM y' : 'Europe/London' }}</div>
                             </div>
-                            <div class="flex-container flex-row flex-grow no-padding">
-                                <div class="header"><b>Days Processing</b></div>
-                                <div>{{ application.daysProcessing }} {{ application.daysProcessing == 1 ? 'Day' : 'Days' }}</div>
-                            </div>
-                        </div>
-                        } @if (application.account.application.state != applicationState.WAITING) {
-                        <div class="card-gap">
-                            <div class="flex-container flex-row flex-grow no-padding">
-                                <div class="header"><b>Date Processed</b></div>
-                                <div>{{ application.account.application.dateAccepted | date : 'd MMM y' : 'Europe/London' }}</div>
-                            </div>
-                            <div class="flex-container flex-row flex-grow no-padding">
-                                <div class="header"><b>Processing Duration</b></div>
-                                <div>{{ application.daysProcessed }} {{ application.daysProcessed == 1 ? 'Day' : 'Days' }}</div>
-                            </div>
-                        </div>
-                        }
-                        <div class="flex-container flex-row flex-grow no-padding">
-                            <div class="header"><b>Average Processing Duration</b></div>
-                            <div>{{ application.averageProcessingTime }} {{ application.averageProcessingTime == 1 ? 'Day' : 'Days' }}</div>
-                        </div>
-                    </mat-card>
-                </div>
-                <div class="flex-container no-padding">
-                    <h4>Candidate Contacts</h4>
-                    <mat-card class="card-gap">
-                        <div class="flex-container flex-row flex-grow no-padding">
-                            <div class="header"><b>TeamSpeak</b></div>
-                            @if (teamspeakState | async; as teamspeakState) {
-                            <div>
-                                <div [ngClass]="{ green: teamspeakState.online, red: !teamspeakState.online }">
-                                    {{ teamspeakState.online ? 'Online as ' + teamspeakState.nickname : 'Offline' }}
+                            @if (application.account.application.state == applicationState.WAITING) {
+                            <div class="card-gap">
+                                <div class="flex-container flex-row flex-grow no-padding">
+                                    <div class="header"><b>Next Candidate Op</b></div>
+                                    <div>{{ application.nextCandidateOp }}</div>
+                                </div>
+                                <div class="flex-container flex-row flex-grow no-padding">
+                                    <div class="header"><b>Days Processing</b></div>
+                                    <div>{{ application.daysProcessing }} {{ application.daysProcessing == 1 ? 'Day' : 'Days' }}</div>
                                 </div>
                             </div>
-                            } @else {
-                            <div class="red">Offline</div>
-                            }
-                        </div>
-                        <div class="flex-container flex-row flex-grow no-padding">
-                            <div class="header"><b>Discord</b></div>
-                            @if (discordState | async; as discordState) {
-                            <div>
-                                <div [ngClass]="{ green: discordState.online, red: !discordState.online }">{{ getDiscordName(discordState) }}</div>
+                            } @if (application.account.application.state != applicationState.WAITING) {
+                            <div class="card-gap">
+                                <div class="flex-container flex-row flex-grow no-padding">
+                                    <div class="header"><b>Date Processed</b></div>
+                                    <div>{{ application.account.application.dateAccepted | date : 'd MMM y' : 'Europe/London' }}</div>
+                                </div>
+                                <div class="flex-container flex-row flex-grow no-padding">
+                                    <div class="header"><b>Processing Duration</b></div>
+                                    <div>{{ application.daysProcessed }} {{ application.daysProcessed == 1 ? 'Day' : 'Days' }}</div>
+                                </div>
                             </div>
-                            } @else {
-                            <div class="red">Offline</div>
                             }
-                        </div>
-                        <div class="flex-container flex-row flex-grow no-padding">
-                            <div class="header"><b>Steam</b></div>
-                            <div><a [attr.href]="application.steamProfile" target="_blank">Steam Profile</a></div>
-                        </div>
-                        <div class="flex-container flex-row flex-grow no-padding">
-                            <div class="header"><b>Email</b></div>
-                            <div>
-                                <a [attr.href]="'mailto:' + application.account.email" target="_blank">{{ application.account.email }}</a>
+                            <div class="flex-container flex-row flex-grow no-padding">
+                                <div class="header"><b>Average Processing Duration</b></div>
+                                <div>{{ application.averageProcessingTime }} {{ application.averageProcessingTime == 1 ? 'Day' : 'Days' }}</div>
                             </div>
-                        </div>
-                    </mat-card>
+                        </mat-card>
+                    </div>
+                    <div class="flex-container no-padding">
+                        <h4>Candidate Contacts</h4>
+                        <mat-card class="card-gap">
+                            <div class="flex-container flex-row flex-grow no-padding">
+                                <div class="header"><b>TeamSpeak</b></div>
+                                @if (teamspeakState | async; as teamspeakState) {
+                                <div>
+                                    <div [ngClass]="{ green: teamspeakState.online, red: !teamspeakState.online }">
+                                        {{ teamspeakState.online ? 'Online as ' + teamspeakState.nickname : 'Offline' }}
+                                    </div>
+                                </div>
+                                } @else {
+                                <div class="red">Offline</div>
+                                }
+                            </div>
+                            <div class="flex-container flex-row flex-grow no-padding">
+                                <div class="header"><b>Discord</b></div>
+                                @if (discordState | async; as discordState) {
+                                <div>
+                                    <div [ngClass]="{ green: discordState.online, red: !discordState.online }">{{ getDiscordName(discordState) }}</div>
+                                </div>
+                                } @else {
+                                <div class="red">Offline</div>
+                                }
+                            </div>
+                            <div class="flex-container flex-row flex-grow no-padding">
+                                <div class="header"><b>Steam</b></div>
+                                <div><a [attr.href]="application.steamProfile" target="_blank">Steam Profile</a></div>
+                            </div>
+                            <div class="flex-container flex-row flex-grow no-padding">
+                                <div class="header"><b>Email</b></div>
+                                <div>
+                                    <a [attr.href]="'mailto:' + application.account.email" target="_blank">{{ application.account.email }}</a>
+                                </div>
+                            </div>
+                        </mat-card>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="flex-container flex-row flex-grow no-padding collapse">
-            <div class="flex-container flex-row flex-grow no-padding padding-top collapse-small">
+
+            <div class="comments-section">
                 <div class="flex-container flex-grow no-padding fit-content">
                     <h4>Application Chat</h4>
                     <mat-card>
@@ -230,7 +230,7 @@
                     </mat-card>
                 </div>
                 <ng-template [ngxPermissionsOnly]="['RECRUITER']">
-                    <div class="flex-container flex-grow no-padding padding-left fit-content">
+                    <div class="flex-container flex-grow no-padding fit-content">
                         <h4>Recruiter Chat</h4>
                         <mat-card>
                             <small class="comment-hint">Only visible to SR1</small>
@@ -240,6 +240,6 @@
                 </ng-template>
             </div>
         </div>
-    </div>
-</div>
-}
+        }
+    </app-full-content-area>
+</app-default-content-areas>

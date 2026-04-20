@@ -22,7 +22,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private utilityHub = inject(UtilityHubService);
 
     ngOnInit() {
-        this.overlayContainer.getContainerElement().classList.add('dark-theme');
+        this.overlayContainer.getContainerElement().classList.add('uksf-theme');
 
         this.checkBrowser();
         this.utilityHub.connect();

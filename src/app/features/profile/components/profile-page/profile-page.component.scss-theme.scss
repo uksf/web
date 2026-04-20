@@ -1,9 +1,0 @@
-@use 'styles/theme-helpers' as th;
-
-@mixin profile-page-component-theme($theme) {
-    app-profile-page {
-        a {
-          color: th.primary($theme);
-        }
-    }
-}

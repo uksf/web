@@ -1,9 +1,0 @@
-@use 'styles/theme-helpers' as th;
-
-@mixin request-loa-modal-component-theme($theme) {
-    app-request-loa-modal {
-        .invalid-message {
-          color: th.warn($theme);
-        }
-    }
-}

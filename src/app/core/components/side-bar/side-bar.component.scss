@@ -1,4 +1,5 @@
 @use 'styles/variables' as v;
+@use 'styles/theme-helpers' as th;
 
 .sideNav {
     .sideNavItem {
@@ -8,8 +9,13 @@
         line-height: 48px;
         font-size: large;
         align-items: center;
+        color: th.fg-base();
 
         &.selected {
+            color: th.primary();
+            background-color: var(--uksf-selected);
+            box-shadow: inset 3px 0 0 0 th.primary();
+
             &:hover {
                 cursor: pointer;
             }
@@ -17,6 +23,7 @@
 
         &:hover {
             cursor: pointer;
+            background-color: var(--uksf-hover);
         }
 
         .mat-icon {
@@ -26,6 +33,15 @@
 
         span {
             height: 100%;
+        }
+    }
+
+    .newVersionNavItem {
+        background-color: th.primary();
+        color: th.primary-contrast();
+
+        &:hover {
+            background-color: th.primary();
         }
     }
 }

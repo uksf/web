@@ -1,3 +1,5 @@
+@use 'styles/theme-helpers' as th;
+
 #wrapper-parent {
     height: 100%;
 }
@@ -129,6 +131,34 @@
 
         .board {
             margin-top: 76px;
+        }
+    }
+}
+
+.wrapper {
+    color: th.fg-base();
+    background-color: var(--uksf-background);
+
+    .header {
+        color: th.fg-base();
+        background-color: var(--uksf-app-bar);
+    }
+
+    .sideboard {
+        color: th.fg-base();
+        background-color: var(--uksf-side-bar);
+    }
+
+    .board {
+        color: th.fg-base();
+        background-color: var(--uksf-background);
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .wrapper {
+        .small-footer {
+            background-color: black;
         }
     }
 }

@@ -57,3 +57,17 @@
     cursor: default;
     pointer-events: none;
 }
+
+.node-content-wrapper {
+    &:hover {
+      background-color: var(--uksf-hover);
+    }
+    &.is-dragging-over {
+      background-color: var(--uksf-hover);
+    }
+}
+.node-drop-slot {
+    &.is-dragging-over {
+      background-color: var(--uksf-hover);
+    }
+}

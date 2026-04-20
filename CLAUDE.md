@@ -326,20 +326,30 @@ Import: `@use 'styles/variables' as v;`
 
 ### Theme System
 
-Angular Material theming with custom palettes:
-- `src/darkTheme.scss` - Dark theme (active)
-- `src/lightTheme.scss` - Light theme (available)
-- `src/palettes.scss` - Custom color palettes
+Single dark theme. No multi-theme scaffolding — one `.uksf-theme` class applied to the app root wrapper and CDK overlay container (in `app.component.ts`). Inside that scope we emit:
+- `--mat-sys-*` via `mat.theme()` (M3 system tokens, overridden to match M2 look)
+- `--uksf-*` via `custom-vars.uksf-theme-custom-vars()` (custom backgrounds, scrollbar, org chart, etc)
+- All Material token / shape / typography overrides
+- Global form-field theming for `app-text-input`, `app-dropdown`, `app-selection-list`, `app-date-input`
+
+Everything else lives in `styles.scss` at module scope (MDC overrides, modal layout, scrollbar sizing, spotlight effect, drag previews).
+
+**Component-owned theming.** Each component owns its theme rules in its own `.component.scss`. No sibling `*.scss-theme.scss` files, no cross-component mixin plumbing. When a component needs colour helpers, import them directly:
+
+```scss
+@use 'styles/theme-helpers' as th;
+
+.foo { color: th.primary(); }  // no-arg helpers: primary, warn, fg-base, fg-divider, fg-secondary-text, fg-hint-text, fg-disabled-text, primary-contrast, warn-contrast
+```
 
 **Rules:**
-- Never hardcode colors - use theme palette functions
-- `::ng-deep` is deprecated but has no replacement - use sparingly for third-party components
-- Components with theming support have a `*.scss-theme.scss` file imported in `styles.scss`
+- Never hardcode colours — use `th.*()` helpers, `--mat-sys-*` tokens, or `--uksf-*` custom properties
+- `::ng-deep` is deprecated but has no replacement — use sparingly for third-party components
 - Prefer `gap` (on flex/grid containers) or `padding` over `margin` for spacing between elements — see **Layout & Spacing** section for the full page-structure ruleset
 
 ### Shared Form Field Styles
 
-`src/styles/_form-field.scss` (structural) and `src/styles/_form-field-theme.scss` (parameterized theme) provide shared SCSS mixins for custom form controls (text-input, dropdown, selection-list).
+`src/styles/_form-field.scss` (structural) and `src/styles/_form-field-theme.scss` (parameterized theme mixin) provide shared SCSS for custom form controls. The theme mixin is invoked once per host selector inside `.uksf-theme` in `styles.scss`.
 
 ## Testing
 

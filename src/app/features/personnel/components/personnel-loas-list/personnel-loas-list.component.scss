@@ -231,3 +231,23 @@
         }
     }
 }
+
+.list-container {
+    .mat-mdc-card {
+        .header-container {
+            .description {
+                &.pending {
+                    color: goldenrod;
+                }
+
+                &.approved {
+                    color: green;
+                }
+
+                &.rejected {
+                    color: red;
+                }
+            }
+        }
+    }
+}

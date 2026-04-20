@@ -6,7 +6,7 @@ import { MatCard } from '@angular/material/card';
 @Component({
     selector: 'app-modpack-guide',
     templateUrl: './modpack-guide.component.html',
-    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-guide.component.scss', './modpack-guide.component.scss-theme.scss'],
+    styleUrls: ['../modpack-page/modpack-page.component.scss', './modpack-guide.component.scss'],
     imports: [DefaultContentAreasComponent, FullContentAreaComponent, MatCard]
 })
 export class ModpackGuideComponent {

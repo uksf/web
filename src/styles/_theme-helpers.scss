@@ -1,47 +1,43 @@
-/// Helper functions returning M2-equivalent dark theme colors.
-/// M3's tonal palette (derived from orange) produces warm-tinted neutrals
-/// (#ece0da instead of white), so we hardcode the original M2 values here.
-/// The $theme parameter is kept for API consistency but ignored for fixed values.
+/// Dark theme color helpers. Hardcoded values matching the original M2 palette —
+/// M3's tonal palette (derived from orange) produces warm-tinted neutrals that
+/// don't match the legacy look.
 
-// Foreground helpers
-@function fg-base($theme) {
+@function fg-base() {
     @return white;
 }
 
-@function fg-text($theme) {
+@function fg-text() {
     @return white;
 }
 
-@function fg-divider($theme) {
+@function fg-divider() {
     @return rgba(255, 255, 255, 0.12);
 }
 
-@function fg-secondary-text($theme) {
+@function fg-secondary-text() {
     @return rgba(255, 255, 255, 0.7);
 }
 
-@function fg-hint-text($theme) {
+@function fg-hint-text() {
     @return rgba(255, 255, 255, 0.5);
 }
 
-@function fg-disabled-text($theme) {
+@function fg-disabled-text() {
     @return rgba(255, 255, 255, 0.5);
 }
 
-// Primary helpers
-@function primary($theme) {
+@function primary() {
     @return #fec400;
 }
 
-@function primary-contrast($theme) {
+@function primary-contrast() {
     @return #000000;
 }
 
-// Warn helpers
-@function warn($theme) {
+@function warn() {
     @return #c62828;
 }
 
-@function warn-contrast($theme) {
+@function warn-contrast() {
     @return white;
 }
