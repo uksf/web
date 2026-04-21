@@ -47,9 +47,15 @@
                                                     </button>
                                                 }
                                                 @if (mod._canUninstall) {
-                                                    <button mat-button class="icon" (click)="uninstall(mod)" matTooltip="Uninstall">
-                                                        <mat-icon>eject</mat-icon>
-                                                    </button>
+                                                    @if (mod._neverReleased) {
+                                                        <button mat-button class="icon delete" (click)="uninstall(mod)" matTooltip="Delete">
+                                                            <mat-icon>delete</mat-icon>
+                                                        </button>
+                                                    } @else {
+                                                        <button mat-button class="icon" (click)="uninstall(mod)" matTooltip="Uninstall">
+                                                            <mat-icon>eject</mat-icon>
+                                                        </button>
+                                                    }
                                                 }
                                                 @if (mod._canDelete) {
                                                     <button mat-button class="icon delete" (click)="delete(mod)" matTooltip="Delete">
@@ -84,10 +90,17 @@
                                                     </button>
                                                 }
                                                 @if (mod._canUninstall) {
-                                                    <button mat-menu-item (click)="uninstall(mod)">
-                                                        <mat-icon>eject</mat-icon>
-                                                        Uninstall
-                                                    </button>
+                                                    @if (mod._neverReleased) {
+                                                        <button mat-menu-item class="delete" (click)="uninstall(mod)">
+                                                            <mat-icon>delete</mat-icon>
+                                                            Delete
+                                                        </button>
+                                                    } @else {
+                                                        <button mat-menu-item (click)="uninstall(mod)">
+                                                            <mat-icon>eject</mat-icon>
+                                                            Uninstall
+                                                        </button>
+                                                    }
                                                 }
                                                 @if (mod._canDelete) {
                                                     <button mat-menu-item class="delete" (click)="delete(mod)">

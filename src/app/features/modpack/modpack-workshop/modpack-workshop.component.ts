@@ -129,6 +129,7 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
             mod._canDelete = this.canDelete(mod);
             mod._updateAvailable = this.updateAvailable(mod);
             mod._interventionRequired = this.interventionRequired(mod);
+            mod._neverReleased = this.neverReleased(mod);
         });
         this.groupMods();
     }
@@ -173,6 +174,10 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
 
     canDelete(mod: WorkshopMod) {
         return mod.status === 'Uninstalled';
+    }
+
+    neverReleased(mod: WorkshopMod) {
+        return !mod.modpackVersionFirstAdded;
     }
 
     hasError(mod: WorkshopMod) {

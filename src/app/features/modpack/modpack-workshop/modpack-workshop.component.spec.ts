@@ -136,6 +136,20 @@ describe('ModpackWorkshopComponent', () => {
         });
     });
 
+    describe('neverReleased', () => {
+        it('returns true when modpackVersionFirstAdded is null', () => {
+            expect(component.neverReleased(makeMod({ modpackVersionFirstAdded: null }))).toBe(true);
+        });
+
+        it('returns true when modpackVersionFirstAdded is empty', () => {
+            expect(component.neverReleased(makeMod({ modpackVersionFirstAdded: '' }))).toBe(true);
+        });
+
+        it('returns false when modpackVersionFirstAdded is set', () => {
+            expect(component.neverReleased(makeMod({ modpackVersionFirstAdded: '5.23.7' }))).toBe(false);
+        });
+    });
+
     describe('hasError', () => {
         it('returns true for Error status', () => {
             expect(component.hasError(makeMod({ status: 'Error' }))).toBe(true);
@@ -284,8 +298,8 @@ describe('ModpackWorkshopComponent', () => {
     describe('updateModComputedProperties', () => {
         it('should set computed properties on each mod', () => {
             component.mods = [
-                makeMod({ status: 'Error', updatedDate: '2026-02-01T00:00:00Z', lastUpdatedLocally: '2026-01-01T00:00:00Z' }),
-                makeMod({ status: 'Uninstalled' })
+                makeMod({ status: 'Error', updatedDate: '2026-02-01T00:00:00Z', lastUpdatedLocally: '2026-01-01T00:00:00Z', modpackVersionFirstAdded: null }),
+                makeMod({ status: 'Uninstalled', modpackVersionFirstAdded: '1.0' })
             ];
 
             component.updateModComputedProperties();
@@ -295,11 +309,13 @@ describe('ModpackWorkshopComponent', () => {
             expect(component.mods[0]._canDelete).toBe(false);
             expect(component.mods[0]._updateAvailable).toBe(true);
             expect(component.mods[0]._interventionRequired).toBe(false);
+            expect(component.mods[0]._neverReleased).toBe(true);
 
             expect(component.mods[1]._hasError).toBe(false);
             expect(component.mods[1]._canUninstall).toBe(false);
             expect(component.mods[1]._canDelete).toBe(true);
             expect(component.mods[1]._updateAvailable).toBe(false);
+            expect(component.mods[1]._neverReleased).toBe(false);
         });
     });
 

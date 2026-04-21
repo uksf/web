@@ -20,6 +20,7 @@ export interface WorkshopMod {
     _canDelete?: boolean;
     _updateAvailable?: boolean;
     _interventionRequired?: boolean;
+    _neverReleased?: boolean;
 }
 
 export interface InstallWorkshopModData {
