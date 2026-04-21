@@ -238,7 +238,6 @@ export class ProfilePageComponent extends DestroyableComponent implements OnInit
                 .subscribe({
                     next: (response) => {
                         this.account = response;
-                        this.sortServiceRecord();
                         this.populateSettings();
                     }
                 });
@@ -260,23 +259,14 @@ export class ProfilePageComponent extends DestroyableComponent implements OnInit
 
     private setAccount(account: Account) {
         this.account = account;
-        this.sortServiceRecord();
         this.populateSettings();
 
         this.accountService.accountChange$.pipe(takeUntil(this.destroy$)).subscribe({
             next: (newAccount) => {
                 this.account = newAccount;
-                this.sortServiceRecord();
                 this.populateSettings();
             }
         });
-    }
-
-    private sortServiceRecord() {
-        if (!this.account?.serviceRecord) return;
-        this.account.serviceRecord = [...this.account.serviceRecord].sort(
-            (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-        );
     }
 
     get loaded(): boolean {
