@@ -388,6 +388,12 @@
     }
 }
 
+// ngx-markdown renders anchor tags as plain HTML (no Angular encapsulation attr),
+// so ::ng-deep is required to pierce through and theme them.
+:host ::ng-deep .build-changelog a {
+    color: th.primary();
+}
+
 a {
     color: th.primary();
 }
