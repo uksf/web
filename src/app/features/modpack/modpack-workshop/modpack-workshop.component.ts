@@ -212,7 +212,8 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
         this.dialog
             .open(WorkshopModInterventionModalComponent, {
                 data: {
-                    availablePbos: mod.pbos
+                    installedPbos: mod.pbos,
+                    availablePbos: mod.availablePbos
                 }
             })
             .afterClosed()

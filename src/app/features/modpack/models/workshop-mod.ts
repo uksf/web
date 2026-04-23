@@ -11,6 +11,7 @@ export interface WorkshopMod {
     rootMod: boolean;
     folderName: string;
     pbos: string[];
+    availablePbos: string[];
 
     updatedDate?: string;
 

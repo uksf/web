@@ -14,37 +14,57 @@
     .flex-container {
         display: flex;
         flex-direction: column;
-        width: fit-content;
-        min-width: 450px;
-        max-height: 600px;
+        width: 560px;
+        max-width: 100%;
+        max-height: 60vh;
+        min-height: 0;
+        overflow: hidden;
 
         .pbos-list-container {
             display: flex;
             flex-direction: column;
-            height: 100%;
+            flex: 1 1 auto;
+            min-height: 0;
             overflow-y: auto;
             padding-right: 6px;
 
             .pbos-list-item-container {
                 display: flex;
                 flex-direction: row;
+                align-items: center;
+                gap: 8px;
+                min-width: 0;
 
-                .pbos-list-item {
-                    display: flex;
-                    flex-direction: row;
-                    width: 100%;
+                .pbo-name {
+                    flex: 1 1 auto;
+                    min-width: 0;
                     height: 40px;
+                    line-height: 40px;
                     font-size: 16px;
-                    line-height: 16px;
+                    color: th.fg-base();
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
 
-                    span {
-                        margin: auto 0;
+                    &.conflict {
+                        color: #ef5350;
                     }
+                }
+
+                .pbo-row-actions {
+                    flex: 0 0 auto;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
                 }
 
                 .mat-mdc-checkbox {
                     padding: 6px;
-                    margin: auto;
+                }
+
+                &.pbo-state-removed .pbo-name {
+                    color: th.fg-disabled-text();
+                    text-decoration: line-through;
                 }
             }
         }
@@ -55,13 +75,28 @@ label {
     margin-bottom: 0;
 }
 
-.pbos-list-item {
-    span {
-        color: th.fg-base();
+.pbo-badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    line-height: 1;
+    flex: 0 0 auto;
 
-        &.conflict {
-            color: red;
-        }
+    &.pbo-badge-new {
+        color: #ffffff;
+        background: #1976d2;
+    }
+
+    &.pbo-badge-removed {
+        color: th.warn-contrast();
+        background: th.warn();
+    }
+
+    &.pbo-badge-conflict {
+        color: #ffffff;
+        background: #ef6c00;
     }
 }
 

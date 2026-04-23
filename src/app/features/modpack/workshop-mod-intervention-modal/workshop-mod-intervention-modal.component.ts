@@ -9,6 +9,22 @@ import { MatCheckbox } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 
+export type WorkshopModPboState = 'existing' | 'new' | 'removed';
+
+export interface WorkshopModPboSelection {
+    name: string;
+    selected: boolean;
+    state: WorkshopModPboState;
+    disabled: boolean;
+    conflict: boolean;
+}
+
+export interface WorkshopModInterventionModalData {
+    installedPbos: string[] | null | undefined;
+    availablePbos: string[] | null | undefined;
+    conflictPbos?: string[] | null;
+}
+
 @Component({
     selector: 'app-workshop-mod-intervention-modal',
     templateUrl: './workshop-mod-intervention-modal.component.html',
@@ -17,46 +33,51 @@ import { MatButton } from '@angular/material/button';
 })
 export class WorkshopModInterventionModalComponent {
     dialogRef = inject<MatDialogRef<WorkshopModInterventionModalComponent>>(MatDialogRef);
-    data = inject<{
-        availablePbos: string[];
-    }>(MAT_DIALOG_DATA);
+    data = inject<WorkshopModInterventionModalData>(MAT_DIALOG_DATA);
 
-    submitting: boolean = false;
-    availablePbos: string[] = [];
+    submitting = false;
     pboSelection: WorkshopModPboSelection[] = [];
 
     constructor() {
-        const data = this.data;
+        const installed = new Set(this.data.installedPbos ?? []);
+        const available = new Set(this.data.availablePbos ?? []);
+        const conflicts = new Set(this.data.conflictPbos ?? []);
 
-        this.availablePbos = data.availablePbos;
-        this.pboSelection = this.availablePbos.map((x: string) => {
-            return { name: x, selected: false, conflict: false };
-        });
+        const rows: WorkshopModPboSelection[] = [];
+        for (const name of available) {
+            if (installed.has(name)) {
+                rows.push({ name, selected: true, state: 'existing', disabled: false, conflict: conflicts.has(name) });
+            } else {
+                rows.push({ name, selected: false, state: 'new', disabled: false, conflict: conflicts.has(name) });
+            }
+        }
+        for (const name of installed) {
+            if (!available.has(name)) {
+                rows.push({ name, selected: false, state: 'removed', disabled: true, conflict: false });
+            }
+        }
+
+        this.pboSelection = rows.sort((a, b) => a.name.localeCompare(b.name));
     }
 
     getTooltip(pbo: WorkshopModPboSelection): string {
         return pbo.conflict ? 'PBO is already installed by another mod. Select to overwrite' : '';
     }
 
-    get valid() {
-        return this.pboSelection.some((x: WorkshopModPboSelection) => x.selected);
+    get valid(): boolean {
+        return this.pboSelection.some((x) => x.selected);
     }
 
-    selectAll() {
-        this.pboSelection.forEach((x: WorkshopModPboSelection) => {
-            x.selected = true;
+    selectAll(): void {
+        this.pboSelection.forEach((x) => {
+            if (!x.disabled) {
+                x.selected = true;
+            }
         });
     }
 
-    submit() {
-        const selectedPbos: string[] = this.pboSelection.filter((x: WorkshopModPboSelection) => x.selected).map((x: WorkshopModPboSelection) => x.name);
-
+    submit(): void {
+        const selectedPbos = this.pboSelection.filter((x) => x.selected).map((x) => x.name);
         this.dialogRef.close(selectedPbos);
     }
-}
-
-export interface WorkshopModPboSelection {
-    name: string;
-    selected: boolean;
-    conflict: boolean;
 }
