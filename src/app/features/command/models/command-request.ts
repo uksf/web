@@ -1,35 +1,47 @@
+export enum ReviewState {
+    APPROVED = 0,
+    REJECTED = 1,
+    PENDING = 2,
+    ERROR = 3
+}
+
 export interface CommandRequestReview {
     id: string;
     name: string;
-    state: number;
+    state: ReviewState;
 }
 
 export interface CommandRequest {
-    id?: string;
-    value?: string;
-    displayValue?: string;
-    dateCreated?: Date;
-    displayFrom?: string;
-    displayRecipient?: string;
-    displayRequester?: string;
-    reason?: string;
-    recipient?: string;
-    requester?: string;
-    reviews?: CommandRequestReview[];
-    secondaryValue?: string;
-    type?: string;
+    id: string;
+    type: string;
+    value: string;
+    secondaryValue: string;
+    displayValue: string;
+    displayFrom: string;
+    displayRequester: string;
+    displayRecipient: string;
+    reason: string;
+    requester: string;
+    recipient: string;
+    dateCreated: string;
+    reviews: Record<string, ReviewState>;
+    overriddenState: ReviewState | null;
+    overriddenBy: string | null;
 }
 
 export interface CommandRequestItem {
-    canOverride: boolean;
     data: CommandRequest;
     displayReason: string;
     displayType: string;
+    iconKey: string;
+    colorKey: string;
+    canOverride: boolean;
     reviews: CommandRequestReview[];
-    // Frontend-only properties
+
+    // frontend-only state (set during patch in-flight)
     updating?: boolean;
-    reviewState?: number;
-    reviewOverriden?: boolean;
+    reviewState?: ReviewState;
+    reviewOverridden?: boolean;
 }
 
 export interface CommandRequestsResponse {

@@ -1,0 +1,56 @@
+<mat-card class="request-card">
+    <div class="header-row">
+        <mat-icon class="type-icon" aria-hidden="true">{{ request.iconKey }}</mat-icon>
+        <div class="type-chip">{{ request.displayType }}</div>
+        <div class="recipient">{{ request.data.displayRecipient }}</div>
+        <app-flex-filler />
+        <div class="meta">{{ request.data.dateCreated | date: 'd MMM yyyy, HH:mm' }} · by {{ request.data.displayRequester }}</div>
+    </div>
+
+    <div class="body-row">
+        @if (isLoa()) {
+            <div class="from-to">
+                <strong>{{ request.data.displayFrom | date: 'mediumDate' : 'UTC' }}</strong>
+                <span class="arrow">→</span>
+                <strong>{{ request.data.displayValue | date: 'mediumDate' : 'UTC' }}</strong>
+            </div>
+        } @else {
+            <div class="from-to">
+                {{ request.data.displayFrom }}
+                <span class="arrow">→</span>
+                <strong>{{ request.data.displayValue }}</strong>
+            </div>
+        }
+        <div class="reason">"{{ request.displayReason }}"</div>
+    </div>
+
+    <div class="footer-row">
+        <div class="footer-label">Reviewers</div>
+        <div class="reviewer-pills">
+            @for (review of request.reviews; track review.id) {
+                <div [class]="pillClass(review.state)">
+                    <div class="dot"></div>
+                    <span>{{ review.name }}</span>
+                </div>
+            }
+        </div>
+        <div class="actions">
+            @if (canReview()) {
+                <button mat-button class="approve" (click)="onReview(reviewState.APPROVED, false)" matTooltip="Approve">
+                    <mat-icon>check_circle</mat-icon>
+                </button>
+                <button mat-button class="reject" (click)="onReview(reviewState.REJECTED, false)" matTooltip="Reject">
+                    <mat-icon>cancel</mat-icon>
+                </button>
+            }
+            @if (request.canOverride) {
+                <button mat-button class="override approve" (click)="onReview(reviewState.APPROVED, true)" matTooltip="Override approve">
+                    <mat-icon>report_problem</mat-icon>
+                </button>
+                <button mat-button class="override reject" (click)="onReview(reviewState.REJECTED, true)" matTooltip="Override reject">
+                    <mat-icon>report</mat-icon>
+                </button>
+            }
+        </div>
+    </div>
+</mat-card>

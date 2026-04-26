@@ -1,5 +1,7 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatButton } from '@angular/material/button';
+import { first, takeUntil } from 'rxjs/operators';
 import { RequestRankModalComponent } from '@app/features/command/modals/request-rank-modal/request-rank-modal.component';
 import { RequestTransferModalComponent } from '@app/features/command/modals/request-transfer-modal/request-transfer-modal.component';
 import { RequestRoleModalComponent } from '@app/features/command/modals/request-role-modal/request-role-modal.component';
@@ -7,43 +9,31 @@ import { RequestChainOfCommandPositionModalComponent } from '@app/features/comma
 import { RequestDischargeModalComponent } from '@app/features/command/modals/request-discharge-modal/request-discharge-modal.component';
 import { RequestUnitRemovalModalComponent } from '@app/features/command/modals/request-unit-removal-modal/request-unit-removal-modal.component';
 import { CommandRequestsHubService } from '../../services/command-requests-hub.service';
-import { AccountService } from '@app/core/services/account.service';
+import { CommandRequestsService } from '../../services/command-requests.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { RequestModalData } from '@app/shared/models/shared';
 import { UnitBranch } from '@app/features/units/models/units';
-import { CommandRequestItem, CommandRequestReview } from '@app/features/command/models/command-request';
-import { first, takeUntil } from 'rxjs/operators';
-import { CommandRequestsService } from '../../services/command-requests.service';
+import { CommandRequestItem, ReviewState } from '@app/features/command/models/command-request';
 import { DestroyableComponent } from '@app/shared/components';
-import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
-import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
-import { MatButton } from '@angular/material/button';
-import { MatCard } from '@angular/material/card';
-import { MatIcon } from '@angular/material/icon';
-import { MatTooltip } from '@angular/material/tooltip';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { DatePipe } from '@angular/common';
+import { DefaultContentAreasComponent } from '@app/shared/components/content-areas/default-content-areas/default-content-areas.component';
+import { FullContentAreaComponent } from '@app/shared/components/content-areas/full-content-area/full-content-area.component';
+import { CommandRequestCardComponent } from '../command-request-card/command-request-card.component';
 
 @Component({
     selector: 'app-command-requests',
     templateUrl: './command-requests.component.html',
-    styleUrls: ['../command-page/command-page.component.scss', './command-requests.component.scss'],
-    imports: [DefaultContentAreasComponent, MainContentAreaComponent, MatButton, MatCard, MatIcon, MatTooltip, MatProgressSpinner, DatePipe]
+    styleUrls: ['./command-requests.component.scss'],
+    imports: [DefaultContentAreasComponent, FullContentAreaComponent, MatButton, CommandRequestCardComponent]
 })
 export class CommandRequestsComponent extends DestroyableComponent implements OnInit, OnDestroy {
     private commandRequestsService = inject(CommandRequestsService);
     dialog = inject(MatDialog);
     private commandRequestsHub = inject(CommandRequestsHubService);
-    private accountService = inject(AccountService);
 
-    reviewState = ReviewState;
     myRequests: CommandRequestItem[] = [];
     otherRequests: CommandRequestItem[] = [];
-    updating;
 
-    private onReceiveRequestUpdate = () => {
-        this.getRequests();
-    };
+    private onReceiveRequestUpdate = () => this.getRequests();
 
     constructor() {
         super();
@@ -54,9 +44,7 @@ export class CommandRequestsComponent extends DestroyableComponent implements On
         this.commandRequestsHub.connect();
         this.commandRequestsHub.on('ReceiveRequestUpdate', this.onReceiveRequestUpdate);
         this.commandRequestsHub.reconnected$.pipe(takeUntil(this.destroy$)).subscribe({
-            next: () => {
-                this.getRequests();
-            }
+            next: () => this.getRequests()
         });
     }
 
@@ -67,7 +55,6 @@ export class CommandRequestsComponent extends DestroyableComponent implements On
     }
 
     getRequests() {
-        this.updating = true;
         this.commandRequestsService
             .getRequests()
             .pipe(first())
@@ -75,129 +62,60 @@ export class CommandRequestsComponent extends DestroyableComponent implements On
                 next: (response) => {
                     this.myRequests = response.myRequests;
                     this.otherRequests = response.otherRequests;
-                    this.updating = false;
-                },
-                error: (_) => {
-                    this.updating = false;
                 }
             });
     }
 
-    isLoa(request) {
-        return request.data.type === 'Loa';
-    }
-
-    canReview(request): boolean {
-        return request.reviews.some((review) => review.id === this.accountService.account.id && review.state === ReviewState.PENDING);
-    }
-
-    setReview(request, reviewState, overriden) {
-        request.updating = true;
-        request.reviewState = reviewState;
-        request.reviewOverriden = overriden;
+    setReview(request: CommandRequestItem, state: ReviewState, overridden: boolean) {
         this.commandRequestsService
-            .setReview(request.data.id, reviewState, overriden)
+            .setReview(request.data.id, state, overridden)
             .pipe(first())
             .subscribe({
-                next: (_) => this.getRequests(),
+                next: () => this.getRequests(),
                 error: (error) => {
                     this.getRequests();
-                    this.dialog.open(MessageModalComponent, {
-                        data: { message: error.error }
-                    });
+                    this.dialog.open(MessageModalComponent, { data: { message: error.error } });
                 }
             });
     }
 
-    transferRequest(): void {
+    rankRequest() {
+        this.openCreateModal(RequestRankModalComponent);
+    }
+
+    roleRequest() {
+        this.openCreateModal(RequestRoleModalComponent);
+    }
+
+    chainOfCommandPositionRequest() {
+        this.openCreateModal(RequestChainOfCommandPositionModalComponent);
+    }
+
+    unitRemovalRequest() {
+        this.openCreateModal(RequestUnitRemovalModalComponent);
+    }
+
+    dischargeRequest() {
+        this.openCreateModal(RequestDischargeModalComponent);
+    }
+
+    transferRequest() {
         const data: RequestModalData = {
             ids: [],
             allowedBranches: [UnitBranch.COMBAT, UnitBranch.AUXILIARY, UnitBranch.SECONDARY]
         };
-        const dialog = this.dialog.open(RequestTransferModalComponent, {
-            data: data
-        });
-        dialog
+        this.dialog
+            .open(RequestTransferModalComponent, { data })
             .afterClosed()
             .pipe(first())
-            .subscribe({
-                next: (_) => {
-                    this.getRequests();
-                }
-            });
+            .subscribe({ next: () => this.getRequests() });
     }
 
-    rankRequest(): void {
-        const dialog = this.dialog.open(RequestRankModalComponent, {});
-        dialog
+    private openCreateModal(component: unknown) {
+        this.dialog
+            .open(component as never)
             .afterClosed()
             .pipe(first())
-            .subscribe({
-                next: (_) => {
-                    this.getRequests();
-                }
-            });
+            .subscribe({ next: () => this.getRequests() });
     }
-
-    roleRequest(): void {
-        const dialog = this.dialog.open(RequestRoleModalComponent, {});
-        dialog
-            .afterClosed()
-            .pipe(first())
-            .subscribe({
-                next: (_) => {
-                    this.getRequests();
-                }
-            });
-    }
-
-    chainOfCommandPositionRequest() {
-        const dialog = this.dialog.open(RequestChainOfCommandPositionModalComponent, {});
-        dialog
-            .afterClosed()
-            .pipe(first())
-            .subscribe({
-                next: (_) => {
-                    this.getRequests();
-                }
-            });
-    }
-
-    unitRemovalRequest() {
-        const dialog = this.dialog.open(RequestUnitRemovalModalComponent, {});
-        dialog
-            .afterClosed()
-            .pipe(first())
-            .subscribe({
-                next: (_) => {
-                    this.getRequests();
-                }
-            });
-    }
-
-    trackByRequestId(index: number, request: { data: { id: string } }): string {
-        return request.data.id;
-    }
-
-    trackByReviewId(index: number, review: CommandRequestReview): string {
-        return review.id;
-    }
-
-    dischargeRequest() {
-        const dialog = this.dialog.open(RequestDischargeModalComponent, {});
-        dialog
-            .afterClosed()
-            .pipe(first())
-            .subscribe({
-                next: (_) => {
-                    this.getRequests();
-                }
-            });
-    }
-}
-
-export enum ReviewState {
-    APPROVED,
-    REJECTED,
-    PENDING
 }

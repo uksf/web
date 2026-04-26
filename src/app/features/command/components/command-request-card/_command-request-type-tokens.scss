@@ -1,0 +1,28 @@
+:host {
+    --t-discharge: #d04444;
+    --t-unit-removal: #d76b7c;
+    --t-demotion: #e8a070;
+    --t-loa: #e8b540;
+    --t-cocp: #b8966c;
+    --t-role: #9b85c8;
+    --t-sec-transfer: #5d8db2;
+    --t-aux-transfer: #4ab0b8;
+    --t-transfer: #6498d4;
+    --t-promotion: #6fb87a;
+    --t-reinstate: #85a55c;
+    --t-default: rgba(255, 255, 255, 0.7);
+
+    --type: var(--t-default);
+}
+
+:host(.t-discharge) { --type: var(--t-discharge); }
+:host(.t-unit-removal) { --type: var(--t-unit-removal); }
+:host(.t-demotion) { --type: var(--t-demotion); }
+:host(.t-loa) { --type: var(--t-loa); }
+:host(.t-cocp) { --type: var(--t-cocp); }
+:host(.t-role) { --type: var(--t-role); }
+:host(.t-sec-transfer) { --type: var(--t-sec-transfer); }
+:host(.t-aux-transfer) { --type: var(--t-aux-transfer); }
+:host(.t-transfer) { --type: var(--t-transfer); }
+:host(.t-promotion) { --type: var(--t-promotion); }
+:host(.t-reinstate) { --type: var(--t-reinstate); }

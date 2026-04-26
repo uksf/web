@@ -115,7 +115,7 @@ export class RequestRankModalComponent implements OnInit {
         }
 
         this.model.accounts.forEach((element: IDropdownElement) => {
-            const commandRequest: CommandRequest = {
+            const commandRequest: Partial<CommandRequest> = {
                 recipient: mapFromElement(BasicAccount, element).id,
                 value: mapFromElement(Rank, this.model.rank).name,
                 reason: this.model.reason

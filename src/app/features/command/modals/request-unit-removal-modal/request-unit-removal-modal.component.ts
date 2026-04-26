@@ -90,7 +90,7 @@ export class RequestUnitRemovalModalComponent implements OnInit {
             return;
         }
 
-        const commandRequest: CommandRequest = {
+        const commandRequest: Partial<CommandRequest> = {
             recipient: mapFromElement(BasicAccount, this.model.account).id,
             value: mapFromElement(Unit, this.model.unit).id,
             reason: this.model.reason

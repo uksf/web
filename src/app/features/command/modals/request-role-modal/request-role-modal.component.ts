@@ -122,7 +122,7 @@ export class RequestRoleModalComponent implements OnInit {
         }
 
         this.model.accounts.forEach((element: IDropdownElement) => {
-            const commandRequest: CommandRequest = {
+            const commandRequest: Partial<CommandRequest> = {
                 recipient: mapFromElement(BasicAccount, element).id,
                 value: mapFromElement(Role, this.model.role).name,
                 reason: this.model.reason

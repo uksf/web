@@ -165,7 +165,7 @@ export class RequestTransferModalComponent implements OnInit {
         }
 
         this.model.accounts.forEach((element: IDropdownElement) => {
-            const commandRequest: CommandRequest = {
+            const commandRequest: Partial<CommandRequest> = {
                 recipient: mapFromElement(BasicAccount, element).id,
                 value: mapFromElement(Unit, this.model.unit).id,
                 reason: this.model.reason

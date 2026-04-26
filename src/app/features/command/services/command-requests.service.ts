@@ -26,31 +26,31 @@ export class CommandRequestsService {
         return this.httpClient.patch(`${this.urls.apiUrl}/commandrequests/${requestId}`, { reviewState, overriden }, { headers: jsonHeaders });
     }
 
-    createTransfer(request: CommandRequest): Observable<unknown> {
+    createTransfer(request: Partial<CommandRequest>): Observable<unknown> {
         return this.httpClient.post(`${this.urls.apiUrl}/commandrequests/create/transfer`, request);
     }
 
-    createUnitRemoval(request: CommandRequest): Observable<unknown> {
+    createUnitRemoval(request: Partial<CommandRequest>): Observable<unknown> {
         return this.httpClient.post(`${this.urls.apiUrl}/commandrequests/create/unitremoval`, request);
     }
 
-    createRole(request: CommandRequest): Observable<unknown> {
+    createRole(request: Partial<CommandRequest>): Observable<unknown> {
         return this.httpClient.post(`${this.urls.apiUrl}/commandrequests/create/role`, request);
     }
 
-    createRank(request: CommandRequest): Observable<unknown> {
+    createRank(request: Partial<CommandRequest>): Observable<unknown> {
         return this.httpClient.post(`${this.urls.apiUrl}/commandrequests/create/rank`, request);
     }
 
-    createDischarge(request: CommandRequest): Observable<unknown> {
+    createDischarge(request: Partial<CommandRequest>): Observable<unknown> {
         return this.httpClient.post(`${this.urls.apiUrl}/commandrequests/create/discharge`, request);
     }
 
-    createChainOfCommandPosition(request: CommandRequest): Observable<unknown> {
+    createChainOfCommandPosition(request: Partial<CommandRequest>): Observable<unknown> {
         return this.httpClient.post(`${this.urls.apiUrl}/commandrequests/create/chainofcommandposition`, request);
     }
 
-    createReinstate(request: CommandRequest): Observable<unknown> {
+    createReinstate(request: Partial<CommandRequest>): Observable<unknown> {
         return this.httpClient.post(`${this.urls.apiUrl}/commandrequests/create/reinstate`, JSON.stringify(request), { headers: jsonHeaders });
     }
 

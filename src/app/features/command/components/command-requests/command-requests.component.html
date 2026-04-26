@@ -1,239 +1,30 @@
 <app-default-content-areas>
-    <app-main-content-area style="grid-column: span 3">
-        <div class="flex-container">
-            <div class="flex-container-slim">
-                <button mat-raised-button color="primary" (click)="rankRequest()">Promote/Demote</button>
-                <button mat-raised-button color="primary" (click)="transferRequest()">Transfer</button>
-                <button mat-raised-button color="primary" (click)="roleRequest()">Assign Role</button>
-                <button mat-raised-button color="primary" (click)="chainOfCommandPositionRequest()">Assign Chain of Command Position</button>
-                <button mat-raised-button color="primary" (click)="unitRemovalRequest()">Unit Removal</button>
-                <button mat-raised-button color="primary" (click)="dischargeRequest()">Discharge</button>
-            </div>
-            @if (myRequests.length === 0 && otherRequests.length > 0) {
-            <div class="requests-container">
-                <h3>You have no pending command requests</h3>
-            </div>
-            } @if (myRequests.length === 0 && otherRequests.length === 0) {
-            <div class="requests-container">
-                <h3>There are no pending command requests</h3>
-            </div>
-            } @if (otherRequests.length === 0) {
-            <div class="requests-container"></div>
-            } @if (myRequests.length > 0) {
-            <div class="requests-container">
-                <h3>Requests needing your review</h3>
-                @for (request of myRequests; track trackByRequestId($index, request)) {
-                <mat-card>
-                    <div class="request-wrapper">
-                        <div class="request-type">
-                            <span class="request-type-text">{{ request.displayType }}</span>
-                        </div>
-                        <div class="request-content">
-                            <div class="request-info">
-                                <div class="request-info-details-names">
-                                    <span class="request-detail"> <b>Requester:</b> {{ request.data.displayRequester }} </span>
-                                    <div class="request-spacer"></div>
-                                    <span class="request-detail"> <b>Recipient:</b> {{ request.data.displayRecipient }} </span>
-                                    <div class="request-spacer"></div>
-                                    <span class="request-detail"> <b>Created:</b> {{ request.data.dateCreated | date : 'd MMM y, HH:mm' : 'Europe/London' }} </span>
-                                </div>
-                                <div class="request-info-details-fromto">
-                                    <span class="request-detail">
-                                        <b>From:</b>
-                                        @if (isLoa(request)) {
-                                        <span> {{ request.data.displayFrom | date : 'mediumDate' : 'UTC' }}</span>
-                                        } @else {
-                                        {{ request.data.displayFrom }}
-                                        }
-                                    </span>
-                                    <div class="request-spacer"></div>
-                                    <span class="request-detail">
-                                        <b>To:</b>
-                                        @if (isLoa(request)) {
-                                        <span> {{ request.data.displayValue | date : 'mediumDate' : 'UTC' }}</span>
-                                        } @else {
-                                        {{ request.data.displayValue }}
-                                        }
-                                    </span>
-                                    <div class="request-spacer"></div>
-                                    <span class="request-detail"> <b>Reason:</b> {{ request.displayReason }} </span>
-                                </div>
-                            </div>
-                            <div class="request-review">
-                                <div class="request-reviewers">
-                                    <b>Reviewers:</b>
-                                    <div>
-                                        @for (review of request.reviews; track trackByReviewId($index, review)) {
-                                        <p class="review-container">
-                                            <mat-icon class="review-state-icon">{{
-                                                review.state === reviewState.APPROVED ? 'done' : review.state === reviewState.REJECTED ? 'clear' : 'hourglass_empty'
-                                            }}</mat-icon>
-                                            <span class="review-label">{{ review.name }}</span>
-                                        </p>
-                                        }
-                                    </div>
-                                </div>
-                                <div class="request-button-container">
-                                    <div class="request-spacer"></div>
-                                    <div class="request-button-sub-container">
-                                        @if (canReview(request)) {
-                                        <button mat-button style="color: green" (click)="setReview(request, reviewState.APPROVED, false)" matTooltip="Accept" [disabled]="request.updating">
-                                            @if (!request.updating || request.reviewState !== 0 || request.reviewOverriden) {
-                                            <mat-icon class="approval-icon">done</mat-icon>
-                                            } @if (request.updating && request.reviewState === 0 && !request.reviewOverriden) {
-                                            <mat-spinner class="approval-updating" [diameter]="30"></mat-spinner>
-                                            }
-                                        </button>
-                                        } @if (request.canOverride) {
-                                        <button
-                                            mat-button
-                                            class="override-button"
-                                            style="color: green"
-                                            (click)="setReview(request, reviewState.APPROVED, true)"
-                                            matTooltip="Override accept"
-                                            [disabled]="request.updating"
-                                        >
-                                            @if (!request.updating || request.reviewState !== 0 || !request.reviewOverriden) {
-                                            <mat-icon class="approval-icon">report_problem</mat-icon>
-                                            } @if (request.updating && request.reviewState === 0 && request.reviewOverriden) {
-                                            <mat-spinner class="approval-updating" [diameter]="30"></mat-spinner>
-                                            }
-                                        </button>
-                                        }
-                                    </div>
-                                    <div class="request-button-sub-container">
-                                        @if (canReview(request)) {
-                                        <button mat-button style="color: red" (click)="setReview(request, reviewState.REJECTED, false)" matTooltip="Reject" [disabled]="request.updating">
-                                            @if (!request.updating || request.reviewState !== 1 || request.reviewOverriden) {
-                                            <mat-icon class="approval-icon">clear</mat-icon>
-                                            } @if (request.updating && request.reviewState === 1 && !request.reviewOverriden) {
-                                            <mat-spinner class="approval-updating" [diameter]="30"></mat-spinner>
-                                            }
-                                        </button>
-                                        } @if (request.canOverride) {
-                                        <button
-                                            mat-button
-                                            class="override-button"
-                                            style="color: red"
-                                            (click)="setReview(request, reviewState.REJECTED, true)"
-                                            matTooltip="Override reject"
-                                            [disabled]="request.updating"
-                                        >
-                                            @if (!request.updating || request.reviewState !== 1 || !request.reviewOverriden) {
-                                            <mat-icon class="approval-icon">report</mat-icon>
-                                            } @if (request.updating && request.reviewState === 1 && request.reviewOverriden) {
-                                            <mat-spinner class="approval-updating" [diameter]="30"></mat-spinner>
-                                            }
-                                        </button>
-                                        }
-                                    </div>
-                                    <div class="request-spacer"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </mat-card>
-                }
-            </div>
-            } @if (otherRequests.length > 0) {
-            <div class="requests-container">
-                <h3>Other requests</h3>
-                @for (request of otherRequests; track trackByRequestId($index, request)) {
-                <mat-card>
-                    <div class="request-wrapper">
-                        <div class="request-type">
-                            <span class="request-type-text">{{ request.displayType }}</span>
-                        </div>
-                        <div class="request-content">
-                            <div class="request-info">
-                                <div class="request-info-details-names">
-                                    <span class="request-detail"> <b>Requester:</b> {{ request.data.displayRequester }} </span>
-                                    <div class="request-spacer"></div>
-                                    <span class="request-detail"> <b>Recipient:</b> {{ request.data.displayRecipient }} </span>
-                                    <div class="request-spacer"></div>
-                                    <span class="request-detail"> <b>Created:</b> {{ request.data.dateCreated | date : 'd MMM y, HH:mm' : 'Europe/London' }} </span>
-                                </div>
-                                <div class="request-info-details-fromto">
-                                    <span class="request-detail">
-                                        <b>From:</b>
-                                        @if (isLoa(request)) {
-                                        <span> {{ request.data.displayFrom | date : 'mediumDate' : 'UTC' }}</span>
-                                        } @else {
-                                        {{ request.data.displayFrom }}
-                                        }
-                                    </span>
-                                    <div class="request-spacer"></div>
-                                    <span class="request-detail">
-                                        <b>To:</b>
-                                        @if (isLoa(request)) {
-                                        <span> {{ request.data.displayValue | date : 'mediumDate' : 'UTC' }}</span>
-                                        } @else {
-                                        {{ request.data.displayValue }}
-                                        }
-                                    </span>
-                                    <div class="request-spacer"></div>
-                                    <span class="request-detail"> <b>Reason:</b> {{ request.displayReason }} </span>
-                                </div>
-                            </div>
-                            <div class="request-review">
-                                <div class="request-reviewers">
-                                    <b>Reviewers:</b>
-                                    <div>
-                                        @for (review of request.reviews; track trackByReviewId($index, review)) {
-                                        <p class="review-container">
-                                            <mat-icon class="review-state-icon">{{
-                                                review.state === reviewState.APPROVED ? 'done' : review.state === reviewState.REJECTED ? 'clear' : 'hourglass_empty'
-                                            }}</mat-icon>
-                                            <span class="review-label">{{ review.name }}</span>
-                                        </p>
-                                        }
-                                    </div>
-                                </div>
-                                @if (request.canOverride) {
-                                <div class="request-button-container">
-                                    <div class="request-spacer"></div>
-                                    <div class="request-button-sub-container">
-                                        <button
-                                            mat-button
-                                            class="override-button"
-                                            style="color: green"
-                                            (click)="setReview(request, reviewState.APPROVED, true)"
-                                            matTooltip="Override accept"
-                                            [disabled]="request.updating"
-                                        >
-                                            @if (!request.updating || request.reviewState !== 0 || !request.reviewOverriden) {
-                                            <mat-icon class="approval-icon">report_problem</mat-icon>
-                                            } @if (request.updating && request.reviewState === 0 && request.reviewOverriden) {
-                                            <mat-spinner class="approval-updating" [diameter]="30"></mat-spinner>
-                                            }
-                                        </button>
-                                    </div>
-                                    <div class="request-button-sub-container">
-                                        <button
-                                            mat-button
-                                            class="override-button"
-                                            style="color: red"
-                                            (click)="setReview(request, reviewState.REJECTED, true)"
-                                            matTooltip="Override reject"
-                                            [disabled]="request.updating"
-                                        >
-                                            @if (!request.updating || request.reviewState !== 1 || !request.reviewOverriden) {
-                                            <mat-icon class="approval-icon">report</mat-icon>
-                                            } @if (request.updating && request.reviewState === 1 && request.reviewOverriden) {
-                                            <mat-spinner class="approval-updating" [diameter]="30"></mat-spinner>
-                                            }
-                                        </button>
-                                    </div>
-                                    <div class="request-spacer"></div>
-                                </div>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </mat-card>
-                }
-            </div>
+    <app-full-content-area>
+        <div class="actions-bar">
+            <button mat-raised-button color="primary" (click)="rankRequest()">Promote/Demote</button>
+            <button mat-raised-button color="primary" (click)="transferRequest()">Transfer</button>
+            <button mat-raised-button color="primary" (click)="roleRequest()">Assign Role</button>
+            <button mat-raised-button color="primary" (click)="chainOfCommandPositionRequest()">Assign Chain of Command Position</button>
+            <button mat-raised-button color="primary" (click)="unitRemovalRequest()">Unit Removal</button>
+            <button mat-raised-button color="primary" (click)="dischargeRequest()">Discharge</button>
+        </div>
+
+        <h2 class="section-h">Requests needing your review</h2>
+        <div class="cards">
+            @for (request of myRequests; track request.data.id) {
+                <app-command-request-card [request]="request" (review)="setReview(request, $event.state, $event.overridden)" />
+            } @empty {
+                <p class="empty">No requests waiting on you</p>
             }
         </div>
-    </app-main-content-area>
+
+        <h2 class="section-h">Other requests</h2>
+        <div class="cards">
+            @for (request of otherRequests; track request.data.id) {
+                <app-command-request-card [request]="request" (review)="setReview(request, $event.state, $event.overridden)" />
+            } @empty {
+                <p class="empty">No other requests</p>
+            }
+        </div>
+    </app-full-content-area>
 </app-default-content-areas>

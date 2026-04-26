@@ -130,7 +130,7 @@ export class RequestChainOfCommandPositionModalComponent implements OnInit {
             return;
         }
 
-        const commandRequest: CommandRequest = {
+        const commandRequest: Partial<CommandRequest> = {
             recipient: mapFromElement(BasicAccount, this.model.account).id,
             value: mapFromElement(Role, this.model.unit).name,
             secondaryValue: mapFromElement(Role, this.model.position).name,

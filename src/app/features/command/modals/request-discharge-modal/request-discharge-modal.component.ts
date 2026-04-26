@@ -69,7 +69,7 @@ export class RequestDischargeModalComponent implements OnInit {
             return;
         }
 
-        const commandRequest: CommandRequest = {
+        const commandRequest: Partial<CommandRequest> = {
             recipient: mapFromElement(BasicAccount, this.model.account).id,
             reason: this.model.reason
         };
