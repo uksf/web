@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { CommandRequestCardComponent } from './command-request-card.component';
-import { ReviewState, CommandRequestItem } from '@app/features/command/models/command-request';
+import { ReviewState, CommandRequestItem, CommandReviewEvent } from '@app/features/command/models/command-request';
 import { AccountService } from '@app/core/services/account.service';
 
 const buildItem = (overrides: Partial<CommandRequestItem> = {}): CommandRequestItem => ({
@@ -18,9 +18,7 @@ const buildItem = (overrides: Partial<CommandRequestItem> = {}): CommandRequestI
         requester: 'tim',
         recipient: 'bridg',
         dateCreated: '2026-04-25T00:00:00Z',
-        reviews: {},
-        overriddenState: null,
-        overriddenBy: null
+        reviews: {}
     },
     displayReason: 'holiday',
     displayType: 'Loa',
@@ -98,7 +96,7 @@ describe('CommandRequestCardComponent', () => {
 
     it('emits review event with state + overridden flag when onReview is called', () => {
         component.request = buildItem({ canOverride: true });
-        const events: { state: ReviewState; overridden: boolean }[] = [];
+        const events: CommandReviewEvent[] = [];
         component.review.subscribe((e) => events.push(e));
 
         component.onReview(ReviewState.APPROVED, false);

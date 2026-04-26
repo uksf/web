@@ -25,8 +25,11 @@ export interface CommandRequest {
     recipient: string;
     dateCreated: string;
     reviews: Record<string, ReviewState>;
-    overriddenState: ReviewState | null;
-    overriddenBy: string | null;
+}
+
+export interface CommandReviewEvent {
+    state: ReviewState;
+    overridden: boolean;
 }
 
 export interface CommandRequestItem {

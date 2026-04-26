@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatButton } from '@angular/material/button';
-import { first, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { first, switchMap, takeUntil } from 'rxjs/operators';
 import { RequestRankModalComponent } from '@app/features/command/modals/request-rank-modal/request-rank-modal.component';
 import { RequestTransferModalComponent } from '@app/features/command/modals/request-transfer-modal/request-transfer-modal.component';
 import { RequestRoleModalComponent } from '@app/features/command/modals/request-role-modal/request-role-modal.component';
@@ -33,18 +34,30 @@ export class CommandRequestsComponent extends DestroyableComponent implements On
     myRequests: CommandRequestItem[] = [];
     otherRequests: CommandRequestItem[] = [];
 
-    private onReceiveRequestUpdate = () => this.getRequests();
+    private refresh$ = new Subject<void>();
+    private onReceiveRequestUpdate = () => this.refresh$.next();
 
     constructor() {
         super();
-        this.getRequests();
+        this.refresh$
+            .pipe(
+                switchMap(() => this.commandRequestsService.getRequests()),
+                takeUntil(this.destroy$)
+            )
+            .subscribe({
+                next: (response) => {
+                    this.myRequests = response.myRequests;
+                    this.otherRequests = response.otherRequests;
+                }
+            });
+        this.refresh$.next();
     }
 
     ngOnInit() {
         this.commandRequestsHub.connect();
         this.commandRequestsHub.on('ReceiveRequestUpdate', this.onReceiveRequestUpdate);
         this.commandRequestsHub.reconnected$.pipe(takeUntil(this.destroy$)).subscribe({
-            next: () => this.getRequests()
+            next: () => this.refresh$.next()
         });
     }
 
@@ -55,15 +68,7 @@ export class CommandRequestsComponent extends DestroyableComponent implements On
     }
 
     getRequests() {
-        this.commandRequestsService
-            .getRequests()
-            .pipe(first())
-            .subscribe({
-                next: (response) => {
-                    this.myRequests = response.myRequests;
-                    this.otherRequests = response.otherRequests;
-                }
-            });
+        this.refresh$.next();
     }
 
     setReview(request: CommandRequestItem, state: ReviewState, overridden: boolean) {

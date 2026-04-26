@@ -155,16 +155,16 @@
     flex-shrink: 0;
 
     .mat-mdc-button {
-        --mat-button-text-state-layer-color: white;
-        --mat-button-text-ripple-color: rgba(255, 255, 255, 0.12);
+        --mat-button-text-state-layer-color: var(--mat-sys-on-surface);
+        --mat-button-text-ripple-color: color-mix(in srgb, #{th.fg-base()} 12%, transparent);
         padding: 0;
         min-width: 40px;
         width: 40px;
         height: 40px;
     }
 
-    .approve { color: green; }
-    .reject { color: red; }
+    .approve { color: var(--t-promotion); }
+    .reject { color: th.warn(); }
 
     @container (max-width: 450px) {
         width: 100%;

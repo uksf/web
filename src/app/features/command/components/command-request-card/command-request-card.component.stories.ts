@@ -19,9 +19,7 @@ const baseItem: CommandRequestItem = {
         requester: 'tim',
         recipient: 'bridg',
         dateCreated: '2026-04-23T10:00:00Z',
-        reviews: {},
-        overriddenState: null,
-        overriddenBy: null
+        reviews: {}
     },
     displayReason: 'Family holiday — already cleared with chain of command.',
     displayType: 'Loa',

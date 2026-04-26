@@ -4,7 +4,7 @@ import { MatButton } from '@angular/material/button';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatCard } from '@angular/material/card';
 import { DatePipe } from '@angular/common';
-import { CommandRequestItem, ReviewState } from '@app/features/command/models/command-request';
+import { CommandRequestItem, CommandReviewEvent, ReviewState } from '@app/features/command/models/command-request';
 import { AccountService } from '@app/core/services/account.service';
 import { FlexFillerComponent } from '@app/shared/components/elements/flex-filler/flex-filler.component';
 
@@ -18,7 +18,7 @@ export class CommandRequestCardComponent {
     private accountService = inject(AccountService);
 
     @Input({ required: true }) request!: CommandRequestItem;
-    @Output() review = new EventEmitter<{ state: ReviewState; overridden: boolean }>();
+    @Output() review = new EventEmitter<CommandReviewEvent>();
 
     reviewState = ReviewState;
 
