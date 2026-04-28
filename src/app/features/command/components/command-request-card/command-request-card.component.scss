@@ -163,8 +163,8 @@
         height: 40px;
     }
 
-    .approve { color: var(--t-promotion); }
-    .reject { color: th.warn(); }
+    .approve { color: green; }
+    .reject { color: red; }
 
     @container (max-width: 450px) {
         width: 100%;
