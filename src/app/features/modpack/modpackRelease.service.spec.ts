@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
-import { Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { ModpackReleaseService } from './modpackRelease.service';
 import { ModpackHubService } from './services/modpack-hub.service';
 import { UrlService } from '@app/core/services/url.service';
@@ -99,5 +99,52 @@ describe('ModpackReleaseService', () => {
 
         service.disconnect();
         expect(modpackHub.off).toHaveBeenCalledWith('ReceiveRelease', expect.any(Function));
+    });
+
+    describe('config downloads', () => {
+        it('loadConfigVersions populates configVersions set', () => {
+            httpClient.get.mockReturnValue(of(['5.23.9', '5.23.8']));
+
+            service.loadConfigVersions();
+
+            expect(httpClient.get).toHaveBeenCalledWith('http://test/modpack/gameconfig/available-versions');
+            expect(service.hasConfig('5.23.9')).toBe(true);
+            expect(service.hasConfig('5.23.8')).toBe(true);
+            expect(service.hasConfig('5.23.7')).toBe(false);
+        });
+
+        it('hasConfig returns false before load', () => {
+            expect(service.hasConfig('5.23.9')).toBe(false);
+        });
+
+        describe('downloadConfig', () => {
+            const originalCreateObjectURL = (globalThis as any).URL?.createObjectURL;
+            const originalRevokeObjectURL = (globalThis as any).URL?.revokeObjectURL;
+
+            beforeEach(() => {
+                (globalThis as any).URL.createObjectURL = vi.fn().mockReturnValue('blob:mock');
+                (globalThis as any).URL.revokeObjectURL = vi.fn();
+            });
+
+            afterEach(() => {
+                (globalThis as any).URL.createObjectURL = originalCreateObjectURL;
+                (globalThis as any).URL.revokeObjectURL = originalRevokeObjectURL;
+            });
+
+            it('triggers download via anchor click with correct filename', () => {
+                const blob = new Blob(['cpp data']);
+                httpClient.get.mockReturnValue(of(blob));
+                const click = vi.fn();
+                const createElementSpy = vi.spyOn(document, 'createElement').mockReturnValue({ click } as unknown as HTMLAnchorElement);
+
+                service.downloadConfig('5.23.9');
+
+                expect(httpClient.get).toHaveBeenCalledWith('http://test/modpack/gameconfig/by-version/5.23.9', { responseType: 'blob' });
+                expect((globalThis as any).URL.createObjectURL).toHaveBeenCalledWith(blob);
+                expect(click).toHaveBeenCalled();
+                expect((globalThis as any).URL.revokeObjectURL).toHaveBeenCalledWith('blob:mock');
+                createElementSpy.mockRestore();
+            });
+        });
     });
 });

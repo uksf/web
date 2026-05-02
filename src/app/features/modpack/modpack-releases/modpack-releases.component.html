@@ -25,6 +25,13 @@
                 <div class="release-header">
                     <h1 class="release-title">Release Version {{ selectedRelease.version }}</h1>
                     <app-flex-filler></app-flex-filler>
+                    <ng-template [ngxPermissionsOnly]="['ADMIN']">
+                        @if (hasConfig(selectedRelease.version)) {
+                            <div class="buttons">
+                                <app-button (clicked)="downloadConfig()">Download Config</app-button>
+                            </div>
+                        }
+                    </ng-template>
                     <div class="release-date">Released {{ selectedRelease.timestamp | date : 'dd MMM y' : 'Europe/London' }}</div>
                 </div>
                 <div class="release-content">

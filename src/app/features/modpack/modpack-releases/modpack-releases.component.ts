@@ -86,6 +86,20 @@ export class ModpackReleasesComponent implements OnInit, OnDestroy {
                 }
             }
         );
+
+        if (this.permissionsService.hasPermission(Permissions.ADMIN)) {
+            this.modpackReleaseService.loadConfigVersions();
+        }
+    }
+
+    hasConfig(version: string): boolean {
+        return this.modpackReleaseService.hasConfig(version);
+    }
+
+    downloadConfig() {
+        if (this.selectedRelease) {
+            this.modpackReleaseService.downloadConfig(this.selectedRelease.version);
+        }
     }
 
     checkRoute() {
