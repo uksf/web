@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { first, merge, of, Subject, switchMap, takeUntil } from 'rxjs';
+import { merge, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { UrlService } from '@app/core/services/url.service';
 import { ModpackHubService } from './services/modpack-hub.service';
 import { ModpackRelease } from './models/modpack-release';
@@ -17,7 +17,6 @@ export class ModpackReleaseService implements OnDestroy {
     private dialog = inject(MatDialog);
 
     releases: ModpackRelease[] = [];
-    configVersions = new Set<string>();
     private onReceiveRelease: ((release: ModpackRelease) => void) | null = null;
     private readonly disconnect$ = new Subject<void>();
 
@@ -126,36 +125,5 @@ export class ModpackReleaseService implements OnDestroy {
                 callback(release.changelog);
             }
         });
-    }
-
-    loadConfigVersions() {
-        this.httpClient
-            .get<string[]>(this.urls.apiUrl + '/modpack/gameconfig/available-versions')
-            .pipe(first())
-            .subscribe({
-                next: (versions) => {
-                    this.configVersions = new Set(versions);
-                }
-            });
-    }
-
-    hasConfig(version: string): boolean {
-        return this.configVersions.has(version);
-    }
-
-    downloadConfig(version: string) {
-        this.httpClient
-            .get(this.urls.apiUrl + `/modpack/gameconfig/by-version/${version}`, { responseType: 'blob' })
-            .pipe(first())
-            .subscribe({
-                next: (blob) => {
-                    const url = URL.createObjectURL(blob);
-                    const anchor = document.createElement('a');
-                    anchor.href = url;
-                    anchor.download = `config_${version}.cpp`;
-                    anchor.click();
-                    URL.revokeObjectURL(url);
-                }
-            });
     }
 }

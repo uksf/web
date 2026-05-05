@@ -1,16 +1,20 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { MarkdownComponent } from 'ngx-markdown';
+import { first } from 'rxjs';
 import { parseMarkdownSync } from '../markdown-utils';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { Permissions } from '@app/core/services/permissions';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModpackReleaseService } from '../modpackRelease.service';
+import { GameDataExportService } from '../services/game-data-export.service';
 import { ModpackRelease } from '../models/modpack-release';
+import { GameDataExport, GameDataFile } from '../models/game-data-export';
 import { DefaultContentAreasComponent } from '../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { FullContentAreaComponent } from '../../../shared/components/content-areas/full-content-area/full-content-area.component';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { NgClass, DatePipe } from '@angular/common';
 import { FlexFillerComponent } from '../../../shared/components/elements/flex-filler/flex-filler.component';
 import { ButtonComponent } from '../../../shared/components/elements/button-pending/button.component';
@@ -27,6 +31,9 @@ import { FormsModule } from '@angular/forms';
         MatButton,
         MatIconButton,
         MatIcon,
+        MatMenu,
+        MatMenuItem,
+        MatMenuTrigger,
         NgClass,
         FlexFillerComponent,
         MarkdownComponent,
@@ -36,10 +43,19 @@ import { FormsModule } from '@angular/forms';
     ]
 })
 export class ModpackReleasesComponent implements OnInit, OnDestroy {
+    private static readonly FILE_NAMES: Record<GameDataFile, (v: string) => string> = {
+        'config': (v) => `config_${v}.cpp`,
+        'cba-settings': (v) => `cba_settings_${v}.sqf`,
+        'cba-settings-reference': (v) => `cba_settings_reference_${v}.json`
+    };
+
     private permissionsService = inject(PermissionsService);
     private route = inject(ActivatedRoute);
     private router = inject(Router);
     private modpackReleaseService = inject(ModpackReleaseService);
+    private gameDataExportService = inject(GameDataExportService);
+
+    private dataExports = new Map<string, GameDataExport>();
 
     selectedReleaseVersion: string = '';
     selectIncomingRelease: boolean = false;
@@ -88,18 +104,42 @@ export class ModpackReleasesComponent implements OnInit, OnDestroy {
         );
 
         if (this.permissionsService.hasPermission(Permissions.ADMIN)) {
-            this.modpackReleaseService.loadConfigVersions();
+            this.gameDataExportService
+                .list()
+                .pipe(first())
+                .subscribe({
+                    next: (records) => {
+                        this.dataExports.clear();
+                        for (const r of records) {
+                            this.dataExports.set(r.modpackVersion, r);
+                        }
+                    }
+                });
         }
     }
 
-    hasConfig(version: string): boolean {
-        return this.modpackReleaseService.hasConfig(version);
+    hasDataExport(version: string): boolean {
+        return this.dataExports.has(version);
     }
 
-    downloadConfig() {
-        if (this.selectedRelease) {
-            this.modpackReleaseService.downloadConfig(this.selectedRelease.version);
-        }
+    getDataExport(version: string): GameDataExport | undefined {
+        return this.dataExports.get(version);
+    }
+
+    download(version: string, file: GameDataFile) {
+        this.gameDataExportService
+            .download(version, file)
+            .pipe(first())
+            .subscribe({
+                next: (blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const anchor = document.createElement('a');
+                    anchor.href = url;
+                    anchor.download = ModpackReleasesComponent.FILE_NAMES[file](version);
+                    anchor.click();
+                    URL.revokeObjectURL(url);
+                }
+            });
     }
 
     checkRoute() {

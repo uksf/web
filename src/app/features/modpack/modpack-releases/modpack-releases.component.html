@@ -26,9 +26,21 @@
                     <h1 class="release-title">Release Version {{ selectedRelease.version }}</h1>
                     <app-flex-filler></app-flex-filler>
                     <ng-template [ngxPermissionsOnly]="['ADMIN']">
-                        @if (hasConfig(selectedRelease.version)) {
+                        @if (hasDataExport(selectedRelease.version)) {
+                            @let dataExport = getDataExport(selectedRelease.version);
                             <div class="buttons">
-                                <app-button (clicked)="downloadConfig()">Download Config</app-button>
+                                <button mat-stroked-button [matMenuTriggerFor]="dataExportMenu">Data Export</button>
+                                <mat-menu #dataExportMenu="matMenu">
+                                    @if (dataExport?.hasConfig) {
+                                        <button mat-menu-item (click)="download(selectedRelease.version, 'config')">Config</button>
+                                    }
+                                    @if (dataExport?.hasCbaSettings) {
+                                        <button mat-menu-item (click)="download(selectedRelease.version, 'cba-settings')">CBA Settings</button>
+                                    }
+                                    @if (dataExport?.hasCbaSettingsReference) {
+                                        <button mat-menu-item (click)="download(selectedRelease.version, 'cba-settings-reference')">Settings Reference</button>
+                                    }
+                                </mat-menu>
                             </div>
                         }
                     </ng-template>
