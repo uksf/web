@@ -18,4 +18,8 @@ export class GameDataExportService {
             .get(`${this.urls.apiUrl}/modpack/gamedata/${version}/${file}`, { responseType: 'blob' })
             .pipe(first());
     }
+
+    trigger(modpackVersion: string): Observable<{ runId: string }> {
+        return this.http.post<{ runId: string }>(`${this.urls.apiUrl}/modpack/gamedata/export`, { modpackVersion }).pipe(first());
+    }
 }

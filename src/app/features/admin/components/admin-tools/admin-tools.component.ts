@@ -13,6 +13,8 @@ import { NgForm, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UksfError } from '@app/shared/models/response';
 import { AdminToolsService } from '../../services/admin-tools.service';
+import { GameDataExportService } from '@app/features/modpack/services/game-data-export.service';
+import { TextInputModalComponent } from '@app/shared/modals/text-input-modal/text-input-modal.component';
 import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
 import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
@@ -28,6 +30,7 @@ import { DropdownComponent } from '../../../../shared/components/elements/dropdo
 })
 export class AdminToolsComponent implements OnInit {
     private adminToolsService = inject(AdminToolsService);
+    private gameDataExportService = inject(GameDataExportService);
     private accountService = inject(AccountService);
     private dialog = inject(MatDialog);
     private permissions = inject(PermissionsService);
@@ -59,7 +62,8 @@ export class AdminToolsComponent implements OnInit {
                 pending: false
             },
             { key: 'reloadTeamspeak', title: 'Reload TeamSpeak', function: this.reloadTeamspeak, pending: false },
-            { key: 'emergencyCleanup', title: 'Emergency Cleanup Stuck Builds', function: this.emergencyCleanupStuckBuilds, pending: false }
+            { key: 'emergencyCleanup', title: 'Emergency Cleanup Stuck Builds', function: this.emergencyCleanupStuckBuilds, pending: false },
+            { key: 'triggerDataExport', title: 'Trigger Data Export', function: this.triggerDataExport, pending: false }
         ];
         this.debugTools = [{ key: 'notification', title: 'Test Notification', function: this.testNotification, pending: false }];
 
@@ -140,6 +144,40 @@ export class AdminToolsComponent implements OnInit {
     testNotification(): void {
         const tool: Tool = this.debugTools.find((x: Tool): boolean => x.key === 'notification');
         this.adminToolsService.testNotification().pipe(first()).subscribe(this.setPending(tool));
+    }
+
+    triggerDataExport(): void {
+        const tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'triggerDataExport');
+        const dialogRef = this.dialog.open(TextInputModalComponent, { data: { title: 'Modpack version (e.g. 5.23.10)' } });
+        dialogRef
+            .afterClosed()
+            .pipe(first())
+            .subscribe({
+                next: (version: string | undefined): void => {
+                    if (!version) {
+                        tool.pending = false;
+                        return;
+                    }
+
+                    this.gameDataExportService
+                        .trigger(version.trim())
+                        .pipe(first())
+                        .subscribe({
+                            next: (response: { runId: string }): void => {
+                                this.dialog.open(MessageModalComponent, {
+                                    data: { message: `Data export triggered for ${version} (runId: ${response.runId})` }
+                                });
+                                tool.pending = false;
+                            },
+                            error: (err: UksfError): void => {
+                                this.dialog.open(MessageModalComponent, {
+                                    data: { message: err?.error || 'Failed to trigger data export' }
+                                });
+                                tool.pending = false;
+                            }
+                        });
+                }
+            });
     }
 
     emergencyCleanupStuckBuilds(): void {
