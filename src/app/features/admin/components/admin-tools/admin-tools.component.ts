@@ -14,7 +14,6 @@ import { Router } from '@angular/router';
 import { UksfError } from '@app/shared/models/response';
 import { AdminToolsService } from '../../services/admin-tools.service';
 import { GameDataExportService } from '@app/features/modpack/services/game-data-export.service';
-import { TextInputModalComponent } from '@app/shared/modals/text-input-modal/text-input-modal.component';
 import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
 import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
@@ -148,34 +147,21 @@ export class AdminToolsComponent implements OnInit {
 
     triggerDataExport(): void {
         const tool: Tool = this.tools.find((x: Tool): boolean => x.key === 'triggerDataExport');
-        const dialogRef = this.dialog.open(TextInputModalComponent, { data: { title: 'Modpack version (e.g. 5.23.10)' } });
-        dialogRef
-            .afterClosed()
+        this.gameDataExportService
+            .trigger()
             .pipe(first())
             .subscribe({
-                next: (version: string | undefined): void => {
-                    if (!version) {
-                        tool.pending = false;
-                        return;
-                    }
-
-                    this.gameDataExportService
-                        .trigger(version.trim())
-                        .pipe(first())
-                        .subscribe({
-                            next: (response: { runId: string }): void => {
-                                this.dialog.open(MessageModalComponent, {
-                                    data: { message: `Data export triggered for ${version} (runId: ${response.runId})` }
-                                });
-                                tool.pending = false;
-                            },
-                            error: (err: UksfError): void => {
-                                this.dialog.open(MessageModalComponent, {
-                                    data: { message: err?.error || 'Failed to trigger data export' }
-                                });
-                                tool.pending = false;
-                            }
-                        });
+                next: (response: { runId: string; version: string }): void => {
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: `Data export triggered for ${response.version} (runId: ${response.runId})` }
+                    });
+                    tool.pending = false;
+                },
+                error: (err: UksfError): void => {
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: err?.error || 'Failed to trigger data export' }
+                    });
+                    tool.pending = false;
                 }
             });
     }

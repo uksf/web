@@ -19,7 +19,7 @@ export class GameDataExportService {
             .pipe(first());
     }
 
-    trigger(modpackVersion: string): Observable<{ runId: string }> {
-        return this.http.post<{ runId: string }>(`${this.urls.apiUrl}/modpack/gamedata/export`, { modpackVersion }).pipe(first());
+    trigger(): Observable<{ runId: string; version: string }> {
+        return this.http.post<{ runId: string; version: string }>(`${this.urls.apiUrl}/modpack/gamedata/export`, {}).pipe(first());
     }
 }
