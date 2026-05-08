@@ -71,12 +71,8 @@
             .buttons {
                 display: flex;
                 flex-direction: row;
-
-                app-button {
-                    margin-left: 5px;
-                    height: fit-content;
-                    align-self: center;
-                }
+                gap: 5px;
+                align-items: center;
             }
         }
 

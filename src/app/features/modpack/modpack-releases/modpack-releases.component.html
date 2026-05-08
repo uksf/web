@@ -29,7 +29,7 @@
                         @if (hasDataExport(selectedRelease.version)) {
                             @let dataExport = getDataExport(selectedRelease.version);
                             <div class="buttons">
-                                <button mat-stroked-button [matMenuTriggerFor]="dataExportMenu">Data Export</button>
+                                <button mat-raised-button color="primary" [matMenuTriggerFor]="dataExportMenu">Data Export</button>
                                 <mat-menu #dataExportMenu="matMenu">
                                     @if (dataExport?.hasConfig) {
                                         <button mat-menu-item (click)="download(selectedRelease.version, 'config')">Config</button>
