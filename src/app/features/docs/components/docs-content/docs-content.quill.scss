@@ -6,7 +6,7 @@
     ::ng-deep .ngx-quill-view {
         padding: 0;
         border-radius: 0;
-        height: auto;
+        flex: 1;
         background-color: var(--uksf-background);
         color: var(--uksf-contrast);
 
@@ -15,6 +15,7 @@
             word-break: break-word;
             overflow-y: visible;
             height: auto;
+            min-height: 100%;
         }
     }
 }
@@ -22,8 +23,12 @@
 .content-editor {
     ::ng-deep .ql-toolbar {
         border: 0;
-        padding: 0 8px 8px 8px;
+        padding: 8px;
         flex-shrink: 0;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background-color: var(--uksf-gray-600);
     }
 
     ::ng-deep .ql-container {
