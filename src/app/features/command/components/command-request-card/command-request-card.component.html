@@ -43,7 +43,7 @@
                     <mat-icon>cancel</mat-icon>
                 </button>
             }
-            @if (request.canOverride) {
+            @if (canOverride()) {
                 <button mat-button class="override approve" (click)="onReview(reviewState.APPROVED, true)" matTooltip="Override approve">
                     <mat-icon>report_problem</mat-icon>
                 </button>

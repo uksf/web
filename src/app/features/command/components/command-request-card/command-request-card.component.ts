@@ -37,6 +37,14 @@ export class CommandRequestCardComponent {
         );
     }
 
+    canOverride(): boolean {
+        if (!this.request.canOverride) {
+            return false;
+        }
+        const accountId = this.accountService.account.id;
+        return this.request.reviews.some((r) => r.id !== accountId);
+    }
+
     pillClass(state: ReviewState): string {
         switch (state) {
             case ReviewState.APPROVED:

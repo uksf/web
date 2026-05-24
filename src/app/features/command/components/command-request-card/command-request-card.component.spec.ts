@@ -86,12 +86,22 @@ describe('CommandRequestCardComponent', () => {
         expect(component.canReview()).toBe(false);
     });
 
-    it('canOverride flag drives override button visibility', () => {
-        component.request = buildItem({ canOverride: true });
-        expect(component.request.canOverride).toBe(true);
-
+    it('canOverride is false when request.canOverride flag is false', () => {
         component.request = buildItem({ canOverride: false });
-        expect(component.request.canOverride).toBe(false);
+        expect(component.canOverride()).toBe(false);
+    });
+
+    it('canOverride is true when flag is set and another reviewer exists', () => {
+        component.request = buildItem({ canOverride: true });
+        expect(component.canOverride()).toBe(true);
+    });
+
+    it('canOverride is false when current user is the only reviewer', () => {
+        component.request = buildItem({
+            canOverride: true,
+            reviews: [{ id: 'me', name: 'Tim', state: ReviewState.PENDING }]
+        });
+        expect(component.canOverride()).toBe(false);
     });
 
     it('emits review event with state + overridden flag when onReview is called', () => {
