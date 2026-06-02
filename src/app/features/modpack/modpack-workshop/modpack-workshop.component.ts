@@ -246,6 +246,20 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
             });
     }
 
+    retry(mod: WorkshopMod) {
+        this.workshopService
+            .retryMod(mod.steamId)
+            .pipe(first())
+            .subscribe({
+                next: () => {},
+                error: (error: UksfError) => {
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: error.error }
+                    });
+                }
+            });
+    }
+
     uninstall(mod: WorkshopMod) {
         this.workshopService
             .uninstallMod(mod.steamId)

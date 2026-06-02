@@ -90,6 +90,15 @@ describe('WorkshopService', () => {
         );
     });
 
+    it('retryMod calls POST /workshop/:steamId/retry', () => {
+        service.retryMod('123').subscribe();
+
+        expect(mockHttpClient.post).toHaveBeenCalledWith(
+            'http://localhost:5500/workshop/123/retry',
+            {}
+        );
+    });
+
     it('uninstallMod calls POST /workshop/:steamId/uninstall', () => {
         service.uninstallMod('123').subscribe();
 

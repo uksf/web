@@ -37,6 +37,10 @@ export class WorkshopService {
         return this.httpClient.post<void>(`${this.urls.apiUrl}/workshop/${steamId}/update`, {});
     }
 
+    retryMod(steamId: string): Observable<void> {
+        return this.httpClient.post<void>(`${this.urls.apiUrl}/workshop/${steamId}/retry`, {});
+    }
+
     uninstallMod(steamId: string): Observable<void> {
         return this.httpClient.post<void>(`${this.urls.apiUrl}/workshop/${steamId}/uninstall`, {});
     }

@@ -126,8 +126,14 @@
     height: 5px;
 }
 
+// Menu links (Steam Workshop / Added with / Last updated with): keep the label text white,
+// colour only the steam ID and version number spans primary.
 a {
-    color: th.primary();
+    color: white;
+
+    .primary {
+        color: th.primary();
+    }
 }
 
 // mat-menu-item for the update action — menu is portaled to the CDK overlay

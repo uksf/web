@@ -35,6 +35,9 @@
                                                     <button mat-button class="icon delete" (click)="showError(mod)" matTooltip="View error">
                                                         <mat-icon>error_outline</mat-icon>
                                                     </button>
+                                                    <button mat-button class="icon update" (click)="retry(mod)" matTooltip="Retry">
+                                                        <mat-icon>refresh</mat-icon>
+                                                    </button>
                                                 }
                                                 @if (mod._interventionRequired) {
                                                     <button mat-button class="icon" (click)="resolveIntervention(mod)" matTooltip="Resolve Intervention">
@@ -75,6 +78,10 @@
                                                     <button mat-menu-item (click)="showError(mod)">
                                                         <mat-icon>error_outline</mat-icon>
                                                         View error
+                                                    </button>
+                                                    <button mat-menu-item class="update" (click)="retry(mod)">
+                                                        <mat-icon>refresh</mat-icon>
+                                                        Retry
                                                     </button>
                                                 }
                                                 @if (mod._interventionRequired) {

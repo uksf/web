@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { ModpackWorkshopComponent } from './modpack-workshop.component';
-import { of, Subject } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { WorkshopMod, WorkshopModStatus } from '../models/workshop-mod';
 import { WorkshopService } from '../services/workshop.service';
 import { ModpackHubService } from '../services/modpack-hub.service';
@@ -37,6 +37,7 @@ describe('ModpackWorkshopComponent', () => {
             installMod: vi.fn().mockReturnValue(of(undefined)),
             resolveIntervention: vi.fn().mockReturnValue(of(undefined)),
             updateMod: vi.fn().mockReturnValue(of(undefined)),
+            retryMod: vi.fn().mockReturnValue(of(undefined)),
             uninstallMod: vi.fn().mockReturnValue(of(undefined)),
             deleteMod: vi.fn().mockReturnValue(of(undefined))
         };
@@ -219,6 +220,27 @@ describe('ModpackWorkshopComponent', () => {
             component.update(mod);
 
             expect(mockWorkshopService.updateMod).toHaveBeenCalledWith('12345');
+        });
+    });
+
+    describe('retry', () => {
+        it('calls service retryMod with steamId', () => {
+            const mod = makeMod({ steamId: '12345', status: 'Error' });
+
+            component.retry(mod);
+
+            expect(mockWorkshopService.retryMod).toHaveBeenCalledWith('12345');
+        });
+
+        it('opens message dialog on error', () => {
+            const mod = makeMod({ steamId: '12345', status: 'Error' });
+            mockWorkshopService.retryMod.mockReturnValue(throwError(() => ({ error: 'Retry failed' })));
+
+            component.retry(mod);
+
+            expect(mockDialog.open).toHaveBeenCalledWith(expect.any(Function), {
+                data: { message: 'Retry failed' }
+            });
         });
     });
 
