@@ -165,6 +165,11 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
     }
 
     updateAvailable(mod: WorkshopMod) {
+        // A mod that needs attention (errored or awaiting intervention) is recovered via Retry/Resolve, not Update —
+        // its lastUpdatedLocally was never bumped so the dates would otherwise falsely flag an update as available.
+        if (mod.status === 'Error' || mod.status === 'InterventionRequired') {
+            return false;
+        }
         return mod.updatedDate !== null && this.isValidDate(mod.updatedDate) && this.isValidDate(mod.lastUpdatedLocally) && new Date(mod.updatedDate) > new Date(mod.lastUpdatedLocally);
     }
 

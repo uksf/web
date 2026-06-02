@@ -104,6 +104,26 @@ describe('ModpackWorkshopComponent', () => {
 
             expect(component.updateAvailable(mod)).toBe(false);
         });
+
+        it('returns false for Error status even when remote is newer', () => {
+            const mod = makeMod({
+                status: 'Error',
+                updatedDate: '2026-02-01T00:00:00Z',
+                lastUpdatedLocally: '2026-01-01T00:00:00Z'
+            });
+
+            expect(component.updateAvailable(mod)).toBe(false);
+        });
+
+        it('returns false for InterventionRequired status even when remote is newer', () => {
+            const mod = makeMod({
+                status: 'InterventionRequired',
+                updatedDate: '2026-02-01T00:00:00Z',
+                lastUpdatedLocally: '2026-01-01T00:00:00Z'
+            });
+
+            expect(component.updateAvailable(mod)).toBe(false);
+        });
     });
 
     describe('canUninstall', () => {
@@ -329,7 +349,7 @@ describe('ModpackWorkshopComponent', () => {
             expect(component.mods[0]._hasError).toBe(true);
             expect(component.mods[0]._canUninstall).toBe(true);
             expect(component.mods[0]._canDelete).toBe(false);
-            expect(component.mods[0]._updateAvailable).toBe(true);
+            expect(component.mods[0]._updateAvailable).toBe(false);
             expect(component.mods[0]._interventionRequired).toBe(false);
             expect(component.mods[0]._neverReleased).toBe(true);
 
