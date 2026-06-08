@@ -5,6 +5,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { of } from 'rxjs';
 import { OperationsNpcsComponent } from './operations-npcs.component';
 import { NpcVoicesService } from '../../services/npc-voices.service';
+import { NpcVoiceJob } from '../../models/npc-voice';
 
 describe('OperationsNpcsComponent', () => {
     let component: OperationsNpcsComponent;
@@ -14,6 +15,7 @@ describe('OperationsNpcsComponent', () => {
     let audioSpy: ReturnType<typeof vi.fn>;
 
     beforeEach(() => {
+        const terminalJob: NpcVoiceJob = { id: 'j0', baseVoiceId: 'smuggler', ownerId: 'o', moods: [], createdAt: '' };
         mockService = {
             getVoices: vi.fn().mockReturnValue(of([
                 { id: '1', voiceId: 'smuggler', displayName: 'Smuggler', moodOf: null, ownerId: 'u', durationMs: 5000, createdAt: '' },
@@ -21,7 +23,9 @@ describe('OperationsNpcsComponent', () => {
             ])),
             upload: vi.fn().mockReturnValue(of({})),
             delete: vi.fn().mockReturnValue(of(undefined)),
-            sampleUrl: vi.fn().mockReturnValue('http://x/sample')
+            sampleUrl: vi.fn().mockReturnValue('http://x/sample'),
+            getJob: vi.fn().mockReturnValue(of(terminalJob)),
+            generateMoods: vi.fn()
         };
         mockDialog = { open: vi.fn().mockReturnValue({ afterClosed: () => of(true) }) };
         mockClipboard = { copy: vi.fn() };
@@ -65,5 +69,17 @@ describe('OperationsNpcsComponent', () => {
         component.delete({ id: '1', voiceId: 'smuggler' } as never);
         expect(mockService.delete).toHaveBeenCalledWith('1');
         expect(mockService.getVoices).toHaveBeenCalledTimes(2); // initial + reload
+    });
+
+    it('generateMoods calls the service and refreshes the job for that base voice', () => {
+        const component = TestBed.inject(OperationsNpcsComponent);
+        const service = TestBed.inject(NpcVoicesService);
+        vi.spyOn(service, 'generateMoods').mockReturnValue(of({ id: 'j1', baseVoiceId: 'smuggler', ownerId: 'o', moods: [{ mood: 'angry', status: 'Pending', error: null }], createdAt: '' }) as any);
+        vi.spyOn(service, 'getJob').mockReturnValue(of({ id: 'j1', baseVoiceId: 'smuggler', ownerId: 'o', moods: [], createdAt: '' }) as any);
+
+        component.generateMoods('smuggler');
+
+        expect(service.generateMoods).toHaveBeenCalledWith('smuggler');
+        expect(component.jobs['smuggler']?.moods?.length).toBe(1);
     });
 });

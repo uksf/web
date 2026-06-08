@@ -51,6 +51,15 @@
                     <input [ngModel]="getMoodLabel(group.base.voiceId)" (ngModelChange)="setMoodLabel(group.base.voiceId, $event)" placeholder="Mood label (e.g. Angry)" />
                     <button mat-stroked-button [disabled]="uploading || !getMoodLabel(group.base.voiceId)" (click)="triggerUpload(group.base.voiceId)">Add mood variant</button>
                 </div>
+
+                <div class="auto-moods">
+                    <button mat-stroked-button [disabled]="uploading" (click)="generateMoods(group.base.voiceId)">Auto-generate moods</button>
+                    @if (jobs[group.base.voiceId]; as job) {
+                        @for (m of job.moods; track m.mood) {
+                            <span class="mood-status">{{ m.mood }}: {{ m.status }}{{ m.error ? ' (' + m.error + ')' : '' }}</span>
+                        }
+                    }
+                </div>
             </mat-expansion-panel>
             }
         </mat-accordion>

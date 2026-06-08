@@ -12,7 +12,7 @@ import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-moda
 import { DefaultContentAreasComponent } from '@app/shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { MainContentAreaComponent } from '@app/shared/components/content-areas/main-content-area/main-content-area.component';
 import { NpcVoicesService } from '../../services/npc-voices.service';
-import { NpcVoice } from '../../models/npc-voice';
+import { NpcVoice, NpcVoiceJob } from '../../models/npc-voice';
 
 interface VoiceGroup {
     base: NpcVoice;
@@ -51,6 +51,7 @@ export class OperationsNpcsComponent implements OnInit, OnDestroy {
     displayName = '';
     moodOfTarget: string | null = null; // when set, the next upload is a mood variant
     moodLabels = new Map<string, string>(); // per-base-voice mood label, keyed on base voiceId
+    jobs: Record<string, NpcVoiceJob> = {};
     uploading = false;
     error: string | null = null;
     private currentAudio: HTMLAudioElement | null = null;
@@ -80,6 +81,7 @@ export class OperationsNpcsComponent implements OnInit, OnDestroy {
                 base,
                 variants: voices.filter((v) => v.moodOf === base.voiceId)
             }));
+            this.groups.forEach((g) => this.refreshJob(g.base.voiceId));
         });
     }
 
@@ -148,5 +150,39 @@ export class OperationsNpcsComponent implements OnInit, OnDestroy {
                     this.service.delete(voice.id).pipe(first()).subscribe(() => this.load());
                 }
             });
+    }
+
+    generateMoods(baseVoiceId: string): void {
+        this.service.generateMoods(baseVoiceId).pipe(first()).subscribe({
+            next: (job) => {
+                this.jobs[baseVoiceId] = job;
+                this.pollJob(baseVoiceId);
+            },
+            error: (err) => { this.error = err?.error?.error ?? 'Mood generation failed to start'; }
+        });
+    }
+
+    private refreshJob(baseVoiceId: string): void {
+        this.service.getJob(baseVoiceId).pipe(first()).subscribe({
+            next: (job) => {
+                this.jobs[baseVoiceId] = job;
+                if (this.jobActive(job)) this.pollJob(baseVoiceId);
+            },
+            error: () => { /* 404 = no job for this voice, leave undefined */ }
+        });
+    }
+
+    private jobActive(job: NpcVoiceJob): boolean {
+        return job.moods.some((m) => m.status === 'Pending');
+    }
+
+    private pollJob(baseVoiceId: string): void {
+        setTimeout(() => {
+            this.service.getJob(baseVoiceId).pipe(first()).subscribe((job) => {
+                this.jobs[baseVoiceId] = job;
+                if (this.jobActive(job)) this.pollJob(baseVoiceId);
+                else this.load(); // terminal — refresh the variant list so new moods appear
+            });
+        }, 5000);
     }
 }
