@@ -6,10 +6,13 @@ import { OperationsPageComponent } from './components/operations-page/operations
 import { OperationsServersComponent } from './components/operations-servers/operations-servers.component';
 import { OperationsAarComponent } from './components/operations-aar/operations-aar.component';
 import { OperationsMissionsComponent } from './components/operations-missions/operations-missions.component';
+import { OperationsNpcsComponent } from './components/operations-npcs/operations-npcs.component';
+import { NpcVoicesService } from './services/npc-voices.service';
 export const OPERATIONS_ROUTES: Routes = [
     {
         path: '',
         component: OperationsPageComponent,
+        providers: [NpcVoicesService],
         children: [
             {
                 path: '',
@@ -39,6 +42,21 @@ export const OPERATIONS_ROUTES: Routes = [
             {
                 path: 'missions',
                 component: OperationsMissionsComponent,
+                data: {
+                    permissions: {
+                        only: Permissions.SERVERS,
+                        except: Permissions.UNLOGGED,
+                        redirectTo: {
+                            UNLOGGED: loginRedirect,
+                            default: '/operations/aar'
+                        }
+                    }
+                },
+                canActivate: [NgxPermissionsGuard]
+            },
+            {
+                path: 'npcs',
+                component: OperationsNpcsComponent,
                 data: {
                     permissions: {
                         only: Permissions.SERVERS,
