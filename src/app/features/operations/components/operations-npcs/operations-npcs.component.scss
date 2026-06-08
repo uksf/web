@@ -1,0 +1,30 @@
+.npc-voices-header {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.npc-voices-error {
+    color: var(--warn, #f44336);
+}
+
+.npc-voices-guidance {
+    opacity: 0.7;
+    font-size: 0.85rem;
+}
+
+.slug {
+    font-family: monospace;
+    margin-right: auto;
+}
+
+mat-card.variant {
+    margin-left: 1.5rem;
+}
+
+.add-variant {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}

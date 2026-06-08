@@ -1,0 +1,59 @@
+<app-default-content-areas>
+    <app-main-content-area style="grid-column: span 3">
+        <div class="npc-voices-header">
+            <input [(ngModel)]="displayName" placeholder="New voice name" />
+            <button mat-raised-button color="primary" [disabled]="uploading || !displayName" (click)="triggerUpload(null)">
+                @if (!uploading) {
+                <span>Upload voice</span>
+                } @else {
+                <mat-icon class="uploading-icon">autorenew</mat-icon>
+                }
+            </button>
+            <input #uploader type="file" accept="audio/wav,.wav" hidden (change)="onFileSelected($event)" />
+        </div>
+        @if (error) {
+        <p class="npc-voices-error">{{ error }}</p>
+        }
+
+        <p class="npc-voices-guidance">
+            3-15 s, clean, single speaker. The emotion of the sample becomes the voice's emotion — upload an angry read for an angry mood variant.
+        </p>
+
+        @if (!voices) {
+        <mat-spinner></mat-spinner>
+        }
+        @if (voices) {
+        <mat-accordion>
+            @for (group of groups; track group.base.id) {
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>{{ group.base.displayName }}</mat-panel-title>
+                    <mat-panel-description>{{ group.base.voiceId }}</mat-panel-description>
+                </mat-expansion-panel-header>
+
+                <mat-card>
+                    <span class="slug">{{ group.base.voiceId }}</span>
+                    <button mat-icon-button (click)="play(group.base)"><mat-icon>play_arrow</mat-icon></button>
+                    <button mat-icon-button (click)="copySlug(group.base.voiceId)"><mat-icon>content_copy</mat-icon></button>
+                    <button mat-icon-button (click)="delete(group.base)"><mat-icon>delete</mat-icon></button>
+                </mat-card>
+
+                @for (variant of group.variants; track variant.id) {
+                <mat-card class="variant">
+                    <span class="slug">{{ variant.voiceId }}</span>
+                    <button mat-icon-button (click)="play(variant)"><mat-icon>play_arrow</mat-icon></button>
+                    <button mat-icon-button (click)="copySlug(variant.voiceId)"><mat-icon>content_copy</mat-icon></button>
+                    <button mat-icon-button (click)="delete(variant)"><mat-icon>delete</mat-icon></button>
+                </mat-card>
+                }
+
+                <div class="add-variant">
+                    <input [(ngModel)]="moodLabel" placeholder="Mood label (e.g. Angry)" />
+                    <button mat-stroked-button [disabled]="uploading || !moodLabel" (click)="triggerUpload(group.base.voiceId)">Add mood variant</button>
+                </div>
+            </mat-expansion-panel>
+            }
+        </mat-accordion>
+        }
+    </app-main-content-area>
+</app-default-content-areas>
