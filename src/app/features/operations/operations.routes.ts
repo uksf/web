@@ -12,7 +12,6 @@ export const OPERATIONS_ROUTES: Routes = [
     {
         path: '',
         component: OperationsPageComponent,
-        providers: [NpcVoicesService],
         children: [
             {
                 path: '',
@@ -57,6 +56,7 @@ export const OPERATIONS_ROUTES: Routes = [
             {
                 path: 'npcs',
                 component: OperationsNpcsComponent,
+                providers: [NpcVoicesService],
                 data: {
                     permissions: {
                         only: Permissions.SERVERS,

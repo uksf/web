@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -39,7 +39,7 @@ interface VoiceGroup {
         MainContentAreaComponent
     ]
 })
-export class OperationsNpcsComponent implements OnInit {
+export class OperationsNpcsComponent implements OnInit, OnDestroy {
     private service = inject(NpcVoicesService);
     private dialog = inject(MatDialog);
     private clipboard = inject(Clipboard);
@@ -50,13 +50,26 @@ export class OperationsNpcsComponent implements OnInit {
     groups: VoiceGroup[] = [];
     displayName = '';
     moodOfTarget: string | null = null; // when set, the next upload is a mood variant
-    moodLabel = '';
+    moodLabels = new Map<string, string>(); // per-base-voice mood label, keyed on base voiceId
     uploading = false;
     error: string | null = null;
     private currentAudio: HTMLAudioElement | null = null;
 
     ngOnInit(): void {
         this.load();
+    }
+
+    ngOnDestroy(): void {
+        this.currentAudio?.pause();
+        this.currentAudio = null;
+    }
+
+    getMoodLabel(voiceId: string): string {
+        return this.moodLabels.get(voiceId) ?? '';
+    }
+
+    setMoodLabel(voiceId: string, value: string): void {
+        this.moodLabels.set(voiceId, value);
     }
 
     private load(): void {
@@ -80,17 +93,20 @@ export class OperationsNpcsComponent implements OnInit {
         const file = input.files?.[0];
         if (file) {
             this.upload(file);
+        } else {
+            this.moodOfTarget = null; // picker dismissed without a file — discard the variant intent
         }
         input.value = '';
     }
 
     private upload(file: File): void {
         this.error = null;
+        const moodOf = this.moodOfTarget;
         const formData = new FormData();
         formData.append('sample', file, file.name);
-        if (this.moodOfTarget) {
-            formData.append('moodOf', this.moodOfTarget);
-            formData.append('moodLabel', this.moodLabel);
+        if (moodOf) {
+            formData.append('moodOf', moodOf);
+            formData.append('moodLabel', this.getMoodLabel(moodOf));
         } else {
             formData.append('displayName', this.displayName);
         }
@@ -99,7 +115,9 @@ export class OperationsNpcsComponent implements OnInit {
             next: () => {
                 this.uploading = false;
                 this.displayName = '';
-                this.moodLabel = '';
+                if (moodOf) {
+                    this.moodLabels.delete(moodOf);
+                }
                 this.moodOfTarget = null;
                 this.load();
             },

@@ -48,8 +48,8 @@
                 }
 
                 <div class="add-variant">
-                    <input [(ngModel)]="moodLabel" placeholder="Mood label (e.g. Angry)" />
-                    <button mat-stroked-button [disabled]="uploading || !moodLabel" (click)="triggerUpload(group.base.voiceId)">Add mood variant</button>
+                    <input [ngModel]="getMoodLabel(group.base.voiceId)" (ngModelChange)="setMoodLabel(group.base.voiceId, $event)" placeholder="Mood label (e.g. Angry)" />
+                    <button mat-stroked-button [disabled]="uploading || !getMoodLabel(group.base.voiceId)" (click)="triggerUpload(group.base.voiceId)">Add mood variant</button>
                 </div>
             </mat-expansion-panel>
             }
