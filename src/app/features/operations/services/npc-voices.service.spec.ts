@@ -43,4 +43,16 @@ describe('NpcVoicesService', () => {
     it('builds a sample url', () => {
         expect(service.sampleUrl('v1')).toBe('http://localhost:5500/npcvoices/v1/sample');
     });
+
+    it('generateMoods POSTs to the generate-moods endpoint', () => {
+        httpClient.post.mockReturnValue(of({}));
+        service.generateMoods('smuggler').subscribe();
+        expect(httpClient.post).toHaveBeenCalledWith('http://localhost:5500/npcvoices/smuggler/generate-moods', {});
+    });
+
+    it('getJob GETs the job endpoint', () => {
+        httpClient.get.mockReturnValue(of({}));
+        service.getJob('smuggler').subscribe();
+        expect(httpClient.get).toHaveBeenCalledWith('http://localhost:5500/npcvoices/smuggler/job');
+    });
 });
