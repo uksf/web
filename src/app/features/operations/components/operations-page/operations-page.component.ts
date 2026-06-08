@@ -23,8 +23,8 @@ export class OperationsPageComponent {
         if (this.permissions.hasPermission(Permissions.SERVERS)) {
             this.tabLinks.unshift(
                 { label: 'Servers', link: 'servers' },
-                { label: 'Missions', link: 'missions' },
-                { label: 'NPCs', link: 'npcs' }
+                { label: 'Missions', link: 'missions' }
+                // NPCs tab hidden for now — page still reachable at /operations/npcs (route intact, SERVERS-gated)
             );
         }
     }
