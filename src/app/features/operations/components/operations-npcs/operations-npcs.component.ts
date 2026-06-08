@@ -12,7 +12,7 @@ import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-moda
 import { DefaultContentAreasComponent } from '@app/shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { MainContentAreaComponent } from '@app/shared/components/content-areas/main-content-area/main-content-area.component';
 import { NpcVoicesService } from '../../services/npc-voices.service';
-import { NpcVoice, NpcVoiceJob } from '../../models/npc-voice';
+import { NpcVoice, NpcVoiceJob, NpcMoodStatus, NpcMoodStatusLabel } from '../../models/npc-voice';
 
 interface VoiceGroup {
     base: NpcVoice;
@@ -173,7 +173,11 @@ export class OperationsNpcsComponent implements OnInit, OnDestroy {
     }
 
     private jobActive(job: NpcVoiceJob): boolean {
-        return job.moods.some((m) => m.status === 'Pending');
+        return job.moods.some((m) => m.status === NpcMoodStatus.Pending);
+    }
+
+    moodStatusLabel(status: NpcMoodStatus): string {
+        return NpcMoodStatusLabel[status];
     }
 
     private pollJob(baseVoiceId: string): void {

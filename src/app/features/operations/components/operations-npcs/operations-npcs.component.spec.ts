@@ -5,7 +5,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { of } from 'rxjs';
 import { OperationsNpcsComponent } from './operations-npcs.component';
 import { NpcVoicesService } from '../../services/npc-voices.service';
-import { NpcVoiceJob } from '../../models/npc-voice';
+import { NpcVoiceJob, NpcMoodStatus } from '../../models/npc-voice';
 
 describe('OperationsNpcsComponent', () => {
     let component: OperationsNpcsComponent;
@@ -74,7 +74,7 @@ describe('OperationsNpcsComponent', () => {
     it('generateMoods calls the service and refreshes the job for that base voice', () => {
         const component = TestBed.inject(OperationsNpcsComponent);
         const service = TestBed.inject(NpcVoicesService);
-        vi.spyOn(service, 'generateMoods').mockReturnValue(of({ id: 'j1', baseVoiceId: 'smuggler', ownerId: 'o', moods: [{ mood: 'angry', status: 'Pending', error: null }], createdAt: '' }) as any);
+        vi.spyOn(service, 'generateMoods').mockReturnValue(of({ id: 'j1', baseVoiceId: 'smuggler', ownerId: 'o', moods: [{ mood: 'angry', status: NpcMoodStatus.Pending, error: null }], createdAt: '' }) as any);
         vi.spyOn(service, 'getJob').mockReturnValue(of({ id: 'j1', baseVoiceId: 'smuggler', ownerId: 'o', moods: [], createdAt: '' }) as any);
 
         component.generateMoods('smuggler');
