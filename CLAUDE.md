@@ -422,3 +422,12 @@ import { SharedComponent } from '@app/shared/components/shared.component';
 - **Linting:** `ng lint` (angular-eslint)
 - PrimeNG CSS bundled locally via `angular.json` styles array
 - Bootstrap replaced with `src/styles/_bootstrap-reset.scss` (extracted element-level resets)
+
+## Brain & skills
+
+- **Vault:** `work/uksf-web/index.md` (hub) in the Brain vault (`E:/Workspace/workshop/Brain`).
+  `concepts/uksf-web-layout-system.md` is the canonical write-up of the Layout & Spacing
+  system above; `entities/uksf-api-stack.md` covers the frontend↔API contract.
+- **Skills:** `web-deep-review` (run before `/code-review` on Angular/RxJS changes),
+  `local-dev` (start/stop the frontend), `frontend-design` (new/reshaped UI),
+  `fullstack-deep-review` for changes spanning the API.
