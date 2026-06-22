@@ -1,6 +1,17 @@
 @use 'styles/theme-helpers' as th;
 
+.medic-symbol,
+.attached-marker {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    color: th.warn();
+    vertical-align: middle;
+}
 
+.name.attached-out {
+    font-style: italic;
+}
 
 ::-webkit-scrollbar-track {
     background-color: var(--uksf-scroll-track);
