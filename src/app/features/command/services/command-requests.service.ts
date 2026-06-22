@@ -61,4 +61,8 @@ export class CommandRequestsService {
     checkExists(body: CommandRequestExistsBody): Observable<boolean> {
         return this.httpClient.post<boolean>(`${this.urls.apiUrl}/commandrequests/exists`, JSON.stringify(body), { headers: jsonHeaders });
     }
+
+    createMedicAttachment(body: { recipient: string; troopId: string; reason: string }): Observable<unknown> {
+        return this.httpClient.post(`${this.urls.apiUrl}/commandrequests/create/medicattachment`, body, { headers: jsonHeaders });
+    }
 }

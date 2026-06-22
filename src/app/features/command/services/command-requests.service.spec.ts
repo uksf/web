@@ -140,4 +140,15 @@ describe('CommandRequestsService', () => {
             { headers: expect.objectContaining({ lazyInit: expect.anything() }) }
         );
     });
+
+    it('createMedicAttachment posts to the endpoint', () => {
+        httpClient.post.mockReturnValue(of(null));
+        service.createMedicAttachment({ recipient: 'rec', troopId: 'troop', reason: 'r' }).subscribe();
+
+        expect(httpClient.post).toHaveBeenCalledWith(
+            'http://localhost:5500/commandrequests/create/medicattachment',
+            { recipient: 'rec', troopId: 'troop', reason: 'r' },
+            { headers: expect.objectContaining({ lazyInit: expect.anything() }) }
+        );
+    });
 });
