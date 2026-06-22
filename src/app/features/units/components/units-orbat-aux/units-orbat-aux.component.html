@@ -19,12 +19,11 @@
                                 @for (unitMember of node.data.members; track trackByName($index, unitMember)) {
                                 <tr>
                                     <div class="row-container">
-                                        <td style="padding-right: 3px">
+                                        <span class="role-slot">
                                             <b class="unit-role">{{ unitMember.chainOfCommandPosition?.charAt(0) }}</b>
-                                        </td>
-                                        <app-flex-filler></app-flex-filler>
-                                        <td class="name">{{ unitMember.name }}</td>
-                                        <app-flex-filler></app-flex-filler>
+                                        </span>
+                                        <span class="name">{{ unitMember.name }}</span>
+                                        <span class="marker-slot"></span>
                                     </div>
                                 </tr>
                                 }

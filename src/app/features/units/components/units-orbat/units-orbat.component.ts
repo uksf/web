@@ -8,7 +8,6 @@ import { DefaultContentAreasComponent } from '../../../../shared/components/cont
 import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { OrganizationChartModule } from 'primeng/organizationchart';
-import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
 
@@ -16,7 +15,7 @@ import { MatTooltip } from '@angular/material/tooltip';
     selector: 'app-units-orbat',
     templateUrl: './units-orbat.component.html',
     styleUrls: ['../units-page/units-page.component.scss', './units-orbat.component.scss'],
-    imports: [DefaultContentAreasComponent, MainContentAreaComponent, MatProgressSpinner, OrganizationChartModule, PrimeTemplate, FlexFillerComponent, MatIcon, MatTooltip]
+    imports: [DefaultContentAreasComponent, MainContentAreaComponent, MatProgressSpinner, OrganizationChartModule, PrimeTemplate, MatIcon, MatTooltip]
 })
 export class UnitsOrbatComponent {
     private unitsService = inject(UnitsService);

@@ -93,19 +93,30 @@ a {
             width: 100%;
 
             .row-container {
-                display: flex;
-                flex-direction: row;
+                display: grid;
+                grid-template-columns: 1.1rem 1fr 1.1rem;
+                align-items: center;
+                width: 100%;
+
+                .role-slot,
+                .marker-slot {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    overflow: hidden;
+                }
 
                 .unit-role {
                     font-size: 18px;
-                    line-height: 1px;
+                    line-height: 1;
                     font-family: monospace;
-                    vertical-align: middle;
                 }
 
                 .name {
+                    grid-column: 2;
                     min-width: 75px;
                     font-size: 11px;
+                    text-align: center;
                 }
             }
         }

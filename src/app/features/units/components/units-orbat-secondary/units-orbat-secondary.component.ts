@@ -8,13 +8,12 @@ import { DefaultContentAreasComponent } from '../../../../shared/components/cont
 import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { OrganizationChartModule } from 'primeng/organizationchart';
-import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
 
 @Component({
     selector: 'app-units-orbat-secondary',
     templateUrl: './units-orbat-secondary.component.html',
     styleUrls: ['../units-page/units-page.component.scss', './units-orbat-secondary.component.scss'],
-    imports: [DefaultContentAreasComponent, MainContentAreaComponent, MatProgressSpinner, OrganizationChartModule, PrimeTemplate, FlexFillerComponent]
+    imports: [DefaultContentAreasComponent, MainContentAreaComponent, MatProgressSpinner, OrganizationChartModule, PrimeTemplate]
 })
 export class UnitsOrbatSecondaryComponent {
     private unitsService = inject(UnitsService);
