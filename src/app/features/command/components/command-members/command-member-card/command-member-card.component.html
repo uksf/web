@@ -19,12 +19,6 @@
                 <span>{{ member.unitObject.name }}</span>
                 <div class="underline"></div>
             </div>
-            @if (isSfmMember) {
-            <div class="header-title edit" (click)="editMedicAttachment(); $event.stopPropagation()" matTooltip="Click to edit medic attachment">
-                <span>Medic Attachment</span>
-                <div class="underline"></div>
-            </div>
-            }
         </div>
         <!--        <div class="header-button-container">-->
         <!--            <mat-icon>more_horiz</mat-icon>-->
@@ -80,6 +74,11 @@
                         Engineer
                     </mat-checkbox>
                 </div>
+                @if (isSfmMember) {
+                <div (click)="editMedicAttachment()" class="member-panel-content-element edit" matTooltip="Attach this medic to a troop">
+                    <span>Medic Attachment</span>
+                </div>
+                }
             </div>
         </div>
     </div>

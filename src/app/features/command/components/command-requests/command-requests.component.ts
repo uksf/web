@@ -9,6 +9,7 @@ import { RequestRoleModalComponent } from '@app/features/command/modals/request-
 import { RequestChainOfCommandPositionModalComponent } from '@app/features/command/modals/request-chain-of-command-position-modal/request-chain-of-command-position-modal.component';
 import { RequestDischargeModalComponent } from '@app/features/command/modals/request-discharge-modal/request-discharge-modal.component';
 import { RequestUnitRemovalModalComponent } from '@app/features/command/modals/request-unit-removal-modal/request-unit-removal-modal.component';
+import { RequestMedicAttachmentModalComponent } from '@app/features/command/modals/request-medic-attachment-modal/request-medic-attachment-modal.component';
 import { CommandRequestsHubService } from '../../services/command-requests-hub.service';
 import { CommandRequestsService } from '../../services/command-requests.service';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
@@ -111,6 +112,15 @@ export class CommandRequestsComponent extends DestroyableComponent implements On
         };
         this.dialog
             .open(RequestTransferModalComponent, { data })
+            .afterClosed()
+            .pipe(first())
+            .subscribe({ next: () => this.getRequests() });
+    }
+
+    medicAttachmentRequest() {
+        const data: RequestModalData = { ids: [] };
+        this.dialog
+            .open(RequestMedicAttachmentModalComponent, { data })
             .afterClosed()
             .pipe(first())
             .subscribe({ next: () => this.getRequests() });
