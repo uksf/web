@@ -1,0 +1,33 @@
+<h2 mat-dialog-title>Medic Attachment Request</h2>
+<mat-dialog-content>
+    <form #form="ngForm" (ngSubmit)="submit()">
+        <app-dropdown
+            #troop="ngModel"
+            [(ngModel)]="selectedTroopElement"
+            (ngModelChange)="onSelectTroop()"
+            [elementName]="'Troop'"
+            [elements]="troopElements"
+            [placeholder]="'Select troop (leave empty to detach)'"
+            id="troop"
+            name="formTroop"
+        >
+            <ng-template #element let-element>
+                {{ element.displayValue }}
+            </ng-template>
+        </app-dropdown>
+        <app-text-input
+            label="Reason"
+            [(ngModel)]="reason"
+            name="formReason"
+            id="reason"
+            [multiline]="true"
+            [minRows]="1"
+            [maxRows]="5"
+        >
+        </app-text-input>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <app-button (clicked)="submit()" [pending]="pending">Submit</app-button>
+    <button mat-button mat-dialog-close>Cancel</button>
+</mat-dialog-actions>

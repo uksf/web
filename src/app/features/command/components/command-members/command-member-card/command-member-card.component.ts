@@ -5,6 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { RequestRankModalComponent } from '@app/features/command/modals/request-rank-modal/request-rank-modal.component';
 import { RequestRoleModalComponent } from '@app/features/command/modals/request-role-modal/request-role-modal.component';
 import { RequestTransferModalComponent } from '@app/features/command/modals/request-transfer-modal/request-transfer-modal.component';
+import { RequestMedicAttachmentModalComponent } from '@app/features/command/modals/request-medic-attachment-modal/request-medic-attachment-modal.component';
 import { RequestModalData } from '@app/shared/models/shared';
 import { EditMemberTrainingModalData } from '@app/features/command/models/training';
 import { MembersService } from '@app/shared/services/members.service';
@@ -59,6 +60,15 @@ export class CommandMemberCardComponent {
         this.dialog.open(RequestTransferModalComponent, {
             data: data
         });
+    }
+
+    get isSfmMember(): boolean {
+        return (this.member.unitObjects ?? []).some((u) => u.shortname === 'SFM');
+    }
+
+    editMedicAttachment() {
+        const data: RequestModalData = { ids: [this.member.id] };
+        this.dialog.open(RequestMedicAttachmentModalComponent, { data });
     }
 
     updateQualifications() {
