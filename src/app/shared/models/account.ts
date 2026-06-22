@@ -45,6 +45,7 @@ export interface Account {
     steamname: string;
     teamspeakIdentities: number[];
     unitAssignment: string;
+    attachedTroop: string | null;
     unitsExperience: string;
     qualifications: AccountQualifications;
     trainings: Training[];

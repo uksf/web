@@ -58,6 +58,8 @@ export interface ResponseUnitMember {
     name: string;
     role: string;
     chainOfCommandPosition: string;
+    isAttachedMedic: boolean;
+    attachedTroopName: string | null;
 }
 
 export interface UnitTreeDataSet {
