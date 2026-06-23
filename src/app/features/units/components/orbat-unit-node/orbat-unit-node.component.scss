@@ -12,6 +12,16 @@
     font-weight: 600;
     font-size: 14px;
 }
+.un-head.two-line {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.un-head-line {
+    line-height: 1.3;
+    min-height: 1.3em;
+}
 .unit-node.has-body .un-head {
     border-bottom: 1px solid var(--uksf-org-line);
 }

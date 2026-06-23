@@ -12,8 +12,20 @@ import { ResponseUnitMember } from '@app/features/units/models/units';
 export class OrbatUnitNodeComponent {
     @Input() name = '';
     @Input() members: ResponseUnitMember[] = [];
+    @Input() showMedicLinks = true; // medic attachments are a combat-chart concern only
+    @Input() twoLineHeader = false; // force the unit name onto two lines (aux chart)
 
     get isEmpty(): boolean {
         return !(this.members?.length > 0);
+    }
+
+    get headerLine1(): string {
+        const i = this.name.indexOf(' ');
+        return i < 0 ? this.name : this.name.slice(0, i);
+    }
+
+    get headerLine2(): string {
+        const i = this.name.indexOf(' ');
+        return i < 0 ? '' : this.name.slice(i + 1);
     }
 }

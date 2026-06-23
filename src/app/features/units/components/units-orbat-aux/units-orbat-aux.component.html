@@ -10,7 +10,7 @@
             <div class="scroll-container">
                 <p-organizationChart [value]="rootNodes" selectionMode="single" [(selection)]="selectedNode" (onNodeSelect)="onNodeSelect($event)">
                     <ng-template let-node pTemplate="unit">
-                        <app-orbat-unit-node [name]="node.label" [members]="node.data.members" />
+                        <app-orbat-unit-node [name]="node.label" [members]="node.data.members" [showMedicLinks]="false" [twoLineHeader]="true" />
                     </ng-template>
                 </p-organizationChart>
             </div>

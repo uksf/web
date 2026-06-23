@@ -1,15 +1,22 @@
 <div class="unit-node" [class.has-body]="!isEmpty">
-    <div class="un-head">{{ name }}</div>
+    <div class="un-head" [class.two-line]="twoLineHeader">
+        @if (twoLineHeader) {
+        <span class="un-head-line">{{ headerLine1 }}</span>
+        <span class="un-head-line">{{ headerLine2 }}</span>
+        } @else {
+        {{ name }}
+        }
+    </div>
     @if (!isEmpty) {
     <div class="un-body">
         @for (m of members; track m.name) {
         <div class="un-row">
-            <span class="un-name" [class.att]="m.isAttachedMedic">{{ m.name }}</span>
+            <span class="un-name" [class.att]="showMedicLinks && m.isAttachedMedic">{{ m.name }}</span>
             @if (m.chainOfCommandPosition) {
             <span class="un-pill">{{ m.chainOfCommandPosition }}</span>
-            } @else if (m.isAttachedMedic) {
+            } @else if (showMedicLinks && m.isAttachedMedic) {
             <mat-icon class="un-medic" matTooltip="Attached combat medic">medical_services</mat-icon>
-            } @else if (m.attachedTroopName) {
+            } @else if (showMedicLinks && m.attachedTroopName) {
             <span class="un-troop" [matTooltip]="'Combat medic attached to ' + m.attachedTroopName">
                 <mat-icon>medical_services</mat-icon>{{ m.attachedTroopName }}
             </span>
