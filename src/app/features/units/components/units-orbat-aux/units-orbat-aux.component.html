@@ -10,26 +10,7 @@
             <div class="scroll-container">
                 <p-organizationChart [value]="rootNodes" selectionMode="single" [(selection)]="selectedNode" (onNodeSelect)="onNodeSelect($event)">
                     <ng-template let-node pTemplate="unit">
-                        <div class="node-header ui-corner-top">
-                            <h4 class="title">{{ node.label }}</h4>
-                        </div>
-                        @if (node.data.members.length > 0) {
-                        <div class="node-content">
-                            <table class="inner-table">
-                                @for (unitMember of node.data.members; track trackByName($index, unitMember)) {
-                                <tr>
-                                    <div class="row-container">
-                                        <span class="role-slot">
-                                            <b class="unit-role">{{ unitMember.chainOfCommandPosition?.charAt(0) }}</b>
-                                        </span>
-                                        <span class="name">{{ unitMember.name }}</span>
-                                        <span class="marker-slot"></span>
-                                    </div>
-                                </tr>
-                                }
-                            </table>
-                        </div>
-                        }
+                        <app-orbat-unit-node [name]="node.label" [members]="node.data.members" />
                     </ng-template>
                 </p-organizationChart>
             </div>

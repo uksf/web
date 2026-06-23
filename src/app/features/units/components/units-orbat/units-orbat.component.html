@@ -10,36 +10,7 @@
             <div class="scroll-container">
                 <p-organizationChart [value]="rootNodes" selectionMode="single" [(selection)]="selectedNode" (onNodeSelect)="onNodeSelect($event)">
                     <ng-template let-node pTemplate="unit">
-                        <div class="node-header p-corner-top">
-                            <h4 class="title">{{ node.label }}</h4>
-                        </div>
-                        @if (node.data.members.length > 0) {
-                        <div class="node-content">
-                            <table class="inner-table">
-                                @for (unitMember of node.data.members; track trackByName($index, unitMember)) {
-                                <tr>
-                                    <div class="row-container">
-                                        <span class="role-slot">
-                                            @if (unitMember.isAttachedMedic) {
-                                            <mat-icon class="medic-symbol" matTooltip="Attached combat medic (SFM)">medical_services</mat-icon>
-                                            } @else {
-                                            <b class="unit-role">{{ unitMember.chainOfCommandPosition?.charAt(0) }}</b>
-                                            }
-                                        </span>
-                                        <span class="name" [class.attached-out]="!!unitMember.attachedTroopName"
-                                            [matTooltip]="unitMember.attachedTroopName ? 'Attached to ' + unitMember.attachedTroopName : ''"
-                                            [matTooltipDisabled]="!unitMember.attachedTroopName">{{ unitMember.name }}</span>
-                                        <span class="marker-slot">
-                                            @if (unitMember.attachedTroopName) {
-                                            <mat-icon class="attached-marker" matTooltip="Attached medic">medical_services</mat-icon>
-                                            }
-                                        </span>
-                                    </div>
-                                </tr>
-                                }
-                            </table>
-                        </div>
-                        }
+                        <app-orbat-unit-node [name]="node.label" [members]="node.data.members" />
                     </ng-template>
                 </p-organizationChart>
             </div>

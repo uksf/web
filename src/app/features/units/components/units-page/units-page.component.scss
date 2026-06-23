@@ -88,50 +88,14 @@ a {
         font-size: 11px;
         overflow-x: auto;
         flex: 1;
-
-        .inner-table {
-            width: 100%;
-
-            .row-container {
-                display: grid;
-                grid-template-columns: 1.1rem 1fr 1.1rem;
-                align-items: center;
-                width: 100%;
-
-                .role-slot,
-                .marker-slot {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    overflow: hidden;
-                }
-
-                .unit-role {
-                    font-size: 18px;
-                    line-height: 1;
-                    font-family: monospace;
-                }
-
-                .name {
-                    grid-column: 2;
-                    min-width: 75px;
-                    font-size: 11px;
-                    text-align: center;
-                }
-            }
-        }
     }
 }
 
 :host ::ng-deep .p-organizationchart {
-    .node-header,
-    .node-content {
-        padding: 0.5em 0.7rem;
-    }
-
     .p-organizationchart-node-content {
-        padding: 0.5rem;
+        padding: 0;
         border-radius: 5px;
+        overflow: hidden;
 
         .p-node-toggler {
             display: none;

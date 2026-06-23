@@ -8,12 +8,13 @@ import { DefaultContentAreasComponent } from '../../../../shared/components/cont
 import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { OrganizationChartModule } from 'primeng/organizationchart';
+import { OrbatUnitNodeComponent } from '../orbat-unit-node/orbat-unit-node.component';
 
 @Component({
     selector: 'app-units-orbat-aux',
     templateUrl: './units-orbat-aux.component.html',
     styleUrls: ['../units-page/units-page.component.scss', './units-orbat-aux.component.scss'],
-    imports: [DefaultContentAreasComponent, MainContentAreaComponent, MatProgressSpinner, OrganizationChartModule, PrimeTemplate]
+    imports: [DefaultContentAreasComponent, MainContentAreaComponent, MatProgressSpinner, OrganizationChartModule, PrimeTemplate, OrbatUnitNodeComponent]
 })
 export class UnitsOrbatAuxComponent {
     private unitsService = inject(UnitsService);
@@ -32,10 +33,6 @@ export class UnitsOrbatAuxComponent {
                     this.rootNodes = [rootNode];
                 }
             });
-    }
-
-    trackByName(index: number, item: { name: string }): string {
-        return item.name;
     }
 
     onNodeSelect(event) {

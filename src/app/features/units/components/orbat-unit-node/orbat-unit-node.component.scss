@@ -1,0 +1,83 @@
+@use 'styles/theme-helpers' as th;
+
+:host {
+    display: block;
+    color: th.fg-base();
+    font-size: 12px;
+}
+
+.un-head {
+    padding: 8px 12px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 14px;
+}
+.unit-node.has-body .un-head {
+    border-bottom: 1px solid var(--uksf-org-line);
+}
+
+.un-body {
+    padding: 5px 0 7px;
+}
+.un-sec {
+    color: th.fg-hint-text();
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 5px 12px 2px;
+}
+
+.un-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 22px;
+    padding: 1px 12px;
+}
+.un-name {
+    font-size: 12px;
+    text-align: left;
+    &.att {
+        font-style: italic;
+    }
+}
+.un-pill {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1.5;
+    padding: 0 6px;
+    border-radius: 8px;
+    color: th.primary();
+    border: 1px solid color-mix(in srgb, th.primary() 60%, transparent);
+}
+.un-medic {
+    flex: 0 0 auto;
+    color: th.warn();
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+    line-height: 15px;
+}
+.un-troop {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    flex: 0 0 auto;
+    white-space: nowrap;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 0 6px 0 4px;
+    border-radius: 8px;
+    color: th.warn();
+    border: 1px solid color-mix(in srgb, th.warn() 50%, transparent);
+
+    mat-icon {
+        font-size: 12px;
+        width: 12px;
+        height: 12px;
+        line-height: 12px;
+    }
+}
