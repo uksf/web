@@ -13,14 +13,6 @@ export class OrbatUnitNodeComponent {
     @Input() name = '';
     @Input() members: ResponseUnitMember[] = [];
 
-    get command(): ResponseUnitMember[] {
-        return (this.members ?? []).filter((m) => !!m.chainOfCommandPosition);
-    }
-
-    get roster(): ResponseUnitMember[] {
-        return (this.members ?? []).filter((m) => !m.chainOfCommandPosition);
-    }
-
     get isEmpty(): boolean {
         return !(this.members?.length > 0);
     }

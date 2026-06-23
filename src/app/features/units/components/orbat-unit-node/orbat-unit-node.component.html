@@ -2,21 +2,12 @@
     <div class="un-head">{{ name }}</div>
     @if (!isEmpty) {
     <div class="un-body">
-        @if (command.length) {
-        <div class="un-sec">Command</div>
-        @for (c of command; track c.name) {
-        <div class="un-row">
-            <span class="un-name">{{ c.name }}</span>
-            <span class="un-pill">{{ c.chainOfCommandPosition }}</span>
-        </div>
-        }
-        }
-        @if (roster.length) {
-        @if (command.length) { <div class="un-sec">Members</div> }
-        @for (m of roster; track m.name) {
+        @for (m of members; track m.name) {
         <div class="un-row">
             <span class="un-name" [class.att]="m.isAttachedMedic">{{ m.name }}</span>
-            @if (m.isAttachedMedic) {
+            @if (m.chainOfCommandPosition) {
+            <span class="un-pill">{{ m.chainOfCommandPosition }}</span>
+            } @else if (m.isAttachedMedic) {
             <mat-icon class="un-medic" matTooltip="Attached combat medic">medical_services</mat-icon>
             } @else if (m.attachedTroopName) {
             <span class="un-troop" [matTooltip]="'Combat medic attached to ' + m.attachedTroopName">
@@ -24,7 +15,6 @@
             </span>
             }
         </div>
-        }
         }
     </div>
     }

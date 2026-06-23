@@ -13,32 +13,15 @@ function create(): OrbatUnitNodeComponent {
 }
 
 describe('OrbatUnitNodeComponent', () => {
-    it('splits members with a CoC position into command, the rest into roster (in order)', () => {
-        const component = create();
-        component.members = [
-            member({ name: 'CSgt.A', chainOfCommandPosition: '1iC' }),
-            member({ name: 'Cpl.B', chainOfCommandPosition: '2iC' }),
-            member({ name: 'Pte.C' })
-        ];
-        expect(component.command.map((m) => m.name)).toEqual(['CSgt.A', 'Cpl.B']);
-        expect(component.roster.map((m) => m.name)).toEqual(['Pte.C']);
-        expect(component.isEmpty).toBe(false);
-    });
-
     it('isEmpty is true with no members', () => {
         const component = create();
         component.members = [];
         expect(component.isEmpty).toBe(true);
     });
 
-    it('attached medics (troop-side) and attached-out medics (SFM-side) both fall in the roster', () => {
+    it('isEmpty is false with members', () => {
         const component = create();
-        component.members = [
-            member({ name: 'Sgt.Cmd', chainOfCommandPosition: '1iC' }),
-            member({ name: 'Pte.SfmMedic', attachedTroopName: 'Air Troop' }),
-            member({ name: 'Pte.TroopMedic', isAttachedMedic: true })
-        ];
-        expect(component.command.map((m) => m.name)).toEqual(['Sgt.Cmd']);
-        expect(component.roster.map((m) => m.name)).toEqual(['Pte.SfmMedic', 'Pte.TroopMedic']);
+        component.members = [member({ name: 'Pte.A' })];
+        expect(component.isEmpty).toBe(false);
     });
 });
