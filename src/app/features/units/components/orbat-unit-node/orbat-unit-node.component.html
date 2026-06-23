@@ -17,7 +17,7 @@
             } @else if (showMedicLinks && m.isAttachedMedic) {
             <mat-icon class="un-medic" matTooltip="Attached combat medic">medical_services</mat-icon>
             } @else if (showMedicLinks && m.attachedTroopName) {
-            <span class="un-troop" [matTooltip]="'Combat medic attached to ' + m.attachedTroopName">
+            <span class="un-troop" [matTooltip]="'Attached to ' + m.attachedTroopName">
                 <mat-icon>medical_services</mat-icon>{{ m.attachedTroopName }}
             </span>
             }
