@@ -13,7 +13,10 @@ import { RouterLinkActive, RouterLink, RouterOutlet } from '@angular/router';
 export class OperationsPageComponent {
     private permissions = inject(PermissionsService);
 
-    tabLinks: { label: string; link: string }[] = [{ label: 'AAR', link: 'aar' }];
+    tabLinks: { label: string; link: string }[] = [
+        { label: 'Campaigns', link: 'campaigns' },
+        { label: 'AAR', link: 'aar' }
+    ];
 
     trackByLink(index: number, item: { link: string }): string {
         return item.link;

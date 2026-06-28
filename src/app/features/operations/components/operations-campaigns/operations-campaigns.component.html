@@ -1,0 +1,23 @@
+<app-default-content-areas>
+    <app-full-content-area>
+        <div class="hdr">
+            <h2>Campaigns</h2>
+            <span class="spacer"></span>
+            <div class="filter"><mat-icon>search</mat-icon><span>Filter</span></div>
+            <button mat-raised-button color="primary"><mat-icon>add</mat-icon> New campaign</button>
+        </div>
+
+        <div class="cards">
+            @for (campaign of campaigns; track campaign.id) {
+                <a class="campaign-card" [routerLink]="[campaign.id]" [style.--stripe]="stripe(campaign)">
+                    <span class="theatre">{{ theatre(campaign) }}</span>
+                    <div class="grow">
+                        <div class="title">{{ campaign.name }}</div>
+                        <div class="sub" [class.muted]="campaign.status === 'archived'">{{ summary(campaign) }}</div>
+                    </div>
+                    <mat-icon class="chev">chevron_right</mat-icon>
+                </a>
+            }
+        </div>
+    </app-full-content-area>
+</app-default-content-areas>

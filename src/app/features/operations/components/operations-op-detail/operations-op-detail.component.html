@@ -1,0 +1,66 @@
+<app-default-content-areas>
+    <app-full-content-area>
+        @if (campaign && op) {
+            <a class="back" [routerLink]="['/operations/campaigns', campaign.id]"><mat-icon>chevron_left</mat-icon> {{ campaign.name }}</a>
+
+            <div class="detail-top">
+                <h2>{{ op.title }}</h2>
+                <span class="pill" [class.scheduled]="op.status === 'Scheduled'" [class.complete]="op.status === 'Complete'">
+                    <span class="dot"></span>{{ op.status }}
+                </span>
+                <span class="spacer"></span>
+                <div class="actions">
+                    <button mat-raised-button><mat-icon>edit</mat-icon> Edit</button>
+                    @if (op.status === 'Scheduled') {
+                        <button mat-raised-button color="primary" [disabled]="op.missionState === 'Missing'"><mat-icon>play_arrow</mat-icon> Launch</button>
+                    } @else {
+                        <a mat-raised-button color="primary"><mat-icon>open_in_new</mat-icon> AAR</a>
+                    }
+                </div>
+            </div>
+
+            <div class="metaline">
+                <span class="m"><mat-icon>event</mat-icon>{{ op.scheduledTime }}</span>
+                <span class="dotsep">·</span>
+                <span class="m"><mat-icon>dns</mat-icon>{{ op.server }}</span>
+                <span class="dotsep">·</span>
+                <span class="m"><span class="swatch" [style.background]="stripe"></span>{{ mapName }}</span>
+                <span class="dotsep">·</span>
+                <span class="m mission" [class.missing]="op.missionState === 'Missing'">
+                    <mat-icon>{{ op.missionState === 'Missing' ? 'warning' : 'description' }}</mat-icon>{{ op.mission }}
+                </span>
+            </div>
+
+            @if (op.missionState === 'Missing') {
+                <div class="warn-banner"><mat-icon>warning</mat-icon> The mission file for this op is missing — re-assign or restore it before launching.</div>
+            }
+
+            <div class="sec">
+                <h3>WARNO</h3>
+                <span class="rule"></span>
+                <a mat-button color="primary"><mat-icon>edit</mat-icon> Edit</a>
+            </div>
+            <div class="prose" [innerHTML]="op.warno"></div>
+
+            <div class="sec">
+                <h3>Intel</h3>
+                <span class="rule"></span>
+                <a mat-button color="primary"><mat-icon>add</mat-icon> Intel page</a>
+            </div>
+            <div class="cards">
+                @for (intel of op.intel; track intel.id) {
+                    <div class="intel-row">
+                        <mat-icon class="intel-ico">menu_book</mat-icon>
+                        <div class="title">{{ intel.title }}</div>
+                        <span class="spacer"></span>
+                        <mat-icon class="chev">chevron_right</mat-icon>
+                    </div>
+                } @empty {
+                    <p class="empty">No intel pages yet</p>
+                }
+            </div>
+        } @else {
+            <p class="empty">Op not found</p>
+        }
+    </app-full-content-area>
+</app-default-content-areas>

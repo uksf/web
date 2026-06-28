@@ -1,0 +1,107 @@
+@use 'styles/theme-helpers' as th;
+@use 'styles/variables' as v;
+
+:host ::ng-deep app-full-content-area {
+    display: flex;
+    flex-direction: column;
+    gap: v.$spacing-16px;
+}
+
+.hdr {
+    display: flex;
+    align-items: center;
+    gap: v.$spacing-12px;
+
+    h2 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 500;
+    }
+}
+
+.spacer {
+    flex: 1;
+}
+
+.filter {
+    display: flex;
+    align-items: center;
+    gap: v.$spacing-8px;
+    background: var(--uksf-dark-card);
+    border: 1px solid th.fg-divider();
+    border-radius: 6px;
+    padding: v.$spacing-8px v.$spacing-12px;
+    color: th.fg-hint-text();
+    min-width: 180px;
+
+    mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+    }
+}
+
+.cards {
+    display: flex;
+    flex-direction: column;
+    gap: v.$spacing-6px;
+}
+
+.campaign-card {
+    display: flex;
+    align-items: center;
+    gap: v.$spacing-12px;
+    padding: v.$spacing-12px v.$spacing-16px;
+    background: var(--uksf-card);
+    border-radius: 0 6px 6px 0;
+    border-left: 4px solid var(--stripe, var(--mat-sys-outline-variant));
+    text-decoration: none;
+    color: th.fg-base();
+
+    &:hover {
+        background: var(--uksf-selected);
+    }
+
+    .theatre {
+        position: relative;
+        flex: 0 0 100px;
+        font-weight: 500;
+        font-size: 13px;
+        padding-right: v.$spacing-12px;
+
+        &::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 18px;
+            width: 1px;
+            background: th.fg-divider();
+        }
+    }
+
+    .grow {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .title {
+        font-weight: 500;
+        font-size: 15px;
+    }
+
+    .sub {
+        color: th.fg-secondary-text();
+        font-size: 12.5px;
+        margin-top: 2px;
+
+        &.muted {
+            color: th.fg-hint-text();
+        }
+    }
+
+    .chev {
+        color: th.fg-hint-text();
+    }
+}

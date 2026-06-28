@@ -1,0 +1,73 @@
+<app-default-content-areas>
+    <app-full-content-area>
+        @if (campaign) {
+            <a class="back" routerLink="/operations/campaigns"><mat-icon>chevron_left</mat-icon> Campaigns</a>
+
+            <div class="detail-top">
+                <h2>{{ campaign.name }}</h2>
+                <span class="pill" [class.complete]="campaign.status === 'archived'" [class.scheduled]="campaign.status === 'active'">
+                    <span class="dot"></span>{{ campaign.status }}
+                </span>
+                <span class="spacer"></span>
+                <button mat-raised-button><mat-icon>edit</mat-icon> Edit</button>
+            </div>
+
+            <div class="prose" [innerHTML]="campaign.brief"></div>
+
+            <div class="sec">
+                <h3>Operations</h3>
+                <span class="rule"></span>
+                <a mat-button color="primary"><mat-icon>add</mat-icon> New op</a>
+            </div>
+
+            <div class="cards">
+                @for (op of campaign.ops; track op.id) {
+                    <div class="op-card" [style.--stripe]="stripe(op)">
+                        <span class="pill" [class.scheduled]="op.status === 'Scheduled'" [class.complete]="op.status === 'Complete'">
+                            <span class="dot"></span>{{ op.status }}
+                        </span>
+                        <a class="op-main" [routerLink]="['ops', op.id]">
+                            <div class="title">{{ op.title }}</div>
+                            <div class="meta">
+                                <span class="m"><mat-icon>event</mat-icon>{{ op.scheduledTime }}</span>
+                                <span class="dotsep">·</span>
+                                <span class="m"><span class="swatch" [style.background]="stripe(op)"></span>{{ map(op) }}</span>
+                                @if (op.missionState === 'Missing') {
+                                    <span class="warn-chip"><mat-icon>warning</mat-icon> mission file missing</span>
+                                }
+                            </div>
+                        </a>
+                        <span class="spacer"></span>
+                        @if (op.status === 'Scheduled') {
+                            <button mat-raised-button color="primary" [disabled]="op.missionState === 'Missing'"><mat-icon>play_arrow</mat-icon> Launch</button>
+                        } @else {
+                            <a mat-button color="primary"><mat-icon>open_in_new</mat-icon> AAR</a>
+                        }
+                        <a class="chev" [routerLink]="['ops', op.id]"><mat-icon>chevron_right</mat-icon></a>
+                    </div>
+                }
+            </div>
+
+            <div class="sec">
+                <h3>Intel</h3>
+                <span class="rule"></span>
+                <a mat-button color="primary"><mat-icon>add</mat-icon> Intel page</a>
+            </div>
+
+            <div class="cards">
+                @for (intel of campaign.intel; track intel.id) {
+                    <div class="intel-row">
+                        <mat-icon class="intel-ico">menu_book</mat-icon>
+                        <div class="title">{{ intel.title }}</div>
+                        <span class="spacer"></span>
+                        <mat-icon class="chev">chevron_right</mat-icon>
+                    </div>
+                } @empty {
+                    <p class="empty">No intel pages yet</p>
+                }
+            </div>
+        } @else {
+            <p class="empty">Campaign not found</p>
+        }
+    </app-full-content-area>
+</app-default-content-areas>

@@ -1,0 +1,226 @@
+@use 'styles/theme-helpers' as th;
+@use 'styles/variables' as v;
+
+:host ::ng-deep app-full-content-area {
+    display: flex;
+    flex-direction: column;
+    gap: v.$spacing-8px;
+}
+
+.back {
+    display: inline-flex;
+    align-items: center;
+    gap: v.$spacing-4px;
+    color: th.fg-secondary-text();
+    text-decoration: none;
+    font-size: 13px;
+
+    mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+    }
+
+    &:hover {
+        color: th.fg-base();
+    }
+}
+
+.detail-top {
+    display: flex;
+    align-items: center;
+    gap: v.$spacing-12px;
+    margin-top: v.$spacing-4px;
+
+    h2 {
+        margin: 0;
+        font-size: 21px;
+        font-weight: 500;
+    }
+
+    .actions {
+        display: flex;
+        gap: v.$spacing-8px;
+    }
+}
+
+.spacer {
+    flex: 1;
+}
+
+.metaline {
+    display: flex;
+    align-items: center;
+    gap: v.$spacing-8px;
+    flex-wrap: wrap;
+    color: th.fg-secondary-text();
+    font-size: 13px;
+
+    .m {
+        display: inline-flex;
+        align-items: center;
+        gap: v.$spacing-4px;
+    }
+
+    mat-icon {
+        font-size: 15px;
+        width: 15px;
+        height: 15px;
+    }
+
+    .dotsep {
+        color: th.fg-hint-text();
+    }
+
+    .swatch {
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        display: inline-block;
+    }
+
+    .mission {
+        color: th.fg-hint-text();
+
+        &.missing {
+            color: th.warn();
+        }
+    }
+}
+
+.warn-banner {
+    display: flex;
+    align-items: center;
+    gap: v.$spacing-8px;
+    padding: v.$spacing-8px v.$spacing-12px;
+    border-radius: 6px;
+    background: color-mix(in srgb, #{th.warn()} 18%, var(--uksf-card));
+    border: 1px solid color-mix(in srgb, #{th.warn()} 50%, transparent);
+    color: th.fg-base();
+    font-size: 13px;
+
+    mat-icon {
+        color: th.warn();
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+    }
+}
+
+.pill {
+    height: 24px;
+    padding: 0 v.$spacing-8px;
+    border-radius: 9999px;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: v.$spacing-6px;
+    background: transparent;
+    border: 1px solid th.fg-divider();
+    color: th.fg-secondary-text();
+    text-transform: capitalize;
+    flex-shrink: 0;
+
+    .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: th.fg-hint-text();
+    }
+
+    &.scheduled {
+        border-color: color-mix(in srgb, var(--uksf-accent) 90%, white 10%);
+        color: th.fg-base();
+
+        .dot {
+            background: color-mix(in srgb, var(--uksf-accent) 70%, white 30%);
+        }
+    }
+
+    &.complete {
+        border-color: color-mix(in srgb, #6fb87a 70%, transparent);
+        color: th.fg-base();
+
+        .dot {
+            background: #6fb87a;
+        }
+    }
+}
+
+.sec {
+    display: flex;
+    align-items: center;
+    gap: v.$spacing-12px;
+    margin-top: v.$spacing-12px;
+
+    h3 {
+        margin: 0;
+        font-size: 13px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: th.fg-secondary-text();
+        font-weight: 700;
+    }
+
+    .rule {
+        flex: 1;
+        height: 1px;
+        background: th.fg-divider();
+    }
+}
+
+.prose {
+    background: var(--uksf-dark-card);
+    border: 1px solid th.fg-divider();
+    border-radius: 6px;
+    padding: v.$spacing-16px;
+    color: th.fg-secondary-text();
+    font-size: 13.5px;
+    line-height: 1.6;
+
+    ::ng-deep p {
+        margin: 0 0 v.$spacing-8px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    ::ng-deep b {
+        color: th.fg-base();
+    }
+}
+
+.cards {
+    display: flex;
+    flex-direction: column;
+    gap: v.$spacing-6px;
+}
+
+.intel-row {
+    display: flex;
+    align-items: center;
+    gap: v.$spacing-12px;
+    padding: v.$spacing-12px v.$spacing-16px;
+    background: var(--uksf-card);
+    border-radius: 0 6px 6px 0;
+    border-left: 3px solid var(--uksf-accent);
+
+    .intel-ico {
+        opacity: 0.8;
+    }
+
+    .title {
+        font-weight: 500;
+        font-size: 14px;
+    }
+
+    .chev {
+        color: th.fg-hint-text();
+    }
+}
+
+.empty {
+    color: th.fg-hint-text();
+    font-size: 13px;
+}
