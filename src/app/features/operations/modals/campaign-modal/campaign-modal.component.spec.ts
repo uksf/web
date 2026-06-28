@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { CampaignModalComponent } from './campaign-modal.component';
@@ -26,6 +26,8 @@ describe('CampaignModalComponent', () => {
         component = TestBed.inject(CampaignModalComponent);
     }
 
+    afterEach(() => TestBed.resetTestingModule());
+
     it('create mode defaults to Active', () => {
         setup(null);
         expect(component.model.status).toBe(CampaignStatus.Active);
@@ -39,18 +41,19 @@ describe('CampaignModalComponent', () => {
         expect(component.model.status).toBe(CampaignStatus.Archived);
     });
 
-    it('submit (create) calls addCampaign then closes true', () => {
+    it('submit (create) calls addCampaign with Active status then closes true', () => {
         setup(null);
         component.model.name = 'New';
         component.submit();
-        expect(service.addCampaign).toHaveBeenCalled();
+        expect(service.addCampaign).toHaveBeenCalledWith(expect.objectContaining({ status: CampaignStatus.Active }));
         expect(dialogRef.close).toHaveBeenCalledWith(true);
     });
 
-    it('submit (edit) calls updateCampaign', () => {
+    it('submit (edit) calls updateCampaign with Archived status', () => {
         setup({ campaign: { id: 'c1', name: 'Iron Sky', brief: '', status: CampaignStatus.Active } });
+        component.statusValue = component.statusOptions.find((o) => o.value === String(CampaignStatus.Archived));
         component.submit();
-        expect(service.updateCampaign).toHaveBeenCalled();
+        expect(service.updateCampaign).toHaveBeenCalledWith(expect.objectContaining({ status: CampaignStatus.Archived }));
         expect(dialogRef.close).toHaveBeenCalledWith(true);
     });
 });

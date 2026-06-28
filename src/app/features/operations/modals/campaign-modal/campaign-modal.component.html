@@ -3,7 +3,7 @@
     <form>
         <app-text-input label="Name" [(ngModel)]="model.name" name="name" id="name" [required]="true"></app-text-input>
         <app-text-input label="Theatre" [(ngModel)]="model.theatre" name="theatre" id="theatre" hint="Used for the card colour/label (e.g. Takistan)"></app-text-input>
-        <app-dropdown [(ngModel)]="statusValue" [elements]="statusElements" [elementName]="'Status'" [placeholder]="'Status'" name="status" id="status">
+        <app-dropdown [(ngModel)]="statusValue" [elements]="statusElements" [elementName]="'Status'" [placeholder]="'Status'" name="status" id="status" [autocomplete]="false">
             <ng-template #element let-element>{{ element.displayValue }}</ng-template>
         </app-dropdown>
         <label class="field-label">Brief</label>

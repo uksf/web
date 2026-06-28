@@ -32,17 +32,18 @@ export class CampaignModalComponent {
     pending = false;
     model: Campaign = { id: '', name: '', brief: '', status: CampaignStatus.Active, theatre: '' };
 
-    statusElements: Observable<IDropdownElement[]> = of([
+    statusOptions: IDropdownElement[] = [
         { value: String(CampaignStatus.Active), displayValue: 'Active' },
         { value: String(CampaignStatus.Archived), displayValue: 'Archived' }
-    ]);
-    statusValue = String(CampaignStatus.Active);
+    ];
+    statusElements: Observable<IDropdownElement[]> = of(this.statusOptions);
+    statusValue: IDropdownElement | null = this.statusOptions[0];
 
     constructor() {
         if (this.data?.campaign) {
             this.isEdit = true;
             this.model = { ...this.data.campaign };
-            this.statusValue = String(this.model.status);
+            this.statusValue = this.statusOptions.find((o) => o.value === String(this.model.status)) ?? this.statusOptions[0];
         }
     }
 
@@ -51,7 +52,7 @@ export class CampaignModalComponent {
             return;
         }
         this.pending = true;
-        this.model.status = Number(this.statusValue);
+        this.model.status = Number(this.statusValue?.value ?? CampaignStatus.Active);
         const request = this.isEdit ? this.campaignsService.updateCampaign(this.model) : this.campaignsService.addCampaign(this.model);
         request.pipe(first()).subscribe({
             next: () => this.dialogRef.close(true),
