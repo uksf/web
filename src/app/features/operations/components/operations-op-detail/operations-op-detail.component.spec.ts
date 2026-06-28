@@ -6,7 +6,7 @@ import { CampaignsService } from '../../services/campaigns.service';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
-import { CampaignStatus, MissionFileState, OpStatus } from '../../models/campaign';
+import { CampaignStatus, IntelScope, MissionFileState, OpStatus } from '../../models/campaign';
 
 describe('OperationsOpDetailComponent', () => {
     let component: OperationsOpDetailComponent;
@@ -39,6 +39,7 @@ describe('OperationsOpDetailComponent', () => {
     it('loads op, campaign and op-scope intel', () => {
         expect(service.getOp).toHaveBeenCalledWith('op1');
         expect(service.getCampaign).toHaveBeenCalledWith('c1');
+        expect(service.getIntel).toHaveBeenCalledWith(IntelScope.Op, 'op1');
         expect(component.dto?.op.title).toBe('Op 1');
         expect(component.campaign?.name).toBe('Iron Sky');
     });
