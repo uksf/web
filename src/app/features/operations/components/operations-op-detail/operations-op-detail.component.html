@@ -1,57 +1,63 @@
 <app-default-content-areas>
     <app-full-content-area>
-        @if (campaign && op) {
+        @if (campaign && dto) {
             <a class="back" [routerLink]="['/operations/campaigns', campaign.id]"><mat-icon>chevron_left</mat-icon> {{ campaign.name }}</a>
 
             <div class="detail-top">
-                <h2>{{ op.title }}</h2>
-                <span class="pill" [class.scheduled]="op.status === 'Scheduled'" [class.complete]="op.status === 'Complete'">
-                    <span class="dot"></span>{{ op.status }}
+                <h2>{{ dto.op.title }}</h2>
+                <span class="pill" [class.scheduled]="dto.op.status === OpStatus.Scheduled" [class.complete]="dto.op.status === OpStatus.Complete">
+                    <span class="dot"></span>{{ dto.op.status === OpStatus.Complete ? 'Complete' : 'Scheduled' }}
                 </span>
                 <span class="spacer"></span>
                 <div class="actions">
-                    <button mat-raised-button><mat-icon>edit</mat-icon> Edit</button>
-                    @if (op.status === 'Scheduled') {
-                        <button mat-raised-button color="primary" [disabled]="op.missionState === 'Missing'"><mat-icon>play_arrow</mat-icon> Launch</button>
-                    } @else {
-                        <a mat-raised-button color="primary"><mat-icon>open_in_new</mat-icon> AAR</a>
+                    <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                        <button mat-raised-button (click)="editOp()"><mat-icon>edit</mat-icon> Edit</button>
+                    </ng-template>
+                    @if (dto.op.status === OpStatus.Scheduled) {
+                        <ng-template [ngxPermissionsOnly]="['NCO', 'SERVERS', 'COMMAND']">
+                            <button mat-raised-button color="primary" [disabled]="dto.missionFileState === MissionFileState.Missing" (click)="launch()">
+                                <mat-icon>play_arrow</mat-icon> Launch
+                            </button>
+                        </ng-template>
+                    } @else if (dto.op.sessionId) {
+                        <a mat-raised-button color="primary" [href]="'https://aar.uk-sf.co.uk/?session=' + dto.op.sessionId" target="_blank" rel="noopener">
+                            <mat-icon>open_in_new</mat-icon> AAR
+                        </a>
                     }
                 </div>
             </div>
 
             <div class="metaline">
-                <span class="m"><mat-icon>event</mat-icon>{{ op.scheduledTime }}</span>
+                <span class="m"><mat-icon>event</mat-icon>{{ dto.op.scheduledTime | date: 'EEE d MMM, HH:mm' }}</span>
                 <span class="dotsep">·</span>
-                <span class="m"><mat-icon>dns</mat-icon>{{ op.server }}</span>
+                <span class="m"><mat-icon>dns</mat-icon>{{ dto.op.serverId }}</span>
                 <span class="dotsep">·</span>
                 <span class="m"><span class="swatch" [style.background]="stripe"></span>{{ mapName }}</span>
                 <span class="dotsep">·</span>
-                <span class="m mission" [class.missing]="op.missionState === 'Missing'">
-                    <mat-icon>{{ op.missionState === 'Missing' ? 'warning' : 'description' }}</mat-icon>{{ op.mission }}
+                <span class="m mission" [class.missing]="dto.missionFileState === MissionFileState.Missing">
+                    <mat-icon>{{ dto.missionFileState === MissionFileState.Missing ? 'warning' : 'description' }}</mat-icon>{{ dto.op.missionName }}
                 </span>
             </div>
 
-            @if (op.missionState === 'Missing') {
+            @if (dto.missionFileState === MissionFileState.Missing) {
                 <div class="warn-banner"><mat-icon>warning</mat-icon> The mission file for this op is missing — re-assign or restore it before launching.</div>
             }
 
             <div class="sec">
                 <h3>WARNO</h3>
                 <span class="rule"></span>
-                <a mat-button color="primary"><mat-icon>edit</mat-icon> Edit</a>
             </div>
-            <div class="prose" [innerHTML]="op.warno"></div>
+            <quill-view class="prose" [content]="dto.op.warno" format="json" [preserveWhitespace]="true"></quill-view>
 
             <div class="sec">
                 <h3>Intel</h3>
                 <span class="rule"></span>
-                <a mat-button color="primary"><mat-icon>add</mat-icon> Intel page</a>
             </div>
             <div class="cards">
-                @for (intel of op.intel; track intel.id) {
+                @for (page of intel; track page.id) {
                     <div class="intel-row">
                         <mat-icon class="intel-ico">menu_book</mat-icon>
-                        <div class="title">{{ intel.title }}</div>
+                        <div class="title">{{ page.title }}</div>
                         <span class="spacer"></span>
                         <mat-icon class="chev">chevron_right</mat-icon>
                     </div>
@@ -60,7 +66,7 @@
                 }
             </div>
         } @else {
-            <p class="empty">Op not found</p>
+            <p class="empty">Loading…</p>
         }
     </app-full-content-area>
 </app-default-content-areas>
