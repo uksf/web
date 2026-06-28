@@ -46,3 +46,10 @@ export function capitaliseMapName(mapName: string): string {
     const lower = mapName.toLowerCase();
     return lower.charAt(0).toUpperCase() + lower.slice(1);
 }
+
+export function mapTokenFromMission(missionName: string | undefined): string {
+    // mission file name is `name.Map.pbo` — pull the map token for colour/label.
+    const withoutExt = missionName?.replace(/\.pbo$/i, '') ?? '';
+    const lastDot = withoutExt.lastIndexOf('.');
+    return lastDot > 0 ? withoutExt.slice(lastDot + 1) : '';
+}

@@ -5,60 +5,71 @@
 
             <div class="detail-top">
                 <h2>{{ campaign.name }}</h2>
-                <span class="pill" [class.complete]="campaign.status === 'archived'" [class.scheduled]="campaign.status === 'active'">
-                    <span class="dot"></span>{{ campaign.status }}
+                <span class="pill" [class.complete]="campaign.status === 1" [class.scheduled]="campaign.status === 0">
+                    <span class="dot"></span>{{ campaign.status === 1 ? 'Archived' : 'Active' }}
                 </span>
                 <span class="spacer"></span>
-                <button mat-raised-button><mat-icon>edit</mat-icon> Edit</button>
+                <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                    <button mat-raised-button (click)="editCampaign()"><mat-icon>edit</mat-icon> Edit</button>
+                </ng-template>
             </div>
 
-            <div class="prose" [innerHTML]="campaign.brief"></div>
+            <quill-view class="prose" [content]="campaign.brief" format="json" [preserveWhitespace]="true"></quill-view>
 
             <div class="sec">
                 <h3>Operations</h3>
                 <span class="rule"></span>
-                <a mat-button color="primary"><mat-icon>add</mat-icon> New op</a>
+                <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                    <a mat-button color="primary" (click)="createOp()"><mat-icon>add</mat-icon> New op</a>
+                </ng-template>
             </div>
 
             <div class="cards">
-                @for (op of campaign.ops; track op.id) {
-                    <div class="op-card" [style.--stripe]="stripe(op)">
-                        <span class="pill" [class.scheduled]="op.status === 'Scheduled'" [class.complete]="op.status === 'Complete'">
-                            <span class="dot"></span>{{ op.status }}
+                @for (dto of ops; track dto.op.id) {
+                    <div class="op-card" [style.--stripe]="stripe(dto.op)">
+                        <span class="pill" [class.scheduled]="dto.op.status === OpStatus.Scheduled" [class.complete]="dto.op.status === OpStatus.Complete">
+                            <span class="dot"></span>{{ dto.op.status === OpStatus.Complete ? 'Complete' : 'Scheduled' }}
                         </span>
-                        <a class="op-main" [routerLink]="['ops', op.id]">
-                            <div class="title">{{ op.title }}</div>
+                        <a class="op-main" [routerLink]="['ops', dto.op.id]">
+                            <div class="title">{{ dto.op.title }}</div>
                             <div class="meta">
-                                <span class="m"><mat-icon>event</mat-icon>{{ op.scheduledTime }}</span>
+                                <span class="m"><mat-icon>event</mat-icon>{{ dto.op.scheduledTime | date: 'EEE d MMM, HH:mm' }}</span>
                                 <span class="dotsep">·</span>
-                                <span class="m"><span class="swatch" [style.background]="stripe(op)"></span>{{ map(op) }}</span>
-                                @if (op.missionState === 'Missing') {
+                                <span class="m"><span class="swatch" [style.background]="stripe(dto.op)"></span>{{ mapName(dto.op) }}</span>
+                                @if (dto.missionFileState === MissionFileState.Missing) {
                                     <span class="warn-chip"><mat-icon>warning</mat-icon> mission file missing</span>
                                 }
                             </div>
                         </a>
                         <span class="spacer"></span>
-                        @if (op.status === 'Scheduled') {
-                            <button mat-raised-button color="primary" [disabled]="op.missionState === 'Missing'"><mat-icon>play_arrow</mat-icon> Launch</button>
-                        } @else {
-                            <a mat-button color="primary"><mat-icon>open_in_new</mat-icon> AAR</a>
+                        @if (dto.op.status === OpStatus.Scheduled) {
+                            <ng-template [ngxPermissionsOnly]="['NCO', 'SERVERS', 'COMMAND']">
+                                <button mat-raised-button color="primary" [disabled]="dto.missionFileState === MissionFileState.Missing" (click)="launch(dto)">
+                                    <mat-icon>play_arrow</mat-icon> Launch
+                                </button>
+                            </ng-template>
+                        } @else if (dto.op.sessionId) {
+                            <!-- R11: AAR deep-link — verify that aar.uk-sf.co.uk accepts ?session= param; if not, drop to plain https://aar.uk-sf.co.uk/ -->
+                            <a mat-button color="primary" [href]="'https://aar.uk-sf.co.uk/?session=' + dto.op.sessionId" target="_blank" rel="noopener">
+                                <mat-icon>open_in_new</mat-icon> AAR
+                            </a>
                         }
-                        <a class="chev" [routerLink]="['ops', op.id]"><mat-icon>chevron_right</mat-icon></a>
+                        <a class="chev" [routerLink]="['ops', dto.op.id]"><mat-icon>chevron_right</mat-icon></a>
                     </div>
+                } @empty {
+                    <p class="empty">No operations yet</p>
                 }
             </div>
 
             <div class="sec">
                 <h3>Intel</h3>
                 <span class="rule"></span>
-                <a mat-button color="primary"><mat-icon>add</mat-icon> Intel page</a>
             </div>
-
             <div class="cards">
-                @for (intel of campaign.intel; track intel.id) {
+                @for (page of intel; track page.id) {
                     <div class="intel-row">
                         <mat-icon class="intel-ico">menu_book</mat-icon>
-                        <div class="title">{{ intel.title }}</div>
+                        <div class="title">{{ page.title }}</div>
                         <span class="spacer"></span>
                         <mat-icon class="chev">chevron_right</mat-icon>
                     </div>
@@ -67,7 +78,7 @@
                 }
             </div>
         } @else {
-            <p class="empty">Campaign not found</p>
+            <p class="empty">Loading…</p>
         }
     </app-full-content-area>
 </app-default-content-areas>
