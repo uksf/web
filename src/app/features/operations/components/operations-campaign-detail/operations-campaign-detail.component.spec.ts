@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { afterEach, describe, it, expect, vi, beforeEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { of, Subject } from 'rxjs';
 import { OperationsCampaignDetailComponent } from './operations-campaign-detail.component';
@@ -56,4 +56,12 @@ describe('OperationsCampaignDetailComponent', () => {
         expect(component.OpStatus.Complete).toBe(OpStatus.Complete);
         expect(component.MissionFileState.Missing).toBe(MissionFileState.Missing);
     });
+
+    it('createIntel opens modal with Campaign scope and campaignId', () => {
+        const dialog = TestBed.inject(MatDialog) as any;
+        component.createIntel();
+        expect(dialog.open).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: expect.objectContaining({ scope: IntelScope.Campaign, ownerId: 'c1' }) }));
+    });
+
+    afterEach(() => TestBed.resetTestingModule());
 });

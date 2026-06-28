@@ -1,0 +1,12 @@
+<h2 mat-dialog-title>{{ isEdit ? 'Edit intel page' : 'New intel page' }}</h2>
+<mat-dialog-content>
+    <form>
+        <app-text-input label="Title" [(ngModel)]="model.title" name="title" id="title" [required]="true"></app-text-input>
+        <label class="field-label">Body</label>
+        <quill-editor [(ngModel)]="model.body" name="body" format="json" [preserveWhitespace]="true" placeholder="Intel…"></quill-editor>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <app-button (clicked)="cancel()">Cancel</app-button>
+    <app-button (clicked)="submit()" [disabled]="!model.title" [pending]="pending">{{ isEdit ? 'Save' : 'Create' }}</app-button>
+</mat-dialog-actions>

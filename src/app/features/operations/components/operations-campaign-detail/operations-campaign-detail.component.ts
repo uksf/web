@@ -14,6 +14,7 @@ import { mapBorderColour, capitaliseMapName, mapTokenFromMission } from '../../u
 import { Campaign, CampaignStatus, IntelPage, IntelScope, MissionFileState, Op, OpDto, OpStatus } from '../../models/campaign';
 import { CampaignsService } from '../../services/campaigns.service';
 import { CampaignModalComponent } from '../../modals/campaign-modal/campaign-modal.component';
+import { IntelModalComponent } from '../../modals/intel-modal/intel-modal.component';
 import { OpModalComponent } from '../../modals/op-modal/op-modal.component';
 
 @Component({
@@ -81,6 +82,14 @@ export class OperationsCampaignDetailComponent {
                 },
                 error: (error) => this.dialog.open(MessageModalComponent, { data: { message: error?.error ?? 'Launch failed' } })
             });
+    }
+
+    createIntel() {
+        this.dialog
+            .open(IntelModalComponent, { data: { scope: IntelScope.Campaign, ownerId: this.campaignId } })
+            .afterClosed()
+            .pipe(first())
+            .subscribe({ next: (saved) => saved && this.load() });
     }
 
     createOp() {

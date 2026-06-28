@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { afterEach, describe, it, expect, vi, beforeEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { OperationsOpDetailComponent } from './operations-op-detail.component';
@@ -29,7 +29,7 @@ describe('OperationsOpDetailComponent', () => {
                 OperationsOpDetailComponent,
                 { provide: CampaignsService, useValue: service },
                 { provide: PermissionsService, useValue: { hasPermission: vi.fn().mockReturnValue(true) } },
-                { provide: MatDialog, useValue: { open: vi.fn() } },
+                { provide: MatDialog, useValue: { open: vi.fn().mockReturnValue({ afterClosed: () => of(undefined) }) } },
                 { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map([['id', 'c1'], ['opId', 'op1']]) } } }
             ]
         });
@@ -48,4 +48,12 @@ describe('OperationsOpDetailComponent', () => {
         component.launch();
         expect(service.launchOp).toHaveBeenCalledWith('op1');
     });
+
+    it('createIntel opens modal with Op scope and opId', () => {
+        const dialog = TestBed.inject(MatDialog) as any;
+        component.createIntel();
+        expect(dialog.open).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: expect.objectContaining({ scope: IntelScope.Op, ownerId: 'op1' }) }));
+    });
+
+    afterEach(() => TestBed.resetTestingModule());
 });

@@ -52,6 +52,9 @@
             <div class="sec">
                 <h3>Intel</h3>
                 <span class="rule"></span>
+                <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                    <a mat-button color="primary" (click)="createIntel()"><mat-icon>add</mat-icon> Intel page</a>
+                </ng-template>
             </div>
             <div class="cards">
                 @for (page of intel; track page.id) {
