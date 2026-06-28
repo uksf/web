@@ -47,6 +47,11 @@
     gap: v.$spacing-6px;
 }
 
+.empty {
+    color: th.fg-hint-text();
+    font-size: 13px;
+}
+
 .campaign-card {
     display: flex;
     align-items: center;

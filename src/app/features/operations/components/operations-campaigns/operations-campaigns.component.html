@@ -3,20 +3,25 @@
         <div class="hdr">
             <h2>Campaigns</h2>
             <span class="spacer"></span>
-            <div class="filter"><mat-icon>search</mat-icon><span>Filter</span></div>
-            <button mat-raised-button color="primary"><mat-icon>add</mat-icon> New campaign</button>
+            <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                <button mat-raised-button color="primary" (click)="createCampaign()"><mat-icon>add</mat-icon> New campaign</button>
+            </ng-template>
         </div>
 
         <div class="cards">
             @for (campaign of campaigns; track campaign.id) {
                 <a class="campaign-card" [routerLink]="[campaign.id]" [style.--stripe]="stripe(campaign)">
-                    <span class="theatre">{{ theatre(campaign) }}</span>
+                    @if (campaign.theatre) {
+                        <span class="theatre">{{ theatre(campaign) }}</span>
+                    }
                     <div class="grow">
                         <div class="title">{{ campaign.name }}</div>
-                        <div class="sub" [class.muted]="campaign.status === 'archived'">{{ summary(campaign) }}</div>
+                        <div class="sub" [class.muted]="summary(campaign) === 'Archived'">{{ summary(campaign) }}</div>
                     </div>
                     <mat-icon class="chev">chevron_right</mat-icon>
                 </a>
+            } @empty {
+                <p class="empty">No campaigns yet</p>
             }
         </div>
     </app-full-content-area>
