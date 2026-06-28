@@ -84,6 +84,8 @@
 
     &.with-border {
         border-left: 4px solid var(--mat-sys-outline-variant);
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
     }
 }
 
