@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
-import { MatAnchor, MatButton } from '@angular/material/button';
+import { MatButton } from '@angular/material/button';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { first } from 'rxjs/operators';
 import { DefaultContentAreasComponent } from '@app/shared/components/content-areas/default-content-areas/default-content-areas.component';
@@ -15,7 +15,7 @@ import { CampaignsService } from '../../services/campaigns.service';
     selector: 'app-operations-campaigns',
     templateUrl: './operations-campaigns.component.html',
     styleUrls: ['./operations-campaigns.component.scss'],
-    imports: [DefaultContentAreasComponent, FullContentAreaComponent, RouterLink, MatIcon, MatButton, MatAnchor, NgxPermissionsModule]
+    imports: [DefaultContentAreasComponent, FullContentAreaComponent, RouterLink, MatIcon, MatButton, NgxPermissionsModule]
 })
 export class OperationsCampaignsComponent {
     private campaignsService = inject(CampaignsService);
