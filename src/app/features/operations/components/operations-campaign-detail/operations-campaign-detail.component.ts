@@ -11,7 +11,7 @@ import { DefaultContentAreasComponent } from '@app/shared/components/content-are
 import { FullContentAreaComponent } from '@app/shared/components/content-areas/full-content-area/full-content-area.component';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { mapBorderColour, capitaliseMapName, mapTokenFromMission } from '../../utils/map-colour';
-import { Campaign, IntelPage, IntelScope, MissionFileState, Op, OpDto, OpStatus } from '../../models/campaign';
+import { Campaign, CampaignStatus, IntelPage, IntelScope, MissionFileState, Op, OpDto, OpStatus } from '../../models/campaign';
 import { CampaignsService } from '../../services/campaigns.service';
 
 @Component({
@@ -37,6 +37,7 @@ export class OperationsCampaignDetailComponent {
 
     readonly OpStatus = OpStatus;
     readonly MissionFileState = MissionFileState;
+    readonly CampaignStatus = CampaignStatus;
 
     campaignId = '';
     campaign?: Campaign;

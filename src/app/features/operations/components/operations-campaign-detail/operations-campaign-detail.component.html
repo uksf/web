@@ -5,8 +5,8 @@
 
             <div class="detail-top">
                 <h2>{{ campaign.name }}</h2>
-                <span class="pill" [class.complete]="campaign.status === 1" [class.scheduled]="campaign.status === 0">
-                    <span class="dot"></span>{{ campaign.status === 1 ? 'Archived' : 'Active' }}
+                <span class="pill" [class.complete]="campaign.status === CampaignStatus.Archived" [class.scheduled]="campaign.status === CampaignStatus.Active">
+                    <span class="dot"></span>{{ campaign.status === CampaignStatus.Archived ? 'Archived' : 'Active' }}
                 </span>
                 <span class="spacer"></span>
                 <ng-template [ngxPermissionsOnly]="['COMMAND']">
