@@ -10,6 +10,7 @@ import { FullContentAreaComponent } from '@app/shared/components/content-areas/f
 import { mapBorderColour, capitaliseMapName } from '../../utils/map-colour';
 import { Campaign, CampaignStatus } from '../../models/campaign';
 import { CampaignsService } from '../../services/campaigns.service';
+import { CampaignModalComponent } from '../../modals/campaign-modal/campaign-modal.component';
 
 @Component({
     selector: 'app-operations-campaigns',
@@ -47,6 +48,10 @@ export class OperationsCampaignsComponent {
     }
 
     createCampaign() {
-        // Filled in Task 6 (campaign modal). Left as a method so the template binds now.
+        this.dialog
+            .open(CampaignModalComponent)
+            .afterClosed()
+            .pipe(first())
+            .subscribe({ next: (saved) => saved && this.load() });
     }
 }
