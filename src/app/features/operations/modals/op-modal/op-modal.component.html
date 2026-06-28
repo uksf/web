@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>{{ isEdit ? 'Edit op' : 'New op' }}</h2>
+<mat-dialog-content>
+    <form>
+        <app-text-input label="Title" [(ngModel)]="model.title" name="title" id="title" [required]="true"></app-text-input>
+        <app-dropdown [(ngModel)]="serverValue" [elements]="servers$" [elementName]="'Server'" [placeholder]="'Server'" name="server" id="server">
+            <ng-template #element let-element>{{ element.displayValue }}</ng-template>
+        </app-dropdown>
+        <app-dropdown [(ngModel)]="missionValue" [elements]="missions$" [elementName]="'Mission'" [placeholder]="'Mission file'" name="mission" id="mission">
+            <ng-template #element let-element>{{ element.displayValue }}</ng-template>
+        </app-dropdown>
+        <div class="datetime">
+            <app-date-input label="Date" [(ngModel)]="scheduledDate" name="date" id="date"></app-date-input>
+            <app-text-input label="Time" [(ngModel)]="scheduledTimeText" name="time" id="time" placeholder="HH:mm"></app-text-input>
+        </div>
+        <label class="field-label">WARNO</label>
+        <quill-editor [(ngModel)]="model.warno" name="warno" format="json" [preserveWhitespace]="true" placeholder="Warning order…"></quill-editor>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <app-button (clicked)="cancel()">Cancel</app-button>
+    <app-button (clicked)="submit()" [disabled]="!model.title" [pending]="pending">{{ isEdit ? 'Save' : 'Create' }}</app-button>
+</mat-dialog-actions>

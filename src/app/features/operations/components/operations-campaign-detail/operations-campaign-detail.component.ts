@@ -14,6 +14,7 @@ import { mapBorderColour, capitaliseMapName, mapTokenFromMission } from '../../u
 import { Campaign, CampaignStatus, IntelPage, IntelScope, MissionFileState, Op, OpDto, OpStatus } from '../../models/campaign';
 import { CampaignsService } from '../../services/campaigns.service';
 import { CampaignModalComponent } from '../../modals/campaign-modal/campaign-modal.component';
+import { OpModalComponent } from '../../modals/op-modal/op-modal.component';
 
 @Component({
     selector: 'app-operations-campaign-detail',
@@ -83,7 +84,11 @@ export class OperationsCampaignDetailComponent {
     }
 
     createOp() {
-        // Filled in Task 7 (op modal).
+        this.dialog
+            .open(OpModalComponent, { data: { campaignId: this.campaignId } })
+            .afterClosed()
+            .pipe(first())
+            .subscribe({ next: (saved) => saved && this.load() });
     }
 
     editCampaign() {

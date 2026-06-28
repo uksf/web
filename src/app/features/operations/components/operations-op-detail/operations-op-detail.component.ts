@@ -13,6 +13,7 @@ import { MessageModalComponent } from '@app/shared/modals/message-modal/message-
 import { capitaliseMapName, mapBorderColour, mapTokenFromMission } from '../../utils/map-colour';
 import { Campaign, IntelPage, IntelScope, MissionFileState, OpDto, OpStatus } from '../../models/campaign';
 import { CampaignsService } from '../../services/campaigns.service';
+import { OpModalComponent } from '../../modals/op-modal/op-modal.component';
 
 @Component({
     selector: 'app-operations-op-detail',
@@ -85,6 +86,11 @@ export class OperationsOpDetailComponent {
     }
 
     editOp() {
-        // Filled in Task 7 (op modal).
+        if (!this.dto) { return; }
+        this.dialog
+            .open(OpModalComponent, { data: { campaignId: this.campaignId, op: this.dto.op } })
+            .afterClosed()
+            .pipe(first())
+            .subscribe({ next: (saved) => saved && this.load() });
     }
 }
