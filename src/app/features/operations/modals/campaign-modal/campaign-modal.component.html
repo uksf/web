@@ -6,7 +6,7 @@
         <app-dropdown [(ngModel)]="statusValue" [elements]="statusElements" [elementName]="'Status'" [placeholder]="'Status'" name="status" id="status" [autocomplete]="false">
             <ng-template #element let-element>{{ element.displayValue }}</ng-template>
         </app-dropdown>
-        <label class="field-label">Brief</label>
+        <span class="field-label">Brief</span>
         <quill-editor [(ngModel)]="model.brief" name="brief" format="json" [preserveWhitespace]="true" placeholder="Campaign brief…"></quill-editor>
     </form>
 </mat-dialog-content>

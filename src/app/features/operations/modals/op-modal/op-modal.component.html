@@ -12,7 +12,7 @@
             <app-date-input label="Date" [(ngModel)]="scheduledDate" name="date" id="date"></app-date-input>
             <app-text-input label="Time" [(ngModel)]="scheduledTimeText" name="time" id="time" placeholder="HH:mm"></app-text-input>
         </div>
-        <label class="field-label">WARNO</label>
+        <span class="field-label">WARNO</span>
         <quill-editor [(ngModel)]="model.warno" name="warno" format="json" [preserveWhitespace]="true" placeholder="Warning order…"></quill-editor>
     </form>
 </mat-dialog-content>
