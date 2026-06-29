@@ -78,7 +78,7 @@
                                 }
                             } @else {
                                 @for (mission of filteredActiveMissions; track trackByMissionPath($index, mission)) {
-                                    <mat-card class="mission-row with-border" [style.border-left-color]="mapBorderColour(mission.map)">
+                                    <mat-card class="mission-row with-border" [style.--accent]="mapBorderColour(mission.map)">
                                         <span class="map-label" [style.font-size]="mapFontSize(mission.map)">{{ capitalise(mission.map) }}</span>
                                         <div class="mission-info">
                                             <span class="mission-name">{{ mission.name }}</span>
@@ -149,7 +149,7 @@
                                 }
                             } @else {
                                 @for (mission of filteredArchivedMissions; track trackByMissionPath($index, mission)) {
-                                    <mat-card class="mission-row with-border" [style.border-left-color]="mapBorderColour(mission.map)">
+                                    <mat-card class="mission-row with-border" [style.--accent]="mapBorderColour(mission.map)">
                                         <span class="map-label" [style.font-size]="mapFontSize(mission.map)">{{ capitalise(mission.map) }}</span>
                                         <div class="mission-info">
                                             <span class="mission-name">{{ mission.name }}</span>

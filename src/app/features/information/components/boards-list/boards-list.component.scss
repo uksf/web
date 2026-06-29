@@ -25,7 +25,18 @@
     align-items: center;
     justify-content: space-between;
     padding: v.$spacing-12px v.$spacing-16px;
-    border-left: 3px solid transparent;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: var(--accent, transparent);
+    }
 }
 
 .board-card-content {

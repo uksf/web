@@ -81,11 +81,19 @@
     gap: v.$spacing-12px;
     padding: v.$spacing-8px v.$spacing-12px;
     margin-bottom: v.$spacing-4px;
+    position: relative;
+    overflow: hidden;
 
     &.with-border {
-        border-left: 4px solid var(--mat-sys-outline-variant);
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
+        &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--accent, var(--mat-sys-outline-variant));
+        }
     }
 }
 

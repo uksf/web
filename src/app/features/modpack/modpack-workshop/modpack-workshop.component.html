@@ -16,7 +16,7 @@
                         <div class="mod-section">
                             <h3 class="mod-section-header">{{ section.label }} <small>{{ section.mods.length }}</small></h3>
                             @for (mod of section.mods; track trackBySteamId($index, mod)) {
-                                <mat-card class="mod-row" [style.border-left-color]="section.accentColor">
+                                <mat-card class="mod-row" [style.--accent]="section.accentColor">
                                     <div class="mod-name">
                                         @if (mod.rootMod) {
                                             <span class="mod-prefix">@</span>
