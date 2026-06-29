@@ -202,9 +202,20 @@
     align-items: center;
     gap: v.$spacing-12px;
     padding: v.$spacing-12px v.$spacing-16px;
+    position: relative;
+    overflow: hidden;
     background: var(--uksf-card);
-    border-radius: 0 6px 6px 0;
-    border-left: 3px solid var(--uksf-accent);
+    border-radius: 6px;
+
+    &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: var(--uksf-accent);
+    }
 
     .intel-ico {
         opacity: 0.8;
