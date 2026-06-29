@@ -1,0 +1,32 @@
+@use 'styles/theme-helpers' as th;
+
+// Cohesive dark editor block for the campaign/op/intel modals: removes Quill
+// snow's default light borders and frames toolbar + body as one rounded panel.
+// (Colours/icons are themed globally in styles.scss under .ql-snow.)
+::ng-deep quill-editor {
+    display: block;
+    border: 1px solid th.fg-divider();
+    border-radius: 6px;
+    overflow: hidden;
+
+    .ql-toolbar.ql-snow {
+        border: 0;
+        border-bottom: 1px solid th.fg-divider();
+    }
+
+    .ql-container.ql-snow {
+        border: 0;
+        background: var(--uksf-background);
+        font-family: inherit;
+        font-size: 14px;
+    }
+
+    .ql-editor {
+        min-height: 120px;
+    }
+
+    .ql-editor.ql-blank::before {
+        color: th.fg-hint-text();
+        font-style: normal;
+    }
+}

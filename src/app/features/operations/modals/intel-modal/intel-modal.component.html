@@ -3,10 +3,10 @@
     <form>
         <app-text-input label="Title" [(ngModel)]="model.title" name="title" id="title" [required]="true"></app-text-input>
         <span class="field-label">Body</span>
-        <quill-editor [(ngModel)]="model.body" name="body" format="json" placeholder="Intel…"></quill-editor>
+        <quill-editor [(ngModel)]="model.body" name="body" format="json" [modules]="quillModules" placeholder="Intel…"></quill-editor>
     </form>
 </mat-dialog-content>
 <mat-dialog-actions>
-    <app-button (clicked)="cancel()">Cancel</app-button>
+    <app-button (clicked)="cancel()" [secondary]="true">Cancel</app-button>
     <app-button (clicked)="submit()" [disabled]="!model.title" [pending]="pending">{{ isEdit ? 'Save' : 'Create' }}</app-button>
 </mat-dialog-actions>

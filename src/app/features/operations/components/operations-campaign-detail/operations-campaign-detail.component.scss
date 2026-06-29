@@ -257,3 +257,11 @@
     color: th.fg-hint-text();
     font-size: 13px;
 }
+
+.intel-row {
+    cursor: pointer;
+
+    &:hover {
+        background: var(--uksf-selected);
+    }
+}

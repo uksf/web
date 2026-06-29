@@ -23,7 +23,7 @@ interface OpModalData {
 @Component({
     selector: 'app-op-modal',
     templateUrl: './op-modal.component.html',
-    styleUrls: ['./op-modal.component.scss'],
+    styleUrls: ['./op-modal.component.scss', '../_quill-modal-editor.scss'],
     imports: [FormsModule, MatDialogTitle, MatDialogContent, MatDialogActions, TextInputComponent, DropdownComponent, DateInputComponent, QuillEditorComponent, ButtonComponent]
 })
 export class OpModalComponent {
@@ -36,6 +36,9 @@ export class OpModalComponent {
 
     isEdit = false;
     pending = false;
+    quillModules = {
+        toolbar: [['bold', 'italic', 'underline', 'strike'], ['blockquote'], [{ header: 1 }, { header: 2 }], [{ list: 'ordered' }, { list: 'bullet' }], ['link'], ['clean']]
+    };
     model: Op = { id: '', campaignId: '', title: '', scheduledTime: '', serverId: '', missionName: '', warno: '', status: OpStatus.Scheduled };
 
     scheduledDate: Date | null = null;

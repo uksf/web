@@ -1,4 +1,4 @@
-<button mat-raised-button color="primary" type="button" (click)="onClick()" [disabled]="disabled || pending">
+<button mat-raised-button [color]="secondary ? undefined : 'primary'" type="button" (click)="onClick()" [disabled]="disabled || pending">
     <span [class.pending]="pending"><ng-content></ng-content></span>
     @if (pending) {
     <mat-spinner [diameter]="24"></mat-spinner>

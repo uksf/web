@@ -12,6 +12,7 @@
                 <div class="actions">
                     <ng-template [ngxPermissionsOnly]="['COMMAND']">
                         <button mat-raised-button (click)="editOp()"><mat-icon>edit</mat-icon> Edit</button>
+                        <button mat-icon-button (click)="deleteOp()" matTooltip="Delete op"><mat-icon>delete</mat-icon></button>
                     </ng-template>
                     @if (dto.op.status === OpStatus.Scheduled) {
                         <ng-template [ngxPermissionsOnly]="['NCO', 'SERVERS', 'COMMAND']">
@@ -30,13 +31,19 @@
             <div class="metaline">
                 <span class="m"><mat-icon>event</mat-icon>{{ dto.op.scheduledTime | date: 'EEE d MMM, HH:mm' }}</span>
                 <span class="dotsep">·</span>
-                <span class="m"><mat-icon>dns</mat-icon>{{ dto.op.serverId }}</span>
+                <span class="m"><mat-icon>dns</mat-icon>{{ serverName }}</span>
+                @if (mapName) {
+                    <span class="dotsep">·</span>
+                    <span class="m"><span class="swatch" [style.background]="stripe"></span>{{ mapName }}</span>
+                }
                 <span class="dotsep">·</span>
-                <span class="m"><span class="swatch" [style.background]="stripe"></span>{{ mapName }}</span>
-                <span class="dotsep">·</span>
-                <span class="m mission" [class.missing]="dto.missionFileState === MissionFileState.Missing">
-                    <mat-icon>{{ dto.missionFileState === MissionFileState.Missing ? 'warning' : 'description' }}</mat-icon>{{ dto.op.missionName }}
-                </span>
+                @if (dto.op.missionName) {
+                    <span class="m mission" [class.missing]="dto.missionFileState === MissionFileState.Missing">
+                        <mat-icon>{{ dto.missionFileState === MissionFileState.Missing ? 'warning' : 'description' }}</mat-icon>{{ dto.op.missionName }}
+                    </span>
+                } @else {
+                    <span class="m mission missing"><mat-icon>warning</mat-icon>No mission assigned</span>
+                }
             </div>
 
             @if (dto.missionFileState === MissionFileState.Missing) {
@@ -47,7 +54,11 @@
                 <h3>WARNO</h3>
                 <span class="rule"></span>
             </div>
-            <quill-view class="prose" [content]="dto.op.warno" format="json"></quill-view>
+            @if (dto.op.warno) {
+                <quill-view class="prose" [content]="dto.op.warno" format="json"></quill-view>
+            } @else {
+                <p class="empty">No WARNO yet</p>
+            }
 
             <div class="sec">
                 <h3>Intel</h3>
@@ -58,10 +69,13 @@
             </div>
             <div class="cards">
                 @for (page of intel; track page.id) {
-                    <div class="intel-row">
+                    <div class="intel-row" (click)="openIntel(page)">
                         <mat-icon class="intel-ico">menu_book</mat-icon>
                         <div class="title">{{ page.title }}</div>
                         <span class="spacer"></span>
+                        <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                            <button mat-icon-button class="row-delete" (click)="deleteIntel(page); $event.stopPropagation()" matTooltip="Delete"><mat-icon>delete</mat-icon></button>
+                        </ng-template>
                         <mat-icon class="chev">chevron_right</mat-icon>
                     </div>
                 } @empty {

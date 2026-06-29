@@ -19,7 +19,7 @@ interface CampaignModalData {
 @Component({
     selector: 'app-campaign-modal',
     templateUrl: './campaign-modal.component.html',
-    styleUrls: ['./campaign-modal.component.scss'],
+    styleUrls: ['./campaign-modal.component.scss', '../_quill-modal-editor.scss'],
     imports: [FormsModule, MatDialogTitle, MatDialogContent, MatDialogActions, TextInputComponent, DropdownComponent, QuillEditorComponent, ButtonComponent]
 })
 export class CampaignModalComponent {
@@ -30,6 +30,9 @@ export class CampaignModalComponent {
 
     isEdit = false;
     pending = false;
+    quillModules = {
+        toolbar: [['bold', 'italic', 'underline', 'strike'], ['blockquote'], [{ header: 1 }, { header: 2 }], [{ list: 'ordered' }, { list: 'bullet' }], ['link'], ['clean']]
+    };
     model: Campaign = { id: '', name: '', brief: '', status: CampaignStatus.Active, theatre: '' };
 
     statusOptions: IDropdownElement[] = [

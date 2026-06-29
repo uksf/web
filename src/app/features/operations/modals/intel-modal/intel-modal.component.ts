@@ -18,7 +18,7 @@ interface IntelModalData {
 @Component({
     selector: 'app-intel-modal',
     templateUrl: './intel-modal.component.html',
-    styleUrls: ['./intel-modal.component.scss'],
+    styleUrls: ['./intel-modal.component.scss', '../_quill-modal-editor.scss'],
     imports: [FormsModule, MatDialogTitle, MatDialogContent, MatDialogActions, TextInputComponent, QuillEditorComponent, ButtonComponent]
 })
 export class IntelModalComponent {
@@ -29,6 +29,9 @@ export class IntelModalComponent {
 
     isEdit = false;
     pending = false;
+    quillModules = {
+        toolbar: [['bold', 'italic', 'underline', 'strike'], ['blockquote'], [{ header: 1 }, { header: 2 }], [{ list: 'ordered' }, { list: 'bullet' }], ['link'], ['clean']]
+    };
     model: IntelPage = { id: '', scope: IntelScope.Campaign, ownerId: '', title: '', body: '' };
 
     constructor() {

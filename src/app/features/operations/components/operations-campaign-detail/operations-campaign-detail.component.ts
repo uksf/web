@@ -1,15 +1,17 @@
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
-import { MatAnchor, MatButton } from '@angular/material/button';
+import { MatAnchor, MatButton, MatIconButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { QuillViewComponent } from 'ngx-quill';
 import { first } from 'rxjs/operators';
 import { DefaultContentAreasComponent } from '@app/shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { FullContentAreaComponent } from '@app/shared/components/content-areas/full-content-area/full-content-area.component';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
+import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { mapBorderColour, capitaliseMapName, mapTokenFromMission } from '../../utils/map-colour';
 import { Campaign, CampaignStatus, IntelPage, IntelScope, MissionFileState, Op, OpDto, OpStatus } from '../../models/campaign';
 import { CampaignsService } from '../../services/campaigns.service';
@@ -28,6 +30,8 @@ import { OpModalComponent } from '../../modals/op-modal/op-modal.component';
         MatIcon,
         MatButton,
         MatAnchor,
+        MatIconButton,
+        MatTooltip,
         DatePipe,
         QuillViewComponent,
         NgxPermissionsModule
@@ -35,6 +39,7 @@ import { OpModalComponent } from '../../modals/op-modal/op-modal.component';
 })
 export class OperationsCampaignDetailComponent {
     private route = inject(ActivatedRoute);
+    private router = inject(Router);
     private campaignsService = inject(CampaignsService);
     private dialog = inject(MatDialog);
 
@@ -107,5 +112,46 @@ export class OperationsCampaignDetailComponent {
             .afterClosed()
             .pipe(first())
             .subscribe({ next: (saved) => saved && this.load() });
+    }
+
+    deleteCampaign() {
+        if (!this.campaign) { return; }
+        this.dialog
+            .open(ConfirmationModalComponent, { data: { title: 'Delete campaign', message: `Delete "${this.campaign.name}" and all its operations? This cannot be undone.`, button: 'Delete' } })
+            .afterClosed()
+            .pipe(first())
+            .subscribe({ next: (confirmed) => confirmed && this.campaignsService.deleteCampaign(this.campaignId).pipe(first()).subscribe({ next: () => this.router.navigate(['/operations/campaigns']) }) });
+    }
+
+    editOp(dto: OpDto) {
+        this.dialog
+            .open(OpModalComponent, { data: { campaignId: this.campaignId, op: dto.op } })
+            .afterClosed()
+            .pipe(first())
+            .subscribe({ next: (saved) => saved && this.load() });
+    }
+
+    deleteOp(dto: OpDto) {
+        this.dialog
+            .open(ConfirmationModalComponent, { data: { title: 'Delete op', message: `Delete "${dto.op.title}"?`, button: 'Delete' } })
+            .afterClosed()
+            .pipe(first())
+            .subscribe({ next: (confirmed) => confirmed && this.campaignsService.deleteOp(dto.op.id).pipe(first()).subscribe({ next: () => this.load() }) });
+    }
+
+    openIntel(page: IntelPage) {
+        this.dialog
+            .open(IntelModalComponent, { data: { scope: IntelScope.Campaign, ownerId: this.campaignId, page } })
+            .afterClosed()
+            .pipe(first())
+            .subscribe({ next: (saved) => saved && this.load() });
+    }
+
+    deleteIntel(page: IntelPage) {
+        this.dialog
+            .open(ConfirmationModalComponent, { data: { title: 'Delete intel page', message: `Delete "${page.title}"?`, button: 'Delete' } })
+            .afterClosed()
+            .pipe(first())
+            .subscribe({ next: (confirmed) => confirmed && this.campaignsService.deleteIntel(page.id).pipe(first()).subscribe({ next: () => this.load() }) });
     }
 }

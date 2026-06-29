@@ -11,6 +11,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 export class ButtonComponent {
     @Input() pending = false;
     @Input() disabled = false;
+    @Input() secondary = false;
     @Output() clicked = new EventEmitter();
 
     constructor() {}

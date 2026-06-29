@@ -11,10 +11,15 @@
                 <span class="spacer"></span>
                 <ng-template [ngxPermissionsOnly]="['COMMAND']">
                     <button mat-raised-button (click)="editCampaign()"><mat-icon>edit</mat-icon> Edit</button>
+                    <button mat-icon-button (click)="deleteCampaign()" matTooltip="Delete campaign"><mat-icon>delete</mat-icon></button>
                 </ng-template>
             </div>
 
-            <quill-view class="prose" [content]="campaign.brief" format="json"></quill-view>
+            @if (campaign.brief) {
+                <quill-view class="prose" [content]="campaign.brief" format="json"></quill-view>
+            } @else {
+                <p class="empty">No brief yet</p>
+            }
 
             <div class="sec">
                 <h3>Operations</h3>
@@ -34,8 +39,10 @@
                             <div class="title">{{ dto.op.title }}</div>
                             <div class="meta">
                                 <span class="m"><mat-icon>event</mat-icon>{{ dto.op.scheduledTime | date: 'EEE d MMM, HH:mm' }}</span>
-                                <span class="dotsep">·</span>
-                                <span class="m"><span class="swatch" [style.background]="stripe(dto.op)"></span>{{ mapName(dto.op) }}</span>
+                                @if (mapName(dto.op)) {
+                                    <span class="dotsep">·</span>
+                                    <span class="m"><span class="swatch" [style.background]="stripe(dto.op)"></span>{{ mapName(dto.op) }}</span>
+                                }
                                 @if (dto.missionFileState === MissionFileState.Missing) {
                                     <span class="warn-chip"><mat-icon>warning</mat-icon> mission file missing</span>
                                 }
@@ -54,6 +61,10 @@
                                 <mat-icon>open_in_new</mat-icon> AAR
                             </a>
                         }
+                        <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                            <button mat-icon-button (click)="editOp(dto)" matTooltip="Edit op"><mat-icon>edit</mat-icon></button>
+                            <button mat-icon-button (click)="deleteOp(dto)" matTooltip="Delete op"><mat-icon>delete</mat-icon></button>
+                        </ng-template>
                         <a class="chev" [routerLink]="['ops', dto.op.id]"><mat-icon>chevron_right</mat-icon></a>
                     </div>
                 } @empty {
@@ -70,10 +81,13 @@
             </div>
             <div class="cards">
                 @for (page of intel; track page.id) {
-                    <div class="intel-row">
+                    <div class="intel-row" (click)="openIntel(page)">
                         <mat-icon class="intel-ico">menu_book</mat-icon>
                         <div class="title">{{ page.title }}</div>
                         <span class="spacer"></span>
+                        <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                            <button mat-icon-button class="row-delete" (click)="deleteIntel(page); $event.stopPropagation()" matTooltip="Delete"><mat-icon>delete</mat-icon></button>
+                        </ng-template>
                         <mat-icon class="chev">chevron_right</mat-icon>
                     </div>
                 } @empty {
