@@ -7,7 +7,7 @@
             <ng-template #element let-element>{{ element.displayValue }}</ng-template>
         </app-dropdown>
         <span class="field-label">Brief</span>
-        <quill-editor [(ngModel)]="model.brief" name="brief" format="json" [preserveWhitespace]="true" placeholder="Campaign brief…"></quill-editor>
+        <quill-editor [(ngModel)]="model.brief" name="brief" format="json" placeholder="Campaign brief…"></quill-editor>
     </form>
 </mat-dialog-content>
 <mat-dialog-actions>

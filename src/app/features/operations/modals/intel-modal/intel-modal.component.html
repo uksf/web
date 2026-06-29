@@ -3,7 +3,7 @@
     <form>
         <app-text-input label="Title" [(ngModel)]="model.title" name="title" id="title" [required]="true"></app-text-input>
         <span class="field-label">Body</span>
-        <quill-editor [(ngModel)]="model.body" name="body" format="json" [preserveWhitespace]="true" placeholder="Intel…"></quill-editor>
+        <quill-editor [(ngModel)]="model.body" name="body" format="json" placeholder="Intel…"></quill-editor>
     </form>
 </mat-dialog-content>
 <mat-dialog-actions>
