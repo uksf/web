@@ -16,7 +16,9 @@
                 <div class="actions">
                     <ng-template [ngxPermissionsOnly]="['COMMAND']">
                         <button mat-raised-button (click)="editCampaign()"><mat-icon>edit</mat-icon> Edit</button>
-                        <button mat-icon-button (click)="deleteCampaign()" matTooltip="Delete campaign"><mat-icon>delete</mat-icon></button>
+                        @if (campaign.status !== CampaignStatus.Past) {
+                            <button mat-icon-button (click)="deleteCampaign()" matTooltip="Delete campaign"><mat-icon>delete</mat-icon></button>
+                        }
                     </ng-template>
                 </div>
             </div>
