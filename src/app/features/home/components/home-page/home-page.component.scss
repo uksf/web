@@ -35,6 +35,12 @@
         margin-bottom: v.$spacing-16px;
     }
 
+    // Discord's widget page has a light backdrop behind its rounded dark card;
+    // clip the (cross-origin) iframe box to the same radius so no white corners show.
+    .discord-widget {
+        border-radius: 8px;
+    }
+
     &.instagram-feed {
         display: flex;
         flex-direction: row;

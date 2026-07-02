@@ -1,0 +1,25 @@
+<app-default-content-areas>
+    <app-full-content-area>
+        @if (page) {
+            <div class="detail-top">
+                <button mat-icon-button class="back-button" [routerLink]="backLink" [matTooltip]="'Back to ' + backLabel"><mat-icon>arrow_back</mat-icon></button>
+                <h2>{{ page.title }}</h2>
+                <span class="spacer"></span>
+                <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                    <div class="actions">
+                        <button mat-raised-button (click)="edit()"><mat-icon>edit</mat-icon> Edit</button>
+                        <button mat-icon-button (click)="delete()" matTooltip="Delete"><mat-icon>delete</mat-icon></button>
+                    </div>
+                </ng-template>
+            </div>
+
+            @if (page.body) {
+                <quill-view class="prose" [content]="page.body" format="json"></quill-view>
+            } @else {
+                <p class="empty">No content yet</p>
+            }
+        } @else {
+            <p class="empty">Loading…</p>
+        }
+    </app-full-content-area>
+</app-default-content-areas>

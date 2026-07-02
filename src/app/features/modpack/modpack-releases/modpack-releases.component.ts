@@ -75,7 +75,7 @@ export class ModpackReleasesComponent implements OnInit, OnDestroy {
     }
 
     updateCachedState() {
-        this.publicReleases = this.releases.filter((x: ModpackRelease) => !x.isDraft || this.permissionsService.hasPermission(Permissions.TESTER));
+        this.publicReleases = this.releases.filter((x: ModpackRelease) => !x.isDraft || this.permissionsService.hasPermission(Permissions.ADMIN));
         this.selectedRelease = this.releases.find((x: ModpackRelease) => x.version === this.selectedReleaseVersion);
         this.latestReleaseIsDraft = this.releases.length > 0 && this.releases[0].isDraft;
     }

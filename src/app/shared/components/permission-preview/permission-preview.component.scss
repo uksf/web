@@ -1,0 +1,121 @@
+@use 'styles/theme-helpers' as th;
+@use 'styles/variables' as v;
+
+:host {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 9000;
+}
+
+.fab {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    background: var(--uksf-card);
+    border: 1px solid th.fg-divider();
+    color: th.fg-secondary-text();
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+
+    &:hover {
+        color: th.fg-base();
+    }
+
+    mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+    }
+}
+
+.panel {
+    width: 220px;
+    background: var(--uksf-card);
+    border: 1px solid th.fg-divider();
+    border-radius: 6px;
+    padding: v.$spacing-12px;
+    display: flex;
+    flex-direction: column;
+    gap: v.$spacing-8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.head {
+    display: flex;
+    align-items: center;
+
+    .title {
+        flex: 1;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: th.fg-secondary-text();
+    }
+
+    .icon {
+        background: none;
+        border: 0;
+        padding: 0;
+        color: th.fg-hint-text();
+        cursor: pointer;
+        display: inline-flex;
+
+        mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+        }
+
+        &:hover {
+            color: th.fg-base();
+        }
+    }
+}
+
+.roles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: v.$spacing-6px;
+}
+
+.role {
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid th.fg-divider();
+    background: transparent;
+    color: th.fg-secondary-text();
+    cursor: pointer;
+
+    &.on {
+        border-color: var(--uksf-accent);
+        color: th.fg-base();
+        background: color-mix(in srgb, var(--uksf-accent) 18%, transparent);
+    }
+}
+
+.reset {
+    font-size: 12px;
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid th.fg-divider();
+    background: transparent;
+    color: th.fg-secondary-text();
+    cursor: pointer;
+
+    &:hover {
+        color: th.fg-base();
+    }
+}
+
+.note {
+    margin: 0;
+    font-size: 10px;
+    line-height: 1.4;
+    color: th.fg-hint-text();
+}

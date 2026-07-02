@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
-import { QuillEditorComponent } from 'ngx-quill';
 import { BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { ButtonComponent } from '@app/shared/components/elements/button-pending/button.component';
@@ -13,6 +12,7 @@ import { MessageModalComponent } from '@app/shared/modals/message-modal/message-
 import { Op, OpStatus } from '../../models/campaign';
 import { CampaignsService } from '../../services/campaigns.service';
 import { GameServersService } from '../../services/game-servers.service';
+import { GameServerOption } from '../../models/game-server';
 import { MissionsService } from '../../services/missions.service';
 
 interface OpModalData {
@@ -23,8 +23,8 @@ interface OpModalData {
 @Component({
     selector: 'app-op-modal',
     templateUrl: './op-modal.component.html',
-    styleUrls: ['./op-modal.component.scss', '../_quill-modal-editor.scss'],
-    imports: [FormsModule, MatDialogTitle, MatDialogContent, MatDialogActions, TextInputComponent, DropdownComponent, DateInputComponent, QuillEditorComponent, ButtonComponent]
+    styleUrls: ['./op-modal.component.scss'],
+    imports: [FormsModule, MatDialogTitle, MatDialogContent, MatDialogActions, TextInputComponent, DropdownComponent, DateInputComponent, ButtonComponent]
 })
 export class OpModalComponent {
     private dialogRef = inject<MatDialogRef<OpModalComponent>>(MatDialogRef);
@@ -36,9 +36,6 @@ export class OpModalComponent {
 
     isEdit = false;
     pending = false;
-    quillModules = {
-        toolbar: [['bold', 'italic', 'underline', 'strike'], ['blockquote'], [{ header: 1 }, { header: 2 }], [{ list: 'ordered' }, { list: 'bullet' }], ['link'], ['clean']]
-    };
     model: Op = { id: '', campaignId: '', title: '', scheduledTime: '', serverId: '', missionName: '', warno: '', status: OpStatus.Scheduled };
 
     scheduledDate: Date | null = null;
@@ -69,7 +66,10 @@ export class OpModalComponent {
                 const serverElements = update.servers.map((s) => ({ value: s.id, displayValue: s.name }));
                 this.servers$.next(serverElements);
                 if (!this.isEdit) {
-                    const main = update.servers.find((s) => s.name === 'Main Server') ?? update.servers[0];
+                    const main =
+                        update.servers.find((s) => s.name === 'Main Server') ??
+                        update.servers.find((s) => s.serverOption === GameServerOption.Singleton) ??
+                        update.servers[0];
                     if (main) {
                         this.model.serverId = main.id;
                         this.serverValue = serverElements.find((e) => e.value === main.id) ?? null;
@@ -133,9 +133,5 @@ export class OpModalComponent {
         const d = new Date(this.scheduledDate);
         d.setHours(isNaN(h) ? 19 : h, isNaN(m) ? 0 : m, 0, 0);
         return d.toISOString();
-    }
-
-    cancel() {
-        this.dialogRef.close();
     }
 }

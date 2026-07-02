@@ -33,11 +33,12 @@ export class CampaignModalComponent {
     quillModules = {
         toolbar: [['bold', 'italic', 'underline', 'strike'], ['blockquote'], [{ header: 1 }, { header: 2 }], [{ list: 'ordered' }, { list: 'bullet' }], ['link'], ['clean']]
     };
-    model: Campaign = { id: '', name: '', brief: '', status: CampaignStatus.Active, theatre: '' };
+    model: Campaign = { id: '', name: '', summary: '', status: CampaignStatus.Upcoming };
 
     statusOptions: IDropdownElement[] = [
-        { value: String(CampaignStatus.Active), displayValue: 'Active' },
-        { value: String(CampaignStatus.Archived), displayValue: 'Archived' }
+        { value: String(CampaignStatus.Upcoming), displayValue: 'Upcoming' },
+        { value: String(CampaignStatus.Current), displayValue: 'Current' },
+        { value: String(CampaignStatus.Past), displayValue: 'Past' }
     ];
     statusElements: Observable<IDropdownElement[]> = of(this.statusOptions);
     statusValue: IDropdownElement | null = this.statusOptions[0];
@@ -55,7 +56,7 @@ export class CampaignModalComponent {
             return;
         }
         this.pending = true;
-        this.model.status = Number(this.statusValue?.value ?? CampaignStatus.Active);
+        this.model.status = Number(this.statusValue?.value ?? CampaignStatus.Upcoming);
         const request = this.isEdit ? this.campaignsService.updateCampaign(this.model) : this.campaignsService.addCampaign(this.model);
         request.pipe(first()).subscribe({
             next: () => this.dialogRef.close(true),
@@ -64,9 +65,5 @@ export class CampaignModalComponent {
                 this.dialog.open(MessageModalComponent, { data: { message: error?.error ?? 'Save failed' } });
             }
         });
-    }
-
-    cancel() {
-        this.dialogRef.close();
     }
 }

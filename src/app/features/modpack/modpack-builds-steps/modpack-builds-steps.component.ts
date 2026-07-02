@@ -3,7 +3,6 @@ import { CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf } 
 import { ActivatedRoute, Router } from '@angular/router';
 import { Permissions } from '@app/core/services/permissions';
 import { PermissionsService } from '@app/core/services/permissions.service';
-import { GameEnvironment } from '@app/shared/models/game-environment';
 import { ThemeEmitterComponent } from '@app/shared/components/elements/theme-emitter/theme-emitter.component';
 import { ModpackBuild } from '../models/modpack-build';
 import { ModpackBuildResult } from '../models/modpack-build-result';
@@ -65,7 +64,7 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
     }
 
     get canControl() {
-        return this.permissions.hasPermission(Permissions.ADMIN) ? true : this.permissions.hasPermission(Permissions.TESTER) && this.build.environment === GameEnvironment.DEV;
+        return this.permissions.hasPermission(Permissions.ADMIN);
     }
 
     get anyWarning() {

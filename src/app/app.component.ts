@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, PLATFORM_ID, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, PLATFORM_ID, inject, isDevMode } from '@angular/core';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { isPlatformBrowser } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
@@ -8,18 +8,21 @@ import { UtilityHubService } from '@app/core/services/utility-hub.service';
 import { HeaderBarComponent } from '@app/core/components/header-bar/header-bar.component';
 import { SideBarComponent } from '@app/core/components/side-bar/side-bar.component';
 import { FooterBarComponent } from '@app/core/components/footer-bar/footer-bar.component';
+import { PermissionPreviewComponent } from '@app/shared/components/permission-preview/permission-preview.component';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
-    imports: [RouterOutlet, HeaderBarComponent, SideBarComponent, FooterBarComponent]
+    imports: [RouterOutlet, HeaderBarComponent, SideBarComponent, FooterBarComponent, PermissionPreviewComponent]
 })
 export class AppComponent implements OnInit, OnDestroy {
     private overlayContainer = inject(OverlayContainer);
     private platformId = inject(PLATFORM_ID);
     private dialog = inject(MatDialog);
     private utilityHub = inject(UtilityHubService);
+
+    readonly devMode = isDevMode();
 
     ngOnInit() {
         this.overlayContainer.getContainerElement().classList.add('uksf-theme');

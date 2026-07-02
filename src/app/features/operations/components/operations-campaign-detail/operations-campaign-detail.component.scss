@@ -7,35 +7,32 @@
     gap: v.$spacing-8px;
 }
 
-.back {
-    display: inline-flex;
-    align-items: center;
-    gap: v.$spacing-4px;
-    color: th.fg-secondary-text();
-    text-decoration: none;
-    font-size: 13px;
-
-    mat-icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
-    }
-
-    &:hover {
-        color: th.fg-base();
-    }
-}
-
 .detail-top {
     display: flex;
     align-items: center;
-    gap: v.$spacing-12px;
+    gap: v.$spacing-8px;
     margin-top: v.$spacing-4px;
+
+    .back-button {
+        margin-left: -8px;
+    }
 
     h2 {
         margin: 0;
         font-size: 21px;
         font-weight: 500;
+    }
+
+    .actions {
+        display: flex;
+        align-items: center;
+        gap: v.$spacing-8px;
+
+        .mat-mdc-icon-button {
+            width: 36px !important;
+            height: 36px !important;
+            padding: 6px !important;
+        }
     }
 }
 
@@ -43,7 +40,13 @@
     flex: 1;
 }
 
+.mat-mdc-button .mat-icon,
+.mat-mdc-raised-button .mat-icon {
+    margin-right: v.$spacing-8px;
+}
+
 .prose {
+    display: block;
     background: var(--uksf-dark-card);
     border: 1px solid th.fg-divider();
     border-radius: 6px;
@@ -132,6 +135,33 @@
             background: #6fb87a;
         }
     }
+
+    &.current {
+        border-color: color-mix(in srgb, var(--uksf-accent) 90%, white 10%);
+        color: th.fg-base();
+
+        .dot {
+            background: color-mix(in srgb, var(--uksf-accent) 70%, white 30%);
+        }
+    }
+
+    &.upcoming {
+        border-color: color-mix(in srgb, #6fb87a 70%, transparent);
+        color: th.fg-base();
+
+        .dot {
+            background: #6fb87a;
+        }
+    }
+
+    &.past {
+        border-color: th.fg-divider();
+        color: th.fg-hint-text();
+
+        .dot {
+            background: th.fg-hint-text();
+        }
+    }
 }
 
 .op-card {
@@ -143,6 +173,11 @@
     overflow: hidden;
     background: var(--uksf-card);
     border-radius: 6px;
+    cursor: pointer;
+
+    &:hover:not(:has(> a:hover, > .op-actions:hover)) {
+        background: var(--uksf-selected);
+    }
 
     &::before {
         content: '';
@@ -151,7 +186,20 @@
         top: 0;
         bottom: 0;
         width: 3px;
-        background: var(--stripe, var(--mat-sys-outline-variant));
+        background: var(--mat-sys-outline-variant);
+    }
+
+    &.scheduled::before {
+        background: color-mix(in srgb, var(--uksf-accent) 70%, white 30%);
+    }
+
+    &.complete::before {
+        background: #6fb87a;
+    }
+
+    > .pill {
+        width: 90px;
+        justify-content: center;
     }
 
     .op-main {
@@ -210,6 +258,27 @@
             width: 14px;
             height: 14px;
         }
+    }
+
+    .op-actions {
+        display: flex;
+        align-items: center;
+        gap: v.$spacing-8px;
+
+        .launch-btn {
+            background: th.primary();
+            color: th.primary-contrast();
+
+            &:hover {
+                background: color-mix(in srgb, th.primary() 85%, black);
+            }
+        }
+    }
+
+    .mat-mdc-icon-button {
+        width: 36px !important;
+        height: 36px !important;
+        padding: 6px !important;
     }
 
     .chev {

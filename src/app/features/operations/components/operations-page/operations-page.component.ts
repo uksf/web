@@ -1,8 +1,18 @@
-import { Component, inject } from '@angular/core';
-import { Permissions } from '@app/core/services/permissions';
-import { PermissionsService } from '@app/core/services/permissions.service';
+import { Component, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatTabNav, MatTabLink, MatTabNavPanel } from '@angular/material/tabs';
 import { RouterLinkActive, RouterLink, RouterOutlet } from '@angular/router';
+import { NgxPermissionsService } from 'ngx-permissions';
+
+interface TabLink {
+    label: string;
+    link: string;
+}
+
+const AAR: TabLink = { label: 'AAR', link: 'aar' };
+const CAMPAIGNS: TabLink = { label: 'Campaigns', link: 'campaigns' };
+const MISSIONS: TabLink = { label: 'Missions', link: 'missions' };
+const SERVERS: TabLink = { label: 'Servers', link: 'servers' };
 
 @Component({
     selector: 'app-operations-page',
@@ -11,24 +21,19 @@ import { RouterLinkActive, RouterLink, RouterOutlet } from '@angular/router';
     imports: [MatTabNav, MatTabLink, RouterLinkActive, RouterLink, MatTabNavPanel, RouterOutlet]
 })
 export class OperationsPageComponent {
-    private permissions = inject(PermissionsService);
+    private ngxPermissions = inject(NgxPermissionsService);
+    private permissions = toSignal(this.ngxPermissions.permissions$, { requireSync: true });
 
-    tabLinks: { label: string; link: string }[] = [
-        { label: 'Campaigns', link: 'campaigns' },
-        { label: 'AAR', link: 'aar' }
-    ];
+    // Non-testers keep the pre-campaigns tab set/order untouched; only TESTER/superadmin get Campaigns and the reordered set.
+    tabLinks = computed<TabLink[]>(() => {
+        const perms = this.permissions();
+        const isTester = !!perms['TESTER'];
+        const hasServers = !!perms['SERVERS'];
 
-    trackByLink(index: number, item: { link: string }): string {
-        return item.link;
-    }
-
-    constructor() {
-        if (this.permissions.hasPermission(Permissions.SERVERS)) {
-            this.tabLinks.unshift(
-                { label: 'Servers', link: 'servers' },
-                { label: 'Missions', link: 'missions' }
-                // NPCs tab hidden for now — page still reachable at /operations/npcs (route intact, SERVERS-gated)
-            );
+        if (isTester) {
+            return hasServers ? [CAMPAIGNS, AAR, MISSIONS, SERVERS] : [CAMPAIGNS, AAR];
         }
-    }
+
+        return hasServers ? [SERVERS, MISSIONS, AAR] : [AAR];
+    });
 }

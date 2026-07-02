@@ -1,0 +1,74 @@
+@use 'styles/theme-helpers' as th;
+@use 'styles/variables' as v;
+
+:host ::ng-deep app-full-content-area {
+    display: flex;
+    flex-direction: column;
+    gap: v.$spacing-8px;
+}
+
+.detail-top {
+    display: flex;
+    align-items: center;
+    gap: v.$spacing-8px;
+    margin-top: v.$spacing-4px;
+
+    .back-button {
+        margin-left: -8px;
+    }
+
+    h2 {
+        margin: 0;
+        font-size: 21px;
+        font-weight: 500;
+    }
+
+    .actions {
+        display: flex;
+        align-items: center;
+        gap: v.$spacing-8px;
+
+        .mat-mdc-icon-button {
+            width: 36px !important;
+            height: 36px !important;
+            padding: 6px !important;
+        }
+    }
+}
+
+.spacer {
+    flex: 1;
+}
+
+.mat-mdc-button .mat-icon,
+.mat-mdc-raised-button .mat-icon {
+    margin-right: v.$spacing-8px;
+}
+
+.prose {
+    display: block;
+    background: var(--uksf-dark-card);
+    border: 1px solid th.fg-divider();
+    border-radius: 6px;
+    padding: v.$spacing-16px;
+    color: th.fg-secondary-text();
+    font-size: 13.5px;
+    line-height: 1.6;
+
+    ::ng-deep p {
+        margin: 0 0 v.$spacing-8px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    ::ng-deep b {
+        color: th.fg-base();
+    }
+}
+
+.empty {
+    color: th.fg-hint-text();
+    font-size: 13px;
+}

@@ -13,7 +13,7 @@ import { FullContentAreaComponent } from '@app/shared/components/content-areas/f
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { capitaliseMapName, mapBorderColour, mapTokenFromMission } from '../../utils/map-colour';
-import { Campaign, IntelPage, IntelScope, MissionFileState, OpDto, OpStatus } from '../../models/campaign';
+import { Campaign, CampaignStatus, IntelPage, IntelScope, MissionFileState, OpDto, OpStatus } from '../../models/campaign';
 import { CampaignsService } from '../../services/campaigns.service';
 import { GameServersService } from '../../services/game-servers.service';
 import { IntelModalComponent } from '../../modals/intel-modal/intel-modal.component';
@@ -46,6 +46,7 @@ export class OperationsOpDetailComponent {
 
     readonly OpStatus = OpStatus;
     readonly MissionFileState = MissionFileState;
+    readonly CampaignStatus = CampaignStatus;
 
     campaignId = '';
     opId = '';
@@ -135,12 +136,12 @@ export class OperationsOpDetailComponent {
             });
     }
 
+    openWarno() {
+        this.router.navigate(['warno'], { relativeTo: this.route });
+    }
+
     openIntel(page: IntelPage) {
-        this.dialog
-            .open(IntelModalComponent, { data: { scope: IntelScope.Op, ownerId: this.opId, page } })
-            .afterClosed()
-            .pipe(first())
-            .subscribe({ next: (saved) => saved && this.load() });
+        this.router.navigate(['intel', page.id], { relativeTo: this.route });
     }
 
     deleteIntel(page: IntelPage) {

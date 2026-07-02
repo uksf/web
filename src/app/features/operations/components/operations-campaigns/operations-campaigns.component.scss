@@ -71,7 +71,19 @@
         top: 0;
         bottom: 0;
         width: 3px;
-        background: var(--stripe, var(--mat-sys-outline-variant));
+        background: var(--mat-sys-outline-variant);
+    }
+
+    &.current::before {
+        background: color-mix(in srgb, var(--uksf-accent) 70%, white 30%);
+    }
+
+    &.upcoming::before {
+        background: #6fb87a;
+    }
+
+    &.past::before {
+        background: th.fg-hint-text();
     }
 
     &:hover {
@@ -107,17 +119,42 @@
         font-size: 15px;
     }
 
-    .sub {
-        color: th.fg-secondary-text();
-        font-size: 12.5px;
-        margin-top: 2px;
-
-        &.muted {
-            color: th.fg-hint-text();
-        }
-    }
-
     .chev {
         color: th.fg-hint-text();
+    }
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: v.$spacing-8px;
+}
+
+.sec {
+    display: flex;
+    align-items: center;
+    gap: v.$spacing-12px;
+
+    h3 {
+        margin: 0;
+        font-size: 13px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: th.fg-secondary-text();
+        font-weight: 700;
+    }
+
+    .rule {
+        flex: 1;
+        height: 1px;
+        background: th.fg-divider();
+    }
+}
+
+.cards.muted .campaign-card {
+    opacity: 0.6;
+
+    &:hover {
+        opacity: 1;
     }
 }

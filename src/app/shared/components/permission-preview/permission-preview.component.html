@@ -1,0 +1,17 @@
+@if (open) {
+    <div class="panel">
+        <div class="head">
+            <span class="title">Preview perms</span>
+            <button class="icon" (click)="toggleOpen()" title="Close"><mat-icon>close</mat-icon></button>
+        </div>
+        <div class="roles">
+            @for (role of roles; track role) {
+                <button class="role" [class.on]="isActive(role)" (click)="toggle(role)">{{ role }}</button>
+            }
+        </div>
+        <button class="reset" (click)="reset()">Reset to my perms</button>
+        <p class="note">Dev only. Changes what the UI shows; the API still enforces your real token. Route guards may redirect.</p>
+    </div>
+} @else {
+    <button class="fab" (click)="toggleOpen()" title="Preview permissions"><mat-icon>visibility</mat-icon></button>
+}

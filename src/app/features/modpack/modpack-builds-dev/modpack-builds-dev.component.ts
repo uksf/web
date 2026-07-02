@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { MarkdownComponent } from 'ngx-markdown';
 import { parseMarkdownSync } from '../markdown-utils';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Permissions } from '@app/core/services/permissions';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { ThemeEmitterComponent } from '@app/shared/components/elements/theme-emitter/theme-emitter.component';
 import { ModpackBuildResult } from '../models/modpack-build-result';
@@ -75,7 +76,7 @@ export class ModpackBuildsDevComponent implements OnInit, OnDestroy {
             }
         );
 
-        if (this.permissions.hasPermission('TESTER')) {
+        if (this.permissions.hasPermission(Permissions.ADMIN)) {
             this.modpackBuildProcessService.getBranches();
         }
     }

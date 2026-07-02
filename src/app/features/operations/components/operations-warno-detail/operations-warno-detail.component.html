@@ -1,0 +1,33 @@
+<app-default-content-areas>
+    <app-full-content-area>
+        @if (dto) {
+            <div class="detail-top">
+                <button mat-icon-button class="back-button" [routerLink]="backLink" [matTooltip]="'Back to ' + dto.op.title"><mat-icon>arrow_back</mat-icon></button>
+                <h2>{{ dto.op.title }} · WARNO</h2>
+                <span class="spacer"></span>
+                <div class="actions">
+                    @if (editing) {
+                        <app-button [secondary]="true" (clicked)="cancelEdit()">Cancel</app-button>
+                        <app-button (clicked)="save()" [pending]="pending">Save</app-button>
+                    } @else {
+                        <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                            <button mat-raised-button (click)="edit()"><mat-icon>edit</mat-icon> Edit</button>
+                        </ng-template>
+                    }
+                </div>
+            </div>
+
+            @if (editing) {
+                <quill-editor [(ngModel)]="draft" format="json" [modules]="quillModules" placeholder="Warning order…"></quill-editor>
+            } @else if (dto.op.warno) {
+                <quill-view class="prose" [content]="dto.op.warno" format="json"></quill-view>
+            } @else {
+                <div class="empty-state">
+                    <p class="empty">No WARNO yet</p>
+                </div>
+            }
+        } @else {
+            <p class="empty">Loading…</p>
+        }
+    </app-full-content-area>
+</app-default-content-areas>

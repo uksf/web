@@ -213,9 +213,15 @@ describe('OperationsMissionsComponent', () => {
 
             const createObjectURL = vi.fn().mockReturnValue('blob:test');
             const revokeObjectURL = vi.fn();
-            (globalThis as any).URL = { createObjectURL, revokeObjectURL };
+            // Stub URL.* without clobbering the real global — deleting URL breaks
+            // Node's lazily-loaded undici (fetch) for the rest of the file.
+            const originalCreate = URL.createObjectURL;
+            const originalRevoke = URL.revokeObjectURL;
+            URL.createObjectURL = createObjectURL;
+            URL.revokeObjectURL = revokeObjectURL;
 
             const mockAnchor = { href: '', download: '', click: vi.fn() };
+            const originalDocument = (globalThis as any).document;
             (globalThis as any).document = { createElement: vi.fn().mockReturnValue(mockAnchor) };
 
             component.download(mission);
@@ -226,8 +232,13 @@ describe('OperationsMissionsComponent', () => {
             expect(mockAnchor.click).toHaveBeenCalled();
             expect(revokeObjectURL).toHaveBeenCalledWith('blob:test');
 
-            delete (globalThis as any).URL;
-            delete (globalThis as any).document;
+            URL.createObjectURL = originalCreate;
+            URL.revokeObjectURL = originalRevoke;
+            if (originalDocument === undefined) {
+                delete (globalThis as any).document;
+            } else {
+                (globalThis as any).document = originalDocument;
+            }
         });
     });
 

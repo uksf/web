@@ -7,30 +7,15 @@
     gap: v.$spacing-8px;
 }
 
-.back {
-    display: inline-flex;
-    align-items: center;
-    gap: v.$spacing-4px;
-    color: th.fg-secondary-text();
-    text-decoration: none;
-    font-size: 13px;
-
-    mat-icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
-    }
-
-    &:hover {
-        color: th.fg-base();
-    }
-}
-
 .detail-top {
     display: flex;
     align-items: center;
-    gap: v.$spacing-12px;
+    gap: v.$spacing-8px;
     margin-top: v.$spacing-4px;
+
+    .back-button {
+        margin-left: -8px;
+    }
 
     h2 {
         margin: 0;
@@ -40,12 +25,33 @@
 
     .actions {
         display: flex;
+        align-items: center;
         gap: v.$spacing-8px;
+
+        .mat-mdc-icon-button {
+            width: 36px !important;
+            height: 36px !important;
+            padding: 6px !important;
+        }
+
+        .launch-btn {
+            background: th.primary();
+            color: th.primary-contrast();
+
+            &:hover {
+                background: color-mix(in srgb, th.primary() 85%, black);
+            }
+        }
     }
 }
 
 .spacer {
     flex: 1;
+}
+
+.mat-mdc-button .mat-icon,
+.mat-mdc-raised-button .mat-icon {
+    margin-right: v.$spacing-8px;
 }
 
 .metaline {
@@ -170,6 +176,7 @@
 }
 
 .prose {
+    display: block;
     background: var(--uksf-dark-card);
     border: 1px solid th.fg-divider();
     border-radius: 6px;
@@ -188,6 +195,53 @@
 
     ::ng-deep b {
         color: th.fg-base();
+    }
+}
+
+.warno-preview {
+    position: relative;
+    max-height: 140px;
+    overflow: hidden;
+    cursor: pointer;
+    border-radius: 6px;
+    user-select: none;
+
+    &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 40px;
+        background: linear-gradient(to bottom, transparent, var(--uksf-dark-card));
+    }
+
+    &:hover .prose {
+        background: var(--uksf-selected);
+    }
+
+    ::ng-deep .ql-editor,
+    ::ng-deep .ql-editor * {
+        cursor: pointer !important;
+    }
+
+    &.empty-state {
+        background: var(--uksf-dark-card);
+        border: 1px dashed th.fg-divider();
+        padding: v.$spacing-16px;
+        max-height: none;
+
+        &::after {
+            display: none;
+        }
+
+        &:hover {
+            background: var(--uksf-selected);
+        }
+
+        .empty {
+            margin: 0;
+        }
     }
 }
 

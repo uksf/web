@@ -13,11 +13,18 @@ export interface GameServerStatus {
     startedAt: string | null;
 }
 
+export enum GameServerOption {
+    None = 0,
+    Singleton = 1,
+    Dcg = 2
+}
+
 export interface GameServer {
     id: string;
     name: string;
     launchedBy: string;
     status: GameServerStatus;
+    serverOption?: GameServerOption;
     logSources?: RptLogSource[];
     missionSelection?: IDropdownElement;
     statusText?: string;

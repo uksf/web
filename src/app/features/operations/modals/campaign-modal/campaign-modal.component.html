@@ -2,15 +2,13 @@
 <mat-dialog-content>
     <form>
         <app-text-input label="Name" [(ngModel)]="model.name" name="name" id="name" [required]="true"></app-text-input>
-        <app-text-input label="Theatre" [(ngModel)]="model.theatre" name="theatre" id="theatre" hint="Used for the card colour/label (e.g. Takistan)"></app-text-input>
         <app-dropdown [(ngModel)]="statusValue" [elements]="statusElements" [elementName]="'Status'" [placeholder]="'Status'" name="status" id="status" [autocomplete]="false">
             <ng-template #element let-element>{{ element.displayValue }}</ng-template>
         </app-dropdown>
-        <span class="field-label">Brief</span>
-        <quill-editor [(ngModel)]="model.brief" name="brief" format="json" [modules]="quillModules" placeholder="Campaign brief…"></quill-editor>
+        <span class="field-label">Summary</span>
+        <quill-editor [(ngModel)]="model.summary" name="summary" format="json" [modules]="quillModules" placeholder="Campaign summary…"></quill-editor>
     </form>
 </mat-dialog-content>
 <mat-dialog-actions>
-    <app-button (clicked)="cancel()" [secondary]="true">Cancel</app-button>
     <app-button (clicked)="submit()" [disabled]="!model.name" [pending]="pending">{{ isEdit ? 'Save' : 'Create' }}</app-button>
 </mat-dialog-actions>

@@ -34,6 +34,10 @@ export class CampaignsService {
         return this.http.get<OpDto[]>(`${this.urls.apiUrl}/ops?campaignId=${campaignId}`);
     }
 
+    getAllOps(): Observable<OpDto[]> {
+        return this.http.get<OpDto[]>(`${this.urls.apiUrl}/ops`);
+    }
+
     getOp(id: string): Observable<OpDto> {
         return this.http.get<OpDto>(`${this.urls.apiUrl}/ops/${id}`);
     }

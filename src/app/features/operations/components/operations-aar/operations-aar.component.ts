@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-operations-aar',
@@ -6,5 +8,14 @@ import { Component } from '@angular/core';
     styleUrls: ['../operations-page/operations-page.component.scss', './operations-aar.component.scss']
 })
 export class OperationsAarComponent {
-    constructor() {}
+    private route = inject(ActivatedRoute);
+    private sanitizer = inject(DomSanitizer);
+
+    aarUrl: SafeResourceUrl;
+
+    constructor() {
+        const session = this.route.snapshot.queryParamMap.get('session');
+        const url = session ? `https://aar.uk-sf.co.uk/?session=${session}` : 'https://aar.uk-sf.co.uk';
+        this.aarUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    }
 }

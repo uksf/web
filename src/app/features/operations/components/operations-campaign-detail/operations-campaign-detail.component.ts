@@ -52,6 +52,17 @@ export class OperationsCampaignDetailComponent {
     ops: OpDto[] = [];
     intel: IntelPage[] = [];
 
+    get statusLabel(): string {
+        switch (this.campaign?.status) {
+            case CampaignStatus.Current:
+                return 'Current';
+            case CampaignStatus.Upcoming:
+                return 'Upcoming';
+            default:
+                return 'Past';
+        }
+    }
+
     constructor() {
         this.campaignId = this.route.snapshot.paramMap.get('id') ?? '';
         this.load();
@@ -63,7 +74,7 @@ export class OperationsCampaignDetailComponent {
         this.campaignsService.getIntel(IntelScope.Campaign, this.campaignId).pipe(first()).subscribe({ next: (intel) => (this.intel = intel) });
     }
 
-    stripe(op: Op): string {
+    mapColour(op: Op): string {
         return mapBorderColour(mapTokenFromMission(op.missionName));
     }
 
@@ -123,6 +134,10 @@ export class OperationsCampaignDetailComponent {
             .subscribe({ next: (confirmed) => confirmed && this.campaignsService.deleteCampaign(this.campaignId).pipe(first()).subscribe({ next: () => this.router.navigate(['/operations/campaigns']) }) });
     }
 
+    openOp(dto: OpDto) {
+        this.router.navigate(['ops', dto.op.id], { relativeTo: this.route });
+    }
+
     editOp(dto: OpDto) {
         this.dialog
             .open(OpModalComponent, { data: { campaignId: this.campaignId, op: dto.op } })
@@ -140,11 +155,7 @@ export class OperationsCampaignDetailComponent {
     }
 
     openIntel(page: IntelPage) {
-        this.dialog
-            .open(IntelModalComponent, { data: { scope: IntelScope.Campaign, ownerId: this.campaignId, page } })
-            .afterClosed()
-            .pipe(first())
-            .subscribe({ next: (saved) => saved && this.load() });
+        this.router.navigate(['intel', page.id], { relativeTo: this.route });
     }
 
     deleteIntel(page: IntelPage) {

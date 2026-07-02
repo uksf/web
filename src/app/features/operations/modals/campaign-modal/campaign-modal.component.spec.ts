@@ -28,32 +28,32 @@ describe('CampaignModalComponent', () => {
 
     afterEach(() => TestBed.resetTestingModule());
 
-    it('create mode defaults to Active', () => {
+    it('create mode defaults to Upcoming', () => {
         setup(null);
-        expect(component.model.status).toBe(CampaignStatus.Active);
+        expect(component.model.status).toBe(CampaignStatus.Upcoming);
         expect(component.isEdit).toBe(false);
     });
 
     it('edit mode prefills from data', () => {
-        setup({ campaign: { id: 'c1', name: 'Iron Sky', brief: '<p>b</p>', status: CampaignStatus.Archived, theatre: 'takistan' } });
+        setup({ campaign: { id: 'c1', name: 'Iron Sky', summary: '<p>b</p>', status: CampaignStatus.Past } });
         expect(component.isEdit).toBe(true);
         expect(component.model.name).toBe('Iron Sky');
-        expect(component.model.status).toBe(CampaignStatus.Archived);
+        expect(component.model.status).toBe(CampaignStatus.Past);
     });
 
-    it('submit (create) calls addCampaign with Active status then closes true', () => {
+    it('submit (create) calls addCampaign with Upcoming status then closes true', () => {
         setup(null);
         component.model.name = 'New';
         component.submit();
-        expect(service.addCampaign).toHaveBeenCalledWith(expect.objectContaining({ status: CampaignStatus.Active }));
+        expect(service.addCampaign).toHaveBeenCalledWith(expect.objectContaining({ status: CampaignStatus.Upcoming }));
         expect(dialogRef.close).toHaveBeenCalledWith(true);
     });
 
-    it('submit (edit) calls updateCampaign with Archived status', () => {
-        setup({ campaign: { id: 'c1', name: 'Iron Sky', brief: '', status: CampaignStatus.Active } });
-        component.statusValue = component.statusOptions.find((o) => o.value === String(CampaignStatus.Archived));
+    it('submit (edit) calls updateCampaign with the chosen status', () => {
+        setup({ campaign: { id: 'c1', name: 'Iron Sky', summary: '', status: CampaignStatus.Upcoming } });
+        component.statusValue = component.statusOptions.find((o) => o.value === String(CampaignStatus.Current));
         component.submit();
-        expect(service.updateCampaign).toHaveBeenCalledWith(expect.objectContaining({ status: CampaignStatus.Archived }));
+        expect(service.updateCampaign).toHaveBeenCalledWith(expect.objectContaining({ status: CampaignStatus.Current }));
         expect(dialogRef.close).toHaveBeenCalledWith(true);
     });
 });

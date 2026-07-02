@@ -7,6 +7,5 @@
     </form>
 </mat-dialog-content>
 <mat-dialog-actions>
-    <app-button (clicked)="cancel()" [secondary]="true">Cancel</app-button>
     <app-button (clicked)="submit()" [disabled]="!model.title" [pending]="pending">{{ isEdit ? 'Save' : 'Create' }}</app-button>
 </mat-dialog-actions>

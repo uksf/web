@@ -58,8 +58,4 @@ export class IntelModalComponent {
             }
         });
     }
-
-    cancel() {
-        this.dialogRef.close();
-    }
 }

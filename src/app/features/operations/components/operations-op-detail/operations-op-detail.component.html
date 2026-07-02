@@ -1,29 +1,30 @@
 <app-default-content-areas>
     <app-full-content-area>
         @if (campaign && dto) {
-            <a class="back" [routerLink]="['/operations/campaigns', campaign.id]"><mat-icon>chevron_left</mat-icon> {{ campaign.name }}</a>
-
             <div class="detail-top">
+                <button mat-icon-button class="back-button" [routerLink]="['/operations/campaigns', campaign.id]" [matTooltip]="'Back to ' + campaign.name"><mat-icon>arrow_back</mat-icon></button>
                 <h2>{{ dto.op.title }}</h2>
                 <span class="pill" [class.scheduled]="dto.op.status === OpStatus.Scheduled" [class.complete]="dto.op.status === OpStatus.Complete">
                     <span class="dot"></span>{{ dto.op.status === OpStatus.Complete ? 'Complete' : 'Scheduled' }}
                 </span>
                 <span class="spacer"></span>
                 <div class="actions">
-                    <ng-template [ngxPermissionsOnly]="['COMMAND']">
-                        <button mat-raised-button (click)="editOp()"><mat-icon>edit</mat-icon> Edit</button>
-                        <button mat-icon-button (click)="deleteOp()" matTooltip="Delete op"><mat-icon>delete</mat-icon></button>
-                    </ng-template>
                     @if (dto.op.status === OpStatus.Scheduled) {
                         <ng-template [ngxPermissionsOnly]="['NCO', 'SERVERS', 'COMMAND']">
-                            <button mat-raised-button color="primary" [disabled]="dto.missionFileState === MissionFileState.Missing" (click)="launch()">
-                                <mat-icon>play_arrow</mat-icon> Launch
+                            <button mat-icon-button class="launch-btn" (click)="launch()" matTooltip="Launch">
+                                <mat-icon>play_arrow</mat-icon>
                             </button>
                         </ng-template>
                     } @else if (dto.op.sessionId) {
-                        <a mat-raised-button color="primary" [href]="'https://aar.uk-sf.co.uk/?session=' + dto.op.sessionId" target="_blank" rel="noopener">
-                            <mat-icon>open_in_new</mat-icon> AAR
+                        <a mat-raised-button color="primary" [routerLink]="['/operations/aar']" [queryParams]="{ session: dto.op.sessionId }">
+                            <mat-icon>article</mat-icon> AAR
                         </a>
+                    }
+                    @if (dto.op.status === OpStatus.Scheduled) {
+                        <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                            <button mat-raised-button (click)="editOp()"><mat-icon>edit</mat-icon> Edit</button>
+                            <button mat-icon-button (click)="deleteOp()" matTooltip="Delete op"><mat-icon>delete</mat-icon></button>
+                        </ng-template>
                     }
                 </div>
             </div>
@@ -32,22 +33,31 @@
                 <span class="m"><mat-icon>event</mat-icon>{{ dto.op.scheduledTime | date: 'EEE d MMM, HH:mm' }}</span>
                 <span class="dotsep">·</span>
                 <span class="m"><mat-icon>dns</mat-icon>{{ serverName }}</span>
-                @if (mapName) {
+                @if (mapName && dto.missionFileState === MissionFileState.Present) {
                     <span class="dotsep">·</span>
                     <span class="m"><span class="swatch" [style.background]="stripe"></span>{{ mapName }}</span>
                 }
                 <span class="dotsep">·</span>
                 @if (dto.op.missionName) {
-                    <span class="m mission" [class.missing]="dto.missionFileState === MissionFileState.Missing">
-                        <mat-icon>{{ dto.missionFileState === MissionFileState.Missing ? 'warning' : 'description' }}</mat-icon>{{ dto.op.missionName }}
-                    </span>
+                    <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                        <span class="m mission" [class.missing]="dto.missionFileState === MissionFileState.Missing && dto.op.status === OpStatus.Scheduled">
+                            <mat-icon>{{ dto.missionFileState === MissionFileState.Missing && dto.op.status === OpStatus.Scheduled ? 'warning' : 'description' }}</mat-icon>{{ dto.op.missionName }}
+                        </span>
+                    </ng-template>
+                    <ng-template [ngxPermissionsExcept]="['COMMAND']">
+                        <span class="m mission"><mat-icon>description</mat-icon>{{ dto.op.missionName }}</span>
+                    </ng-template>
                 } @else {
-                    <span class="m mission missing"><mat-icon>warning</mat-icon>No mission assigned</span>
+                    <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                        <span class="m mission missing"><mat-icon>warning</mat-icon>No mission assigned</span>
+                    </ng-template>
                 }
             </div>
 
-            @if (dto.missionFileState === MissionFileState.Missing) {
-                <div class="warn-banner"><mat-icon>warning</mat-icon> The mission file for this op is missing — re-assign or restore it before launching.</div>
+            @if (dto.missionFileState === MissionFileState.Missing && dto.op.status === OpStatus.Scheduled) {
+                <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                    <div class="warn-banner"><mat-icon>warning</mat-icon> The mission file for this op is missing. Re-assign or restore it before launching</div>
+                </ng-template>
             }
 
             <div class="sec">
@@ -55,17 +65,23 @@
                 <span class="rule"></span>
             </div>
             @if (dto.op.warno) {
-                <quill-view class="prose" [content]="dto.op.warno" format="json"></quill-view>
+                <div class="warno-preview" (click)="openWarno()">
+                    <quill-view class="prose" [content]="dto.op.warno" format="json"></quill-view>
+                </div>
             } @else {
-                <p class="empty">No WARNO yet</p>
+                <div class="warno-preview empty-state" (click)="openWarno()">
+                    <p class="empty">No WARNO yet</p>
+                </div>
             }
 
             <div class="sec">
                 <h3>Intel</h3>
                 <span class="rule"></span>
-                <ng-template [ngxPermissionsOnly]="['COMMAND']">
-                    <a mat-button color="primary" (click)="createIntel()"><mat-icon>add</mat-icon> Intel page</a>
-                </ng-template>
+                @if (campaign.status !== CampaignStatus.Past) {
+                    <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                        <a mat-flat-button color="primary" (click)="createIntel()">Add Intel</a>
+                    </ng-template>
+                }
             </div>
             <div class="cards">
                 @for (page of intel; track page.id) {

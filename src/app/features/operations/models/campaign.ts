@@ -1,6 +1,7 @@
 export enum CampaignStatus {
-    Active = 0,
-    Archived = 1
+    Current = 0,
+    Past = 1,
+    Upcoming = 2
 }
 
 export enum OpStatus {
@@ -21,9 +22,8 @@ export enum MissionFileState {
 export interface Campaign {
     id: string;
     name: string;
-    brief: string;
+    summary: string;
     status: CampaignStatus;
-    theatre?: string;
     start?: string;
     end?: string;
 }

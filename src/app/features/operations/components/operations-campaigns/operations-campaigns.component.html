@@ -4,25 +4,38 @@
             <h2>Campaigns</h2>
             <span class="spacer"></span>
             <ng-template [ngxPermissionsOnly]="['COMMAND']">
-                <button mat-raised-button color="primary" (click)="createCampaign()"><mat-icon>add</mat-icon> New campaign</button>
+                <button mat-raised-button color="primary" (click)="createCampaign()">New campaign</button>
             </ng-template>
         </div>
 
-        <div class="cards">
-            @for (campaign of campaigns; track campaign.id) {
-                <a class="campaign-card" [routerLink]="[campaign.id]" [style.--stripe]="stripe(campaign)">
-                    @if (campaign.theatre) {
-                        <span class="theatre">{{ theatre(campaign) }}</span>
+        @for (section of sections; track section.title) {
+            <div class="section">
+                <div class="sec">
+                    <h3>{{ section.title }}</h3>
+                    <span class="rule"></span>
+                </div>
+                <div class="cards" [class.muted]="section.muted">
+                    @for (campaign of section.items; track campaign.id) {
+                        <a
+                            class="campaign-card"
+                            [routerLink]="[campaign.id]"
+                            [class.current]="campaign.status === CampaignStatus.Current"
+                            [class.upcoming]="campaign.status === CampaignStatus.Upcoming"
+                            [class.past]="campaign.status === CampaignStatus.Past"
+                        >
+                            @if (theatre(campaign)) {
+                                <span class="theatre">{{ theatre(campaign) }}</span>
+                            }
+                            <div class="grow">
+                                <div class="title">{{ campaign.name }}</div>
+                            </div>
+                            <mat-icon class="chev">chevron_right</mat-icon>
+                        </a>
                     }
-                    <div class="grow">
-                        <div class="title">{{ campaign.name }}</div>
-                        <div class="sub" [class.muted]="summary(campaign) === 'Archived'">{{ summary(campaign) }}</div>
-                    </div>
-                    <mat-icon class="chev">chevron_right</mat-icon>
-                </a>
-            } @empty {
-                <p class="empty">No campaigns yet</p>
-            }
-        </div>
+                </div>
+            </div>
+        } @empty {
+            <p class="empty">No campaigns yet</p>
+        }
     </app-full-content-area>
 </app-default-content-areas>

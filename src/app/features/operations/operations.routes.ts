@@ -1,6 +1,8 @@
+import { inject } from '@angular/core';
 import { Routes } from '@angular/router';
 import { NgxPermissionsGuard } from 'ngx-permissions';
 import { Permissions } from '@app/core/services/permissions';
+import { PermissionsService } from '@app/core/services/permissions.service';
 import { loginRedirect } from '@app/login-redirect';
 import { OperationsPageComponent } from './components/operations-page/operations-page.component';
 import { OperationsServersComponent } from './components/operations-servers/operations-servers.component';
@@ -10,6 +12,8 @@ import { OperationsNpcsComponent } from './components/operations-npcs/operations
 import { OperationsCampaignsComponent } from './components/operations-campaigns/operations-campaigns.component';
 import { OperationsCampaignDetailComponent } from './components/operations-campaign-detail/operations-campaign-detail.component';
 import { OperationsOpDetailComponent } from './components/operations-op-detail/operations-op-detail.component';
+import { OperationsIntelDetailComponent } from './components/operations-intel-detail/operations-intel-detail.component';
+import { OperationsWarnoDetailComponent } from './components/operations-warno-detail/operations-warno-detail.component';
 import { NpcVoicesService } from './services/npc-voices.service';
 export const OPERATIONS_ROUTES: Routes = [
     {
@@ -18,7 +22,7 @@ export const OPERATIONS_ROUTES: Routes = [
         children: [
             {
                 path: '',
-                redirectTo: 'servers',
+                redirectTo: () => (inject(PermissionsService).hasPermission(Permissions.TESTER) ? 'campaigns' : 'servers'),
                 pathMatch: 'full'
             },
             { path: 'activity', redirectTo: 'aar' },
@@ -77,9 +81,9 @@ export const OPERATIONS_ROUTES: Routes = [
                 component: OperationsCampaignsComponent,
                 data: {
                     permissions: {
-                        only: Permissions.MEMBER,
+                        only: Permissions.TESTER,
                         except: Permissions.UNLOGGED,
-                        redirectTo: { UNLOGGED: loginRedirect, default: '/home' }
+                        redirectTo: { UNLOGGED: loginRedirect, default: '/operations/aar' }
                     }
                 },
                 canActivate: [NgxPermissionsGuard]
@@ -89,9 +93,9 @@ export const OPERATIONS_ROUTES: Routes = [
                 component: OperationsCampaignDetailComponent,
                 data: {
                     permissions: {
-                        only: Permissions.MEMBER,
+                        only: Permissions.TESTER,
                         except: Permissions.UNLOGGED,
-                        redirectTo: { UNLOGGED: loginRedirect, default: '/home' }
+                        redirectTo: { UNLOGGED: loginRedirect, default: '/operations/aar' }
                     }
                 },
                 canActivate: [NgxPermissionsGuard]
@@ -101,9 +105,45 @@ export const OPERATIONS_ROUTES: Routes = [
                 component: OperationsOpDetailComponent,
                 data: {
                     permissions: {
-                        only: Permissions.MEMBER,
+                        only: Permissions.TESTER,
                         except: Permissions.UNLOGGED,
-                        redirectTo: { UNLOGGED: loginRedirect, default: '/home' }
+                        redirectTo: { UNLOGGED: loginRedirect, default: '/operations/aar' }
+                    }
+                },
+                canActivate: [NgxPermissionsGuard]
+            },
+            {
+                path: 'campaigns/:id/intel/:intelId',
+                component: OperationsIntelDetailComponent,
+                data: {
+                    permissions: {
+                        only: Permissions.TESTER,
+                        except: Permissions.UNLOGGED,
+                        redirectTo: { UNLOGGED: loginRedirect, default: '/operations/aar' }
+                    }
+                },
+                canActivate: [NgxPermissionsGuard]
+            },
+            {
+                path: 'campaigns/:id/ops/:opId/intel/:intelId',
+                component: OperationsIntelDetailComponent,
+                data: {
+                    permissions: {
+                        only: Permissions.TESTER,
+                        except: Permissions.UNLOGGED,
+                        redirectTo: { UNLOGGED: loginRedirect, default: '/operations/aar' }
+                    }
+                },
+                canActivate: [NgxPermissionsGuard]
+            },
+            {
+                path: 'campaigns/:id/ops/:opId/warno',
+                component: OperationsWarnoDetailComponent,
+                data: {
+                    permissions: {
+                        only: Permissions.TESTER,
+                        except: Permissions.UNLOGGED,
+                        redirectTo: { UNLOGGED: loginRedirect, default: '/operations/aar' }
                     }
                 },
                 canActivate: [NgxPermissionsGuard]

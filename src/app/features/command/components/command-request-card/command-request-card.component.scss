@@ -7,12 +7,20 @@
 }
 
 .request-card {
+    position: relative;
     padding: 0;
     overflow: hidden;
-    border-left: 3px solid var(--type);
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
     container-type: inline-size;
+
+    &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: var(--type);
+    }
 }
 
 .header-row {

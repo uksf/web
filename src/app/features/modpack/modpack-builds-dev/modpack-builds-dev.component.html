@@ -4,7 +4,7 @@
         @if (builds) {
         <div class="flex-container no-padding-left">
             <div class="build-item-container">
-                <ng-template [ngxPermissionsOnly]="['TESTER']">
+                <ng-template [ngxPermissionsOnly]="['ADMIN']">
                     <div class="new-button">
                         <button mat-raised-button color="primary" (click)="newBuild()" [disabled]="branches.length === 0">New</button>
                         <button mat-icon-button (click)="newBuild()" [disabled]="branches.length === 0" color="primary">
@@ -52,7 +52,7 @@
                             }
                         </div>
                         <app-flex-filler></app-flex-filler>
-                        <ng-template [ngxPermissionsOnly]="['TESTER']">
+                        <ng-template [ngxPermissionsOnly]="['ADMIN']">
                             @if (!selectedBuild.finished && !cancelling) {
                             <button mat-raised-button color="primary" (click)="cancelBuild()">Cancel Build</button>
                             } @if (canRebuild()) {

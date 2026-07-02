@@ -1,71 +1,80 @@
 <app-default-content-areas>
     <app-full-content-area>
         @if (campaign) {
-            <a class="back" routerLink="/operations/campaigns"><mat-icon>chevron_left</mat-icon> Campaigns</a>
-
             <div class="detail-top">
+                <button mat-icon-button class="back-button" routerLink="/operations/campaigns" matTooltip="Back to campaigns"><mat-icon>arrow_back</mat-icon></button>
                 <h2>{{ campaign.name }}</h2>
-                <span class="pill" [class.complete]="campaign.status === CampaignStatus.Archived" [class.scheduled]="campaign.status === CampaignStatus.Active">
-                    <span class="dot"></span>{{ campaign.status === CampaignStatus.Archived ? 'Archived' : 'Active' }}
+                <span
+                    class="pill"
+                    [class.current]="campaign.status === CampaignStatus.Current"
+                    [class.upcoming]="campaign.status === CampaignStatus.Upcoming"
+                    [class.past]="campaign.status === CampaignStatus.Past"
+                >
+                    <span class="dot"></span>{{ statusLabel }}
                 </span>
                 <span class="spacer"></span>
-                <ng-template [ngxPermissionsOnly]="['COMMAND']">
-                    <button mat-raised-button (click)="editCampaign()"><mat-icon>edit</mat-icon> Edit</button>
-                    <button mat-icon-button (click)="deleteCampaign()" matTooltip="Delete campaign"><mat-icon>delete</mat-icon></button>
-                </ng-template>
+                <div class="actions">
+                    <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                        <button mat-raised-button (click)="editCampaign()"><mat-icon>edit</mat-icon> Edit</button>
+                        <button mat-icon-button (click)="deleteCampaign()" matTooltip="Delete campaign"><mat-icon>delete</mat-icon></button>
+                    </ng-template>
+                </div>
             </div>
 
-            @if (campaign.brief) {
-                <quill-view class="prose" [content]="campaign.brief" format="json"></quill-view>
+            @if (campaign.summary) {
+                <quill-view class="prose" [content]="campaign.summary" format="json"></quill-view>
             } @else {
-                <p class="empty">No brief yet</p>
+                <p class="empty">No summary yet</p>
             }
 
             <div class="sec">
                 <h3>Operations</h3>
                 <span class="rule"></span>
-                <ng-template [ngxPermissionsOnly]="['COMMAND']">
-                    <a mat-button color="primary" (click)="createOp()"><mat-icon>add</mat-icon> New op</a>
-                </ng-template>
+                @if (campaign.status !== CampaignStatus.Past) {
+                    <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                        <a mat-flat-button color="primary" (click)="createOp()">New op</a>
+                    </ng-template>
+                }
             </div>
 
             <div class="cards">
                 @for (dto of ops; track dto.op.id) {
-                    <div class="op-card" [style.--stripe]="stripe(dto.op)">
+                    <div class="op-card" [class.scheduled]="dto.op.status === OpStatus.Scheduled" [class.complete]="dto.op.status === OpStatus.Complete" (click)="openOp(dto)">
                         <span class="pill" [class.scheduled]="dto.op.status === OpStatus.Scheduled" [class.complete]="dto.op.status === OpStatus.Complete">
                             <span class="dot"></span>{{ dto.op.status === OpStatus.Complete ? 'Complete' : 'Scheduled' }}
                         </span>
-                        <a class="op-main" [routerLink]="['ops', dto.op.id]">
+                        <div class="op-main">
                             <div class="title">{{ dto.op.title }}</div>
                             <div class="meta">
                                 <span class="m"><mat-icon>event</mat-icon>{{ dto.op.scheduledTime | date: 'EEE d MMM, HH:mm' }}</span>
-                                @if (mapName(dto.op)) {
+                                @if (mapName(dto.op) && dto.missionFileState === MissionFileState.Present) {
                                     <span class="dotsep">·</span>
-                                    <span class="m"><span class="swatch" [style.background]="stripe(dto.op)"></span>{{ mapName(dto.op) }}</span>
+                                    <span class="m"><span class="swatch" [style.background]="mapColour(dto.op)"></span>{{ mapName(dto.op) }}</span>
                                 }
-                                @if (dto.missionFileState === MissionFileState.Missing) {
-                                    <span class="warn-chip"><mat-icon>warning</mat-icon> mission file missing</span>
+                                @if (dto.missionFileState === MissionFileState.Missing && dto.op.status === OpStatus.Scheduled) {
+                                    <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                                        <span class="warn-chip"><mat-icon>warning</mat-icon> mission file missing</span>
+                                    </ng-template>
                                 }
                             </div>
-                        </a>
+                        </div>
                         <span class="spacer"></span>
-                        @if (dto.op.status === OpStatus.Scheduled) {
-                            <ng-template [ngxPermissionsOnly]="['NCO', 'SERVERS', 'COMMAND']">
-                                <button mat-raised-button color="primary" [disabled]="dto.missionFileState === MissionFileState.Missing" (click)="launch(dto)">
-                                    <mat-icon>play_arrow</mat-icon> Launch
-                                </button>
-                            </ng-template>
-                        } @else if (dto.op.sessionId) {
-                            <!-- R11: AAR deep-link — verify that aar.uk-sf.co.uk accepts ?session= param; if not, drop to plain https://aar.uk-sf.co.uk/ -->
-                            <a mat-button color="primary" [href]="'https://aar.uk-sf.co.uk/?session=' + dto.op.sessionId" target="_blank" rel="noopener">
-                                <mat-icon>open_in_new</mat-icon> AAR
-                            </a>
-                        }
-                        <ng-template [ngxPermissionsOnly]="['COMMAND']">
-                            <button mat-icon-button (click)="editOp(dto)" matTooltip="Edit op"><mat-icon>edit</mat-icon></button>
-                            <button mat-icon-button (click)="deleteOp(dto)" matTooltip="Delete op"><mat-icon>delete</mat-icon></button>
-                        </ng-template>
-                        <a class="chev" [routerLink]="['ops', dto.op.id]"><mat-icon>chevron_right</mat-icon></a>
+                        <div class="op-actions">
+                            @if (dto.op.status === OpStatus.Scheduled) {
+                                <ng-template [ngxPermissionsOnly]="['NCO', 'SERVERS', 'COMMAND']">
+                                    <button mat-icon-button class="launch-btn" (click)="launch(dto); $event.stopPropagation()" matTooltip="Launch">
+                                        <mat-icon>play_arrow</mat-icon>
+                                    </button>
+                                </ng-template>
+                            }
+                            @if (dto.op.status === OpStatus.Scheduled) {
+                                <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                                    <button mat-icon-button (click)="editOp(dto); $event.stopPropagation()" matTooltip="Edit op"><mat-icon>edit</mat-icon></button>
+                                    <button mat-icon-button (click)="deleteOp(dto); $event.stopPropagation()" matTooltip="Delete op"><mat-icon>delete</mat-icon></button>
+                                </ng-template>
+                            }
+                        </div>
+                        <mat-icon class="chev">chevron_right</mat-icon>
                     </div>
                 } @empty {
                     <p class="empty">No operations yet</p>
@@ -75,9 +84,11 @@
             <div class="sec">
                 <h3>Intel</h3>
                 <span class="rule"></span>
-                <ng-template [ngxPermissionsOnly]="['COMMAND']">
-                    <a mat-button color="primary" (click)="createIntel()"><mat-icon>add</mat-icon> Intel page</a>
-                </ng-template>
+                @if (campaign.status !== CampaignStatus.Past) {
+                    <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                        <a mat-flat-button color="primary" (click)="createIntel()">Add Intel</a>
+                    </ng-template>
+                }
             </div>
             <div class="cards">
                 @for (page of intel; track page.id) {
