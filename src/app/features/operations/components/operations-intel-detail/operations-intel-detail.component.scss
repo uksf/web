@@ -70,5 +70,6 @@
 
 .empty {
     color: th.fg-hint-text();
-    font-size: 13px;
+    font-style: italic;
+    padding: v.$spacing-8px v.$spacing-16px;
 }
