@@ -110,4 +110,42 @@ describe('OpModalComponent', () => {
         );
         expect(dialogRef.close).toHaveBeenCalledWith(true);
     });
+
+    it('create mode advances to the upcoming Saturday from a weekday, before 19:00', () => {
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date(2026, 5, 10, 12, 0, 0)); // Wed 10 June, local noon
+        setup({ campaignId: 'c1' });
+        expect(component.scheduledDate!.getDay()).toBe(6);
+        expect(component.scheduledDate!.getDate()).toBe(13);
+        expect(component.scheduledDate!.getHours()).toBe(19);
+        vi.useRealTimers();
+    });
+
+    it('create mode advances to the upcoming Saturday from a weekday, after 19:00', () => {
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date(2026, 5, 10, 20, 0, 0)); // Wed 10 June, local 20:00
+        setup({ campaignId: 'c1' });
+        expect(component.scheduledDate!.getDay()).toBe(6);
+        expect(component.scheduledDate!.getDate()).toBe(13);
+        expect(component.scheduledDate!.getHours()).toBe(19);
+        vi.useRealTimers();
+    });
+
+    it('create mode uses today when today is Saturday before 19:00', () => {
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date(2026, 5, 13, 12, 0, 0)); // Sat 13 June, local noon
+        setup({ campaignId: 'c1' });
+        expect(component.scheduledDate!.getDate()).toBe(13);
+        expect(component.scheduledDate!.getHours()).toBe(19);
+        vi.useRealTimers();
+    });
+
+    it('create mode rolls to next Saturday when today is Saturday after 19:00', () => {
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date(2026, 5, 13, 20, 0, 0)); // Sat 13 June, local 20:00
+        setup({ campaignId: 'c1' });
+        expect(component.scheduledDate!.getDate()).toBe(20);
+        expect(component.scheduledDate!.getHours()).toBe(19);
+        vi.useRealTimers();
+    });
 });

@@ -98,8 +98,10 @@ export class OpModalComponent {
         const now = new Date();
         const candidate = new Date(now);
         candidate.setHours(19, 0, 0, 0);
+        const daysUntilSaturday = (6 - candidate.getDay() + 7) % 7;
+        candidate.setDate(candidate.getDate() + daysUntilSaturday);
         if (now >= candidate) {
-            candidate.setDate(candidate.getDate() + 1);
+            candidate.setDate(candidate.getDate() + 7);
         }
         return candidate;
     }
