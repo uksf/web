@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, HostListener, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
@@ -52,6 +52,14 @@ export class OperationsCampaignDetailComponent {
     ops: OpDto[] = [];
     intel: IntelPage[] = [];
 
+    shiftHeld = false;
+
+    @HostListener('window:keydown', ['$event'])
+    @HostListener('window:keyup', ['$event'])
+    onKey(event: KeyboardEvent) {
+        this.shiftHeld = event.shiftKey;
+    }
+
     get statusLabel(): string {
         switch (this.campaign?.status) {
             case CampaignStatus.Current:
@@ -80,6 +88,18 @@ export class OperationsCampaignDetailComponent {
 
     mapName(op: Op): string {
         return capitaliseMapName(mapTokenFromMission(op.missionName));
+    }
+
+    isLaunchDisabled(dto: OpDto): boolean {
+        return dto.op.autoLaunch && !this.shiftHeld;
+    }
+
+    launchIcon(dto: OpDto): string {
+        return dto.op.autoLaunch && !this.shiftHeld ? 'schedule' : 'play_arrow';
+    }
+
+    launchTooltip(dto: OpDto): string {
+        return dto.op.autoLaunch && !this.shiftHeld ? 'This op is scheduled to launch automatically. Hold shift to launch now.' : 'Launch';
     }
 
     launch(dto: OpDto) {

@@ -82,6 +82,27 @@ describe('OperationsOpDetailComponent', () => {
         expect(dialog.open).toHaveBeenCalledWith(expect.anything(), { data: { message: 'Boom' } });
     });
 
+    it('isLaunchDisabled getter is true for an autoLaunch op when shift is not held', () => {
+        component.dto = { ...opDto, op: { ...opDto.op, autoLaunch: true } } as any;
+        expect(component.isLaunchDisabled).toBe(true);
+    });
+
+    it('isLaunchDisabled getter becomes false once shift is held', () => {
+        component.dto = { ...opDto, op: { ...opDto.op, autoLaunch: true } } as any;
+        component.onKey({ shiftKey: true } as KeyboardEvent);
+        expect(component.isLaunchDisabled).toBe(false);
+    });
+
+    it('launchIcon getter shows a clock for a disabled auto-launch op', () => {
+        component.dto = { ...opDto, op: { ...opDto.op, autoLaunch: true } } as any;
+        expect(component.launchIcon).toBe('schedule');
+    });
+
+    it('launchTooltip getter explains the hold-shift behaviour only when disabled', () => {
+        component.dto = { ...opDto, op: { ...opDto.op, autoLaunch: true } } as any;
+        expect(component.launchTooltip).toContain('Hold shift');
+    });
+
     it('createIntel opens modal with Op scope and opId', () => {
         component.createIntel();
         expect(dialog.open).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: expect.objectContaining({ scope: IntelScope.Op, ownerId: 'op1' }) }));

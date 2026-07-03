@@ -11,8 +11,8 @@
                 <div class="actions">
                     @if (dto.op.status === OpStatus.Scheduled) {
                         <ng-template [ngxPermissionsOnly]="['NCO', 'SERVERS', 'COMMAND']">
-                            <button mat-icon-button class="launch-btn" (click)="launch()" matTooltip="Launch">
-                                <mat-icon>play_arrow</mat-icon>
+                            <button mat-icon-button class="launch-btn" [disabled]="isLaunchDisabled" (click)="launch()" [matTooltip]="launchTooltip">
+                                <mat-icon>{{ launchIcon }}</mat-icon>
                             </button>
                         </ng-template>
                     } @else if (dto.op.sessionId) {

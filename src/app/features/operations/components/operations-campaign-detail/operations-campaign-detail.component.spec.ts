@@ -18,7 +18,7 @@ describe('OperationsCampaignDetailComponent', () => {
 
     const campaign = { id: 'c1', name: 'Iron Sky', summary: '<p>b</p>', status: CampaignStatus.Current };
     const opDto = {
-        op: { id: 'op1', campaignId: 'c1', title: 'Op 1', scheduledTime: '2026-06-28T18:00:00Z', serverId: 's1', missionName: 'sweep.Altis.pbo', warno: '', status: OpStatus.Scheduled },
+        op: { id: 'op1', campaignId: 'c1', title: 'Op 1', scheduledTime: '2026-06-28T18:00:00Z', serverId: 's1', missionName: 'sweep.Altis.pbo', warno: '', status: OpStatus.Scheduled, autoLaunch: false },
         missionFileState: MissionFileState.Present
     };
     const intelPage = { id: 'i1', scope: IntelScope.Campaign, ownerId: 'c1', title: 'Enemy', body: '' };
@@ -92,6 +92,33 @@ describe('OperationsCampaignDetailComponent', () => {
         service.launchOp.mockReturnValue(throwError(() => ({ error: 'Boom' })));
         component.launch(opDto as any);
         expect(dialog.open).toHaveBeenCalledWith(expect.anything(), { data: { message: 'Boom' } });
+    });
+
+    it('isLaunchDisabled is true for an autoLaunch op when shift is not held', () => {
+        const autoDto = { ...opDto, op: { ...opDto.op, autoLaunch: true } };
+        expect(component.isLaunchDisabled(autoDto as any)).toBe(true);
+    });
+
+    it('isLaunchDisabled becomes false once shift is held', () => {
+        const autoDto = { ...opDto, op: { ...opDto.op, autoLaunch: true } };
+        component.onKey({ shiftKey: true } as KeyboardEvent);
+        expect(component.isLaunchDisabled(autoDto as any)).toBe(false);
+    });
+
+    it('isLaunchDisabled is always false for a manual-only op', () => {
+        expect(component.isLaunchDisabled(opDto as any)).toBe(false);
+    });
+
+    it('launchIcon shows a clock for a disabled auto-launch op, play_arrow otherwise', () => {
+        const autoDto = { ...opDto, op: { ...opDto.op, autoLaunch: true } };
+        expect(component.launchIcon(autoDto as any)).toBe('schedule');
+        expect(component.launchIcon(opDto as any)).toBe('play_arrow');
+    });
+
+    it('launchTooltip explains the hold-shift behaviour only when disabled', () => {
+        const autoDto = { ...opDto, op: { ...opDto.op, autoLaunch: true } };
+        expect(component.launchTooltip(autoDto as any)).toContain('Hold shift');
+        expect(component.launchTooltip(opDto as any)).toBe('Launch');
     });
 
     it('createIntel opens modal with Campaign scope and campaignId', () => {
