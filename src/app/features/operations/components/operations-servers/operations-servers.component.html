@@ -151,7 +151,7 @@
                                                 </button>
                                                 }
                                                 @if (server.launchedBy && (server.status.launching || server.status.running)) {
-                                                <span class="launched-by"><b>Launched by:</b> {{ server.launchedBy | displayName | async }}</span>
+                                                <span class="launched-by"><b>Launched by:</b> {{ isSchedulerLaunch(server) ? 'Auto-launch' : (server.launchedBy | displayName | async) }}</span>
                                                 } @if (server.status.launching || server.status.running) {
                                                 <button (click)="stop(server)" [disabled]="isPending(server.id) || isDisabled" color="primary" mat-raised-button>Stop</button>
                                                 }

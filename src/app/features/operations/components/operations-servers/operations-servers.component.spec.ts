@@ -468,4 +468,11 @@ describe('OperationsServersComponent', () => {
             expect(mockGameServersService.updateServerOrder).not.toHaveBeenCalled();
         });
     });
+
+    describe('isSchedulerLaunch', () => {
+        it('isSchedulerLaunch is true only for the Scheduler sentinel', () => {
+            expect(component.isSchedulerLaunch(makeServer({ launchedBy: 'Scheduler' }))).toBe(true);
+            expect(component.isSchedulerLaunch(makeServer({ launchedBy: 'account-abc123' }))).toBe(false);
+        });
+    });
 });

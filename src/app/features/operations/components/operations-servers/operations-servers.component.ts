@@ -584,4 +584,8 @@ export class OperationsServersComponent extends DestroyableComponent implements 
         const mission = this.mapMission(element);
         return `${mission.path}`;
     };
+
+    isSchedulerLaunch(server: GameServer): boolean {
+        return server.launchedBy === 'Scheduler';
+    }
 }
