@@ -49,6 +49,29 @@ describe('OpModalComponent', () => {
         expect(component.scheduledDate!.getHours()).not.toBeNaN();
     });
 
+    it('create mode defaults autoLaunch to false', () => {
+        setup({ campaignId: 'c1' });
+        expect(component.model.autoLaunch).toBe(false);
+    });
+
+    it('edit mode prefills autoLaunch from the op', () => {
+        setup({
+            campaignId: 'c1',
+            op: {
+                id: 'op1',
+                campaignId: 'c1',
+                title: 'Op 1',
+                scheduledTime: '2026-06-28T18:00:00Z',
+                serverId: 's2',
+                missionName: 'm.Altis.pbo',
+                warno: '',
+                status: OpStatus.Scheduled,
+                autoLaunch: true
+            }
+        });
+        expect(component.model.autoLaunch).toBe(true);
+    });
+
     it('create mode sets serverValue IDropdownElement so the value is the Main Server id', () => {
         setup({ campaignId: 'c1' });
         expect(component.serverValue?.value).toBe('main1');

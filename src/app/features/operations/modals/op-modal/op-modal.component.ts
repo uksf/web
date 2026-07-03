@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
+import { MatCheckbox } from '@angular/material/checkbox';
 import { BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { ButtonComponent } from '@app/shared/components/elements/button-pending/button.component';
@@ -24,7 +25,7 @@ interface OpModalData {
     selector: 'app-op-modal',
     templateUrl: './op-modal.component.html',
     styleUrls: ['./op-modal.component.scss'],
-    imports: [FormsModule, MatDialogTitle, MatDialogContent, MatDialogActions, TextInputComponent, DropdownComponent, DateInputComponent, ButtonComponent]
+    imports: [FormsModule, MatDialogTitle, MatDialogContent, MatDialogActions, TextInputComponent, DropdownComponent, DateInputComponent, ButtonComponent, MatCheckbox]
 })
 export class OpModalComponent {
     private dialogRef = inject<MatDialogRef<OpModalComponent>>(MatDialogRef);
@@ -36,7 +37,7 @@ export class OpModalComponent {
 
     isEdit = false;
     pending = false;
-    model: Op = { id: '', campaignId: '', title: '', scheduledTime: '', serverId: '', missionName: '', warno: '', status: OpStatus.Scheduled };
+    model: Op = { id: '', campaignId: '', title: '', scheduledTime: '', serverId: '', missionName: '', warno: '', status: OpStatus.Scheduled, autoLaunch: false };
 
     scheduledDate: Date | null = null;
     scheduledTimeText = '19:00';

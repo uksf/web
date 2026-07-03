@@ -12,6 +12,9 @@
             <app-date-input label="Date" [(ngModel)]="scheduledDate" name="date" id="date"></app-date-input>
             <app-text-input label="Time" [(ngModel)]="scheduledTimeText" name="time" id="time" placeholder="HH:mm"></app-text-input>
         </div>
+        <mat-checkbox [(ngModel)]="model.autoLaunch" name="autoLaunch" id="autoLaunch" color="primary">
+            Auto-launch at scheduled time
+        </mat-checkbox>
     </form>
 </mat-dialog-content>
 <mat-dialog-actions>

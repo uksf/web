@@ -37,6 +37,7 @@ export interface Op {
     missionName: string;
     warno: string;
     status: OpStatus;
+    autoLaunch: boolean;
     sessionId?: string;
     launchedServerId?: string;
     launchedMission?: string;
