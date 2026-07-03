@@ -93,6 +93,11 @@ describe('OperationsOpDetailComponent', () => {
         expect(component.isLaunchDisabled).toBe(false);
     });
 
+    it('isLaunchDisabled getter is always false for a manual-only op', () => {
+        component.dto = opDto as any;
+        expect(component.isLaunchDisabled).toBe(false);
+    });
+
     it('launchIcon getter shows a clock for a disabled auto-launch op', () => {
         component.dto = { ...opDto, op: { ...opDto.op, autoLaunch: true } } as any;
         expect(component.launchIcon).toBe('schedule');
