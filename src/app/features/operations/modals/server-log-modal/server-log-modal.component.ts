@@ -15,7 +15,7 @@ import { TextInputComponent } from '@app/shared/components/elements/text-input/t
 import { DebouncedCallback } from '@app/shared/utils/debounce-callback';
 import { ServersHubService } from '../../services/servers-hub.service';
 import { GameServersService } from '../../services/game-servers.service';
-import { GameServer, RptLogSource, RptLogSearchResult } from '../../models/game-server';
+import { GameServer, RptLogSource, RptLogSearchResult, StopPhase } from '../../models/game-server';
 import { highlightRptLine, extractRptTags, type RptLineTags, type RptLogLevel } from '../../utils/rpt-syntax-highlighter';
 import { LogMinimapComponent } from '../../components/log-minimap/log-minimap.component';
 import { createLineProjection, type LineProjection } from '../../components/log-minimap/line-projection';
@@ -194,7 +194,7 @@ export class ServerLogModalComponent extends DestroyableComponent implements OnI
         if (!status) {
             return false;
         }
-        return status.running || status.launching || status.stopping;
+        return status.running || status.launching || status.stopPhase !== StopPhase.None;
     }
 
     ngOnInit(): void {

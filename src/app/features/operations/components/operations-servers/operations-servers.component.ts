@@ -16,7 +16,7 @@ import { PermissionsService } from '@app/core/services/permissions.service';
 import { UksfError } from '@app/shared/models/response';
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { OrderUpdateRequest } from '@app/shared/models/order-update-request';
-import { GameServer, GameServersUpdate, GameServerUpdate, Mission, MissionReport } from '../../models/game-server';
+import { GameServer, GameServersUpdate, GameServerUpdate, Mission, MissionReport, StopPhase } from '../../models/game-server';
 import { GameServersService } from '../../services/game-servers.service';
 import { DestroyableComponent } from '@app/shared/components';
 import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
@@ -195,11 +195,17 @@ export class OperationsServersComponent extends DestroyableComponent implements 
     }
 
     getServerStatus(server: GameServer): string {
-        if (server.status.stopping) return 'Stopping';
+        if (server.status.stopPhase === StopPhase.Ending) return 'Ending';
+        if (server.status.stopPhase === StopPhase.Saving) return 'Saving';
+        if (server.status.stopPhase === StopPhase.Stopping) return 'Stopping';
         if (server.status.launching) return 'Launching';
         if (!server.status.running) return 'Offline';
         if (!server.status.startedAt) return 'Waiting';
         return 'Running';
+    }
+
+    isStopping(server: GameServer): boolean {
+        return server.status.stopPhase !== StopPhase.None;
     }
 
     isPending(serverId: string): boolean {

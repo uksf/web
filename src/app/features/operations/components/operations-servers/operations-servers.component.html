@@ -54,7 +54,7 @@
                                         </ng-template>
                                         <h3
                                             [ngClass]="{
-                                                'title-stopping': server.status.stopping,
+                                                'title-stopping': isStopping(server),
                                                 'title-launching': server.status.launching && !server.status.running,
                                                 'title-running': server.status.running
                                             }"
@@ -89,7 +89,7 @@
                                                 <ng-template [ngxPermissionsOnly]="['ADMIN']">
                                                     <button
                                                         (click)="deleteServer($event, server)"
-                                                        [disabled]="isPending(server.id) || server.status.running || server.status.launching || server.status.stopping"
+                                                        [disabled]="isPending(server.id) || server.status.running || server.status.launching || isStopping(server)"
                                                         class="icon delete"
                                                         mat-button
                                                         matTooltip="Delete game server"
@@ -98,7 +98,7 @@
                                                     </button>
                                                     <button
                                                         (click)="editServer($event, server)"
-                                                        [disabled]="isPending(server.id) || server.status.running || server.status.launching || server.status.stopping"
+                                                        [disabled]="isPending(server.id) || server.status.running || server.status.launching || isStopping(server)"
                                                         class="icon"
                                                         mat-button
                                                         matTooltip="Edit game server"
@@ -109,7 +109,7 @@
                                                 <ng-template [ngxPermissionsOnly]="['SR5']">
                                                     <button
                                                         (click)="editServerMods($event, server)"
-                                                        [disabled]="isPending(server.id) || server.status.running || server.status.launching || server.status.stopping"
+                                                        [disabled]="isPending(server.id) || server.status.running || server.status.launching || isStopping(server)"
                                                         class="icon"
                                                         mat-button
                                                         matTooltip="Edit game server mods"
@@ -119,7 +119,7 @@
                                                 </ng-template>
                                             </div>
                                             <app-flex-filler></app-flex-filler>
-                                            @if (!server.status.running && !server.status.launching && !server.status.stopping) {
+                                            @if (!server.status.running && !server.status.launching && !isStopping(server)) {
                                             <app-dropdown
                                                 [(ngModel)]="server.missionSelection"
                                                 [displayWith]="displayWithMission"
@@ -139,11 +139,11 @@
                                             </app-dropdown>
                                             }
                                             <div class="control-buttons">
-                                                @if (!server.status.launching && !server.status.running && !server.status.stopping) {
+                                                @if (!server.status.launching && !server.status.running && !isStopping(server)) {
                                                 <button
                                                     (click)="launch(server)"
                                                     [disabled]="isPending(server.id) || !server.missionSelection || isDisabled"
-                                                    [ngClass]="{ 'control-button': !server.status.launching && !server.status.running && !server.status.stopping }"
+                                                    [ngClass]="{ 'control-button': !server.status.launching && !server.status.running && !isStopping(server) }"
                                                     color="primary"
                                                     mat-raised-button
                                                 >
@@ -155,7 +155,7 @@
                                                 } @if (server.status.launching || server.status.running) {
                                                 <button (click)="stop(server)" [disabled]="isPending(server.id) || isDisabled" color="primary" mat-raised-button>Stop</button>
                                                 }
-                                                @if (server.status.stopping && admin) {
+                                                @if (isStopping(server) && admin) {
                                                 <button (click)="kill(server)" [disabled]="isPending(server.id) || isDisabled" color="warn" mat-raised-button>Kill</button>
                                                 }
                                             </div>

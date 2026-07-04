@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ServersHubService } from '../../services/servers-hub.service';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { ActivatedRoute } from '@angular/router';
+import { GameServer, StopPhase } from '../../models/game-server';
 
 describe('OperationsServersComponent', () => {
     let component: OperationsServersComponent;
@@ -21,7 +22,7 @@ describe('OperationsServersComponent', () => {
         name: 'Test Server',
         status: {
             parsedUptime: '01:30:45',
-            stopping: false,
+            stopPhase: StopPhase.None,
             launching: false,
             running: true,
             mission: 'test_mission',
@@ -79,13 +80,24 @@ describe('OperationsServersComponent', () => {
 
     describe('getServerStatus', () => {
         it('returns "Stopping" when server is stopping', () => {
-            const server = makeServer({ status: { ...makeServer().status, stopping: true } });
+            const server = makeServer({ status: { ...makeServer().status, stopPhase: StopPhase.Stopping } });
             expect(component.getServerStatus(server)).toBe('Stopping');
         });
 
         it('returns "Launching" when launching flag is set', () => {
-            const server = makeServer({ status: { ...makeServer().status, launching: true, running: false, stopping: false } });
+            const server = makeServer({ status: { ...makeServer().status, launching: true, running: false, stopPhase: StopPhase.None } });
             expect(component.getServerStatus(server)).toBe('Launching');
+        });
+
+        it('labels each stop phase from stopPhase', () => {
+            const make = (stopPhase: StopPhase, running = true) =>
+                ({ status: { stopPhase, launching: false, running, startedAt: '2026-07-04T00:00:00Z' } } as GameServer);
+
+            expect(component.getServerStatus(make(StopPhase.Ending))).toBe('Ending');
+            expect(component.getServerStatus(make(StopPhase.Saving))).toBe('Saving');
+            expect(component.getServerStatus(make(StopPhase.Stopping))).toBe('Stopping');
+            expect(component.getServerStatus(make(StopPhase.None))).toBe('Running');
+            expect(component.getServerStatus(make(StopPhase.None, false))).toBe('Offline');
         });
 
         it('returns "Offline" when server is not running', () => {

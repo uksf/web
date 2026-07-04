@@ -7,7 +7,7 @@ import { of, Subject } from 'rxjs';
 import { ServersHubService } from '../../services/servers-hub.service';
 import { GameServersService } from '../../services/game-servers.service';
 import { ServerLogModalComponent } from './server-log-modal.component';
-import { RptLogSource } from '../../models/game-server';
+import { RptLogSource, StopPhase } from '../../models/game-server';
 
 describe('ServerLogModalComponent', () => {
     let component: ServerLogModalComponent;
@@ -29,7 +29,7 @@ describe('ServerLogModalComponent', () => {
         logSources: testSources,
         status: {
             parsedUptime: '00:00:00',
-            stopping: false,
+            stopPhase: StopPhase.None,
             launching: false,
             running: true,
             mission: 'test_mission',
@@ -109,19 +109,19 @@ describe('ServerLogModalComponent', () => {
         });
 
         it('should disable tail for offline server', () => {
-            component.server = { ...testServer, status: { ...testServer.status, running: false, launching: false, stopping: false } };
+            component.server = { ...testServer, status: { ...testServer.status, running: false, launching: false, stopPhase: StopPhase.None } };
             component.tailEnabled = (component as any).isServerActive();
             expect(component.tailEnabled).toBe(false);
         });
 
         it('should enable tail when server is launching but not yet running', () => {
-            component.server = { ...testServer, status: { ...testServer.status, running: false, launching: true, stopping: false } };
+            component.server = { ...testServer, status: { ...testServer.status, running: false, launching: true, stopPhase: StopPhase.None } };
             component.tailEnabled = (component as any).isServerActive();
             expect(component.tailEnabled).toBe(true);
         });
 
         it('should enable tail when server is stopping', () => {
-            component.server = { ...testServer, status: { ...testServer.status, running: false, launching: false, stopping: true } };
+            component.server = { ...testServer, status: { ...testServer.status, running: false, launching: false, stopPhase: StopPhase.Stopping } };
             component.tailEnabled = (component as any).isServerActive();
             expect(component.tailEnabled).toBe(true);
         });

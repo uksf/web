@@ -6,7 +6,7 @@ export interface GameServerStatus {
     maxPlayers: string;
     parsedUptime: string;
     launching: boolean;
-    stopping: boolean;
+    stopPhase: StopPhase;
     running: boolean;
     mission: string;
     players: string[];
@@ -17,6 +17,13 @@ export enum GameServerOption {
     None = 0,
     Singleton = 1,
     Dcg = 2
+}
+
+export enum StopPhase {
+    None = 0,
+    Ending = 1,
+    Saving = 2,
+    Stopping = 3
 }
 
 export interface GameServer {
