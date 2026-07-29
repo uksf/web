@@ -1,8 +1,10 @@
 import { Component, HostListener, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { interval } from 'rxjs';
 import { debounceTime, first, takeUntil } from 'rxjs/operators';
 import { ModpackHubService } from '../services/modpack-hub.service';
-import { InstallWorkshopModData, WorkshopMod, WorkshopModSection, WORKSHOP_SECTION_DEFINITIONS, WorkshopModSectionKey } from '../models/workshop-mod';
+import { InstallWorkshopModData, WorkshopMod, WorkshopModSection, WorkshopModUpdatedDate } from '../models/workshop-mod';
+import { applyComputedProperties, groupModsIntoSections } from '../models/workshop-mod-grouping';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { UksfError } from '@app/shared/models/response';
 import { MatDialog } from '@angular/material/dialog';
@@ -20,6 +22,8 @@ import { MatTooltip } from '@angular/material/tooltip';
 import { TextInputBoxedComponent } from '../../../shared/components/elements/text-input-boxed/text-input-boxed.component';
 import { MatIcon } from '@angular/material/icon';
 import { MatCard } from '@angular/material/card';
+
+const UPDATED_DATE_POLL_INTERVAL_MS = 300000;
 
 @Component({
     selector: 'app-modpack-workshop',
@@ -42,11 +46,10 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
     showInlineActions = true;
 
     ngOnInit() {
-        this.getData(() => {
-            this.mods.forEach((mod: WorkshopMod) => {
-                this.getModUpdatedDate(mod);
-            });
-        });
+        this.getData();
+        interval(UPDATED_DATE_POLL_INTERVAL_MS)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({ next: () => this.refreshUpdatedDates() });
         this.modpackHub.connect();
         this.modpackHub.on('ReceiveWorkshopModAdded', this.onReceiveWorkshopModAdded);
         this.modpackHub.on('ReceiveWorkshopModUpdate', this.onReceiveWorkshopModUpdate);
@@ -84,8 +87,11 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
             .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (mods: WorkshopMod[]) => {
-                    this.mods = mods;
+                    this.mods = this.withKnownUpdatedDates(mods);
                     this.updateModComputedProperties();
+                    if (this.mods.some((mod: WorkshopMod) => !mod.updatedDate)) {
+                        this.refreshUpdatedDates();
+                    }
                     if (callback) {
                         callback();
                     }
@@ -103,6 +109,7 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
                     if (index === -1) {
                         this.getData();
                     } else {
+                        mod.updatedDate = this.mods[index].updatedDate;
                         this.mods.splice(index, 1, mod);
                         this.updateModComputedProperties();
                     }
@@ -110,27 +117,31 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
             });
     }
 
-    getModUpdatedDate(mod: WorkshopMod) {
+    refreshUpdatedDates() {
         this.workshopService
-            .getModUpdatedDate(mod.steamId)
+            .getModUpdatedDates()
             .pipe(takeUntil(this.destroy$))
             .subscribe({
-                next: (updatedDateResponse) => {
-                    mod.updatedDate = updatedDateResponse.updatedDate;
-                    mod._updateAvailable = this.updateAvailable(mod);
+                next: (updatedDates: WorkshopModUpdatedDate[]) => {
+                    const datesBySteamId = new Map(updatedDates.map((x: WorkshopModUpdatedDate) => [x.steamId, x.updatedDate]));
+                    this.mods.forEach((mod: WorkshopMod) => {
+                        mod.updatedDate = datesBySteamId.get(mod.steamId) ?? mod.updatedDate;
+                    });
+                    this.updateModComputedProperties();
                 }
             });
     }
 
-    updateModComputedProperties() {
-        this.mods.forEach((mod) => {
-            mod._hasError = this.hasError(mod);
-            mod._canUninstall = this.canUninstall(mod);
-            mod._canDelete = this.canDelete(mod);
-            mod._updateAvailable = this.updateAvailable(mod);
-            mod._interventionRequired = this.interventionRequired(mod);
-            mod._neverReleased = this.neverReleased(mod);
+    private withKnownUpdatedDates(mods: WorkshopMod[]): WorkshopMod[] {
+        const knownDates = new Map(this.mods.map((mod: WorkshopMod) => [mod.steamId, mod.updatedDate]));
+        mods.forEach((mod: WorkshopMod) => {
+            mod.updatedDate = knownDates.get(mod.steamId);
         });
+        return mods;
+    }
+
+    updateModComputedProperties() {
+        this.mods.forEach(applyComputedProperties);
         this.groupMods();
     }
 
@@ -140,53 +151,7 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
     }
 
     groupMods() {
-        const sectionMap = new Map<WorkshopModSectionKey, WorkshopMod[]>();
-        for (const def of WORKSHOP_SECTION_DEFINITIONS) {
-            sectionMap.set(def.key, []);
-        }
-
-        const filteredMods = this.searchTerm
-            ? this.mods.filter(mod => mod.name.toLowerCase().includes(this.searchTerm))
-            : this.mods;
-
-        for (const mod of filteredMods) {
-            const key = this.getSectionKey(mod);
-            sectionMap.get(key).push(mod);
-        }
-
-        this.sections = WORKSHOP_SECTION_DEFINITIONS.map(def => ({
-            ...def,
-            mods: sectionMap.get(def.key).sort((a, b) => a.name.localeCompare(b.name)),
-        }));
-    }
-
-    interventionRequired(mod: WorkshopMod) {
-        return mod.status === 'InterventionRequired';
-    }
-
-    updateAvailable(mod: WorkshopMod) {
-        // A mod that needs attention (errored or awaiting intervention) is recovered via Retry/Resolve, not Update —
-        // its lastUpdatedLocally was never bumped so the dates would otherwise falsely flag an update as available.
-        if (mod.status === 'Error' || mod.status === 'InterventionRequired') {
-            return false;
-        }
-        return mod.updatedDate !== null && this.isValidDate(mod.updatedDate) && this.isValidDate(mod.lastUpdatedLocally) && new Date(mod.updatedDate) > new Date(mod.lastUpdatedLocally);
-    }
-
-    canUninstall(mod: WorkshopMod) {
-        return mod.status === 'InstalledPendingRelease' || mod.status === 'Installed' || mod.status === 'UpdatedPendingRelease' || mod.status === 'InterventionRequired' || mod.status === 'Error';
-    }
-
-    canDelete(mod: WorkshopMod) {
-        return mod.status === 'Uninstalled';
-    }
-
-    neverReleased(mod: WorkshopMod) {
-        return !mod.modpackVersionFirstAdded;
-    }
-
-    hasError(mod: WorkshopMod) {
-        return mod.status === 'Error';
+        this.sections = groupModsIntoSections(this.mods, this.searchTerm);
     }
 
     install() {
@@ -291,28 +256,5 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
 
     trackBySteamId(_: number, mod: WorkshopMod) {
         return mod.steamId;
-    }
-
-    private getSectionKey(mod: WorkshopMod): WorkshopModSectionKey {
-        if (mod.status === 'Error' || mod.status === 'InterventionRequired') {
-            return 'needsAttention';
-        }
-        if (mod.status === 'Installing' || mod.status === 'Updating' || mod.status === 'Uninstalling') {
-            return 'inProgress';
-        }
-        if (mod._updateAvailable) {
-            return 'updatesAvailable';
-        }
-        if (mod.status === 'InstalledPendingRelease' || mod.status === 'UpdatedPendingRelease' || mod.status === 'UninstalledPendingRelease') {
-            return 'pendingRelease';
-        }
-        if (mod.status === 'Uninstalled') {
-            return 'uninstalled';
-        }
-        return 'installed';
-    }
-
-    private isValidDate(date: string) {
-        return date !== '0001-01-01T00:00:00.0000000Z';
     }
 }

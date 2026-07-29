@@ -17,8 +17,8 @@ export class WorkshopService {
         return this.httpClient.get<WorkshopMod>(`${this.urls.apiUrl}/workshop/${id}`);
     }
 
-    getModUpdatedDate(steamId: string): Observable<WorkshopModUpdatedDate> {
-        return this.httpClient.get<WorkshopModUpdatedDate>(`${this.urls.apiUrl}/workshop/${steamId}/updatedDate`);
+    getModUpdatedDates(): Observable<WorkshopModUpdatedDate[]> {
+        return this.httpClient.get<WorkshopModUpdatedDate[]>(`${this.urls.apiUrl}/workshop/updatedDates`);
     }
 
     installMod(data: InstallWorkshopModData): Observable<void> {

@@ -40,8 +40,8 @@
                                                     </button>
                                                 }
                                                 @if (mod._interventionRequired) {
-                                                    <button mat-button class="icon" (click)="resolveIntervention(mod)" matTooltip="Resolve Intervention">
-                                                        <mat-icon>construction</mat-icon>
+                                                    <button mat-button class="icon" (click)="resolveIntervention(mod)" [matTooltip]="mod._interventionLabel">
+                                                        <mat-icon>checklist</mat-icon>
                                                     </button>
                                                 }
                                                 @if (mod._updateAvailable) {
@@ -86,8 +86,8 @@
                                                 }
                                                 @if (mod._interventionRequired) {
                                                     <button mat-menu-item (click)="resolveIntervention(mod)">
-                                                        <mat-icon>construction</mat-icon>
-                                                        Resolve Intervention
+                                                        <mat-icon>checklist</mat-icon>
+                                                        {{ mod._interventionLabel }}
                                                     </button>
                                                 }
                                                 @if (mod._updateAvailable) {
