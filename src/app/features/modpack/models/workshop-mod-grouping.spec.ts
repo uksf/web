@@ -25,7 +25,9 @@ const makeMod = (overrides: Partial<WorkshopMod> = {}): WorkshopMod => ({
     rootMod: true,
     folderName: '@testmod',
     pbos: [],
+    extensions: [],
     availablePbos: [],
+    availableExtensions: [],
     ...overrides
 });
 
@@ -49,8 +51,14 @@ describe('interventionLabel', () => {
         expect(interventionLabel(makeMod({ status: 'InterventionRequired', availablePbos: ['mod.pbo'] }))).toBe('Select files to install');
     });
 
+    it('describes file selection when only non-PBO files are awaiting selection', () => {
+        expect(interventionLabel(makeMod({ status: 'InterventionRequired', availablePbos: [], availableExtensions: ['ctab_connect.dll'] }))).toBe(
+            'Select files to install'
+        );
+    });
+
     it('falls back to a generic label when there is nothing to select', () => {
-        expect(interventionLabel(makeMod({ status: 'InterventionRequired', availablePbos: [] }))).toBe('Resolve intervention');
+        expect(interventionLabel(makeMod({ status: 'InterventionRequired', availablePbos: [], availableExtensions: [] }))).toBe('Resolve intervention');
     });
 });
 

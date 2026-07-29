@@ -26,7 +26,9 @@ describe('ModpackWorkshopComponent', () => {
         rootMod: true,
         folderName: '@testmod',
         pbos: [],
+        extensions: [],
         availablePbos: [],
+        availableExtensions: [],
         ...overrides
     });
 
@@ -208,14 +210,24 @@ describe('ModpackWorkshopComponent', () => {
     });
 
     describe('resolveIntervention', () => {
-        it('sends the selected files for the mod', () => {
+        it('sends the selected pbos and files for the mod', () => {
             const dialogClose$ = new Subject<any>();
             mockDialog.open.mockReturnValue({ afterClosed: () => dialogClose$.asObservable() });
 
-            component.resolveIntervention(makeMod({ steamId: '12345', availablePbos: ['mod.pbo'] }));
-            dialogClose$.next(['mod.pbo']);
+            component.resolveIntervention(makeMod({ steamId: '12345', availablePbos: ['mod.pbo'], availableExtensions: ['ctab_connect.dll'] }));
+            dialogClose$.next({ selectedPbos: ['mod.pbo'], selectedExtensions: ['ctab_connect.dll'] });
 
-            expect(mockWorkshopService.resolveIntervention).toHaveBeenCalledWith('12345', ['mod.pbo']);
+            expect(mockWorkshopService.resolveIntervention).toHaveBeenCalledWith('12345', ['mod.pbo'], ['ctab_connect.dll']);
+        });
+
+        it('passes both installed and available lists to the modal', () => {
+            mockDialog.open.mockReturnValue({ afterClosed: () => new Subject<any>().asObservable() });
+
+            component.resolveIntervention(makeMod({ pbos: ['a.pbo'], extensions: ['ctab_connect.dll'], availablePbos: ['b.pbo'], availableExtensions: ['new.dll'] }));
+
+            expect(mockDialog.open).toHaveBeenCalledWith(expect.any(Function), {
+                data: { installedPbos: ['a.pbo'], availablePbos: ['b.pbo'], installedExtensions: ['ctab_connect.dll'], availableExtensions: ['new.dll'] }
+            });
         });
     });
 

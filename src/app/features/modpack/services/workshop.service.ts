@@ -29,8 +29,8 @@ export class WorkshopService {
         });
     }
 
-    resolveIntervention(steamId: string, selectedPbos: string[]): Observable<void> {
-        return this.httpClient.post<void>(`${this.urls.apiUrl}/workshop/${steamId}/resolve`, { selectedPbos });
+    resolveIntervention(steamId: string, selectedPbos: string[], selectedExtensions: string[]): Observable<void> {
+        return this.httpClient.post<void>(`${this.urls.apiUrl}/workshop/${steamId}/resolve`, { selectedPbos, selectedExtensions });
     }
 
     updateMod(steamId: string): Observable<void> {

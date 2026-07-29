@@ -10,13 +10,18 @@ describe('WorkshopModInterventionModalComponent', () => {
         mockDialogRef = { close: vi.fn() };
     });
 
-    function createComponent(installedPbos: string[] | null, availablePbos: string[]): WorkshopModInterventionModalComponent {
+    function createComponent(
+        installedPbos: string[] | null,
+        availablePbos: string[],
+        installedExtensions: string[] | null = [],
+        availableExtensions: string[] = []
+    ): WorkshopModInterventionModalComponent {
         TestBed.resetTestingModule();
         TestBed.configureTestingModule({
             providers: [
                 WorkshopModInterventionModalComponent,
                 { provide: MatDialogRef, useValue: mockDialogRef },
-                { provide: MAT_DIALOG_DATA, useValue: { installedPbos, availablePbos } }
+                { provide: MAT_DIALOG_DATA, useValue: { installedPbos, availablePbos, installedExtensions, availableExtensions } }
             ]
         });
         return TestBed.inject(WorkshopModInterventionModalComponent);
@@ -50,32 +55,85 @@ describe('WorkshopModInterventionModalComponent', () => {
         expect(a?.selected).toBe(false);
     });
 
-    it('submits only the selected PBO names', () => {
+    it('starts on the PBO step and submits directly when the mod has no extensions', () => {
         const component = createComponent(['a.pbo'], ['a.pbo', 'b.pbo']);
+
+        expect(component.onExtensionStep).toBe(false);
+        expect(component.hasExtensionStep).toBe(false);
+        expect(component.isLastStep).toBe(true);
+        expect(component.title).toBe('Select PBOs to install');
 
         component.submit();
 
-        expect(mockDialogRef.close).toHaveBeenCalledWith(['a.pbo']);
+        expect(mockDialogRef.close).toHaveBeenCalledWith({ selectedPbos: ['a.pbo'], selectedExtensions: [] });
     });
 
-    it('selectAll toggles all non-disabled rows on', () => {
-        const component = createComponent(['a.pbo', 'old.pbo'], ['a.pbo', 'b.pbo']);
+    it('moves to the extension step when the mod root ships dlls', () => {
+        const component = createComponent(['a.pbo'], ['a.pbo'], [], ['ctab_connect.dll']);
+
+        expect(component.hasExtensionStep).toBe(true);
+        expect(component.isLastStep).toBe(false);
+        expect(component.rows.map((x) => x.name)).toEqual(['a.pbo']);
+
+        component.next();
+
+        expect(component.title).toBe('Select extensions to install');
+        expect(component.rows.map((x) => x.name)).toEqual(['ctab_connect.dll']);
+        expect(component.isLastStep).toBe(true);
+    });
+
+    it('skips straight to extensions when the mod has no pbos', () => {
+        const component = createComponent([], [], [], ['ctab_connect.dll']);
+
+        expect(component.onExtensionStep).toBe(true);
+        expect(component.isLastStep).toBe(true);
+    });
+
+    it('submits pbos and extensions as separate lists', () => {
+        const component = createComponent(['a.pbo'], ['a.pbo', 'b.pbo'], [], ['ctab_connect.dll']);
+        component.next();
+        component.selectAll();
+
+        component.submit();
+
+        expect(mockDialogRef.close).toHaveBeenCalledWith({ selectedPbos: ['a.pbo'], selectedExtensions: ['ctab_connect.dll'] });
+    });
+
+    it('selectAll only touches the current step', () => {
+        const component = createComponent(['a.pbo', 'old.pbo'], ['a.pbo', 'b.pbo'], [], ['ctab_connect.dll']);
 
         component.selectAll();
 
-        const a = component.pboSelection.find((p) => p.name === 'a.pbo');
-        const b = component.pboSelection.find((p) => p.name === 'b.pbo');
-        const old = component.pboSelection.find((p) => p.name === 'old.pbo');
-        expect(a?.selected).toBe(true);
-        expect(b?.selected).toBe(true);
-        expect(old?.selected).toBe(false);
+        expect(component.pboSelection.find((p) => p.name === 'b.pbo')?.selected).toBe(true);
+        expect(component.pboSelection.find((p) => p.name === 'old.pbo')?.selected).toBe(false);
+        expect(component.extensionSelection[0].selected).toBe(false);
     });
 
-    it('handles null installedPbos (first install case)', () => {
-        const component = createComponent(null, ['a.pbo', 'b.pbo']);
+    it('back returns to the PBO step', () => {
+        const component = createComponent(['a.pbo'], ['a.pbo'], [], ['ctab_connect.dll']);
+
+        component.next();
+        component.back();
+
+        expect(component.onExtensionStep).toBe(false);
+    });
+
+    it('is valid when only extensions are selected', () => {
+        const component = createComponent([], [], [], ['ctab_connect.dll']);
+
+        expect(component.valid).toBe(false);
+
+        component.extensionSelection[0].selected = true;
+
+        expect(component.valid).toBe(true);
+    });
+
+    it('handles null installed lists (first install case)', () => {
+        const component = createComponent(null, ['a.pbo', 'b.pbo'], null, ['ctab_connect.dll']);
 
         expect(component.pboSelection).toHaveLength(2);
         expect(component.pboSelection.every((p) => p.state === 'new')).toBe(true);
         expect(component.pboSelection.every((p) => !p.selected)).toBe(true);
+        expect(component.extensionSelection[0].state).toBe('new');
     });
 });

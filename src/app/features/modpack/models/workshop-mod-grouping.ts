@@ -7,7 +7,7 @@ export function interventionRequired(mod: WorkshopMod): boolean {
 }
 
 export function interventionLabel(mod: WorkshopMod): string {
-    return mod.availablePbos?.length ? 'Select files to install' : 'Resolve intervention';
+    return mod.availablePbos?.length || mod.availableExtensions?.length ? 'Select files to install' : 'Resolve intervention';
 }
 
 export function updateAvailable(mod: WorkshopMod): boolean {

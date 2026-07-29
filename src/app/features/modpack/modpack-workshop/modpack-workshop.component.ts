@@ -9,7 +9,7 @@ import { MessageModalComponent } from '@app/shared/modals/message-modal/message-
 import { UksfError } from '@app/shared/models/response';
 import { MatDialog } from '@angular/material/dialog';
 import { InstallWorkshopModModalComponent } from '../install-workshop-mod-modal/install-workshop-mod-modal.component';
-import { WorkshopModInterventionModalComponent } from '../workshop-mod-intervention-modal/workshop-mod-intervention-modal.component';
+import { WorkshopModInterventionModalComponent, WorkshopModInterventionResult } from '../workshop-mod-intervention-modal/workshop-mod-intervention-modal.component';
 import { WorkshopService } from '../services/workshop.service';
 import { DestroyableComponent } from '@app/shared/components';
 import { DefaultContentAreasComponent } from '../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
@@ -183,16 +183,18 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
             .open(WorkshopModInterventionModalComponent, {
                 data: {
                     installedPbos: mod.pbos,
-                    availablePbos: mod.availablePbos
+                    availablePbos: mod.availablePbos,
+                    installedExtensions: mod.extensions,
+                    availableExtensions: mod.availableExtensions
                 }
             })
             .afterClosed()
             .pipe(first())
             .subscribe({
-                next: (selectedPbos: string[]) => {
-                    if (selectedPbos) {
+                next: (selection: WorkshopModInterventionResult) => {
+                    if (selection) {
                         this.workshopService
-                            .resolveIntervention(mod.steamId, selectedPbos)
+                            .resolveIntervention(mod.steamId, selection.selectedPbos, selection.selectedExtensions)
                             .pipe(first())
                             .subscribe({
                                 next: () => {},

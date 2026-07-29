@@ -1,37 +1,36 @@
-<h2 mat-dialog-title>Select files to install</h2>
+<h2 mat-dialog-title>{{ title }}</h2>
 <mat-dialog-content>
-    @if (!pboSelection) {
-        <div class="spinner-container">
-            <app-flex-filler></app-flex-filler>
-            <mat-spinner></mat-spinner>
-            <app-flex-filler></app-flex-filler>
-        </div>
-    } @else {
-        <div class="flex-container">
-            <div class="pbos-list-container">
-                @for (pbo of pboSelection; track pbo.name) {
-                    <div class="pbos-list-item-container" [ngClass]="'pbo-state-' + pbo.state">
-                        <span class="pbo-name" [ngClass]="{ conflict: pbo.conflict }" [matTooltip]="getTooltip(pbo)" [title]="pbo.name">{{ pbo.name }}</span>
-                        <div class="pbo-row-actions">
-                            @if (pbo.conflict) {
-                                <span class="pbo-badge pbo-badge-conflict">CONFLICT</span>
-                            }
-                            @if (pbo.state === 'new') {
-                                <span class="pbo-badge pbo-badge-new">NEW</span>
-                            }
-                            @if (pbo.state === 'removed') {
-                                <span class="pbo-badge pbo-badge-removed">REMOVED</span>
-                            }
-                            <mat-checkbox color="primary" [(ngModel)]="pbo.selected" [disabled]="pbo.disabled"></mat-checkbox>
-                        </div>
+    <div class="flex-container">
+        <div class="pbos-list-container">
+            @for (row of rows; track row.name) {
+                <div class="pbos-list-item-container" [ngClass]="'pbo-state-' + row.state">
+                    <span class="pbo-name" [ngClass]="{ conflict: row.conflict }" [matTooltip]="getTooltip(row)" [title]="row.name">{{ row.name }}</span>
+                    <div class="pbo-row-actions">
+                        @if (row.conflict) {
+                            <span class="pbo-badge pbo-badge-conflict">CONFLICT</span>
+                        }
+                        @if (row.state === 'new') {
+                            <span class="pbo-badge pbo-badge-new">NEW</span>
+                        }
+                        @if (row.state === 'removed') {
+                            <span class="pbo-badge pbo-badge-removed">REMOVED</span>
+                        }
+                        <mat-checkbox color="primary" [(ngModel)]="row.selected" [disabled]="row.disabled"></mat-checkbox>
                     </div>
-                }
-            </div>
+                </div>
+            }
         </div>
-    }
+    </div>
 </mat-dialog-content>
 <mat-dialog-actions>
+    @if (onExtensionStep && pboSelection.length) {
+        <button mat-raised-button (click)="back()">Back</button>
+    }
     <button mat-raised-button color="primary" (click)="selectAll()">Select All</button>
     <app-flex-filler></app-flex-filler>
-    <button mat-raised-button color="primary" (click)="submit()" [disabled]="!valid">Submit</button>
+    @if (isLastStep) {
+        <button mat-raised-button color="primary" (click)="submit()" [disabled]="!valid">Submit</button>
+    } @else {
+        <button mat-raised-button color="primary" (click)="next()">Next</button>
+    }
 </mat-dialog-actions>

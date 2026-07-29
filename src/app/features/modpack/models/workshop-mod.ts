@@ -11,7 +11,9 @@ export interface WorkshopMod {
     rootMod: boolean;
     folderName: string;
     pbos: string[];
+    extensions: string[];
     availablePbos: string[];
+    availableExtensions: string[];
 
     updatedDate?: string;
 
