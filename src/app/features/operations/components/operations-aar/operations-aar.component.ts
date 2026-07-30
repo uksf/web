@@ -15,7 +15,17 @@ export class OperationsAarComponent {
 
     constructor() {
         const session = this.route.snapshot.queryParamMap.get('session');
-        const url = session ? `https://aar.uk-sf.co.uk/?session=${session}` : 'https://aar.uk-sf.co.uk';
+        // Pass parent URL so OCAP Steam login can return here after top-level OpenID
+        // (Steam blocks framing; OCAP breaks out then bounces back via embedReturn).
+        const params = new URLSearchParams();
+        if (session) {
+            params.set('session', session);
+        }
+        if (typeof window !== 'undefined') {
+            params.set('embedReturn', window.location.href);
+        }
+        const qs = params.toString();
+        const url = qs ? `https://aar.uk-sf.co.uk/?${qs}` : 'https://aar.uk-sf.co.uk';
         this.aarUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
     }
 }
