@@ -7,6 +7,7 @@ export interface GameServerStatus {
     parsedUptime: string;
     launching: boolean;
     stopPhase: StopPhase;
+    killAllowedAt: string | null;
     running: boolean;
     mission: string;
     players: string[];
