@@ -17,6 +17,8 @@
 .tree-rows {
     display: flex;
     flex-direction: column;
+    // keeps rows and the scrollbar off the card edge
+    padding-right: 8px;
 }
 
 .tree-row {

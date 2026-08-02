@@ -51,6 +51,8 @@
         gap: 6px;
         max-height: 420px;
         overflow: auto;
+        // keeps rows and the scrollbar off the card edge
+        padding-right: 8px;
     }
 
     .entry {
@@ -65,8 +67,7 @@
             opacity: 0.5;
         }
 
-        .entry-row,
-        .exclude {
+        .entry-row {
             display: flex;
             flex-direction: row;
             align-items: center;
@@ -112,6 +113,7 @@
             align-items: center;
             gap: 6px;
             padding-left: 26px;
+            padding-bottom: 4px;
 
             .rule {
                 display: flex;
@@ -203,9 +205,19 @@
             grid-template-columns: 32px 130px 1fr 100px 90px 32px 1fr;
             align-items: center;
             gap: 8px;
-            padding: 4px 8px;
+            padding: 6px 8px;
             border-radius: 4px;
             background: rgb(255 255 255 / 4%);
+
+            // grid centres the cell, not the inline icon inside it
+            > span {
+                display: flex;
+                align-items: center;
+            }
+
+            mat-icon {
+                display: block;
+            }
 
             &.failed {
                 background: rgb(244 67 54 / 16%);
