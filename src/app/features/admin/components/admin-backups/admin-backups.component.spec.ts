@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
 import { AdminBackupsComponent } from './admin-backups.component';
 import { BackupsService } from '../../services/backups.service';
-import { BackupEntry, BackupEntryType } from '@app/features/admin/models/backup';
+import { BackupEntry, BackupEntryType, BackupRunState } from '@app/features/admin/models/backup';
 
 describe('AdminBackupsComponent', () => {
     let component: AdminBackupsComponent;
@@ -108,14 +108,23 @@ describe('AdminBackupsComponent', () => {
         expect(mockBackupsService.deleteEntry).not.toHaveBeenCalled();
     });
 
-    it('runs a backup after confirmation and refreshes the history', () => {
+    it('starts a backup after confirmation and follows it through the history', () => {
         mockBackupsService.getRuns.mockClear();
 
         component.runNow();
 
         expect(mockBackupsService.runNow).toHaveBeenCalled();
         expect(mockBackupsService.getRuns).toHaveBeenCalled();
-        expect(component.running).toBe(false);
+        // the server keeps working, so the page stays in the running state until a poll says otherwise
+        expect(component.running).toBe(true);
+    });
+
+    it('reports the run still in progress from the history', () => {
+        component.runs = [{ id: 'run-1', state: BackupRunState.Running } as never];
+        expect(component.activeRun).toBeTruthy();
+
+        component.runs = [{ id: 'run-1', state: BackupRunState.Success } as never];
+        expect(component.activeRun).toBeFalsy();
     });
 
     it('surfaces a rejected change instead of failing silently', () => {
@@ -212,13 +221,13 @@ describe('AdminBackupsComponent', () => {
         expect(mockBackupsService.updateEntry).toHaveBeenCalledWith(expect.objectContaining({ excludes: [] }));
     });
 
-    it('surfaces a failed run and still refreshes the history', () => {
-        mockBackupsService.runNow.mockReturnValue(throwError(() => ({ error: { detail: 'mongodump failed' } })));
+    it('surfaces a run that could not be started', () => {
+        mockBackupsService.runNow.mockReturnValue(throwError(() => ({ error: { detail: 'BACKUP_PUBLIC_KEY is missing' } })));
         mockBackupsService.getRuns.mockClear();
 
         component.runNow();
 
-        expect(component.error).toBe('mongodump failed');
+        expect(component.error).toBe('BACKUP_PUBLIC_KEY is missing');
         expect(component.running).toBe(false);
         expect(mockBackupsService.getRuns).toHaveBeenCalled();
     });

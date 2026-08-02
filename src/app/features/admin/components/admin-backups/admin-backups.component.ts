@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { forkJoin, Observable } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { forkJoin, Observable, timer } from 'rxjs';
+import { first, switchMap, takeUntil } from 'rxjs/operators';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -13,8 +13,12 @@ import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-moda
 import { BackupEntry, BackupEntryType, BackupRule, BackupRun, BackupRunState, BackupTreeNode } from '@app/features/admin/models/backup';
 import { DefaultContentAreasComponent } from '@app/shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { MainContentAreaComponent } from '@app/shared/components/content-areas/main-content-area/main-content-area.component';
+import { DestroyableComponent } from '@app/shared/components/destroyable/destroyable.component';
+import { isRuleEmpty, toRules, withoutRule, withRule } from './backup-rules';
 import { BackupsService } from '../../services/backups.service';
 import { BackupTreeComponent } from './backup-tree.component';
+
+const POLL_INTERVAL_MS = 5000;
 
 @Component({
     selector: 'app-admin-backups',
@@ -35,7 +39,7 @@ import { BackupTreeComponent } from './backup-tree.component';
         DecimalPipe
     ]
 })
-export class AdminBackupsComponent implements OnInit {
+export class AdminBackupsComponent extends DestroyableComponent implements OnInit {
     private backupsService = inject(BackupsService);
     private dialog = inject(MatDialog);
 
@@ -99,35 +103,21 @@ export class AdminBackupsComponent implements OnInit {
         );
     }
 
-    /** One list per entry: a pattern keeps only matching files, the same prefixed with ! keeps them out. */
     rules(entry: BackupEntry): BackupRule[] {
-        return [
-            ...entry.includePatterns.map((text) => ({ text, exclude: false })),
-            ...entry.excludes.map((text) => ({ text: `!${text}`, exclude: true }))
-        ];
+        return toRules(entry);
     }
 
     addRule(entry: BackupEntry, rule: string, input: HTMLInputElement): void {
-        const trimmed = rule?.trim();
-        if (!trimmed || trimmed === '!') {
+        if (isRuleEmpty(rule)) {
             return;
         }
 
         input.value = '';
-
-        const updated = trimmed.startsWith('!')
-            ? { ...entry, excludes: [...entry.excludes, trimmed.slice(1).trim()] }
-            : { ...entry, includePatterns: [...entry.includePatterns, trimmed] };
-
-        this.save(this.backupsService.updateEntry(updated));
+        this.save(this.backupsService.updateEntry(withRule(entry, rule)));
     }
 
     removeRule(entry: BackupEntry, rule: BackupRule): void {
-        const updated = rule.exclude
-            ? { ...entry, excludes: entry.excludes.filter((x) => x !== rule.text.slice(1)) }
-            : { ...entry, includePatterns: entry.includePatterns.filter((x) => x !== rule.text) };
-
-        this.save(this.backupsService.updateEntry(updated));
+        this.save(this.backupsService.updateEntry(withoutRule(entry, rule)));
     }
 
     exclude(node: BackupTreeNode): void {
@@ -186,6 +176,10 @@ export class AdminBackupsComponent implements OnInit {
             });
     }
 
+    get activeRun(): BackupRun {
+        return this.runs.find((run) => run.state === BackupRunState.Running);
+    }
+
     runNow(): void {
         this.dialog
             .open(ConfirmationModalComponent, { data: { message: 'Run a backup now? This dumps mongo, builds the archive and uploads it.' } })
@@ -204,16 +198,35 @@ export class AdminBackupsComponent implements OnInit {
                         .pipe(first())
                         .subscribe({
                             next: () => {
-                                this.running = false;
                                 this.loadRuns();
+                                this.pollRun();
                             },
                             error: (response) => {
                                 this.running = false;
-                                this.error = response?.error?.detail ?? 'Backup failed - check the logs';
+                                this.error = response?.error?.detail ?? 'Backup could not be started - check the logs';
                                 this.loadRuns();
                             }
                         });
                 }
+            });
+    }
+
+    /** The run happens on the server, so the page follows it through the history rather than holding a request open. */
+    private pollRun(): void {
+        timer(POLL_INTERVAL_MS, POLL_INTERVAL_MS)
+            .pipe(
+                switchMap(() => this.backupsService.getRuns()),
+                takeUntil(this.destroy$)
+            )
+            .subscribe({
+                next: (runs) => {
+                    this.runs = runs;
+                    if (!this.activeRun) {
+                        this.running = false;
+                        this.destroy$.next();
+                    }
+                },
+                error: () => (this.running = false)
             });
     }
 

@@ -8,9 +8,12 @@
             } @else {
             <div class="backups-container">
                 <div class="backups-header">
-                    <button mat-raised-button color="primary" (click)="runNow()" [disabled]="running || updating">
-                        {{ running ? 'Running…' : 'Run backup now' }}
+                    <button mat-raised-button color="primary" (click)="runNow()" [disabled]="running || activeRun || updating">
+                        {{ running || activeRun ? 'Running…' : 'Run backup now' }}
                     </button>
+                    @if (running || activeRun) {
+                    <mat-spinner [diameter]="20"></mat-spinner>
+                    }
                     <button mat-icon-button matTooltip="Refresh" aria-label="Refresh backups" (click)="load()" [disabled]="updating">
                         <mat-icon>refresh</mat-icon>
                     </button>
