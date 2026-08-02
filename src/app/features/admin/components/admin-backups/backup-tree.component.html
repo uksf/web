@@ -8,7 +8,13 @@
 
 <div class="tree-rows">
     @for (row of rows; track trackByPath($index, row)) {
-    <div class="tree-row" [class.selected]="isSelected(row)" [class.excluded]="isExcluded(row)" [style.--depth]="row.level">
+    <div
+        class="tree-row"
+        [class.selected]="isSelected(row)"
+        [class.excluded]="isExcluded(row)"
+        [class.has-selection-below]="hasSelectionBelow(row)"
+        [style.--depth]="row.level"
+    >
         <button mat-icon-button class="toggle" [attr.aria-label]="(row.expanded ? 'Collapse ' : 'Expand ') + row.node.path" (click)="toggle(row)" [disabled]="!row.node.isDirectory || !row.node.hasChildren">
             @if (row.loading) {
             <mat-spinner [diameter]="16"></mat-spinner>
@@ -19,11 +25,26 @@
 
         <mat-icon class="kind">{{ row.node.isDirectory ? 'folder' : 'description' }}</mat-icon>
         <span class="name" [title]="row.node.path">{{ row.node.name }}</span>
+        @if (hasSelectionBelow(row) && !isSelected(row)) {
+        <mat-icon class="below-marker" matTooltip="Something inside this is backed up">subdirectory_arrow_right</mat-icon>
+        }
 
-        <div class="actions">
-            <button mat-icon-button matTooltip="Back this up" [attr.aria-label]="'Back up ' + row.node.path" (click)="include.emit(row.node)" [disabled]="isSelected(row) || isCovered(row)">
+        <div class="actions" [class.always-visible]="canDeselect(row)">
+            @if (canDeselect(row)) {
+            <button
+                mat-icon-button
+                class="deselect"
+                matTooltip="Stop backing this up, including anything inside it"
+                [attr.aria-label]="'Stop backing up ' + row.node.path"
+                (click)="deselect.emit(row.node)"
+            >
+                <mat-icon>remove_circle_outline</mat-icon>
+            </button>
+            } @else {
+            <button mat-icon-button matTooltip="Back this up" [attr.aria-label]="'Back up ' + row.node.path" (click)="include.emit(row.node)" [disabled]="isCovered(row)">
                 <mat-icon>add_circle_outline</mat-icon>
             </button>
+            }
             <button mat-icon-button matTooltip="Exclude from its parent selection" [attr.aria-label]="'Exclude ' + row.node.path" (click)="exclude.emit(row.node)" [disabled]="!isCovered(row) || isExcluded(row)">
                 <mat-icon>block</mat-icon>
             </button>

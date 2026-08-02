@@ -27,6 +27,7 @@ export class BackupTreeComponent implements OnInit {
     @Input() excludedPaths: string[] = [];
     @Output() include = new EventEmitter<BackupTreeNode>();
     @Output() exclude = new EventEmitter<BackupTreeNode>();
+    @Output() deselect = new EventEmitter<BackupTreeNode>();
 
     rows: BackupTreeRow[] = [];
     loading = true;
@@ -86,6 +87,16 @@ export class BackupTreeComponent implements OnInit {
     /** A node inside a selected folder can be excluded, but cannot be selected again. */
     isCovered(row: BackupTreeRow): boolean {
         return this.selectedPaths.some((path) => this.contains(path, row.node.path));
+    }
+
+    /** Something below this folder is selected, so the branch is worth opening. */
+    hasSelectionBelow(row: BackupTreeRow): boolean {
+        return row.node.isDirectory && this.selectedPaths.some((path) => this.contains(row.node.path, path));
+    }
+
+    /** This row, or anything under it, can be dropped from the backup here. */
+    canDeselect(row: BackupTreeRow): boolean {
+        return this.isSelected(row) || this.hasSelectionBelow(row);
     }
 
     trackByPath(_: number, row: BackupTreeRow): string {

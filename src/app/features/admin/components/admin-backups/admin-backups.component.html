@@ -28,6 +28,7 @@
                             [excludedPaths]="excludedPaths"
                             (include)="include($event)"
                             (exclude)="exclude($event)"
+                            (deselect)="deselect($event)"
                         ></app-backup-tree>
                     </mat-card>
 
@@ -42,14 +43,40 @@
                                 <div class="entry-row">
                                     <mat-icon class="kind">{{ isFolder(entry) ? 'folder' : 'description' }}</mat-icon>
                                     <span class="path" [title]="entry.path">{{ entry.path }}</span>
-                                    <mat-slide-toggle [checked]="entry.enabled" (change)="toggleEnabled(entry, $event.checked)" matTooltip="Include in the nightly run"></mat-slide-toggle>
+                                    <mat-slide-toggle
+                                        class="compact-toggle"
+                                        [hideIcon]="true"
+                                        [checked]="entry.enabled"
+                                        (change)="toggleEnabled(entry, $event.checked)"
+                                        matTooltip="Include in the nightly run"
+                                    ></mat-slide-toggle>
                                     <button mat-icon-button matTooltip="Remove" [attr.aria-label]="'Remove ' + entry.path" (click)="deleteEntry(entry)" [disabled]="updating">
                                         <mat-icon>delete_outline</mat-icon>
                                     </button>
                                 </div>
                                 @if (isFolder(entry)) {
                                 <div class="entry-options">
-                                    <mat-slide-toggle [checked]="entry.recursive" (change)="toggleRecursive(entry, $event.checked)">Include subfolders</mat-slide-toggle>
+                                    <mat-slide-toggle class="compact-toggle" [hideIcon]="true" [checked]="entry.recursive" (change)="toggleRecursive(entry, $event.checked)">
+                                        Include subfolders
+                                    </mat-slide-toggle>
+                                </div>
+                                <div class="entry-patterns">
+                                    @for (pattern of entry.includePatterns; track pattern) {
+                                    <span class="pattern">
+                                        {{ pattern }}
+                                        <button mat-icon-button [attr.aria-label]="'Remove pattern ' + pattern" (click)="removePattern(entry, pattern)" [disabled]="updating">
+                                            <mat-icon>close</mat-icon>
+                                        </button>
+                                    </span>
+                                    }
+                                    <input
+                                        #patternInput
+                                        class="pattern-input"
+                                        type="text"
+                                        placeholder="only files matching, e.g. *.Arma3Profile"
+                                        [attr.aria-label]="'Add pattern to ' + entry.path"
+                                        (keyup.enter)="addPattern(entry, patternInput.value, patternInput)"
+                                    />
                                 </div>
                                 } @for (exclude of entry.excludes; track exclude) {
                                 <div class="exclude">

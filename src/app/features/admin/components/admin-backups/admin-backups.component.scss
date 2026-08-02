@@ -1,3 +1,4 @@
+@use '@angular/material' as mat;
 @use '../../admin-shared' as admin;
 
 @include admin.admin-table-base;
@@ -74,6 +75,89 @@
 
         .entry-options {
             padding-left: 26px;
+        }
+
+        // Material 3 ships a 52x32 switch with a 40px state layer. These are its own size tokens, not a scale hack.
+        .compact-toggle {
+            @include mat.slide-toggle-overrides(
+                (
+                    track-height: 18px,
+                    track-width: 32px,
+                    state-layer-size: 24px,
+                    selected-handle-size: 12px,
+                    unselected-handle-size: 12px,
+                    with-icon-handle-size: 12px,
+                    pressed-handle-size: 14px,
+                    selected-handle-horizontal-margin: 0 16px,
+                    selected-with-icon-handle-horizontal-margin: 0 16px,
+                    selected-pressed-handle-horizontal-margin: 0 15px,
+                    unselected-handle-horizontal-margin: 0 4px,
+                    unselected-with-icon-handle-horizontal-margin: 0 4px,
+                    unselected-pressed-handle-horizontal-margin: 0 3px,
+
+                    // Material 3 recolours the handle to primary-container on hover, which in this
+                    // theme is the same yellow as the track, so the switch reads as a solid blob.
+                    selected-hover-handle-color: var(--mat-sys-on-primary),
+                    selected-focus-handle-color: var(--mat-sys-on-primary),
+                    selected-pressed-handle-color: var(--mat-sys-on-primary)
+                )
+            );
+
+            font-size: 13px;
+        }
+
+        .entry-patterns {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+            padding-left: 26px;
+
+            .pattern {
+                display: flex;
+                align-items: center;
+                gap: 2px;
+                padding: 2px 2px 2px 8px;
+                border-radius: 10px;
+                font-size: 12px;
+                background: rgb(255 255 255 / 10%);
+
+                // styles.scss forces every icon button to 40px with !important, so this needs the same weapon.
+                button.mat-mdc-icon-button {
+                    display: inline-flex !important;
+                    align-items: center;
+                    justify-content: center;
+                    width: 20px !important;
+                    height: 20px !important;
+                    padding: 0 !important;
+
+                    .mat-icon {
+                        display: block;
+                        margin: 0;
+                        font-size: 14px !important;
+                        width: 14px !important;
+                        height: 14px !important;
+                        line-height: 14px !important;
+                    }
+                }
+            }
+
+            .pattern-input {
+                flex: 1;
+                min-width: 180px;
+                padding: 2px 6px;
+                border: none;
+                border-bottom: 1px solid rgb(255 255 255 / 20%);
+                border-radius: 0;
+                background: transparent;
+                color: inherit;
+                font-size: 12px;
+
+                &:focus {
+                    outline: none;
+                    border-bottom-color: rgb(255 255 255 / 50%);
+                }
+            }
         }
 
         .exclude {

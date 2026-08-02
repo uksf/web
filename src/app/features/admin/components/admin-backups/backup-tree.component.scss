@@ -41,15 +41,51 @@
         background: rgb(244 67 54 / 16%);
     }
 
-    .toggle {
-        width: 24px;
-        height: 24px;
-        line-height: 24px;
+    &.has-selection-below:not(.selected) {
+        background: rgb(76 175 80 / 7%);
+    }
 
-        mat-icon {
-            font-size: 18px;
-            width: 18px;
-            height: 18px;
+    .below-marker {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        color: rgb(76 175 80 / 80%);
+    }
+
+    // styles.scss forces every icon button to 40px with !important, which overflows a 32px row.
+    .toggle.mat-mdc-icon-button {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 24px !important;
+        height: 24px !important;
+        padding: 0 !important;
+
+        .mat-icon {
+            display: block;
+            margin: 0;
+            font-size: 18px !important;
+            width: 18px !important;
+            height: 18px !important;
+            line-height: 18px !important;
+        }
+    }
+
+    .actions button.mat-mdc-icon-button {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 26px !important;
+        height: 26px !important;
+        padding: 0 !important;
+
+        .mat-icon {
+            display: block;
+            margin: 0;
+            font-size: 18px !important;
+            width: 18px !important;
+            height: 18px !important;
+            line-height: 18px !important;
         }
     }
 
@@ -71,6 +107,15 @@
         display: flex;
         gap: 2px;
         opacity: 0;
+
+        // A selected row keeps its control on show, so removing it never needs a hunt.
+        &.always-visible {
+            opacity: 1;
+        }
+
+        .deselect {
+            color: rgb(244 67 54 / 85%);
+        }
     }
 
     &:hover .actions {

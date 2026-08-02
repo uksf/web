@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Observable } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -92,10 +92,25 @@ export class AdminBackupsComponent implements OnInit {
                 path: node.path,
                 entryType: node.isDirectory ? BackupEntryType.Folder : BackupEntryType.File,
                 recursive: true,
+                includePatterns: [],
                 excludes: [],
                 enabled: true
             })
         );
+    }
+
+    addPattern(entry: BackupEntry, pattern: string, input: HTMLInputElement): void {
+        const trimmed = pattern?.trim();
+        if (!trimmed) {
+            return;
+        }
+
+        input.value = '';
+        this.save(this.backupsService.updateEntry({ ...entry, includePatterns: [...entry.includePatterns, trimmed] }));
+    }
+
+    removePattern(entry: BackupEntry, pattern: string): void {
+        this.save(this.backupsService.updateEntry({ ...entry, includePatterns: entry.includePatterns.filter((x) => x !== pattern) }));
     }
 
     exclude(node: BackupTreeNode): void {
@@ -105,6 +120,31 @@ export class AdminBackupsComponent implements OnInit {
         }
 
         this.save(this.backupsService.updateEntry({ ...parent, excludes: [...parent.excludes, node.path] }));
+    }
+
+    /** Drops this path and everything selected below it, so a branch can be cleared from one row. */
+    deselect(node: BackupTreeNode): void {
+        const affected = this.entries.filter((entry) => this.samePath(entry.path, node.path) || this.contains(node.path, entry.path));
+        if (!affected.length) {
+            return;
+        }
+
+        const message =
+            affected.length === 1
+                ? `Stop backing up '${affected[0].path}'?`
+                : `Stop backing up ${affected.length} selections under '${node.path}'?`;
+
+        this.dialog
+            .open(ConfirmationModalComponent, { data: { message } })
+            .afterClosed()
+            .pipe(first())
+            .subscribe({
+                next: (result) => {
+                    if (result) {
+                        this.save(forkJoin(affected.map((entry) => this.backupsService.deleteEntry(entry.id))));
+                    }
+                }
+            });
     }
 
     removeExclude(entry: BackupEntry, exclude: string): void {
@@ -195,5 +235,9 @@ export class AdminBackupsComponent implements OnInit {
 
     private contains(parent: string, child: string): boolean {
         return child.toLowerCase().startsWith(`${parent.toLowerCase().replace(/\\+$/, '')}\\`);
+    }
+
+    private samePath(left: string, right: string): boolean {
+        return left?.toLowerCase() === right?.toLowerCase();
     }
 }

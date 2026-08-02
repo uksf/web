@@ -94,6 +94,36 @@ describe('BackupTreeComponent', () => {
         expect(component.isExcluded(component.rows[2])).toBe(true);
     });
 
+    it('marks a folder that has a selection somewhere below it', () => {
+        component.selectedPaths = ['C:\\Server\\Nginx\\conf'];
+        component.toggle(component.rows[0]);
+
+        expect(component.hasSelectionBelow(component.rows[0])).toBe(true);
+        expect(component.hasSelectionBelow(component.rows[1])).toBe(true);
+        expect(component.hasSelectionBelow(component.rows[2])).toBe(false);
+    });
+
+    it('a selected folder is not also marked as having a selection below', () => {
+        component.selectedPaths = ['C:\\Server'];
+        component.toggle(component.rows[0]);
+
+        expect(component.hasSelectionBelow(component.rows[1])).toBe(false);
+    });
+
+    it('a selected row, and any ancestor of a selection, can be deselected', () => {
+        component.selectedPaths = ['C:\\Server\\deets.txt'];
+        component.toggle(component.rows[0]);
+
+        // C:\ and C:\Server are both above the selection, deets.txt is the selection itself
+        expect(component.canDeselect(component.rows[0])).toBe(true);
+        expect(component.canDeselect(component.rows[1])).toBe(true);
+        expect(component.canDeselect(component.rows[2])).toBe(true);
+
+        component.toggle(component.rows[1]);
+        const nginx = component.rows.find((row) => row.node.path === 'C:\\Server\\Nginx');
+        expect(component.canDeselect(nginx)).toBe(false);
+    });
+
     it('a sibling with a shared prefix is not treated as inside', () => {
         component.selectedPaths = ['C:\\Serve'];
         component.toggle(component.rows[0]);

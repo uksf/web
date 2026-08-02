@@ -14,6 +14,7 @@ export interface BackupEntry {
     path: string;
     entryType: BackupEntryType;
     recursive: boolean;
+    includePatterns: string[];
     excludes: string[];
     enabled: boolean;
 }

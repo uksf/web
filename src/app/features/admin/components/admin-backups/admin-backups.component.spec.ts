@@ -16,6 +16,7 @@ describe('AdminBackupsComponent', () => {
         path: 'C:\\Server\\Nginx',
         entryType: BackupEntryType.Folder,
         recursive: true,
+        includePatterns: [],
         excludes: ['C:\\Server\\Nginx\\logs'],
         enabled: true
     };
@@ -63,6 +64,7 @@ describe('AdminBackupsComponent', () => {
             path: 'D:\\Website',
             entryType: BackupEntryType.Folder,
             recursive: true,
+            includePatterns: [],
             excludes: [],
             enabled: true
         });
@@ -129,6 +131,67 @@ describe('AdminBackupsComponent', () => {
 
         expect(component.error).toBe('Path overlaps an existing selection');
         expect(component.updating).toBe(false);
+    });
+
+    it('deselecting a folder drops it and everything selected below it', () => {
+        const child: BackupEntry = { ...folderEntry, id: 'entry-2', path: 'C:\\Server\\Nginx\\conf', excludes: [] };
+        const other: BackupEntry = { ...folderEntry, id: 'entry-3', path: 'D:\\Website', excludes: [] };
+        mockBackupsService.getEntries.mockReturnValue(of([folderEntry, child, other]));
+        build();
+
+        component.deselect({ name: 'Nginx', path: 'C:\\Server\\Nginx', isDirectory: true, hasChildren: true });
+
+        expect(mockBackupsService.deleteEntry).toHaveBeenCalledWith('entry-1');
+        expect(mockBackupsService.deleteEntry).toHaveBeenCalledWith('entry-2');
+        expect(mockBackupsService.deleteEntry).not.toHaveBeenCalledWith('entry-3');
+    });
+
+    it('deselecting a parent of a selection drops the selection below it', () => {
+        const child: BackupEntry = { ...folderEntry, id: 'entry-2', path: 'C:\\Server\\Nginx\\conf', excludes: [] };
+        mockBackupsService.getEntries.mockReturnValue(of([child]));
+        build();
+
+        component.deselect({ name: 'Server', path: 'C:\\Server', isDirectory: true, hasChildren: true });
+
+        expect(mockBackupsService.deleteEntry).toHaveBeenCalledWith('entry-2');
+    });
+
+    it('deselecting where nothing is selected does nothing', () => {
+        component.deselect({ name: 'Elsewhere', path: 'D:\\Elsewhere', isDirectory: true, hasChildren: true });
+
+        expect(mockDialog.open).not.toHaveBeenCalled();
+        expect(mockBackupsService.deleteEntry).not.toHaveBeenCalled();
+    });
+
+    it('deselecting is cancelled by declining the confirmation', () => {
+        build(false);
+
+        component.deselect({ name: 'Nginx', path: 'C:\\Server\\Nginx', isDirectory: true, hasChildren: true });
+
+        expect(mockBackupsService.deleteEntry).not.toHaveBeenCalled();
+    });
+
+    it('adds a pattern and clears the input', () => {
+        const input = { value: '*.Arma3Profile' } as HTMLInputElement;
+
+        component.addPattern(folderEntry, ' *.Arma3Profile ', input);
+
+        expect(mockBackupsService.updateEntry).toHaveBeenCalledWith(expect.objectContaining({ includePatterns: ['*.Arma3Profile'] }));
+        expect(input.value).toBe('');
+    });
+
+    it('ignores an empty pattern', () => {
+        const input = { value: '   ' } as HTMLInputElement;
+
+        component.addPattern(folderEntry, '   ', input);
+
+        expect(mockBackupsService.updateEntry).not.toHaveBeenCalled();
+    });
+
+    it('removes a pattern', () => {
+        component.removePattern({ ...folderEntry, includePatterns: ['*.Arma3Profile', '*.vars.*'] }, '*.vars.*');
+
+        expect(mockBackupsService.updateEntry).toHaveBeenCalledWith(expect.objectContaining({ includePatterns: ['*.Arma3Profile'] }));
     });
 
     it('surfaces a failed run and still refreshes the history', () => {
