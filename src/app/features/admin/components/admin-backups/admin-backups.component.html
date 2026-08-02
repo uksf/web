@@ -78,6 +78,16 @@
                                         (keyup.enter)="addPattern(entry, patternInput.value, patternInput)"
                                     />
                                 </div>
+                                <div class="entry-patterns">
+                                    <input
+                                        #excludeInput
+                                        class="pattern-input"
+                                        type="text"
+                                        placeholder="exclude by name, e.g. DevRun_*"
+                                        [attr.aria-label]="'Add exclude to ' + entry.path"
+                                        (keyup.enter)="addExclude(entry, excludeInput.value, excludeInput)"
+                                    />
+                                </div>
                                 } @for (exclude of entry.excludes; track exclude) {
                                 <div class="exclude">
                                     <mat-icon class="kind">block</mat-icon>

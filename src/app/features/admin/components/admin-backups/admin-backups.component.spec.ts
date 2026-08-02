@@ -188,6 +188,25 @@ describe('AdminBackupsComponent', () => {
         expect(mockBackupsService.updateEntry).not.toHaveBeenCalled();
     });
 
+    it('adds a name-pattern exclude typed by hand', () => {
+        const input = { value: 'DevRun_*' } as HTMLInputElement;
+
+        component.addExclude(folderEntry, ' DevRun_* ', input);
+
+        expect(mockBackupsService.updateEntry).toHaveBeenCalledWith(
+            expect.objectContaining({ excludes: ['C:\\Server\\Nginx\\logs', 'DevRun_*'] })
+        );
+        expect(input.value).toBe('');
+    });
+
+    it('ignores an empty exclude', () => {
+        const input = { value: '  ' } as HTMLInputElement;
+
+        component.addExclude(folderEntry, '  ', input);
+
+        expect(mockBackupsService.updateEntry).not.toHaveBeenCalled();
+    });
+
     it('removes a pattern', () => {
         component.removePattern({ ...folderEntry, includePatterns: ['*.Arma3Profile', '*.vars.*'] }, '*.vars.*');
 

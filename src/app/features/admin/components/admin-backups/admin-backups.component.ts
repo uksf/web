@@ -113,6 +113,16 @@ export class AdminBackupsComponent implements OnInit {
         this.save(this.backupsService.updateEntry({ ...entry, includePatterns: entry.includePatterns.filter((x) => x !== pattern) }));
     }
 
+    addExclude(entry: BackupEntry, exclude: string, input: HTMLInputElement): void {
+        const trimmed = exclude?.trim();
+        if (!trimmed) {
+            return;
+        }
+
+        input.value = '';
+        this.save(this.backupsService.updateEntry({ ...entry, excludes: [...entry.excludes, trimmed] }));
+    }
+
     exclude(node: BackupTreeNode): void {
         const parent = this.entries.find((entry) => this.contains(entry.path, node.path));
         if (!parent) {
