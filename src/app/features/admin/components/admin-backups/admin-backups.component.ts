@@ -10,7 +10,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
-import { BackupEntry, BackupEntryType, BackupRun, BackupRunState, BackupTreeNode } from '@app/features/admin/models/backup';
+import { BackupEntry, BackupEntryType, BackupRule, BackupRun, BackupRunState, BackupTreeNode } from '@app/features/admin/models/backup';
 import { DefaultContentAreasComponent } from '@app/shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { MainContentAreaComponent } from '@app/shared/components/content-areas/main-content-area/main-content-area.component';
 import { BackupsService } from '../../services/backups.service';
@@ -99,28 +99,35 @@ export class AdminBackupsComponent implements OnInit {
         );
     }
 
-    addPattern(entry: BackupEntry, pattern: string, input: HTMLInputElement): void {
-        const trimmed = pattern?.trim();
-        if (!trimmed) {
+    /** One list per entry: a pattern keeps only matching files, the same prefixed with ! keeps them out. */
+    rules(entry: BackupEntry): BackupRule[] {
+        return [
+            ...entry.includePatterns.map((text) => ({ text, exclude: false })),
+            ...entry.excludes.map((text) => ({ text: `!${text}`, exclude: true }))
+        ];
+    }
+
+    addRule(entry: BackupEntry, rule: string, input: HTMLInputElement): void {
+        const trimmed = rule?.trim();
+        if (!trimmed || trimmed === '!') {
             return;
         }
 
         input.value = '';
-        this.save(this.backupsService.updateEntry({ ...entry, includePatterns: [...entry.includePatterns, trimmed] }));
+
+        const updated = trimmed.startsWith('!')
+            ? { ...entry, excludes: [...entry.excludes, trimmed.slice(1).trim()] }
+            : { ...entry, includePatterns: [...entry.includePatterns, trimmed] };
+
+        this.save(this.backupsService.updateEntry(updated));
     }
 
-    removePattern(entry: BackupEntry, pattern: string): void {
-        this.save(this.backupsService.updateEntry({ ...entry, includePatterns: entry.includePatterns.filter((x) => x !== pattern) }));
-    }
+    removeRule(entry: BackupEntry, rule: BackupRule): void {
+        const updated = rule.exclude
+            ? { ...entry, excludes: entry.excludes.filter((x) => x !== rule.text.slice(1)) }
+            : { ...entry, includePatterns: entry.includePatterns.filter((x) => x !== rule.text) };
 
-    addExclude(entry: BackupEntry, exclude: string, input: HTMLInputElement): void {
-        const trimmed = exclude?.trim();
-        if (!trimmed) {
-            return;
-        }
-
-        input.value = '';
-        this.save(this.backupsService.updateEntry({ ...entry, excludes: [...entry.excludes, trimmed] }));
+        this.save(this.backupsService.updateEntry(updated));
     }
 
     exclude(node: BackupTreeNode): void {
@@ -155,10 +162,6 @@ export class AdminBackupsComponent implements OnInit {
                     }
                 }
             });
-    }
-
-    removeExclude(entry: BackupEntry, exclude: string): void {
-        this.save(this.backupsService.updateEntry({ ...entry, excludes: entry.excludes.filter((x) => x !== exclude) }));
     }
 
     toggleEnabled(entry: BackupEntry, enabled: boolean): void {

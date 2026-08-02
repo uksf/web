@@ -60,41 +60,23 @@
                                         Include subfolders
                                     </mat-slide-toggle>
                                 </div>
-                                <div class="entry-patterns">
-                                    @for (pattern of entry.includePatterns; track pattern) {
-                                    <span class="pattern">
-                                        {{ pattern }}
-                                        <button mat-icon-button [attr.aria-label]="'Remove pattern ' + pattern" (click)="removePattern(entry, pattern)" [disabled]="updating">
+                                <div class="entry-rules">
+                                    @for (rule of rules(entry); track rule.text) {
+                                    <span class="rule" [class.exclude]="rule.exclude" [title]="rule.text">
+                                        {{ rule.text }}
+                                        <button mat-icon-button [attr.aria-label]="'Remove rule ' + rule.text" (click)="removeRule(entry, rule)" [disabled]="updating">
                                             <mat-icon>close</mat-icon>
                                         </button>
                                     </span>
                                     }
                                     <input
-                                        #patternInput
-                                        class="pattern-input"
+                                        #ruleInput
+                                        class="rule-input"
                                         type="text"
-                                        placeholder="only files matching, e.g. *.Arma3Profile"
-                                        [attr.aria-label]="'Add pattern to ' + entry.path"
-                                        (keyup.enter)="addPattern(entry, patternInput.value, patternInput)"
+                                        placeholder="*.Arma3Profile to keep only those, !DevRun_* to exclude"
+                                        [attr.aria-label]="'Add rule to ' + entry.path"
+                                        (keyup.enter)="addRule(entry, ruleInput.value, ruleInput)"
                                     />
-                                </div>
-                                <div class="entry-patterns">
-                                    <input
-                                        #excludeInput
-                                        class="pattern-input"
-                                        type="text"
-                                        placeholder="exclude by name, e.g. DevRun_*"
-                                        [attr.aria-label]="'Add exclude to ' + entry.path"
-                                        (keyup.enter)="addExclude(entry, excludeInput.value, excludeInput)"
-                                    />
-                                </div>
-                                } @for (exclude of entry.excludes; track exclude) {
-                                <div class="exclude">
-                                    <mat-icon class="kind">block</mat-icon>
-                                    <span class="path" [title]="exclude">{{ exclude }}</span>
-                                    <button mat-icon-button matTooltip="Stop excluding" [attr.aria-label]="'Stop excluding ' + exclude" (click)="removeExclude(entry, exclude)" [disabled]="updating">
-                                        <mat-icon>undo</mat-icon>
-                                    </button>
                                 </div>
                                 }
                             </div>

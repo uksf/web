@@ -90,12 +90,6 @@ describe('AdminBackupsComponent', () => {
         expect(mockBackupsService.updateEntry).not.toHaveBeenCalled();
     });
 
-    it('removes an exclude', () => {
-        component.removeExclude(folderEntry, 'C:\\Server\\Nginx\\logs');
-
-        expect(mockBackupsService.updateEntry).toHaveBeenCalledWith(expect.objectContaining({ excludes: [] }));
-    });
-
     it('toggles enabled and recursive without losing the rest of the entry', () => {
         component.toggleEnabled(folderEntry, false);
         expect(mockBackupsService.updateEntry).toHaveBeenCalledWith(expect.objectContaining({ enabled: false, excludes: folderEntry.excludes }));
@@ -171,46 +165,51 @@ describe('AdminBackupsComponent', () => {
         expect(mockBackupsService.deleteEntry).not.toHaveBeenCalled();
     });
 
-    it('adds a pattern and clears the input', () => {
+    it('lists includes and excludes as one set of rules, excludes prefixed', () => {
+        const entry = { ...folderEntry, includePatterns: ['*.Arma3Profile'] };
+
+        expect(component.rules(entry)).toEqual([
+            { text: '*.Arma3Profile', exclude: false },
+            { text: '!C:\\Server\\Nginx\\logs', exclude: true }
+        ]);
+    });
+
+    it('a rule without ! is an include pattern', () => {
         const input = { value: '*.Arma3Profile' } as HTMLInputElement;
 
-        component.addPattern(folderEntry, ' *.Arma3Profile ', input);
+        component.addRule(folderEntry, ' *.Arma3Profile ', input);
 
         expect(mockBackupsService.updateEntry).toHaveBeenCalledWith(expect.objectContaining({ includePatterns: ['*.Arma3Profile'] }));
         expect(input.value).toBe('');
     });
 
-    it('ignores an empty pattern', () => {
-        const input = { value: '   ' } as HTMLInputElement;
+    it('a rule starting with ! is an exclude, without the prefix', () => {
+        const input = { value: '!DevRun_*' } as HTMLInputElement;
 
-        component.addPattern(folderEntry, '   ', input);
-
-        expect(mockBackupsService.updateEntry).not.toHaveBeenCalled();
-    });
-
-    it('adds a name-pattern exclude typed by hand', () => {
-        const input = { value: 'DevRun_*' } as HTMLInputElement;
-
-        component.addExclude(folderEntry, ' DevRun_* ', input);
+        component.addRule(folderEntry, '!DevRun_* ', input);
 
         expect(mockBackupsService.updateEntry).toHaveBeenCalledWith(
             expect.objectContaining({ excludes: ['C:\\Server\\Nginx\\logs', 'DevRun_*'] })
         );
-        expect(input.value).toBe('');
     });
 
-    it('ignores an empty exclude', () => {
-        const input = { value: '  ' } as HTMLInputElement;
+    it('ignores an empty rule, and a bare !', () => {
+        const input = { value: '' } as HTMLInputElement;
 
-        component.addExclude(folderEntry, '  ', input);
+        component.addRule(folderEntry, '   ', input);
+        component.addRule(folderEntry, '!', input);
 
         expect(mockBackupsService.updateEntry).not.toHaveBeenCalled();
     });
 
-    it('removes a pattern', () => {
-        component.removePattern({ ...folderEntry, includePatterns: ['*.Arma3Profile', '*.vars.*'] }, '*.vars.*');
+    it('removes a rule from whichever list it came from', () => {
+        const entry = { ...folderEntry, includePatterns: ['*.Arma3Profile', '*.vars.*'] };
 
+        component.removeRule(entry, { text: '*.vars.*', exclude: false });
         expect(mockBackupsService.updateEntry).toHaveBeenCalledWith(expect.objectContaining({ includePatterns: ['*.Arma3Profile'] }));
+
+        component.removeRule(entry, { text: '!C:\\Server\\Nginx\\logs', exclude: true });
+        expect(mockBackupsService.updateEntry).toHaveBeenCalledWith(expect.objectContaining({ excludes: [] }));
     });
 
     it('surfaces a failed run and still refreshes the history', () => {

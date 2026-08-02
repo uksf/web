@@ -19,6 +19,12 @@ export interface BackupEntry {
     enabled: boolean;
 }
 
+/** A pattern shown in the entry list. Excludes carry their ! prefix in `text`. */
+export interface BackupRule {
+    text: string;
+    exclude: boolean;
+}
+
 export interface BackupTreeNode {
     name: string;
     path: string;
