@@ -1,0 +1,106 @@
+<app-default-content-areas>
+    <app-main-content-area style="grid-column: span 3">
+        <div class="page-container">
+            @if (loading) {
+            <div class="spinner-container">
+                <mat-spinner></mat-spinner>
+            </div>
+            } @else {
+            <div class="backups-container">
+                <div class="backups-header">
+                    <button mat-raised-button color="primary" (click)="runNow()" [disabled]="running || updating">
+                        {{ running ? 'Running…' : 'Run backup now' }}
+                    </button>
+                    <button mat-icon-button matTooltip="Refresh" aria-label="Refresh backups" (click)="load()" [disabled]="updating">
+                        <mat-icon>refresh</mat-icon>
+                    </button>
+                    @if (error) {
+                    <span class="error">{{ error }}</span>
+                    }
+                </div>
+
+                <div class="backups-columns">
+                    <mat-card class="panel">
+                        <h3>Browse</h3>
+                        <app-backup-tree
+                            class="tree"
+                            [selectedPaths]="selectedPaths"
+                            [excludedPaths]="excludedPaths"
+                            (include)="include($event)"
+                            (exclude)="exclude($event)"
+                        ></app-backup-tree>
+                    </mat-card>
+
+                    <mat-card class="panel">
+                        <h3>Backed up ({{ entries.length }})</h3>
+                        @if (!entries.length) {
+                        <p class="empty">Nothing selected yet. Pick folders or files on the left.</p>
+                        }
+                        <div class="entries">
+                            @for (entry of entries; track trackByEntry($index, entry)) {
+                            <div class="entry" [class.disabled]="!entry.enabled">
+                                <div class="entry-row">
+                                    <mat-icon class="kind">{{ isFolder(entry) ? 'folder' : 'description' }}</mat-icon>
+                                    <span class="path" [title]="entry.path">{{ entry.path }}</span>
+                                    <mat-slide-toggle [checked]="entry.enabled" (change)="toggleEnabled(entry, $event.checked)" matTooltip="Include in the nightly run"></mat-slide-toggle>
+                                    <button mat-icon-button matTooltip="Remove" [attr.aria-label]="'Remove ' + entry.path" (click)="deleteEntry(entry)" [disabled]="updating">
+                                        <mat-icon>delete_outline</mat-icon>
+                                    </button>
+                                </div>
+                                @if (isFolder(entry)) {
+                                <div class="entry-options">
+                                    <mat-slide-toggle [checked]="entry.recursive" (change)="toggleRecursive(entry, $event.checked)">Include subfolders</mat-slide-toggle>
+                                </div>
+                                } @for (exclude of entry.excludes; track exclude) {
+                                <div class="exclude">
+                                    <mat-icon class="kind">block</mat-icon>
+                                    <span class="path" [title]="exclude">{{ exclude }}</span>
+                                    <button mat-icon-button matTooltip="Stop excluding" [attr.aria-label]="'Stop excluding ' + exclude" (click)="removeExclude(entry, exclude)" [disabled]="updating">
+                                        <mat-icon>undo</mat-icon>
+                                    </button>
+                                </div>
+                                }
+                            </div>
+                            }
+                        </div>
+                    </mat-card>
+                </div>
+
+                <mat-card class="panel runs">
+                    <h3>Recent runs</h3>
+                    @if (!runs.length) {
+                    <p class="empty">No runs recorded yet.</p>
+                    }
+                    <div class="runs-table">
+                        @for (run of runs; track trackByRun($index, run)) {
+                        <div class="run" [class.failed]="run.state === runState.Failed">
+                            <span class="state">
+                                <mat-icon>{{ run.state === runState.Success ? 'check_circle' : run.state === runState.Failed ? 'error' : 'hourglass_top' }}</mat-icon>
+                            </span>
+                            <span class="started">{{ run.started | date: 'dd/MM/yyyy HH:mm' }}</span>
+                            <span class="name">{{ run.archiveName }}</span>
+                            <span class="files">{{ run.fileCount | number }} files</span>
+                            <span class="size">{{ run.archiveBytes / 1048576 | number: '1.0-1' }} MB</span>
+                            <span class="cloud">
+                                @if (run.driveFileId) {
+                                <mat-icon matTooltip="Uploaded to Drive">cloud_done</mat-icon>
+                                } @else {
+                                <mat-icon matTooltip="Local only">cloud_off</mat-icon>
+                                }
+                            </span>
+                            <span class="detail">
+                                @if (run.error) {
+                                <span class="error">{{ run.error }}</span>
+                                } @else if (run.skips?.length) {
+                                <span class="skips" [matTooltip]="run.skips.length + ' files were skipped'">{{ run.skips.length }} skipped</span>
+                                }
+                            </span>
+                        </div>
+                        }
+                    </div>
+                </mat-card>
+            </div>
+            }
+        </div>
+    </app-main-content-area>
+</app-default-content-areas>

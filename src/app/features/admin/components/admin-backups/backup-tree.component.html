@@ -1,0 +1,33 @@
+@if (loading) {
+<div class="tree-spinner">
+    <mat-spinner [diameter]="28"></mat-spinner>
+</div>
+} @if (error) {
+<p class="tree-error">{{ error }}</p>
+}
+
+<div class="tree-rows">
+    @for (row of rows; track trackByPath($index, row)) {
+    <div class="tree-row" [class.selected]="isSelected(row)" [class.excluded]="isExcluded(row)" [style.--depth]="row.level">
+        <button mat-icon-button class="toggle" [attr.aria-label]="(row.expanded ? 'Collapse ' : 'Expand ') + row.node.path" (click)="toggle(row)" [disabled]="!row.node.isDirectory || !row.node.hasChildren">
+            @if (row.loading) {
+            <mat-spinner [diameter]="16"></mat-spinner>
+            } @else if (row.node.isDirectory && row.node.hasChildren) {
+            <mat-icon>{{ row.expanded ? 'expand_more' : 'chevron_right' }}</mat-icon>
+            }
+        </button>
+
+        <mat-icon class="kind">{{ row.node.isDirectory ? 'folder' : 'description' }}</mat-icon>
+        <span class="name" [title]="row.node.path">{{ row.node.name }}</span>
+
+        <div class="actions">
+            <button mat-icon-button matTooltip="Back this up" [attr.aria-label]="'Back up ' + row.node.path" (click)="include.emit(row.node)" [disabled]="isSelected(row) || isCovered(row)">
+                <mat-icon>add_circle_outline</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="Exclude from its parent selection" [attr.aria-label]="'Exclude ' + row.node.path" (click)="exclude.emit(row.node)" [disabled]="!isCovered(row) || isExcluded(row)">
+                <mat-icon>block</mat-icon>
+            </button>
+        </div>
+    </div>
+    }
+</div>
