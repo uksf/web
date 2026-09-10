@@ -2,8 +2,8 @@
     <app-full-content-area>
         @if (dto) {
             <div class="detail-top">
-                <button mat-icon-button class="back-button" [routerLink]="backLink" [matTooltip]="'Back to ' + dto.op.title"><mat-icon>arrow_back</mat-icon></button>
-                <h2>{{ dto.op.title }} · WARNO</h2>
+                <button mat-icon-button class="back-button" [routerLink]="backLink" [matTooltip]="'Back to ' + dto.mission.title"><mat-icon>arrow_back</mat-icon></button>
+                <h2>{{ dto.mission.title }} · WARNO</h2>
                 <span class="spacer"></span>
                 <div class="actions">
                     @if (editing) {
@@ -19,13 +19,15 @@
 
             @if (editing) {
                 <quill-editor [(ngModel)]="draft" format="json" [modules]="quillModules" placeholder="Warning order…"></quill-editor>
-            } @else if (dto.op.warno) {
-                <quill-view class="prose" [content]="dto.op.warno" format="json"></quill-view>
+            } @else if (dto.mission.warno) {
+                <quill-view class="prose" [content]="dto.mission.warno" format="json"></quill-view>
             } @else {
                 <div class="empty-state">
                     <p class="empty">No WARNO</p>
                 </div>
             }
+        } @else if (missing) {
+            <p class="empty">Mission not found</p>
         } @else {
             <p class="empty">Loading…</p>
         }

@@ -1,6 +1,5 @@
-import { Component, HostListener, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
 import { MatAnchor, MatButton, MatIconButton } from '@angular/material/button';
@@ -10,19 +9,17 @@ import { QuillViewComponent } from 'ngx-quill';
 import { first } from 'rxjs/operators';
 import { DefaultContentAreasComponent } from '@app/shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { FullContentAreaComponent } from '@app/shared/components/content-areas/full-content-area/full-content-area.component';
-import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
-import { mapBorderColour, capitaliseMapName, mapTokenFromMission } from '../../utils/map-colour';
-import { Campaign, CampaignStatus, IntelPage, IntelScope, MissionFileState, Op, OpDto, OpStatus } from '../../models/campaign';
+import { Campaign, CampaignStatus, IntelPage, IntelScope, Operation, OperationStatus } from '../../models/campaign';
 import { CampaignsService } from '../../services/campaigns.service';
 import { CampaignModalComponent } from '../../modals/campaign-modal/campaign-modal.component';
 import { IntelModalComponent } from '../../modals/intel-modal/intel-modal.component';
-import { OpModalComponent } from '../../modals/op-modal/op-modal.component';
+import { OperationModalComponent } from '../../modals/operation-modal/operation-modal.component';
 
 @Component({
     selector: 'app-operations-campaign-detail',
     templateUrl: './operations-campaign-detail.component.html',
-    styleUrls: ['./operations-campaign-detail.component.scss'],
+    styleUrls: ['../operations-detail-chrome.scss', '../operations-detail-cards.scss', './operations-campaign-detail.component.scss'],
     imports: [
         DefaultContentAreasComponent,
         FullContentAreaComponent,
@@ -32,7 +29,6 @@ import { OpModalComponent } from '../../modals/op-modal/op-modal.component';
         MatAnchor,
         MatIconButton,
         MatTooltip,
-        DatePipe,
         QuillViewComponent,
         NgxPermissionsModule
     ]
@@ -43,21 +39,17 @@ export class OperationsCampaignDetailComponent {
     private campaignsService = inject(CampaignsService);
     private dialog = inject(MatDialog);
 
-    readonly OpStatus = OpStatus;
-    readonly MissionFileState = MissionFileState;
     readonly CampaignStatus = CampaignStatus;
+    readonly OperationStatus = OperationStatus;
 
     campaignId = '';
     campaign?: Campaign;
-    ops: OpDto[] = [];
+    operations: Operation[] = [];
     intel: IntelPage[] = [];
+    missing = false;
 
-    shiftHeld = false;
-
-    @HostListener('window:keydown', ['$event'])
-    @HostListener('window:keyup', ['$event'])
-    onKey(event: KeyboardEvent) {
-        this.shiftHeld = event.shiftKey;
+    get isPastCampaign(): boolean {
+        return this.campaign?.status === CampaignStatus.Past;
     }
 
     get statusLabel(): string {
@@ -72,52 +64,28 @@ export class OperationsCampaignDetailComponent {
     }
 
     constructor() {
-        this.campaignId = this.route.snapshot.paramMap.get('id') ?? '';
+        this.campaignId = this.route.snapshot.paramMap.get('campaignId') ?? '';
         this.load();
     }
 
     load() {
-        this.campaignsService.getCampaign(this.campaignId).pipe(first()).subscribe({ next: (c) => (this.campaign = c) });
-        this.campaignsService.getOps(this.campaignId).pipe(first()).subscribe({ next: (ops) => (this.ops = ops) });
+        this.campaignsService.getCampaign(this.campaignId).pipe(first()).subscribe({
+            next: (c) => (this.campaign = c),
+            error: () => (this.missing = true)
+        });
+        this.campaignsService.getOperations(this.campaignId).pipe(first()).subscribe({ next: (operations) => (this.operations = operations) });
         this.campaignsService.getIntel(IntelScope.Campaign, this.campaignId).pipe(first()).subscribe({ next: (intel) => (this.intel = intel) });
     }
 
-    mapColour(op: Op): string {
-        return mapBorderColour(mapTokenFromMission(op.missionName));
-    }
-
-    mapName(op: Op): string {
-        return capitaliseMapName(mapTokenFromMission(op.missionName));
-    }
-
-    isLaunchDisabled(dto: OpDto): boolean {
-        return dto.op.autoLaunch && !this.shiftHeld;
-    }
-
-    launchIcon(dto: OpDto): string {
-        return dto.op.autoLaunch && !this.shiftHeld ? 'schedule' : 'play_arrow';
-    }
-
-    launchTooltip(dto: OpDto): string {
-        return dto.op.autoLaunch && !this.shiftHeld ? 'This op is scheduled to launch automatically. Hold shift to launch now.' : 'Launch';
-    }
-
-    launch(dto: OpDto) {
-        this.campaignsService
-            .launchOp(dto.op.id)
-            .pipe(first())
-            .subscribe({
-                next: (reports) => {
-                    if (reports && reports.length > 0) {
-                        this.dialog.open(MessageModalComponent, {
-                            // ValidationReport fields: detail (string), title (string), error (boolean)
-                            data: { title: 'Mission patched with warnings', message: reports.map((r) => r.detail ?? r.title ?? JSON.stringify(r)).join('\n') }
-                        });
-                    }
-                    this.load();
-                },
-                error: (error) => this.dialog.open(MessageModalComponent, { data: { message: error?.error ?? 'Launch failed' } })
-            });
+    operationStatusLabel(operation: Operation): string {
+        switch (operation.status) {
+            case OperationStatus.Current:
+                return 'Current';
+            case OperationStatus.Upcoming:
+                return 'Upcoming';
+            default:
+                return 'Past';
+        }
     }
 
     createIntel() {
@@ -128,9 +96,9 @@ export class OperationsCampaignDetailComponent {
             .subscribe({ next: (saved) => saved && this.load() });
     }
 
-    createOp() {
+    createOperation() {
         this.dialog
-            .open(OpModalComponent, { data: { campaignId: this.campaignId } })
+            .open(OperationModalComponent, { data: { campaignId: this.campaignId } })
             .afterClosed()
             .pipe(first())
             .subscribe({ next: (saved) => saved && this.load() });
@@ -154,24 +122,24 @@ export class OperationsCampaignDetailComponent {
             .subscribe({ next: (confirmed) => confirmed && this.campaignsService.deleteCampaign(this.campaignId).pipe(first()).subscribe({ next: () => this.router.navigate(['/operations/campaigns']) }) });
     }
 
-    openOp(dto: OpDto) {
-        this.router.navigate(['ops', dto.op.id], { relativeTo: this.route });
+    openOperation(operation: Operation) {
+        this.router.navigate(['operations', operation.id], { relativeTo: this.route });
     }
 
-    editOp(dto: OpDto) {
+    editOperation(operation: Operation) {
         this.dialog
-            .open(OpModalComponent, { data: { campaignId: this.campaignId, op: dto.op } })
+            .open(OperationModalComponent, { data: { campaignId: this.campaignId, operation } })
             .afterClosed()
             .pipe(first())
             .subscribe({ next: (saved) => saved && this.load() });
     }
 
-    deleteOp(dto: OpDto) {
+    deleteOperation(operation: Operation) {
         this.dialog
-            .open(ConfirmationModalComponent, { data: { title: 'Delete op', message: `Delete "${dto.op.title}"?`, button: 'Delete' } })
+            .open(ConfirmationModalComponent, { data: { title: 'Delete operation', message: `Delete "${operation.title}" and all its missions?`, button: 'Delete' } })
             .afterClosed()
             .pipe(first())
-            .subscribe({ next: (confirmed) => confirmed && this.campaignsService.deleteOp(dto.op.id).pipe(first()).subscribe({ next: () => this.load() }) });
+            .subscribe({ next: (confirmed) => confirmed && this.campaignsService.deleteOperation(this.campaignId, operation.id).pipe(first()).subscribe({ next: () => this.load() }) });
     }
 
     openIntel(page: IntelPage) {

@@ -16,6 +16,7 @@
         "test:e2e": "node node_modules/@playwright/test/cli.js test",
         "test:e2e:ui": "node node_modules/@playwright/test/cli.js test --ui",
         "test:e2e:update-snapshots": "node node_modules/@playwright/test/cli.js test visual-baseline --update-snapshots",
+        "test:e2e:hierarchy": "node node_modules/@playwright/test/cli.js test --config=playwright.hierarchy.config.ts",
         "storybook": "ng run uksf:storybook",
         "build-storybook": "ng run uksf:build-storybook",
         "test:storybook": "node node_modules/@playwright/test/cli.js test --config=playwright-storybook.config.ts",

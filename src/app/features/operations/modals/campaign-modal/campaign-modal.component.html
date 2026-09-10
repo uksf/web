@@ -5,8 +5,8 @@
         <app-dropdown [(ngModel)]="statusValue" [elements]="statusElements" [elementName]="'Status'" [placeholder]="'Status'" name="status" id="status" [autocomplete]="false">
             <ng-template #element let-element>{{ element.displayValue }}</ng-template>
         </app-dropdown>
-        <span class="field-label">Summary</span>
-        <quill-editor [(ngModel)]="model.summary" name="summary" format="json" [modules]="quillModules" placeholder="Campaign summary…"></quill-editor>
+        <span class="field-label">Campaign brief</span>
+        <quill-editor [(ngModel)]="model.summary" name="summary" format="json" [modules]="quillModules" placeholder="Campaign brief…"></quill-editor>
     </form>
 </mat-dialog-content>
 <mat-dialog-actions>

@@ -29,9 +29,16 @@ describe('IntelModalComponent', () => {
     afterEach(() => TestBed.resetTestingModule());
 
     it('create mode seeds scope + ownerId', () => {
-        setup({ scope: IntelScope.Op, ownerId: 'op1' });
-        expect(component.model.scope).toBe(IntelScope.Op);
+        setup({ scope: IntelScope.Operation, ownerId: 'op1' });
+        expect(component.model.scope).toBe(IntelScope.Operation);
         expect(component.model.ownerId).toBe('op1');
+        expect(component.isEdit).toBe(false);
+    });
+
+    it('create mode seeds mission scope + ownerId', () => {
+        setup({ scope: IntelScope.Mission, ownerId: 'm1' });
+        expect(component.model.scope).toBe(IntelScope.Mission);
+        expect(component.model.ownerId).toBe('m1');
         expect(component.isEdit).toBe(false);
     });
 
@@ -44,13 +51,13 @@ describe('IntelModalComponent', () => {
     });
 
     it('edit mode prefills from page data', () => {
-        setup({ scope: IntelScope.Op, ownerId: 'op1', page: { id: 'i1', scope: IntelScope.Op, ownerId: 'op1', title: 'Recon', body: '' } });
+        setup({ scope: IntelScope.Mission, ownerId: 'm1', page: { id: 'i1', scope: IntelScope.Mission, ownerId: 'm1', title: 'Recon', body: '' } });
         expect(component.isEdit).toBe(true);
         expect(component.model.title).toBe('Recon');
     });
 
     it('submit edit calls updateIntel then closes true', () => {
-        setup({ scope: IntelScope.Op, ownerId: 'op1', page: { id: 'i1', scope: IntelScope.Op, ownerId: 'op1', title: 'Recon', body: '' } });
+        setup({ scope: IntelScope.Mission, ownerId: 'm1', page: { id: 'i1', scope: IntelScope.Mission, ownerId: 'm1', title: 'Recon', body: '' } });
         component.submit();
         expect(service.updateIntel).toHaveBeenCalledWith(expect.objectContaining({ id: 'i1' }));
         expect(dialogRef.close).toHaveBeenCalledWith(true);

@@ -1,0 +1,9 @@
+.op-card {
+    &.scheduled::before {
+        background: color-mix(in srgb, var(--uksf-accent) 70%, white 30%);
+    }
+
+    &.complete::before {
+        background: #6fb87a;
+    }
+}

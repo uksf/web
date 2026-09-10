@@ -5,18 +5,18 @@ import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { OperationsWarnoDetailComponent } from './operations-warno-detail.component';
 import { CampaignsService } from '../../services/campaigns.service';
-import { OpStatus } from '../../models/campaign';
+import { CampaignMissionStatus } from '../../models/campaign';
 
 describe('OperationsWarnoDetailComponent', () => {
     let service: any;
     let dialog: any;
 
-    const opDto = { op: { id: 'op1', campaignId: 'c1', title: 'Op 1', scheduledTime: '2026-06-28T18:00:00Z', serverId: 's1', missionName: 'm', warno: '<p>original</p>', status: OpStatus.Scheduled } };
+    const missionDto = { mission: { id: 'm1', operationId: 'op1', title: 'Op 1', scheduledTime: '2026-06-28T18:00:00Z', serverId: 's1', missionName: 'm', warno: '<p>original</p>', status: CampaignMissionStatus.Scheduled } };
 
     beforeEach(() => {
         service = {
-            getOp: vi.fn().mockReturnValue(of(opDto)),
-            updateOp: vi.fn().mockReturnValue(of(undefined))
+            getMission: vi.fn().mockReturnValue(of(missionDto)),
+            updateMission: vi.fn().mockReturnValue(of(undefined))
         };
         dialog = { open: vi.fn() };
         TestBed.configureTestingModule({
@@ -24,18 +24,19 @@ describe('OperationsWarnoDetailComponent', () => {
                 OperationsWarnoDetailComponent,
                 { provide: CampaignsService, useValue: service },
                 { provide: MatDialog, useValue: dialog },
-                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map([['id', 'c1'], ['opId', 'op1']]) } } }
+                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map([['campaignId', 'c1'], ['operationId', 'op1'], ['missionId', 'm1']]) } } }
             ]
         });
     });
 
     afterEach(() => TestBed.resetTestingModule());
 
-    it('loads the op on construction', () => {
+    it('loads the mission on construction', () => {
         const component = TestBed.inject(OperationsWarnoDetailComponent);
 
-        expect(service.getOp).toHaveBeenCalledWith('op1');
-        expect(component.dto?.op.warno).toBe('<p>original</p>');
+        expect(service.getMission).toHaveBeenCalledWith('c1', 'op1', 'm1');
+        expect(component.dto?.mission.warno).toBe('<p>original</p>');
+        expect(component.backLink).toEqual(['/operations/campaigns', 'c1', 'operations', 'op1', 'missions', 'm1']);
     });
 
     it('edit seeds the draft from the current warno and enters editing mode', () => {
@@ -47,21 +48,21 @@ describe('OperationsWarnoDetailComponent', () => {
         expect(component.editing).toBe(true);
     });
 
-    it('save updates the op, reloads, and exits editing mode on success', () => {
+    it('save updates the mission, reloads, and exits editing mode on success', () => {
         const component = TestBed.inject(OperationsWarnoDetailComponent);
         component.edit();
         component.draft = '<p>updated</p>';
 
         component.save();
 
-        expect(service.updateOp).toHaveBeenCalledWith(expect.objectContaining({ id: 'op1', warno: '<p>updated</p>' }));
+        expect(service.updateMission).toHaveBeenCalledWith('c1', 'op1', expect.objectContaining({ id: 'm1', warno: '<p>updated</p>' }));
         expect(component.pending).toBe(false);
         expect(component.editing).toBe(false);
-        expect(service.getOp).toHaveBeenCalledTimes(2);
+        expect(service.getMission).toHaveBeenCalledTimes(2);
     });
 
     it('save surfaces an error modal and stays in editing mode when the update fails', () => {
-        service.updateOp.mockReturnValue(throwError(() => ({ error: 'Boom' })));
+        service.updateMission.mockReturnValue(throwError(() => ({ error: 'Boom' })));
         const component = TestBed.inject(OperationsWarnoDetailComponent);
         component.edit();
         component.draft = '<p>updated</p>';
@@ -80,7 +81,7 @@ describe('OperationsWarnoDetailComponent', () => {
 
         component.save();
 
-        expect(service.updateOp).not.toHaveBeenCalled();
+        expect(service.updateMission).not.toHaveBeenCalled();
     });
 
     it('cancelEdit exits editing mode without saving', () => {
@@ -90,6 +91,6 @@ describe('OperationsWarnoDetailComponent', () => {
         component.cancelEdit();
 
         expect(component.editing).toBe(false);
-        expect(service.updateOp).not.toHaveBeenCalled();
+        expect(service.updateMission).not.toHaveBeenCalled();
     });
 });

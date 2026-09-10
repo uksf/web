@@ -1,0 +1,15 @@
+<h2 mat-dialog-title>{{ isEdit ? 'Edit operation' : 'New operation' }}</h2>
+<mat-dialog-content>
+    <form>
+        <app-text-input label="Title" [(ngModel)]="model.title" name="title" id="title" [required]="true"></app-text-input>
+        <app-dropdown [(ngModel)]="statusValue" [elements]="statusElements" [elementName]="'Status'" [placeholder]="'Status'" name="status" id="status" [autocomplete]="false">
+            <ng-template #element let-element>{{ element.displayValue }}</ng-template>
+        </app-dropdown>
+        <span class="field-label">Brief</span>
+        <quill-editor [(ngModel)]="model.brief" name="brief" format="json" [modules]="quillModules" placeholder="Operation brief…"></quill-editor>
+        <app-form-value-debug-template></app-form-value-debug-template>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <app-button (clicked)="submit()" [disabled]="!model.title" [pending]="pending">{{ isEdit ? 'Save' : 'Create' }}</app-button>
+</mat-dialog-actions>

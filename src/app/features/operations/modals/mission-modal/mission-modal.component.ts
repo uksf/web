@@ -10,34 +10,36 @@ import { DropdownComponent } from '@app/shared/components/elements/dropdown/drop
 import { DateInputComponent } from '@app/shared/components/elements/date-input/date-input.component';
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { Op, OpStatus } from '../../models/campaign';
+import { CampaignMission, CampaignMissionStatus } from '../../models/campaign';
 import { CampaignsService } from '../../services/campaigns.service';
 import { GameServersService } from '../../services/game-servers.service';
 import { GameServerOption } from '../../models/game-server';
 import { MissionsService } from '../../services/missions.service';
+import { TemplateFormValueDebugComponent } from '@app/shared/components/elements/form-value-debug/form-value-debug.component';
 
-interface OpModalData {
+interface MissionModalData {
     campaignId: string;
-    op?: Op;
+    operationId: string;
+    mission?: CampaignMission;
 }
 
 @Component({
-    selector: 'app-op-modal',
-    templateUrl: './op-modal.component.html',
-    styleUrls: ['./op-modal.component.scss'],
-    imports: [FormsModule, MatDialogTitle, MatDialogContent, MatDialogActions, TextInputComponent, DropdownComponent, DateInputComponent, ButtonComponent, MatCheckbox]
+    selector: 'app-mission-modal',
+    templateUrl: './mission-modal.component.html',
+    styleUrls: ['./mission-modal.component.scss'],
+    imports: [FormsModule, MatDialogTitle, MatDialogContent, MatDialogActions, TextInputComponent, DropdownComponent, DateInputComponent, ButtonComponent, MatCheckbox, TemplateFormValueDebugComponent]
 })
-export class OpModalComponent {
-    private dialogRef = inject<MatDialogRef<OpModalComponent>>(MatDialogRef);
+export class MissionModalComponent {
+    private dialogRef = inject<MatDialogRef<MissionModalComponent>>(MatDialogRef);
     private dialog = inject(MatDialog);
     private campaignsService = inject(CampaignsService);
     private gameServersService = inject(GameServersService);
     private missionsService = inject(MissionsService);
-    private data = inject<OpModalData>(MAT_DIALOG_DATA);
+    private data = inject<MissionModalData>(MAT_DIALOG_DATA);
 
     isEdit = false;
     pending = false;
-    model: Op = { id: '', campaignId: '', title: '', scheduledTime: '', serverId: '', missionName: '', warno: '', status: OpStatus.Scheduled, autoLaunch: false };
+    model: CampaignMission = { id: '', operationId: '', title: '', scheduledTime: '', serverId: '', missionName: '', warno: '', status: CampaignMissionStatus.Scheduled, autoLaunch: false };
 
     scheduledDate: Date | null = null;
     scheduledTimeText = '19:00';
@@ -48,10 +50,10 @@ export class OpModalComponent {
     missionValue: IDropdownElement | null = null;
 
     constructor() {
-        this.model.campaignId = this.data.campaignId;
-        if (this.data.op) {
+        this.model.operationId = this.data.operationId;
+        if (this.data.mission) {
             this.isEdit = true;
-            this.model = { ...this.data.op };
+            this.model = { ...this.data.mission };
             this.scheduledDate = this.model.scheduledTime ? new Date(this.model.scheduledTime) : null;
             this.scheduledTimeText = this.scheduledDate ? this.formatTime(this.scheduledDate) : '19:00';
         } else {
@@ -118,7 +120,9 @@ export class OpModalComponent {
         this.model.serverId = this.serverValue?.value ?? '';
         this.model.missionName = this.missionValue?.value ?? '';
         this.model.scheduledTime = this.combineDateTime();
-        const request = this.isEdit ? this.campaignsService.updateOp(this.model) : this.campaignsService.addOp(this.model);
+        const request = this.isEdit
+            ? this.campaignsService.updateMission(this.data.campaignId, this.data.operationId, this.model)
+            : this.campaignsService.addMission(this.data.campaignId, this.data.operationId, this.model);
         request.pipe(first()).subscribe({
             next: () => this.dialogRef.close(true),
             error: (error) => {

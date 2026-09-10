@@ -13,16 +13,16 @@ import { FullContentAreaComponent } from '@app/shared/components/content-areas/f
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { capitaliseMapName, mapBorderColour, mapTokenFromMission } from '../../utils/map-colour';
-import { Campaign, CampaignStatus, IntelPage, IntelScope, MissionFileState, OpDto, OpStatus } from '../../models/campaign';
+import { Campaign, CampaignMissionDto, CampaignMissionStatus, CampaignStatus, IntelPage, IntelScope, MissionFileState, Operation } from '../../models/campaign';
 import { CampaignsService } from '../../services/campaigns.service';
 import { GameServersService } from '../../services/game-servers.service';
 import { IntelModalComponent } from '../../modals/intel-modal/intel-modal.component';
-import { OpModalComponent } from '../../modals/op-modal/op-modal.component';
+import { MissionModalComponent } from '../../modals/mission-modal/mission-modal.component';
 
 @Component({
-    selector: 'app-operations-op-detail',
-    templateUrl: './operations-op-detail.component.html',
-    styleUrls: ['./operations-op-detail.component.scss'],
+    selector: 'app-operations-mission-detail',
+    templateUrl: './operations-mission-detail.component.html',
+    styleUrls: ['../operations-detail-chrome.scss', '../operations-detail-cards.scss', './operations-mission-detail.component.scss'],
     imports: [
         DefaultContentAreasComponent,
         FullContentAreaComponent,
@@ -37,22 +37,25 @@ import { OpModalComponent } from '../../modals/op-modal/op-modal.component';
         NgxPermissionsModule
     ]
 })
-export class OperationsOpDetailComponent {
+export class OperationsMissionDetailComponent {
     private route = inject(ActivatedRoute);
     private router = inject(Router);
     private campaignsService = inject(CampaignsService);
     private gameServersService = inject(GameServersService);
     private dialog = inject(MatDialog);
 
-    readonly OpStatus = OpStatus;
+    readonly CampaignMissionStatus = CampaignMissionStatus;
     readonly MissionFileState = MissionFileState;
     readonly CampaignStatus = CampaignStatus;
 
     campaignId = '';
-    opId = '';
+    operationId = '';
+    missionId = '';
     campaign?: Campaign;
-    dto?: OpDto;
+    operation?: Operation;
+    dto?: CampaignMissionDto;
     intel: IntelPage[] = [];
+    missing = false;
     private serverNames: Record<string, string> = {};
 
     shiftHeld = false;
@@ -63,9 +66,14 @@ export class OperationsOpDetailComponent {
         this.shiftHeld = event.shiftKey;
     }
 
+    get isPastCampaign(): boolean {
+        return this.campaign?.status === CampaignStatus.Past;
+    }
+
     constructor() {
-        this.campaignId = this.route.snapshot.paramMap.get('id') ?? '';
-        this.opId = this.route.snapshot.paramMap.get('opId') ?? '';
+        this.campaignId = this.route.snapshot.paramMap.get('campaignId') ?? '';
+        this.operationId = this.route.snapshot.paramMap.get('operationId') ?? '';
+        this.missionId = this.route.snapshot.paramMap.get('missionId') ?? '';
         this.gameServersService
             .getServers()
             .pipe(first())
@@ -74,34 +82,38 @@ export class OperationsOpDetailComponent {
     }
 
     load() {
-        this.campaignsService.getOp(this.opId).pipe(first()).subscribe({ next: (dto) => (this.dto = dto) });
+        this.campaignsService.getMission(this.campaignId, this.operationId, this.missionId).pipe(first()).subscribe({
+            next: (dto) => (this.dto = dto),
+            error: () => (this.missing = true)
+        });
         this.campaignsService.getCampaign(this.campaignId).pipe(first()).subscribe({ next: (c) => (this.campaign = c) });
-        this.campaignsService.getIntel(IntelScope.Op, this.opId).pipe(first()).subscribe({ next: (intel) => (this.intel = intel) });
+        this.campaignsService.getOperation(this.campaignId, this.operationId).pipe(first()).subscribe({ next: (operation) => (this.operation = operation) });
+        this.campaignsService.getIntel(IntelScope.Mission, this.missionId).pipe(first()).subscribe({ next: (intel) => (this.intel = intel) });
     }
 
     get serverName(): string {
-        const id = this.dto?.op.serverId;
+        const id = this.dto?.mission.serverId;
         return id ? (this.serverNames[id] ?? id) : '';
     }
 
     get stripe(): string {
-        return this.dto ? mapBorderColour(mapTokenFromMission(this.dto.op.missionName)) : '';
+        return this.dto ? mapBorderColour(mapTokenFromMission(this.dto.mission.missionName)) : '';
     }
 
     get mapName(): string {
-        return capitaliseMapName(mapTokenFromMission(this.dto?.op.missionName));
+        return capitaliseMapName(mapTokenFromMission(this.dto?.mission.missionName));
     }
 
     get isLaunchDisabled(): boolean {
-        return !!this.dto?.op.autoLaunch && !this.shiftHeld;
+        return !!this.dto?.mission.autoLaunch && !this.shiftHeld;
     }
 
     get launchIcon(): string {
-        return this.dto?.op.autoLaunch && !this.shiftHeld ? 'schedule' : 'play_arrow';
+        return this.dto?.mission.autoLaunch && !this.shiftHeld ? 'schedule' : 'play_arrow';
     }
 
     get launchTooltip(): string {
-        return this.dto?.op.autoLaunch && !this.shiftHeld ? 'This op is scheduled to launch automatically. Hold shift to launch now.' : 'Launch';
+        return this.dto?.mission.autoLaunch && !this.shiftHeld ? 'This mission is scheduled to launch automatically. Hold shift to launch now.' : 'Launch';
     }
 
     launch() {
@@ -109,7 +121,7 @@ export class OperationsOpDetailComponent {
             return;
         }
         this.campaignsService
-            .launchOp(this.dto.op.id)
+            .launchMission(this.campaignId, this.operationId, this.dto.mission.id)
             .pipe(first())
             .subscribe({
                 next: (reports) => {
@@ -126,31 +138,33 @@ export class OperationsOpDetailComponent {
 
     createIntel() {
         this.dialog
-            .open(IntelModalComponent, { data: { scope: IntelScope.Op, ownerId: this.opId } })
+            .open(IntelModalComponent, { data: { scope: IntelScope.Mission, ownerId: this.missionId } })
             .afterClosed()
             .pipe(first())
             .subscribe({ next: (saved) => saved && this.load() });
     }
 
-    editOp() {
+    editMission() {
         if (!this.dto) { return; }
         this.dialog
-            .open(OpModalComponent, { data: { campaignId: this.campaignId, op: this.dto.op } })
+            .open(MissionModalComponent, { data: { campaignId: this.campaignId, operationId: this.operationId, mission: this.dto.mission } })
             .afterClosed()
             .pipe(first())
             .subscribe({ next: (saved) => saved && this.load() });
     }
 
-    deleteOp() {
+    deleteMission() {
         if (!this.dto) { return; }
         this.dialog
-            .open(ConfirmationModalComponent, { data: { title: 'Delete op', message: `Delete "${this.dto.op.title}"? This cannot be undone.`, button: 'Delete' } })
+            .open(ConfirmationModalComponent, { data: { title: 'Delete mission', message: `Delete "${this.dto.mission.title}"? This cannot be undone.`, button: 'Delete' } })
             .afterClosed()
             .pipe(first())
             .subscribe({
                 next: (confirmed) => {
                     if (confirmed) {
-                        this.campaignsService.deleteOp(this.opId).pipe(first()).subscribe({ next: () => this.router.navigate(['/operations/campaigns', this.campaignId]) });
+                        this.campaignsService.deleteMission(this.campaignId, this.operationId, this.missionId).pipe(first()).subscribe({
+                            next: () => this.router.navigate(['/operations/campaigns', this.campaignId, 'operations', this.operationId])
+                        });
                     }
                 }
             });

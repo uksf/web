@@ -1,0 +1,124 @@
+<app-default-content-areas>
+    <app-full-content-area>
+        @if (campaign && operation) {
+            <div class="detail-top">
+                <button mat-icon-button class="back-button" [routerLink]="['/operations/campaigns', campaign.id]" [matTooltip]="'Back to ' + campaign.name"><mat-icon>arrow_back</mat-icon></button>
+                <h2>{{ operation.title }}</h2>
+                <span
+                    class="pill"
+                    [class.current]="operation.status === OperationStatus.Current"
+                    [class.upcoming]="operation.status === OperationStatus.Upcoming"
+                    [class.past]="operation.status === OperationStatus.Past"
+                >
+                    <span class="dot"></span>{{ statusLabel }}
+                </span>
+                <span class="spacer"></span>
+                <div class="actions">
+                    <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                        <button mat-raised-button (click)="editOperation()"><mat-icon>edit</mat-icon> Edit</button>
+                        @if (!isPastCampaign) {
+                            <button mat-icon-button (click)="deleteOperation()" matTooltip="Delete operation"><mat-icon>delete</mat-icon></button>
+                        }
+                    </ng-template>
+                </div>
+            </div>
+
+            @if (operation.brief) {
+                <quill-view class="prose" [content]="operation.brief" format="json"></quill-view>
+            } @else {
+                <p class="empty">No brief</p>
+            }
+
+            <div class="sec">
+                <h3>Missions</h3>
+                <span class="rule"></span>
+                @if (!isPastCampaign) {
+                    <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                        <button mat-flat-button color="primary" (click)="createMission()">New mission</button>
+                    </ng-template>
+                }
+            </div>
+
+            <div class="cards">
+                @for (dto of missions; track dto.mission.id) {
+                    <div class="op-card" [class.scheduled]="dto.mission.status === CampaignMissionStatus.Scheduled" [class.complete]="dto.mission.status === CampaignMissionStatus.Complete">
+                        <span class="pill" [class.scheduled]="dto.mission.status === CampaignMissionStatus.Scheduled" [class.complete]="dto.mission.status === CampaignMissionStatus.Complete">
+                            <span class="dot"></span>{{ dto.mission.status === CampaignMissionStatus.Complete ? 'Complete' : 'Scheduled' }}
+                        </span>
+                        <a class="op-main" [routerLink]="['/operations/campaigns', campaignId, 'operations', operationId, 'missions', dto.mission.id]">
+                            <div class="title">{{ dto.mission.title }}</div>
+                            <div class="meta">
+                                <span class="m"><mat-icon>event</mat-icon>{{ dto.mission.scheduledTime | date: 'EEE d MMM, HH:mm' }}</span>
+                                @if (mapName(dto.mission) && dto.missionFileState === MissionFileState.Present) {
+                                    <span class="dotsep">·</span>
+                                    <span class="m"><span class="swatch" [style.background]="mapColour(dto.mission)"></span>{{ mapName(dto.mission) }}</span>
+                                }
+                                @if (dto.missionFileState === MissionFileState.Missing && dto.mission.status === CampaignMissionStatus.Scheduled) {
+                                    <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                                        <span class="warn-chip"><mat-icon>warning</mat-icon> mission file missing</span>
+                                    </ng-template>
+                                }
+                            </div>
+                        </a>
+                        <span class="spacer"></span>
+                        <div class="op-actions">
+                            @if (dto.mission.status === CampaignMissionStatus.Scheduled) {
+                                <ng-template [ngxPermissionsOnly]="['NCO', 'SERVERS', 'COMMAND']">
+                                    <button
+                                        mat-icon-button
+                                        class="launch-btn"
+                                        [disabled]="isLaunchDisabled(dto)"
+                                        (click)="launch(dto)"
+                                        [matTooltip]="launchTooltip(dto)"
+                                    >
+                                        <mat-icon>{{ launchIcon(dto) }}</mat-icon>
+                                    </button>
+                                </ng-template>
+                            }
+                            @if (dto.mission.status === CampaignMissionStatus.Scheduled) {
+                                <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                                    <button mat-icon-button (click)="editMission(dto)" matTooltip="Edit mission"><mat-icon>edit</mat-icon></button>
+                                    <button mat-icon-button (click)="deleteMission(dto)" matTooltip="Delete mission"><mat-icon>delete</mat-icon></button>
+                                </ng-template>
+                            }
+                        </div>
+                        <mat-icon class="chev">chevron_right</mat-icon>
+                    </div>
+                } @empty {
+                    <p class="empty">No missions</p>
+                }
+            </div>
+
+            <div class="sec">
+                <h3>Intel</h3>
+                <span class="rule"></span>
+                @if (!isPastCampaign) {
+                    <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                        <button mat-flat-button color="primary" (click)="createIntel()">Add Intel</button>
+                    </ng-template>
+                }
+            </div>
+            <div class="cards">
+                @for (page of intel; track page.id) {
+                    <div class="intel-row">
+                        <a class="intel-main" [routerLink]="['/operations/campaigns', campaignId, 'operations', operationId, 'intel', page.id]">
+                            <mat-icon class="intel-ico">menu_book</mat-icon>
+                            <div class="title">{{ page.title }}</div>
+                            <span class="spacer"></span>
+                            <mat-icon class="chev">chevron_right</mat-icon>
+                        </a>
+                        <ng-template [ngxPermissionsOnly]="['COMMAND']">
+                            <button mat-icon-button class="row-delete" (click)="deleteIntel(page)" matTooltip="Delete"><mat-icon>delete</mat-icon></button>
+                        </ng-template>
+                    </div>
+                } @empty {
+                    <p class="empty">No intel pages</p>
+                }
+            </div>
+        } @else if (missing) {
+            <p class="empty">Operation not found</p>
+        } @else {
+            <p class="empty">Loading…</p>
+        }
+    </app-full-content-area>
+</app-default-content-areas>

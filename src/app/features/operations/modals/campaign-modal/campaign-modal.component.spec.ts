@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { readFileSync } from 'fs';
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { CampaignModalComponent } from './campaign-modal.component';
@@ -27,6 +28,14 @@ describe('CampaignModalComponent', () => {
     }
 
     afterEach(() => TestBed.resetTestingModule());
+
+    it('labels the summary field as Campaign brief without renaming the model', () => {
+        const html = readFileSync('src/app/features/operations/modals/campaign-modal/campaign-modal.component.html', 'utf8');
+        expect(html).toContain('Campaign brief');
+        expect(html).toContain('[(ngModel)]="model.summary"');
+        setup(null);
+        expect(component.model).toHaveProperty('summary');
+    });
 
     it('create mode defaults to Upcoming', () => {
         setup(null);

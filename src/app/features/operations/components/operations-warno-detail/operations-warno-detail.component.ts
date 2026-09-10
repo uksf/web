@@ -12,7 +12,7 @@ import { DefaultContentAreasComponent } from '@app/shared/components/content-are
 import { FullContentAreaComponent } from '@app/shared/components/content-areas/full-content-area/full-content-area.component';
 import { ButtonComponent } from '@app/shared/components/elements/button-pending/button.component';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { OpDto } from '../../models/campaign';
+import { CampaignMissionDto } from '../../models/campaign';
 import { CampaignsService } from '../../services/campaigns.service';
 
 @Component({
@@ -40,8 +40,10 @@ export class OperationsWarnoDetailComponent {
     private dialog = inject(MatDialog);
 
     campaignId = '';
-    opId = '';
-    dto?: OpDto;
+    operationId = '';
+    missionId = '';
+    dto?: CampaignMissionDto;
+    missing = false;
     editing = false;
     pending = false;
     draft = '';
@@ -50,24 +52,28 @@ export class OperationsWarnoDetailComponent {
     };
 
     get backLink(): string[] {
-        return ['/operations/campaigns', this.campaignId, 'ops', this.opId];
+        return ['/operations/campaigns', this.campaignId, 'operations', this.operationId, 'missions', this.missionId];
     }
 
     constructor() {
-        this.campaignId = this.route.snapshot.paramMap.get('id') ?? '';
-        this.opId = this.route.snapshot.paramMap.get('opId') ?? '';
+        this.campaignId = this.route.snapshot.paramMap.get('campaignId') ?? '';
+        this.operationId = this.route.snapshot.paramMap.get('operationId') ?? '';
+        this.missionId = this.route.snapshot.paramMap.get('missionId') ?? '';
         this.load();
     }
 
     load() {
-        this.campaignsService.getOp(this.opId).pipe(first()).subscribe({ next: (dto) => (this.dto = dto) });
+        this.campaignsService.getMission(this.campaignId, this.operationId, this.missionId).pipe(first()).subscribe({
+            next: (dto) => (this.dto = dto),
+            error: () => (this.missing = true)
+        });
     }
 
     edit() {
         if (!this.dto) {
             return;
         }
-        this.draft = this.dto.op.warno;
+        this.draft = this.dto.mission.warno;
         this.editing = true;
     }
 
@@ -77,7 +83,7 @@ export class OperationsWarnoDetailComponent {
         }
         this.pending = true;
         this.campaignsService
-            .updateOp({ ...this.dto.op, warno: this.draft })
+            .updateMission(this.campaignId, this.operationId, { ...this.dto.mission, warno: this.draft })
             .pipe(first())
             .subscribe({
                 next: () => {

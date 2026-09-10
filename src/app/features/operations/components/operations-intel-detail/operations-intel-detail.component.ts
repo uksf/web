@@ -6,11 +6,12 @@ import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatTooltip } from '@angular/material/tooltip';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { QuillViewComponent } from 'ngx-quill';
-import { first } from 'rxjs/operators';
+import { forkJoin, of } from 'rxjs';
+import { first, switchMap, tap } from 'rxjs/operators';
 import { DefaultContentAreasComponent } from '@app/shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { FullContentAreaComponent } from '@app/shared/components/content-areas/full-content-area/full-content-area.component';
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
-import { Campaign, IntelPage, IntelScope, OpDto } from '../../models/campaign';
+import { Campaign, CampaignMissionDto, IntelPage, IntelScope, Operation } from '../../models/campaign';
 import { CampaignsService } from '../../services/campaigns.service';
 import { IntelModalComponent } from '../../modals/intel-modal/intel-modal.component';
 
@@ -27,38 +28,79 @@ export class OperationsIntelDetailComponent {
     private dialog = inject(MatDialog);
 
     campaignId = '';
-    opId: string | null = null;
+    operationId: string | null = null;
+    missionId: string | null = null;
     intelId = '';
     campaign?: Campaign;
-    op?: OpDto;
+    operation?: Operation;
+    mission?: CampaignMissionDto;
     page?: IntelPage;
+    loaded = false;
+    missing = false;
 
     get backLink(): string[] {
-        return this.opId ? ['/operations/campaigns', this.campaignId, 'ops', this.opId] : ['/operations/campaigns', this.campaignId];
+        if (this.missionId && this.operationId) {
+            return ['/operations/campaigns', this.campaignId, 'operations', this.operationId, 'missions', this.missionId];
+        }
+        if (this.operationId) {
+            return ['/operations/campaigns', this.campaignId, 'operations', this.operationId];
+        }
+        return ['/operations/campaigns', this.campaignId];
     }
 
     get backLabel(): string {
-        return this.opId ? (this.op?.op.title ?? '') : (this.campaign?.name ?? '');
+        if (this.missionId) {
+            return this.mission?.mission.title ?? '';
+        }
+        if (this.operationId) {
+            return this.operation?.title ?? '';
+        }
+        return this.campaign?.name ?? '';
+    }
+
+    get ancestry(): string {
+        return [this.campaign?.name, this.operation?.title, this.mission?.mission.title].filter(Boolean).join(' / ');
     }
 
     constructor() {
-        this.campaignId = this.route.snapshot.paramMap.get('id') ?? '';
-        this.opId = this.route.snapshot.paramMap.get('opId');
+        this.campaignId = this.route.snapshot.paramMap.get('campaignId') ?? '';
+        this.operationId = this.route.snapshot.paramMap.get('operationId');
+        this.missionId = this.route.snapshot.paramMap.get('missionId');
         this.intelId = this.route.snapshot.paramMap.get('intelId') ?? '';
         this.load();
     }
 
     load() {
-        this.campaignsService.getCampaign(this.campaignId).pipe(first()).subscribe({ next: (c) => (this.campaign = c) });
-        if (this.opId) {
-            this.campaignsService.getOp(this.opId).pipe(first()).subscribe({ next: (dto) => (this.op = dto) });
-        }
-        const scope = this.opId ? IntelScope.Op : IntelScope.Campaign;
-        const ownerId = this.opId ?? this.campaignId;
-        this.campaignsService
-            .getIntel(scope, ownerId)
-            .pipe(first())
-            .subscribe({ next: (pages) => (this.page = pages.find((p) => p.id === this.intelId)) });
+        this.loaded = false;
+        this.missing = false;
+        this.page = undefined;
+        const scope = this.missionId ? IntelScope.Mission : this.operationId ? IntelScope.Operation : IntelScope.Campaign;
+        const ownerId = this.missionId ?? this.operationId ?? this.campaignId;
+        forkJoin({
+            campaign: this.campaignsService.getCampaign(this.campaignId).pipe(tap((c) => (this.campaign = c))),
+            operation: this.operationId
+                ? this.campaignsService.getOperation(this.campaignId, this.operationId).pipe(tap((operation) => (this.operation = operation)))
+                : of(null),
+            mission:
+                this.missionId && this.operationId
+                    ? this.campaignsService.getMission(this.campaignId, this.operationId, this.missionId).pipe(tap((dto) => (this.mission = dto)))
+                    : of(null)
+        })
+            .pipe(
+                switchMap(() => this.campaignsService.getIntel(scope, ownerId)),
+                first()
+            )
+            .subscribe({
+                next: (pages) => {
+                    this.page = pages.find((p) => p.id === this.intelId);
+                    this.loaded = true;
+                },
+                error: () => {
+                    this.page = undefined;
+                    this.missing = true;
+                    this.loaded = true;
+                }
+            });
     }
 
     edit() {

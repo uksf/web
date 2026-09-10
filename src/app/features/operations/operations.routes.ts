@@ -11,10 +11,20 @@ import { OperationsMissionsComponent } from './components/operations-missions/op
 import { OperationsNpcsComponent } from './components/operations-npcs/operations-npcs.component';
 import { OperationsCampaignsComponent } from './components/operations-campaigns/operations-campaigns.component';
 import { OperationsCampaignDetailComponent } from './components/operations-campaign-detail/operations-campaign-detail.component';
-import { OperationsOpDetailComponent } from './components/operations-op-detail/operations-op-detail.component';
+import { OperationsOperationDetailComponent } from './components/operations-operation-detail/operations-operation-detail.component';
+import { OperationsMissionDetailComponent } from './components/operations-mission-detail/operations-mission-detail.component';
 import { OperationsIntelDetailComponent } from './components/operations-intel-detail/operations-intel-detail.component';
 import { OperationsWarnoDetailComponent } from './components/operations-warno-detail/operations-warno-detail.component';
 import { NpcVoicesService } from './services/npc-voices.service';
+
+const testerRouteData = {
+    permissions: {
+        only: Permissions.TESTER,
+        except: Permissions.UNLOGGED,
+        redirectTo: { UNLOGGED: loginRedirect, default: '/operations/aar' }
+    }
+};
+
 export const OPERATIONS_ROUTES: Routes = [
     {
         path: '',
@@ -79,73 +89,49 @@ export const OPERATIONS_ROUTES: Routes = [
             {
                 path: 'campaigns',
                 component: OperationsCampaignsComponent,
-                data: {
-                    permissions: {
-                        only: Permissions.TESTER,
-                        except: Permissions.UNLOGGED,
-                        redirectTo: { UNLOGGED: loginRedirect, default: '/operations/aar' }
-                    }
-                },
+                data: testerRouteData,
                 canActivate: [NgxPermissionsGuard]
             },
             {
-                path: 'campaigns/:id',
+                path: 'campaigns/:campaignId',
                 component: OperationsCampaignDetailComponent,
-                data: {
-                    permissions: {
-                        only: Permissions.TESTER,
-                        except: Permissions.UNLOGGED,
-                        redirectTo: { UNLOGGED: loginRedirect, default: '/operations/aar' }
-                    }
-                },
+                data: testerRouteData,
                 canActivate: [NgxPermissionsGuard]
             },
             {
-                path: 'campaigns/:id/ops/:opId',
-                component: OperationsOpDetailComponent,
-                data: {
-                    permissions: {
-                        only: Permissions.TESTER,
-                        except: Permissions.UNLOGGED,
-                        redirectTo: { UNLOGGED: loginRedirect, default: '/operations/aar' }
-                    }
-                },
-                canActivate: [NgxPermissionsGuard]
-            },
-            {
-                path: 'campaigns/:id/intel/:intelId',
+                path: 'campaigns/:campaignId/intel/:intelId',
                 component: OperationsIntelDetailComponent,
-                data: {
-                    permissions: {
-                        only: Permissions.TESTER,
-                        except: Permissions.UNLOGGED,
-                        redirectTo: { UNLOGGED: loginRedirect, default: '/operations/aar' }
-                    }
-                },
+                data: testerRouteData,
                 canActivate: [NgxPermissionsGuard]
             },
             {
-                path: 'campaigns/:id/ops/:opId/intel/:intelId',
+                path: 'campaigns/:campaignId/operations/:operationId',
+                component: OperationsOperationDetailComponent,
+                data: testerRouteData,
+                canActivate: [NgxPermissionsGuard]
+            },
+            {
+                path: 'campaigns/:campaignId/operations/:operationId/intel/:intelId',
                 component: OperationsIntelDetailComponent,
-                data: {
-                    permissions: {
-                        only: Permissions.TESTER,
-                        except: Permissions.UNLOGGED,
-                        redirectTo: { UNLOGGED: loginRedirect, default: '/operations/aar' }
-                    }
-                },
+                data: testerRouteData,
                 canActivate: [NgxPermissionsGuard]
             },
             {
-                path: 'campaigns/:id/ops/:opId/warno',
+                path: 'campaigns/:campaignId/operations/:operationId/missions/:missionId',
+                component: OperationsMissionDetailComponent,
+                data: testerRouteData,
+                canActivate: [NgxPermissionsGuard]
+            },
+            {
+                path: 'campaigns/:campaignId/operations/:operationId/missions/:missionId/intel/:intelId',
+                component: OperationsIntelDetailComponent,
+                data: testerRouteData,
+                canActivate: [NgxPermissionsGuard]
+            },
+            {
+                path: 'campaigns/:campaignId/operations/:operationId/missions/:missionId/warno',
                 component: OperationsWarnoDetailComponent,
-                data: {
-                    permissions: {
-                        only: Permissions.TESTER,
-                        except: Permissions.UNLOGGED,
-                        redirectTo: { UNLOGGED: loginRedirect, default: '/operations/aar' }
-                    }
-                },
+                data: testerRouteData,
                 canActivate: [NgxPermissionsGuard]
             },
             {

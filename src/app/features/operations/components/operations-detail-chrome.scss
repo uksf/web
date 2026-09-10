@@ -33,6 +33,15 @@
             height: 36px !important;
             padding: 6px !important;
         }
+
+        .launch-btn {
+            background: th.primary();
+            color: th.primary-contrast();
+
+            &:hover {
+                background: color-mix(in srgb, th.primary() 85%, black);
+            }
+        }
     }
 }
 
@@ -68,10 +77,32 @@
     }
 }
 
-.crumb {
-    margin: 0;
-    color: th.fg-secondary-text();
-    font-size: 12.5px;
+.sec {
+    display: flex;
+    align-items: center;
+    gap: v.$spacing-12px;
+    margin-top: v.$spacing-12px;
+
+    h3 {
+        margin: 0;
+        font-size: 13px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: th.fg-secondary-text();
+        font-weight: 700;
+    }
+
+    .rule {
+        flex: 1;
+        height: 1px;
+        background: th.fg-divider();
+    }
+}
+
+.cards {
+    display: flex;
+    flex-direction: column;
+    gap: v.$spacing-6px;
 }
 
 .empty {

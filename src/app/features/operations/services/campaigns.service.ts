@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UrlService } from '@app/core/services/url.service';
 import { ValidationReport } from '@app/shared/models/response';
-import { Campaign, IntelPage, IntelScope, Op, OpDto } from '../models/campaign';
+import { Campaign, CampaignMission, CampaignMissionDto, IntelPage, IntelScope, Operation } from '../models/campaign';
 
 @Injectable({ providedIn: 'root' })
 export class CampaignsService {
@@ -30,32 +30,52 @@ export class CampaignsService {
         return this.http.delete<void>(`${this.urls.apiUrl}/campaigns/${id}`);
     }
 
-    getOps(campaignId: string): Observable<OpDto[]> {
-        return this.http.get<OpDto[]>(`${this.urls.apiUrl}/ops?campaignId=${campaignId}`);
+    getOperations(campaignId: string): Observable<Operation[]> {
+        return this.http.get<Operation[]>(`${this.urls.apiUrl}/campaigns/${campaignId}/operations`);
     }
 
-    getAllOps(): Observable<OpDto[]> {
-        return this.http.get<OpDto[]>(`${this.urls.apiUrl}/ops`);
+    getOperation(campaignId: string, operationId: string): Observable<Operation> {
+        return this.http.get<Operation>(`${this.urls.apiUrl}/campaigns/${campaignId}/operations/${operationId}`);
     }
 
-    getOp(id: string): Observable<OpDto> {
-        return this.http.get<OpDto>(`${this.urls.apiUrl}/ops/${id}`);
+    addOperation(campaignId: string, operation: Operation): Observable<void> {
+        return this.http.post<void>(`${this.urls.apiUrl}/campaigns/${campaignId}/operations`, operation);
     }
 
-    addOp(op: Op): Observable<void> {
-        return this.http.post<void>(`${this.urls.apiUrl}/ops`, op);
+    updateOperation(campaignId: string, operationId: string, operation: Operation): Observable<void> {
+        return this.http.put<void>(`${this.urls.apiUrl}/campaigns/${campaignId}/operations/${operationId}`, operation);
     }
 
-    updateOp(op: Op): Observable<void> {
-        return this.http.put<void>(`${this.urls.apiUrl}/ops`, op);
+    deleteOperation(campaignId: string, operationId: string): Observable<void> {
+        return this.http.delete<void>(`${this.urls.apiUrl}/campaigns/${campaignId}/operations/${operationId}`);
     }
 
-    deleteOp(id: string): Observable<void> {
-        return this.http.delete<void>(`${this.urls.apiUrl}/ops/${id}`);
+    getCampaignMissions(campaignId: string): Observable<CampaignMissionDto[]> {
+        return this.http.get<CampaignMissionDto[]>(`${this.urls.apiUrl}/campaigns/${campaignId}/missions`);
     }
 
-    launchOp(id: string): Observable<ValidationReport[]> {
-        return this.http.post<ValidationReport[]>(`${this.urls.apiUrl}/ops/${id}/launch`, {});
+    getMissions(campaignId: string, operationId: string): Observable<CampaignMissionDto[]> {
+        return this.http.get<CampaignMissionDto[]>(`${this.urls.apiUrl}/campaigns/${campaignId}/operations/${operationId}/missions`);
+    }
+
+    getMission(campaignId: string, operationId: string, missionId: string): Observable<CampaignMissionDto> {
+        return this.http.get<CampaignMissionDto>(`${this.urls.apiUrl}/campaigns/${campaignId}/operations/${operationId}/missions/${missionId}`);
+    }
+
+    addMission(campaignId: string, operationId: string, mission: CampaignMission): Observable<void> {
+        return this.http.post<void>(`${this.urls.apiUrl}/campaigns/${campaignId}/operations/${operationId}/missions`, mission);
+    }
+
+    updateMission(campaignId: string, operationId: string, mission: CampaignMission): Observable<void> {
+        return this.http.put<void>(`${this.urls.apiUrl}/campaigns/${campaignId}/operations/${operationId}/missions/${mission.id}`, mission);
+    }
+
+    deleteMission(campaignId: string, operationId: string, missionId: string): Observable<void> {
+        return this.http.delete<void>(`${this.urls.apiUrl}/campaigns/${campaignId}/operations/${operationId}/missions/${missionId}`);
+    }
+
+    launchMission(campaignId: string, operationId: string, missionId: string): Observable<ValidationReport[]> {
+        return this.http.post<ValidationReport[]>(`${this.urls.apiUrl}/campaigns/${campaignId}/operations/${operationId}/missions/${missionId}/launch`, {});
     }
 
     getIntel(scope: IntelScope, ownerId: string): Observable<IntelPage[]> {

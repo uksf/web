@@ -1,13 +1,13 @@
 import { afterEach, describe, it, expect, vi, beforeEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
-import { of, Subject, throwError } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { OperationsCampaignDetailComponent } from './operations-campaign-detail.component';
 import { CampaignsService } from '../../services/campaigns.service';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { ActivatedRoute } from '@angular/router';
-import { CampaignStatus, IntelScope, MissionFileState, OpStatus } from '../../models/campaign';
+import { CampaignStatus, IntelScope, OperationStatus } from '../../models/campaign';
 
 describe('OperationsCampaignDetailComponent', () => {
     let component: OperationsCampaignDetailComponent;
@@ -17,21 +17,18 @@ describe('OperationsCampaignDetailComponent', () => {
     let dialogAfterClosed$: Subject<any>;
 
     const campaign = { id: 'c1', name: 'Iron Sky', summary: '<p>b</p>', status: CampaignStatus.Current };
-    const opDto = {
-        op: { id: 'op1', campaignId: 'c1', title: 'Op 1', scheduledTime: '2026-06-28T18:00:00Z', serverId: 's1', missionName: 'sweep.Altis.pbo', warno: '', status: OpStatus.Scheduled, autoLaunch: false },
-        missionFileState: MissionFileState.Present
-    };
+    const operation = { id: 'op1', campaignId: 'c1', title: 'Op 1', brief: '<p>brief</p>', status: OperationStatus.Upcoming };
+    const siblingOperation = { id: 'op2', campaignId: 'c1', title: 'Op 2', brief: '', status: OperationStatus.Current };
     const intelPage = { id: 'i1', scope: IntelScope.Campaign, ownerId: 'c1', title: 'Enemy', body: '' };
 
     beforeEach(() => {
         dialogAfterClosed$ = new Subject();
         service = {
             getCampaign: vi.fn().mockReturnValue(of(campaign)),
-            getOps: vi.fn().mockReturnValue(of([opDto])),
+            getOperations: vi.fn().mockReturnValue(of([operation, siblingOperation])),
             getIntel: vi.fn().mockReturnValue(of([intelPage])),
-            launchOp: vi.fn().mockReturnValue(of([])),
             deleteCampaign: vi.fn().mockReturnValue(of(undefined)),
-            deleteOp: vi.fn().mockReturnValue(of(undefined)),
+            deleteOperation: vi.fn().mockReturnValue(of(undefined)),
             deleteIntel: vi.fn().mockReturnValue(of(undefined))
         };
         dialog = { open: vi.fn().mockReturnValue({ afterClosed: () => dialogAfterClosed$.asObservable() }) };
@@ -43,7 +40,7 @@ describe('OperationsCampaignDetailComponent', () => {
                 { provide: PermissionsService, useValue: { hasPermission: vi.fn().mockReturnValue(true) } },
                 { provide: MatDialog, useValue: dialog },
                 { provide: Router, useValue: router },
-                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map([['id', 'c1']]) } } }
+                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map([['campaignId', 'c1']]) } } }
             ]
         });
         component = TestBed.inject(OperationsCampaignDetailComponent);
@@ -51,18 +48,17 @@ describe('OperationsCampaignDetailComponent', () => {
 
     afterEach(() => TestBed.resetTestingModule());
 
-    it('loads campaign, ops and intel for the route id', () => {
+    it('loads campaign, operations and intel for the route campaignId', () => {
         expect(service.getCampaign).toHaveBeenCalledWith('c1');
-        expect(service.getOps).toHaveBeenCalledWith('c1');
+        expect(service.getOperations).toHaveBeenCalledWith('c1');
         expect(service.getIntel).toHaveBeenCalledWith(IntelScope.Campaign, 'c1');
         expect(component.campaign?.name).toBe('Iron Sky');
-        expect(component.ops.length).toBe(1);
+        expect(component.operations.length).toBe(2);
         expect(component.intel.length).toBe(1);
     });
 
-    it('exposes OpStatus, MissionFileState + CampaignStatus enums to the template', () => {
-        expect(component.OpStatus.Complete).toBe(OpStatus.Complete);
-        expect(component.MissionFileState.Missing).toBe(MissionFileState.Missing);
+    it('exposes OperationStatus + CampaignStatus enums to the template', () => {
+        expect(component.OperationStatus.Current).toBe(OperationStatus.Current);
         expect(component.CampaignStatus.Upcoming).toBe(CampaignStatus.Upcoming);
     });
 
@@ -75,50 +71,12 @@ describe('OperationsCampaignDetailComponent', () => {
         expect(component.statusLabel).toBe(label);
     });
 
-    it('derives op map colour + name from the mission file', () => {
-        // sweep.Altis.pbo -> Altis (known map colour)
-        expect(component.mapName(opDto.op as any)).toBe('Altis');
-        expect(component.mapColour(opDto.op as any)).toBe('#c2a878');
-    });
-
-    it('launch reloads the campaign on success', () => {
-        service.getCampaign.mockClear();
-        component.launch(opDto as any);
-        expect(service.launchOp).toHaveBeenCalledWith('op1');
-        expect(service.getCampaign).toHaveBeenCalled();
-    });
-
-    it('launch surfaces an error modal when the launch fails', () => {
-        service.launchOp.mockReturnValue(throwError(() => ({ error: 'Boom' })));
-        component.launch(opDto as any);
-        expect(dialog.open).toHaveBeenCalledWith(expect.anything(), { data: { message: 'Boom' } });
-    });
-
-    it('isLaunchDisabled is true for an autoLaunch op when shift is not held', () => {
-        const autoDto = { ...opDto, op: { ...opDto.op, autoLaunch: true } };
-        expect(component.isLaunchDisabled(autoDto as any)).toBe(true);
-    });
-
-    it('isLaunchDisabled becomes false once shift is held', () => {
-        const autoDto = { ...opDto, op: { ...opDto.op, autoLaunch: true } };
-        component.onKey({ shiftKey: true } as KeyboardEvent);
-        expect(component.isLaunchDisabled(autoDto as any)).toBe(false);
-    });
-
-    it('isLaunchDisabled is always false for a manual-only op', () => {
-        expect(component.isLaunchDisabled(opDto as any)).toBe(false);
-    });
-
-    it('launchIcon shows a clock for a disabled auto-launch op, play_arrow otherwise', () => {
-        const autoDto = { ...opDto, op: { ...opDto.op, autoLaunch: true } };
-        expect(component.launchIcon(autoDto as any)).toBe('schedule');
-        expect(component.launchIcon(opDto as any)).toBe('play_arrow');
-    });
-
-    it('launchTooltip explains the hold-shift behaviour only when disabled', () => {
-        const autoDto = { ...opDto, op: { ...opDto.op, autoLaunch: true } };
-        expect(component.launchTooltip(autoDto as any)).toContain('Hold shift');
-        expect(component.launchTooltip(opDto as any)).toBe('Launch');
+    it.each([
+        [OperationStatus.Upcoming, 'Upcoming'],
+        [OperationStatus.Current, 'Current'],
+        [OperationStatus.Past, 'Past']
+    ])('operationStatusLabel maps %s to %s', (status, label) => {
+        expect(component.operationStatusLabel({ ...operation, status })).toBe(label);
     });
 
     it('createIntel opens modal with Campaign scope and campaignId', () => {
@@ -126,8 +84,8 @@ describe('OperationsCampaignDetailComponent', () => {
         expect(dialog.open).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: expect.objectContaining({ scope: IntelScope.Campaign, ownerId: 'c1' }) }));
     });
 
-    it('createOp opens modal seeded with the campaignId', () => {
-        component.createOp();
+    it('createOperation opens modal seeded with the campaignId', () => {
+        component.createOperation();
         expect(dialog.open).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: { campaignId: 'c1' } }));
     });
 
@@ -136,9 +94,9 @@ describe('OperationsCampaignDetailComponent', () => {
         expect(dialog.open).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: { campaign: component.campaign } }));
     });
 
-    it('openOp navigates to the op detail route', () => {
-        component.openOp(opDto as any);
-        expect(router.navigate).toHaveBeenCalledWith(['ops', 'op1'], expect.anything());
+    it('openOperation navigates to the operation detail route', () => {
+        component.openOperation(operation as any);
+        expect(router.navigate).toHaveBeenCalledWith(['operations', 'op1'], expect.anything());
     });
 
     it('openIntel navigates to the intel detail route', () => {
@@ -159,12 +117,13 @@ describe('OperationsCampaignDetailComponent', () => {
         expect(service.deleteCampaign).not.toHaveBeenCalled();
     });
 
-    it('deleteOp deletes then reloads when confirmed', () => {
-        service.getOps.mockClear();
-        component.deleteOp(opDto as any);
+    it('deleteOperation deletes the named operation then reloads when confirmed', () => {
+        service.getOperations.mockClear();
+        component.deleteOperation(operation as any);
         dialogAfterClosed$.next(true);
-        expect(service.deleteOp).toHaveBeenCalledWith('op1');
-        expect(service.getOps).toHaveBeenCalled();
+        expect(service.deleteOperation).toHaveBeenCalledWith('c1', 'op1');
+        expect(service.deleteOperation).not.toHaveBeenCalledWith('c1', 'op2');
+        expect(service.getOperations).toHaveBeenCalled();
     });
 
     it('deleteIntel deletes then reloads when confirmed', () => {
@@ -174,4 +133,22 @@ describe('OperationsCampaignDetailComponent', () => {
         expect(service.deleteIntel).toHaveBeenCalledWith('i1');
         expect(service.getIntel).toHaveBeenCalled();
     });
+
+    it.each([OperationStatus.Upcoming, OperationStatus.Current, OperationStatus.Past])(
+        'Past campaign gates create/delete/add-intel regardless of operation status %s',
+        (status) => {
+            component.campaign = { ...campaign, status: CampaignStatus.Past };
+            component.operations = [{ ...operation, status }];
+            expect(component.isPastCampaign).toBe(true);
+        }
+    );
+
+    it.each([OperationStatus.Upcoming, OperationStatus.Current, OperationStatus.Past])(
+        'Current campaign does not freeze create/delete/add-intel when operation is %s',
+        (status) => {
+            component.campaign = { ...campaign, status: CampaignStatus.Current };
+            component.operations = [{ ...operation, status }];
+            expect(component.isPastCampaign).toBe(false);
+        }
+    );
 });
