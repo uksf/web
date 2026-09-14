@@ -6,14 +6,13 @@ import { MessageModalComponent } from '@app/shared/modals/message-modal/message-
 import { MatDialog } from '@angular/material/dialog';
 import { UksfError } from '@app/shared/models/response';
 import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
-import { QuillViewComponent, QuillEditorComponent } from 'ngx-quill';
-import { FormsModule } from '@angular/forms';
+import { DocsEditorComponent } from '@app/shared/components/docs-editor/docs-editor.component';
 
 @Component({
     selector: 'app-docs-content',
     templateUrl: './docs-content.component.html',
-    styleUrls: ['./docs-content.component.scss', './docs-content.quill.scss'],
-    imports: [ButtonComponent, QuillViewComponent, QuillEditorComponent, FormsModule]
+    styleUrls: ['./docs-content.component.scss'],
+    imports: [ButtonComponent, DocsEditorComponent]
 })
 export class DocsContentComponent implements OnChanges {
     private docsService = inject(DocsService);
@@ -82,6 +81,4 @@ export class DocsContentComponent implements OnChanges {
                 }
             });
     }
-
-    onContentChanged(_event: { html: string; text: string }) {}
 }

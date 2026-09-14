@@ -1,10 +1,7 @@
+@use '../../../../shared/components/docs-editor/docs-editor-chrome' as chrome;
+
 :host {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    min-width: 0;
-    z-index: 1;
+    @include chrome.host-rules;
 }
 
 h3 {
@@ -19,67 +16,9 @@ h3 {
     text-align: center;
 }
 
-.content-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    overflow-y: hidden;
-
-    .content-header {
-        flex-shrink: 0;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        padding: 16px;
-        height: 68px;
-
-        .document-title {
-            font-size: 24px;
-            align-self: center;
-        }
-
-        .buttons-container {
-            display: flex;
-            flex-direction: row;
-
-            app-button {
-                height: fit-content;
-                align-self: center;
-            }
-        }
-    }
-
-    .content {
-        flex-grow: 1;
-        overflow-y: auto;
-        min-height: 0;
-
-        .content-view {
-            display: flex;
-            flex-direction: column;
-            max-width: 900px;
-            margin: 0 auto;
-            min-height: 100%;
-        }
-
-        .content-editor {
-            display: flex;
-            flex-direction: column;
-            max-width: 900px;
-            margin: 0 auto;
-            min-height: 100%;
-        }
-    }
-}
+@include chrome.container;
 
 ::-webkit-scrollbar {
     width: 7px;
     height: 5px;
-}
-
-.content-container {
-    .content-header {
-        background-color: var(--uksf-gray-600);
-    }
 }

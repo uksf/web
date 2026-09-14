@@ -110,9 +110,9 @@ describe('OperationsMissionDetailComponent', () => {
         expect(component.launchTooltip).toContain('Hold shift');
     });
 
-    it('createIntel opens modal with Mission scope and missionId', () => {
+    it('createIntel navigates to the mission intel editor', () => {
         component.createIntel();
-        expect(dialog.open).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: expect.objectContaining({ scope: IntelScope.Mission, ownerId: 'm1' }) }));
+        expect(router.navigate).toHaveBeenCalledWith(['/operations/campaigns', 'c1', 'operations', 'op1', 'missions', 'm1', 'intel', 'new']);
     });
 
     it('editMission opens modal with campaignId, operationId and current mission', () => {

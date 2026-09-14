@@ -1,0 +1,46 @@
+@use '../../../shared/components/docs-editor/docs-editor-chrome' as chrome;
+@use 'styles/variables' as v;
+
+:host {
+    @include chrome.host-rules;
+}
+
+@include chrome.container;
+
+.editor-form {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.content-container > app-docs-editor,
+.editor-form > app-docs-editor {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.editor-fields {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: v.$spacing-12px;
+    padding: 0 16px 16px;
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.content-header .buttons-container {
+    gap: v.$spacing-8px;
+}
+
+.empty {
+    color: var(--mat-sys-on-surface-variant);
+    font-style: italic;
+    padding: v.$spacing-16px;
+}

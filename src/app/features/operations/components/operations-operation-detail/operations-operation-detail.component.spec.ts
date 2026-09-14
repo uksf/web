@@ -128,9 +128,9 @@ describe('OperationsOperationDetailComponent', () => {
         expect(component.launchTooltip(missionDto as any)).toBe('Launch');
     });
 
-    it('createIntel opens modal with Operation scope and operationId', () => {
+    it('createIntel navigates to the operation intel editor', () => {
         component.createIntel();
-        expect(dialog.open).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: expect.objectContaining({ scope: IntelScope.Operation, ownerId: 'op1' }) }));
+        expect(router.navigate).toHaveBeenCalledWith(['/operations/campaigns', 'c1', 'operations', 'op1', 'intel', 'new']);
     });
 
     it('createMission opens modal seeded with campaignId and operationId', () => {
@@ -138,9 +138,9 @@ describe('OperationsOperationDetailComponent', () => {
         expect(dialog.open).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: { campaignId: 'c1', operationId: 'op1' } }));
     });
 
-    it('editOperation opens modal with the current operation', () => {
+    it('editOperation navigates to the operation editor', () => {
         component.editOperation();
-        expect(dialog.open).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: { campaignId: 'c1', operation: component.operation } }));
+        expect(router.navigate).toHaveBeenCalledWith(['/operations/campaigns', 'c1', 'operations', 'op1', 'edit']);
     });
 
     it('openMission navigates to the mission detail route', () => {

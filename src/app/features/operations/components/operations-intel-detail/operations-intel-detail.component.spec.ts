@@ -164,4 +164,16 @@ describe('OperationsIntelDetailComponent', () => {
             expect(router.navigate).toHaveBeenCalledWith(['/operations/campaigns', 'c1']);
         });
     });
+
+    describe('edit', () => {
+        beforeEach(() => configure({ campaignId: 'c1', intelId: 'i1' }));
+
+        it('navigates to the sibling edit route', () => {
+            const component = TestBed.inject(OperationsIntelDetailComponent);
+
+            component.edit();
+
+            expect(router.navigate).toHaveBeenCalledWith(['edit'], expect.anything());
+        });
+    });
 });

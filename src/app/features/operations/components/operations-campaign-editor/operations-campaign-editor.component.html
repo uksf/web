@@ -1,0 +1,23 @@
+@if (missing) {
+    <p class="empty">Campaign not found</p>
+} @else {
+    <div class="content-container">
+        <div class="content-header">
+            <span class="document-title">{{ isEdit ? 'Edit campaign' : 'New campaign' }}</span>
+            <div class="buttons-container">
+                <app-button [secondary]="true" (clicked)="cancel()">Cancel</app-button>
+                <app-button (clicked)="submit()" [disabled]="!model.name" [pending]="pending">{{ isEdit ? 'Save' : 'Create' }}</app-button>
+            </div>
+        </div>
+        <form class="editor-form">
+            <div class="editor-fields">
+                <app-text-input label="Name" [(ngModel)]="model.name" name="name" id="name" [required]="true"></app-text-input>
+                <app-dropdown [(ngModel)]="statusValue" [elements]="statusElements" [elementName]="'Status'" [placeholder]="'Status'" name="status" id="status" [autocomplete]="false">
+                    <ng-template #element let-element>{{ element.displayValue }}</ng-template>
+                </app-dropdown>
+            </div>
+            <app-docs-editor [(content)]="model.summary"></app-docs-editor>
+            <app-form-value-debug-template></app-form-value-debug-template>
+        </form>
+    </div>
+}

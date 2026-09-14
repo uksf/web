@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
+import { Router, RouterLink } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
 import { MatButton } from '@angular/material/button';
 import { NgxPermissionsModule } from 'ngx-permissions';
@@ -11,7 +10,6 @@ import { FullContentAreaComponent } from '@app/shared/components/content-areas/f
 import { capitaliseMapName, mapTokenFromMission } from '../../utils/map-colour';
 import { Campaign, CampaignMissionDto, CampaignStatus } from '../../models/campaign';
 import { CampaignsService } from '../../services/campaigns.service';
-import { CampaignModalComponent } from '../../modals/campaign-modal/campaign-modal.component';
 
 @Component({
     selector: 'app-operations-campaigns',
@@ -21,7 +19,7 @@ import { CampaignModalComponent } from '../../modals/campaign-modal/campaign-mod
 })
 export class OperationsCampaignsComponent {
     private campaignsService = inject(CampaignsService);
-    private dialog = inject(MatDialog);
+    private router = inject(Router);
 
     readonly CampaignStatus = CampaignStatus;
 
@@ -83,10 +81,6 @@ export class OperationsCampaignsComponent {
     }
 
     createCampaign() {
-        this.dialog
-            .open(CampaignModalComponent)
-            .afterClosed()
-            .pipe(first())
-            .subscribe({ next: (saved) => saved && this.load() });
+        this.router.navigate(['/operations/campaigns/new']);
     }
 }

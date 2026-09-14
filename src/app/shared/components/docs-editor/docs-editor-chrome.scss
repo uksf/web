@@ -1,0 +1,44 @@
+@mixin host-rules {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+    z-index: 1;
+    background-color: var(--uksf-gray-800);
+}
+
+@mixin container {
+    .content-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overflow-y: hidden;
+
+        .content-header {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            padding: 16px;
+            height: 68px;
+            background-color: var(--uksf-gray-600);
+
+            .document-title {
+                font-size: 24px;
+                align-self: center;
+            }
+
+            .buttons-container {
+                display: flex;
+                flex-direction: row;
+
+                app-button {
+                    height: fit-content;
+                    align-self: center;
+                }
+            }
+        }
+    }
+}

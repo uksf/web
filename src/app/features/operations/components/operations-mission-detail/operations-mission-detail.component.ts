@@ -16,7 +16,6 @@ import { capitaliseMapName, mapBorderColour, mapTokenFromMission } from '../../u
 import { Campaign, CampaignMissionDto, CampaignMissionStatus, CampaignStatus, IntelPage, IntelScope, MissionFileState, Operation } from '../../models/campaign';
 import { CampaignsService } from '../../services/campaigns.service';
 import { GameServersService } from '../../services/game-servers.service';
-import { IntelModalComponent } from '../../modals/intel-modal/intel-modal.component';
 import { MissionModalComponent } from '../../modals/mission-modal/mission-modal.component';
 
 @Component({
@@ -137,11 +136,7 @@ export class OperationsMissionDetailComponent {
     }
 
     createIntel() {
-        this.dialog
-            .open(IntelModalComponent, { data: { scope: IntelScope.Mission, ownerId: this.missionId } })
-            .afterClosed()
-            .pipe(first())
-            .subscribe({ next: (saved) => saved && this.load() });
+        this.router.navigate(['/operations/campaigns', this.campaignId, 'operations', this.operationId, 'missions', this.missionId, 'intel', 'new']);
     }
 
     editMission() {

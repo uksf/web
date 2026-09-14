@@ -15,9 +15,7 @@ import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-moda
 import { mapBorderColour, capitaliseMapName, mapTokenFromMission } from '../../utils/map-colour';
 import { Campaign, CampaignMission, CampaignMissionDto, CampaignMissionStatus, CampaignStatus, IntelPage, IntelScope, MissionFileState, Operation, OperationStatus } from '../../models/campaign';
 import { CampaignsService } from '../../services/campaigns.service';
-import { IntelModalComponent } from '../../modals/intel-modal/intel-modal.component';
 import { MissionModalComponent } from '../../modals/mission-modal/mission-modal.component';
-import { OperationModalComponent } from '../../modals/operation-modal/operation-modal.component';
 
 @Component({
     selector: 'app-operations-operation-detail',
@@ -133,11 +131,7 @@ export class OperationsOperationDetailComponent {
     }
 
     createIntel() {
-        this.dialog
-            .open(IntelModalComponent, { data: { scope: IntelScope.Operation, ownerId: this.operationId } })
-            .afterClosed()
-            .pipe(first())
-            .subscribe({ next: (saved) => saved && this.load() });
+        this.router.navigate(['/operations/campaigns', this.campaignId, 'operations', this.operationId, 'intel', 'new']);
     }
 
     createMission() {
@@ -150,11 +144,7 @@ export class OperationsOperationDetailComponent {
 
     editOperation() {
         if (!this.operation) { return; }
-        this.dialog
-            .open(OperationModalComponent, { data: { campaignId: this.campaignId, operation: this.operation } })
-            .afterClosed()
-            .pipe(first())
-            .subscribe({ next: (saved) => saved && this.load() });
+        this.router.navigate(['/operations/campaigns', this.campaignId, 'operations', this.operationId, 'edit']);
     }
 
     deleteOperation() {

@@ -1,7 +1,7 @@
 import { afterEach, describe, it, expect, vi, beforeEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
-import { of, Subject } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
+import { of } from 'rxjs';
+import { Router } from '@angular/router';
 import { OperationsCampaignsComponent } from './operations-campaigns.component';
 import { CampaignsService } from '../../services/campaigns.service';
 import { PermissionsService } from '@app/core/services/permissions.service';
@@ -10,8 +10,7 @@ import { CampaignStatus, MissionFileState } from '../../models/campaign';
 describe('OperationsCampaignsComponent', () => {
     let component: OperationsCampaignsComponent;
     let service: any;
-    let dialog: any;
-    let dialogAfterClosed$: Subject<any>;
+    let router: any;
 
     const campaigns = [
         { id: 'c1', name: 'Iron Sky', summary: '', status: CampaignStatus.Current },
@@ -27,18 +26,17 @@ describe('OperationsCampaignsComponent', () => {
     };
 
     beforeEach(() => {
-        dialogAfterClosed$ = new Subject();
         service = {
             getCampaigns: vi.fn().mockReturnValue(of(campaigns)),
             getCampaignMissions: vi.fn().mockImplementation((id: string) => of(missionsByCampaign[id] ?? []))
         };
-        dialog = { open: vi.fn().mockReturnValue({ afterClosed: () => dialogAfterClosed$.asObservable() }) };
+        router = { navigate: vi.fn() };
         TestBed.configureTestingModule({
             providers: [
                 OperationsCampaignsComponent,
                 { provide: CampaignsService, useValue: service },
                 { provide: PermissionsService, useValue: { hasPermission: vi.fn().mockReturnValue(true) } },
-                { provide: MatDialog, useValue: dialog }
+                { provide: Router, useValue: router }
             ]
         });
         component = TestBed.inject(OperationsCampaignsComponent);
@@ -93,17 +91,8 @@ describe('OperationsCampaignsComponent', () => {
         expect(isolated.theatre({ id: 'c3', name: 'Empty File', summary: '', status: CampaignStatus.Current } as any)).toBe('');
     });
 
-    it('createCampaign reloads the list when a campaign is saved', () => {
-        service.getCampaigns.mockClear();
+    it('createCampaign navigates to the campaign editor', () => {
         component.createCampaign();
-        dialogAfterClosed$.next(true);
-        expect(service.getCampaigns).toHaveBeenCalled();
-    });
-
-    it('createCampaign does not reload when the modal is dismissed', () => {
-        service.getCampaigns.mockClear();
-        component.createCampaign();
-        dialogAfterClosed$.next(undefined);
-        expect(service.getCampaigns).not.toHaveBeenCalled();
+        expect(router.navigate).toHaveBeenCalledWith(['/operations/campaigns/new']);
     });
 });

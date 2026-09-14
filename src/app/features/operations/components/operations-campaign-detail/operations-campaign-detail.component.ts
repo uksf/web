@@ -12,9 +12,7 @@ import { FullContentAreaComponent } from '@app/shared/components/content-areas/f
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { Campaign, CampaignStatus, IntelPage, IntelScope, Operation, OperationStatus } from '../../models/campaign';
 import { CampaignsService } from '../../services/campaigns.service';
-import { CampaignModalComponent } from '../../modals/campaign-modal/campaign-modal.component';
-import { IntelModalComponent } from '../../modals/intel-modal/intel-modal.component';
-import { OperationModalComponent } from '../../modals/operation-modal/operation-modal.component';
+
 
 @Component({
     selector: 'app-operations-campaign-detail',
@@ -89,28 +87,16 @@ export class OperationsCampaignDetailComponent {
     }
 
     createIntel() {
-        this.dialog
-            .open(IntelModalComponent, { data: { scope: IntelScope.Campaign, ownerId: this.campaignId } })
-            .afterClosed()
-            .pipe(first())
-            .subscribe({ next: (saved) => saved && this.load() });
+        this.router.navigate(['/operations/campaigns', this.campaignId, 'intel', 'new']);
     }
 
     createOperation() {
-        this.dialog
-            .open(OperationModalComponent, { data: { campaignId: this.campaignId } })
-            .afterClosed()
-            .pipe(first())
-            .subscribe({ next: (saved) => saved && this.load() });
+        this.router.navigate(['/operations/campaigns', this.campaignId, 'operations', 'new']);
     }
 
     editCampaign() {
         if (!this.campaign) { return; }
-        this.dialog
-            .open(CampaignModalComponent, { data: { campaign: this.campaign } })
-            .afterClosed()
-            .pipe(first())
-            .subscribe({ next: (saved) => saved && this.load() });
+        this.router.navigate(['/operations/campaigns', this.campaignId, 'edit']);
     }
 
     deleteCampaign() {
@@ -127,11 +113,7 @@ export class OperationsCampaignDetailComponent {
     }
 
     editOperation(operation: Operation) {
-        this.dialog
-            .open(OperationModalComponent, { data: { campaignId: this.campaignId, operation } })
-            .afterClosed()
-            .pipe(first())
-            .subscribe({ next: (saved) => saved && this.load() });
+        this.router.navigate(['/operations/campaigns', this.campaignId, 'operations', operation.id, 'edit']);
     }
 
     deleteOperation(operation: Operation) {

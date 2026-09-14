@@ -61,12 +61,22 @@ describe('OPERATIONS_ROUTES hierarchy paths', () => {
     });
 
     it('uses campaignId, operationId and missionId on nested campaign routes', () => {
+        expect(paths).toContain('campaigns/new');
         expect(paths).toContain('campaigns/:campaignId');
+        expect(paths).toContain('campaigns/:campaignId/edit');
+        expect(paths).toContain('campaigns/:campaignId/intel/new');
         expect(paths).toContain('campaigns/:campaignId/intel/:intelId');
+        expect(paths).toContain('campaigns/:campaignId/intel/:intelId/edit');
+        expect(paths).toContain('campaigns/:campaignId/operations/new');
         expect(paths).toContain('campaigns/:campaignId/operations/:operationId');
+        expect(paths).toContain('campaigns/:campaignId/operations/:operationId/edit');
+        expect(paths).toContain('campaigns/:campaignId/operations/:operationId/intel/new');
         expect(paths).toContain('campaigns/:campaignId/operations/:operationId/intel/:intelId');
+        expect(paths).toContain('campaigns/:campaignId/operations/:operationId/intel/:intelId/edit');
         expect(paths).toContain('campaigns/:campaignId/operations/:operationId/missions/:missionId');
+        expect(paths).toContain('campaigns/:campaignId/operations/:operationId/missions/:missionId/intel/new');
         expect(paths).toContain('campaigns/:campaignId/operations/:operationId/missions/:missionId/intel/:intelId');
+        expect(paths).toContain('campaigns/:campaignId/operations/:operationId/missions/:missionId/intel/:intelId/edit');
         expect(paths).toContain('campaigns/:campaignId/operations/:operationId/missions/:missionId/warno');
     });
 
@@ -78,7 +88,7 @@ describe('OPERATIONS_ROUTES hierarchy paths', () => {
 
     it('gates every campaign hierarchy route on TESTER', () => {
         const hierarchy = children.filter((r) => r.path?.startsWith('campaigns'));
-        expect(hierarchy.length).toBe(8);
+        expect(hierarchy.length).toBe(18);
         for (const route of hierarchy) {
             expect(route.data?.['permissions']?.only).toBe(Permissions.TESTER);
             expect(route.canActivate).toBeTruthy();

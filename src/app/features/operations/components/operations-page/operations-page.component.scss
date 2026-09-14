@@ -32,6 +32,19 @@ mat-tab-nav-panel {
         flex-direction: column;
         overflow: hidden;
     }
+
+    &:has(app-docs-editor) {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+
+        ::ng-deep > *:not(router-outlet) {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+    }
 }
 
 a {

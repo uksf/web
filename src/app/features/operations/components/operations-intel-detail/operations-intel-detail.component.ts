@@ -13,7 +13,6 @@ import { FullContentAreaComponent } from '@app/shared/components/content-areas/f
 import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
 import { Campaign, CampaignMissionDto, IntelPage, IntelScope, Operation } from '../../models/campaign';
 import { CampaignsService } from '../../services/campaigns.service';
-import { IntelModalComponent } from '../../modals/intel-modal/intel-modal.component';
 
 @Component({
     selector: 'app-operations-intel-detail',
@@ -107,11 +106,7 @@ export class OperationsIntelDetailComponent {
         if (!this.page) {
             return;
         }
-        this.dialog
-            .open(IntelModalComponent, { data: { scope: this.page.scope, ownerId: this.page.ownerId, page: this.page } })
-            .afterClosed()
-            .pipe(first())
-            .subscribe({ next: (saved) => saved && this.load() });
+        this.router.navigate(['edit'], { relativeTo: this.route });
     }
 
     delete() {

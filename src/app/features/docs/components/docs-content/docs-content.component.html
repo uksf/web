@@ -17,21 +17,7 @@
         }
     </div>
     @if (documentContent) {
-    <div #editorBounds class="content">
-        @if (!editing) {
-        <quill-view [content]="documentContent.text" [preserveWhitespace]="true" class="content-view" format="json"></quill-view>
-        } @if (editing) {
-        <quill-editor
-            (onContentChanged)="onContentChanged($event)"
-            [(ngModel)]="documentContent.text"
-            [bounds]="editorBounds"
-            [preserveWhitespace]="true"
-            class="content-editor"
-            format="json"
-            placeholder=""
-        ></quill-editor>
-        }
-    </div>
+    <app-docs-editor [(content)]="documentContent.text" [readonly]="!editing"></app-docs-editor>
     }
 </div>
 }

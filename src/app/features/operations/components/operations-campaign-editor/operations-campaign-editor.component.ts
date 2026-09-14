@@ -1,38 +1,34 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
-import { QuillEditorComponent } from 'ngx-quill';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { Observable, of } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { ButtonComponent } from '@app/shared/components/elements/button-pending/button.component';
 import { TextInputComponent } from '@app/shared/components/elements/text-input/text-input.component';
 import { DropdownComponent } from '@app/shared/components/elements/dropdown/dropdown.component';
+import { TemplateFormValueDebugComponent } from '@app/shared/components/elements/form-value-debug/form-value-debug.component';
+import { DocsEditorComponent } from '@app/shared/components/docs-editor/docs-editor.component';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { Campaign, CampaignStatus } from '../../models/campaign';
 import { CampaignsService } from '../../services/campaigns.service';
 
-interface CampaignModalData {
-    campaign?: Campaign;
-}
-
 @Component({
-    selector: 'app-campaign-modal',
-    templateUrl: './campaign-modal.component.html',
-    styleUrls: ['./campaign-modal.component.scss', '../_quill-modal-editor.scss'],
-    imports: [FormsModule, MatDialogTitle, MatDialogContent, MatDialogActions, TextInputComponent, DropdownComponent, QuillEditorComponent, ButtonComponent]
+    selector: 'app-operations-campaign-editor',
+    templateUrl: './operations-campaign-editor.component.html',
+    styleUrls: ['../_docs-editor-page.scss'],
+    imports: [FormsModule, TextInputComponent, DropdownComponent, ButtonComponent, DocsEditorComponent, TemplateFormValueDebugComponent]
 })
-export class CampaignModalComponent {
-    private dialogRef = inject<MatDialogRef<CampaignModalComponent>>(MatDialogRef);
+export class OperationsCampaignEditorComponent {
+    private route = inject(ActivatedRoute);
+    private router = inject(Router);
     private dialog = inject(MatDialog);
     private campaignsService = inject(CampaignsService);
-    private data = inject<CampaignModalData>(MAT_DIALOG_DATA, { optional: true });
 
     isEdit = false;
     pending = false;
-    quillModules = {
-        toolbar: [['bold', 'italic', 'underline', 'strike'], ['blockquote'], [{ header: 1 }, { header: 2 }], [{ list: 'ordered' }, { list: 'bullet' }], ['link'], ['clean']]
-    };
+    missing = false;
     model: Campaign = { id: '', name: '', summary: '', status: CampaignStatus.Upcoming };
 
     statusOptions: IDropdownElement[] = [
@@ -44,22 +40,33 @@ export class CampaignModalComponent {
     statusValue: IDropdownElement | null = this.statusOptions[0];
 
     constructor() {
-        if (this.data?.campaign) {
-            this.isEdit = true;
-            this.model = { ...this.data.campaign };
-            this.statusValue = this.statusOptions.find((o) => o.value === String(this.model.status)) ?? this.statusOptions[0];
+        const campaignId = this.route.snapshot.paramMap.get('campaignId');
+        if (!campaignId) {
+            return;
         }
+        this.isEdit = true;
+        this.campaignsService.getCampaign(campaignId).pipe(first()).subscribe({
+            next: (campaign) => {
+                this.model = { ...campaign };
+                this.statusValue = this.statusOptions.find((o) => o.value === String(this.model.status)) ?? this.statusOptions[0];
+            },
+            error: () => (this.missing = true)
+        });
+    }
+
+    cancel() {
+        this.router.navigate(this.isEdit && this.model.id ? ['/operations/campaigns', this.model.id] : ['/operations/campaigns']);
     }
 
     submit() {
-        if (!this.model.name || this.pending) {
+        if (!this.model.name || this.pending || this.missing) {
             return;
         }
         this.pending = true;
         this.model.status = Number(this.statusValue?.value ?? CampaignStatus.Upcoming);
         const request = this.isEdit ? this.campaignsService.updateCampaign(this.model) : this.campaignsService.addCampaign(this.model);
         request.pipe(first()).subscribe({
-            next: () => this.dialogRef.close(true),
+            next: () => this.cancel(),
             error: (error) => {
                 this.pending = false;
                 this.dialog.open(MessageModalComponent, { data: { message: error?.error ?? 'Save failed' } });

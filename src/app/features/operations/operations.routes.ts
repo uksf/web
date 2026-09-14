@@ -15,6 +15,9 @@ import { OperationsOperationDetailComponent } from './components/operations-oper
 import { OperationsMissionDetailComponent } from './components/operations-mission-detail/operations-mission-detail.component';
 import { OperationsIntelDetailComponent } from './components/operations-intel-detail/operations-intel-detail.component';
 import { OperationsWarnoDetailComponent } from './components/operations-warno-detail/operations-warno-detail.component';
+import { OperationsCampaignEditorComponent } from './components/operations-campaign-editor/operations-campaign-editor.component';
+import { OperationsOperationEditorComponent } from './components/operations-operation-editor/operations-operation-editor.component';
+import { OperationsIntelEditorComponent } from './components/operations-intel-editor/operations-intel-editor.component';
 import { NpcVoicesService } from './services/npc-voices.service';
 
 const testerRouteData = {
@@ -93,8 +96,26 @@ export const OPERATIONS_ROUTES: Routes = [
                 canActivate: [NgxPermissionsGuard]
             },
             {
+                path: 'campaigns/new',
+                component: OperationsCampaignEditorComponent,
+                data: testerRouteData,
+                canActivate: [NgxPermissionsGuard]
+            },
+            {
                 path: 'campaigns/:campaignId',
                 component: OperationsCampaignDetailComponent,
+                data: testerRouteData,
+                canActivate: [NgxPermissionsGuard]
+            },
+            {
+                path: 'campaigns/:campaignId/edit',
+                component: OperationsCampaignEditorComponent,
+                data: testerRouteData,
+                canActivate: [NgxPermissionsGuard]
+            },
+            {
+                path: 'campaigns/:campaignId/intel/new',
+                component: OperationsIntelEditorComponent,
                 data: testerRouteData,
                 canActivate: [NgxPermissionsGuard]
             },
@@ -105,8 +126,32 @@ export const OPERATIONS_ROUTES: Routes = [
                 canActivate: [NgxPermissionsGuard]
             },
             {
+                path: 'campaigns/:campaignId/intel/:intelId/edit',
+                component: OperationsIntelEditorComponent,
+                data: testerRouteData,
+                canActivate: [NgxPermissionsGuard]
+            },
+            {
+                path: 'campaigns/:campaignId/operations/new',
+                component: OperationsOperationEditorComponent,
+                data: testerRouteData,
+                canActivate: [NgxPermissionsGuard]
+            },
+            {
                 path: 'campaigns/:campaignId/operations/:operationId',
                 component: OperationsOperationDetailComponent,
+                data: testerRouteData,
+                canActivate: [NgxPermissionsGuard]
+            },
+            {
+                path: 'campaigns/:campaignId/operations/:operationId/edit',
+                component: OperationsOperationEditorComponent,
+                data: testerRouteData,
+                canActivate: [NgxPermissionsGuard]
+            },
+            {
+                path: 'campaigns/:campaignId/operations/:operationId/intel/new',
+                component: OperationsIntelEditorComponent,
                 data: testerRouteData,
                 canActivate: [NgxPermissionsGuard]
             },
@@ -117,14 +162,32 @@ export const OPERATIONS_ROUTES: Routes = [
                 canActivate: [NgxPermissionsGuard]
             },
             {
+                path: 'campaigns/:campaignId/operations/:operationId/intel/:intelId/edit',
+                component: OperationsIntelEditorComponent,
+                data: testerRouteData,
+                canActivate: [NgxPermissionsGuard]
+            },
+            {
                 path: 'campaigns/:campaignId/operations/:operationId/missions/:missionId',
                 component: OperationsMissionDetailComponent,
                 data: testerRouteData,
                 canActivate: [NgxPermissionsGuard]
             },
             {
+                path: 'campaigns/:campaignId/operations/:operationId/missions/:missionId/intel/new',
+                component: OperationsIntelEditorComponent,
+                data: testerRouteData,
+                canActivate: [NgxPermissionsGuard]
+            },
+            {
                 path: 'campaigns/:campaignId/operations/:operationId/missions/:missionId/intel/:intelId',
                 component: OperationsIntelDetailComponent,
+                data: testerRouteData,
+                canActivate: [NgxPermissionsGuard]
+            },
+            {
+                path: 'campaigns/:campaignId/operations/:operationId/missions/:missionId/intel/:intelId/edit',
+                component: OperationsIntelEditorComponent,
                 data: testerRouteData,
                 canActivate: [NgxPermissionsGuard]
             },

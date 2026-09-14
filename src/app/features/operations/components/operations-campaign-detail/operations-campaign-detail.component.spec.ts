@@ -79,19 +79,24 @@ describe('OperationsCampaignDetailComponent', () => {
         expect(component.operationStatusLabel({ ...operation, status })).toBe(label);
     });
 
-    it('createIntel opens modal with Campaign scope and campaignId', () => {
+    it('createIntel navigates to the campaign intel editor', () => {
         component.createIntel();
-        expect(dialog.open).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: expect.objectContaining({ scope: IntelScope.Campaign, ownerId: 'c1' }) }));
+        expect(router.navigate).toHaveBeenCalledWith(['/operations/campaigns', 'c1', 'intel', 'new']);
     });
 
-    it('createOperation opens modal seeded with the campaignId', () => {
+    it('createOperation navigates to the operation editor', () => {
         component.createOperation();
-        expect(dialog.open).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: { campaignId: 'c1' } }));
+        expect(router.navigate).toHaveBeenCalledWith(['/operations/campaigns', 'c1', 'operations', 'new']);
     });
 
-    it('editCampaign opens modal with the current campaign', () => {
+    it('editCampaign navigates to the campaign editor', () => {
         component.editCampaign();
-        expect(dialog.open).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: { campaign: component.campaign } }));
+        expect(router.navigate).toHaveBeenCalledWith(['/operations/campaigns', 'c1', 'edit']);
+    });
+
+    it('editOperation navigates to the operation editor', () => {
+        component.editOperation(operation as any);
+        expect(router.navigate).toHaveBeenCalledWith(['/operations/campaigns', 'c1', 'operations', 'op1', 'edit']);
     });
 
     it('openOperation navigates to the operation detail route', () => {
