@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { commandRoles, getLastWrite, installIsolation, memberRoles, resetLastWrite } from './hierarchy-harness';
+import { commandRoles, commandWithoutTesterRoles, getLastWrite, installIsolation, memberRoles, resetLastWrite } from './hierarchy-harness';
 
 const scratch = '/Users/tim/.agent-scratch/docs-editor-reuse';
 
@@ -67,37 +67,64 @@ test.describe('docs-parity editor pages', () => {
         await expect(page.getByText('Not found')).toBeVisible();
     });
 
-    test('TESTER gate redirects members away from editor routes', async ({ page }) => {
+    test('TESTER gate redirects members and COMMAND-without-TESTER; TESTER+COMMAND enters', async ({ page }) => {
         await installIsolation(page, memberRoles);
         await page.goto('/operations/campaigns/new');
         await expect(page).not.toHaveURL(/\/operations\/campaigns\/new$/);
         await page.goto('/operations/campaigns/c1/edit');
         await expect(page).not.toHaveURL(/\/edit$/);
-    });
 
-    test('empty docs-parity editor fills remaining page height without overflow', async ({ page }, testInfo) => {
+        await installIsolation(page, commandWithoutTesterRoles);
+        await page.goto('/operations/campaigns/new');
+        await expect(page).not.toHaveURL(/\/operations\/campaigns\/new$/);
+        await page.goto('/operations/campaigns/c1/operations/new');
+        await expect(page).not.toHaveURL(/\/operations\/new$/);
+        await page.goto('/operations/campaigns/c1/intel/new');
+        await expect(page).not.toHaveURL(/\/intel\/new$/);
+
         await installIsolation(page, commandRoles);
         await page.goto('/operations/campaigns/new');
-        const campaignEditor = page.locator('app-docs-editor');
-        await expect(campaignEditor.locator('.ql-toolbar')).toBeVisible();
-        const campaignBox = await campaignEditor.locator('.content').boundingBox();
-        expect(campaignBox).toBeTruthy();
-        const viewport = page.viewportSize()!;
-        expect(campaignBox!.height).toBeGreaterThan(viewport.height * 0.35);
-        expect(viewport.height - (campaignBox!.y + campaignBox!.height)).toBeLessThan(48);
-        expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewport.width + 1);
-        expect(await campaignEditor.locator('.content-editor').evaluate((el) => getComputedStyle(el).maxWidth)).toBe('900px');
-        expect(await campaignEditor.locator('.ql-toolbar').evaluate((el) => getComputedStyle(el).position)).toBe('sticky');
-        await page.screenshot({ path: `${scratch}/campaign-new-${testInfo.project.name}.png`, fullPage: true });
+        await expect(page.locator('app-operations-campaign-editor')).toBeVisible();
+        await page.goto('/operations/campaigns/c1/operations/new');
+        await expect(page.locator('app-operations-operation-editor')).toBeVisible();
+        await page.goto('/operations/campaigns/c1/intel/new');
+        await expect(page.locator('app-operations-intel-editor')).toBeVisible();
+    });
 
+    test('empty docs-parity editor fills remaining page height with debugForms true and false', async ({ page }, testInfo) => {
+        const viewport = page.viewportSize()!;
+        const assertFullHeight = async (label: string) => {
+            const editor = page.locator('app-docs-editor').first();
+            await expect(editor.locator('.ql-toolbar')).toBeVisible();
+            const box = await editor.locator('.content').boundingBox();
+            expect(box, label).toBeTruthy();
+            expect(box!.height, label).toBeGreaterThan(viewport.height * 0.35);
+            expect(viewport.height - (box!.y + box!.height), label).toBeLessThan(48);
+            expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewport.width + 1);
+            expect(await editor.locator('.content-editor').evaluate((el) => getComputedStyle(el).maxWidth)).toBe('900px');
+            expect(await editor.locator('.ql-toolbar').evaluate((el) => getComputedStyle(el).position)).toBe('sticky');
+        };
+
+        for (const debugForms of [false, true]) {
+            await installIsolation(page, commandRoles, { debugForms });
+            await page.goto('/operations/campaigns/new');
+            await assertFullHeight(`campaign debugForms=${debugForms}`);
+            if (debugForms) {
+                await expect(page.locator('app-form-value-debug-template pre')).toBeVisible();
+            }
+            await page.screenshot({ path: `${scratch}/campaign-new-debug-${debugForms}-${testInfo.project.name}.png`, fullPage: true });
+
+            await page.goto('/operations/campaigns/c1/operations/new');
+            await assertFullHeight(`operation debugForms=${debugForms}`);
+
+            await page.goto('/operations/campaigns/c1/intel/new');
+            await assertFullHeight(`intel debugForms=${debugForms}`);
+        }
+
+        await installIsolation(page, commandRoles, { debugForms: false });
         await page.goto('/operations/campaigns/c1/operations/op1/missions/m1/warno');
         await page.getByRole('button', { name: 'Edit' }).click();
-        const warnoEditor = page.locator('app-docs-editor');
-        await expect(warnoEditor.locator('.ql-toolbar')).toBeVisible();
-        const warnoBox = await warnoEditor.locator('.content').boundingBox();
-        expect(warnoBox).toBeTruthy();
-        expect(warnoBox!.height).toBeGreaterThan(viewport.height * 0.35);
-        expect(viewport.height - (warnoBox!.y + warnoBox!.height)).toBeLessThan(48);
+        await assertFullHeight('warno empty editor');
         await page.screenshot({ path: `${scratch}/warno-edit-${testInfo.project.name}.png`, fullPage: true });
 
         await page.goto('/information/docs?folder=f1&document=d1');

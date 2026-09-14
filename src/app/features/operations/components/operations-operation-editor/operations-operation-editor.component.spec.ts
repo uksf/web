@@ -5,17 +5,18 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { OperationsOperationEditorComponent } from './operations-operation-editor.component';
 import { CampaignsService } from '../../services/campaigns.service';
-import { OperationStatus } from '../../models/campaign';
+import { CampaignStatus, OperationStatus } from '../../models/campaign';
 
 describe('OperationsOperationEditorComponent', () => {
     let component: OperationsOperationEditorComponent;
     let service: any;
     let router: any;
 
-    function setup(params: Record<string, string>) {
+    function setup(params: Record<string, string>, campaignStatus = CampaignStatus.Current) {
         service = {
             addOperation: vi.fn().mockReturnValue(of(undefined)),
             updateOperation: vi.fn().mockReturnValue(of(undefined)),
+            getCampaign: vi.fn().mockReturnValue(of({ id: params.campaignId ?? 'c1', name: 'Iron Sky', summary: '', status: campaignStatus })),
             getOperation: vi.fn().mockReturnValue(of({ id: 'op1', campaignId: 'c1', title: 'Alpha', brief: '<p>b</p>', status: OperationStatus.Past }))
         };
         router = { navigate: vi.fn() };
@@ -68,5 +69,22 @@ describe('OperationsOperationEditorComponent', () => {
         setup({ campaignId: 'c1' });
         component.submit();
         expect(service.addOperation).not.toHaveBeenCalled();
+    });
+
+    it('create under Past campaign redirects and does not write', () => {
+        setup({ campaignId: 'c-past' }, CampaignStatus.Past);
+        expect(component.creationBlocked).toBe(true);
+        expect(router.navigate).toHaveBeenCalledWith(['/operations/campaigns', 'c-past']);
+        component.model.title = 'Nope';
+        component.submit();
+        expect(service.addOperation).not.toHaveBeenCalled();
+    });
+
+    it('edit under Past campaign remains allowed', () => {
+        setup({ campaignId: 'c-past', operationId: 'op1' }, CampaignStatus.Past);
+        expect(component.creationBlocked).toBe(false);
+        expect(component.isEdit).toBe(true);
+        component.submit();
+        expect(service.updateOperation).toHaveBeenCalled();
     });
 });

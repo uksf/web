@@ -10,6 +10,7 @@ function jwt(roles: string[]): string {
 }
 
 export const commandRoles = ['COMMAND', 'TESTER', 'NCO', 'SERVERS'];
+export const commandWithoutTesterRoles = ['COMMAND', 'NCO', 'SERVERS'];
 export const memberRoles: string[] = [];
 
 const account = {
@@ -25,6 +26,7 @@ const account = {
 
 const campaign = { id: 'c1', name: 'Iron Sky', summary: JSON.stringify([{ insert: 'Campaign brief\n' }]), status: 0 };
 const pastCampaign = { id: 'c-past', name: 'Old War', summary: JSON.stringify([{ insert: 'Past brief\n' }]), status: 1 };
+const pastOperation = { id: 'op-past', campaignId: 'c-past', title: 'Old Op', brief: JSON.stringify([{ insert: 'Old brief\n' }]), status: 1 };
 const operation = { id: 'op1', campaignId: 'c1', title: 'Alpha', brief: JSON.stringify([{ insert: 'Conduct brief\n' }]), status: 1 };
 const siblingOperation = { id: 'op2', campaignId: 'c1', title: 'Bravo', brief: JSON.stringify([{ insert: 'Other brief\n' }]), status: 2 };
 const scheduledMission = {
@@ -52,7 +54,20 @@ const completeMission = {
 };
 const scheduledDto = { mission: scheduledMission, missionFileState: 0 };
 const completeDto = { mission: completeMission, missionFileState: 1 };
+const pastMission = {
+    id: 'm-past',
+    operationId: 'op-past',
+    title: 'Old Sweep',
+    scheduledTime: '2025-06-28T18:00:00Z',
+    serverId: 's1',
+    missionName: 'old.Tanoa.pbo',
+    warno: JSON.stringify([{ insert: 'old warno\n' }]),
+    status: 1,
+    autoLaunch: false
+};
+const pastMissionDto = { mission: pastMission, missionFileState: 1 };
 const campaignIntel = { id: 'i1', scope: 0, ownerId: 'c1', title: 'Campaign intel', body: JSON.stringify([{ insert: 'ci\n' }]) };
+const pastCampaignIntel = { id: 'i-past', scope: 0, ownerId: 'c-past', title: 'Past intel', body: JSON.stringify([{ insert: 'pi\n' }]) };
 const operationIntel = { id: 'i2', scope: 1, ownerId: 'op1', title: 'Operation intel', body: JSON.stringify([{ insert: 'oi\n' }]) };
 const missionIntel = { id: 'i3', scope: 2, ownerId: 'm1', title: 'Mission intel', body: JSON.stringify([{ insert: 'mi\n' }]) };
 const docsFolder = {
@@ -79,7 +94,7 @@ function json(route: { fulfill: Function }, body: unknown, status = 200) {
     return route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
 }
 
-export async function installIsolation(page: Page, roles: string[]) {
+export async function installIsolation(page: Page, roles: string[], opts: { debugForms?: boolean } = {}) {
     lastWrite = null;
     const token = jwt(roles);
     const blocked: string[] = [];
@@ -95,7 +110,7 @@ export async function installIsolation(page: Page, roles: string[]) {
             return route.fulfill({
                 status: 200,
                 contentType: 'application/json',
-                body: JSON.stringify({ apiUrl: API, environment: 'Development', debugForms: false })
+                body: JSON.stringify({ apiUrl: API, environment: 'Development', debugForms: opts.debugForms === true })
             });
         }
         if (url.startsWith(APP)) {
@@ -130,6 +145,7 @@ async function fulfillApi(route: { fulfill: Function }, request: Request, token:
     if (path.startsWith('/intelpages') && method === 'GET') {
         if (url.includes('scope=2')) return json(route, [missionIntel]);
         if (url.includes('scope=1')) return json(route, [operationIntel]);
+        if (url.includes('ownerId=c-past') || url.includes('c-past')) return json(route, [pastCampaignIntel]);
         return json(route, [campaignIntel]);
     }
     if (path === '/docs/folders' && method === 'GET') return json(route, [docsFolder]);
@@ -141,7 +157,8 @@ async function fulfillApi(route: { fulfill: Function }, request: Request, token:
     if (path === '/campaigns/c1' && method === 'GET') return json(route, campaign);
     if (path === '/campaigns/c-past' && method === 'GET') return json(route, pastCampaign);
     if (path === '/campaigns/c1/operations' && method === 'GET') return json(route, [operation, siblingOperation]);
-    if (path === '/campaigns/c-past/operations' && method === 'GET') return json(route, []);
+    if (path === '/campaigns/c-past/operations' && method === 'GET') return json(route, [pastOperation]);
+    if (path === '/campaigns/c-past/operations/op-past' && method === 'GET') return json(route, pastOperation);
     if (path === '/campaigns/c1/operations/op1' && method === 'GET') return json(route, operation);
     if (path === '/campaigns/c1/operations/op2' && method === 'GET') return json(route, siblingOperation);
     if (path === '/campaigns/c2/operations/op1' && method === 'GET') return json(route, {}, 404);
@@ -150,7 +167,9 @@ async function fulfillApi(route: { fulfill: Function }, request: Request, token:
     if (path === '/campaigns/c1/operations/op1/missions/m1' && method === 'GET') return json(route, scheduledDto);
     if (path === '/campaigns/c1/operations/op1/missions/m-aar' && method === 'GET') return json(route, completeDto);
     if (path === '/campaigns/c1/missions' && method === 'GET') return json(route, [scheduledDto, completeDto]);
-    if (path === '/campaigns/c-past/missions' && method === 'GET') return json(route, []);
+    if (path === '/campaigns/c-past/missions' && method === 'GET') return json(route, [pastMissionDto]);
+    if (path === '/campaigns/c-past/operations/op-past/missions' && method === 'GET') return json(route, [pastMissionDto]);
+    if (path === '/campaigns/c-past/operations/op-past/missions/m-past' && method === 'GET') return json(route, pastMissionDto);
     if (path.endsWith('/launch') && method === 'POST') {
         return json(route, { error: 'Launch failed', statusCode: 400 }, 400);
     }

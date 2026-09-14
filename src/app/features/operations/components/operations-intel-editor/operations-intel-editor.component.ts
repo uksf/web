@@ -9,7 +9,7 @@ import { TextInputComponent } from '@app/shared/components/elements/text-input/t
 import { TemplateFormValueDebugComponent } from '@app/shared/components/elements/form-value-debug/form-value-debug.component';
 import { DocsEditorComponent } from '@app/shared/components/docs-editor/docs-editor.component';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { IntelPage, IntelScope } from '../../models/campaign';
+import { CampaignStatus, IntelPage, IntelScope } from '../../models/campaign';
 import { CampaignsService } from '../../services/campaigns.service';
 
 @Component({
@@ -30,6 +30,7 @@ export class OperationsIntelEditorComponent {
     isEdit = false;
     pending = false;
     missing = false;
+    creationBlocked = false;
     model: IntelPage = { id: '', scope: IntelScope.Campaign, ownerId: '', title: '', body: '' };
 
     get backLink(): string[] {
@@ -66,12 +67,19 @@ export class OperationsIntelEditorComponent {
             mission: this.missionId && this.operationId ? this.campaignsService.getMission(this.campaignId, this.operationId, this.missionId) : of(null)
         })
             .pipe(
-                switchMap(() => (this.isEdit ? this.campaignsService.getIntel(this.model.scope, this.model.ownerId) : of([]))),
+                switchMap(({ campaign }) => {
+                    if (!this.isEdit && campaign.status === CampaignStatus.Past) {
+                        this.creationBlocked = true;
+                        this.router.navigate(this.backLink);
+                        return of(null);
+                    }
+                    return this.isEdit ? this.campaignsService.getIntel(this.model.scope, this.model.ownerId) : of([]);
+                }),
                 first()
             )
             .subscribe({
                 next: (pages) => {
-                    if (!this.isEdit) {
+                    if (!this.isEdit || !pages) {
                         return;
                     }
                     const page = pages.find((p) => p.id === intelId);
@@ -90,7 +98,7 @@ export class OperationsIntelEditorComponent {
     }
 
     submit() {
-        if (!this.model.title || this.pending || this.missing) {
+        if (!this.model.title || this.pending || this.missing || this.creationBlocked) {
             return;
         }
         this.pending = true;

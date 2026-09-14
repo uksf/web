@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { commandRoles, installIsolation, memberRoles } from './hierarchy-harness';
+import { commandRoles, getLastWrite, installIsolation, memberRoles, resetLastWrite } from './hierarchy-harness';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -9,7 +9,7 @@ test.describe('isolated campaign hierarchy', () => {
         await page.goto('/operations/campaigns');
         await expect(page.locator('app-operations-campaigns')).toBeVisible();
         await expect(page.getByText('Iron Sky')).toBeVisible();
-        await expect(page.getByText('Altis')).toBeVisible();
+        await expect(page.getByText('Altis · Tanoa')).toBeVisible();
 
         await page.goto('/operations/campaigns/c1');
         await expect(page.locator('app-operations-campaign-detail')).toBeVisible();
@@ -73,6 +73,38 @@ test.describe('isolated campaign hierarchy', () => {
         await expect(page.getByText('Add Intel')).toBeVisible();
     });
 
+    test('Past campaign rejects direct create URLs; edits remain allowed', async ({ page }) => {
+        await installIsolation(page, commandRoles);
+        resetLastWrite();
+        await page.goto('/operations/campaigns/c-past/operations/new');
+        await expect(page).toHaveURL(/\/operations\/campaigns\/c-past$/);
+        await expect(page.locator('app-operations-operation-editor')).toHaveCount(0);
+        expect(getLastWrite()).toBeNull();
+
+        await page.goto('/operations/campaigns/c-past/intel/new');
+        await expect(page).toHaveURL(/\/operations\/campaigns\/c-past$/);
+        expect(getLastWrite()).toBeNull();
+
+        await page.goto('/operations/campaigns/c-past/operations/op-past/intel/new');
+        await expect(page).toHaveURL(/\/operations\/campaigns\/c-past\/operations\/op-past$/);
+        expect(getLastWrite()).toBeNull();
+
+        await page.goto('/operations/campaigns/c-past/operations/op-past/missions/m-past/intel/new');
+        await expect(page).toHaveURL(/\/missions\/m-past$/);
+        expect(getLastWrite()).toBeNull();
+
+        await page.goto('/operations/campaigns/c-past/edit');
+        await expect(page.locator('app-operations-campaign-editor')).toBeVisible();
+        await page.getByRole('button', { name: 'Save' }).click();
+        expect(getLastWrite()?.method).toBe('PUT');
+
+        resetLastWrite();
+        await page.goto('/operations/campaigns/c-past/operations/op-past/edit');
+        await expect(page.locator('app-operations-operation-editor')).toBeVisible();
+        await page.getByRole('button', { name: 'Save' }).click();
+        expect(getLastWrite()?.method).toBe('PUT');
+    });
+
     test('TESTER gate redirects members away from campaigns', async ({ page }) => {
         await installIsolation(page, memberRoles);
         await page.goto('/operations/campaigns');
@@ -126,6 +158,14 @@ test.describe('isolated campaign hierarchy', () => {
         const ab = await actions.boundingBox();
         expect(ab).toBeTruthy();
         await page.mouse.click(ab!.x + 2, ab!.y + ab!.height / 2);
+        await expect(page).toHaveURL(/\/operations\/campaigns\/c1\/operations\/op1$/);
+
+        await card.getByRole('link', { name: 'Sweep' }).focus();
+        await page.keyboard.press('Enter');
+        await expect(page).toHaveURL(mission);
+        await page.goto(list);
+
+        await card.locator('.op-actions .launch-btn').click({ force: true });
         await expect(page).toHaveURL(/\/operations\/campaigns\/c1\/operations\/op1$/);
     });
 

@@ -5,18 +5,20 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { OperationsIntelEditorComponent } from './operations-intel-editor.component';
 import { CampaignsService } from '../../services/campaigns.service';
-import { IntelScope } from '../../models/campaign';
+import { CampaignStatus, IntelScope } from '../../models/campaign';
 
 describe('OperationsIntelEditorComponent', () => {
     let component: OperationsIntelEditorComponent;
     let service: any;
     let router: any;
 
-    function setup(params: Record<string, string>, pages: any[] = [], errors: { campaign?: boolean; operation?: boolean } = {}) {
+    function setup(params: Record<string, string>, pages: any[] = [], errors: { campaign?: boolean; operation?: boolean; past?: boolean } = {}) {
         service = {
             addIntel: vi.fn().mockReturnValue(of(undefined)),
             updateIntel: vi.fn().mockReturnValue(of(undefined)),
-            getCampaign: vi.fn().mockReturnValue(errors.campaign ? throwError(() => ({ status: 404 })) : of({ id: 'c1' })),
+            getCampaign: vi.fn().mockReturnValue(
+                errors.campaign ? throwError(() => ({ status: 404 })) : of({ id: params.campaignId ?? 'c1', name: 'Iron Sky', summary: '', status: errors.past ? CampaignStatus.Past : CampaignStatus.Current })
+            ),
             getOperation: vi.fn().mockReturnValue(errors.operation ? throwError(() => ({ status: 404 })) : of({ id: 'op1' })),
             getMission: vi.fn().mockReturnValue(of({ mission: { id: 'm1', title: 'Sweep' } })),
             getIntel: vi.fn().mockReturnValue(of(pages))
@@ -85,5 +87,25 @@ describe('OperationsIntelEditorComponent', () => {
         setup({ campaignId: 'c2', operationId: 'op1', intelId: 'i2' }, [], { operation: true });
         expect(component.missing).toBe(true);
         expect(service.getIntel).not.toHaveBeenCalled();
+    });
+
+    it.each([
+        [{ campaignId: 'c-past' }, ['/operations/campaigns', 'c-past']],
+        [{ campaignId: 'c-past', operationId: 'op-past' }, ['/operations/campaigns', 'c-past', 'operations', 'op-past']],
+        [{ campaignId: 'c-past', operationId: 'op-past', missionId: 'm-past' }, ['/operations/campaigns', 'c-past', 'operations', 'op-past', 'missions', 'm-past']]
+    ] as const)('create under Past campaign redirects and does not write %j', (params, back) => {
+        setup({ ...params }, [], { past: true });
+        expect(component.creationBlocked).toBe(true);
+        expect(router.navigate).toHaveBeenCalledWith([...back]);
+        component.model.title = 'Nope';
+        component.submit();
+        expect(service.addIntel).not.toHaveBeenCalled();
+    });
+
+    it('edit under Past campaign remains allowed', () => {
+        setup({ campaignId: 'c-past', intelId: 'i1' }, [{ id: 'i1', scope: IntelScope.Campaign, ownerId: 'c-past', title: 'Old', body: '' }], { past: true });
+        expect(component.creationBlocked).toBe(false);
+        component.submit();
+        expect(service.updateIntel).toHaveBeenCalled();
     });
 });

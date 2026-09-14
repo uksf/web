@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable, of } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { first, switchMap } from 'rxjs/operators';
 import { ButtonComponent } from '@app/shared/components/elements/button-pending/button.component';
 import { TextInputComponent } from '@app/shared/components/elements/text-input/text-input.component';
 import { DropdownComponent } from '@app/shared/components/elements/dropdown/dropdown.component';
@@ -11,7 +11,7 @@ import { TemplateFormValueDebugComponent } from '@app/shared/components/elements
 import { DocsEditorComponent } from '@app/shared/components/docs-editor/docs-editor.component';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
-import { Operation, OperationStatus } from '../../models/campaign';
+import { CampaignStatus, Operation, OperationStatus } from '../../models/campaign';
 import { CampaignsService } from '../../services/campaigns.service';
 
 @Component({
@@ -30,6 +30,7 @@ export class OperationsOperationEditorComponent {
     isEdit = false;
     pending = false;
     missing = false;
+    creationBlocked = false;
     model: Operation = { id: '', campaignId: '', title: '', brief: '', status: OperationStatus.Upcoming };
 
     statusOptions: IDropdownElement[] = [
@@ -44,17 +45,30 @@ export class OperationsOperationEditorComponent {
         this.campaignId = this.route.snapshot.paramMap.get('campaignId') ?? '';
         this.model.campaignId = this.campaignId;
         const operationId = this.route.snapshot.paramMap.get('operationId');
-        if (!operationId) {
-            return;
-        }
-        this.isEdit = true;
-        this.campaignsService.getOperation(this.campaignId, operationId).pipe(first()).subscribe({
-            next: (operation) => {
-                this.model = { ...operation };
-                this.statusValue = this.statusOptions.find((o) => o.value === String(this.model.status)) ?? this.statusOptions[0];
-            },
-            error: () => (this.missing = true)
-        });
+        this.isEdit = !!operationId;
+        this.campaignsService
+            .getCampaign(this.campaignId)
+            .pipe(
+                switchMap((campaign) => {
+                    if (!this.isEdit && campaign.status === CampaignStatus.Past) {
+                        this.creationBlocked = true;
+                        this.router.navigate(['/operations/campaigns', this.campaignId]);
+                        return of(null);
+                    }
+                    return operationId ? this.campaignsService.getOperation(this.campaignId, operationId) : of(null);
+                }),
+                first()
+            )
+            .subscribe({
+                next: (operation) => {
+                    if (!operation) {
+                        return;
+                    }
+                    this.model = { ...operation };
+                    this.statusValue = this.statusOptions.find((o) => o.value === String(this.model.status)) ?? this.statusOptions[0];
+                },
+                error: () => (this.missing = true)
+            });
     }
 
     cancel() {
@@ -66,7 +80,7 @@ export class OperationsOperationEditorComponent {
     }
 
     submit() {
-        if (!this.model.title || this.pending || this.missing) {
+        if (!this.model.title || this.pending || this.missing || this.creationBlocked) {
             return;
         }
         this.pending = true;
