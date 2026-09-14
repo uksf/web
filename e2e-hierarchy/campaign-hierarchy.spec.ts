@@ -91,6 +91,44 @@ test.describe('isolated campaign hierarchy', () => {
         await expect(page.locator('app-mission-modal')).toHaveCount(0);
     });
 
+    test('mission card blank/status/arrow navigate; action container does not', async ({ page }) => {
+        await installIsolation(page, commandRoles);
+        const list = '/operations/campaigns/c1/operations/op1';
+        const mission = /\/operations\/campaigns\/c1\/operations\/op1\/missions\/m1$/;
+        await page.goto(list);
+        const card = page.locator('.op-card').filter({ hasText: 'Sweep' });
+        await expect(card.getByRole('link', { name: 'Sweep' })).toBeVisible();
+
+        const clickCenter = async (loc: ReturnType<typeof card.locator>) => {
+            const box = await loc.boundingBox();
+            expect(box).toBeTruthy();
+            await page.mouse.click(box!.x + box!.width / 2, box!.y + box!.height / 2);
+        };
+
+        await clickCenter(card.locator('.pill'));
+        await expect(page).toHaveURL(mission);
+        await page.goto(list);
+
+        await clickCenter(card.locator('.chev'));
+        await expect(page).toHaveURL(mission);
+        await page.goto(list);
+
+        await clickCenter(card.locator('.spacer'));
+        await expect(page).toHaveURL(mission);
+        await page.goto(list);
+
+        await card.locator('.op-actions button').filter({ hasText: 'edit' }).click();
+        await expect(page).toHaveURL(/\/operations\/campaigns\/c1\/operations\/op1$/);
+        await expect(page.locator('app-mission-modal')).toBeVisible();
+        await page.keyboard.press('Escape');
+
+        const actions = card.locator('.op-actions');
+        const ab = await actions.boundingBox();
+        expect(ab).toBeTruthy();
+        await page.mouse.click(ab!.x + 2, ab!.y + ab!.height / 2);
+        await expect(page).toHaveURL(/\/operations\/campaigns\/c1\/operations\/op1$/);
+    });
+
     test('mocked launch error and shift override', async ({ page }) => {
         await installIsolation(page, commandRoles);
         await page.goto('/operations/campaigns/c1/operations/op1/missions/m1');
