@@ -17,7 +17,8 @@ export class AdminPageComponent {
         { label: 'Discord', link: 'discord' },
         { label: 'Tools', link: 'tools' },
         { label: 'Variables', link: 'variables' },
-        { label: 'Servers', link: 'servers' }
+        { label: 'Servers', link: 'servers' },
+        { label: 'Backups', link: 'backups' }
     ];
 
     constructor() {}

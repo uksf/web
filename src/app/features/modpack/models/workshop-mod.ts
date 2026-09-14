@@ -11,7 +11,9 @@ export interface WorkshopMod {
     rootMod: boolean;
     folderName: string;
     pbos: string[];
+    extensions: string[];
     availablePbos: string[];
+    availableExtensions: string[];
 
     updatedDate?: string;
 
@@ -21,6 +23,7 @@ export interface WorkshopMod {
     _canDelete?: boolean;
     _updateAvailable?: boolean;
     _interventionRequired?: boolean;
+    _interventionLabel?: string;
     _neverReleased?: boolean;
 }
 
@@ -31,6 +34,7 @@ export interface InstallWorkshopModData {
 }
 
 export interface WorkshopModUpdatedDate {
+    steamId: string;
     updatedDate: string;
 }
 
@@ -56,7 +60,7 @@ export interface WorkshopModSection {
 }
 
 export const WORKSHOP_SECTION_DEFINITIONS: { key: WorkshopModSectionKey; label: string; accentColor: string }[] = [
-    { key: 'needsAttention', label: 'Need Attention', accentColor: '#f44336' },
+    { key: 'needsAttention', label: 'Needs Attention', accentColor: '#f44336' },
     { key: 'inProgress', label: 'In Progress', accentColor: '#ff9800' },
     { key: 'updatesAvailable', label: 'Updates Available', accentColor: '#2196f3' },
     { key: 'pendingRelease', label: 'Pending Release', accentColor: '#7b1fa2' },

@@ -2,8 +2,7 @@
    In production these load via index.html; Storybook's runtime strips <head>
    link elements so we compile them into the CSS bundle instead. */
 @import url('https://fonts.googleapis.com/css?family=Roboto');
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
-@import url('https://fonts.googleapis.com/css?family=Raleway');
+@import url('https://fonts.googleapis.com/css2?family=Material+Icons&display=block');
 
 /* Font-family and weight are now provided by _bootstrap-reset.scss
    (imported via styles.scss), which is compiled into both the app

@@ -149,14 +149,20 @@
                                                 >
                                                     Launch
                                                 </button>
-                                                }
-                                                @if (server.launchedBy && (server.status.launching || server.status.running)) {
+                                                } @if (server.launchedBy && (server.status.launching || server.status.running)) {
                                                 <span class="launched-by"><b>Launched by:</b> {{ isSchedulerLaunch(server) ? 'Auto-launch' : (server.launchedBy | displayName | async) }}</span>
                                                 } @if (server.status.launching || server.status.running) {
-                                                <button (click)="stop(server)" [disabled]="isPending(server.id) || isDisabled" color="primary" mat-raised-button>Stop</button>
-                                                }
-                                                @if (isStopping(server) && admin) {
-                                                <button (click)="kill(server)" [disabled]="isPending(server.id) || isDisabled" color="warn" mat-raised-button>Kill</button>
+                                                <button (click)="stop(server)" [disabled]="isPending(server.id) || isDisabled || isStopping(server)" color="primary" mat-raised-button>Stop</button>
+                                                } @if (isStopping(server) && admin) {
+                                                <button
+                                                    (click)="kill(server)"
+                                                    [disabled]="isPending(server.id) || isDisabled || !isKillAllowed(server)"
+                                                    [matTooltip]="isKillAllowed(server) ? '' : 'Available if this shutdown takes longer than normal'"
+                                                    color="warn"
+                                                    mat-raised-button
+                                                >
+                                                    Kill
+                                                </button>
                                                 }
                                             </div>
                                         </div>

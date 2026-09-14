@@ -17,8 +17,8 @@ export class WorkshopService {
         return this.httpClient.get<WorkshopMod>(`${this.urls.apiUrl}/workshop/${id}`);
     }
 
-    getModUpdatedDate(steamId: string): Observable<WorkshopModUpdatedDate> {
-        return this.httpClient.get<WorkshopModUpdatedDate>(`${this.urls.apiUrl}/workshop/${steamId}/updatedDate`);
+    getModUpdatedDates(): Observable<WorkshopModUpdatedDate[]> {
+        return this.httpClient.get<WorkshopModUpdatedDate[]>(`${this.urls.apiUrl}/workshop/updatedDates`);
     }
 
     installMod(data: InstallWorkshopModData): Observable<void> {
@@ -29,8 +29,8 @@ export class WorkshopService {
         });
     }
 
-    resolveIntervention(steamId: string, selectedPbos: string[]): Observable<void> {
-        return this.httpClient.post<void>(`${this.urls.apiUrl}/workshop/${steamId}/resolve`, { selectedPbos });
+    resolveIntervention(steamId: string, selectedPbos: string[], selectedExtensions: string[]): Observable<void> {
+        return this.httpClient.post<void>(`${this.urls.apiUrl}/workshop/${steamId}/resolve`, { selectedPbos, selectedExtensions });
     }
 
     updateMod(steamId: string): Observable<void> {

@@ -1,13 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { TestBed } from '@angular/core/testing';
-import { OperationsServersComponent } from './operations-servers.component';
 import { of, Subject } from 'rxjs';
-import { GameServersService } from '../../services/game-servers.service';
-import { MatDialog } from '@angular/material/dialog';
-import { ServersHubService } from '../../services/servers-hub.service';
-import { PermissionsService } from '@app/core/services/permissions.service';
-import { ActivatedRoute } from '@angular/router';
+import { OperationsServersComponent } from './operations-servers.component';
 import { GameServer, StopPhase } from '../../models/game-server';
+import { makeServer, setupOperationsServersSpec, teardownOperationsServersSpec } from './operations-servers.spec-setup';
 
 describe('OperationsServersComponent', () => {
     let component: OperationsServersComponent;
@@ -17,103 +12,12 @@ describe('OperationsServersComponent', () => {
     let mockPermissions: any;
     let dialogAfterClosed$: Subject<any>;
 
-    const makeServer = (overrides: Partial<any> = {}) => ({
-        id: 'server1',
-        name: 'Test Server',
-        status: {
-            parsedUptime: '01:30:45',
-            stopPhase: StopPhase.None,
-            launching: false,
-            running: true,
-            mission: 'test_mission',
-            players: [],
-            startedAt: new Date(Date.now() - 90 * 60 * 1000).toISOString()
-        },
-        ...overrides
-    });
-
     beforeEach(() => {
-        (globalThis as any).window = { setInterval: vi.fn().mockReturnValue(1), clearInterval: vi.fn() };
-        dialogAfterClosed$ = new Subject();
-        mockGameServersService = {
-            getServers: vi.fn().mockReturnValue(of({ servers: [], instanceCount: 0, missions: [] })),
-            getDisabledState: vi.fn().mockReturnValue(of(false)),
-            toggleDisabledState: vi.fn().mockReturnValue(of(undefined)),
-            deleteServer: vi.fn().mockReturnValue(of(undefined)),
-            updateServerOrder: vi.fn().mockReturnValue(of(undefined)),
-            uploadMission: vi.fn().mockReturnValue(of({ missions: [], missionReports: [] })),
-            launchServer: vi.fn().mockReturnValue(of(undefined)),
-            stopServer: vi.fn().mockReturnValue(of(undefined)),
-            killServer: vi.fn().mockReturnValue(of(undefined)),
-            killAllServers: vi.fn().mockReturnValue(of(undefined)),
-        };
-        mockDialog = {
-            open: vi.fn().mockReturnValue({ afterClosed: () => dialogAfterClosed$.asObservable() }),
-        };
-        mockServersHub = {
-            connect: vi.fn(),
-            disconnect: vi.fn(),
-            on: vi.fn(),
-            off: vi.fn(),
-            reconnected$: new Subject<void>().asObservable()
-        };
-        mockPermissions = {
-            hasPermission: vi.fn().mockReturnValue(false),
-        };
-
-        TestBed.configureTestingModule({
-            providers: [
-                OperationsServersComponent,
-                { provide: GameServersService, useValue: mockGameServersService },
-                { provide: MatDialog, useValue: mockDialog },
-                { provide: ServersHubService, useValue: mockServersHub },
-                { provide: PermissionsService, useValue: mockPermissions },
-                { provide: ActivatedRoute, useValue: { snapshot: { queryParams: {} } } },
-            ]
-        });
-        component = TestBed.inject(OperationsServersComponent);
+        ({ component, mockGameServersService, mockDialog, mockServersHub, mockPermissions, dialogAfterClosed$ } = setupOperationsServersSpec());
     });
 
     afterEach(() => {
-        delete (globalThis as any).window;
-    });
-
-    describe('getServerStatus', () => {
-        it('returns "Stopping" when server is stopping', () => {
-            const server = makeServer({ status: { ...makeServer().status, stopPhase: StopPhase.Stopping } });
-            expect(component.getServerStatus(server)).toBe('Stopping');
-        });
-
-        it('returns "Launching" when launching flag is set', () => {
-            const server = makeServer({ status: { ...makeServer().status, launching: true, running: false, stopPhase: StopPhase.None } });
-            expect(component.getServerStatus(server)).toBe('Launching');
-        });
-
-        it('labels each stop phase from stopPhase', () => {
-            const make = (stopPhase: StopPhase, running = true) =>
-                ({ status: { stopPhase, launching: false, running, startedAt: '2026-07-04T00:00:00Z' } } as GameServer);
-
-            expect(component.getServerStatus(make(StopPhase.Ending))).toBe('Ending');
-            expect(component.getServerStatus(make(StopPhase.Saving))).toBe('Saving');
-            expect(component.getServerStatus(make(StopPhase.Stopping))).toBe('Stopping');
-            expect(component.getServerStatus(make(StopPhase.None))).toBe('Running');
-            expect(component.getServerStatus(make(StopPhase.None, false))).toBe('Offline');
-        });
-
-        it('returns "Offline" when server is not running', () => {
-            const server = makeServer({ status: { ...makeServer().status, running: false } });
-            expect(component.getServerStatus(server)).toBe('Offline');
-        });
-
-        it('returns "Waiting" when startedAt is not set', () => {
-            const server = makeServer({ status: { ...makeServer().status, startedAt: null } });
-            expect(component.getServerStatus(server)).toBe('Waiting');
-        });
-
-        it('returns "Running" for normal running server', () => {
-            const server = makeServer();
-            expect(component.getServerStatus(server)).toBe('Running');
-        });
+        teardownOperationsServersSpec();
     });
 
     describe('uptime from startedAt', () => {
@@ -170,94 +74,6 @@ describe('OperationsServersComponent', () => {
         });
     });
 
-    describe('mapMission', () => {
-        it('maps dropdown element to Mission', () => {
-            const element = { value: '/path/to/mission.pbo', displayValue: 'mission', data: 'Altis' };
-
-            const result = component.mapMission(element);
-
-            expect(result).toEqual({ path: '/path/to/mission.pbo', name: 'mission', map: 'Altis', size: 0, lastModified: '' });
-        });
-    });
-
-    describe('mapMissionElement', () => {
-        it('maps Mission to dropdown element', () => {
-            const mission = { path: '/path/to/mission.pbo', name: 'mission', map: 'Altis' };
-
-            const result = component.mapMissionElement(mission);
-
-            expect(result).toEqual({ value: '/path/to/mission.pbo', displayValue: 'mission', data: 'Altis' });
-        });
-    });
-
-    describe('missionFormatter', () => {
-        it('formats mission name and map', () => {
-            expect(component.missionFormatter('co40_test', 'Altis')).toBe('co40_test.Altis');
-        });
-    });
-
-    describe('getMissionName', () => {
-        it('returns map and name formatted', () => {
-            const element = { value: '/path', displayValue: 'co40_test', data: 'Altis' };
-
-            expect(component.getMissionName(element)).toBe('Altis, co40_test');
-        });
-    });
-
-    describe('getMissionTooltip', () => {
-        it('returns mission path', () => {
-            const element = { value: '/path/to/mission.pbo', displayValue: 'mission', data: 'Altis' };
-
-            expect(component.getMissionTooltip(element)).toBe('/path/to/mission.pbo');
-        });
-    });
-
-    describe('displayWithMission', () => {
-        it('returns empty string for null element', () => {
-            expect(component.displayWithMission(null)).toBe('');
-        });
-
-        it('returns formatted mission name', () => {
-            const element = { value: '/path', displayValue: 'co40_test', data: 'Altis' };
-
-            expect(component.displayWithMission(element)).toBe('co40_test.Altis');
-        });
-    });
-
-    describe('missionFilter', () => {
-        it('matches by name', () => {
-            const element = { value: '/path/co40_test.Altis.pbo', displayValue: 'co40_test', data: 'Altis' };
-
-            expect(component.missionFilter(element, 'co40')).toBe(true);
-        });
-
-        it('matches by path', () => {
-            const element = { value: '/path/co40_test.Altis.pbo', displayValue: 'co40_test', data: 'Altis' };
-
-            expect(component.missionFilter(element, '/path')).toBe(true);
-        });
-
-        it('returns false for no match', () => {
-            const element = { value: '/path/co40_test.Altis.pbo', displayValue: 'co40_test', data: 'Altis' };
-
-            expect(component.missionFilter(element, 'xyz')).toBe(false);
-        });
-    });
-
-    describe('missionMatcher', () => {
-        it('matches formatted mission string', () => {
-            const element = { value: '/path', displayValue: 'co40_test', data: 'Altis' };
-
-            expect(component.missionMatcher(element, 'co40_test.altis')).toBe(true);
-        });
-
-        it('returns false for non-matching string', () => {
-            const element = { value: '/path', displayValue: 'co40_test', data: 'Altis' };
-
-            expect(component.missionMatcher(element, 'wrong')).toBe(false);
-        });
-    });
-
     describe('showError', () => {
         it('shows error.error when it is a string', () => {
             component.showError({ error: 'Something went wrong' });
@@ -288,36 +104,6 @@ describe('OperationsServersComponent', () => {
 
             expect(mockDialog.open).toHaveBeenCalledWith(expect.any(Function), {
                 data: { message: 'An error occurred' }
-            });
-        });
-    });
-
-    describe('resetDropZone', () => {
-        it('resets file dragging state', () => {
-            component.fileDragging = true;
-            component.dropZoneHeight = 500;
-            component.dropZoneWidth = 800;
-
-            component.resetDropZone();
-
-            expect(component.fileDragging).toBe(false);
-            expect(component.dropZoneHeight).toBe(0);
-            expect(component.dropZoneWidth).toBe(0);
-        });
-    });
-
-    describe('fileDropFinished', () => {
-        it('does nothing when both arrays are empty', () => {
-            component.fileDropFinished([], []);
-
-            expect(mockDialog.open).not.toHaveBeenCalled();
-        });
-
-        it('shows error when no pbo files found', () => {
-            component.fileDropFinished([], [{ name: 'test.txt' }]);
-
-            expect(mockDialog.open).toHaveBeenCalledWith(expect.any(Function), {
-                data: { message: 'None of those files are PBOs files' }
             });
         });
     });
@@ -371,19 +157,23 @@ describe('OperationsServersComponent', () => {
     describe('getServers', () => {
         it('sets servers and instance count from response', () => {
             const servers = [makeServer()];
-            mockGameServersService.getServers.mockReturnValue(of({
-                servers,
-                instanceCount: 2,
-                missions: [{ path: '/p', name: 'test', map: 'Altis' }]
-            }));
+            mockGameServersService.getServers.mockReturnValue(
+                of({
+                    servers,
+                    instanceCount: 2,
+                    missions: [{ path: '/p', name: 'test', map: 'Altis' }]
+                })
+            );
             // Need to init first to get hubConnection
             component.ngOnInit();
             mockGameServersService.getServers.mockClear();
-            mockGameServersService.getServers.mockReturnValue(of({
-                servers,
-                instanceCount: 2,
-                missions: [{ path: '/p', name: 'test', map: 'Altis' }]
-            }));
+            mockGameServersService.getServers.mockReturnValue(
+                of({
+                    servers,
+                    instanceCount: 2,
+                    missions: [{ path: '/p', name: 'test', map: 'Altis' }]
+                })
+            );
 
             component.getServers();
 
@@ -440,14 +230,6 @@ describe('OperationsServersComponent', () => {
             dialogAfterClosed$.next(false);
 
             expect(mockGameServersService.killServer).not.toHaveBeenCalled();
-        });
-    });
-
-    describe('upload', () => {
-        it('does nothing when files array is empty', () => {
-            component.upload([]);
-
-            expect(mockGameServersService.uploadMission).not.toHaveBeenCalled();
         });
     });
 

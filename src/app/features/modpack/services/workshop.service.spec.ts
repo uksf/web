@@ -50,15 +50,15 @@ describe('WorkshopService', () => {
         expect(mockHttpClient.get).toHaveBeenCalledWith('http://localhost:5500/workshop/mod1');
     });
 
-    it('getModUpdatedDate calls GET /workshop/:steamId/updatedDate', () => {
-        const response: WorkshopModUpdatedDate = { updatedDate: '2026-01-01T00:00:00Z' };
+    it('getModUpdatedDates calls GET /workshop/updatedDates', () => {
+        const response: WorkshopModUpdatedDate[] = [{ steamId: '123', updatedDate: '2026-01-01T00:00:00Z' }];
         mockHttpClient.get.mockReturnValue(of(response));
 
-        service.getModUpdatedDate('123').subscribe({
-            next: (result) => expect(result.updatedDate).toBe('2026-01-01T00:00:00Z')
+        service.getModUpdatedDates().subscribe({
+            next: (result) => expect(result[0].updatedDate).toBe('2026-01-01T00:00:00Z')
         });
 
-        expect(mockHttpClient.get).toHaveBeenCalledWith('http://localhost:5500/workshop/123/updatedDate');
+        expect(mockHttpClient.get).toHaveBeenCalledWith('http://localhost:5500/workshop/updatedDates');
     });
 
     it('installMod calls POST /workshop with mod data', () => {
