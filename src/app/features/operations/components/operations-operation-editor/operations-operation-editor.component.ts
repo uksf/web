@@ -31,6 +31,7 @@ export class OperationsOperationEditorComponent {
     pending = false;
     missing = false;
     creationBlocked = false;
+    ready = false;
     model: Operation = { id: '', campaignId: '', title: '', brief: '', status: OperationStatus.Upcoming };
 
     statusOptions: IDropdownElement[] = [
@@ -61,11 +62,18 @@ export class OperationsOperationEditorComponent {
             )
             .subscribe({
                 next: (operation) => {
-                    if (!operation) {
+                    if (this.creationBlocked) {
                         return;
                     }
-                    this.model = { ...operation };
-                    this.statusValue = this.statusOptions.find((o) => o.value === String(this.model.status)) ?? this.statusOptions[0];
+                    if (this.isEdit) {
+                        if (!operation) {
+                            this.missing = true;
+                            return;
+                        }
+                        this.model = { ...operation };
+                        this.statusValue = this.statusOptions.find((o) => o.value === String(this.model.status)) ?? this.statusOptions[0];
+                    }
+                    this.ready = true;
                 },
                 error: () => (this.missing = true)
             });
@@ -80,7 +88,7 @@ export class OperationsOperationEditorComponent {
     }
 
     submit() {
-        if (!this.model.title || this.pending || this.missing || this.creationBlocked) {
+        if (!this.model.title || this.pending || this.missing || this.creationBlocked || !this.ready) {
             return;
         }
         this.pending = true;

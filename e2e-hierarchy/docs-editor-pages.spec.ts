@@ -67,6 +67,28 @@ test.describe('docs-parity editor pages', () => {
         await expect(page.getByText('Not found')).toBeVisible();
     });
 
+    test('Create stays disabled until delayed campaign GET resolves', async ({ page }) => {
+        await installIsolation(page, commandRoles);
+        await page.route('**/campaigns/c1', async (route) => {
+            if (route.request().method() !== 'GET') {
+                return route.fallback();
+            }
+            await new Promise((r) => setTimeout(r, 800));
+            return route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ id: 'c1', name: 'Iron Sky', summary: '', status: 0 })
+            });
+        });
+        const nav = page.goto('/operations/campaigns/c1/operations/new');
+        await expect(page.locator('app-operations-operation-editor')).toBeVisible();
+        await page.locator('#title input, input#title, [name="title"] input').first().fill('Charlie');
+        await expect(page.getByRole('button', { name: 'Create' })).toBeDisabled();
+        expect(getLastWrite()).toBeNull();
+        await nav;
+        await expect(page.getByRole('button', { name: 'Create' })).toBeEnabled({ timeout: 5000 });
+    });
+
     test('TESTER gate redirects members and COMMAND-without-TESTER; TESTER+COMMAND enters', async ({ page }) => {
         await installIsolation(page, memberRoles);
         await page.goto('/operations/campaigns/new');

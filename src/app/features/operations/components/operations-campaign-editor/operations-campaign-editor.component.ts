@@ -29,6 +29,7 @@ export class OperationsCampaignEditorComponent {
     isEdit = false;
     pending = false;
     missing = false;
+    ready = false;
     model: Campaign = { id: '', name: '', summary: '', status: CampaignStatus.Upcoming };
 
     statusOptions: IDropdownElement[] = [
@@ -42,6 +43,7 @@ export class OperationsCampaignEditorComponent {
     constructor() {
         const campaignId = this.route.snapshot.paramMap.get('campaignId');
         if (!campaignId) {
+            this.ready = true;
             return;
         }
         this.isEdit = true;
@@ -49,6 +51,7 @@ export class OperationsCampaignEditorComponent {
             next: (campaign) => {
                 this.model = { ...campaign };
                 this.statusValue = this.statusOptions.find((o) => o.value === String(this.model.status)) ?? this.statusOptions[0];
+                this.ready = true;
             },
             error: () => (this.missing = true)
         });
@@ -59,7 +62,7 @@ export class OperationsCampaignEditorComponent {
     }
 
     submit() {
-        if (!this.model.name || this.pending || this.missing) {
+        if (!this.model.name || this.pending || this.missing || !this.ready) {
             return;
         }
         this.pending = true;

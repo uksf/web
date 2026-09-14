@@ -1,6 +1,6 @@
 import { afterEach, describe, it, expect, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { OperationsIntelEditorComponent } from './operations-intel-editor.component';
@@ -107,5 +107,113 @@ describe('OperationsIntelEditorComponent', () => {
         expect(component.creationBlocked).toBe(false);
         component.submit();
         expect(service.updateIntel).toHaveBeenCalled();
+    });
+
+    it('delayed ancestry blocks create until all parents complete', () => {
+        const campaign$ = new Subject<any>();
+        const operation$ = new Subject<any>();
+        service = {
+            addIntel: vi.fn().mockReturnValue(of(undefined)),
+            updateIntel: vi.fn().mockReturnValue(of(undefined)),
+            getCampaign: vi.fn().mockReturnValue(campaign$),
+            getOperation: vi.fn().mockReturnValue(operation$),
+            getMission: vi.fn().mockReturnValue(of(null)),
+            getIntel: vi.fn()
+        };
+        router = { navigate: vi.fn() };
+        TestBed.configureTestingModule({
+            providers: [
+                OperationsIntelEditorComponent,
+                { provide: CampaignsService, useValue: service },
+                { provide: Router, useValue: router },
+                { provide: MatDialog, useValue: { open: vi.fn() } },
+                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map(Object.entries({ campaignId: 'c1', operationId: 'op1' })) } } }
+            ]
+        });
+        component = TestBed.inject(OperationsIntelEditorComponent);
+        component.model.title = 'Enemy';
+        component.submit();
+        expect(service.addIntel).not.toHaveBeenCalled();
+        campaign$.next({ id: 'c1', name: 'Iron Sky', summary: '', status: CampaignStatus.Current });
+        campaign$.complete();
+        component.submit();
+        expect(service.addIntel).not.toHaveBeenCalled();
+        operation$.next({ id: 'op1' });
+        operation$.complete();
+        expect(component.ready).toBe(true);
+        component.submit();
+        expect(service.addIntel).toHaveBeenCalledWith(expect.objectContaining({ scope: IntelScope.Operation, ownerId: 'op1', title: 'Enemy' }));
+    });
+
+    it('delayed Past campaign redirects without addIntel', () => {
+        const campaign$ = new Subject<any>();
+        service = {
+            addIntel: vi.fn().mockReturnValue(of(undefined)),
+            updateIntel: vi.fn().mockReturnValue(of(undefined)),
+            getCampaign: vi.fn().mockReturnValue(campaign$),
+            getOperation: vi.fn().mockReturnValue(of(null)),
+            getMission: vi.fn().mockReturnValue(of(null)),
+            getIntel: vi.fn()
+        };
+        router = { navigate: vi.fn() };
+        TestBed.configureTestingModule({
+            providers: [
+                OperationsIntelEditorComponent,
+                { provide: CampaignsService, useValue: service },
+                { provide: Router, useValue: router },
+                { provide: MatDialog, useValue: { open: vi.fn() } },
+                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map(Object.entries({ campaignId: 'c-past' })) } } }
+            ]
+        });
+        component = TestBed.inject(OperationsIntelEditorComponent);
+        component.model.title = 'Nope';
+        component.submit();
+        expect(service.addIntel).not.toHaveBeenCalled();
+        campaign$.next({ id: 'c-past', name: 'Old', summary: '', status: CampaignStatus.Past });
+        campaign$.complete();
+        expect(component.creationBlocked).toBe(true);
+        expect(component.ready).toBe(false);
+        expect(router.navigate).toHaveBeenCalledWith(['/operations/campaigns', 'c-past']);
+        component.submit();
+        expect(service.addIntel).not.toHaveBeenCalled();
+    });
+
+    it('delayed intel lookup blocks update until it completes', () => {
+        const intel$ = new Subject<any[]>();
+        service = {
+            addIntel: vi.fn().mockReturnValue(of(undefined)),
+            updateIntel: vi.fn().mockReturnValue(of(undefined)),
+            getCampaign: vi.fn().mockReturnValue(of({ id: 'c1', name: 'Iron Sky', summary: '', status: CampaignStatus.Current })),
+            getOperation: vi.fn().mockReturnValue(of(null)),
+            getMission: vi.fn().mockReturnValue(of(null)),
+            getIntel: vi.fn().mockReturnValue(intel$)
+        };
+        router = { navigate: vi.fn() };
+        TestBed.configureTestingModule({
+            providers: [
+                OperationsIntelEditorComponent,
+                { provide: CampaignsService, useValue: service },
+                { provide: Router, useValue: router },
+                { provide: MatDialog, useValue: { open: vi.fn() } },
+                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map(Object.entries({ campaignId: 'c1', intelId: 'i1' })) } } }
+            ]
+        });
+        component = TestBed.inject(OperationsIntelEditorComponent);
+        component.model.title = 'Recon';
+        component.submit();
+        expect(service.updateIntel).not.toHaveBeenCalled();
+        intel$.next([{ id: 'i1', scope: IntelScope.Campaign, ownerId: 'c1', title: 'Recon', body: '' }]);
+        intel$.complete();
+        expect(component.ready).toBe(true);
+        component.submit();
+        expect(service.updateIntel).toHaveBeenCalledWith(expect.objectContaining({ id: 'i1', title: 'Recon' }));
+    });
+
+    it('ancestry error keeps create blocked', () => {
+        setup({ campaignId: 'c1', operationId: 'op1' }, [], { operation: true });
+        expect(component.ready).toBe(false);
+        component.model.title = 'Enemy';
+        component.submit();
+        expect(service.addIntel).not.toHaveBeenCalled();
     });
 });

@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { OperationsCampaignEditorComponent } from './operations-campaign-editor.component';
@@ -64,5 +64,66 @@ describe('OperationsCampaignEditorComponent', () => {
         component.cancel();
         expect(service.addCampaign).not.toHaveBeenCalled();
         expect(router.navigate).toHaveBeenCalledWith(['/operations/campaigns']);
+    });
+
+    it('create without remote data is ready immediately', () => {
+        setup({});
+        expect(component.ready).toBe(true);
+        component.model.name = 'New';
+        component.submit();
+        expect(service.addCampaign).toHaveBeenCalled();
+    });
+
+    it('delayed campaign lookup blocks update until it completes', () => {
+        const campaign$ = new Subject<any>();
+        service = {
+            addCampaign: vi.fn().mockReturnValue(of(undefined)),
+            updateCampaign: vi.fn().mockReturnValue(of(undefined)),
+            getCampaign: vi.fn().mockReturnValue(campaign$)
+        };
+        router = { navigate: vi.fn() };
+        TestBed.configureTestingModule({
+            providers: [
+                OperationsCampaignEditorComponent,
+                { provide: CampaignsService, useValue: service },
+                { provide: Router, useValue: router },
+                { provide: MatDialog, useValue: { open: vi.fn() } },
+                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map(Object.entries({ campaignId: 'c1' })) } } }
+            ]
+        });
+        component = TestBed.inject(OperationsCampaignEditorComponent);
+        expect(component.ready).toBe(false);
+        component.model.name = 'Iron Sky';
+        component.submit();
+        expect(service.updateCampaign).not.toHaveBeenCalled();
+        campaign$.next({ id: 'c1', name: 'Iron Sky', summary: '<p>b</p>', status: CampaignStatus.Past });
+        campaign$.complete();
+        expect(component.ready).toBe(true);
+        component.submit();
+        expect(service.updateCampaign).toHaveBeenCalledWith(expect.objectContaining({ id: 'c1', name: 'Iron Sky' }));
+    });
+
+    it('campaign load error keeps update blocked', () => {
+        service = {
+            addCampaign: vi.fn().mockReturnValue(of(undefined)),
+            updateCampaign: vi.fn().mockReturnValue(of(undefined)),
+            getCampaign: vi.fn().mockReturnValue(throwError(() => ({ status: 404 })))
+        };
+        router = { navigate: vi.fn() };
+        TestBed.configureTestingModule({
+            providers: [
+                OperationsCampaignEditorComponent,
+                { provide: CampaignsService, useValue: service },
+                { provide: Router, useValue: router },
+                { provide: MatDialog, useValue: { open: vi.fn() } },
+                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map(Object.entries({ campaignId: 'c1' })) } } }
+            ]
+        });
+        component = TestBed.inject(OperationsCampaignEditorComponent);
+        expect(component.ready).toBe(false);
+        expect(component.missing).toBe(true);
+        component.model.name = 'X';
+        component.submit();
+        expect(service.updateCampaign).not.toHaveBeenCalled();
     });
 });

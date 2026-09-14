@@ -31,6 +31,7 @@ export class OperationsIntelEditorComponent {
     pending = false;
     missing = false;
     creationBlocked = false;
+    ready = false;
     model: IntelPage = { id: '', scope: IntelScope.Campaign, ownerId: '', title: '', body: '' };
 
     get backLink(): string[] {
@@ -67,7 +68,11 @@ export class OperationsIntelEditorComponent {
             mission: this.missionId && this.operationId ? this.campaignsService.getMission(this.campaignId, this.operationId, this.missionId) : of(null)
         })
             .pipe(
-                switchMap(({ campaign }) => {
+                switchMap(({ campaign, operation, mission }) => {
+                    if ((this.operationId && !operation) || (this.missionId && !mission)) {
+                        this.missing = true;
+                        return of(null);
+                    }
                     if (!this.isEdit && campaign.status === CampaignStatus.Past) {
                         this.creationBlocked = true;
                         this.router.navigate(this.backLink);
@@ -79,15 +84,22 @@ export class OperationsIntelEditorComponent {
             )
             .subscribe({
                 next: (pages) => {
-                    if (!this.isEdit || !pages) {
+                    if (this.creationBlocked || this.missing) {
                         return;
                     }
-                    const page = pages.find((p) => p.id === intelId);
-                    if (!page) {
-                        this.missing = true;
-                        return;
+                    if (this.isEdit) {
+                        if (!pages) {
+                            this.missing = true;
+                            return;
+                        }
+                        const page = pages.find((p) => p.id === intelId);
+                        if (!page) {
+                            this.missing = true;
+                            return;
+                        }
+                        this.model = { ...page };
                     }
-                    this.model = { ...page };
+                    this.ready = true;
                 },
                 error: () => (this.missing = true)
             });
@@ -98,7 +110,7 @@ export class OperationsIntelEditorComponent {
     }
 
     submit() {
-        if (!this.model.title || this.pending || this.missing || this.creationBlocked) {
+        if (!this.model.title || this.pending || this.missing || this.creationBlocked || !this.ready) {
             return;
         }
         this.pending = true;

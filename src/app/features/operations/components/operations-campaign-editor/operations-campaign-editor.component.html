@@ -6,7 +6,7 @@
             <span class="document-title">{{ isEdit ? 'Edit campaign' : 'New campaign' }}</span>
             <div class="buttons-container">
                 <app-button [secondary]="true" (clicked)="cancel()">Cancel</app-button>
-                <app-button (clicked)="submit()" [disabled]="!model.name" [pending]="pending">{{ isEdit ? 'Save' : 'Create' }}</app-button>
+                <app-button (clicked)="submit()" [disabled]="!model.name || !ready" [pending]="pending">{{ isEdit ? 'Save' : 'Create' }}</app-button>
             </div>
         </div>
         <form class="editor-form">
