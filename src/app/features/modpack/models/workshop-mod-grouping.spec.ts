@@ -79,7 +79,7 @@ describe('updateAvailable', () => {
         expect(updateAvailable(makeMod({ updatedDate: '0001-01-01T00:00:00.0000000Z', lastUpdatedLocally: '2026-01-01T00:00:00Z' }))).toBe(false);
     });
 
-    it.each(['Error', 'InterventionRequired'] as WorkshopModStatus[])('returns false for %s even when remote is newer', (status) => {
+    it.each(['Error', 'InterventionRequired', 'Installing', 'Updating', 'Uninstalling'] as WorkshopModStatus[])('returns false for %s even when remote is newer', (status) => {
         expect(updateAvailable(makeMod({ status, updatedDate: '2026-02-01T00:00:00Z', lastUpdatedLocally: '2026-01-01T00:00:00Z' }))).toBe(false);
     });
 });

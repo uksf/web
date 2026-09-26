@@ -210,11 +210,20 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
     }
 
     update(mod: WorkshopMod) {
+        // Show the mod as updating straight away so the button cannot be clicked again before the hub reports the new status.
+        mod.status = 'Updating';
+        this.updateModComputedProperties();
         this.workshopService
             .updateMod(mod.steamId)
             .pipe(first())
             .subscribe({
-                next: () => {}
+                next: () => {},
+                error: (error: UksfError) => {
+                    this.getDataForMod(mod.id);
+                    this.dialog.open(MessageModalComponent, {
+                        data: { message: error.error }
+                    });
+                }
             });
     }
 

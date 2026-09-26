@@ -11,9 +11,10 @@ export function interventionLabel(mod: WorkshopMod): string {
 }
 
 export function updateAvailable(mod: WorkshopMod): boolean {
-    // A mod that needs attention (errored or awaiting intervention) is recovered via Retry/Resolve, not Update —
-    // its lastUpdatedLocally was never bumped so the dates would otherwise falsely flag an update as available.
-    if (mod.status === 'Error' || mod.status === 'InterventionRequired') {
+    // A mod that needs attention (errored or awaiting intervention) is recovered via Retry/Resolve, not Update, and a mod
+    // mid-operation is already being handled. Neither has had lastUpdatedLocally bumped yet, so the dates would
+    // otherwise falsely flag an update as available.
+    if (mod.status === 'Error' || mod.status === 'InterventionRequired' || inProgress(mod)) {
         return false;
     }
     return !!mod.updatedDate && isValidDate(mod.updatedDate) && isValidDate(mod.lastUpdatedLocally) && new Date(mod.updatedDate) > new Date(mod.lastUpdatedLocally);
@@ -66,7 +67,7 @@ function sectionKey(mod: WorkshopMod): WorkshopModSectionKey {
     if (mod.status === 'Error' || mod.status === 'InterventionRequired') {
         return 'needsAttention';
     }
-    if (mod.status === 'Installing' || mod.status === 'Updating' || mod.status === 'Uninstalling') {
+    if (inProgress(mod)) {
         return 'inProgress';
     }
     if (mod._updateAvailable) {
@@ -79,6 +80,10 @@ function sectionKey(mod: WorkshopMod): WorkshopModSectionKey {
         return 'uninstalled';
     }
     return 'installed';
+}
+
+function inProgress(mod: WorkshopMod): boolean {
+    return mod.status === 'Installing' || mod.status === 'Updating' || mod.status === 'Uninstalling';
 }
 
 function isValidDate(date: string): boolean {
