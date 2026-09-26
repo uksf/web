@@ -104,6 +104,13 @@ label {
         background: th.warn();
     }
 
+    &.pbo-badge-folder {
+        color: th.fg-base();
+        border: 1px solid currentColor;
+        font-weight: 400;
+        letter-spacing: 0;
+    }
+
     &.pbo-badge-conflict {
         color: #ffffff;
         background: #ef6c00;

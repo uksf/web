@@ -6,6 +6,9 @@
                 <div class="pbos-list-item-container" [ngClass]="'pbo-state-' + row.state">
                     <span class="pbo-name" [ngClass]="{ conflict: row.conflict }" [matTooltip]="getTooltip(row)" [title]="row.name">{{ row.name }}</span>
                     <div class="pbo-row-actions">
+                        @if (row.folder !== undefined) {
+                            <span class="pbo-badge pbo-badge-folder" [matTooltip]="getFolderTooltip(row)">{{ folderLabel(row) }}</span>
+                        }
                         @if (row.conflict) {
                             <span class="pbo-badge pbo-badge-conflict">CONFLICT</span>
                         }

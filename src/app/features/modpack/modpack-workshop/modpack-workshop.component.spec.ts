@@ -223,10 +223,10 @@ describe('ModpackWorkshopComponent', () => {
         it('passes both installed and available lists to the modal', () => {
             mockDialog.open.mockReturnValue({ afterClosed: () => new Subject<any>().asObservable() });
 
-            component.resolveIntervention(makeMod({ pbos: ['a.pbo'], extensions: ['ctab_connect.dll'], availablePbos: ['b.pbo'], availableExtensions: ['new.dll'] }));
-
+            const availablePboFolders = [{ name: 'b.pbo', folder: 'optionals/Addons' }];
+            component.resolveIntervention(makeMod({ pbos: ['a.pbo'], extensions: ['ctab_connect.dll'], availablePbos: ['b.pbo'], availablePboFolders, availableExtensions: ['new.dll'] }));
             expect(mockDialog.open).toHaveBeenCalledWith(expect.any(Function), {
-                data: { installedPbos: ['a.pbo'], availablePbos: ['b.pbo'], installedExtensions: ['ctab_connect.dll'], availableExtensions: ['new.dll'] }
+                data: { installedPbos: ['a.pbo'], availablePbos: ['b.pbo'], availablePboFolders, installedExtensions: ['ctab_connect.dll'], availableExtensions: ['new.dll'] }
             });
         });
     });

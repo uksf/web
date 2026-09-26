@@ -136,4 +136,33 @@ describe('WorkshopModInterventionModalComponent', () => {
         expect(component.pboSelection.every((p) => !p.selected)).toBe(true);
         expect(component.extensionSelection[0].state).toBe('new');
     });
+
+    it('labels PBOs found outside the addons folder with their folder', () => {
+        TestBed.resetTestingModule();
+        TestBed.configureTestingModule({
+            providers: [
+                WorkshopModInterventionModalComponent,
+                { provide: MatDialogRef, useValue: mockDialogRef },
+                {
+                    provide: MAT_DIALOG_DATA,
+                    useValue: {
+                        installedPbos: [],
+                        availablePbos: ['main.pbo', 'main_ace.pbo', 'root.pbo'],
+                        availablePboFolders: [
+                            { name: 'main_ace.pbo', folder: 'optionals/Addons' },
+                            { name: 'root.pbo', folder: '' }
+                        ]
+                    }
+                }
+            ]
+        });
+        const component = TestBed.inject(WorkshopModInterventionModalComponent);
+        const row = (name: string) => component.pboSelection.find((p) => p.name === name);
+
+        expect(row('main.pbo').folder).toBeUndefined();
+        expect(component.folderLabel(row('main_ace.pbo'))).toBe('optionals/Addons');
+        expect(component.getFolderTooltip(row('main_ace.pbo'))).toBe("Not in the mod's addons folder. Found in optionals/Addons");
+        expect(component.folderLabel(row('root.pbo'))).toBe('mod root');
+        expect(row('main_ace.pbo').selected).toBe(false);
+    });
 });

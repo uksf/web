@@ -7,6 +7,7 @@ import { MatTooltip } from '@angular/material/tooltip';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
+import { WorkshopModPbo } from '../models/workshop-mod';
 
 export type WorkshopModSelectionState = 'existing' | 'new' | 'removed';
 
@@ -16,11 +17,13 @@ export interface WorkshopModSelectionRow {
     state: WorkshopModSelectionState;
     disabled: boolean;
     conflict: boolean;
+    folder?: string;
 }
 
 export interface WorkshopModInterventionModalData {
     installedPbos: string[] | null | undefined;
     availablePbos: string[] | null | undefined;
+    availablePboFolders?: WorkshopModPbo[] | null;
     installedExtensions: string[] | null | undefined;
     availableExtensions: string[] | null | undefined;
     conflictPbos?: string[] | null;
@@ -47,6 +50,7 @@ export class WorkshopModInterventionModalComponent {
 
     constructor() {
         this.pboSelection = buildSelection(this.data.installedPbos, this.data.availablePbos, this.data.conflictPbos);
+        applyFolders(this.pboSelection, this.data.availablePboFolders);
         this.extensionSelection = buildSelection(this.data.installedExtensions, this.data.availableExtensions, []);
         this.onExtensionStep = this.pboSelection.length === 0;
     }
@@ -73,6 +77,14 @@ export class WorkshopModInterventionModalComponent {
 
     getTooltip(row: WorkshopModSelectionRow): string {
         return row.conflict ? 'PBO is already installed by another mod. Select to overwrite' : '';
+    }
+
+    folderLabel(row: WorkshopModSelectionRow): string {
+        return row.folder || 'mod root';
+    }
+
+    getFolderTooltip(row: WorkshopModSelectionRow): string {
+        return `Not in the mod's addons folder. Found in ${this.folderLabel(row)}`;
     }
 
     selectAll(): void {
@@ -117,6 +129,12 @@ function buildSelection(
     }
 
     return rows.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+// A PBO outside the mod's addons folder is the author's own layout (optionals, compat folders), so its row says where it came from.
+function applyFolders(rows: WorkshopModSelectionRow[], folders: WorkshopModPbo[] | null | undefined): void {
+    const folderByName = new Map((folders ?? []).map((x) => [x.name, x.folder]));
+    rows.filter((row) => folderByName.has(row.name)).forEach((row) => (row.folder = folderByName.get(row.name)));
 }
 
 function selectedNames(rows: WorkshopModSelectionRow[]): string[] {

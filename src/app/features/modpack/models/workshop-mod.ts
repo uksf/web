@@ -13,6 +13,7 @@ export interface WorkshopMod {
     pbos: string[];
     extensions: string[];
     availablePbos: string[];
+    availablePboFolders?: WorkshopModPbo[];
     availableExtensions: string[];
 
     updatedDate?: string;
@@ -25,6 +26,12 @@ export interface WorkshopMod {
     _interventionRequired?: boolean;
     _interventionLabel?: string;
     _neverReleased?: boolean;
+}
+
+/** A PBO found outside the mod's addons folder, with its folder relative to the mod root. */
+export interface WorkshopModPbo {
+    name: string;
+    folder: string;
 }
 
 export interface InstallWorkshopModData {

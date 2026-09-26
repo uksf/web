@@ -184,6 +184,7 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
                 data: {
                     installedPbos: mod.pbos,
                     availablePbos: mod.availablePbos,
+                    availablePboFolders: mod.availablePboFolders,
                     installedExtensions: mod.extensions,
                     availableExtensions: mod.availableExtensions
                 }
