@@ -1,6 +1,7 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild, inject } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
+import { PasskeyCredential, PasskeyService, isPasskeyCancelled } from '@app/core/services/authentication/passkey.service';
 import { Router } from '@angular/router';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { RedirectService } from '@app/core/services/authentication/redirect.service';
@@ -19,8 +20,9 @@ import { ButtonComponent } from '../../../../shared/components/elements/button-p
     styleUrls: ['./login.component.scss', '../login-page/login-page.component.scss'],
     imports: [MatDialogTitle, FormsModule, TextInputComponent, ButtonHiddenSubmitComponent, MatCheckbox, FlexFillerComponent, ButtonComponent]
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
     private auth = inject(AuthenticationService);
+    private passkeyService = inject(PasskeyService);
     private router = inject(Router);
     private permissionsService = inject(PermissionsService);
     private redirectService = inject(RedirectService);
@@ -28,6 +30,8 @@ export class LoginComponent implements OnInit {
     @ViewChild(NgForm) form!: NgForm;
     @Output() onRequestPasswordReset = new EventEmitter();
     pending = false;
+    passkeyPending = false;
+    passkeysSupported = this.passkeyService.supported;
     stayLogged = true;
     loginError = '';
     model: FormModel = {
@@ -42,9 +46,17 @@ export class LoginComponent implements OnInit {
         ],
         password: [{ type: 'required', message: 'Password is required' }]
     };
+    private autofillRequest: AbortController | null = null;
+    private destroyed = false;
 
     ngOnInit() {
         this.auth.logout();
+        this.offerPasskeyAutofill();
+    }
+
+    ngOnDestroy() {
+        this.destroyed = true;
+        this.autofillRequest?.abort();
     }
 
     submit() {
@@ -59,18 +71,7 @@ export class LoginComponent implements OnInit {
             .login(this.model.email, this.model.password, this.stayLogged)
             .pipe(first())
             .subscribe({
-                next: () => {
-                    this.permissionsService
-                        .refresh()
-                        .then(() => {
-                            const redirect = this.redirectService.getAndClearRedirectUrl() ?? '/home';
-                            this.router.navigateByUrl(redirect);
-                        })
-                        .catch(() => {
-                            this.pending = false;
-                            this.loginError = 'Login failed';
-                        });
-                },
+                next: () => this.onLoggedIn(),
                 error: (error: UksfError) => {
                     this.pending = false;
                     this.loginError = error?.error || 'Login failed';
@@ -78,8 +79,77 @@ export class LoginComponent implements OnInit {
             });
     }
 
+    async loginWithPasskey() {
+        if (this.passkeyPending) {
+            return;
+        }
+
+        this.autofillRequest?.abort();
+        this.passkeyPending = true;
+        this.loginError = '';
+        try {
+            this.completePasskeyLogin(await this.passkeyService.getAssertion());
+        } catch (error) {
+            this.onPasskeyError(error);
+            this.offerPasskeyAutofill();
+        }
+    }
+
     requestPasswordReset() {
         this.onRequestPasswordReset.emit();
+    }
+
+    // Lists passkeys in the browser or password manager autofill for the email field
+    private async offerPasskeyAutofill() {
+        if (this.destroyed || !(await this.passkeyService.conditionalMediationAvailable())) {
+            return;
+        }
+
+        const request = new AbortController();
+        this.autofillRequest = request;
+        try {
+            const passkey = await this.passkeyService.getAssertion('conditional', request.signal);
+            this.passkeyPending = true;
+            this.completePasskeyLogin(passkey);
+        } catch (error) {
+            if (!request.signal.aborted) {
+                this.onPasskeyError(error);
+            }
+        }
+    }
+
+    private completePasskeyLogin(passkey: PasskeyCredential) {
+        this.auth
+            .loginWithPasskey(passkey, this.stayLogged)
+            .pipe(first())
+            .subscribe({
+                next: () => this.onLoggedIn(),
+                error: (error: UksfError) => {
+                    this.onPasskeyError(error);
+                    this.offerPasskeyAutofill();
+                }
+            });
+    }
+
+    private onPasskeyError(error: unknown) {
+        this.passkeyPending = false;
+        if (!isPasskeyCancelled(error)) {
+            this.loginError = (error as UksfError)?.error || 'Passkey sign-in failed';
+        }
+    }
+
+    private onLoggedIn() {
+        this.permissionsService
+            .refresh()
+            .then(() => {
+                const redirect = this.redirectService.getAndClearRedirectUrl() ?? '/home';
+                this.router.navigateByUrl(redirect);
+            })
+            .catch(() => {
+                this.pending = false;
+                this.passkeyPending = false;
+                this.loginError = 'Login failed';
+            });
     }
 }
 

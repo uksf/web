@@ -6,6 +6,7 @@ import { SessionService } from './session.service';
 import { AccountService } from '../account.service';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { CreateAccount } from '@app/shared/models/account';
+import { PasskeyCredential } from './passkey.service';
 
 export interface TokenResponse {
     token: string;
@@ -24,6 +25,17 @@ export class AuthenticationService {
     public login(email: string, password: string, stayLogged: boolean): Observable<TokenResponse> {
         const body = { email, password };
         return this.httpClient.post<TokenResponse>(`${this.urls.apiUrl}/auth/login`, body).pipe(
+            tap((response) => {
+                this.sessionService.setSessionToken(response.token);
+                if (stayLogged) {
+                    this.sessionService.setStorageToken();
+                }
+            })
+        );
+    }
+
+    public loginWithPasskey(passkey: PasskeyCredential, stayLogged: boolean): Observable<TokenResponse> {
+        return this.httpClient.post<TokenResponse>(`${this.urls.apiUrl}/auth/passkey`, passkey).pipe(
             tap((response) => {
                 this.sessionService.setSessionToken(response.token);
                 if (stayLogged) {

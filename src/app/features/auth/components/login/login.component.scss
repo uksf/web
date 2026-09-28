@@ -1,1 +1,14 @@
+@use 'styles/variables' as v;
+@use 'styles/theme-helpers' as th;
 
+.passkey-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: v.$spacing-8px;
+    margin-top: v.$spacing-16px;
+
+    .passkey-divider {
+        color: th.fg-secondary-text();
+    }
+}

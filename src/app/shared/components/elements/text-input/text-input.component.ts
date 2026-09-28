@@ -28,6 +28,7 @@ export class TextInputComponent implements ControlValueAccessor, DoCheck {
     @Input() minRows = 1;
     @Input() maxRows = 10;
     @Input() autocomplete = 'off';
+    @Input() name: string | null = null;
     @Input() validationMessages: ValidationMessage[] = [];
     @Input() reserveErrorSpace = true;
     @Input() clearable = false;

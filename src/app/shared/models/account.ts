@@ -20,7 +20,8 @@ export interface CreateAccount {
     firstName: string;
     lastName: string;
     nation: string;
-    password: string;
+    password?: string;
+    passkey?: { flowId: string; credential: Record<string, unknown> };
 }
 
 export interface Account {

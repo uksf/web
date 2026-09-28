@@ -7,6 +7,7 @@ import { AuthenticationService } from '@app/core/services/authentication/authent
 import { Router } from '@angular/router';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { RedirectService } from '@app/core/services/authentication/redirect.service';
+import { PasskeyService } from '@app/core/services/authentication/passkey.service';
 
 const meta: Meta<LoginComponent> = {
     title: 'Auth/Login',
@@ -19,7 +20,8 @@ const meta: Meta<LoginComponent> = {
                 { provide: AuthenticationService, useValue: {} },
                 { provide: Router, useValue: {} },
                 { provide: PermissionsService, useValue: {} },
-                { provide: RedirectService, useValue: {} }
+                { provide: RedirectService, useValue: {} },
+                { provide: PasskeyService, useValue: { supported: true, conditionalMediationAvailable: () => Promise.resolve(false) } }
             ]
         })
     ]

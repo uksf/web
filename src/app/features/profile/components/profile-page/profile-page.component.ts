@@ -29,6 +29,7 @@ import { MatTooltip } from '@angular/material/tooltip';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { DatePipe } from '@angular/common';
 import { CountryImage } from '../../../../shared/pipes/country.pipe';
+import { PasskeysCardComponent } from '../passkeys-card/passkeys-card.component';
 
 @Component({
     selector: 'app-profile-page',
@@ -50,7 +51,7 @@ import { CountryImage } from '../../../../shared/pipes/country.pipe';
         NgxPermissionsModule,
         DatePipe,
         CountryImage,
-        
+        PasskeysCardComponent
     ]
 })
 export class ProfilePageComponent extends DestroyableComponent implements OnInit {
@@ -89,144 +90,74 @@ export class ProfilePageComponent extends DestroyableComponent implements OnInit
     }
 
     ngOnInit() {
-        if (this.route.snapshot.queryParams['steamid']) {
-            const id = this.route.snapshot.queryParams['steamid'];
-            if (id === 'fail') {
-                this.router.navigate(['/profile']).then(() => {
-                    this.getAccount();
-                    this.dialog
-                        .open(MessageModalComponent, {
-                            data: { message: 'Steam failed to connect' }
-                        })
-                        .afterClosed()
-                        .pipe(first())
-                        .subscribe({
-                            next: () => {
-                                this.accountService.checkConnections();
-                            }
-                        });
-                });
+        const params = this.route.snapshot.queryParams;
+        if (params['steamid']) {
+            if (params['steamid'] === 'fail') {
+                this.showConnectionResult('Steam failed to connect');
             } else {
-                const code = this.route.snapshot.queryParams['validation'];
                 this.profileService
-                    .connectSteam(id, { code: code })
+                    .connectSteam(params['steamid'], { code: params['validation'] })
                     .pipe(first())
                     .subscribe({
-                        next: () => {
-                            this.router.navigate(['/profile']).then(() => {
-                                this.getAccount();
-                                this.dialog
-                                    .open(MessageModalComponent, {
-                                        data: { message: 'Steam successfully connected' }
-                                    })
-                                    .afterClosed()
-                                    .pipe(first())
-                                    .subscribe({
-                                        next: () => {
-                                            this.accountService.checkConnections();
-                                        }
-                                    });
-                            });
-                        },
-                        error: (error) => {
-                            this.router.navigate(['/profile']).then(() => {
-                                this.getAccount();
-                                this.dialog
-                                    .open(MessageModalComponent, {
-                                        data: { message: error.error }
-                                    })
-                                    .afterClosed()
-                                    .pipe(first())
-                                    .subscribe({
-                                        next: () => {
-                                            this.accountService.checkConnections();
-                                        }
-                                    });
-                            });
-                        }
+                        next: () => this.showConnectionResult('Steam successfully connected'),
+                        error: (error) => this.showConnectionResult(error.error)
                     });
             }
-        } else if (this.route.snapshot.queryParams['discordid']) {
-            const id = this.route.snapshot.queryParams['discordid'];
-            if (id === 'fail') {
-                this.router.navigate(['/profile']).then(() => {
-                    this.getAccount();
-                    this.dialog
-                        .open(MessageModalComponent, {
-                            data: { message: 'Discord failed to connect' }
-                        })
-                        .afterClosed()
-                        .pipe(first())
-                        .subscribe({
-                            next: () => {
-                                this.accountService.checkConnections();
-                            }
-                        });
-                });
+        } else if (params['discordid']) {
+            if (params['discordid'] === 'fail') {
+                this.showConnectionResult('Discord failed to connect');
             } else {
-                const code = this.route.snapshot.queryParams['validation'];
-                const added = this.route.snapshot.queryParams['added'];
                 this.profileService
-                    .connectDiscord(id, { code: code })
+                    .connectDiscord(params['discordid'], { code: params['validation'] })
                     .pipe(first())
                     .subscribe({
                         next: () => {
-                            this.router.navigate(['/profile']).then(() => {
-                                this.getAccount();
-                                if (added === 'true') {
-                                    this.dialog
-                                        .open(MessageModalComponent, {
-                                            data: { message: 'Discord successfully connected' }
-                                        })
-                                        .afterClosed()
-                                        .pipe(first())
-                                        .subscribe({
-                                            next: () => {
-                                                this.accountService.checkConnections();
-                                            }
-                                        });
-                                } else {
-                                    this.dialog
-                                        .open(ConfirmationModalComponent, {
-                                            data: {
-                                                message: "Discord successfully connected\n\nWe were unable to add you to our Discord server.\nPlease join by pressing 'Join Discord'",
-                                                button: 'Join Discord'
-                                            }
-                                        })
-                                        .afterClosed()
-                                        .pipe(first())
-                                        .subscribe({
-                                            next: (result) => {
-                                                this.accountService.checkConnections();
-                                                if (result) {
-                                                    window.open('https://discord.uk-sf.co.uk', '_blank');
-                                                }
-                                            }
-                                        });
-                                }
-                            });
+                            if (params['added'] === 'true') {
+                                this.showConnectionResult('Discord successfully connected');
+                            } else {
+                                this.showDiscordJoinPrompt();
+                            }
                         },
-                        error: (error) => {
-                            this.router.navigate(['/profile']).then(() => {
-                                this.getAccount();
-                                this.dialog
-                                    .open(MessageModalComponent, {
-                                        data: { message: error.error }
-                                    })
-                                    .afterClosed()
-                                    .pipe(first())
-                                    .subscribe({
-                                        next: () => {
-                                            this.accountService.checkConnections();
-                                        }
-                                    });
-                            });
-                        }
+                        error: (error) => this.showConnectionResult(error.error)
                     });
             }
         } else {
             this.getAccount();
         }
+    }
+
+    private showConnectionResult(message: string) {
+        this.router.navigate(['/profile']).then(() => {
+            this.getAccount();
+            this.dialog
+                .open(MessageModalComponent, { data: { message } })
+                .afterClosed()
+                .pipe(first())
+                .subscribe({ next: () => this.accountService.checkConnections() });
+        });
+    }
+
+    private showDiscordJoinPrompt() {
+        this.router.navigate(['/profile']).then(() => {
+            this.getAccount();
+            this.dialog
+                .open(ConfirmationModalComponent, {
+                    data: {
+                        message: "Discord successfully connected\n\nWe were unable to add you to our Discord server.\nPlease join by pressing 'Join Discord'",
+                        button: 'Join Discord'
+                    }
+                })
+                .afterClosed()
+                .pipe(first())
+                .subscribe({
+                    next: (result) => {
+                        this.accountService.checkConnections();
+                        if (result) {
+                            window.open('https://discord.uk-sf.co.uk', '_blank');
+                        }
+                    }
+                });
+        });
     }
 
     getAccount(forceRefresh: boolean = false) {

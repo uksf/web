@@ -14,6 +14,7 @@ import { nameCase, titleCase } from '@app/shared/services/helper.service';
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { CreateAccount } from '@app/shared/models/account';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
+import { PasskeyService, isPasskeyCancelled } from '@app/core/services/authentication/passkey.service';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { ApplicationService } from '../../services/application.service';
 import { DestroyableComponent } from '@app/shared/components';
@@ -22,57 +23,7 @@ import { TextInputComponent as TextInputComponent_1 } from '../../../../shared/c
 import { DropdownComponent } from '../../../../shared/components/elements/dropdown/dropdown.component';
 import { ButtonComponent } from '../../../../shared/components/elements/button-pending/button.component';
 import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
-
-function matchingPasswords(passwordKey: string, confirmPasswordKey: string) {
-    return (group: UntypedFormGroup): ValidationErrors | null => {
-        const password = group.controls[passwordKey];
-        const confirmPassword = group.controls[confirmPasswordKey];
-        if (password.value !== confirmPassword.value) {
-            return { mismatchedPasswords: true };
-        }
-        return null;
-    };
-}
-
-function validDob(dayKey: string, monthKey: string, yearKey: string) {
-    return (group: UntypedFormGroup): ValidationErrors | null => {
-        if (group.controls[dayKey].value === '' || group.controls[monthKey].value === '' || group.controls[yearKey].value === '') {
-            return null;
-        }
-
-        const day = parseInt(group.controls[dayKey].value, 10);
-        const month = parseInt(group.controls[monthKey].value, 10);
-        const year = parseInt(group.controls[yearKey].value, 10);
-        const valid = !isNaN(new Date(`${month}/${day}/${year}`).getTime());
-        if (isNaN(day) || isNaN(month) || isNaN(year) || !valid) {
-            return { nan: true };
-        }
-        if (day < 1 || day > 31) {
-            return { day: true };
-        }
-        if (month < 1 || month > 12) {
-            return { month: true };
-        }
-        if (year < 1900) {
-            return { dead: true };
-        }
-        if (year > new Date().getFullYear()) {
-            return { born: true };
-        }
-        if ((month === 4 || month === 6 || month === 9 || month === 11) && day === 31) {
-            return { monthday: true };
-        }
-        if (month === 2) {
-            const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
-            if (day > 29) {
-                return { febhigh: true };
-            }
-            if (day === 29 && !leap) {
-                return { leap: true };
-            }
-        }
-    };
-}
+import { matchingPasswords, validDob } from './application-identity.validators';
 
 @Component({
     selector: 'app-application-identity',
@@ -85,6 +36,7 @@ export class ApplicationIdentityComponent extends DestroyableComponent implement
     formBuilder = inject(UntypedFormBuilder);
     private applicationService = inject(ApplicationService);
     private authenticationService = inject(AuthenticationService);
+    private passkeyService = inject(PasskeyService);
     private permissionsService = inject(PermissionsService);
 
     @Output() nextEvent = new EventEmitter();
@@ -99,6 +51,8 @@ export class ApplicationIdentityComponent extends DestroyableComponent implement
     pending = false;
     countries: BehaviorSubject<IDropdownElement[]> = new BehaviorSubject<IDropdownElement[]>([]);
     validating = false;
+    passkeysSupported = this.passkeyService.supported;
+    usePasskey = false;
 
     validation_messages = {
         email: [
@@ -152,6 +106,7 @@ export class ApplicationIdentityComponent extends DestroyableComponent implement
             ),
             nation: ['']
         });
+        this.setUsePasskey(this.passkeysSupported);
     }
 
     updateCachedDobError() {
@@ -228,9 +183,19 @@ export class ApplicationIdentityComponent extends DestroyableComponent implement
         }
     }
 
+    setUsePasskey(usePasskey: boolean) {
+        this.usePasskey = usePasskey;
+        const passwordGroup = this.formGroup.get('passwordGroup');
+        if (usePasskey) {
+            passwordGroup.disable();
+        } else {
+            passwordGroup.enable();
+        }
+    }
+
     next() {
         // Honeypot field must be empty
-        if (this.formGroup.value.name !== '') {
+        if (this.formGroup.value.name !== '' || this.pending) {
             return;
         }
 
@@ -238,7 +203,6 @@ export class ApplicationIdentityComponent extends DestroyableComponent implement
         const formObj = this.formGroup.getRawValue();
         const body: CreateAccount = {
             email: formObj.email,
-            password: formObj.passwordGroup.password,
             firstName: formObj.firstName,
             lastName: formObj.lastName,
             dobYear: formObj.dobGroup.year,
@@ -247,6 +211,26 @@ export class ApplicationIdentityComponent extends DestroyableComponent implement
             nation: formObj.nation.value
         };
 
+        if (this.usePasskey) {
+            this.createAccountWithPasskey(body);
+        } else {
+            this.createAccount({ ...body, password: formObj.passwordGroup.password });
+        }
+    }
+
+    private async createAccountWithPasskey(body: CreateAccount) {
+        try {
+            const passkey = await this.passkeyService.createForNewAccount({ email: body.email, firstName: body.firstName, lastName: body.lastName });
+            this.createAccount({ ...body, passkey });
+        } catch (error) {
+            this.pending = false;
+            if (!isPasskeyCancelled(error)) {
+                this.showError((error as UksfError)?.error || 'Passkey creation failed');
+            }
+        }
+    }
+
+    private createAccount(body: CreateAccount) {
         this.authenticationService
             .createAccount(body)
             .pipe(first())
@@ -258,12 +242,14 @@ export class ApplicationIdentityComponent extends DestroyableComponent implement
                     });
                 },
                 error: (error: UksfError) => {
-                    this.dialog.open(MessageModalComponent, {
-                        data: { message: error?.error || 'Account creation failed' }
-                    });
+                    this.showError(error?.error || 'Account creation failed');
                     this.pending = false;
                 }
             });
+    }
+
+    private showError(message: string) {
+        this.dialog.open(MessageModalComponent, { data: { message } });
     }
 
     previous() {

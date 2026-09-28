@@ -1,0 +1,34 @@
+@use 'styles/variables' as v;
+@use 'styles/theme-helpers' as th;
+
+.passkeys-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: v.$spacing-8px;
+
+    h3,
+    p {
+        margin: 0;
+    }
+}
+
+.hint {
+    color: th.fg-secondary-text();
+    font-size: 12px;
+}
+
+.passkey {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: v.$spacing-8px;
+    width: 100%;
+
+    .passkey-details {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+}

@@ -1,0 +1,23 @@
+<mat-card class="passkeys-card">
+    <h3>Passkeys</h3>
+    <p class="hint">Sign in with your device or password manager instead of a password.</p>
+    @for (passkey of passkeys; track passkey.id) {
+    <div class="passkey">
+        <mat-icon>key</mat-icon>
+        <div class="passkey-details">
+            <span>{{ passkey.name }}</span>
+            <span class="hint">
+                Added {{ passkey.created | date : 'mediumDate' }}@if (passkey.lastUsed) {, last used {{ passkey.lastUsed | date : 'mediumDate' }}}
+            </span>
+        </div>
+        <button mat-icon-button matTooltip="Remove passkey" (click)="remove(passkey)">
+            <mat-icon>delete</mat-icon>
+        </button>
+    </div>
+    }
+    @if (supported) {
+    <app-button (clicked)="add()" [pending]="pending">Add a passkey</app-button>
+    } @else {
+    <p class="hint">This browser does not support passkeys.</p>
+    }
+</mat-card>

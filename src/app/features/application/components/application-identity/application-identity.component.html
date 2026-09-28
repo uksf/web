@@ -1,15 +1,22 @@
 <mat-card>
     <h2>Identity</h2>
     <form [formGroup]="formGroup">
-        <div class="special-field-form-container">
+        <div class="special-field-form-container" aria-hidden="true">
             <label for="name">If you see this, keep this field blank</label>
-            <input type="text" id="name" formControlName="name" tabindex="-1" autocomplete="off" />
+            <input type="text" id="name" formControlName="name" tabindex="-1" autocomplete="off" data-bwignore data-1p-ignore data-lpignore="true" />
         </div>
-        <app-text-input class="normal" label="Email" formControlName="email" [required]="true" autocomplete="username" [validationMessages]="validation_messages.email"> </app-text-input>
+        <app-text-input class="normal" label="Email" type="email" name="email" formControlName="email" [required]="true" autocomplete="username" [validationMessages]="validation_messages.email"> </app-text-input>
+        @if (usePasskey) {
+        <div class="sign-in-method">
+            <p>You will sign in with a passkey. Your device or password manager keeps it, so there is no password to remember.</p>
+            <button type="button" class="option-link" (click)="setUsePasskey(false)">Use a password instead</button>
+        </div>
+        } @else {
         <div formGroupName="passwordGroup">
             <app-text-input
                 class="normal"
                 label="Password (min 12 chars)"
+                name="password"
                 formControlName="password"
                 type="password"
                 [required]="true"
@@ -20,6 +27,7 @@
             <app-text-input
                 class="normal"
                 label="Confirm Password"
+                name="confirmPassword"
                 formControlName="confirmPassword"
                 type="password"
                 autocomplete="new-password"
@@ -28,6 +36,10 @@
             >
             </app-text-input>
         </div>
+        @if (passkeysSupported) {
+        <button type="button" class="option-link" (click)="setUsePasskey(true)">Use a passkey instead</button>
+        }
+        }
         <div class="name-container">
             <p>This name will be used in-game, on TeamSpeak, and on Discord.</p>
             <p>If you do not wish to use your real name, you may use a realistic fake name (for example, Barry Miller)</p>

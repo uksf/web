@@ -6,6 +6,7 @@ import { LoginComponent } from './login.component';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { RedirectService } from '@app/core/services/authentication/redirect.service';
+import { PasskeyService } from '@app/core/services/authentication/passkey.service';
 
 describe('LoginComponent', () => {
     let component: LoginComponent;
@@ -13,11 +14,18 @@ describe('LoginComponent', () => {
     let mockRouter: any;
     let mockPermissionsService: any;
     let mockRedirectService: any;
+    let mockPasskeyService: any;
 
     beforeEach(() => {
         mockAuth = {
             login: vi.fn(),
+            loginWithPasskey: vi.fn(),
             logout: vi.fn()
+        };
+        mockPasskeyService = {
+            supported: true,
+            conditionalMediationAvailable: vi.fn().mockResolvedValue(false),
+            getAssertion: vi.fn()
         };
         mockRouter = {
             navigate: vi.fn().mockResolvedValue(true),
@@ -39,6 +47,7 @@ describe('LoginComponent', () => {
                 { provide: Router, useValue: mockRouter },
                 { provide: PermissionsService, useValue: mockPermissionsService },
                 { provide: RedirectService, useValue: mockRedirectService },
+                { provide: PasskeyService, useValue: mockPasskeyService },
             ]
         });
         component = TestBed.inject(LoginComponent);
@@ -132,6 +141,64 @@ describe('LoginComponent', () => {
 
             expect(component.pending).toBe(false);
             expect(component.loginError).toBe('Invalid credentials');
+        });
+    });
+
+    describe('passkeys', () => {
+        const passkey = { flowId: 'flow', credential: {} };
+
+        it('signs in with a passkey from the button', async () => {
+            mockPasskeyService.getAssertion.mockResolvedValue(passkey);
+            mockAuth.loginWithPasskey.mockReturnValue(of({ token: 'test' }));
+
+            await component.loginWithPasskey();
+            await vi.waitFor(() => expect(mockRouter.navigateByUrl).toHaveBeenCalledWith('/home'));
+
+            expect(mockPasskeyService.getAssertion).toHaveBeenCalledWith();
+            expect(mockAuth.loginWithPasskey).toHaveBeenCalledWith(passkey, true);
+        });
+
+        it('shows no error when the passkey prompt is cancelled', async () => {
+            mockPasskeyService.getAssertion.mockRejectedValue(new DOMException('cancelled', 'NotAllowedError'));
+
+            await component.loginWithPasskey();
+
+            expect(component.passkeyPending).toBe(false);
+            expect(component.loginError).toBe('');
+        });
+
+        it('shows the API error when the passkey is rejected', async () => {
+            mockPasskeyService.getAssertion.mockResolvedValue(passkey);
+            mockAuth.loginWithPasskey.mockReturnValue(throwError(() => ({ error: 'This passkey is not registered with UKSF' })));
+
+            await component.loginWithPasskey();
+
+            expect(component.passkeyPending).toBe(false);
+            expect(component.loginError).toBe('This passkey is not registered with UKSF');
+        });
+
+        it('offers passkeys in autofill when the browser supports it', async () => {
+            mockPasskeyService.conditionalMediationAvailable.mockResolvedValue(true);
+            mockPasskeyService.getAssertion.mockReturnValue(new Promise(() => {}));
+
+            component.ngOnInit();
+
+            await vi.waitFor(() => expect(mockPasskeyService.getAssertion).toHaveBeenCalledWith('conditional', expect.any(AbortSignal)));
+            const signal: AbortSignal = mockPasskeyService.getAssertion.mock.calls[0][1];
+            component.ngOnDestroy();
+            expect(signal.aborted).toBe(true);
+        });
+
+        it('cancels the autofill request before opening the passkey prompt', async () => {
+            mockPasskeyService.conditionalMediationAvailable.mockResolvedValue(true);
+            mockPasskeyService.getAssertion.mockReturnValueOnce(new Promise(() => {})).mockRejectedValue(new DOMException('cancelled', 'NotAllowedError'));
+            component.ngOnInit();
+            await vi.waitFor(() => expect(mockPasskeyService.getAssertion).toHaveBeenCalledTimes(1));
+            const signal: AbortSignal = mockPasskeyService.getAssertion.mock.calls[0][1];
+
+            await component.loginWithPasskey();
+
+            expect(signal.aborted).toBe(true);
         });
     });
 });

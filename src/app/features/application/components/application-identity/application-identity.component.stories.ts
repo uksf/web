@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ApplicationService } from '../../services/application.service';
 import { AuthenticationService } from '@app/core/services/authentication/authentication.service';
 import { PermissionsService } from '@app/core/services/permissions.service';
+import { PasskeyService } from '@app/core/services/authentication/passkey.service';
 import { of } from 'rxjs';
 
 const meta: Meta<ApplicationIdentityComponent> = {
@@ -18,7 +19,8 @@ const meta: Meta<ApplicationIdentityComponent> = {
                 { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(undefined) }) } },
                 { provide: ApplicationService, useValue: { getNations: () => of(['GB', 'US', 'DE']), checkEmailExists: () => of(false) } },
                 { provide: AuthenticationService, useValue: { createAccount: () => of({}) } },
-                { provide: PermissionsService, useValue: { refresh: () => Promise.resolve() } }
+                { provide: PermissionsService, useValue: { refresh: () => Promise.resolve() } },
+                { provide: PasskeyService, useValue: { supported: true } }
             ]
         })
     ]

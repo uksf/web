@@ -119,6 +119,8 @@
                     </ng-template>
                 </form>
             </mat-card>
+            } @if (isMyProfile) {
+            <app-passkeys-card></app-passkeys-card>
             }
         </div>
     </app-side-content-area>

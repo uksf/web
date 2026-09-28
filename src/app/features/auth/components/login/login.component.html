@@ -1,17 +1,17 @@
 <div>
     <h2 mat-dialog-title>Login</h2>
     <form #form="ngForm" (ngSubmit)="submit()">
-        <div class="special-field-form-container">
+        <div class="special-field-form-container" aria-hidden="true">
             <label for="name">If you see this, keep this field blank</label>
-            <input type="text" id="name" name="formName" [(ngModel)]="model.name" tabindex="-1" autocomplete="off" [maxLength]="0" />
+            <input type="text" id="name" name="formName" [(ngModel)]="model.name" tabindex="-1" autocomplete="off" data-bwignore data-1p-ignore data-lpignore="true" [maxLength]="0" />
         </div>
         <app-text-input
             class="full-width"
             label="Email Address"
             type="email"
-            name="formEmail"
+            name="email"
             [(ngModel)]="model.email"
-            autocomplete="username"
+            autocomplete="username webauthn"
             [required]="true"
             email
             [validationMessages]="validationMessages.email"
@@ -21,7 +21,7 @@
             class="full-width"
             label="Password"
             type="password"
-            name="formPassword"
+            name="password"
             [(ngModel)]="model.password"
             autocomplete="current-password"
             [required]="true"
@@ -40,9 +40,13 @@
         <span>{{ loginError }}</span>
     </div>
     }
-    <form>
-        <div class="button-container">
-            <app-button (clicked)="submit()" [disabled]="!form.valid" [pending]="pending">Login</app-button>
-        </div>
-    </form>
+    <div class="button-container">
+        <app-button (clicked)="submit()" [disabled]="!form.valid || passkeyPending" [pending]="pending">Login</app-button>
+    </div>
+    @if (passkeysSupported) {
+    <div class="passkey-container">
+        <span class="passkey-divider">or</span>
+        <app-button [secondary]="true" (clicked)="loginWithPasskey()" [disabled]="pending" [pending]="passkeyPending">Sign in with a passkey</app-button>
+    </div>
+    }
 </div>
