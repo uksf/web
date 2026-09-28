@@ -67,28 +67,3 @@ export const folderAnimations: {
         ])
     ])
 };
-
-export const collapseAnimations: {
-    readonly collapsed: AnimationTriggerMetadata;
-} = {
-    /** Animation that expands and collapses the sidebar. */
-    collapsed: trigger('collapsed', [
-        state(
-            'expanded',
-            style({
-                width: '300px',
-                visibility: 'visible',
-                transform: 'translateX(0px)'
-            })
-        ),
-        state(
-            'collapsed',
-            style({
-                width: '0',
-                visibility: 'hidden',
-                transform: 'translateX(-7px)'
-            })
-        ),
-        transition('expanded <=> collapsed', [animate('300ms cubic-bezier(0.35, -0.1, 0.25, 1)')])
-    ])
-};

@@ -1,28 +1,75 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
-import { first } from 'rxjs/operators';
+import { Component, EventEmitter, HostListener, Input, OnInit, Output, inject } from '@angular/core';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { ActivatedRoute } from '@angular/router';
+import { distinctUntilChanged, first, map, takeUntil } from 'rxjs/operators';
 import { FolderMetadata } from '@app/features/docs/models/documents';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateFolderModalComponent } from '../../modals/create-folder-modal/create-folder-modal.component';
-import { collapseAnimations } from '@app/shared/services/animations.service';
 import { MatIcon } from '@angular/material/icon';
 import { FlexFillerComponent } from '../../../../shared/components/elements/flex-filler/flex-filler.component';
 import { MatTooltip } from '@angular/material/tooltip';
 import { DocsFolderComponent } from './docs-folder/docs-folder.component';
+import { DestroyableComponent } from '@app/shared/components';
+
+const OVERLAY_QUERY = '(max-width: 768px)';
 
 @Component({
     selector: 'app-docs-sidebar',
     templateUrl: './docs-sidebar.component.html',
     styleUrls: ['./docs-sidebar.component.scss'],
-    animations: [collapseAnimations.collapsed],
+    host: { '[class.overlay]': 'overlay' },
     imports: [MatIcon, FlexFillerComponent, MatTooltip, DocsFolderComponent]
 })
-export class DocsSidebarComponent {
+export class DocsSidebarComponent extends DestroyableComponent implements OnInit {
     private dialog = inject(MatDialog);
+    private breakpointObserver = inject(BreakpointObserver);
+    private route = inject(ActivatedRoute);
 
     @Input('allDocumentMetadata') allFolderMetadata: FolderMetadata[];
     @Input() expandedFolderIds = new Set<string>();
     @Output() refresh = new EventEmitter();
-    collapsed = false;
+    overlay = this.breakpointObserver.isMatched(OVERLAY_QUERY);
+    collapsed = this.overlay;
+
+    ngOnInit(): void {
+        this.breakpointObserver
+            .observe(OVERLAY_QUERY)
+            .pipe(
+                map((state) => state.matches),
+                distinctUntilChanged(),
+                takeUntil(this.destroy$)
+            )
+            .subscribe({
+                next: (overlay) => {
+                    if (overlay !== this.overlay) {
+                        this.overlay = overlay;
+                        this.collapsed = overlay;
+                    }
+                }
+            });
+
+        // On narrow screens the sidebar covers the page, so get out of the way once a document is picked
+        this.route.queryParams
+            .pipe(
+                map((params) => params['document']),
+                distinctUntilChanged(),
+                takeUntil(this.destroy$)
+            )
+            .subscribe({
+                next: (document) => {
+                    if (document && this.overlay) {
+                        this.collapsed = true;
+                    }
+                }
+            });
+    }
+
+    @HostListener('document:keydown.escape')
+    onEscape() {
+        if (this.overlay && !this.collapsed) {
+            this.collapsed = true;
+        }
+    }
 
     addFolder() {
         this.dialog

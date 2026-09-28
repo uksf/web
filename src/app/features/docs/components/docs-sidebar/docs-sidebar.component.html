@@ -1,26 +1,25 @@
-<div class="sidebar-layout">
-    <div [@collapsed]="collapsed ? 'collapsed' : 'expanded'" class="sidebar-container">
-        <div class="sidebar-header">
-            <div class="icon-container">
-                <mat-icon color="primary">article_outline</mat-icon>
+<button type="button" class="sidebar-backdrop" tabindex="-1" aria-label="Close sidebar" [class.visible]="overlay && !collapsed" (click)="toggleCollapse()"></button>
+<div class="sidebar" [class.collapsed]="collapsed">
+    <div class="sidebar-clip">
+        <nav class="sidebar-container" aria-label="Docs" [attr.inert]="collapsed ? '' : null">
+            <div class="sidebar-header">
+                <div class="icon-container">
+                    <mat-icon color="primary">article_outline</mat-icon>
+                </div>
+                <span>Docs</span>
+                <app-flex-filler></app-flex-filler>
+                <div class="add-icon-container">
+                    <mat-icon (click)="addFolder()" matTooltip="Create new folder">add</mat-icon>
+                </div>
             </div>
-            <span>Docs</span>
-            <app-flex-filler></app-flex-filler>
-            <div class="add-icon-container">
-                <mat-icon (click)="addFolder()" matTooltip="Create new folder">add</mat-icon>
+            <div class="sidebar-content">
+                @for (rootFolder of getRootFolders; track trackById($index, rootFolder)) {
+                <app-docs-folder (refresh)="refresh.emit()" [allDocumentMetadata]="allFolderMetadata" [folderMetadata]="rootFolder" [expandedFolderIds]="expandedFolderIds"></app-docs-folder>
+                }
             </div>
-        </div>
-        <div class="sidebar-content">
-            @for (rootFolder of getRootFolders; track trackById($index, rootFolder)) {
-            <app-docs-folder (refresh)="refresh.emit()" [allDocumentMetadata]="allFolderMetadata" [folderMetadata]="rootFolder" [expandedFolderIds]="expandedFolderIds"></app-docs-folder>
-            }
-        </div>
+        </nav>
     </div>
-    <div class="sidebar-collapse-container">
-        <div class="sidebar-collapse-button">
-            <div (click)="toggleCollapse()" [matTooltip]="tooltip" class="sidebar-collapse-icon" [class.collapsed]="collapsed">
-                <mat-icon>expand_more</mat-icon>
-            </div>
-        </div>
-    </div>
+    <button type="button" class="sidebar-toggle" (click)="toggleCollapse()" [matTooltip]="tooltip" [attr.aria-label]="tooltip" [attr.aria-expanded]="!collapsed">
+        <mat-icon>chevron_left</mat-icon>
+    </button>
 </div>
