@@ -1,3 +1,6 @@
+@use 'styles/variables' as v;
+@use 'styles/theme-helpers' as th;
+
 :host {
     flex: 1;
     display: flex;
@@ -94,10 +97,52 @@
         li[data-list='bullet'] > .ql-ui:before {
             content: '-';
         }
+
+        table {
+            width: 100%;
+            margin: 8px 0;
+            table-layout: auto;
+            border-collapse: collapse;
+        }
+
+        td {
+            padding: 6px 10px;
+            vertical-align: top;
+            word-break: normal;
+            overflow-wrap: break-word;
+            border: 1px solid th.fg-divider();
+        }
+
+        tr:first-child td {
+            background-color: var(--uksf-gray-600);
+        }
+
+        // Keep preformatted text (ASCII diagrams, box-drawing tables) intact on narrow screens
+        .ql-code-block-container {
+            overflow-x: auto;
+        }
+
+        .ql-code-block {
+            white-space: pre;
+            word-break: normal;
+            overflow-wrap: normal;
+        }
     }
 
     ::-webkit-scrollbar {
         width: 7px;
         height: 5px;
+    }
+}
+
+@include v.below(v.$layout-medium) {
+    .content-view ::ng-deep .ngx-quill-view .ql-editor,
+    .content-editor ::ng-deep .ql-container .ql-editor {
+        padding: 16px;
+        overflow-x: auto;
+
+        td {
+            padding: 4px 6px;
+        }
     }
 }

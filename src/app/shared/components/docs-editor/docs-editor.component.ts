@@ -12,6 +12,7 @@ export class DocsEditorComponent {
     @Input() content: string | null = null;
     @Input() readonly = false;
     @Output() contentChange = new EventEmitter<string>();
+    modules = { table: true };
 
     onContentChange(value: string) {
         this.content = value;
