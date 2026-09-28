@@ -112,7 +112,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.autofillRequest = request;
         try {
             const passkey = await this.passkeyService.getAssertion('conditional', request.signal);
-            if (this.pending) {
+            if (request.signal.aborted || this.pending || this.passkeyPending) {
                 return;
             }
             this.passkeyPending = true;

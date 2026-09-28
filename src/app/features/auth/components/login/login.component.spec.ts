@@ -238,5 +238,22 @@ describe('LoginComponent', () => {
 
             expect(mockPasskeyService.getAssertion).not.toHaveBeenCalled();
         });
+
+        it('ignores an autofill result that arrives after the button took over', async () => {
+            let resolveAutofill: (value: unknown) => void;
+            mockPasskeyService.conditionalMediationAvailable.mockResolvedValue(true);
+            mockPasskeyService.getAssertion
+                .mockReturnValueOnce(new Promise((resolve) => (resolveAutofill = resolve)))
+                .mockReturnValueOnce(new Promise(() => {}));
+            component.ngOnInit();
+            await vi.waitFor(() => expect(mockPasskeyService.getAssertion).toHaveBeenCalledTimes(1));
+
+            component.loginWithPasskey();
+            resolveAutofill({ flowId: 'autofill', credential: {} });
+            await Promise.resolve();
+            await Promise.resolve();
+
+            expect(mockAuth.loginWithPasskey).not.toHaveBeenCalled();
+        });
     });
 });
