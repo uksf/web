@@ -5,6 +5,7 @@
         <quill-editor
             [ngModel]="content"
             (ngModelChange)="onContentChange($event)"
+            (onEditorCreated)="decorateTableButtons($event)"
             [bounds]="editorBounds"
             [modules]="modules"
             [preserveWhitespace]="true"

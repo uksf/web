@@ -61,10 +61,11 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     submit() {
         // Honeypot field must be empty
-        if (this.model.name || !this.form.valid || this.pending) {
+        if (this.model.name || !this.form.valid || this.pending || this.passkeyPending) {
             return;
         }
 
+        this.autofillRequest?.abort();
         this.pending = true;
         this.loginError = '';
         this.auth
@@ -75,12 +76,13 @@ export class LoginComponent implements OnInit, OnDestroy {
                 error: (error: UksfError) => {
                     this.pending = false;
                     this.loginError = error?.error || 'Login failed';
+                    this.offerPasskeyAutofill();
                 }
             });
     }
 
     async loginWithPasskey() {
-        if (this.passkeyPending) {
+        if (this.passkeyPending || this.pending) {
             return;
         }
 
@@ -101,14 +103,18 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     // Lists passkeys in the browser or password manager autofill for the email field
     private async offerPasskeyAutofill() {
-        if (this.destroyed || !(await this.passkeyService.conditionalMediationAvailable())) {
+        if (!(await this.passkeyService.conditionalMediationAvailable()) || this.destroyed || this.pending || this.passkeyPending) {
             return;
         }
 
+        this.autofillRequest?.abort();
         const request = new AbortController();
         this.autofillRequest = request;
         try {
             const passkey = await this.passkeyService.getAssertion('conditional', request.signal);
+            if (this.pending) {
+                return;
+            }
             this.passkeyPending = true;
             this.completePasskeyLogin(passkey);
         } catch (error) {

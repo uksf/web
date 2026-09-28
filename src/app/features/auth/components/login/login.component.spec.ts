@@ -200,5 +200,43 @@ describe('LoginComponent', () => {
 
             expect(signal.aborted).toBe(true);
         });
+
+        it('stops the autofill request when signing in with a password', async () => {
+            mockPasskeyService.conditionalMediationAvailable.mockResolvedValue(true);
+            mockPasskeyService.getAssertion.mockReturnValue(new Promise(() => {}));
+            mockAuth.login.mockReturnValue(of({ token: 'test' }));
+            component.ngOnInit();
+            await vi.waitFor(() => expect(mockPasskeyService.getAssertion).toHaveBeenCalledTimes(1));
+            const signal: AbortSignal = mockPasskeyService.getAssertion.mock.calls[0][1];
+            component.model.email = 'test@test.com';
+            component.model.password = 'password';
+
+            component.submit();
+
+            expect(signal.aborted).toBe(true);
+        });
+
+        it('ignores a password submit while a passkey sign-in is running', () => {
+            component.passkeyPending = true;
+            component.model.email = 'test@test.com';
+            component.model.password = 'password';
+
+            component.submit();
+
+            expect(mockAuth.login).not.toHaveBeenCalled();
+        });
+
+        it('does not start autofill once the page has closed', async () => {
+            let available: (value: boolean) => void;
+            mockPasskeyService.conditionalMediationAvailable.mockReturnValue(new Promise((resolve) => (available = resolve)));
+
+            component.ngOnInit();
+            component.ngOnDestroy();
+            available(true);
+            await Promise.resolve();
+            await Promise.resolve();
+
+            expect(mockPasskeyService.getAssertion).not.toHaveBeenCalled();
+        });
     });
 });

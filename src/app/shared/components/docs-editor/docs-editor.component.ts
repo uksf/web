@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { QuillEditorComponent, QuillViewComponent } from 'ngx-quill';
+import { DOCS_EDITOR_MODULES, decorateTableButtons } from './docs-editor-table';
 
 @Component({
     selector: 'app-docs-editor',
@@ -12,7 +13,8 @@ export class DocsEditorComponent {
     @Input() content: string | null = null;
     @Input() readonly = false;
     @Output() contentChange = new EventEmitter<string>();
-    modules = { table: true };
+    modules = DOCS_EDITOR_MODULES;
+    decorateTableButtons = decorateTableButtons;
 
     onContentChange(value: string) {
         this.content = value;
