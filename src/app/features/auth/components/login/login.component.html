@@ -46,7 +46,7 @@
     @if (passkeysSupported) {
     <div class="passkey-container">
         <span class="passkey-divider">or</span>
-        <app-button [secondary]="true" (clicked)="loginWithPasskey()" [disabled]="pending" [pending]="passkeyPending">Sign in with a passkey</app-button>
+        <app-button (clicked)="loginWithPasskey()" [disabled]="pending" [pending]="passkeyPending">Sign in with a passkey</app-button>
     </div>
     }
 </div>
