@@ -15,7 +15,7 @@
         </ng-template>
         <ng-template [ngxPermissionsOnly]="['UNLOGGED']">
             <button mat-raised-button color="primary" class="button" routerLink="/login">
-                <div><mat-icon>person</mat-icon> Login</div>
+                <div><mat-icon>person</mat-icon> Sign in</div>
             </button>
         </ng-template>
         <ng-template [ngxPermissionsOnly]="['CONFIRMED']">
@@ -34,7 +34,7 @@
                 <button mat-menu-item (click)="openLOAModal()">New LOA</button>
             </ng-template>
             <!--            <button mat-menu-item (click)="toggleTheme()">{{ otherTheme | titlecase }} Theme</button>-->
-            <button mat-menu-item (click)="logout()">Logout</button>
+            <button mat-menu-item (click)="logout()">Sign out</button>
         </mat-menu>
     </div>
     } @else if (mobile) {
@@ -43,7 +43,7 @@
             <app-notifications class="button"></app-notifications>
         </ng-template>
         <ng-template [ngxPermissionsOnly]="['UNLOGGED']">
-            <button mat-raised-button color="primary" class="button" routerLink="/login">Login</button>
+            <button mat-raised-button color="primary" class="button" routerLink="/login">Sign in</button>
         </ng-template>
         <ng-template [ngxPermissionsOnly]="['CONFIRMED']">
             <button mat-raised-button color="primary" class="button" routerLink="/application">Apply</button>
@@ -53,7 +53,7 @@
         </ng-template>
         <ng-template [ngxPermissionsExcept]="['UNLOGGED']">
             <button mat-raised-button color="primary" class="button" routerLink="/profile">Profile</button>
-            <button mat-raised-button color="primary" class="button" (click)="logout()">Logout</button>
+            <button mat-raised-button color="primary" class="button" (click)="logout()">Sign out</button>
         </ng-template>
     </div>
     } @else if (mobileSmall) {

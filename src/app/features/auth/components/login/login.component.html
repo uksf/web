@@ -1,5 +1,5 @@
 <div>
-    <h2 mat-dialog-title>Login</h2>
+    <h2 mat-dialog-title>Sign in</h2>
     <form #form="ngForm" (ngSubmit)="submit()">
         <div class="special-field-form-container" aria-hidden="true">
             <label for="name">If you see this, keep this field blank</label>
@@ -31,7 +31,7 @@
         <app-button-hidden-submit></app-button-hidden-submit>
     </form>
     <div class="options-container">
-        <mat-checkbox color="primary" [(ngModel)]="stayLogged">Stay logged in</mat-checkbox>
+        <mat-checkbox color="primary" [(ngModel)]="stayLogged">Stay signed in</mat-checkbox>
         <app-flex-filler></app-flex-filler>
         <a class="option-link" (click)="requestPasswordReset()">Reset Password</a>
     </div>
@@ -41,7 +41,7 @@
     </div>
     }
     <div class="button-container">
-        <app-button (clicked)="submit()" [disabled]="!form.valid || passkeyPending" [pending]="pending">Login</app-button>
+        <app-button (clicked)="submit()" [disabled]="!form.valid || passkeyPending" [pending]="pending">Sign in</app-button>
     </div>
     @if (passkeysSupported) {
     <div class="passkey-container">

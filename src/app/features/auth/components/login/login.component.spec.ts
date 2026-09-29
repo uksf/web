@@ -128,7 +128,7 @@ describe('LoginComponent', () => {
                 expect(component.pending).toBe(false);
             });
 
-            expect(component.loginError).toBe('Login failed');
+            expect(component.loginError).toBe('Sign-in failed');
             expect(mockRouter.navigateByUrl).not.toHaveBeenCalled();
         });
 

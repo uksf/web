@@ -75,7 +75,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                 next: () => this.onLoggedIn(),
                 error: (error: UksfError) => {
                     this.pending = false;
-                    this.loginError = error?.error || 'Login failed';
+                    this.loginError = error?.error || 'Sign-in failed';
                     this.offerPasskeyAutofill();
                 }
             });
@@ -154,7 +154,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             .catch(() => {
                 this.pending = false;
                 this.passkeyPending = false;
-                this.loginError = 'Login failed';
+                this.loginError = 'Sign-in failed';
             });
     }
 }
