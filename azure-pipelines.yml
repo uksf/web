@@ -3,6 +3,10 @@ trigger:
   branches:
     include:
       - main
+  # Pushing a dev-* tag (e.g. dev-passkeys) on any commit builds and deploys it to Dev only
+  tags:
+    include:
+      - dev-*
 
 pool: Avengers
 
@@ -86,3 +90,4 @@ stages:
       apiUrl: 'https://api.uk-sf.co.uk'
       variableGroup: UKSF Web - Production
       dependsOn: DeployDev
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
