@@ -12,6 +12,7 @@ interface TabLink {
 const AAR: TabLink = { label: 'AAR', link: 'aar' };
 const CAMPAIGNS: TabLink = { label: 'Campaigns', link: 'campaigns' };
 const MISSIONS: TabLink = { label: 'Missions', link: 'missions' };
+const NPCS: TabLink = { label: 'NPCs', link: 'npcs' };
 const SERVERS: TabLink = { label: 'Servers', link: 'servers' };
 
 @Component({
@@ -24,5 +25,5 @@ export class OperationsPageComponent {
     private ngxPermissions = inject(NgxPermissionsService);
     private permissions = toSignal(this.ngxPermissions.permissions$, { requireSync: true });
 
-    tabLinks = computed<TabLink[]>(() => (this.permissions()['SERVERS'] ? [CAMPAIGNS, AAR, MISSIONS, SERVERS] : [CAMPAIGNS, AAR]));
+    tabLinks = computed<TabLink[]>(() => (this.permissions()['SERVERS'] ? [CAMPAIGNS, AAR, MISSIONS, NPCS, SERVERS] : [CAMPAIGNS, AAR]));
 }

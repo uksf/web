@@ -1,68 +1,130 @@
 <app-default-content-areas>
     <app-main-content-area style="grid-column: span 3">
-        <div class="npc-voices-header">
-            <input [(ngModel)]="displayName" placeholder="New voice name" />
-            <button mat-raised-button color="primary" [disabled]="uploading || !displayName" (click)="triggerUpload(null)">
-                @if (!uploading) {
-                <span>Upload voice</span>
-                } @else {
-                <mat-icon class="uploading-icon">autorenew</mat-icon>
-                }
-            </button>
-            <input #uploader type="file" accept="audio/wav,.wav" hidden (change)="onFileSelected($event)" />
-        </div>
-        @if (error) {
-        <p class="npc-voices-error">{{ error }}</p>
-        }
-
-        <p class="npc-voices-guidance">
-            3-15 s, clean, single speaker. The emotion of the sample becomes the voice's emotion. Upload an angry read for an angry mood variant.
-        </p>
-
-        @if (!voices) {
-        <mat-spinner></mat-spinner>
-        }
-        @if (voices) {
-        <mat-accordion>
-            @for (group of groups; track group.base.id) {
-            <mat-expansion-panel>
-                <mat-expansion-panel-header>
-                    <mat-panel-title>{{ group.base.displayName }}</mat-panel-title>
-                    <mat-panel-description>{{ group.base.voiceId }}</mat-panel-description>
-                </mat-expansion-panel-header>
-
-                <mat-card>
-                    <span class="slug">{{ group.base.voiceId }}</span>
-                    <button mat-icon-button (click)="play(group.base)"><mat-icon>play_arrow</mat-icon></button>
-                    <button mat-icon-button (click)="copySlug(group.base.voiceId)"><mat-icon>content_copy</mat-icon></button>
-                    <button mat-icon-button (click)="delete(group.base)"><mat-icon>delete</mat-icon></button>
-                </mat-card>
-
-                @for (variant of group.variants; track variant.id) {
-                <mat-card class="variant">
-                    <span class="slug">{{ variant.voiceId }}</span>
-                    <button mat-icon-button (click)="play(variant)"><mat-icon>play_arrow</mat-icon></button>
-                    <button mat-icon-button (click)="copySlug(variant.voiceId)"><mat-icon>content_copy</mat-icon></button>
-                    <button mat-icon-button (click)="delete(variant)"><mat-icon>delete</mat-icon></button>
-                </mat-card>
-                }
-
-                <div class="add-variant">
-                    <input [ngModel]="getMoodLabel(group.base.voiceId)" (ngModelChange)="setMoodLabel(group.base.voiceId, $event)" placeholder="Mood label (e.g. Angry)" />
-                    <button mat-stroked-button [disabled]="uploading || !getMoodLabel(group.base.voiceId)" (click)="triggerUpload(group.base.voiceId)">Add mood variant</button>
+        <div class="npcs-page">
+            <div class="npcs-header">
+                <h2>NPC Voices</h2>
+                <app-flex-filler></app-flex-filler>
+                <div class="header-buttons">
+                    <app-text-input-boxed class="filter-input" placeholder="Filter" leadingIcon="search" [(ngModel)]="filter" [clearable]="true" [reserveErrorSpace]="false" (input)="applyFilter()" (cleared)="applyFilter()"></app-text-input-boxed>
+                    <button mat-raised-button color="primary" (click)="openUpload()">Upload Voice</button>
                 </div>
+            </div>
+            <p class="page-hint">
+                Put a voice ID in an NPC's <strong>Voice</strong> field in 3DEN. Each voice has five moods, generated from its source sample, and the NPC changes mood as the conversation goes.
+            </p>
 
-                <div class="auto-moods">
-                    <button mat-stroked-button [disabled]="uploading" (click)="generateMoods(group.base.voiceId)">Auto-generate moods</button>
-                    @if (jobs[group.base.voiceId]; as job) {
-                        @for (m of job.moods; track m.mood) {
-                            <span class="mood-status">{{ m.mood }}: {{ moodStatusLabel(m.status) }}{{ m.error ? ' (' + m.error + ')' : '' }}</span>
-                        }
+            @if (!voices) {
+                <div class="loading"><mat-spinner diameter="32"></mat-spinner></div>
+            } @else if (filtered.length === 0) {
+                <div class="empty-state">{{ groups.length ? 'No voices match the filter' : 'No voices yet. Upload a sample to add the first one.' }}</div>
+            } @else {
+                <mat-accordion class="voices-accordion" multi>
+                    @for (group of filtered; track group.voiceId) {
+                        <mat-expansion-panel class="voice-panel" [togglePosition]="'before'" [attr.data-complete]="readyCount(group) === group.moods.length">
+                            <mat-expansion-panel-header [collapsedHeight]="'48px'" [expandedHeight]="'48px'">
+                                <div class="voice-row">
+                                    <span class="voice-name">{{ groupName(group) }}</span>
+                                    <div class="voice-id-cell">
+                                        <button class="voice-id" type="button" (click)="copy(group.voiceId, $event)" [matTooltip]="copiedId === group.voiceId ? 'Copied' : 'Copy voice ID'">
+                                            <span>{{ group.voiceId }}</span>
+                                            <mat-icon>{{ copiedId === group.voiceId ? 'check' : 'content_copy' }}</mat-icon>
+                                        </button>
+                                    </div>
+                                    <div class="mood-chips">
+                                        @for (mood of group.moods; track mood.mood) {
+                                            <span class="mood-chip" [attr.data-state]="mood.state" [matTooltip]="moodTooltip(mood)">{{ moodLabel(mood.mood) }}</span>
+                                        }
+                                    </div>
+                                    <app-flex-filler></app-flex-filler>
+                                    @if (group.base) {
+                                        <span class="voice-meta" matTooltip="Uploaded">{{ group.base.createdAt | date: 'dd/MM/yy, HH:mm' }}</span>
+                                    } @else {
+                                        <span class="voice-warning" matTooltip="The source sample was deleted. Delete these moods or upload the voice again.">
+                                            <mat-icon>warning</mat-icon>
+                                            No source sample
+                                        </span>
+                                    }
+                                    <div class="action-slots">
+                                        @if (group.base) {
+                                            <button mat-icon-button (click)="play(group.base, $event)" [matTooltip]="player.playingId === group.base.id ? 'Stop' : 'Play source sample'">
+                                                <mat-icon>{{ player.playingId === group.base.id ? 'stop' : 'play_arrow' }}</mat-icon>
+                                            </button>
+                                        } @else {
+                                            <span></span>
+                                        }
+                                        @if (group.base && canManage(group.base)) {
+                                            <button mat-icon-button (click)="generate(group.voiceId, [], false, $event)" [disabled]="missingCount(group) === 0 || generating(group) || busy.has(group.voiceId)" [matTooltip]="missingCount(group) === 0 ? 'Every mood is generated' : 'Generate missing moods'">
+                                                <mat-icon>auto_awesome</mat-icon>
+                                            </button>
+                                            <span></span>
+                                            <button mat-icon-button (click)="delete(group.base, deleteVoiceMessage(group), $event)" matTooltip="Delete voice">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            </mat-expansion-panel-header>
+                            <ng-template matExpansionPanelContent>
+                                <div class="mood-list">
+                                    @for (mood of group.moods; track mood.mood) {
+                                        <div class="mood-row">
+                                            <span class="mood-dot" [attr.data-state]="mood.state"></span>
+                                            <span class="mood-name">{{ moodLabel(mood.mood) }}</span>
+                                            <span class="mood-state">
+                                                @switch (mood.state) {
+                                                    @case ('ready') {
+                                                        Ready
+                                                        @if (mood.variant) {
+                                                            <span class="mood-meta">{{ (mood.variant.durationMs / 1000).toFixed(1) }} s</span>
+                                                        }
+                                                    }
+                                                    @case ('generating') {
+                                                        <mat-spinner diameter="14"></mat-spinner>
+                                                        Generating
+                                                    }
+                                                    @case ('failed') {
+                                                        <span class="failed" [matTooltip]="mood.error ?? ''">Generation failed</span>
+                                                    }
+                                                    @default {
+                                                        <span class="missing" matTooltip="Until this mood exists, the NPC uses the source sample for it.">Missing</span>
+                                                    }
+                                                }
+                                            </span>
+                                            <app-flex-filler></app-flex-filler>
+                                            <div class="action-slots">
+                                                @if (mood.variant) {
+                                                    <button mat-icon-button (click)="play(mood.variant)" [matTooltip]="player.playingId === mood.variant.id ? 'Stop' : 'Play'">
+                                                        <mat-icon>{{ player.playingId === mood.variant.id ? 'stop' : 'play_arrow' }}</mat-icon>
+                                                    </button>
+                                                } @else {
+                                                    <span></span>
+                                                }
+                                                @if (group.base && canManage(group.base)) {
+                                                    <button mat-icon-button (click)="generate(group.voiceId, [mood.mood])" [disabled]="mood.state === 'generating' || busy.has(group.voiceId)" [matTooltip]="mood.variant ? 'Regenerate' : 'Generate'">
+                                                        <mat-icon>{{ mood.variant ? 'autorenew' : 'auto_awesome' }}</mat-icon>
+                                                    </button>
+                                                    <button mat-icon-button (click)="recordMood(group, mood.mood)" [disabled]="busy.has(group.voiceId)" matTooltip="Upload your own recording">
+                                                        <mat-icon>upload</mat-icon>
+                                                    </button>
+                                                } @else {
+                                                    <span></span>
+                                                    <span></span>
+                                                }
+                                                @if (mood.variant && canManage(group.base)) {
+                                                    <button mat-icon-button (click)="delete(mood.variant, 'Delete the ' + mood.mood + ' mood of \'' + groupName(group) + '\'?')" matTooltip="Delete mood">
+                                                        <mat-icon>delete</mat-icon>
+                                                    </button>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </ng-template>
+                        </mat-expansion-panel>
                     }
-                </div>
-            </mat-expansion-panel>
+                </mat-accordion>
             }
-        </mat-accordion>
-        }
+            <input #moodUploader type="file" accept="audio/wav,.wav" hidden (change)="onMoodFileSelected($event)" />
+        </div>
     </app-main-content-area>
 </app-default-content-areas>

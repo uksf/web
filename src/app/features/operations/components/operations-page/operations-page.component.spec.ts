@@ -26,7 +26,7 @@ describe('OperationsPageComponent', () => {
         expect(labelsFor(['MEMBER'])).toEqual(['Campaigns', 'AAR']);
     });
 
-    it('orders Campaigns, AAR, Missions, Servers for a member with SERVERS permission', () => {
-        expect(labelsFor(['MEMBER', 'SERVERS'])).toEqual(['Campaigns', 'AAR', 'Missions', 'Servers']);
+    it('orders Campaigns, AAR, Missions, NPCs, Servers for a member with SERVERS permission', () => {
+        expect(labelsFor(['MEMBER', 'SERVERS'])).toEqual(['Campaigns', 'AAR', 'Missions', 'NPCs', 'Servers']);
     });
 });

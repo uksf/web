@@ -1,192 +1,266 @@
-import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, Injector, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatButton, MatIconButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
-import { MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, MatExpansionPanelDescription } from '@angular/material/expansion';
-import { MatCard } from '@angular/material/card';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { MatDialog } from '@angular/material/dialog';
 import { Clipboard } from '@angular/cdk/clipboard';
-import { first } from 'rxjs/operators';
-import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { MatAccordion, MatExpansionPanel, MatExpansionPanelContent, MatExpansionPanelHeader } from '@angular/material/expansion';
+import { MatIcon } from '@angular/material/icon';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatTooltip } from '@angular/material/tooltip';
+import { NgxPermissionsService } from 'ngx-permissions';
+import { forkJoin, of, timer } from 'rxjs';
+import { catchError, first, takeUntil } from 'rxjs/operators';
+import { AccountService } from '@app/core/services/account.service';
+import { DestroyableComponent } from '@app/shared/components/destroyable/destroyable.component';
 import { DefaultContentAreasComponent } from '@app/shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { MainContentAreaComponent } from '@app/shared/components/content-areas/main-content-area/main-content-area.component';
+import { FlexFillerComponent } from '@app/shared/components/elements/flex-filler/flex-filler.component';
+import { TextInputBoxedComponent } from '@app/shared/components/elements/text-input-boxed/text-input-boxed.component';
+import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-modal/confirmation-modal.component';
+import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
+import { NpcVoiceUploadData, NpcVoiceUploadModalComponent, NpcVoiceUploadResult } from '../../modals/npc-voice-upload-modal/npc-voice-upload-modal.component';
+import { NpcMood, NpcVoice, NpcVoiceJob } from '../../models/npc-voice';
 import { NpcVoicesService } from '../../services/npc-voices.service';
-import { NpcVoice, NpcVoiceJob, NpcMoodStatus, NpcMoodStatusLabel } from '../../models/npc-voice';
+import { groupName, groupVoices, isGenerating, matchesFilter, moodLabel, NpcMoodView, NpcVoiceGroup } from '../../utils/npc-voice-groups';
+import { NpcSamplePlayer } from '../../utils/npc-sample-player';
 
-interface VoiceGroup {
-    base: NpcVoice;
-    variants: NpcVoice[];
-}
+const POLL_MS = 5000;
 
 @Component({
     selector: 'app-operations-npcs',
     templateUrl: './operations-npcs.component.html',
     styleUrls: ['./operations-npcs.component.scss'],
     imports: [
+        DatePipe,
         FormsModule,
         MatButton,
         MatIconButton,
-        MatIcon,
         MatAccordion,
         MatExpansionPanel,
         MatExpansionPanelHeader,
-        MatExpansionPanelTitle,
-        MatExpansionPanelDescription,
-        MatCard,
+        MatExpansionPanelContent,
+        MatIcon,
         MatProgressSpinner,
+        MatTooltip,
         DefaultContentAreasComponent,
-        MainContentAreaComponent
+        MainContentAreaComponent,
+        FlexFillerComponent,
+        TextInputBoxedComponent
     ]
 })
-export class OperationsNpcsComponent implements OnInit, OnDestroy {
+export class OperationsNpcsComponent extends DestroyableComponent implements OnInit, OnDestroy {
     private service = inject(NpcVoicesService);
     private dialog = inject(MatDialog);
     private clipboard = inject(Clipboard);
+    private accountService = inject(AccountService);
+    private permissions = inject(NgxPermissionsService);
+    private injector = inject(Injector);
 
-    @ViewChild('uploader') uploader!: ElementRef<HTMLInputElement>;
+    @ViewChild('moodUploader') moodUploader!: ElementRef<HTMLInputElement>;
 
     voices: NpcVoice[] | null = null;
-    groups: VoiceGroup[] = [];
-    displayName = '';
-    moodOfTarget: string | null = null; // when set, the next upload is a mood variant
-    moodLabels = new Map<string, string>(); // per-base-voice mood label, keyed on base voiceId
     jobs: Record<string, NpcVoiceJob> = {};
-    uploading = false;
-    error: string | null = null;
-    private currentAudio: HTMLAudioElement | null = null;
+    groups: NpcVoiceGroup[] = [];
+    filtered: NpcVoiceGroup[] = [];
+    filter = '';
+    copiedId: string | null = null;
+    player = new NpcSamplePlayer();
+    busy = new Set<string>();
+
+    readonly groupName = groupName;
+    readonly moodLabel = moodLabel;
+
+    private moodUploadTarget: { group: NpcVoiceGroup; mood: NpcMood } | null = null;
+    private polling = false;
 
     ngOnInit(): void {
         this.load();
     }
 
-    ngOnDestroy(): void {
-        this.currentAudio?.pause();
-        this.currentAudio = null;
+    override ngOnDestroy(): void {
+        this.player.stop();
+        super.ngOnDestroy();
     }
 
-    getMoodLabel(voiceId: string): string {
-        return this.moodLabels.get(voiceId) ?? '';
+    canManage(voice: NpcVoice | null): boolean {
+        if (!voice) return !!this.permissions.getPermission('ADMIN');
+        return voice.ownerId === this.accountService.account?.id || !!this.permissions.getPermission('ADMIN');
     }
 
-    setMoodLabel(voiceId: string, value: string): void {
-        this.moodLabels.set(voiceId, value);
+    generating(group: NpcVoiceGroup): boolean {
+        return isGenerating(this.jobs[group.voiceId]);
     }
 
-    private load(): void {
-        this.service.getVoices().pipe(first()).subscribe((voices) => {
-            this.voices = voices;
-            const bases = voices.filter((v) => !v.moodOf);
-            this.groups = bases.map((base) => ({
-                base,
-                variants: voices.filter((v) => v.moodOf === base.voiceId)
-            }));
-            this.groups.forEach((g) => this.refreshJob(g.base.voiceId));
-        });
+    missingCount(group: NpcVoiceGroup): number {
+        return group.moods.filter((m) => m.state === 'missing' || m.state === 'failed').length;
     }
 
-    triggerUpload(moodOf: string | null): void {
-        this.moodOfTarget = moodOf;
-        this.uploader.nativeElement.click();
+    readyCount(group: NpcVoiceGroup): number {
+        return group.moods.filter((m) => m.state === 'ready').length;
     }
 
-    onFileSelected(event: Event): void {
+    moodTooltip(mood: NpcMoodView): string {
+        const label = moodLabel(mood.mood);
+        switch (mood.state) {
+            case 'ready':
+                return `${label}: ready`;
+            case 'generating':
+                return `${label}: generating. This waits for the voice generator to be online.`;
+            case 'failed':
+                return `${label}: generation failed${mood.error ? ` (${mood.error})` : ''}`;
+            default:
+                return `${label}: missing. The NPC uses the source sample for this mood.`;
+        }
+    }
+
+    applyFilter(): void {
+        this.filtered = this.groups.filter((g) => matchesFilter(g, this.filter));
+    }
+
+    openUpload(): void {
+        this.dialog
+            .open<NpcVoiceUploadModalComponent, NpcVoiceUploadData, NpcVoiceUploadResult>(NpcVoiceUploadModalComponent, {
+                injector: this.injector,
+                data: { takenIds: (this.voices ?? []).map((v) => v.voiceId) }
+            })
+            .afterClosed()
+            .pipe(first())
+            .subscribe((result) => {
+                if (!result) return;
+                if (result.generateMoods) {
+                    this.generate(result.voice.voiceId, [], true);
+                } else {
+                    this.load();
+                }
+            });
+    }
+
+    copy(voiceId: string, event: Event): void {
+        event.stopPropagation();
+        this.clipboard.copy(voiceId);
+        this.copiedId = voiceId;
+        timer(1500)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => (this.copiedId = this.copiedId === voiceId ? null : this.copiedId));
+    }
+
+    play(voice: NpcVoice, event?: Event): void {
+        event?.stopPropagation();
+        this.player.toggle(voice.id, this.service.getSample(voice.id), () => this.showError('The sample could not be loaded.'));
+    }
+
+    generate(voiceId: string, moods: NpcMood[], reload = false, event?: Event): void {
+        event?.stopPropagation();
+        this.busy.add(voiceId);
+        this.service
+            .generateMoods(voiceId, moods)
+            .pipe(first())
+            .subscribe({
+                next: (job) => {
+                    this.busy.delete(voiceId);
+                    this.jobs[voiceId] = job;
+                    if (reload) this.load();
+                    else this.regroup();
+                    this.poll();
+                },
+                error: (err) => {
+                    this.busy.delete(voiceId);
+                    if (reload) this.load();
+                    this.showError(err?.error?.error ?? 'Mood generation could not start.');
+                }
+            });
+    }
+
+    recordMood(group: NpcVoiceGroup, mood: NpcMood): void {
+        this.moodUploadTarget = { group, mood };
+        this.moodUploader.nativeElement.click();
+    }
+
+    onMoodFileSelected(event: Event): void {
         const input = event.target as HTMLInputElement;
         const file = input.files?.[0];
-        if (file) {
-            this.upload(file);
-        } else {
-            this.moodOfTarget = null; // picker dismissed without a file — discard the variant intent
-        }
+        const target = this.moodUploadTarget;
         input.value = '';
-    }
+        this.moodUploadTarget = null;
+        if (!file || !target) return;
 
-    private upload(file: File): void {
-        this.error = null;
-        const moodOf = this.moodOfTarget;
         const formData = new FormData();
         formData.append('sample', file, file.name);
-        if (moodOf) {
-            formData.append('moodOf', moodOf);
-            formData.append('moodLabel', this.getMoodLabel(moodOf));
-        } else {
-            formData.append('displayName', this.displayName);
-        }
-        this.uploading = true;
-        this.service.upload(formData).pipe(first()).subscribe({
-            next: () => {
-                this.uploading = false;
-                this.displayName = '';
-                if (moodOf) {
-                    this.moodLabels.delete(moodOf);
+        formData.append('moodOf', target.group.voiceId);
+        formData.append('moodLabel', target.mood);
+        this.busy.add(target.group.voiceId);
+        this.service
+            .upload(formData)
+            .pipe(first())
+            .subscribe({
+                next: () => {
+                    this.busy.delete(target.group.voiceId);
+                    this.load();
+                },
+                error: (err) => {
+                    this.busy.delete(target.group.voiceId);
+                    this.showError(err?.error?.error ?? 'Upload failed.');
                 }
-                this.moodOfTarget = null;
-                this.load();
-            },
-            error: (err) => {
-                this.uploading = false;
-                this.error = err?.error?.error ?? err?.message ?? 'Upload failed';
-            }
-        });
+            });
     }
 
-    play(voice: NpcVoice): void {
-        this.currentAudio?.pause();
-        this.currentAudio = new Audio(this.service.sampleUrl(voice.id));
-        this.currentAudio.play();
-    }
-
-    copySlug(voiceId: string): void {
-        this.clipboard.copy(voiceId);
-    }
-
-    delete(voice: NpcVoice): void {
+    delete(voice: NpcVoice, message: string, event?: Event): void {
+        event?.stopPropagation();
         this.dialog
-            .open(ConfirmationModalComponent, { data: { message: `Delete voice '${voice.voiceId}'?` } })
+            .open(ConfirmationModalComponent, { data: { message } })
             .afterClosed()
             .pipe(first())
             .subscribe((confirmed) => {
-                if (confirmed) {
-                    this.service.delete(voice.id).pipe(first()).subscribe(() => this.load());
-                }
+                if (!confirmed) return;
+                this.service
+                    .delete(voice.id)
+                    .pipe(first())
+                    .subscribe({ next: () => this.load(), error: () => this.showError('The voice could not be deleted.') });
             });
     }
 
-    generateMoods(baseVoiceId: string): void {
-        this.service.generateMoods(baseVoiceId).pipe(first()).subscribe({
-            next: (job) => {
-                this.jobs[baseVoiceId] = job;
-                this.pollJob(baseVoiceId);
-            },
-            error: (err) => { this.error = err?.error?.error ?? 'Mood generation failed to start'; }
-        });
+    deleteVoiceMessage(group: NpcVoiceGroup): string {
+        const moods = this.readyCount(group);
+        const suffix = moods ? ` and its ${moods} mood${moods === 1 ? '' : 's'}` : '';
+        return `Delete '${groupName(group)}'${suffix}? NPCs that use '${group.voiceId}' will fall back to the default voice.`;
     }
 
-    private refreshJob(baseVoiceId: string): void {
-        this.service.getJob(baseVoiceId).pipe(first()).subscribe({
-            next: (job) => {
-                this.jobs[baseVoiceId] = job;
-                if (this.jobActive(job)) this.pollJob(baseVoiceId);
-            },
-            error: () => { /* 404 = no job for this voice, leave undefined */ }
-        });
-    }
-
-    private jobActive(job: NpcVoiceJob): boolean {
-        return job.moods.some((m) => m.status === NpcMoodStatus.Pending);
-    }
-
-    moodStatusLabel(status: NpcMoodStatus): string {
-        return NpcMoodStatusLabel[status];
-    }
-
-    private pollJob(baseVoiceId: string): void {
-        setTimeout(() => {
-            this.service.getJob(baseVoiceId).pipe(first()).subscribe((job) => {
-                this.jobs[baseVoiceId] = job;
-                if (this.jobActive(job)) this.pollJob(baseVoiceId);
-                else this.load(); // terminal — refresh the variant list so new moods appear
+    private load(): void {
+        this.service
+            .getVoices()
+            .pipe(first())
+            .subscribe((voices) => {
+                this.voices = voices;
+                const bases = voices.filter((v) => !v.moodOf).map((v) => v.voiceId);
+                const requests = bases.map((id) => this.service.getJob(id).pipe(catchError(() => of(null))));
+                (requests.length ? forkJoin(requests) : of([])).pipe(first()).subscribe((jobs) => {
+                    this.jobs = {};
+                    jobs.forEach((job) => job && (this.jobs[job.baseVoiceId] = job));
+                    this.regroup();
+                    this.poll();
+                });
             });
-        }, 5000);
+    }
+
+    private regroup(): void {
+        this.groups = groupVoices(this.voices ?? [], this.jobs);
+        this.applyFilter();
+    }
+
+    // One loop for every voice that is generating; it ends when none are.
+    private poll(): void {
+        if (this.polling || !Object.values(this.jobs).some(isGenerating)) return;
+        this.polling = true;
+        timer(POLL_MS)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => {
+                this.polling = false;
+                this.load();
+            });
+    }
+
+    private showError(message: string): void {
+        this.dialog.open(MessageModalComponent, { data: { message } });
     }
 }

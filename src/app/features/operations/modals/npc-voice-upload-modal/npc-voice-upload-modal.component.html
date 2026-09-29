@@ -1,0 +1,45 @@
+<app-autofocus-stop></app-autofocus-stop>
+<h2 mat-dialog-title>Upload Voice</h2>
+<mat-dialog-content>
+    <div class="upload-form">
+        <app-text-input class="field" label="Name" [(ngModel)]="name" name="name" [required]="true" [maxlength]="40" [reserveErrorSpace]="false"></app-text-input>
+        <div class="voice-id">
+            <span class="label">Voice ID</span>
+            <span class="value">{{ slug || '—' }}</span>
+            @if (slugTaken) {
+                <span class="taken">already in use</span>
+            }
+        </div>
+
+        <div class="file-row">
+            <button mat-stroked-button type="button" (click)="picker.click()">
+                <mat-icon>audio_file</mat-icon>
+                Choose WAV
+            </button>
+            <span class="file-name" [class.empty]="!file">{{ file?.name ?? 'No file chosen' }}</span>
+            @if (seconds !== null && !lengthProblem) {
+                <span class="file-length">{{ seconds.toFixed(1) }} s</span>
+            }
+            <input #picker type="file" accept="audio/wav,.wav" hidden (change)="onFileSelected($event)" />
+        </div>
+        @if (lengthProblem) {
+            <p class="problem">{{ lengthProblem }}</p>
+        }
+
+        <ul class="guidance">
+            <li>One speaker, 3 to 15 seconds, no music or background noise.</li>
+            <li>Read in a calm, neutral voice. The moods add the emotion.</li>
+            <li>Voices are male. Arma has no female character models.</li>
+        </ul>
+
+        <mat-checkbox color="primary" [(ngModel)]="generateMoods">Generate all five moods after upload</mat-checkbox>
+
+        @if (error) {
+            <p class="problem">{{ error }}</p>
+        }
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <app-button [secondary]="true" (clicked)="cancel()">Cancel</app-button>
+    <app-button [disabled]="!canSubmit" [pending]="pending" (clicked)="submit()">Upload</app-button>
+</mat-dialog-actions>

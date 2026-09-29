@@ -1,0 +1,70 @@
+@use 'styles/variables' as v;
+
+.upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: v.$spacing-12px;
+    width: 420px;
+}
+
+.field {
+    display: block;
+}
+
+.voice-id {
+    display: flex;
+    gap: v.$spacing-8px;
+    font-size: 13px;
+
+    .label {
+        opacity: 0.6;
+    }
+
+    .value {
+        font-family: monospace;
+    }
+
+    .taken {
+        color: var(--mat-sys-error);
+    }
+}
+
+.file-row {
+    display: flex;
+    align-items: center;
+    gap: v.$spacing-12px;
+
+    .file-name {
+        flex: 1;
+        min-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        &.empty {
+            opacity: 0.6;
+        }
+    }
+
+    .file-length {
+        font-size: 12px;
+        opacity: 0.6;
+    }
+}
+
+.guidance {
+    margin: 0;
+    padding-left: v.$spacing-16px;
+    font-size: 13px;
+    opacity: 0.75;
+
+    li + li {
+        margin-top: v.$spacing-4px;
+    }
+}
+
+.problem {
+    margin: 0;
+    font-size: 13px;
+    color: var(--mat-sys-error);
+}

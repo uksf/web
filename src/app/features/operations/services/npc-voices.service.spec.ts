@@ -40,14 +40,18 @@ describe('NpcVoicesService', () => {
         expect(httpClient.delete).toHaveBeenCalledWith('http://localhost:5500/npcvoices/v1');
     });
 
-    it('builds a sample url', () => {
-        expect(service.sampleUrl('v1')).toBe('http://localhost:5500/npcvoices/v1/sample');
+    it('fetches a sample as a blob so the auth interceptor applies', () => {
+        httpClient.get.mockReturnValue(of(new Blob()));
+        service.getSample('v1').subscribe();
+        expect(httpClient.get).toHaveBeenCalledWith('http://localhost:5500/npcvoices/v1/sample', { responseType: 'blob' });
     });
 
-    it('generateMoods POSTs to the generate-moods endpoint', () => {
+    it('generateMoods POSTs the chosen moods, or none for every missing mood', () => {
         httpClient.post.mockReturnValue(of({}));
         service.generateMoods('smuggler').subscribe();
-        expect(httpClient.post).toHaveBeenCalledWith('http://localhost:5500/npcvoices/smuggler/generate-moods', {});
+        service.generateMoods('smuggler', ['sad']).subscribe();
+        expect(httpClient.post).toHaveBeenNthCalledWith(1, 'http://localhost:5500/npcvoices/smuggler/generate-moods', { moods: [] });
+        expect(httpClient.post).toHaveBeenNthCalledWith(2, 'http://localhost:5500/npcvoices/smuggler/generate-moods', { moods: ['sad'] });
     });
 
     it('getJob GETs the job endpoint', () => {

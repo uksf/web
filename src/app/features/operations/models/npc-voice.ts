@@ -16,12 +16,6 @@ export enum NpcMoodStatus {
     Failed = 2
 }
 
-export const NpcMoodStatusLabel: Record<NpcMoodStatus, string> = {
-    [NpcMoodStatus.Pending]: 'Pending',
-    [NpcMoodStatus.Ready]: 'Ready',
-    [NpcMoodStatus.Failed]: 'Failed'
-};
-
 export interface NpcMoodTask {
     mood: string;
     status: NpcMoodStatus;
@@ -35,3 +29,8 @@ export interface NpcVoiceJob {
     moods: NpcMoodTask[];
     createdAt: string;
 }
+
+// The moods an NPC can speak in, in display order. Every one is generated from the uploaded
+// source sample, neutral included, so the character keeps one voice across moods.
+export const NPC_MOODS = ['neutral', 'angry', 'afraid', 'sad', 'happy'] as const;
+export type NpcMood = (typeof NPC_MOODS)[number];

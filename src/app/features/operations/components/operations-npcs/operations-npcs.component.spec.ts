@@ -2,84 +2,158 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { Clipboard } from '@angular/cdk/clipboard';
-import { of } from 'rxjs';
+import { NgxPermissionsService } from 'ngx-permissions';
+import { of, Subject } from 'rxjs';
+import { AccountService } from '@app/core/services/account.service';
 import { OperationsNpcsComponent } from './operations-npcs.component';
 import { NpcVoicesService } from '../../services/npc-voices.service';
-import { NpcVoiceJob, NpcMoodStatus } from '../../models/npc-voice';
+import { NpcMoodStatus, NpcVoice, NpcVoiceJob } from '../../models/npc-voice';
+
+const voice = (voiceId: string, moodOf: string | null = null, ownerId = 'me'): NpcVoice => ({
+    id: `id-${voiceId}`,
+    voiceId,
+    displayName: moodOf ? `Smuggler (${voiceId})` : 'Smuggler',
+    moodOf,
+    ownerId,
+    durationMs: 5000,
+    createdAt: ''
+});
 
 describe('OperationsNpcsComponent', () => {
     let component: OperationsNpcsComponent;
-    let mockService: Record<string, ReturnType<typeof vi.fn>>;
-    let mockDialog: { open: ReturnType<typeof vi.fn> };
-    let mockClipboard: { copy: ReturnType<typeof vi.fn> };
-    let audioSpy: ReturnType<typeof vi.fn>;
+    let service: Record<string, ReturnType<typeof vi.fn>>;
+    let dialog: { open: ReturnType<typeof vi.fn> };
+    let clipboard: { copy: ReturnType<typeof vi.fn> };
+    let admin: boolean;
+    let audio: { play: ReturnType<typeof vi.fn>; pause: ReturnType<typeof vi.fn> };
 
     beforeEach(() => {
-        const terminalJob: NpcVoiceJob = { id: 'j0', baseVoiceId: 'smuggler', ownerId: 'o', moods: [], createdAt: '' };
-        mockService = {
-            getVoices: vi.fn().mockReturnValue(of([
-                { id: '1', voiceId: 'smuggler', displayName: 'Smuggler', moodOf: null, ownerId: 'u', durationMs: 5000, createdAt: '' },
-                { id: '2', voiceId: 'smuggler_angry', displayName: 'Smuggler', moodOf: 'smuggler', ownerId: 'u', durationMs: 4000, createdAt: '' }
-            ])),
+        admin = false;
+        service = {
+            getVoices: vi.fn().mockReturnValue(of([voice('smuggler'), voice('smuggler_angry', 'smuggler')])),
+            getJob: vi.fn().mockReturnValue(of(null)),
             upload: vi.fn().mockReturnValue(of({})),
             delete: vi.fn().mockReturnValue(of(undefined)),
-            sampleUrl: vi.fn().mockReturnValue('http://x/sample'),
-            getJob: vi.fn().mockReturnValue(of(terminalJob)),
+            getSample: vi.fn().mockReturnValue(of(new Blob(['x']))),
             generateMoods: vi.fn()
         };
-        mockDialog = { open: vi.fn().mockReturnValue({ afterClosed: () => of(true) }) };
-        mockClipboard = { copy: vi.fn() };
-        audioSpy = vi.fn(function () {
-            return { play: vi.fn(), pause: vi.fn() };
+        dialog = { open: vi.fn().mockReturnValue({ afterClosed: () => of(true) }) };
+        clipboard = { copy: vi.fn() };
+        audio = { play: vi.fn().mockResolvedValue(undefined), pause: vi.fn() };
+        (globalThis as unknown as { Audio: unknown }).Audio = vi.fn(function () {
+            return audio;
         });
-        (globalThis as unknown as { Audio: unknown }).Audio = audioSpy;
+        URL.createObjectURL = vi.fn().mockReturnValue('blob:x');
+        URL.revokeObjectURL = vi.fn();
 
         TestBed.configureTestingModule({
             providers: [
                 OperationsNpcsComponent,
-                { provide: NpcVoicesService, useValue: mockService },
-                { provide: MatDialog, useValue: mockDialog },
-                { provide: Clipboard, useValue: mockClipboard }
+                { provide: NpcVoicesService, useValue: service },
+                { provide: MatDialog, useValue: dialog },
+                { provide: Clipboard, useValue: clipboard },
+                { provide: AccountService, useValue: { account: { id: 'me' }, accountChange$: new Subject() } },
+                { provide: NgxPermissionsService, useValue: { getPermission: (p: string) => (p === 'ADMIN' && admin ? {} : undefined) } }
             ]
         });
         component = TestBed.inject(OperationsNpcsComponent);
     });
 
-    afterEach(() => { delete (globalThis as unknown as { Audio?: unknown }).Audio; });
+    afterEach(() => {
+        component.ngOnDestroy();
+        delete (globalThis as unknown as { Audio?: unknown }).Audio;
+    });
 
-    it('loads and groups voices with mood variants nested', () => {
+    it('groups a voice with its five moods', () => {
         component.ngOnInit();
-        expect(component.groups.length).toBe(1);
-        expect(component.groups[0].base.voiceId).toBe('smuggler');
-        expect(component.groups[0].variants.map((v) => v.voiceId)).toEqual(['smuggler_angry']);
+
+        expect(component.groups).toHaveLength(1);
+        expect(component.groups[0].moods.map((m) => `${m.mood}:${m.state}`)).toEqual(['neutral:missing', 'angry:ready', 'afraid:missing', 'sad:missing', 'happy:missing']);
     });
 
-    it('copies a voice slug', () => {
-        component.copySlug('smuggler');
-        expect(mockClipboard.copy).toHaveBeenCalledWith('smuggler');
+    it('shows a queued mood as generating and a failed one with its error', () => {
+        const job: NpcVoiceJob = {
+            id: 'j',
+            baseVoiceId: 'smuggler',
+            ownerId: 'me',
+            createdAt: '',
+            moods: [
+                { mood: 'sad', status: NpcMoodStatus.Pending, error: null },
+                { mood: 'happy', status: NpcMoodStatus.Failed, error: 'generation failed' }
+            ]
+        };
+        service['getJob'].mockReturnValue(of(job));
+
+        component.ngOnInit();
+
+        const moods = component.groups[0].moods;
+        expect(moods.find((m) => m.mood === 'sad')?.state).toBe('generating');
+        expect(moods.find((m) => m.mood === 'happy')).toMatchObject({ state: 'failed', error: 'generation failed' });
     });
 
-    it('plays a sample via Audio', () => {
-        component.play({ id: '1' } as never);
-        expect(audioSpy).toHaveBeenCalledWith('http://x/sample');
+    it('filters by name or voice ID', () => {
+        service['getVoices'].mockReturnValue(of([voice('smuggler'), { ...voice('pavel'), displayName: 'Pavel' }]));
+        component.ngOnInit();
+
+        component.filter = 'pav';
+        component.applyFilter();
+
+        expect(component.filtered.map((g) => g.voiceId)).toEqual(['pavel']);
+    });
+
+    it('plays a sample through the authenticated request and stops on a second press', () => {
+        const target = voice('smuggler');
+
+        component.play(target);
+        expect(service['getSample']).toHaveBeenCalledWith('id-smuggler');
+        expect(audio.play).toHaveBeenCalled();
+        expect(component.player.playingId).toBe('id-smuggler');
+
+        component.play(target);
+        expect(audio.pause).toHaveBeenCalled();
+        expect(component.player.playingId).toBeNull();
+    });
+
+    it('generates only the chosen mood', () => {
+        service['generateMoods'].mockReturnValue(of({ id: 'j', baseVoiceId: 'smuggler', ownerId: 'me', createdAt: '', moods: [{ mood: 'sad', status: NpcMoodStatus.Pending, error: null }] }));
+        component.ngOnInit();
+
+        component.generate('smuggler', ['sad']);
+
+        expect(service['generateMoods']).toHaveBeenCalledWith('smuggler', ['sad']);
+        expect(component.groups[0].moods.find((m) => m.mood === 'sad')?.state).toBe('generating');
+    });
+
+    it('copies the voice ID without toggling the panel', () => {
+        const event = { stopPropagation: vi.fn() } as unknown as Event;
+
+        component.copy('smuggler', event);
+
+        expect(clipboard.copy).toHaveBeenCalledWith('smuggler');
+        expect(event.stopPropagation).toHaveBeenCalled();
+        expect(component.copiedId).toBe('smuggler');
     });
 
     it('deletes after confirmation and reloads', () => {
         component.ngOnInit();
-        component.delete({ id: '1', voiceId: 'smuggler' } as never);
-        expect(mockService.delete).toHaveBeenCalledWith('1');
-        expect(mockService.getVoices).toHaveBeenCalledTimes(2); // initial + reload
+
+        component.delete(voice('smuggler'), 'Delete?');
+
+        expect(service['delete']).toHaveBeenCalledWith('id-smuggler');
+        expect(service['getVoices']).toHaveBeenCalledTimes(2);
     });
 
-    it('generateMoods calls the service and refreshes the job for that base voice', () => {
-        const component = TestBed.inject(OperationsNpcsComponent);
-        const service = TestBed.inject(NpcVoicesService);
-        vi.spyOn(service, 'generateMoods').mockReturnValue(of({ id: 'j1', baseVoiceId: 'smuggler', ownerId: 'o', moods: [{ mood: 'angry', status: NpcMoodStatus.Pending, error: null }], createdAt: '' }) as any);
-        vi.spyOn(service, 'getJob').mockReturnValue(of({ id: 'j1', baseVoiceId: 'smuggler', ownerId: 'o', moods: [], createdAt: '' }) as any);
+    it('lets owners and admins manage a voice, and nobody else', () => {
+        expect(component.canManage(voice('smuggler', null, 'me'))).toBe(true);
+        expect(component.canManage(voice('smuggler', null, 'someone'))).toBe(false);
 
-        component.generateMoods('smuggler');
+        admin = true;
+        expect(component.canManage(voice('smuggler', null, 'someone'))).toBe(true);
+    });
 
-        expect(service.generateMoods).toHaveBeenCalledWith('smuggler');
-        expect(component.jobs['smuggler']?.moods?.length).toBe(1);
+    it('names the moods that a delete removes', () => {
+        component.ngOnInit();
+
+        expect(component.deleteVoiceMessage(component.groups[0])).toContain("'Smuggler' and its 1 mood?");
     });
 });
