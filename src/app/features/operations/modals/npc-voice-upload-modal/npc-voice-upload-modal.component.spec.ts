@@ -48,6 +48,17 @@ describe('NpcVoiceUploadModalComponent', () => {
         expect(component.canSubmit).toBe(false);
     });
 
+    it('blocks a file whose length could not be read', () => {
+        component.name = 'Pavel';
+        component.seconds = null;
+
+        expect(component.canSubmit).toBe(false);
+
+        component.seconds = 8;
+        component.fileError = 'This file is not a playable WAV.';
+        expect(component.canSubmit).toBe(false);
+    });
+
     it('uploads and returns the voice with the generate choice', () => {
         const created = { voiceId: 'pavel' };
         service.upload.mockReturnValue(of(created));

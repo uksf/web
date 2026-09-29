@@ -13,6 +13,9 @@
                 Put a voice ID in an NPC's <strong>Voice</strong> field in 3DEN. Each voice has five moods, generated from its source sample, and the NPC changes mood as the conversation goes.
             </p>
 
+            @if (loadFailed) {
+                <p class="load-failed">The voice list could not be loaded. It retries while moods are generating; otherwise reload the page.</p>
+            }
             @if (!voices) {
                 <div class="loading"><mat-spinner diameter="32"></mat-spinner></div>
             } @else if (filtered.length === 0) {

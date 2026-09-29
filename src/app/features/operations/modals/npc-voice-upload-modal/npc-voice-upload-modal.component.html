@@ -22,8 +22,8 @@
             }
             <input #picker type="file" accept="audio/wav,.wav" hidden (change)="onFileSelected($event)" />
         </div>
-        @if (lengthProblem) {
-            <p class="problem">{{ lengthProblem }}</p>
+        @if (fileError ?? lengthProblem; as problem) {
+            <p class="problem">{{ problem }}</p>
         }
 
         <ul class="guidance">

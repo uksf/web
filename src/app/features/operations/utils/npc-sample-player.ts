@@ -23,6 +23,7 @@ export class NpcSamplePlayer {
                 this.audio.play().catch(() => this.stop());
             },
             error: () => {
+                if (this.playingId !== id) return;
                 this.stop();
                 onError();
             }

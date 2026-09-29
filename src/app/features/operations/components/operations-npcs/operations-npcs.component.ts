@@ -65,6 +65,7 @@ export class OperationsNpcsComponent extends DestroyableComponent implements OnI
     filtered: NpcVoiceGroup[] = [];
     filter = '';
     copiedId: string | null = null;
+    loadFailed = false;
     player = new NpcSamplePlayer();
     busy = new Set<string>();
 
@@ -230,7 +231,15 @@ export class OperationsNpcsComponent extends DestroyableComponent implements OnI
         this.service
             .getVoices()
             .pipe(first())
-            .subscribe((voices) => {
+            .subscribe({
+                error: () => {
+                    this.loadFailed = true;
+                    this.voices ??= [];
+                    this.regroup();
+                    this.poll();
+                },
+                next: (voices) => {
+                this.loadFailed = false;
                 this.voices = voices;
                 const bases = voices.filter((v) => !v.moodOf).map((v) => v.voiceId);
                 const requests = bases.map((id) => this.service.getJob(id).pipe(catchError(() => of(null))));
@@ -240,6 +249,7 @@ export class OperationsNpcsComponent extends DestroyableComponent implements OnI
                     this.regroup();
                     this.poll();
                 });
+                }
             });
     }
 

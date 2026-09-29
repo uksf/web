@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { NgxPermissionsService } from 'ngx-permissions';
-import { of, Subject } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { AccountService } from '@app/core/services/account.service';
 import { OperationsNpcsComponent } from './operations-npcs.component';
 import { NpcVoicesService } from '../../services/npc-voices.service';
@@ -89,6 +89,15 @@ describe('OperationsNpcsComponent', () => {
         const moods = component.groups[0].moods;
         expect(moods.find((m) => m.mood === 'sad')?.state).toBe('generating');
         expect(moods.find((m) => m.mood === 'happy')).toMatchObject({ state: 'failed', error: 'generation failed' });
+    });
+
+    it('reports a failed load instead of spinning forever', () => {
+        service['getVoices'].mockReturnValue(throwError(() => new Error('down')));
+
+        component.ngOnInit();
+
+        expect(component.loadFailed).toBe(true);
+        expect(component.voices).toEqual([]);
     });
 
     it('filters by name or voice ID', () => {

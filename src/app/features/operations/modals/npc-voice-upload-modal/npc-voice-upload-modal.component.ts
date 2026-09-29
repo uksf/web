@@ -48,6 +48,7 @@ export class NpcVoiceUploadModalComponent {
     generateMoods = true;
     pending = false;
     error: string | null = null;
+    fileError: string | null = null;
 
     get slug(): string {
         return voiceSlug(this.name);
@@ -65,7 +66,7 @@ export class NpcVoiceUploadModalComponent {
     }
 
     get canSubmit(): boolean {
-        return !!this.slug && !this.slugTaken && !!this.file && !this.lengthProblem && !this.pending;
+        return !!this.slug && !this.slugTaken && !!this.file && this.seconds !== null && !this.fileError && !this.lengthProblem && !this.pending;
     }
 
     onFileSelected(event: Event): void {
@@ -76,6 +77,7 @@ export class NpcVoiceUploadModalComponent {
         this.file = file;
         this.seconds = null;
         this.error = null;
+        this.fileError = null;
         if (!this.name) this.name = file.name.replace(/\.wav$/i, '');
         this.measure(file);
     }
@@ -111,7 +113,7 @@ export class NpcVoiceUploadModalComponent {
             URL.revokeObjectURL(url);
         };
         audio.onerror = () => {
-            this.error = 'This file is not a playable WAV.';
+            this.fileError = 'This file is not a playable WAV.';
             URL.revokeObjectURL(url);
         };
         audio.src = url;
