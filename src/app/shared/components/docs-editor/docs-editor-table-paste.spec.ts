@@ -105,6 +105,15 @@ describe('docs editor with Quill', () => {
         expect(quill.root.querySelectorAll('table tr')[1].querySelectorAll('td')[2].querySelectorAll('br.ql-line-break')).toHaveLength(2);
     });
 
+    it('keeps a table pasted into a code block as text', () => {
+        quill.setContents(new Delta().insert('code').insert('\n', { 'code-block': 'plain' }));
+        quill.setSelection(4, 0);
+
+        paste(boxTable);
+
+        expect(quill.root.querySelector('table')).toBeNull();
+    });
+
     it('leaves ordinary pasted text to Quill', () => {
         quill.setSelection(0, 0);
 

@@ -100,7 +100,9 @@ export function pasteTextTables(quill: Quill) {
             const html = event.clipboardData?.getData('text/html') ?? '';
             const table = html.includes('<table') ? null : parseTextTable(event.clipboardData?.getData('text/plain') ?? '');
             const range = quill.getSelection(true);
-            if (!table || !range || quill.getFormat(range).table) {
+            const format = range ? quill.getFormat(range) : {};
+            // Inside a table or a code block the text is kept as typed
+            if (!table || !range || format['table'] || format['code-block']) {
                 return;
             }
             event.preventDefault();
