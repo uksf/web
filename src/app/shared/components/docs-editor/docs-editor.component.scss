@@ -98,22 +98,22 @@
             content: '-';
         }
 
-        table {
-            width: 100%;
+        // quill-table-up draws the table; these match its cells to the site theme
+        .ql-table-wrapper {
             margin: 8px 0;
-            table-layout: auto;
-            border-collapse: collapse;
         }
 
-        td {
-            padding: 6px 10px;
+        .ql-table-cell {
             vertical-align: top;
+            font-size: inherit;
             word-break: normal;
             overflow-wrap: break-word;
-            border: 1px solid th.fg-divider();
+            border-color: th.fg-divider();
         }
 
-        tr:first-child td {
+        th.ql-table-cell {
+            font-weight: bold;
+            text-align: left;
             background-color: var(--uksf-gray-600);
         }
 
@@ -141,7 +141,7 @@
         padding: 16px;
         overflow-x: auto;
 
-        td {
+        .ql-table-cell-inner {
             padding: 4px 6px;
         }
     }

@@ -1,9 +1,8 @@
 // @vitest-environment jsdom
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
 import Quill, { Delta } from 'quill';
-import { parseTextTable, textTableOps } from './docs-editor-table-paste';
-import { registerDocsFormats } from './docs-editor-formats';
-import { DOCS_EDITOR_MODULES, setUpDocsEditor } from './docs-editor-table';
+import { parseTextTable, textTableHtml } from './docs-editor-table-paste';
+import { DocsEditorModules, loadDocsEditorModules, setUpDocsEditor } from './docs-editor-table';
 
 const boxTable = `┌─────────────┬──────────────────────┬─────────────────────┐
 │ CAPABILITY  │ BASIC / BASELINE     │ ADVANCED            │
@@ -53,38 +52,38 @@ describe('parseTextTable', () => {
     });
 });
 
-describe('textTableOps', () => {
-    it('builds one table line per cell, bolds the header and joins cell lines with line breaks', () => {
-        const ops = new Delta(
-            textTableOps([
+describe('textTableHtml', () => {
+    it('makes the first row a header, bullet lines a list and other lines paragraphs', () => {
+        expect(
+            textTableHtml([
                 [['A'], ['B']],
-                [['one', 'two'], []]
+                [['Intro', '• one', '- two', 'After'], []]
             ])
-        ).ops;
-        const rows = ops.flatMap((op) => (typeof op.insert === 'string' && /^\n+$/.test(op.insert) ? Array(op.insert.length).fill(op.attributes?.['table']) : []));
+        ).toBe('<table><tr><th><p>A</p></th><th><p>B</p></th></tr><tr><td><p>Intro</p><ul><li>one</li><li>two</li></ul><p>After</p></td><td><p><br></p></td></tr></table>');
+    });
 
-        expect(ops.filter((op) => typeof op.insert !== 'string' || !/^\n+$/.test(op.insert))).toEqual([
-            { insert: 'A', attributes: { bold: true } },
-            { insert: 'B', attributes: { bold: true } },
-            { insert: 'one' },
-            { insert: { 'line-break': true } },
-            { insert: 'two' }
-        ]);
-        expect(rows).toHaveLength(4);
-        expect(rows[0]).toBe(rows[1]);
-        expect(rows[2]).toBe(rows[3]);
-        expect(rows[0]).not.toBe(rows[2]);
+    it('escapes HTML in cell text', () => {
+        expect(textTableHtml([[['<b>x</b>'], ['a & b']], [['c'], ['d']]])).toContain('<p>&lt;b&gt;x&lt;/b&gt;</p><');
     });
 });
 
-describe('docs editor with Quill', () => {
+describe('docs editor paste with Quill', () => {
+    let modules: DocsEditorModules;
     let quill: Quill;
 
-    beforeEach(() => {
-        registerDocsFormats();
+    beforeAll(async () => {
         Range.prototype.getBoundingClientRect ??= () => ({ top: 0, bottom: 0, left: 0, right: 0, width: 0, height: 0, x: 0, y: 0, toJSON: () => ({}) });
+        (globalThis as { ResizeObserver?: unknown }).ResizeObserver ??= class {
+            observe() {}
+            unobserve() {}
+            disconnect() {}
+        };
+        modules = await loadDocsEditorModules();
+    });
+
+    beforeEach(() => {
         document.body.innerHTML = '<div id="editor"></div>';
-        quill = new Quill('#editor', { modules: { ...DOCS_EDITOR_MODULES, toolbar: false } });
+        quill = new Quill('#editor', { modules: { ...modules.editor, toolbar: false } });
         setUpDocsEditor(quill);
     });
 
@@ -92,17 +91,17 @@ describe('docs editor with Quill', () => {
         const event = new Event('paste', { bubbles: true, cancelable: true }) as ClipboardEvent;
         Object.defineProperty(event, 'clipboardData', { value: { getData: (type: string) => (type === 'text/plain' ? text : '') } });
         quill.root.dispatchEvent(event);
-        return event;
     };
 
-    it('turns a pasted box-drawing table into a Quill table', () => {
+    it('turns a pasted box-drawing table into a table with bullet lists in the cells', () => {
         quill.setSelection(0, 0);
 
-        const event = paste(boxTable);
+        paste(boxTable);
 
-        expect(event.defaultPrevented).toBe(true);
-        expect(quill.root.querySelectorAll('table tr')).toHaveLength(3);
-        expect(quill.root.querySelectorAll('table tr')[1].querySelectorAll('td')[2].querySelectorAll('br.ql-line-break')).toHaveLength(2);
+        const rows = quill.root.querySelectorAll('table tr');
+        expect(rows).toHaveLength(3);
+        expect(rows[0].querySelectorAll('th')).toHaveLength(3);
+        expect([...rows[1].querySelectorAll('td')[2].querySelectorAll('li')].map((item) => item.textContent)).toEqual(['Eagle VCP', 'HAHO', 'Fast roping']);
     });
 
     it('keeps a table pasted into a code block as text', () => {
@@ -120,29 +119,5 @@ describe('docs editor with Quill', () => {
         paste('hello | world');
 
         expect(quill.root.querySelector('table')).toBeNull();
-    });
-
-    it('keeps the line break when the document is saved and loaded again', () => {
-        quill.setContents(new Delta(textTableOps([[['a', 'b'], ['c']], [['d'], ['e']]])));
-
-        const saved = JSON.parse(JSON.stringify(quill.getContents()));
-        quill.setContents([]);
-        quill.setContents(saved);
-
-        expect(quill.getContents().ops.filter((op) => typeof op.insert === 'object')).toEqual([{ insert: { 'line-break': true } }]);
-        expect(quill.root.querySelectorAll('td')).toHaveLength(4);
-    });
-
-    it('adds a line break inside a cell on Enter', () => {
-        quill.setContents(new Delta(textTableOps([[['ab'], ['c']], [['d'], ['e']]])));
-        quill.setSelection(1, 0);
-
-        quill.root.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
-
-        expect(quill.root.querySelectorAll('td')).toHaveLength(4);
-        const cell = quill.root.querySelectorAll('td')[0];
-        expect(cell.textContent).toBe('ab');
-        expect(cell.querySelectorAll('br.ql-line-break')).toHaveLength(1);
-        expect(quill.getSelection()?.index).toBe(2);
     });
 });

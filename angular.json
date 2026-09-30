@@ -25,7 +25,9 @@
                             "./node_modules/primeng/resources/primeng.min.css",
                             "./node_modules/primeng/resources/themes/md-dark-indigo/theme.css",
                             "./node_modules/quill/dist/quill.core.css",
-                            "./node_modules/quill/dist/quill.snow.css"
+                            "./node_modules/quill/dist/quill.snow.css",
+                            "./node_modules/quill-table-up/dist/index.css",
+                            "./node_modules/quill-table-up/dist/table-creator.css"
                         ],
                         "scripts": [
                             "./node_modules/prismjs/prism.js",
@@ -93,7 +95,9 @@
                             "./node_modules/primeng/resources/primeng.min.css",
                             "./node_modules/primeng/resources/themes/md-dark-indigo/theme.css",
                             "./node_modules/quill/dist/quill.core.css",
-                            "./node_modules/quill/dist/quill.snow.css"
+                            "./node_modules/quill/dist/quill.snow.css",
+                            "./node_modules/quill-table-up/dist/index.css",
+                            "./node_modules/quill-table-up/dist/table-creator.css"
                         ],
                         "stylePreprocessorOptions": {
                             "loadPaths": ["src"]
@@ -114,7 +118,9 @@
                             "./node_modules/primeng/resources/primeng.min.css",
                             "./node_modules/primeng/resources/themes/md-dark-indigo/theme.css",
                             "./node_modules/quill/dist/quill.core.css",
-                            "./node_modules/quill/dist/quill.snow.css"
+                            "./node_modules/quill/dist/quill.snow.css",
+                            "./node_modules/quill-table-up/dist/index.css",
+                            "./node_modules/quill-table-up/dist/table-creator.css"
                         ],
                         "stylePreprocessorOptions": {
                             "loadPaths": ["src"]

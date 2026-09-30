@@ -1,18 +1,19 @@
 <div #editorBounds class="content">
-    @if (readonly) {
-        <quill-view [content]="content" [modules]="modules" [beforeRender]="loadDocsFormats" [preserveWhitespace]="true" class="content-view" format="json"></quill-view>
-    } @else {
-        <quill-editor
-            [ngModel]="content"
-            (ngModelChange)="onContentChange($event)"
-            (onEditorCreated)="setUpDocsEditor($event)"
-            [bounds]="editorBounds"
-            [modules]="modules"
-            [beforeRender]="loadDocsFormats"
-            [preserveWhitespace]="true"
-            class="content-editor"
-            format="json"
-            placeholder=""
-        ></quill-editor>
+    @if (modules(); as modules) {
+        @if (readonly) {
+            <quill-view [content]="content" [modules]="modules.viewer" [preserveWhitespace]="true" class="content-view" format="json"></quill-view>
+        } @else {
+            <quill-editor
+                [ngModel]="content"
+                (ngModelChange)="onContentChange($event)"
+                (onEditorCreated)="setUpDocsEditor($event)"
+                [bounds]="editorBounds"
+                [modules]="modules.editor"
+                [preserveWhitespace]="true"
+                class="content-editor"
+                format="json"
+                placeholder=""
+            ></quill-editor>
+        }
     }
 </div>

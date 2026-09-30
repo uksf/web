@@ -51,6 +51,7 @@
         "primeicons": "7.0.0",
         "primeng": "17.18.15",
         "quill": "^2.0.3",
+        "quill-table-up": "3.6.0",
         "rxjs": "^7.4.0",
         "tslib": "^2.3.1",
         "zone.js": "~0.15.1"

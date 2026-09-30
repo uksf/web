@@ -1,49 +1,44 @@
-import { describe, it, expect, vi } from 'vitest';
-import { DOCS_EDITOR_MODULES, decorateTableButtons } from './docs-editor-table';
+// @vitest-environment jsdom
+import { describe, it, expect, beforeAll } from 'vitest';
+import Quill from 'quill';
+import { DocsEditorModules, loadDocsEditorModules } from './docs-editor-table';
 
 describe('docs editor tables', () => {
-    const tableActions = ['table', 'table-row', 'table-column', 'table-delete-row', 'table-delete-column', 'table-delete'];
+    let modules: DocsEditorModules;
 
-    it('enables the table module and puts every table action in one toolbar group', () => {
-        const groups = DOCS_EDITOR_MODULES.toolbar.container as unknown[];
-
-        expect(DOCS_EDITOR_MODULES.table).toBe(true);
-        expect(groups.filter((group) => Array.isArray(group) && group.includes('table'))).toEqual([tableActions]);
+    beforeAll(async () => {
+        Range.prototype.getBoundingClientRect ??= () => ({ top: 0, bottom: 0, left: 0, right: 0, width: 0, height: 0, x: 0, y: 0, toJSON: () => ({}) });
+        (globalThis as { ResizeObserver?: unknown }).ResizeObserver ??= class {
+            observe() {}
+            unobserve() {}
+            disconnect() {}
+        };
+        modules = await loadDocsEditorModules();
     });
 
-    it('routes toolbar clicks to the Quill table module', () => {
-        const table = { insertTable: vi.fn(), insertRowBelow: vi.fn(), insertColumnRight: vi.fn(), deleteRow: vi.fn(), deleteColumn: vi.fn(), deleteTable: vi.fn() };
-        const toolbar = { quill: { getModule: vi.fn().mockReturnValue(table) } };
+    it('swaps Quill’s table button for the table-up picker and keeps full-width tables', () => {
+        const toolbar = modules.editor['toolbar'] as unknown[];
 
-        for (const action of tableActions) {
-            DOCS_EDITOR_MODULES.toolbar.handlers[action].call(toolbar);
-        }
-
-        expect(toolbar.quill.getModule).toHaveBeenCalledWith('table');
-        expect(table.insertTable).toHaveBeenCalledWith(3, 3);
-        expect(table.insertRowBelow).toHaveBeenCalledOnce();
-        expect(table.insertColumnRight).toHaveBeenCalledOnce();
-        expect(table.deleteRow).toHaveBeenCalledOnce();
-        expect(table.deleteColumn).toHaveBeenCalledOnce();
-        expect(table.deleteTable).toHaveBeenCalledOnce();
+        expect(toolbar.flat().filter((tool) => tool === 'table')).toEqual([]);
+        expect(toolbar[toolbar.length - 1]).toEqual([{ 'table-up': [] }]);
+        expect(modules.editor['table-up']).toMatchObject({ full: true, fullSwitch: false });
+        expect(modules.viewer).toEqual({ 'table-up': { full: true, fullSwitch: false } });
     });
 
-    it('labels the table buttons and gives the new ones icons', () => {
-        const quillIcon = '<svg data-quill></svg>';
-        const buttons = Object.fromEntries(
-            tableActions.map((action) => {
-                const attributes: Record<string, string> = {};
-                return [`button.ql-${action}`, { attributes, innerHTML: quillIcon, setAttribute: (name: string, value: string) => (attributes[name] = value) }];
-            })
+    it('holds a bullet list and several lines in one cell, and keeps them when saved and loaded', () => {
+        document.body.innerHTML = '<div id="editor"></div><div id="viewer"></div>';
+        const editor = new Quill('#editor', { modules: { ...modules.editor, toolbar: false } });
+        editor.setContents(
+            editor.clipboard.convert({ html: '<table><tr><td><p>Air</p></td><td><ul><li>One</li><li>Two</li></ul><p>Note</p></td></tr></table>' })
         );
-        const container = { querySelector: (selector: string) => buttons[selector] ?? null };
-        const quill = { getModule: () => ({ container }) } as never;
 
-        decorateTableButtons(quill);
+        const saved = JSON.parse(JSON.stringify(editor.getContents()));
+        const viewer = new Quill('#viewer', { readOnly: true, modules: modules.viewer });
+        viewer.setContents(saved);
 
-        expect(buttons['button.ql-table'].attributes['title']).toBe('Insert table');
-        expect(buttons['button.ql-table'].innerHTML).toBe(quillIcon);
-        expect(buttons['button.ql-table-row'].attributes['aria-label']).toBe('Add row below');
-        expect(buttons['button.ql-table-row'].innerHTML).toContain('<svg viewBox="0 0 18 18">');
+        const cells = viewer.root.querySelectorAll('td');
+        expect(cells).toHaveLength(2);
+        expect([...cells[1].querySelectorAll('li')].map((item) => item.textContent)).toEqual(['One', 'Two']);
+        expect(cells[1].textContent).toContain('Note');
     });
 });
