@@ -1,5 +1,7 @@
 import { defaultModules } from 'ngx-quill/config';
 import type Quill from 'quill';
+import { TABLE_KEYBOARD_BINDINGS, matchLineBreak } from './docs-editor-line-break';
+import { pasteTextTables } from './docs-editor-table-paste';
 
 interface TableModule {
     insertTable(rows: number, columns: number): void;
@@ -52,6 +54,8 @@ const baseToolbar = (defaultModules.toolbar as unknown[]).filter((group) => !(Ar
 
 export const DOCS_EDITOR_MODULES = {
     table: true,
+    keyboard: { bindings: TABLE_KEYBOARD_BINDINGS },
+    clipboard: { matchers: [['BR', matchLineBreak]] },
     toolbar: {
         container: [...baseToolbar, Object.keys(TABLE_ACTIONS)],
         handlers: Object.fromEntries(
@@ -78,4 +82,9 @@ export function decorateTableButtons(quill: Quill) {
             button.innerHTML = action.icon;
         }
     }
+}
+
+export function setUpDocsEditor(quill: Quill) {
+    decorateTableButtons(quill);
+    pasteTextTables(quill);
 }

@@ -1,7 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { QuillEditorComponent, QuillViewComponent } from 'ngx-quill';
-import { DOCS_EDITOR_MODULES, decorateTableButtons } from './docs-editor-table';
+import { DOCS_EDITOR_MODULES, setUpDocsEditor } from './docs-editor-table';
+import { loadDocsFormats } from './docs-editor-line-break';
 
 @Component({
     selector: 'app-docs-editor',
@@ -14,7 +15,8 @@ export class DocsEditorComponent {
     @Input() readonly = false;
     @Output() contentChange = new EventEmitter<string>();
     modules = DOCS_EDITOR_MODULES;
-    decorateTableButtons = decorateTableButtons;
+    setUpDocsEditor = setUpDocsEditor;
+    loadDocsFormats = loadDocsFormats;
 
     onContentChange(value: string) {
         this.content = value;
