@@ -1,0 +1,120 @@
+@use 'styles/theme-helpers' as th;
+
+// quill-table-up ships a light theme. Its menus, pickers and tooltips attach outside the editor, and its dialogs and
+// tooltips attach to <body> outside .uksf-theme, so the theme is global and each variable carries its dark value.
+// Nested under html so it outranks the library CSS, which angular.json loads after styles.scss.
+
+html {
+    .table-up-menu,
+    .table-up-align,
+    .table-up-color-picker,
+    .table-up-dialog__content,
+    .table-up-color-map__btn,
+    .ql-snow .ql-table-up .ql-picker-options {
+        color: th.fg-text();
+        background-color: var(--uksf-dialog, #242424);
+        border-color: th.fg-divider();
+    }
+
+    .table-up-menu,
+    .table-up-align {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+
+        .icon {
+            color: th.fg-text();
+        }
+    }
+
+    .table-up-menu__item:hover,
+    .table-up-align__item:hover,
+    .table-up-color-map__btn:hover {
+        background-color: var(--uksf-hover, #484848);
+    }
+
+    .table-up-menu__item.is-break,
+    .table-up-align__item.is-break,
+    .table-up-menu.is-contextmenu .is-break {
+        background-color: th.fg-divider();
+    }
+
+    .table-up-color-map--used,
+    .table-up-color-picker__action {
+        border-color: th.fg-divider();
+    }
+
+    .table-up-tooltip {
+        color: th.fg-text();
+        background-color: var(--uksf-gray-800, #0e0e0e);
+    }
+
+    .table-up-color-picker {
+        --color-picker-bg-color: var(--uksf-dialog, #242424);
+    }
+
+    .table-up-color-picker__input {
+        color: th.fg-text();
+        background-color: var(--uksf-background, #121212);
+        border-color: th.fg-divider();
+    }
+
+    .table-up-dialog {
+        --dialog-color-border: #{th.fg-divider()};
+    }
+
+    .table-up-button {
+        --table-btn-color: #{th.fg-text()};
+        --table-btn-bg-hover: var(--uksf-hover, #484848);
+        --table-btn-color-border: #{th.fg-divider()};
+        --table-btn-confirm-color-border: #{th.primary()};
+        --table-btn-confirm-bg: #{th.primary()};
+        --table-btn-confirm-hover: #{th.primary()};
+
+        &.confirm {
+            color: th.primary-contrast();
+        }
+    }
+
+    .table-up-input__item {
+        --input-color-text: #{th.fg-text()};
+        --input-color-boxshaow: #{th.fg-divider()};
+        --input-color-focus: #{th.primary()};
+    }
+
+    .table-up-select-box,
+    .ql-snow .table-up-select-box {
+        --select-box-color-border: #{th.fg-divider()};
+        --select-box-color-active: #{th.primary()};
+        --select-box-color-bg-hover: var(--uksf-hover, #484848);
+        --select-box-color-bg-active: rgba(254, 196, 0, 0.25);
+        --select-box-custom-color-text: #{th.fg-text()};
+        --select-box-custom-color-bg-hover: var(--uksf-hover, #484848);
+        color: th.fg-text();
+    }
+
+    .table-up-resize-box__col-header,
+    .table-up-resize-box__row-header,
+    .table-up-resize-box__corner,
+    .table-up-resize-box__col-header.is-selected:hover,
+    .table-up-resize-box__row-header.is-selected:hover {
+        background-color: var(--uksf-gray-600, #181818);
+        border-color: th.fg-divider();
+    }
+
+    .table-up-resize-box__col-header:hover,
+    .table-up-resize-box__row-header:hover {
+        background-color: var(--uksf-hover, #484848);
+    }
+
+    .table-up-scale__block {
+        background-color: var(--uksf-gray-600, #181818);
+        border-color: th.fg-divider();
+    }
+
+    .table-up-scrollbar__thumb {
+        background-color: var(--uksf-scroll-thumb, #484848);
+    }
+
+    .ql-editor .ql-table {
+        --table-freeze-bg: var(--uksf-background, #121212);
+    }
+}

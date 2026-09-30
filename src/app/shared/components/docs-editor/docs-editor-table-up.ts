@@ -13,7 +13,7 @@ export function editorModules(toolbar: unknown[]) {
         [TableUp.moduleName]: {
             ...tableOptions,
             customSelect: defaultCustomSelect,
-            modules: [{ module: TableSelection }, { module: TableMenuSelect }, { module: TableResizeLine }]
+            modules: [{ module: TableSelection, options: { selectColor: '#fec40040' } }, { module: TableMenuSelect }, { module: TableResizeLine }]
         }
     };
 }

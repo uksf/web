@@ -4,6 +4,7 @@
 @use 'styles/form-field-theme' as fft;
 @use 'styles/mat-form-field-overrides' as mffo;
 @use 'styles/custom-theme-vars' as custom-vars;
+@use 'styles/quill-table-up-theme';
 @use 'app/features/command/components/command-ranks/ranks-list-item-layout' as ranks-layout;
 @use 'app/features/operations/components/operations-servers/servers-list-item-layout' as servers-layout;
 
