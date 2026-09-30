@@ -72,7 +72,10 @@ export class LoginComponent implements OnInit, OnDestroy {
             .login(this.model.email, this.model.password, this.stayLogged)
             .pipe(first())
             .subscribe({
-                next: () => this.onLoggedIn(),
+                next: () => {
+                    void this.passkeyService.upgradeAfterPasswordSignIn();
+                    this.onLoggedIn();
+                },
                 error: (error: UksfError) => {
                     this.pending = false;
                     this.loginError = error?.error || 'Sign-in failed';
@@ -131,6 +134,9 @@ export class LoginComponent implements OnInit, OnDestroy {
             .subscribe({
                 next: () => this.onLoggedIn(),
                 error: (error: UksfError) => {
+                    if (error?.statusCode === 404) {
+                        this.passkeyService.signalUnknownCredential(passkey.credential['id'] as string);
+                    }
                     this.onPasskeyError(error);
                     this.offerPasskeyAutofill();
                 }

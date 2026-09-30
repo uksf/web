@@ -25,7 +25,9 @@ describe('LoginComponent', () => {
         mockPasskeyService = {
             supported: true,
             conditionalMediationAvailable: vi.fn().mockResolvedValue(false),
-            getAssertion: vi.fn()
+            getAssertion: vi.fn(),
+            upgradeAfterPasswordSignIn: vi.fn().mockResolvedValue(undefined),
+            signalUnknownCredential: vi.fn()
         };
         mockRouter = {
             navigate: vi.fn().mockResolvedValue(true),
@@ -101,6 +103,7 @@ describe('LoginComponent', () => {
 
             expect(mockRedirectService.getAndClearRedirectUrl).toHaveBeenCalled();
             expect(mockRouter.navigateByUrl).toHaveBeenCalledWith('/admin');
+            expect(mockPasskeyService.upgradeAfterPasswordSignIn).toHaveBeenCalledTimes(1);
         });
 
         it('navigates to /home when no redirect URL is stored', async () => {
@@ -175,6 +178,17 @@ describe('LoginComponent', () => {
 
             expect(component.passkeyPending).toBe(false);
             expect(component.loginError).toBe('This passkey is not registered with UKSF');
+            expect(mockPasskeyService.signalUnknownCredential).not.toHaveBeenCalled();
+        });
+
+        it('tells the password manager about a passkey the site no longer knows', async () => {
+            mockPasskeyService.getAssertion.mockResolvedValue({ flowId: 'flow', credential: { id: 'Cw' } });
+            mockAuth.loginWithPasskey.mockReturnValue(throwError(() => ({ error: 'This passkey is not registered with UKSF', statusCode: 404 })));
+
+            await component.loginWithPasskey();
+
+            expect(mockPasskeyService.signalUnknownCredential).toHaveBeenCalledWith('Cw');
+            expect(mockPasskeyService.upgradeAfterPasswordSignIn).not.toHaveBeenCalled();
         });
 
         it('offers passkeys in autofill when the browser supports it', async () => {

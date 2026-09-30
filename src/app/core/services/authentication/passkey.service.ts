@@ -10,6 +10,7 @@ export interface PasskeyCredential {
 
 export interface Passkey {
     id: string;
+    credentialId: string;
     name: string;
     created: string;
     lastUsed: string | null;
@@ -41,6 +42,12 @@ interface CreationOptionsJson extends Omit<PublicKeyCredentialCreationOptions, '
 interface RequestOptionsJson extends Omit<PublicKeyCredentialRequestOptions, 'challenge' | 'allowCredentials'> {
     challenge: string;
     allowCredentials?: CredentialDescriptorJson[];
+}
+
+// WebAuthn Level 3 additions that are not in the DOM typings yet
+interface PublicKeyCredentialLevel3 {
+    getClientCapabilities?: () => Promise<Record<string, boolean>>;
+    signalUnknownCredential?: (options: { rpId: string; credentialId: string }) => Promise<void>;
 }
 
 // The API rejects transport names outside the WebAuthn Level 3 list
@@ -111,6 +118,39 @@ export class PasskeyService {
         };
     }
 
+    async conditionalCreateAvailable(): Promise<boolean> {
+        const capabilities = this.supported ? await (PublicKeyCredential as unknown as PublicKeyCredentialLevel3).getClientCapabilities?.() : undefined;
+        return !!capabilities?.['conditionalCreate'];
+    }
+
+    // After a password sign-in, the password manager that filled the password may save a passkey without a prompt (conditional create).
+    // Every failure is silent: most attempts end with the browser declining, which is expected.
+    async upgradeAfterPasswordSignIn(): Promise<void> {
+        try {
+            if (!(await this.conditionalCreateAvailable())) {
+                return;
+            }
+            const { passkeys } = await firstValueFrom(this.list());
+            if (passkeys.length > 0) {
+                return;
+            }
+            const credential = await this.create(`${this.urls.apiUrl}/passkeys/options/automatic`, {}, 'conditional');
+            await firstValueFrom(this.httpClient.post<Passkey>(`${this.urls.apiUrl}/passkeys`, credential));
+        } catch {
+            // Declined by the browser, or not possible now
+        }
+    }
+
+    // Tells the password manager that the site no longer knows this passkey, so it can remove it
+    signalUnknownCredential(credentialId: string) {
+        if (!this.supported) {
+            return;
+        }
+        (PublicKeyCredential as unknown as PublicKeyCredentialLevel3)
+            .signalUnknownCredential?.({ rpId: window.location.hostname, credentialId })
+            .catch(() => undefined);
+    }
+
     async createForNewAccount(details: { email: string; firstName: string; lastName: string }): Promise<PasskeyCredential> {
         return this.create(`${this.urls.apiUrl}/accounts/create/passkey/options`, details);
     }
@@ -128,16 +168,19 @@ export class PasskeyService {
         return this.httpClient.delete<void>(`${this.urls.apiUrl}/passkeys/${id}`);
     }
 
-    private async create(optionsUrl: string, body: object): Promise<PasskeyCredential> {
+    private async create(optionsUrl: string, body: object, mediation?: CredentialMediationRequirement): Promise<PasskeyCredential> {
         const { flowId, options } = await firstValueFrom(this.httpClient.post<PasskeyOptions<CreationOptionsJson>>(optionsUrl, body));
-        const credential = (await navigator.credentials.create({
+        // 'mediation' on create is WebAuthn Level 3 and not in the DOM typings yet
+        const request: CredentialCreationOptions & { mediation?: CredentialMediationRequirement } = {
+            mediation,
             publicKey: {
                 ...options,
                 challenge: toArrayBuffer(options.challenge),
                 user: { ...options.user, id: toArrayBuffer(options.user.id) },
                 excludeCredentials: toDescriptors(options.excludeCredentials)
             }
-        })) as PublicKeyCredential;
+        };
+        const credential = (await navigator.credentials.create(request)) as PublicKeyCredential;
         const response = credential.response as AuthenticatorAttestationResponse;
 
         return {

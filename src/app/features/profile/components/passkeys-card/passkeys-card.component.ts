@@ -53,7 +53,7 @@ export class PasskeysCardComponent implements OnInit {
         this.dialog
             .open(ConfirmationModalComponent, {
                 data: {
-                    message: `Remove the passkey '${passkey.name}'?\n\nAlso delete it from your device or password manager, because it will no longer sign you in.`,
+                    message: `Remove the passkey '${passkey.name}'?\n\nIt will no longer sign you in. If it still shows in your device or password manager, delete it there too.`,
                     button: 'Remove'
                 }
             })
@@ -66,7 +66,10 @@ export class PasskeysCardComponent implements OnInit {
                             .remove(passkey.id)
                             .pipe(first())
                             .subscribe({
-                                next: () => (this.passkeys = this.passkeys.filter((x) => x.id !== passkey.id)),
+                                next: () => {
+                                    this.passkeys = this.passkeys.filter((x) => x.id !== passkey.id);
+                                    this.passkeyService.signalUnknownCredential(passkey.credentialId);
+                                },
                                 error: (error: UksfError) => this.showError(error?.error || 'Failed to remove passkey')
                             });
                     }

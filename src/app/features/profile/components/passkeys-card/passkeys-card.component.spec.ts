@@ -6,7 +6,7 @@ import { PasskeysCardComponent } from './passkeys-card.component';
 import { PasskeyService } from '@app/core/services/authentication/passkey.service';
 
 describe('PasskeysCardComponent', () => {
-    const existing = { id: '1', name: 'iCloud Keychain', created: '2026-09-01T00:00:00Z', lastUsed: null, isBackedUp: true };
+    const existing = { id: '1', credentialId: 'Cw', name: 'iCloud Keychain', created: '2026-09-01T00:00:00Z', lastUsed: null, isBackedUp: true };
     let component: PasskeysCardComponent;
     let mockPasskeyService: any;
     let mockDialog: any;
@@ -16,7 +16,8 @@ describe('PasskeysCardComponent', () => {
             supported: true,
             list: vi.fn().mockReturnValue(of({ hasPassword: true, passkeys: [existing] })),
             add: vi.fn(),
-            remove: vi.fn().mockReturnValue(of(undefined))
+            remove: vi.fn().mockReturnValue(of(undefined)),
+            signalUnknownCredential: vi.fn()
         };
         mockDialog = { open: vi.fn().mockReturnValue({ afterClosed: () => of(true) }) };
         TestBed.configureTestingModule({
@@ -61,6 +62,7 @@ describe('PasskeysCardComponent', () => {
 
         expect(mockPasskeyService.remove).toHaveBeenCalledWith('1');
         expect(component.passkeys).toEqual([]);
+        expect(mockPasskeyService.signalUnknownCredential).toHaveBeenCalledWith('Cw');
     });
 
     it('keeps the passkey when removal is refused', () => {

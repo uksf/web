@@ -91,4 +91,62 @@ describe('PasskeyService', () => {
         expect(result.credential.response).toEqual({ clientDataJSON: 'BQ', attestationObject: 'DA', transports: ['internal', 'hybrid'] });
         expect(result.credential.clientExtensionResults).toEqual({ credProps: { rk: true } });
     });
+
+    describe('automatic passkey upgrade', () => {
+        let publicKeyCredential: any;
+
+        beforeEach(() => {
+            publicKeyCredential = { getClientCapabilities: vi.fn().mockResolvedValue({ conditionalCreate: true }), signalUnknownCredential: vi.fn().mockResolvedValue(undefined) };
+            vi.stubGlobal('PublicKeyCredential', publicKeyCredential);
+            vi.stubGlobal('window', { PublicKeyCredential: publicKeyCredential, location: { hostname: 'uk-sf.co.uk' } });
+            mockHttp.get.mockReturnValue(of({ hasPassword: true, passkeys: [] }));
+            mockHttp.post.mockImplementation((url: string) =>
+                of(url.endsWith('/options/automatic') ? { flowId: 'flow', options: { challenge: 'AQI', user: { id: 'CQ', name: 'a@b.com', displayName: 'A B' } } } : {})
+            );
+            mockCredentials.create.mockResolvedValue({
+                id: 'Cw',
+                rawId: bytes(11),
+                type: 'public-key',
+                response: { clientDataJSON: bytes(5), attestationObject: bytes(12) }
+            });
+        });
+
+        it('creates a passkey conditionally and saves it', async () => {
+            await service.upgradeAfterPasswordSignIn();
+
+            expect(mockCredentials.create.mock.calls[0][0].mediation).toBe('conditional');
+            expect(mockHttp.post).toHaveBeenCalledWith('http://api/passkeys/options/automatic', {});
+            expect(mockHttp.post).toHaveBeenCalledWith('http://api/passkeys', expect.objectContaining({ flowId: 'flow' }));
+        });
+
+        it('does nothing when the browser cannot create passkeys conditionally', async () => {
+            publicKeyCredential.getClientCapabilities.mockResolvedValue({ conditionalCreate: false });
+
+            await service.upgradeAfterPasswordSignIn();
+
+            expect(mockHttp.get).not.toHaveBeenCalled();
+            expect(mockCredentials.create).not.toHaveBeenCalled();
+        });
+
+        it('does nothing when the account already has a passkey', async () => {
+            mockHttp.get.mockReturnValue(of({ hasPassword: true, passkeys: [{ id: '1' }] }));
+
+            await service.upgradeAfterPasswordSignIn();
+
+            expect(mockCredentials.create).not.toHaveBeenCalled();
+        });
+
+        it('stays silent when the browser declines', async () => {
+            mockCredentials.create.mockRejectedValue(new DOMException('declined', 'NotAllowedError'));
+
+            await expect(service.upgradeAfterPasswordSignIn()).resolves.toBeUndefined();
+            expect(mockHttp.post).not.toHaveBeenCalledWith('http://api/passkeys', expect.anything());
+        });
+
+        it('signals an unknown passkey for this site to the password manager', () => {
+            service.signalUnknownCredential('Cw');
+
+            expect(publicKeyCredential.signalUnknownCredential).toHaveBeenCalledWith({ rpId: 'uk-sf.co.uk', credentialId: 'Cw' });
+        });
+    });
 });
