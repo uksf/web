@@ -1,0 +1,80 @@
+// Generated from quill-table-up 3.6.0 dist CSS: every rem size converted to px at the 16px root it was designed for.
+// The site root is 10px, so the library's menus, tooltips and pickers would otherwise render at 62.5% size.
+// Regenerate if quill-table-up is upgraded.
+// prettier-ignore
+html {
+    .table-up-tooltip { padding: 4px 12px; border-radius: 4px; font-size: 12px; }
+    .table-up-button { --table-btn-border: 1px solid var(--table-btn-color-border); --table-btn-confirm-outline-focus-visible: 2px solid #a0cfff; height: 32px; padding: 8px 16px; border-radius: 4px; font-size: 14px; }
+    .table-up-button+.table-up-button { margin-left: 6px; }
+    .table-up-button.confirm:focus-visible { outline-offset: 1px; }
+    .table-up-dialog { --dialog-border: 1px solid var(--dialog-color-border); --dialog-boxshadow: 0 0 12px var(--dialog-color-boxshadow); }
+    .table-up-dialog__overlay { padding: 16px; }
+    .table-up-dialog__content { border-radius: 4px; font-size: 18px; }
+    .table-up-color-picker { width: 268px; padding: 8px; border-radius: 6px; box-shadow: 0 0 6px #b2b5b8; }
+    .table-up-color-picker__content { height: 188px; padding-top: 8px; }
+    .table-up-color-picker__selector { width: 230px; height: 150px; }
+    .table-up-color-picker__background-handle { border: 1px solid #fff; left: 230px; width: 10px; height: 10px; transform: translate(-5px,-5px); }
+    .table-up-color-picker__hue { width: 12px; height: 150px; margin-left: 240px; }
+    .table-up-color-picker__hue-handle { border: 1px solid #fff; box-shadow: 0 0 2px #0009; width: 16px; height: 10px; transform: translate(-2px,-5px); }
+    .table-up-color-picker__alpha { width: 230px; height: 12px; margin-top: 160px; background-size: 12px 12px; background-position: 0 0,6px 0,6px -6px,0 6px; }
+    .table-up-color-picker__alpha-handle { border: 1px solid #fff; box-shadow: 0 0 2px #0009; width: 10px; height: 16px; transform: translate(-5px,-2px); }
+    .table-up-color-picker__action { gap: 6px; padding-top: 8px; border-top: 1px solid #e9ecef; }
+    .table-up-color-picker__action-item { font-size: 12px; }
+    .table-up-color-picker__input { height: 22px; margin-left: 2px; padding: 2px 0 2px 4px; border: 1px solid #ced4da; border-radius: 4px; }
+    .table-up-tooltip .table-up-color-picker { width: 252px; padding: 8px 0; }
+    .table-up-resize-line__row { height: 1px; }
+    .table-up-resize-line__row::after, .table-up-resize-line__row::before { height: 8px; }
+    .table-up-resize-line__row::before { transform: translateY(-8px); }
+    .table-up-resize-line__col { width: 1px; }
+    .table-up-resize-line__col::after, .table-up-resize-line__col::before { width: 8px; }
+    .table-up-resize-line__col::before { transform: translateX(-8px); }
+    .table-up-resize-box.is-caption-bottom .table-up-resize-box__corner { border-bottom-width: 1px; }
+    .table-up-resize-box.is-align-right .table-up-resize-box__col-separator { left: -2px; }
+    .table-up-resize-box.is-align-right .table-up-resize-box__corner { border-right-width: 1px; }
+    .table-up-resize-box__col-header, .table-up-resize-box__row-header { border: 1px solid #ccc; }
+    .table-up-resize-box__col-separator { right: -2px; width: 2px; }
+    .table-up-resize-box__col-separator::after { right: -6px; }
+    .table-up-resize-box__col-separator::before { left: -6px; }
+    .table-up-resize-box__col-separator::after, .table-up-resize-box__col-separator::before { width: 8px; }
+    .table-up-resize-box__row-separator { bottom: -2px; height: 2px; }
+    .table-up-resize-box__row-separator::after { bottom: -6px; }
+    .table-up-resize-box__row-separator::before { top: -6px; }
+    .table-up-resize-box__row-separator::after, .table-up-resize-box__row-separator::before { height: 8px; }
+    .table-up-resize-box__corner { border: 1px solid #ccc; }
+    .table-up-drag__line.is-col { width: 2px; }
+    .table-up-drag__line.is-row { height: 2px; }
+    .table-up-drag__indicator { border: 1px solid #3f85ff; }
+    .table-up-drag__tip { margin-left: -20px; margin-top: -20px; padding-top: 20px; padding-left: 20px; }
+    .table-up-drag__tip-content { width: 100px; height: 24px; }
+    .table-up-scale__block { width: 12px; height: 12px; border: 1px solid grey; }
+    .table-up-scrollbar.is-vertical { top: 2px; bottom: 2px; left: -8px; width: 6px; }
+    .table-up-scrollbar.is-horizontal { bottom: 2px; left: 2px; right: 2px; height: 6px; }
+    .table-up-scrollbar__thumb { border-radius: 5px; }
+    .table-up-align, .table-up-menu { padding: 4px; border-radius: 6px; box-shadow: 0 0 8px rgba(0,0,0,.5); font-size: 14px; }
+    .table-up-align__item, .table-up-menu__item { padding: 4px; border-radius: 4px; }
+    .table-up-align__item.is-break, .table-up-menu__item.is-break { width: 1px; margin: 2px 4px; }
+    .table-up-align .icon, .table-up-menu .icon { font-size: 20px; }
+    .table-up-menu.is-contextmenu { padding: 4px 8px; max-height: 350px; }
+    .table-up-menu.is-contextmenu .table-up-menu__item { gap: 4px; }
+    .table-up-menu.is-contextmenu .is-break { height: 1px; margin: 4px 0; }
+    .table-up-align .icon { width: 20px; height: 20px; }
+    .table-up-color-map--used { margin-top: 4px; padding-top: 4px; border-top: 1px solid #ccc; }
+    .table-up-color-map__content-row { gap: 4px; }
+    .table-up-color-map__item { width: 14px; height: 14px; margin: 2px; border: 1px solid #a3a3a3; }
+    .table-up-color-map__btn { height: 20px; padding: 0 6px; }
+    .table-up-input__item { --input-height: 32px; --input-inner-height: calc(var(--input-height) - 2px); --input-boxshaow: 0 0 0 1px var(--input-color-boxshaow) inset; --input-boxshaow-focus: 0 0 0 1px var(--input-color-focus) inset; --input-boxshaow-error: 0 0 0 1px var(--input-color-error) inset; }
+    .table-up-input__item+.table-up-input__item { margin-top: 18px; }
+    .table-up-input__label { width: 80px; }
+    .table-up-input__input { padding: 1px 8px; border-radius: 4px; }
+    .table-up-input__input input { font-size: 14px; }
+    .table-up-input__error-tip { font-size: 12px; line-height: 16px; }
+    .table-up-select-box { --select-box-border: 1px solid var(--select-box-color-border); }
+    .table-up-select-box__block { width: 160px; }
+    .table-up-select-box__item { margin: 2px; height: 16px; width: 16px; }
+    .table-up-select-box__custom { padding: 8px; font-size: 16px; }
+    .table-up-creator { padding: 24px; }
+    .table-up-creator__control { margin-top: 16px; }
+    .table-up-creator__checkbox { margin-top: 4px; font-size: 12px; }
+    .table-up-creator__checkbox input { width: 18px; height: 18px; border: 1px solid var(--check-color); border-radius: 5px; margin-right: 10px; }
+    .table-up-creator__checkbox input:before { width: 10px; height: 10px; border-radius: 3px; }
+}
