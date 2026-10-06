@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { forkJoin } from 'rxjs';
 import { first } from 'rxjs/operators';
@@ -15,7 +15,7 @@ import { CampaignsService } from '../../services/campaigns.service';
     selector: 'app-operations-campaigns',
     templateUrl: './operations-campaigns.component.html',
     styleUrls: ['./operations-campaigns.component.scss'],
-    imports: [DefaultContentAreasComponent, FullContentAreaComponent, RouterLink, MatIcon, MatButton, NgxPermissionsModule]
+    imports: [DefaultContentAreasComponent, FullContentAreaComponent, RouterLink, MatIcon, MatButton, MatIconButton, NgxPermissionsModule]
 })
 export class OperationsCampaignsComponent {
     private campaignsService = inject(CampaignsService);

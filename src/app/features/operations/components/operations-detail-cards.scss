@@ -170,7 +170,15 @@
         }
     }
 
+    .op-hit {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+    }
+
     .op-actions {
+        position: relative;
+        z-index: 2;
         display: flex;
         align-items: center;
         gap: v.$spacing-8px;
@@ -191,9 +199,10 @@
         padding: 6px !important;
     }
 
-    .chev {
+    .open {
+        position: relative;
+        z-index: 2;
         color: th.fg-hint-text();
-        display: inline-flex;
     }
 }
 

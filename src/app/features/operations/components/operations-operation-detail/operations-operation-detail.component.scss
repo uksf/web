@@ -6,16 +6,4 @@
     &.complete::before {
         background: #6fb87a;
     }
-
-    // stretched native link; actions stack above so padding/gaps do not navigate
-    .op-hit {
-        position: absolute;
-        inset: 0;
-        z-index: 1;
-    }
-
-    .op-actions {
-        position: relative;
-        z-index: 2;
-    }
 }

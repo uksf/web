@@ -44,8 +44,9 @@
                     <div class="op-card" [class.scheduled]="dto.mission.status === CampaignMissionStatus.Scheduled" [class.complete]="dto.mission.status === CampaignMissionStatus.Complete">
                         <a
                             class="op-hit"
+                            tabindex="-1"
+                            aria-hidden="true"
                             [routerLink]="['/operations/campaigns', campaignId, 'operations', operationId, 'missions', dto.mission.id]"
-                            [attr.aria-label]="dto.mission.title"
                         ></a>
                         <span class="pill" [class.scheduled]="dto.mission.status === CampaignMissionStatus.Scheduled" [class.complete]="dto.mission.status === CampaignMissionStatus.Complete">
                             <span class="dot"></span>{{ dto.mission.status === CampaignMissionStatus.Complete ? 'Complete' : 'Scheduled' }}
@@ -87,7 +88,14 @@
                                 </ng-template>
                             }
                         </div>
-                        <mat-icon class="chev">chevron_right</mat-icon>
+                        <a
+                            mat-icon-button
+                            class="open"
+                            [routerLink]="['/operations/campaigns', campaignId, 'operations', operationId, 'missions', dto.mission.id]"
+                            [attr.aria-label]="'Open ' + dto.mission.title"
+                        >
+                            <mat-icon>chevron_right</mat-icon>
+                        </a>
                     </div>
                 } @empty {
                     <p class="empty">No missions</p>

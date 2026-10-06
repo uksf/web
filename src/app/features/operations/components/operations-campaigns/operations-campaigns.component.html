@@ -16,21 +16,23 @@
                 </div>
                 <div class="cards" [class.muted]="section.muted">
                     @for (campaign of section.items; track campaign.id) {
-                        <a
+                        <div
                             class="campaign-card"
-                            [routerLink]="[campaign.id]"
                             [class.current]="campaign.status === CampaignStatus.Current"
                             [class.upcoming]="campaign.status === CampaignStatus.Upcoming"
                             [class.past]="campaign.status === CampaignStatus.Past"
                         >
+                            <a class="card-hit" tabindex="-1" aria-hidden="true" [routerLink]="[campaign.id]"></a>
                             @if (theatre(campaign)) {
                                 <span class="theatre">{{ theatre(campaign) }}</span>
                             }
                             <div class="grow">
                                 <div class="title">{{ campaign.name }}</div>
                             </div>
-                            <mat-icon class="chev">chevron_right</mat-icon>
-                        </a>
+                            <a mat-icon-button class="open" [routerLink]="[campaign.id]" [attr.aria-label]="'Open ' + campaign.name">
+                                <mat-icon>chevron_right</mat-icon>
+                            </a>
+                        </div>
                     }
                 </div>
             </div>

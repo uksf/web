@@ -120,7 +120,15 @@
         font-size: 15px;
     }
 
-    .chev {
+    .card-hit {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+    }
+
+    .open {
+        position: relative;
+        z-index: 2;
         color: th.fg-hint-text();
     }
 }

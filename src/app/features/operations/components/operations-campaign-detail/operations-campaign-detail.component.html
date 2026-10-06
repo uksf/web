@@ -47,6 +47,7 @@
                         [class.upcoming]="operation.status === OperationStatus.Upcoming"
                         [class.past]="operation.status === OperationStatus.Past"
                     >
+                        <a class="op-hit" tabindex="-1" aria-hidden="true" [routerLink]="['/operations/campaigns', campaignId, 'operations', operation.id]"></a>
                         <span
                             class="pill"
                             [class.current]="operation.status === OperationStatus.Current"
@@ -55,9 +56,9 @@
                         >
                             <span class="dot"></span>{{ operationStatusLabel(operation) }}
                         </span>
-                        <a class="op-main" [routerLink]="['/operations/campaigns', campaignId, 'operations', operation.id]">
+                        <div class="op-main">
                             <div class="title">{{ operation.title }}</div>
-                        </a>
+                        </div>
                         <span class="spacer"></span>
                         <div class="op-actions">
                             <ng-template [ngxPermissionsOnly]="['COMMAND']">
@@ -67,7 +68,14 @@
                                 }
                             </ng-template>
                         </div>
-                        <mat-icon class="chev">chevron_right</mat-icon>
+                        <a
+                            mat-icon-button
+                            class="open"
+                            [routerLink]="['/operations/campaigns', campaignId, 'operations', operation.id]"
+                            [attr.aria-label]="'Open ' + operation.title"
+                        >
+                            <mat-icon>chevron_right</mat-icon>
+                        </a>
                     </div>
                 } @empty {
                     <p class="empty">No operations</p>
