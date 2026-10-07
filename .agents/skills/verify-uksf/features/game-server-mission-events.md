@@ -17,11 +17,11 @@ The UKSF Arma extension reports what happens on a game server. The API records e
 ## Driving it with HTTP replay
 
 1. Start a listener on `127.0.0.1:47999` that records every request. It stands in for the game, which receives API commands at `POST http://127.0.0.1:<X-Api-Port>/command`.
-2. Post each event with header `X-Api-Port: 47999`. Use port 47999 so that no configured game server matches it.
+2. Check that no `gameServers` record uses port 47999 (`verify-data gameserver-port 47999`), then post each event with header `X-Api-Port: 47999`. Each post must answer 202.
    `["mission_started",[["sessionId","verify-<run-id>"],["mission","verify_mission"],["map","VR"]]]`
-3. Poll `verify-data mission verify-<run-id>` until `missionStarted` is set. Then post `player_connected` with a dummy Steam id, and poll until the uid appears in `players`.
-4. Post `player_disconnected` and `mission_ended` with `duration` 42. Poll until `missionEnded` is set.
-5. Wait two seconds and check the listener. A mission with no NPCs pushes no commands.
+3. Poll `verify-data mission verify-<run-id>` until `missionStarted` is set. Then post `player_connected` with a dummy Steam id and the name Verify Agent, and poll until its presence entry has `connected`.
+4. Post `player_disconnected` and poll until that entry has `disconnected`. Post `mission_ended` with `duration` 42 and poll until `missionEnded` is set and `durationSeconds` is 42.
+5. Wait ten seconds and check the listener. A mission with no NPCs pushes no commands. The window covers only the time from `mission_started` to ten seconds after the end is visible.
 
 Evidence: every posted body and its HTTP status, each polled session state, and the commands the listener received, in `result.json`.
 

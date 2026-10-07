@@ -8,7 +8,7 @@ description: Drive the real UKSF website, API, and the API's Arma game-server su
 This skill starts its own UKSF API and web dev server, drives them the way a user or the Arma extension does, and keeps the evidence. It never drives an instance it did not start.
 
 - Web checkout: the repo that holds this skill (`UKSF_WEB_DIR` overrides it).
-- API checkout: `~/Workspace/uksf/api` (`UKSF_API_DIR` overrides it). It must hold the gitignored `UKSF.Api/appsettings.Development.json`, which points at the shared `devLocal` Mongo database.
+- API checkout: `~/Workspace/uksf/api` (`UKSF_API_DIR` overrides it). It must hold the gitignored `UKSF.Api/appsettings.Development.json`, which points at the shared `devLocal` Mongo database, and it must include API commit `a61e4070` or later, which keeps verify-mode logs out of Mongo. The doctor fails on an older API.
 - Run state and evidence: `~/.uksf-verify/runs/<run-id>/` (`UKSF_VERIFY_HOME` overrides the root).
 - Host: macOS (iultron). It needs the .NET 10 SDK in `~/.dotnet`, bun in `~/.bun/bin`, `node_modules` installed in the web checkout (`bun install`; a symlinked `node_modules` breaks Angular's CSS imports), and Google Chrome. Set `PLAYWRIGHT_CHROME_PATH` to use another Chrome build.
 
@@ -21,10 +21,12 @@ S=.agents/skills/verify-uksf/scripts
 $S/uksf-verify.sh up
 ```
 
-`up` refuses to start when a run is already active or when port 5500 or 4200 is in use. It builds the API checkout into `~/.uksf-verify/api-bin`, then starts:
+`up` takes the lock `$TMPDIR/uksf-verify.lock` atomically, so a second `up` refuses while a run is active, whatever its `UKSF_VERIFY_HOME`. It also refuses when port 5500 or 4200 is in use, or when an environment variable overrides API configuration (`appSettings__*`, `ConnectionStrings__*`, `Kestrel__*`, `ASPNETCORE_URLS`). The run id is `v<UTC timestamp>-<4 hex>`. It records a source id (commit, uncommitted diff, and untracked files) for both checkouts, builds the API into `<run>/api-bin`, then starts:
 
-- the API with `ASPNETCORE_ENVIRONMENT=Development`, `UKSF_VERIFY_MODE=1`, and `UKSF_VERIFY_EMAIL_DIR=<run>/email`. Verify mode runs no migrations, creates no scheduled jobs, and starts no Teamspeak, Discord, scheduler, queued builds, backups, game-server recovery, or NPC workers. Mail goes to `.eml` files in the run's `email` folder. The Discord client cannot connect in Development or verify mode.
-- the web dev server (`ng serve --port 4200`) in the web checkout.
+- the API with `ASPNETCORE_ENVIRONMENT=Development`, `UKSF_VERIFY_MODE=1`, and `UKSF_VERIFY_EMAIL_DIR=<run>/email`. Verify mode runs no migrations, creates no scheduled jobs or indexes, and starts no Teamspeak, Discord, scheduler, queued builds, backups, game-server recovery, or NPC workers. It writes its own logs to stdout as `verify-log {json}` lines in `<run>/api.log`, not to Mongo, and prints `verify mode: database <name> at <host>:<port>`. Mail goes to `.eml` files in the run's `email` folder. The Discord client cannot connect in Development or verify mode.
+- the web dev server (`ng serve --port 4200`) in its own process group, recorded at launch.
+
+If any step fails, `up` runs `down` before it exits.
 
 Ready signals: the API log line `Application started`, and HTTP 200 from `http://localhost:4200/`. A fresh `up` takes about 20 seconds with a warm build.
 
@@ -36,12 +38,12 @@ $S/uksf-verify.sh doctor
 
 Run it after `up`, and again whenever a result looks wrong. Every line must be `PASS`:
 
-- the API process is alive and holds port 5500, and the web process holds port 4200 and serves this web checkout;
-- the API runs the commit that is checked out;
+- this run owns the lock, the API process (by PID and start time) holds port 5500, and the run's web process group holds port 4200 and serves this web checkout;
+- the API and web source ids still match the ones recorded at `up`;
 - the API log shows both verify-mode skip lines and no Discord connection;
-- `GET /accounts` without a token answers 401;
-- the database is `devLocal` and answers a ping;
-- every outbound API connection goes to the Mongo port.
+- `GET /accounts` without a token is rejected with 401 (the sign-up drive proves that a valid sign-in works);
+- the database the API itself reports is `devLocal` on the server named in the settings file;
+- in a snapshot of the API's connections, every remote end is a Mongo server address, and every loopback end is this run's port 5500 or 4200.
 
 If a line fails, run `down`, fix the cause, and start again. Do not drive a run that failed its doctor.
 
@@ -56,9 +58,11 @@ node $S/drive-signup.mjs "$R" "$ID" "$PWD/$S"
 node $S/drive-mission.mjs "$R" "$ID" "$PWD/$S"
 ```
 
+Before it writes anything, each driver runs `uksf-verify.sh owned <run-id>`, refuses an evidence folder that already exists, and checks that its own records do not exist yet.
+
 - `drive-signup.mjs` uses Playwright against the web UI. Run it from the web checkout root so it loads the repo's Playwright.
-- `drive-mission.mjs` replays game-server events into `POST /gameservers/events` exactly as the Arma extension sends them, and runs a fake game listener on port 47999 (`UKSF_VERIFY_LISTENER_PORT`) that records every command the API pushes back.
-- `verify-data.cs` reads the run's records from `devLocal`: `dotnet run $S/verify-data.cs -- $UKSF_API_DIR account <email>` or `mission <session-id>`.
+- `drive-mission.mjs` replays game-server events into `POST /gameservers/events` exactly as the Arma extension sends them, and runs a fake game listener on port 47999 (`UKSF_VERIFY_LISTENER_PORT`) that records every command the API pushes back. It refuses a port that any `gameServers` record in `devLocal` uses.
+- `verify-data.cs` reads the run's records from `devLocal`: `dotnet run $S/verify-data.cs -- $UKSF_API_DIR account <email>`, `mission <session-id>`, or `gameserver-port <port>`.
 
 For a feature with no driver yet, follow its recipe in `features/` and save the same kind of evidence by hand.
 
@@ -74,7 +78,7 @@ Evidence stays in `<run>/evidence/` after cleanup. Quote its path in your report
 ## Data
 
 - `devLocal` holds copies of the real units, ranks, and accounts. A run may read them as-is.
-- A run creates only records tagged with its run id: the account `verify+<run-id>@uksf-verify.invalid` with password `Verify-<run-id>-pw`, and the mission session `verify-<run-id>`.
+- A run creates only records tagged with its run id: the account `verify+<run-id>@uksf-verify.invalid` with password `Verify-<run-id>-pw` and its confirmation code, and the mission session `verify-<run-id>` with any player stats for it. Verify mode writes no log records to Mongo.
 - Never change shared records, feature flags, or variables in `devLocal`.
 
 ## Cleanup
@@ -83,7 +87,7 @@ Evidence stays in `<run>/evidence/` after cleanup. Quote its path in your report
 $S/uksf-verify.sh down
 ```
 
-`down` stops the API process and the web server's process group by the PIDs it recorded, never by process name. It then removes the run's tagged records from `devLocal` (accounts, confirmation codes, audit logs, mission sessions, player mission stats) and writes the counts to `<run>/evidence/cleanup.json`. Run `down` after every attempt, including failed ones.
+`down` stops the API only when its PID still has the recorded start time, and stops the web server's recorded process group only when a member of that group serves this web checkout. It never matches processes by name. It then removes the run's tagged records from `devLocal` (the account, its confirmation codes, the mission session, and its player mission stats), writes the counts to `<run>/evidence/cleanup.json`, deletes `<run>/api-bin`, and releases the lock. Run `down` after every attempt, including failed ones.
 
 ## Arma beyond event replay
 

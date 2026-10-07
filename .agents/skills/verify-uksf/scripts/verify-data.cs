@@ -10,7 +10,7 @@ const string RequiredDatabase = "devLocal";
 
 if (args.Length < 2 || (args[1] != "doctor" && args.Length < 3))
 {
-    Console.Error.WriteLine("usage: verify-data <api-checkout> doctor|account <email>|mission <session-id>|cleanup <run-id>");
+    Console.Error.WriteLine("usage: verify-data <api-checkout> doctor|account <email>|mission <session-id>|gameserver-port <port>|cleanup <run-id>");
     return 2;
 }
 
@@ -27,7 +27,6 @@ if (databaseName != RequiredDatabase)
 var database = new MongoClient(connectionString).GetDatabase(databaseName);
 var accounts = database.GetCollection<BsonDocument>("accounts");
 var codes = database.GetCollection<BsonDocument>("confirmationCodes");
-var auditLogs = database.GetCollection<BsonDocument>("auditLogs");
 var missionSessions = database.GetCollection<BsonDocument>("missionSessions");
 var playerMissionStats = database.GetCollection<BsonDocument>("playerMissionStats");
 
@@ -36,7 +35,8 @@ switch (args[1])
     case "doctor":
         await database.RunCommandAsync<BsonDocument>(new BsonDocument("ping", 1));
         var server = MongoUrl.Create(connectionString).Server;
-        Console.WriteLine($"database={databaseName} port={server.Port} reachable");
+        var addresses = await System.Net.Dns.GetHostAddressesAsync(server.Host);
+        Console.WriteLine($"database={databaseName} server={server.Host}:{server.Port} ips={string.Join(",", addresses.Select(x => x.ToString()))} reachable");
         return 0;
 
     case "account":
@@ -53,6 +53,11 @@ switch (args[1])
         Console.WriteLine(JsonSerializer.Serialize(new { found = true, id = account["_id"].ToString(), email = args[2], membershipState = stateName }));
         return 0;
 
+    case "gameserver-port":
+        var servers = await database.GetCollection<BsonDocument>("gameServers").CountDocumentsAsync(Builders<BsonDocument>.Filter.Eq("apiPort", int.Parse(args[2])));
+        Console.WriteLine(JsonSerializer.Serialize(new { apiPort = int.Parse(args[2]), configuredServers = servers }));
+        return servers == 0 ? 0 : 1;
+
     case "mission":
         var session = await missionSessions.Find(Builders<BsonDocument>.Filter.Eq("sessionId", args[2])).FirstOrDefaultAsync();
         if (session is null)
@@ -61,7 +66,7 @@ switch (args[1])
             return 1;
         }
 
-        var presence = session.GetValue("playerPresence", new BsonArray()).AsBsonArray;
+        var presence = session.GetValue("playerPresence", new BsonArray()).AsBsonArray.Select(x => x.AsBsonDocument).ToList();
         Console.WriteLine(JsonSerializer.Serialize(new
         {
             found = true,
@@ -71,39 +76,37 @@ switch (args[1])
             missionStarted = session.GetValue("missionStarted", BsonNull.Value).ToString(),
             missionEnded = session.GetValue("missionEnded", BsonNull.Value).ToString(),
             durationSeconds = session.GetValue("durationSeconds", BsonNull.Value).ToString(),
-            players = presence.Select(x => x.AsBsonDocument.GetValue("uid", BsonNull.Value).ToString()).ToArray()
+            players = presence.Select(x => x.GetValue("uid", BsonNull.Value).ToString()).ToArray(),
+            presence = presence.Select(x => new
+            {
+                uid = x.GetValue("uid", BsonNull.Value).ToString(),
+                name = x.GetValue("name", BsonNull.Value).ToString(),
+                connected = x.GetValue("connected", BsonNull.Value).ToString(),
+                disconnected = x.GetValue("disconnected", BsonNull.Value).ToString()
+            }).ToArray()
         }));
         return 0;
 
     case "cleanup":
         var runId = args[2];
-        if (!Regex.IsMatch(runId, "^v[0-9]{14}$"))
+        if (!Regex.IsMatch(runId, "^v[0-9]{14}-[0-9a-f]{4}$"))
         {
             Console.Error.WriteLine($"refusing: '{runId}' is not a verify run id");
             return 4;
         }
 
         var email = $"verify+{runId}@uksf-verify.invalid";
-        var runAccounts = await accounts.Find(Builders<BsonDocument>.Filter.Eq("email", email)).ToListAsync();
-        var accountIds = runAccounts.Select(x => x["_id"].ToString()!).ToList();
         var removedAccounts = await accounts.DeleteManyAsync(Builders<BsonDocument>.Filter.Eq("email", email));
         var removedCodes = await codes.DeleteManyAsync(Builders<BsonDocument>.Filter.Eq("value", email));
-        var auditFilter = Builders<BsonDocument>.Filter.Or(
-            Builders<BsonDocument>.Filter.Regex("message", new BsonRegularExpression(Regex.Escape(email))),
-            Builders<BsonDocument>.Filter.In("who", accountIds),
-            Builders<BsonDocument>.Filter.In("message", accountIds.Select(id => new BsonRegularExpression(Regex.Escape(id))))
-        );
-        var removedAudit = await auditLogs.DeleteManyAsync(auditFilter);
         var sessionFilter = Builders<BsonDocument>.Filter.Eq("sessionId", $"verify-{runId}");
         var removedSessions = await missionSessions.DeleteManyAsync(sessionFilter);
-        var removedPlayerStats = await playerMissionStats.DeleteManyAsync(sessionFilter);
+        var removedPlayerStats = await playerMissionStats.DeleteManyAsync(Builders<BsonDocument>.Filter.Eq("missionSessionId", $"verify-{runId}"));
         Console.WriteLine(JsonSerializer.Serialize(new
         {
             runId,
             email,
             accounts = removedAccounts.DeletedCount,
             confirmationCodes = removedCodes.DeletedCount,
-            auditLogs = removedAudit.DeletedCount,
             missionSessions = removedSessions.DeletedCount,
             playerMissionStats = removedPlayerStats.DeletedCount
         }));

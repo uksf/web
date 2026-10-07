@@ -1,23 +1,21 @@
 import { createServer } from "node:http";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { execFileSync } from "node:child_process";
+import { data, driverArguments, requireFreshEvidence, requireOwned } from "./verify-lib.mjs";
 
-const [runDir, runId, scripts] = process.argv.slice(2);
-if (!runDir || !runId || !scripts) {
-  console.error("usage: drive-mission.mjs <run-dir> <run-id> <scripts-dir>");
-  process.exit(2);
-}
-
+const { runDir, runId, scripts } = driverArguments("drive-mission.mjs");
 const LISTENER_PORT = Number(process.env.UKSF_VERIFY_LISTENER_PORT ?? 47999);
 const API = "http://127.0.0.1:5500/gameservers/events";
+const STEP_SECONDS = 180;
+const QUIET_SECONDS = 10;
 const evidence = join(runDir, "evidence", "mission");
 const sessionId = `verify-${runId}`;
 const uid = "76561190000000001";
 const sent = [];
 const commands = [];
 const otherRequests = [];
-mkdirSync(evidence, { recursive: true });
+const lookupErrors = [];
+const timings = {};
 
 function sqf(value) {
   if (Array.isArray(value)) return `[${value.map(sqf).join(",")}]`;
@@ -31,36 +29,42 @@ async function send(type, pairs) {
     method: "POST",
     headers: { "Content-Type": "text/plain", "X-Api-Port": String(LISTENER_PORT), "X-Enqueued-At": new Date().toISOString() },
     body,
+    signal: AbortSignal.timeout(30_000),
   });
   sent.push({ type, body, status: response.status });
-  if (response.status >= 300) throw new Error(`${type} answered ${response.status}: ${await response.text()}`);
+  if (response.status !== 202) throw new Error(`${type} answered ${response.status}, expected 202: ${await response.text()}`);
 }
-
-function mission() {
-  const output = execFileSync("dotnet", ["run", join(scripts, "verify-data.cs"), "--", process.env.UKSF_API_DIR, "mission", sessionId], { encoding: "utf8" });
-  return JSON.parse(output.trim().split("\n").pop());
-}
-
-const timings = {};
 
 async function until(description, predicate) {
   const startedAt = Date.now();
-  const deadline = startedAt + 180_000;
+  const deadline = startedAt + STEP_SECONDS * 1000;
   let last;
   while (Date.now() < deadline) {
-    try {
-      last = mission();
-    } catch {
-      last = { found: false };
-    }
-    if (predicate(last)) {
-      timings[description] = Math.round((Date.now() - startedAt) / 1000);
-      return last;
+    const lookup = data(scripts, ["mission", sessionId], deadline - Date.now());
+    if (lookup.ok) {
+      last = lookup.value;
+      if (last.found && predicate(last)) {
+        timings[description] = Math.round((Date.now() - startedAt) / 1000);
+        return last;
+      }
+    } else {
+      lookupErrors.push({ at: new Date().toISOString(), step: description, error: lookup.error });
     }
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
-  throw new Error(`timed out waiting for ${description}; last state ${JSON.stringify(last)}`);
+  throw new Error(`no ${description} within ${STEP_SECONDS}s; last state ${JSON.stringify(last)}`);
 }
+
+const isSet = (value) => typeof value === "string" && value !== "BsonNull" && value.length > 0;
+const ourPresence = (state) => state.presence?.find((entry) => entry.uid === uid);
+
+requireFreshEvidence(evidence);
+requireOwned(scripts, runId);
+const port = data(scripts, ["gameserver-port", String(LISTENER_PORT)], 60_000);
+if (!port.ok || port.value.configuredServers !== 0) throw new Error(`refusing: port ${LISTENER_PORT} is configured for a game server in devLocal or could not be checked (${port.error ?? JSON.stringify(port.value)})`);
+const existing = data(scripts, ["mission", sessionId], 60_000);
+if (!existing.ok || existing.value.found) throw new Error(`refusing: mission session ${sessionId} already exists or could not be checked`);
+mkdirSync(evidence, { recursive: true });
 
 const listener = createServer((request, response) => {
   let body = "";
@@ -74,14 +78,17 @@ const listener = createServer((request, response) => {
 await new Promise((resolve) => listener.listen(LISTENER_PORT, "127.0.0.1", resolve));
 
 try {
+  requireOwned(scripts, runId);
   await send("mission_started", { sessionId, mission: "verify_mission", map: "VR" });
-  const started = await until("the mission session", (state) => state.found && state.missionStarted !== "BsonNull");
+  const started = await until("mission start", (state) => isSet(state.missionStarted));
   await send("player_connected", { sessionId, uid, name: "Verify Agent" });
-  const joined = await until("the player presence", (state) => state.players?.includes(uid));
+  const joined = await until("player connection", (state) => isSet(ourPresence(state)?.connected));
   await send("player_disconnected", { sessionId, uid });
+  const left = await until("player disconnection", (state) => isSet(ourPresence(state)?.disconnected));
   await send("mission_ended", { sessionId, duration: 42 });
-  const ended = await until("the mission end", (state) => state.missionEnded !== "BsonNull");
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+  const ended = await until("mission end", (state) => isSet(state.missionEnded) && state.durationSeconds === "42");
+  await new Promise((resolve) => setTimeout(resolve, QUIET_SECONDS * 1000));
+  const presence = ourPresence(ended);
   const result = {
     runId,
     sessionId,
@@ -89,17 +96,20 @@ try {
     sent,
     started,
     joined,
+    left,
     ended,
     secondsUntilVisible: timings,
+    commandWindowSeconds: `from mission_started until ${QUIET_SECONDS}s after the mission end was visible`,
     commandsPushedToGame: commands,
     otherListenerRequests: otherRequests,
-    pass: started.mission === "verify_mission" && joined.players.includes(uid) && ended.durationSeconds === "42" && commands.length === 0,
+    lookupErrors,
+    pass: started.mission === "verify_mission" && started.map === "VR" && presence?.name === "Verify Agent" && isSet(presence?.disconnected) && ended.durationSeconds === "42" && commands.length === 0,
   };
   writeFileSync(join(evidence, "result.json"), JSON.stringify(result, null, 2));
-  console.log(JSON.stringify({ pass: result.pass, sessionId, secondsUntilVisible: timings, durationSeconds: ended.durationSeconds, players: ended.players, commandsPushedToGame: commands.length, evidence }));
+  console.log(JSON.stringify({ pass: result.pass, sessionId, secondsUntilVisible: timings, commandsPushedToGame: commands.length, evidence }));
   process.exitCode = result.pass ? 0 : 1;
 } catch (error) {
-  writeFileSync(join(evidence, "result.json"), JSON.stringify({ runId, sessionId, sent, commandsPushedToGame: commands, pass: false, error: String(error) }, null, 2));
+  writeFileSync(join(evidence, "result.json"), JSON.stringify({ runId, sessionId, sent, secondsUntilVisible: timings, commandsPushedToGame: commands, otherListenerRequests: otherRequests, lookupErrors, pass: false, error: String(error) }, null, 2));
   console.error(String(error));
   process.exitCode = 1;
 } finally {

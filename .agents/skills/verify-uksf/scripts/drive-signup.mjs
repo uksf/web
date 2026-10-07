@@ -1,17 +1,13 @@
-import { readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { execFileSync } from "node:child_process";
 import { createRequire } from "node:module";
+import { data, driverArguments, requireFreshEvidence, requireOwned } from "./verify-lib.mjs";
 
-const [runDir, runId, scripts] = process.argv.slice(2);
-if (!runDir || !runId || !scripts) {
-  console.error("usage: drive-signup.mjs <run-dir> <run-id> <scripts-dir>");
-  process.exit(2);
-}
-
+const { runDir, runId, scripts } = driverArguments("drive-signup.mjs");
 const require = createRequire(join(process.cwd(), "package.json"));
 const { chromium } = require("playwright");
 
+const WEB = "http://localhost:4200";
 const evidence = join(runDir, "evidence", "signup");
 const emailDir = join(runDir, "email");
 const email = `verify+${runId}@uksf-verify.invalid`;
@@ -36,12 +32,17 @@ function emailBody(raw) {
 
 async function confirmationCode() {
   const deadline = Date.now() + 30_000;
+  const recipient = new RegExp(`^To:.*${email.replace(/[+.]/g, "\\$&")}`, "im");
   while (Date.now() < deadline) {
-    for (const file of readdirSync(emailDir).filter((name) => name.endsWith(".eml"))) {
-      const raw = readFileSync(join(emailDir, file), "utf8");
-      if (!new RegExp(`^To:.*${email.replace(/[+.]/g, "\\$&")}`, "im").test(raw)) continue;
+    const messages = readdirSync(emailDir)
+      .filter((name) => name.endsWith(".eml"))
+      .map((name) => ({ name, modified: statSync(join(emailDir, name)).mtimeMs }))
+      .sort((a, b) => b.modified - a.modified);
+    for (const { name } of messages) {
+      const raw = readFileSync(join(emailDir, name), "utf8");
+      if (!recipient.test(raw)) continue;
       const code = emailBody(raw).match(/\b[0-9a-f]{24}\b/);
-      if (code) return { code: code[0], file };
+      if (code) return { code: code[0], file: join(emailDir, name) };
     }
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
@@ -49,22 +50,26 @@ async function confirmationCode() {
 }
 
 function account() {
-  const output = execFileSync("dotnet", ["run", join(scripts, "verify-data.cs"), "--", process.env.UKSF_API_DIR, "account", email], { encoding: "utf8" });
-  return JSON.parse(output.trim().split("\n").pop());
+  const lookup = data(scripts, ["account", email], 60_000);
+  if (!lookup.ok) throw new Error(`account lookup failed: ${lookup.error}`);
+  return lookup.value;
 }
 
-execFileSync("mkdir", ["-p", evidence]);
+requireFreshEvidence(evidence);
+requireOwned(scripts, runId);
+if (account().found) throw new Error(`refusing: ${email} already exists in devLocal`);
+mkdirSync(evidence, { recursive: true });
+
 const chromePath = process.env.PLAYWRIGHT_CHROME_PATH ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const browser = await chromium.launch({ executablePath: chromePath, args: ["--headless=new", "--no-first-run", "--no-default-browser-check"] });
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
 activePage = page;
 try {
-  await page.goto("http://localhost:4200/application");
+  await page.goto(`${WEB}/application`);
   await page.getByText("Application to join UKSF").waitFor();
   await shot(page, "information");
 
   await page.locator("app-application-info app-button", { hasText: "Next" }).last().click();
-  await page.getByText("Use a password instead").waitFor();
   await page.getByText("Use a password instead").click();
   await page.locator("app-application-identity input[type=email]").fill(email);
   const passwords = page.locator('app-application-identity input[autocomplete="new-password"]');
@@ -81,6 +86,7 @@ try {
   await page.locator("mat-option", { hasText: "United Kingdom" }).first().click();
   await shot(page, "identity-filled");
 
+  requireOwned(scripts, runId);
   await page.locator("app-application-identity app-button", { hasText: "Next" }).click();
   await page.getByLabel("Enter confirmation code").waitFor({ timeout: 30_000 });
   await shot(page, "email-confirmation");
@@ -95,7 +101,7 @@ try {
   const fresh = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const signIn = await fresh.newPage();
   activePage = signIn;
-  await signIn.goto("http://localhost:4200/login");
+  await signIn.goto(`${WEB}/login`);
   await signIn.locator("app-login input[type=email]").fill(email);
   await signIn.locator("app-login input[type=password]").fill(password);
   await signIn.locator("app-login app-button").filter({ hasText: /^\s*Sign in\s*$/ }).click();
@@ -108,7 +114,7 @@ try {
   const result = {
     runId,
     email,
-    emailFile: join(emailDir, file),
+    emailFile: file,
     accountAfterCreate: before,
     accountAfterCode: after,
     signedInAs: signedInAs ? "Agent.V" : null,
