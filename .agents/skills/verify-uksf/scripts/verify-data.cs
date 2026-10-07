@@ -10,7 +10,7 @@ const string RequiredDatabase = "devLocal";
 
 if (args.Length < 2 || (args[1] != "doctor" && args.Length < 3))
 {
-    Console.Error.WriteLine("usage: verify-data <api-checkout> doctor|account <email>|mission <session-id>|gameserver-port <port>|cleanup <run-id>");
+    Console.Error.WriteLine("usage: verify-data <api-checkout> doctor|account <email>|mission <session-id>|gameserver-port <port>|cleanup <run-id> account|mission...");
     return 2;
 }
 
@@ -96,20 +96,29 @@ switch (args[1])
         }
 
         var email = $"verify+{runId}@uksf-verify.invalid";
-        var removedAccounts = await accounts.DeleteManyAsync(Builders<BsonDocument>.Filter.Eq("email", email));
-        var removedCodes = await codes.DeleteManyAsync(Builders<BsonDocument>.Filter.Eq("value", email));
-        var sessionFilter = Builders<BsonDocument>.Filter.Eq("sessionId", $"verify-{runId}");
-        var removedSessions = await missionSessions.DeleteManyAsync(sessionFilter);
-        var removedPlayerStats = await playerMissionStats.DeleteManyAsync(Builders<BsonDocument>.Filter.Eq("missionSessionId", $"verify-{runId}"));
-        Console.WriteLine(JsonSerializer.Serialize(new
+        var kinds = args.Skip(3).ToHashSet();
+        var unknownKinds = kinds.Except(["account", "mission"]).ToList();
+        if (kinds.Count == 0 || unknownKinds.Count > 0)
         {
-            runId,
-            email,
-            accounts = removedAccounts.DeletedCount,
-            confirmationCodes = removedCodes.DeletedCount,
-            missionSessions = removedSessions.DeletedCount,
-            playerMissionStats = removedPlayerStats.DeletedCount
-        }));
+            Console.Error.WriteLine($"refusing: cleanup needs record kinds 'account' or 'mission' from the run's manifest, got '{string.Join(" ", args.Skip(3))}'");
+            return 4;
+        }
+
+        var sessionId = $"verify-{runId}";
+        var removed = new Dictionary<string, long>();
+        if (kinds.Contains("account"))
+        {
+            removed["accounts"] = (await accounts.DeleteManyAsync(Builders<BsonDocument>.Filter.Eq("email", email))).DeletedCount;
+            removed["confirmationCodes"] = (await codes.DeleteManyAsync(Builders<BsonDocument>.Filter.Eq("value", email))).DeletedCount;
+        }
+
+        if (kinds.Contains("mission"))
+        {
+            removed["missionSessions"] = (await missionSessions.DeleteManyAsync(Builders<BsonDocument>.Filter.Eq("sessionId", sessionId))).DeletedCount;
+            removed["playerMissionStats"] = (await playerMissionStats.DeleteManyAsync(Builders<BsonDocument>.Filter.Eq("missionSessionId", sessionId))).DeletedCount;
+        }
+
+        Console.WriteLine(JsonSerializer.Serialize(new { runId, removed }));
         return 0;
 
     default:

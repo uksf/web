@@ -1,7 +1,7 @@
 import { createServer } from "node:http";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { data, driverArguments, requireFreshEvidence, requireOwned } from "./verify-lib.mjs";
+import { data as lookup, driverArguments, holdLease, recordOwnership, requireOwned, reserveEvidence } from "./verify-lib.mjs";
 
 const { runDir, runId, scripts } = driverArguments("drive-mission.mjs");
 const LISTENER_PORT = Number(process.env.UKSF_VERIFY_LISTENER_PORT ?? 47999);
@@ -24,6 +24,7 @@ function sqf(value) {
 }
 
 async function send(type, pairs) {
+  requireOwned(scripts, runId);
   const body = sqf([type, Object.entries(pairs)]);
   const response = await fetch(API, {
     method: "POST",
@@ -40,15 +41,15 @@ async function until(description, predicate) {
   const deadline = startedAt + STEP_SECONDS * 1000;
   let last;
   while (Date.now() < deadline) {
-    const lookup = data(scripts, ["mission", sessionId], deadline - Date.now());
-    if (lookup.ok) {
-      last = lookup.value;
+    const found = lookup(runDir, scripts, ["mission", sessionId], deadline - Date.now());
+    if (found.ok) {
+      last = found.value;
       if (last.found && predicate(last)) {
         timings[description] = Math.round((Date.now() - startedAt) / 1000);
         return last;
       }
     } else {
-      lookupErrors.push({ at: new Date().toISOString(), step: description, error: lookup.error });
+      lookupErrors.push({ at: new Date().toISOString(), step: description, error: found.error });
     }
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
@@ -58,13 +59,14 @@ async function until(description, predicate) {
 const isSet = (value) => typeof value === "string" && value !== "BsonNull" && value.length > 0;
 const ourPresence = (state) => state.presence?.find((entry) => entry.uid === uid);
 
-requireFreshEvidence(evidence);
+holdLease(runDir);
+reserveEvidence(evidence);
 requireOwned(scripts, runId);
-const port = data(scripts, ["gameserver-port", String(LISTENER_PORT)], 60_000);
+const port = lookup(runDir, scripts, ["gameserver-port", String(LISTENER_PORT)], 60_000);
 if (!port.ok || port.value.configuredServers !== 0) throw new Error(`refusing: port ${LISTENER_PORT} is configured for a game server in devLocal or could not be checked (${port.error ?? JSON.stringify(port.value)})`);
-const existing = data(scripts, ["mission", sessionId], 60_000);
+const existing = lookup(runDir, scripts, ["mission", sessionId], 60_000);
 if (!existing.ok || existing.value.found) throw new Error(`refusing: mission session ${sessionId} already exists or could not be checked`);
-mkdirSync(evidence, { recursive: true });
+recordOwnership(runDir, "mission");
 
 const listener = createServer((request, response) => {
   let body = "";
@@ -78,7 +80,6 @@ const listener = createServer((request, response) => {
 await new Promise((resolve) => listener.listen(LISTENER_PORT, "127.0.0.1", resolve));
 
 try {
-  requireOwned(scripts, runId);
   await send("mission_started", { sessionId, mission: "verify_mission", map: "VR" });
   const started = await until("mission start", (state) => isSet(state.missionStarted));
   await send("player_connected", { sessionId, uid, name: "Verify Agent" });

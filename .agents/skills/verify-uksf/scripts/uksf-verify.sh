@@ -2,9 +2,10 @@
 set -Eeuo pipefail
 
 SCRIPTS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-WEB_DIR="${UKSF_WEB_DIR:-$(git -C "$SCRIPTS" rev-parse --show-toplevel)}"
-API_DIR="${UKSF_API_DIR:-$HOME/Workspace/uksf/api}"
+WEB_DIR="$(cd "${UKSF_WEB_DIR:-$(git -C "$SCRIPTS" rev-parse --show-toplevel)}" && pwd -P)"
 VERIFY_HOME="${UKSF_VERIFY_HOME:-$HOME/.uksf-verify}"
+mkdir -p "$VERIFY_HOME"
+VERIFY_HOME="$(cd "$VERIFY_HOME" && pwd -P)"
 LOCK="${TMPDIR:-/tmp}/uksf-verify.lock"
 API_PORT=5500
 WEB_PORT=4200
@@ -12,8 +13,12 @@ export DOTNET_ROOT="${DOTNET_ROOT:-$HOME/.dotnet}"
 export PATH="$DOTNET_ROOT:$HOME/.bun/bin:$PATH"
 
 current_run() {
-  [[ -f "$VERIFY_HOME/current" ]] || { echo "no verify run is active" >&2; exit 1; }
+  [[ -f "$VERIFY_HOME/current" ]] || { echo "no verify run is active in $VERIFY_HOME" >&2; exit 1; }
   cat "$VERIFY_HOME/current"
+}
+
+run_dir() {
+  echo "$VERIFY_HOME/runs/$1"
 }
 
 listener() {
@@ -24,29 +29,25 @@ started_at() {
   ps -o lstart= -p "$1" 2>/dev/null | tr -s ' ' || true
 }
 
+same_process() {
+  [[ -n "$(started_at "$1")" && "$(started_at "$1")" == "$2" ]]
+}
+
 cwd_of() {
   lsof -nP -a -p "$1" -d cwd 2>/dev/null | awk 'NR > 1 {print $NF}'
 }
 
-pid_gone() {
-  ! kill -0 "$1" 2>/dev/null
-}
-
-group_gone() {
-  [[ -z "$(group_members "$1")" ]]
-}
-
-group_members() {
-  ps -axo pid=,pgid= | awk -v group="$1" '$2 == group {print $1}'
-}
-
 source_id() {
-  local repo="$1"
-  {
-    git -C "$repo" rev-parse HEAD
-    git -C "$repo" diff HEAD
-    git -C "$repo" ls-files -o --exclude-standard -z | (cd "$repo" && xargs -0 shasum 2>/dev/null) || true
-  } | shasum | cut -c1-16
+  local repo="$1" index
+  index="$(mktemp)"
+  cp "$(git -C "$repo" rev-parse --absolute-git-dir)/index" "$index"
+  GIT_INDEX_FILE="$index" git -C "$repo" add -A
+  GIT_INDEX_FILE="$index" git -C "$repo" write-tree
+  rm -f "$index"
+}
+
+settings_hash() {
+  shasum "$1/UKSF.Api/appsettings.Development.json" | cut -c1-16
 }
 
 wait_for() {
@@ -74,37 +75,40 @@ web_ready() {
 }
 
 data() {
-  dotnet run "$SCRIPTS/verify-data.cs" -- "$API_DIR" "$@" 2>/dev/null
+  local dir="$1"
+  shift
+  dotnet run "$SCRIPTS/verify-data.cs" -- "$(cat "$dir/api-dir")" "$@" 2>/dev/null
 }
 
 up() {
-  mkdir "$LOCK" 2>/dev/null || { echo "refusing: another verify run holds $LOCK ($(cat "$LOCK/run" 2>/dev/null)); run '$0 down' first" >&2; exit 1; }
+  local api_dir
+  api_dir="$(cd "${UKSF_API_DIR:-$HOME/Workspace/uksf/api}" && pwd -P)"
+  mkdir "$LOCK" 2>/dev/null || { echo "refusing: another verify run holds $LOCK ($(cat "$LOCK/run" 2>/dev/null)); run '$0 down' with its UKSF_VERIFY_HOME ($(cat "$LOCK/home" 2>/dev/null))" >&2; exit 1; }
   local run dir
   run="v$(date -u +%Y%m%d%H%M%S)-$(openssl rand -hex 2)"
-  dir="$VERIFY_HOME/runs/$run"
+  dir="$(run_dir "$run")"
   echo "$run" > "$LOCK/run"
+  echo "$VERIFY_HOME" > "$LOCK/home"
+  mkdir -p "$dir/email" "$dir/evidence" "$dir/drivers"
+  echo "$api_dir" > "$dir/api-dir"
+  echo "$run" > "$VERIFY_HOME/current"
   trap 'echo "up failed; cleaning up run '"$run"'" >&2; down' ERR
   for port in $API_PORT $WEB_PORT; do
-    [[ -z "$(listener "$port")" ]] || { echo "refusing: port $port is in use by pid $(listener "$port"); this skill drives only instances it starts" >&2; rmdir_lock; exit 1; }
+    [[ -z "$(listener "$port")" ]] || { echo "refusing: port $port is in use by pid $(listener "$port"); this skill drives only instances it starts" >&2; false; }
   done
   if env | grep -qiE '^(appSettings|connectionStrings|Kestrel|ASPNETCORE_URLS)'; then
-    echo "refusing: an environment variable overrides API configuration; unset it" >&2; rmdir_lock; exit 1
+    echo "refusing: an environment variable overrides API configuration; unset it" >&2
+    false
   fi
-  [[ -f "$API_DIR/UKSF.Api/appsettings.Development.json" ]] || { echo "missing $API_DIR/UKSF.Api/appsettings.Development.json" >&2; rmdir_lock; exit 1; }
-
-  mkdir -p "$dir/email" "$dir/evidence"
-  mkdir -p "$VERIFY_HOME"
-  echo "$run" > "$VERIFY_HOME/current"
-  source_id "$API_DIR" > "$dir/api-source"
+  settings_hash "$api_dir" > "$dir/api-settings"
+  source_id "$api_dir" > "$dir/api-source"
   source_id "$WEB_DIR" > "$dir/web-source"
-  git -C "$API_DIR" rev-parse HEAD > "$dir/api-commit"
-  git -C "$WEB_DIR" rev-parse HEAD > "$dir/web-commit"
 
-  echo "building the API at $(cut -c1-8 "$dir/api-commit") (source $(cat "$dir/api-source"))"
-  dotnet build "$API_DIR/UKSF.Api/UKSF.Api.csproj" -c Debug -o "$dir/api-bin" -v quiet -nologo > "$dir/api-build.log" 2>&1
+  echo "building the API at $(git -C "$api_dir" rev-parse --short HEAD) (source tree $(cut -c1-12 "$dir/api-source"))"
+  dotnet build "$api_dir/UKSF.Api/UKSF.Api.csproj" -c Debug -o "$dir/api-bin" -v quiet -nologo > "$dir/api-build.log" 2>&1
 
   ASPNETCORE_ENVIRONMENT=Development UKSF_VERIFY_MODE=1 UKSF_VERIFY_EMAIL_DIR="$dir/email" \
-    nohup "$dir/api-bin/UKSF.Api" --contentRoot "$API_DIR/UKSF.Api" > "$dir/api.log" 2>&1 &
+    nohup "$dir/api-bin/UKSF.Api" --contentRoot "$api_dir/UKSF.Api" > "$dir/api.log" 2>&1 &
   echo $! > "$dir/api.pid"
   started_at "$(cat "$dir/api.pid")" > "$dir/api.started"
 
@@ -112,17 +116,13 @@ up() {
   nohup python3 -c 'import os, sys; os.setsid(); os.execvp(sys.argv[1], sys.argv[1:])' \
     node node_modules/@angular/cli/bin/ng.js serve --port "$WEB_PORT" > "$dir/web.log" 2>&1 &
   echo $! > "$dir/web.pgid"
+  started_at "$(cat "$dir/web.pgid")" > "$dir/web.started"
   cd - >/dev/null
 
   wait_for 120 "the API to start" api_started "$dir"
   wait_for 240 "the web dev server" web_ready
   trap - ERR
   echo "run $run is up: api pid $(cat "$dir/api.pid"), web process group $(cat "$dir/web.pgid"), evidence in $dir/evidence"
-}
-
-rmdir_lock() {
-  rm -rf "$LOCK"
-  trap - ERR
 }
 
 check() {
@@ -136,7 +136,7 @@ no_discord() {
 }
 
 connections_ok() {
-  local remotes="$1" mongo_ips="$2" remote host port
+  local remotes="$1" mongo_ips="$2" mongo_port="$3" remote host port
   while read -r remote; do
     [[ -z "$remote" ]] && continue
     host="${remote%:*}"
@@ -146,93 +146,128 @@ connections_ok() {
     if [[ "$host" == "127.0.0.1" || "$host" == "::1" ]]; then
       [[ "$port" == "$API_PORT" || "$port" == "$WEB_PORT" ]] || return 1
     else
-      grep -qx "$host" <<< "$mongo_ips" || return 1
+      grep -qx "$host" <<< "$mongo_ips" && [[ "$port" == "$mongo_port" ]] || return 1
     fi
   done <<< "$remotes"
-}
-
-api_database_line() {
-  sed -n 's/^verify mode: database \(.*\)$/\1/p' "$1/api.log" | head -1
 }
 
 owned() {
   local run dir
   run="$(current_run)"
-  dir="$VERIFY_HOME/runs/$run"
+  dir="$(run_dir "$run")"
   [[ -z "${1:-}" || "$1" == "$run" ]] || { echo "run $1 is not the active run $run" >&2; return 1; }
-  [[ "$(cat "$LOCK/run" 2>/dev/null)" == "$run" ]] || { echo "the lock does not belong to run $run" >&2; return 1; }
-  [[ "$(listener $API_PORT)" == "$(cat "$dir/api.pid")" ]] || { echo "port $API_PORT is not held by run $run's API" >&2; return 1; }
-  [[ "$(started_at "$(cat "$dir/api.pid")")" == "$(cat "$dir/api.started")" ]] || { echo "the API pid was reused" >&2; return 1; }
+  [[ "$(cat "$LOCK/run" 2>/dev/null)" == "$run" && "$(cat "$LOCK/home" 2>/dev/null)" == "$VERIFY_HOME" ]] || { echo "the lock does not belong to run $run in $VERIFY_HOME" >&2; return 1; }
+  [[ ! -e "$dir/teardown" ]] || { echo "run $run is being torn down" >&2; return 1; }
+  [[ "$(settings_hash "$(cat "$dir/api-dir")")" == "$(cat "$dir/api-settings")" ]] || { echo "the API settings file changed since up" >&2; return 1; }
+  [[ "$(listener $API_PORT)" == "$(cat "$dir/api.pid")" ]] && same_process "$(cat "$dir/api.pid")" "$(cat "$dir/api.started")" || { echo "port $API_PORT is not held by run $run's API" >&2; return 1; }
+  same_process "$(cat "$dir/web.pgid")" "$(cat "$dir/web.started")" || { echo "run $run's web server is gone" >&2; return 1; }
   [[ "$(ps -o pgid= -p "$(listener $WEB_PORT)" 2>/dev/null | tr -d ' ')" == "$(cat "$dir/web.pgid")" ]] || { echo "port $WEB_PORT is not held by run $run's web server" >&2; return 1; }
 }
 
 doctor() {
   local run dir api_pid
   run="$(current_run)"
-  dir="$VERIFY_HOME/runs/$run"
+  dir="$(run_dir "$run")"
   api_pid="$(cat "$dir/api.pid")"
   failures=0
   echo "run $run"
-  check "this run owns the lock, both ports, and its recorded processes" owned "$run"
+  check "this run owns the lock, both ports, its recorded processes, and unchanged API settings" owned "$run"
   check "the web process group serves $WEB_DIR" test "$(cwd_of "$(listener $WEB_PORT)")" = "$WEB_DIR"
-  check "API source is unchanged since up ($(cat "$dir/api-source"))" test "$(source_id "$API_DIR")" = "$(cat "$dir/api-source")"
-  check "web source is unchanged since up ($(cat "$dir/web-source"))" test "$(source_id "$WEB_DIR")" = "$(cat "$dir/web-source")"
+  check "API source is unchanged since up" test "$(source_id "$(cat "$dir/api-dir")")" = "$(cat "$dir/api-source")"
+  check "web source is unchanged since up" test "$(source_id "$WEB_DIR")" = "$(cat "$dir/web-source")"
   check "verify mode skipped migrations" grep -q "verify mode: database migrations are not run" "$dir/api.log"
   check "verify mode skipped integrations" grep -q "verify mode: Teamspeak, Discord, the scheduler and queued builds are not started" "$dir/api.log"
   check "discord never connected" no_discord "$dir"
   check "unauthenticated GET /accounts is rejected with 401" test "$(http_status "http://localhost:$API_PORT/accounts")" = "401"
-  local reported expected
-  reported="$(api_database_line "$dir")"
-  expected="$(data doctor | sed -n 's/^database=\([^ ]*\) server=\([^ ]*\) .*/\1 at \2/p')"
+  local described reported expected mongo_ips mongo_port remotes
+  described="$(data "$dir" doctor || true)"
+  reported="$(sed -n 's/^verify mode: database \(.*\)$/\1/p' "$dir/api.log" | head -1)"
+  expected="$(sed -n 's/^database=\([^ ]*\) server=\([^ ]*\) .*/\1 at \2/p' <<< "$described")"
   echo "API reports database: ${reported:-nothing}; expected: ${expected:-unknown}"
   check "the API's own database is devLocal on the expected server" test -n "$reported" -a "$reported" = "$expected"
   check "web dev server answers 200" web_ready
-  local mongo_ips remotes
-  mongo_ips="$(data doctor | sed -n 's/.* ips=\([^ ]*\).*/\1/p' | tr ',' '\n')"
+  mongo_ips="$(sed -n 's/.* ips=\([^ ]*\).*/\1/p' <<< "$described" | tr ',' '\n')"
+  mongo_port="${expected##*:}"
   remotes="$(lsof -nP -a -p "$api_pid" -iTCP -sTCP:ESTABLISHED 2>/dev/null | awk 'NR > 1 {split($9, ends, "->"); print ends[2]}' | sort -u || true)"
   echo "API connections now: ${remotes:-none}"
-  check "every API connection in this snapshot goes to the Mongo server or this run's ports" connections_ok "$remotes" "$mongo_ips"
+  check "every API connection in this snapshot is the Mongo server and port, or this run's ports" connections_ok "$remotes" "$mongo_ips" "$mongo_port"
   [[ $failures -eq 0 ]] && echo "doctor: healthy" || { echo "doctor: $failures check(s) failed"; return 1; }
 }
 
+live_drivers() {
+  local lease
+  for lease in "$1"/drivers/*; do
+    [[ -f "$lease" ]] || continue
+    same_process "$(basename "$lease")" "$(cat "$lease")" && echo "$(basename "$lease")"
+  done
+}
+
+no_live_drivers() {
+  [[ -z "$(live_drivers "$1")" ]]
+}
+
+api_stopped() {
+  ! same_process "$1" "$2"
+}
+
 stop_api() {
-  local dir="$1" pid
+  local dir="$1" pid started
   [[ -f "$dir/api.pid" ]] || return 0
   pid="$(cat "$dir/api.pid")"
-  kill -0 "$pid" 2>/dev/null || return 0
-  if [[ "$(started_at "$pid")" != "$(cat "$dir/api.started" 2>/dev/null)" ]]; then
-    echo "not signalling pid $pid: it is not the API this run started" >&2
-    return 0
-  fi
+  started="$(cat "$dir/api.started")"
+  same_process "$pid" "$started" || return 0
   kill -TERM "$pid"
-  wait_for 30 "the API to stop" pid_gone "$pid" || kill -KILL "$pid"
+  wait_for 30 "the API to stop" api_stopped "$pid" "$started" && return 0
+  same_process "$pid" "$started" && kill -KILL "$pid"
 }
 
 stop_web() {
-  local dir="$1" group member ours=""
+  local dir="$1" group started
   [[ -f "$dir/web.pgid" ]] || return 0
   group="$(cat "$dir/web.pgid")"
-  for member in $(group_members "$group"); do
-    [[ "$(cwd_of "$member")" == "$WEB_DIR" ]] && ours=yes
-  done
-  [[ -n "$ours" ]] || return 0
-  kill -TERM -- "-$group" 2>/dev/null || true
-  wait_for 30 "the web server to stop" group_gone "$group" || kill -KILL -- "-$group" 2>/dev/null || true
+  started="$(cat "$dir/web.started")"
+  if ! same_process "$group" "$started"; then
+    local orphans
+    orphans="$(ps -axo pid=,pgid= | awk -v g="$group" '$2 == g {print $1}' | tr '\n' ' ')"
+    [[ -z "$orphans" ]] || echo "not signalling process group $group: its leader is gone, so its members ($orphans) cannot be proven ours" >&2
+    return 0
+  fi
+  kill -TERM -- "-$group"
+  wait_for 30 "the web server to stop" api_stopped "$group" "$started" && return 0
+  same_process "$group" "$started" && kill -KILL -- "-$group"
 }
 
 down() {
   trap - ERR
   local run dir
-  run="$(cat "$VERIFY_HOME/current" 2>/dev/null || cat "$LOCK/run" 2>/dev/null || true)"
-  [[ -n "$run" ]] || { echo "no verify run is active" >&2; rm -rf "$LOCK"; return 0; }
-  dir="$VERIFY_HOME/runs/$run"
+  run="$(cat "$VERIFY_HOME/current" 2>/dev/null || true)"
+  [[ -n "$run" ]] || { echo "no verify run is active in $VERIFY_HOME" >&2; return 1; }
+  dir="$(run_dir "$run")"
+  if [[ -d "$LOCK" ]] && [[ "$(cat "$LOCK/run" 2>/dev/null)" != "$run" || "$(cat "$LOCK/home" 2>/dev/null)" != "$VERIFY_HOME" ]]; then
+    echo "refusing: the lock belongs to run $(cat "$LOCK/run" 2>/dev/null) in $(cat "$LOCK/home" 2>/dev/null), not $run in $VERIFY_HOME" >&2
+    return 1
+  fi
+  mkdir "$dir/teardown" 2>/dev/null || { echo "refusing: another down is tearing run $run down" >&2; return 1; }
+  if ! wait_for 300 "running drivers to finish" no_live_drivers "$dir"; then
+    echo "refusing: drivers $(live_drivers "$dir" | tr '\n' ' ')are still running; stop them, then run down again" >&2
+    rmdir "$dir/teardown"
+    return 1
+  fi
   stop_api "$dir"
   stop_web "$dir"
-  mkdir -p "$dir/evidence"
-  data cleanup "$run" | tee "$dir/evidence/cleanup.json" || echo "cleanup failed; see the run's records in devLocal" >&2
-  rm -rf "$dir/api-bin"
-  rm -f "$dir/api.pid" "$dir/api.started" "$dir/web.pgid" "$VERIFY_HOME/current"
-  rm -rf "$LOCK"
+  local kinds
+  kinds="$(sort -u "$dir/owned" 2>/dev/null | tr '\n' ' ')"
+  if [[ -n "$kinds" ]] && ! data "$dir" cleanup "$run" $kinds > "$dir/evidence/cleanup.json"; then
+    echo "processes stopped, but cleanup of $kinds failed; run down again to retry" >&2
+    rmdir "$dir/teardown"
+    return 1
+  fi
+  [[ -n "$kinds" ]] || echo '{"cleanup":"no records were created"}' > "$dir/evidence/cleanup.json"
+  cat "$dir/evidence/cleanup.json"
+  echo
+  rm -rf "$dir/api-bin" "$dir/teardown"
+  rm -f "$dir/api.pid" "$dir/api.started" "$dir/web.pgid" "$dir/web.started" "$VERIFY_HOME/current"
+  [[ "$(cat "$LOCK/run" 2>/dev/null)" == "$run" ]] && rm -rf "$LOCK"
   echo "run $run is down; evidence kept in $dir/evidence"
 }
 
@@ -242,6 +277,6 @@ case "${1:-}" in
   down) down ;;
   owned) owned "${2:-}" ;;
   run-id) current_run ;;
-  dir) echo "$VERIFY_HOME/runs/$(current_run)" ;;
+  dir) run_dir "$(current_run)" ;;
   *) echo "usage: $0 up|doctor|down|owned [run-id]|run-id|dir" >&2; exit 2 ;;
 esac

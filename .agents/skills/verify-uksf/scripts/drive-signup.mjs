@@ -1,7 +1,7 @@
-import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { createRequire } from "node:module";
-import { data, driverArguments, requireFreshEvidence, requireOwned } from "./verify-lib.mjs";
+import { data as lookup, driverArguments, holdLease, recordOwnership, requireOwned, reserveEvidence } from "./verify-lib.mjs";
 
 const { runDir, runId, scripts } = driverArguments("drive-signup.mjs");
 const require = createRequire(join(process.cwd(), "package.json"));
@@ -50,15 +50,16 @@ async function confirmationCode() {
 }
 
 function account() {
-  const lookup = data(scripts, ["account", email], 60_000);
-  if (!lookup.ok) throw new Error(`account lookup failed: ${lookup.error}`);
-  return lookup.value;
+  const found = lookup(runDir, scripts, ["account", email], 60_000);
+  if (!found.ok) throw new Error(`account lookup failed: ${found.error}`);
+  return found.value;
 }
 
-requireFreshEvidence(evidence);
+holdLease(runDir);
+reserveEvidence(evidence);
 requireOwned(scripts, runId);
 if (account().found) throw new Error(`refusing: ${email} already exists in devLocal`);
-mkdirSync(evidence, { recursive: true });
+recordOwnership(runDir, "account");
 
 const chromePath = process.env.PLAYWRIGHT_CHROME_PATH ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const browser = await chromium.launch({ executablePath: chromePath, args: ["--headless=new", "--no-first-run", "--no-default-browser-check"] });
