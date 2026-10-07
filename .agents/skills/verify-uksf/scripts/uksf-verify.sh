@@ -39,10 +39,10 @@ cwd_of() {
 
 source_id() {
   local repo="$1" index
-  index="$(mktemp)"
-  cp "$(git -C "$repo" rev-parse --absolute-git-dir)/index" "$index"
-  GIT_INDEX_FILE="$index" git -C "$repo" add -A
-  GIT_INDEX_FILE="$index" git -C "$repo" write-tree
+  index="$(mktemp)" || return 1
+  cp "$(git -C "$repo" rev-parse --absolute-git-dir)/index" "$index" || { rm -f "$index"; return 1; }
+  GIT_INDEX_FILE="$index" git -C "$repo" add -A >/dev/null 2>&1 || { rm -f "$index"; return 1; }
+  GIT_INDEX_FILE="$index" git -C "$repo" write-tree || { rm -f "$index"; return 1; }
   rm -f "$index"
 }
 
@@ -77,7 +77,7 @@ web_ready() {
 data() {
   local dir="$1"
   shift
-  dotnet run "$SCRIPTS/verify-data.cs" -- "$(cat "$dir/api-dir")" "$@" 2>/dev/null
+  dotnet run "$SCRIPTS/verify-data.cs" -- "$dir/settings.json" "$@" 2>/dev/null
 }
 
 up() {
@@ -90,6 +90,7 @@ up() {
   echo "$run" > "$LOCK/run"
   echo "$VERIFY_HOME" > "$LOCK/home"
   mkdir -p "$dir/email" "$dir/evidence" "$dir/drivers"
+  touch "$dir/owned"
   echo "$api_dir" > "$dir/api-dir"
   echo "$run" > "$VERIFY_HOME/current"
   trap 'echo "up failed; cleaning up run '"$run"'" >&2; down' ERR
@@ -100,6 +101,8 @@ up() {
     echo "refusing: an environment variable overrides API configuration; unset it" >&2
     false
   fi
+  cp "$api_dir/UKSF.Api/appsettings.Development.json" "$dir/settings.json"
+  chmod 600 "$dir/settings.json"
   settings_hash "$api_dir" > "$dir/api-settings"
   source_id "$api_dir" > "$dir/api-source"
   source_id "$WEB_DIR" > "$dir/web-source"
@@ -173,8 +176,11 @@ doctor() {
   echo "run $run"
   check "this run owns the lock, both ports, its recorded processes, and unchanged API settings" owned "$run"
   check "the web process group serves $WEB_DIR" test "$(cwd_of "$(listener $WEB_PORT)")" = "$WEB_DIR"
-  check "API source is unchanged since up" test "$(source_id "$(cat "$dir/api-dir")")" = "$(cat "$dir/api-source")"
-  check "web source is unchanged since up" test "$(source_id "$WEB_DIR")" = "$(cat "$dir/web-source")"
+  local api_now web_now
+  api_now="$(source_id "$(cat "$dir/api-dir")")" || api_now="hashing failed"
+  web_now="$(source_id "$WEB_DIR")" || web_now="hashing failed"
+  check "API source is unchanged since up" test "$api_now" = "$(cat "$dir/api-source")"
+  check "web source is unchanged since up" test "$web_now" = "$(cat "$dir/web-source")"
   check "verify mode skipped migrations" grep -q "verify mode: database migrations are not run" "$dir/api.log"
   check "verify mode skipped integrations" grep -q "verify mode: Teamspeak, Discord, the scheduler and queued builds are not started" "$dir/api.log"
   check "discord never connected" no_discord "$dir"
@@ -219,6 +225,11 @@ stop_api() {
   kill -TERM "$pid"
   wait_for 30 "the API to stop" api_stopped "$pid" "$started" && return 0
   same_process "$pid" "$started" && kill -KILL "$pid"
+  wait_for 10 "the API to die" api_stopped "$pid" "$started"
+}
+
+group_gone() {
+  [[ -z "$(ps -axo pgid= | awk -v g="$1" '$1 == g')" ]]
 }
 
 stop_web() {
@@ -226,15 +237,15 @@ stop_web() {
   [[ -f "$dir/web.pgid" ]] || return 0
   group="$(cat "$dir/web.pgid")"
   started="$(cat "$dir/web.started")"
-  if ! same_process "$group" "$started"; then
-    local orphans
-    orphans="$(ps -axo pid=,pgid= | awk -v g="$group" '$2 == g {print $1}' | tr '\n' ' ')"
-    [[ -z "$orphans" ]] || echo "not signalling process group $group: its leader is gone, so its members ($orphans) cannot be proven ours" >&2
-    return 0
+  if same_process "$group" "$started"; then
+    kill -TERM -- "-$group"
+    wait_for 30 "the web server to stop" group_gone "$group" && return 0
+    same_process "$group" "$started" && kill -KILL -- "-$group"
+    wait_for 10 "the web server to die" group_gone "$group" && return 0
   fi
-  kill -TERM -- "-$group"
-  wait_for 30 "the web server to stop" api_stopped "$group" "$started" && return 0
-  same_process "$group" "$started" && kill -KILL -- "-$group"
+  group_gone "$group" && return 0
+  echo "process group $group still has members ($(ps -axo pid=,pgid= | awk -v g="$group" '$2 == g {print $1}' | tr '\n' ' ')) whose leader is gone, so they cannot be proven ours; stop them, then run down again" >&2
+  return 1
 }
 
 down() {
@@ -243,29 +254,28 @@ down() {
   run="$(cat "$VERIFY_HOME/current" 2>/dev/null || true)"
   [[ -n "$run" ]] || { echo "no verify run is active in $VERIFY_HOME" >&2; return 1; }
   dir="$(run_dir "$run")"
-  if [[ -d "$LOCK" ]] && [[ "$(cat "$LOCK/run" 2>/dev/null)" != "$run" || "$(cat "$LOCK/home" 2>/dev/null)" != "$VERIFY_HOME" ]]; then
+  if [[ "$(cat "$LOCK/run" 2>/dev/null)" != "$run" || "$(cat "$LOCK/home" 2>/dev/null)" != "$VERIFY_HOME" ]]; then
     echo "refusing: the lock belongs to run $(cat "$LOCK/run" 2>/dev/null) in $(cat "$LOCK/home" 2>/dev/null), not $run in $VERIFY_HOME" >&2
     return 1
   fi
   mkdir "$dir/teardown" 2>/dev/null || { echo "refusing: another down is tearing run $run down" >&2; return 1; }
+  trap "rmdir '$dir/teardown' 2>/dev/null || true" EXIT
   if ! wait_for 300 "running drivers to finish" no_live_drivers "$dir"; then
     echo "refusing: drivers $(live_drivers "$dir" | tr '\n' ' ')are still running; stop them, then run down again" >&2
-    rmdir "$dir/teardown"
     return 1
   fi
-  stop_api "$dir"
-  stop_web "$dir"
+  stop_api "$dir" || return 1
+  stop_web "$dir" || return 1
   local kinds
-  kinds="$(sort -u "$dir/owned" 2>/dev/null | tr '\n' ' ')"
+  kinds="$(sort -u "$dir/owned" | tr '\n' ' ')" || { echo "the run's ownership manifest is unreadable" >&2; return 1; }
   if [[ -n "$kinds" ]] && ! data "$dir" cleanup "$run" $kinds > "$dir/evidence/cleanup.json"; then
     echo "processes stopped, but cleanup of $kinds failed; run down again to retry" >&2
-    rmdir "$dir/teardown"
     return 1
   fi
   [[ -n "$kinds" ]] || echo '{"cleanup":"no records were created"}' > "$dir/evidence/cleanup.json"
   cat "$dir/evidence/cleanup.json"
   echo
-  rm -rf "$dir/api-bin" "$dir/teardown"
+  rm -rf "$dir/api-bin" "$dir/teardown" "$dir/settings.json"
   rm -f "$dir/api.pid" "$dir/api.started" "$dir/web.pgid" "$dir/web.started" "$VERIFY_HOME/current"
   [[ "$(cat "$LOCK/run" 2>/dev/null)" == "$run" ]] && rm -rf "$LOCK"
   echo "run $run is down; evidence kept in $dir/evidence"

@@ -12,7 +12,7 @@ This map lists what a user or the game does with UKSF, how they reach it, and ho
 
 - Web: Playwright with Google Chrome headless, viewport 1280 by 900, from the web checkout root. Prefer `autocomplete` attributes, label text, and component tags (`app-button`, `app-header-bar`) over coordinates.
 - Game: HTTP replay to `POST http://127.0.0.1:5500/gameservers/events` with the extension's wire format: an SQF `str()` array `["<type>",[["key",value],...]]`, header `X-Api-Port` (the game listener port), and header `X-Enqueued-At`. The endpoint accepts loopback callers only.
-- Data checks: `dotnet run scripts/verify-data.cs -- <api-checkout> account <email>` or `mission <session-id>`.
+- Data checks: `dotnet run scripts/verify-data.cs -- <run>/settings.json account <email>` or `mission <session-id>`.
 
 ## Proof rules
 

@@ -10,11 +10,11 @@ const string RequiredDatabase = "devLocal";
 
 if (args.Length < 2 || (args[1] != "doctor" && args.Length < 3))
 {
-    Console.Error.WriteLine("usage: verify-data <api-checkout> doctor|account <email>|mission <session-id>|gameserver-port <port>|cleanup <run-id> account|mission...");
+    Console.Error.WriteLine("usage: verify-data <settings-json> doctor|account <email>|mission <session-id>|gameserver-port <port>|cleanup <run-id> account|mission...");
     return 2;
 }
 
-var settingsPath = Path.Combine(args[0], "UKSF.Api", "appsettings.Development.json");
+var settingsPath = args[0];
 var settings = JsonDocument.Parse(File.ReadAllText(settingsPath));
 var connectionString = settings.RootElement.GetProperty("appSettings").GetProperty("connectionStrings").GetProperty("database").GetString()!;
 var databaseName = MongoUrl.Create(connectionString).DatabaseName;

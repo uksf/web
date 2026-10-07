@@ -21,7 +21,7 @@ S=.agents/skills/verify-uksf/scripts
 $S/uksf-verify.sh up
 ```
 
-`up` takes the lock `$TMPDIR/uksf-verify.lock` atomically and writes the run id and the canonical `UKSF_VERIFY_HOME` into it, so a second `up` refuses while a run is active, whatever its home. It also refuses when port 5500 or 4200 is in use, or when an environment variable overrides API configuration (`appSettings__*`, `ConnectionStrings__*`, `Kestrel__*`, `ASPNETCORE_URLS`). The run id is `v<UTC timestamp>-<4 hex>`. It pins the API checkout and a hash of its settings file in the run folder, records a source id for both checkouts (a git tree hash of the working tree, written through a temporary index, so it covers binary, untracked, and deleted files), builds the API into `<run>/api-bin`, then starts:
+`up` takes the lock `$TMPDIR/uksf-verify.lock` atomically and writes the run id and the canonical `UKSF_VERIFY_HOME` into it, so a second `up` refuses while a run is active, whatever its home. It also refuses when port 5500 or 4200 is in use, or when an environment variable overrides API configuration (`appSettings__*`, `ConnectionStrings__*`, `Kestrel__*`, `ASPNETCORE_URLS`). The run id is `v<UTC timestamp>-<4 hex>`. It copies the API settings file to `<run>/settings.json` (mode 600) and records its hash, so every database lookup and the cleanup use exactly the configuration the API started with. It records a source id for both checkouts (a git tree hash of the working tree, written through a temporary index, so it covers binary, untracked, and deleted files), builds the API into `<run>/api-bin`, then starts:
 
 - the API with `ASPNETCORE_ENVIRONMENT=Development`, `UKSF_VERIFY_MODE=1`, and `UKSF_VERIFY_EMAIL_DIR=<run>/email`. Verify mode runs no migrations, creates no scheduled jobs or indexes, and starts no Teamspeak, Discord, scheduler, queued builds, backups, game-server recovery, or NPC workers. It writes its own logs to stdout as `verify-log {json}` lines in `<run>/api.log`, not to Mongo, and prints `verify mode: database <name> at <host>:<port>`. Mail goes to `.eml` files in the run's `email` folder. The Discord client cannot connect in Development or verify mode.
 - the web dev server (`ng serve --port 4200`) in its own process group, recorded at launch.
@@ -52,17 +52,17 @@ If a line fails, run `down`, fix the cause, and start again. Do not drive a run 
 Each driver takes the run directory, the run id, and the scripts directory, and writes `result.json` plus screenshots or payloads under `<run>/evidence/<feature>/`. Each exits 0 only when its proof holds.
 
 ```bash
-export UKSF_API_DIR=~/Workspace/uksf/api PATH="$HOME/.dotnet:$PATH" DOTNET_ROOT="$HOME/.dotnet"
+export PATH="$HOME/.dotnet:$PATH" DOTNET_ROOT="$HOME/.dotnet"
 R=$($S/uksf-verify.sh dir); ID=$($S/uksf-verify.sh run-id)
 node $S/drive-signup.mjs "$R" "$ID" "$PWD/$S"
 node $S/drive-mission.mjs "$R" "$ID" "$PWD/$S"
 ```
 
-Each driver checks that its run folder is the active one, takes a lease in `<run>/drivers/<pid>`, reserves its evidence folder atomically (an existing folder refuses the drive), runs `uksf-verify.sh owned <run-id>`, checks that its records do not exist yet, and only then adds their kind to `<run>/owned`. Database lookups use the API checkout pinned at `up`, not the current `UKSF_API_DIR`. The mission driver re-runs `owned` before every event it posts.
+Each driver checks that its run folder is the active one, takes a lease in `<run>/drivers/<pid>`, reserves its evidence folder atomically (an existing folder refuses the drive), runs `uksf-verify.sh owned <run-id>`, checks that its records do not exist yet, and only then adds their kind to `<run>/owned`. Database lookups use `<run>/settings.json`, not the current `UKSF_API_DIR` or settings file. The mission driver re-runs `owned` before every event it posts.
 
 - `drive-signup.mjs` uses Playwright against the web UI. Run it from the web checkout root so it loads the repo's Playwright.
 - `drive-mission.mjs` replays game-server events into `POST /gameservers/events` exactly as the Arma extension sends them, and runs a fake game listener on port 47999 (`UKSF_VERIFY_LISTENER_PORT`) that records every command the API pushes back. It refuses a port that any `gameServers` record in `devLocal` uses.
-- `verify-data.cs` reads the run's records from `devLocal`: `dotnet run $S/verify-data.cs -- $UKSF_API_DIR account <email>`, `mission <session-id>`, or `gameserver-port <port>`.
+- `verify-data.cs` reads the run's records from `devLocal`: `dotnet run $S/verify-data.cs -- $R/settings.json account <email>`, `mission <session-id>`, or `gameserver-port <port>`.
 
 For a feature with no driver yet, follow its recipe in `features/` and save the same kind of evidence by hand.
 
@@ -87,7 +87,7 @@ Evidence stays in `<run>/evidence/` after cleanup. Quote its path in your report
 $S/uksf-verify.sh down
 ```
 
-`down` refuses unless the lock belongs to this home's active run, and only one `down` runs per run (`<run>/teardown`). It waits up to 300 seconds for live driver leases, and refuses while any remain. It signals the API only while its PID has the recorded start time, and the web process group only while its leader has the recorded start time, and it checks that identity again before any forced kill. It never matches processes by name. It then removes only the record kinds listed in `<run>/owned` (an account and its confirmation codes, or a mission session and its player stats) and writes the counts to `<run>/evidence/cleanup.json`. If cleanup fails, `down` exits non-zero and keeps the run active, so run it again to retry. On success it deletes `<run>/api-bin` and releases the lock. Run `down` after every attempt, including failed ones.
+`down` refuses unless the lock exists and belongs to this home's active run, and only one `down` runs per run (`<run>/teardown`). It waits up to 300 seconds for live driver leases, and refuses while any remain. It signals the API only while its PID has the recorded start time, and the web process group only while its leader has the recorded start time, and it checks that identity again before any forced kill. If a member of the web process group survives, or its leader is gone while members remain, `down` fails and keeps the run so you can stop them and retry. It never matches processes by name. It then removes only the record kinds listed in `<run>/owned` (an account and its confirmation codes, or a mission session and its player stats) and writes the counts to `<run>/evidence/cleanup.json`. If cleanup fails, `down` exits non-zero and keeps the run active, so run it again to retry. On success it deletes `<run>/api-bin` and `<run>/settings.json` (which holds secrets) and releases the lock. Run `down` after every attempt, including failed ones.
 
 ## Arma beyond event replay
 
