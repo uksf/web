@@ -43,7 +43,8 @@ switch (args[1])
         var account = await accounts.Find(Builders<BsonDocument>.Filter.Eq("email", args[2])).FirstOrDefaultAsync();
         if (account is null)
         {
-            Console.WriteLine("{\"found\":false}");
+            var orphanCodes = await codes.CountDocumentsAsync(Builders<BsonDocument>.Filter.Eq("value", args[2]));
+            Console.WriteLine(JsonSerializer.Serialize(new { found = false, confirmationCodes = orphanCodes }));
             return 1;
         }
 
@@ -62,7 +63,8 @@ switch (args[1])
         var session = await missionSessions.Find(Builders<BsonDocument>.Filter.Eq("sessionId", args[2])).FirstOrDefaultAsync();
         if (session is null)
         {
-            Console.WriteLine("{\"found\":false}");
+            var orphanStats = await playerMissionStats.CountDocumentsAsync(Builders<BsonDocument>.Filter.Eq("missionSessionId", args[2]));
+            Console.WriteLine(JsonSerializer.Serialize(new { found = false, playerMissionStats = orphanStats }));
             return 1;
         }
 

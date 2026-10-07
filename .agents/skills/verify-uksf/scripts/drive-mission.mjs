@@ -65,7 +65,7 @@ requireOwned(scripts, runId);
 const port = lookup(runDir, scripts, ["gameserver-port", String(LISTENER_PORT)], 60_000);
 if (!port.ok || port.value.configuredServers !== 0) throw new Error(`refusing: port ${LISTENER_PORT} is configured for a game server in devLocal or could not be checked (${port.error ?? JSON.stringify(port.value)})`);
 const existing = lookup(runDir, scripts, ["mission", sessionId], 60_000);
-if (!existing.ok || existing.value.found) throw new Error(`refusing: mission session ${sessionId} already exists or could not be checked`);
+if (!existing.ok || existing.value.found || existing.value.playerMissionStats !== 0) throw new Error(`refusing: mission session ${sessionId} or its player stats already exist, or could not be checked (${existing.error ?? JSON.stringify(existing.value)})`);
 recordOwnership(runDir, "mission");
 
 const listener = createServer((request, response) => {

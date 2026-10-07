@@ -58,7 +58,8 @@ function account() {
 holdLease(runDir);
 reserveEvidence(evidence);
 requireOwned(scripts, runId);
-if (account().found) throw new Error(`refusing: ${email} already exists in devLocal`);
+const preflight = account();
+if (preflight.found || preflight.confirmationCodes !== 0) throw new Error(`refusing: ${email} or its confirmation codes already exist in devLocal (${JSON.stringify(preflight)})`);
 recordOwnership(runDir, "account");
 
 const chromePath = process.env.PLAYWRIGHT_CHROME_PATH ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
