@@ -2,7 +2,7 @@ import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { createRequire } from "node:module";
 import { driveDetails } from "./details-step.mjs";
-import { data as lookup, driverArguments, holdLease, recordOwnership, requireOwned, reserveEvidence } from "./verify-lib.mjs";
+import { data as lookup, driverArguments, holdLease, recordOwnership, recordWrites, requireOwned, reserveEvidence } from "./verify-lib.mjs";
 
 const { runDir, runId, scripts } = driverArguments("drive-signup.mjs");
 const require = createRequire(join(process.cwd(), "package.json"));
@@ -17,6 +17,7 @@ const email = `verify+${runId}@uksf-verify.invalid`;
 const password = `Verify-${runId}-pw`;
 const steps = [];
 let activePage;
+let accountId;
 
 async function shot(page, name) {
   const path = join(evidence, `${String(steps.length + 1).padStart(2, "0")}-${name}.png`);
@@ -53,7 +54,7 @@ async function confirmationCode() {
 }
 
 function account() {
-  const found = lookup(runDir, scripts, ["account", email], 60_000);
+  const found = lookup(runDir, scripts, accountId ? ["account", email, accountId] : ["account", email], 60_000);
   if (!found.ok) throw new Error(`account lookup failed: ${found.error}`);
   return found.value;
 }
@@ -95,12 +96,19 @@ try {
   await shot(page, "identity-filled");
 
   requireOwned(scripts, runId);
+  const created = page.waitForResponse((response) => response.url().endsWith("/accounts/create") && response.request().method() === "POST", { timeout: 30_000 });
   await page.locator("app-application-identity app-button", { hasText: "Next" }).click();
+  const { token } = await (await created).json();
+  const claims = JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString("utf8"));
+  accountId = claims["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid"];
+  if (!/^[0-9a-f]{24}$/.test(accountId ?? "")) throw new Error(`the create response carries no account id (${JSON.stringify(claims)})`);
+  recordWrites(runDir, { accountId, email, confirmationCodes: [] });
   await page.getByLabel("Enter confirmation code").waitFor({ timeout: 30_000 });
   await shot(page, "email-confirmation");
   const before = account();
 
   const { code, file } = await confirmationCode();
+  recordWrites(runDir, { confirmationCodes: [code] });
   await page.getByLabel("Enter confirmation code").fill(code);
   await page.locator("app-application-communications").waitFor({ timeout: 30_000 });
   await shot(page, "communications");
@@ -108,7 +116,7 @@ try {
 
   let details;
   if (withDetails) {
-    details = await driveDetails({ page, runDir, runId, scripts, email, evidence: detailsEvidence, shot });
+    details = await driveDetails({ page, runDir, runId, scripts, email, accountId, evidence: detailsEvidence, shot });
     console.log(JSON.stringify({ feature: "application-details", pass: details.pass, checks: details.checks, evidence: detailsEvidence }));
   }
 
@@ -130,11 +138,12 @@ try {
     runId,
     email,
     emailFile: file,
+    accountId,
     accountAfterCreate: before,
     accountAfterCode: after,
     signedInAs: signedInAs ? "Agent.V" : null,
     details: details ? { pass: details.pass, result: join(detailsEvidence, "result.json") } : undefined,
-    pass: before.found && before.membershipState === "Unconfirmed" && after.membershipState === "Confirmed" && signedInAs && (!details || details.pass),
+    pass: before.found && before.id === accountId && before.membershipState === "Unconfirmed" && after.membershipState === "Confirmed" && signedInAs && (!details || details.pass),
     steps,
   };
   writeFileSync(join(evidence, "result.json"), JSON.stringify(result, null, 2));
@@ -147,4 +156,7 @@ try {
   process.exitCode = 1;
 } finally {
   await browser.close();
+  const funnel = lookup(runDir, scripts, ["funnel", runId], 60_000);
+  if (funnel.ok) recordWrites(runDir, { funnelEvents: funnel.value.events.map((event) => event.id) });
+  else console.error(`funnel event ids were not recorded: ${funnel.error}`);
 }

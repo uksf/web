@@ -2,20 +2,19 @@
 #:property PublishAot=false
 
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
 const string RequiredDatabase = "devLocal";
+var usage = "usage: verify-data <settings-json> doctor|account <email> [<account-id>]|application <account-id> <email>|funnel <run-id>|mission <session-id>|gameserver-port <port>";
 
-if (args.Length < 2 || (args[1] != "doctor" && args.Length < 3))
+if (args.Length < 2 || (args[1] != "doctor" && args.Length < 3) || (args[1] == "application" && args.Length < 4))
 {
-    Console.Error.WriteLine("usage: verify-data <settings-json> doctor|account <email>|mission <session-id>|gameserver-port <port>|application <email>|cleanup <run-id> [--dry-run] account|funnel|application|mission...");
+    Console.Error.WriteLine(usage);
     return 2;
 }
 
-var settingsPath = args[0];
-var settings = JsonDocument.Parse(File.ReadAllText(settingsPath));
+var settings = JsonDocument.Parse(File.ReadAllText(args[0]));
 var connectionString = settings.RootElement.GetProperty("appSettings").GetProperty("connectionStrings").GetProperty("database").GetString()!;
 var databaseName = MongoUrl.Create(connectionString).DatabaseName;
 if (databaseName != RequiredDatabase)
@@ -33,8 +32,7 @@ var commentThreads = database.GetCollection<BsonDocument>("commentThreads");
 var notifications = database.GetCollection<BsonDocument>("notifications");
 var units = database.GetCollection<BsonDocument>("units");
 var funnelEvents = database.GetCollection<BsonDocument>("applicationFunnelEvents");
-
-static string VisitorId(string email) => $"verify-{Regex.Match(email, "v[0-9]{14}-[0-9a-f]{4}").Value}";
+var filter = Builders<BsonDocument>.Filter;
 
 static List<string> ApplicationThreads(BsonDocument account)
 {
@@ -44,15 +42,31 @@ static List<string> ApplicationThreads(BsonDocument account)
         : [];
 }
 
+static bool MintedBySameProcess(ObjectId id, ObjectId reference) => id.ToByteArray().Skip(4).Take(5).SequenceEqual(reference.ToByteArray().Skip(4).Take(5));
+
+FilterDefinition<BsonDocument> RunAccount(ObjectId id, string email) => filter.And(filter.Eq("_id", id), filter.Eq("email", email));
+
 async Task<long> UnitMembersTotal() =>
     (await units.Find(FilterDefinition<BsonDocument>.Empty).Project(Builders<BsonDocument>.Projection.Include("members")).ToListAsync())
         .Sum(x => (long)x.GetValue("members", new BsonArray()).AsBsonArray.Count);
 
-FilterDefinition<BsonDocument> AccountNotifications(ObjectId accountId) =>
-    Builders<BsonDocument>.Filter.Or(
-        Builders<BsonDocument>.Filter.Eq("owner", accountId),
-        Builders<BsonDocument>.Filter.Eq("link", $"/recruitment/{accountId}")
-    );
+async Task<List<string>> MintedThreads(ObjectId accountId)
+{
+    var since = new ObjectId(accountId.ToByteArray().Take(4).Concat(new byte[8]).ToArray());
+    var ids = await commentThreads.Find(filter.Gte("_id", since)).Project(Builders<BsonDocument>.Projection.Include("_id")).ToListAsync();
+    return ids.Select(x => x["_id"].AsObjectId).Where(x => MintedBySameProcess(x, accountId)).Select(x => x.ToString()).OrderBy(x => x).ToList();
+}
+
+async Task<List<string>> ExpectedNotificationOwners(ObjectId applicantId, BsonValue recruiter)
+{
+    var recruitmentUnitId = (await database.GetCollection<BsonDocument>("variables").Find(filter.Eq("key", "UNIT_ID_RECRUITMENT")).FirstOrDefaultAsync())?.GetValue("item", BsonNull.Value);
+    var recruitmentUnit = recruitmentUnitId is null || recruitmentUnitId.IsBsonNull ? null : await units.Find(filter.Eq("_id", ObjectId.Parse(recruitmentUnitId.ToString()))).FirstOrDefaultAsync();
+    var chain = recruitmentUnit?.GetValue("chainOfCommand", BsonNull.Value);
+    var leads = chain is { IsBsonDocument: true } ? new[] { "first", "second", "third", "nco" }.Select(x => chain.AsBsonDocument.GetValue(x, BsonNull.Value)).Where(x => !x.IsBsonNull).Select(x => x.ToString()!) : [];
+    var candidates = new[] { applicantId.ToString() }.Concat(recruiter.IsBsonNull ? [] : [recruiter.ToString()!]).Concat(leads).Distinct().ToList();
+    var notifiable = await accounts.Find(filter.And(filter.In("_id", candidates.Select(ObjectId.Parse)), filter.Ne("membershipState", 3))).Project(Builders<BsonDocument>.Projection.Include("_id")).ToListAsync();
+    return notifiable.Select(x => x["_id"].ToString()!).OrderBy(x => x).ToList();
+}
 
 switch (args[1])
 {
@@ -64,11 +78,13 @@ switch (args[1])
         return 0;
 
     case "account":
-        var account = await accounts.Find(Builders<BsonDocument>.Filter.Eq("email", args[2])).FirstOrDefaultAsync();
+        var byEmail = filter.Eq("email", args[2]);
+        var account = await accounts.Find(args.Length > 3 ? RunAccount(ObjectId.Parse(args[3]), args[2]) : byEmail).FirstOrDefaultAsync();
         if (account is null)
         {
-            var orphanCodes = await codes.CountDocumentsAsync(Builders<BsonDocument>.Filter.Eq("value", args[2]));
-            var orphanFunnel = await funnelEvents.CountDocumentsAsync(Builders<BsonDocument>.Filter.Eq("visitorId", VisitorId(args[2])));
+            var orphanCodes = await codes.CountDocumentsAsync(filter.Eq("value", args[2]));
+            var visitor = $"verify-{args[2].Split('+', '@')[1]}";
+            var orphanFunnel = await funnelEvents.CountDocumentsAsync(filter.Eq("visitorId", visitor));
             Console.WriteLine(JsonSerializer.Serialize(new { found = false, confirmationCodes = orphanCodes, funnelEvents = orphanFunnel }));
             return 1;
         }
@@ -79,16 +95,21 @@ switch (args[1])
         Console.WriteLine(JsonSerializer.Serialize(new { found = true, id = account["_id"].ToString(), email = args[2], membershipState = stateName }));
         return 0;
 
+    case "funnel":
+        var events = await funnelEvents.Find(filter.Eq("visitorId", $"verify-{args[2]}")).Project(Builders<BsonDocument>.Projection.Include("_id").Include("event")).ToListAsync();
+        Console.WriteLine(JsonSerializer.Serialize(new { visitorId = $"verify-{args[2]}", events = events.Select(x => new { id = x["_id"].ToString(), @event = x.GetValue("event", BsonNull.Value).ToString() }).ToArray() }));
+        return 0;
+
     case "gameserver-port":
-        var servers = await database.GetCollection<BsonDocument>("gameServers").CountDocumentsAsync(Builders<BsonDocument>.Filter.Eq("apiPort", int.Parse(args[2])));
+        var servers = await database.GetCollection<BsonDocument>("gameServers").CountDocumentsAsync(filter.Eq("apiPort", int.Parse(args[2])));
         Console.WriteLine(JsonSerializer.Serialize(new { apiPort = int.Parse(args[2]), configuredServers = servers }));
         return servers == 0 ? 0 : 1;
 
     case "mission":
-        var session = await missionSessions.Find(Builders<BsonDocument>.Filter.Eq("sessionId", args[2])).FirstOrDefaultAsync();
+        var session = await missionSessions.Find(filter.Eq("sessionId", args[2])).FirstOrDefaultAsync();
         if (session is null)
         {
-            var orphanStats = await playerMissionStats.CountDocumentsAsync(Builders<BsonDocument>.Filter.Eq("missionSessionId", args[2]));
+            var orphanStats = await playerMissionStats.CountDocumentsAsync(filter.Eq("missionSessionId", args[2]));
             Console.WriteLine(JsonSerializer.Serialize(new { found = false, playerMissionStats = orphanStats }));
             return 1;
         }
@@ -115,150 +136,53 @@ switch (args[1])
         return 0;
 
     case "application":
-        var applicant = await accounts.Find(Builders<BsonDocument>.Filter.Eq("email", args[2])).FirstOrDefaultAsync();
+        var applicantId = ObjectId.Parse(args[2]);
+        var applicant = await accounts.Find(RunAccount(applicantId, args[3])).FirstOrDefaultAsync();
         if (applicant is null)
         {
-            Console.WriteLine(JsonSerializer.Serialize(new { found = false }));
+            Console.WriteLine(JsonSerializer.Serialize(new { found = false, mintedThreads = await MintedThreads(applicantId) }));
             return 1;
         }
 
-        var applicantId = applicant["_id"].AsObjectId;
         var application = applicant.GetValue("application", BsonNull.Value);
         var applicationState = application.IsBsonDocument ? application.AsBsonDocument.GetValue("state", BsonNull.Value) : BsonNull.Value;
+        var recruiter = application.IsBsonDocument ? application.AsBsonDocument.GetValue("recruiter", BsonNull.Value) : BsonNull.Value;
         string[] applicationStates = ["Accepted", "Rejected", "Waiting"];
-        var notificationIds = (await notifications.Find(AccountNotifications(applicantId)).Project(Builders<BsonDocument>.Projection.Include("_id")).ToListAsync()).Select(x => x["_id"].ToString()).ToArray();
-        var holdingUnits = (await units.Find(Builders<BsonDocument>.Filter.AnyEq("members", applicantId)).Project(Builders<BsonDocument>.Projection.Include("_id")).ToListAsync()).Select(x => x["_id"].ToString()).ToArray();
-        var applicantFunnel = await funnelEvents.Find(Builders<BsonDocument>.Filter.Eq("visitorId", VisitorId(args[2]))).ToListAsync();
+        var accountNotifications = filter.Or(filter.Eq("owner", applicantId), filter.Eq("link", $"/recruitment/{applicantId}"));
+        var notificationDocs = await notifications.Find(accountNotifications).ToListAsync();
+        var holdingUnits = (await units.Find(filter.AnyEq("members", applicantId)).Project(Builders<BsonDocument>.Projection.Include("_id")).ToListAsync()).Select(x => x["_id"].ToString()).ToArray();
+        var threads = ApplicationThreads(applicant);
+        var threadDocuments = await commentThreads.CountDocumentsAsync(filter.In("_id", threads.Select(ObjectId.Parse)));
+        var visitorId = $"verify-{args[3].Split('+', '@')[1]}";
+        var applicantFunnel = await funnelEvents.Find(filter.Eq("visitorId", visitorId)).ToListAsync();
         Console.WriteLine(JsonSerializer.Serialize(new
         {
             found = true,
             accountId = applicantId.ToString(),
             applicationState = applicationState.IsInt32 && applicationState.AsInt32 < applicationStates.Length ? applicationStates[applicationState.AsInt32] : applicationState.IsBsonNull ? null : applicationState.ToString(),
-            recruiter = application.IsBsonDocument ? application.AsBsonDocument.GetValue("recruiter", BsonNull.Value).ToString() : null,
+            recruiter = recruiter.IsBsonNull ? null : recruiter.ToString(),
             armaExperience = applicant.GetValue("armaExperience", BsonNull.Value).ToString(),
+            unitsExperience = applicant.GetValue("unitsExperience", BsonNull.Value).ToString(),
+            background = applicant.GetValue("background", BsonNull.Value).ToString(),
             reference = applicant.GetValue("reference", BsonNull.Value).ToString(),
             rolePreferences = applicant.GetValue("rolePreferences", new BsonArray()).AsBsonArray.Select(x => x.ToString()).ToArray(),
             rank = applicant.GetValue("rank", BsonNull.Value).ToString(),
             roleAssignment = applicant.GetValue("roleAssignment", BsonNull.Value).ToString(),
-            serviceRecord = applicant.GetValue("serviceRecord", new BsonArray()).AsBsonArray.Count,
-            commentThreads = ApplicationThreads(applicant),
-            notifications = notificationIds,
+            serviceRecord = applicant.GetValue("serviceRecord", new BsonArray()).AsBsonArray.Select(x => x.AsBsonDocument.GetValue("occurence", BsonNull.Value).ToString()).ToArray(),
+            commentThreads = threads,
+            threadDocuments,
+            mintedThreads = await MintedThreads(applicantId),
+            notifications = notificationDocs.Select(x => x["_id"].ToString()).ToArray(),
+            notificationOwners = notificationDocs.Select(x => x.GetValue("owner", BsonNull.Value).ToString()).OrderBy(x => x).ToArray(),
+            recruiterAssigned = notificationDocs.Any(x => x.GetValue("owner", BsonNull.Value).ToString() == recruiter.ToString() && x.GetValue("link", BsonNull.Value).ToString() == $"/recruitment/{applicantId}"),
+            expectedNotificationOwners = await ExpectedNotificationOwners(applicantId, recruiter),
             units = holdingUnits,
             unitMembersTotal = await UnitMembersTotal(),
             funnelEvents = applicantFunnel.Select(x => new { id = x["_id"].ToString(), @event = x.GetValue("event", BsonNull.Value).ToString() }).ToArray()
         }));
         return 0;
 
-    case "cleanup":
-        var runId = args[2];
-        if (!Regex.IsMatch(runId, "^v[0-9]{14}-[0-9a-f]{4}$"))
-        {
-            Console.Error.WriteLine($"refusing: '{runId}' is not a verify run id");
-            return 4;
-        }
-
-        var email = $"verify+{runId}@uksf-verify.invalid";
-        var dryRun = args.Contains("--dry-run");
-        var kinds = args.Skip(3).Where(x => x != "--dry-run").ToHashSet();
-        var unknownKinds = kinds.Except(["account", "funnel", "mission", "application"]).ToList();
-        if (kinds.Count == 0 || unknownKinds.Count > 0)
-        {
-            Console.Error.WriteLine($"refusing: cleanup needs record kinds 'account', 'funnel', 'application' or 'mission' from the run's manifest, got '{string.Join(" ", args.Skip(3))}'");
-            return 4;
-        }
-
-        var sessionId = $"verify-{runId}";
-        var deletions = new List<(string Name, IMongoCollection<BsonDocument> Collection, FilterDefinition<BsonDocument> Filter)>();
-        var remainingChecks = new Dictionary<string, Func<Task<long>>>();
-        ObjectId? manifestAccount = null;
-        long unitMembersTotalBefore = 0;
-        if (kinds.Contains("application"))
-        {
-            var manifestPath = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(settingsPath))!, "application-writes.json");
-            var manifest = JsonDocument.Parse(File.ReadAllText(manifestPath)).RootElement;
-            var ownerId = ObjectId.Parse(manifest.GetProperty("accountId").GetString()!);
-            manifestAccount = ownerId;
-            var owner = await accounts.Find(Builders<BsonDocument>.Filter.And(Builders<BsonDocument>.Filter.Eq("_id", ownerId), Builders<BsonDocument>.Filter.Eq("email", email))).FirstOrDefaultAsync();
-            if (owner is null)
-            {
-                Console.Error.WriteLine($"refusing: manifest account {ownerId} is not the run's tagged account {email}");
-                return 5;
-            }
-
-            var manifestComplete = manifest.TryGetProperty("complete", out var completeFlag) && completeFlag.GetBoolean();
-            if (!manifestComplete && owner.Contains("application") && !owner["application"].IsBsonNull)
-            {
-                Console.Error.WriteLine("refusing: the account has an application but the ownership manifest never recorded its ids");
-                return 5;
-            }
-
-            List<ObjectId> Recorded(string name) => manifest.GetProperty(name).EnumerateArray().Select(x => ObjectId.Parse(x.GetString()!)).ToList();
-            var recordedThreads = Recorded("commentThreads");
-            var recordedNotifications = Recorded("notifications");
-            if (Recorded("units").Count > 0)
-            {
-                Console.Error.WriteLine("refusing: the manifest records unit memberships, which this cleanup does not reverse");
-                return 5;
-            }
-
-            if (recordedThreads.Select(x => x.ToString()).Except(ApplicationThreads(owner)).Any())
-            {
-                Console.Error.WriteLine("refusing: a recorded comment thread is not one of the account's application threads");
-                return 5;
-            }
-
-            unitMembersTotalBefore = manifest.GetProperty("unitMembersTotal").GetInt64();
-            deletions.Add(("commentThreads", commentThreads, Builders<BsonDocument>.Filter.In("_id", recordedThreads)));
-            deletions.Add(("notifications", notifications, Builders<BsonDocument>.Filter.And(Builders<BsonDocument>.Filter.In("_id", recordedNotifications), AccountNotifications(ownerId))));
-            remainingChecks["commentThreads"] = () => commentThreads.CountDocumentsAsync(Builders<BsonDocument>.Filter.In("_id", recordedThreads));
-            remainingChecks["notifications"] = () => notifications.CountDocumentsAsync(AccountNotifications(ownerId));
-            remainingChecks["unitsHoldingAccount"] = () => units.CountDocumentsAsync(Builders<BsonDocument>.Filter.AnyEq("members", ownerId));
-        }
-
-        if (kinds.Contains("funnel"))
-        {
-            var visitor = Builders<BsonDocument>.Filter.Eq("visitorId", VisitorId(email));
-            deletions.Add(("applicationFunnelEvents", funnelEvents, visitor));
-            remainingChecks["applicationFunnelEvents"] = () => funnelEvents.CountDocumentsAsync(visitor);
-        }
-
-        if (kinds.Contains("account"))
-        {
-            deletions.Add(("accounts", accounts, Builders<BsonDocument>.Filter.Eq("email", email)));
-            deletions.Add(("confirmationCodes", codes, Builders<BsonDocument>.Filter.Eq("value", email)));
-            remainingChecks["accounts"] = () => accounts.CountDocumentsAsync(Builders<BsonDocument>.Filter.Eq("email", email));
-            remainingChecks["confirmationCodes"] = () => codes.CountDocumentsAsync(Builders<BsonDocument>.Filter.Eq("value", email));
-        }
-
-        if (kinds.Contains("mission"))
-        {
-            deletions.Add(("missionSessions", missionSessions, Builders<BsonDocument>.Filter.Eq("sessionId", sessionId)));
-            deletions.Add(("playerMissionStats", playerMissionStats, Builders<BsonDocument>.Filter.Eq("missionSessionId", sessionId)));
-        }
-
-        var counts = new Dictionary<string, long>();
-        foreach (var (name, collection, filter) in deletions)
-        {
-            counts[name] = dryRun ? await collection.CountDocumentsAsync(filter) : (await collection.DeleteManyAsync(filter)).DeletedCount;
-        }
-
-        if (dryRun)
-        {
-            Console.WriteLine(JsonSerializer.Serialize(new { runId, dryRun = true, wouldRemove = counts }));
-            return 0;
-        }
-
-        var remaining = new Dictionary<string, long>();
-        foreach (var (name, check) in remainingChecks)
-        {
-            remaining[name] = await check();
-        }
-
-        var unitMembers = manifestAccount is null ? (object?)null : new { before = unitMembersTotalBefore, now = await UnitMembersTotal() };
-        Console.WriteLine(JsonSerializer.Serialize(new { runId, removed = counts, remaining, unitMembersTotal = unitMembers }));
-        return remaining.Values.All(x => x == 0) ? 0 : 6;
-
     default:
-        Console.Error.WriteLine($"unknown command '{args[1]}'");
+        Console.Error.WriteLine(usage);
         return 2;
 }

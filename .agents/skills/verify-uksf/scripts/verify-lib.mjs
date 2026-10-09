@@ -1,8 +1,8 @@
 import { execFileSync } from "node:child_process";
-import { appendFileSync, mkdirSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-export const RUN_ID = /^v[0-9]{14}-[0-9a-f]{4}$/;
+export const RUN_ID = /^v[0-9]{14}-[0-9a-f]{16}$/;
 
 function verifyScript(scripts, args) {
   return execFileSync(join(scripts, "uksf-verify.sh"), args, { stdio: ["ignore", "pipe", "pipe"], encoding: "utf8" }).trim();
@@ -64,6 +64,12 @@ export function reserveEvidence(directory) {
 
 export function recordOwnership(runDir, kind) {
   appendFileSync(join(runDir, "owned"), `${kind}\n`);
+}
+
+export function recordWrites(runDir, patch) {
+  const path = join(runDir, "account-writes.json");
+  const current = existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : {};
+  writeFileSync(path, JSON.stringify({ ...current, ...patch }, null, 2));
 }
 
 export function data(runDir, scripts, args, timeoutMs) {

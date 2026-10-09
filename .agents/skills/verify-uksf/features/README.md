@@ -15,7 +15,7 @@ Last clean pass: none yet. The first maintain pass (2026-10-09) ended `changed`.
 - Web: Playwright with Google Chrome headless, viewport 1280 by 900, from the web checkout root. Prefer `autocomplete` attributes, label text, and component tags (`app-button`, `app-header-bar`) over coordinates.
 - Game: HTTP replay to `POST http://127.0.0.1:5500/gameservers/events` with the extension's wire format: an SQF `str()` array `["<type>",[["key",value],...]]`, header `X-Api-Port` (the game listener port), and header `X-Enqueued-At`. The endpoint accepts loopback callers only.
 - Web runs set localStorage `uksf_visitor_id` to `verify-<run-id>` before the page loads, so the application funnel events the app posts belong to the run.
-- Data checks: `dotnet run .agents/skills/verify-uksf/scripts/verify-data.cs -- <run>/settings.json account <email>`, `application <email>`, or `mission <session-id>`.
+- Data checks: `dotnet run .agents/skills/verify-uksf/scripts/verify-data.cs -- <run>/settings.json account <email> [<account-id>]`, `application <account-id> <email>`, `funnel <run-id>`, or `mission <session-id>`.
 
 ## Proof rules
 

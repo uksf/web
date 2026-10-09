@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { data as lookup, recordOwnership, requireOwned } from "./verify-lib.mjs";
 
@@ -17,12 +17,14 @@ function query(runDir, scripts, args) {
   return found.value;
 }
 
-function manifest(runDir, accountId, recorded, complete) {
+function manifest(runDir, accountId, recorded, state) {
   writeFileSync(
     join(runDir, "application-writes.json"),
-    JSON.stringify({ accountId, complete, commentThreads: recorded.commentThreads ?? [], notifications: recorded.notifications ?? [], units: recorded.units ?? [], unitMembersTotal: recorded.unitMembersTotal }, null, 2),
+    JSON.stringify({ accountId, ...state, commentThreads: recorded.commentThreads ?? [], notifications: recorded.notifications ?? [], units: recorded.units ?? [], unitMembersTotal: recorded.unitMembersTotal }, null, 2),
   );
 }
+
+const sameSet = (a, b) => JSON.stringify([...a].sort()) === JSON.stringify([...b].sort());
 
 async function seedComms(page) {
   const token = await page.evaluate(() => localStorage.getItem("access_token") ?? sessionStorage.getItem("access_token"));
@@ -31,22 +33,19 @@ async function seedComms(page) {
   return { status: response.status, body: await response.json().catch(() => null) };
 }
 
-async function settledApplication(runDir, scripts, email) {
-  let previous;
-  let stableSince = 0;
-  const deadline = Date.now() + 30_000;
+async function settledApplication(runDir, scripts, account) {
+  const deadline = Date.now() + 60_000;
+  let current;
   while (Date.now() < deadline) {
-    const current = query(runDir, scripts, ["application", email]);
-    const key = JSON.stringify([current.commentThreads, current.notifications, current.units, current.funnelEvents]);
-    if (current.notifications.length > 0 && key === previous) {
-      if (Date.now() - stableSince >= 5_000) return current;
-    } else {
-      previous = key;
-      stableSince = Date.now();
+    current = query(runDir, scripts, ["application", ...account]);
+    if (current.expectedNotificationOwners.length > 0 && sameSet(current.notificationOwners, current.expectedNotificationOwners)) {
+      await new Promise((resolve) => setTimeout(resolve, 3_000));
+      const settled = query(runDir, scripts, ["application", ...account]);
+      if (sameSet(settled.notificationOwners, settled.expectedNotificationOwners)) return settled;
     }
     await new Promise((resolve) => setTimeout(resolve, 1_000));
   }
-  throw new Error("the submit's writes did not settle within 30 seconds");
+  throw new Error(`the submit wrote notifications for [${current?.notificationOwners}] but the API notifies [${current?.expectedNotificationOwners}]; not settled within 60 seconds`);
 }
 
 function mailRecipients(runDir) {
@@ -56,12 +55,13 @@ function mailRecipients(runDir) {
     .map((name) => ({ file: join(folder, name), to: readFileSync(join(folder, name), "utf8").match(/^To:\s*(.*)$/im)?.[1]?.trim() }));
 }
 
-async function steps({ page, runDir, runId, scripts, email, evidence, shot }) {
+async function steps({ page, runDir, runId, scripts, email, accountId, evidence, shot }) {
   const checks = {};
-  const before = query(runDir, scripts, ["application", email]);
-  checks.preflightClean = before.found && !before.applicationState && before.commentThreads.length === 0 && before.notifications.length === 0 && before.units.length === 0;
+  const account = [accountId, email];
+  const before = query(runDir, scripts, ["application", ...account]);
+  checks.preflightClean = before.found && !before.applicationState && before.commentThreads.length === 0 && before.notifications.length === 0 && before.units.length === 0 && before.mintedThreads.length === 0 && before.serviceRecord.length === 0;
   if (!checks.preflightClean) throw new Error(`refusing: ${email} already has application writes (${JSON.stringify(before)})`);
-  manifest(runDir, before.accountId, { unitMembersTotal: before.unitMembersTotal }, false);
+  manifest(runDir, accountId, { unitMembersTotal: before.unitMembersTotal }, { complete: false });
   recordOwnership(runDir, "application");
   const mailBefore = mailRecipients(runDir).length;
 
@@ -90,14 +90,17 @@ async function steps({ page, runDir, runId, scripts, email, evidence, shot }) {
   await page.getByText("Your application has been successfully submitted").waitFor();
   await shot(page, "submitted");
 
-  const after = await settledApplication(runDir, scripts, email);
-  manifest(runDir, after.accountId, after, true);
+  const after = await settledApplication(runDir, scripts, account);
+  const threadsExact = sameSet(after.mintedThreads, after.commentThreads);
+  manifest(runDir, accountId, { ...after, commentThreads: threadsExact ? after.commentThreads : [...new Set([...after.commentThreads, ...after.mintedThreads])] }, { complete: true });
 
   checks.stateWaiting = after.applicationState === "Waiting";
-  checks.answersStored = after.armaExperience === ANSWERS.arma && after.reference === ANSWERS.reference && after.rolePreferences.join() === ANSWERS.role;
+  checks.answersStored = after.armaExperience === ANSWERS.arma && after.unitsExperience === ANSWERS.units && after.background === ANSWERS.background && after.reference === ANSWERS.reference && after.rolePreferences.join() === ANSWERS.role;
   checks.candidateApplicant = after.rank === "Candidate" && after.roleAssignment === "Applicant";
-  checks.twoCommentThreads = after.commentThreads.length === 2;
-  checks.notificationsRecorded = after.notifications.length > 0;
+  checks.oneServiceRecordEntry = after.serviceRecord.length === 1;
+  checks.recruiterAssigned = /^[0-9a-f]{24}$/.test(after.recruiter ?? "") && after.recruiterAssigned;
+  checks.twoCommentThreadDocuments = after.commentThreads.length === 2 && after.threadDocuments === 2 && threadsExact;
+  checks.notificationsExact = sameSet(after.notificationOwners, after.expectedNotificationOwners) && after.notificationOwners.includes(accountId);
   checks.noUnitMembershipsAdded = after.units.length === 0 && after.unitMembersTotal === before.unitMembersTotal;
   checks.submitFunnelEvent = after.funnelEvents.some((event) => event.event === "application_submitted");
   const mail = mailRecipients(runDir).slice(mailBefore);
@@ -111,16 +114,16 @@ async function steps({ page, runDir, runId, scripts, email, evidence, shot }) {
 }
 
 export async function driveDetails(args) {
-  const { runDir, scripts, email } = args;
+  const { runDir, scripts, email, accountId } = args;
   try {
     return await steps(args);
   } finally {
-    try {
-      const recorded = JSON.parse(readFileSync(join(runDir, "application-writes.json"), "utf8"));
-      if (!recorded.complete) {
-        const current = query(runDir, scripts, ["application", email]);
-        if (current.found) manifest(runDir, current.accountId, { ...current, unitMembersTotal: recorded.unitMembersTotal }, true);
-      }
-    } catch {}
+    const path = join(runDir, "application-writes.json");
+    const recorded = existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : undefined;
+    if (recorded && !recorded.complete) {
+      const current = lookup(runDir, scripts, ["application", accountId, email], 60_000);
+      const threads = current.ok ? [...new Set([...(current.value.commentThreads ?? []), ...current.value.mintedThreads])] : [];
+      manifest(runDir, accountId, { ...(current.value ?? {}), commentThreads: threads, unitMembersTotal: recorded.unitMembersTotal }, current.ok ? { complete: true } : { complete: false, orphanRisk: true });
+    }
   }
 }
