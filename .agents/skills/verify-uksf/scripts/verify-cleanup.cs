@@ -90,17 +90,6 @@ if (kinds.Contains("application"))
         return Refuse($"the application manifest does not name the pinned account {ownerId}");
     }
 
-    if (manifest.Value.TryGetProperty("orphanRisk", out var risk) && risk.GetBoolean())
-    {
-        Console.Error.WriteLine($"orphan risk: the drive could not record which comment threads its submit created for account {ownerId}. Find the commentThreads minted by this run's API (their _id shares bytes 5-9 with {ownerId} and is not older than it), delete them by id, then remove application-writes.json's orphanRisk and run down again");
-        return 7;
-    }
-
-    if (!manifest.Value.GetProperty("complete").GetBoolean() && owner is not null && owner.GetValue("application", BsonNull.Value).IsBsonDocument)
-    {
-        return Refuse("the account has an application but the ownership manifest never recorded its ids");
-    }
-
     var since = new ObjectId(ownerId.ToByteArray().Take(4).Concat(new byte[8]).ToArray());
     var minted = (await Collection("commentThreads").Find(filter.Gte("_id", since)).Project(Builders<BsonDocument>.Projection.Include("_id")).ToListAsync())
         .Select(x => x["_id"].AsObjectId).Where(x => x.ToByteArray().Skip(4).Take(5).SequenceEqual(ownerId.ToByteArray().Skip(4).Take(5))).ToHashSet();
@@ -109,6 +98,20 @@ if (kinds.Contains("application"))
     var applicationThreads = application is { IsBsonDocument: true }
         ? new[] { "recruiterCommentThread", "applicationCommentThread" }.Select(x => application.AsBsonDocument.GetValue(x, BsonNull.Value)).Where(x => !x.IsBsonNull).Select(x => ObjectId.Parse(x.ToString()!)).ToHashSet()
         : null;
+    var suspects = minted.Union(Ids(manifest, "candidateThreads")).Union(applicationThreads is null ? recordedThreads : []).ToList();
+    var standing = (await Collection("commentThreads").Find(filter.In("_id", suspects)).Project(Builders<BsonDocument>.Projection.Include("_id")).ToListAsync()).Select(x => x["_id"].AsObjectId).ToList();
+    var flagged = manifest.Value.TryGetProperty("orphanRisk", out var risk) && risk.GetBoolean();
+    if (flagged || (applicationThreads is null && standing.Count > 0))
+    {
+        Console.Error.WriteLine($"orphan risk: account {ownerId} has no attached application, so no comment thread is provably this run's. Candidate threads still present: [{string.Join(",", standing)}]. Check each by hand, delete only those this run created, remove orphanRisk from application-writes.json, and run down again");
+        return 7;
+    }
+
+    if (!manifest.Value.GetProperty("complete").GetBoolean() && applicationThreads is not null)
+    {
+        return Refuse("the account has an application but the ownership manifest never recorded its ids");
+    }
+
     if (applicationThreads is not null && !recordedThreads.SetEquals(applicationThreads))
     {
         return Refuse($"the manifest records threads [{string.Join(",", recordedThreads)}] but the account's application holds [{string.Join(",", applicationThreads)}]");
@@ -125,11 +128,11 @@ if (kinds.Contains("application"))
     }
 
     unitMembersTotalBefore = manifest.Value.GetProperty("unitMembersTotal").GetInt64();
-    var threads = filter.In("_id", recordedThreads);
+    var threads = filter.In("_id", applicationThreads ?? []);
     var accountNotifications = filter.Or(filter.Eq("owner", ownerId), filter.Eq("link", $"/recruitment/{ownerId}"));
     deletions.Add(("commentThreads", Collection("commentThreads"), threads));
     deletions.Add(("notifications", Collection("notifications"), accountNotifications));
-    remainingChecks["commentThreads"] = (Collection("commentThreads"), filter.Or(threads, filter.In("_id", minted)));
+    remainingChecks["commentThreads"] = (Collection("commentThreads"), filter.In("_id", recordedThreads.Union(minted)));
     remainingChecks["notifications"] = (Collection("notifications"), accountNotifications);
     remainingChecks["unitsHoldingAccount"] = (Collection("units"), filter.AnyEq("members", ownerId));
 }

@@ -20,7 +20,7 @@ function query(runDir, scripts, args) {
 function manifest(runDir, accountId, recorded, state) {
   writeFileSync(
     join(runDir, "application-writes.json"),
-    JSON.stringify({ accountId, ...state, commentThreads: recorded.commentThreads ?? [], notifications: recorded.notifications ?? [], units: recorded.units ?? [], unitMembersTotal: recorded.unitMembersTotal }, null, 2),
+    JSON.stringify({ accountId, ...state, commentThreads: recorded.commentThreads ?? [], candidateThreads: recorded.candidateThreads ?? [], notifications: recorded.notifications ?? [], units: recorded.units ?? [], unitMembersTotal: recorded.unitMembersTotal }, null, 2),
   );
 }
 
@@ -92,7 +92,7 @@ async function steps({ page, runDir, runId, scripts, email, accountId, evidence,
 
   const after = await settledApplication(runDir, scripts, account);
   const threadsExact = sameSet(after.mintedThreads, after.commentThreads);
-  manifest(runDir, accountId, { ...after, commentThreads: threadsExact ? after.commentThreads : [...new Set([...after.commentThreads, ...after.mintedThreads])] }, { complete: true });
+  manifest(runDir, accountId, { ...after, candidateThreads: after.mintedThreads }, { complete: true });
 
   checks.stateWaiting = after.applicationState === "Waiting";
   checks.answersStored = after.armaExperience === ANSWERS.arma && after.unitsExperience === ANSWERS.units && after.background === ANSWERS.background && after.reference === ANSWERS.reference && after.rolePreferences.join() === ANSWERS.role;
@@ -122,8 +122,10 @@ export async function driveDetails(args) {
     const recorded = existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : undefined;
     if (recorded && !recorded.complete) {
       const current = lookup(runDir, scripts, ["application", accountId, email], 60_000);
-      const threads = current.ok ? [...new Set([...(current.value.commentThreads ?? []), ...current.value.mintedThreads])] : [];
-      manifest(runDir, accountId, { ...(current.value ?? {}), commentThreads: threads, unitMembersTotal: recorded.unitMembersTotal }, current.ok ? { complete: true } : { complete: false, orphanRisk: true });
+      const found = current.ok ? current.value : {};
+      const candidateThreads = found.mintedThreads ?? [];
+      const orphanRisk = !current.ok || (!found.applicationState && candidateThreads.length > 0);
+      manifest(runDir, accountId, { ...found, candidateThreads, unitMembersTotal: recorded.unitMembersTotal }, orphanRisk ? { complete: current.ok, orphanRisk } : { complete: true });
     }
   }
 }
