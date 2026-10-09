@@ -30,6 +30,6 @@ Evidence: every posted body and its HTTP status, each polled session state, and 
 - The endpoint is loopback-only. Post to `127.0.0.1`, not the machine's network address.
 - SQF strings double their quotes. Numbers are bare.
 - `durationSeconds` reads back as the string `42` from `verify-data`.
-- Each event handler finds the session with `GetSingle(Func)`, which streams the whole `missionSessions` collection to the API and filters it there. Against the remote `devLocal`, one event can take 20 to 60 seconds to show in Mongo, so the driver waits up to 180 seconds per step and records `secondsUntilVisible`.
+- Each event handler finds the session with `FindFirst`, which filters in Mongo through the `sessionId` index. Against the remote `devLocal`, an event shows in Mongo within 1 to 3 seconds (measured 1, 1, 1, and 3 seconds on 2026-10-09). The driver still waits up to 180 seconds per step and records `secondsUntilVisible`.
 - A Go tool on iultron (`Go-http-client/1.1`, probably moshi-hook port discovery) sends `GET /` to any new local listener within seconds. Only `POST /command` is a game command. The driver records other requests separately as `otherListenerRequests`.
 - NPC events need a mission with registered NPCs, and NPC broker features that are off in `devLocal`. They are not mapped yet.

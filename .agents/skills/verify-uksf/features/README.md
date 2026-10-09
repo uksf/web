@@ -28,7 +28,7 @@ This map lists what a user or the game does with UKSF, how they reach it, and ho
 
 ## Known local failures
 
-- The home page's picture endpoint reads a configured `E:\Workspace\UKSF\homepagepictures` path, which exists only on ultron. On macOS it logs a `DirectoryNotFoundException`. It does not affect the mapped features.
+- None. The home page's picture endpoint (`GET /instagram`) reads a configured `E:\Workspace\UKSF\homepagepictures` path that exists only on ultron. With the path absent it answers 200 with `[]` and logs no error. It does not affect the mapped features.
 
 ## Not yet mapped
 

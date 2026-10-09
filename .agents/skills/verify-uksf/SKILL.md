@@ -28,7 +28,7 @@ $S/uksf-verify.sh up
 
 If any step fails, `up` runs `down` before it exits.
 
-Ready signals: the API log line `Application started`, and HTTP 200 from `http://localhost:4200/`. A fresh `up` takes about 20 seconds with a warm build.
+Ready signals: the API log line `Application started`, and HTTP 200 from `http://localhost:4200/`. A fresh `up` took 1 minute 54 seconds on 2026-10-09 with the API build included.
 
 ## Doctor
 
