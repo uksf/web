@@ -269,7 +269,7 @@ down() {
   stop_web "$dir" || return 1
   local kinds
   kinds="$(sort -u "$dir/owned" | tr '\n' ' ')" || { echo "the run's ownership manifest is unreadable" >&2; return 1; }
-  if [[ -n "$kinds" ]] && ! data "$dir" cleanup "$run" $kinds > "$dir/evidence/cleanup.json"; then
+  if [[ -n "$kinds" ]] && ! { data "$dir" cleanup "$run" --dry-run $kinds > "$dir/evidence/cleanup-dry-run.json" && cat "$dir/evidence/cleanup-dry-run.json" && data "$dir" cleanup "$run" $kinds > "$dir/evidence/cleanup.json"; }; then
     echo "processes stopped, but cleanup of $kinds failed; run down again to retry" >&2
     return 1
   fi

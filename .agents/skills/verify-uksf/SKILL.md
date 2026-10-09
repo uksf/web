@@ -54,21 +54,21 @@ Each driver takes the run directory, the run id, and the scripts directory, and 
 ```bash
 export PATH="$HOME/.dotnet:$PATH" DOTNET_ROOT="$HOME/.dotnet"
 R=$($S/uksf-verify.sh dir); ID=$($S/uksf-verify.sh run-id)
-node $S/drive-signup.mjs "$R" "$ID" "$PWD/$S"
+node $S/drive-signup.mjs "$R" "$ID" "$PWD/$S" --details
 node $S/drive-mission.mjs "$R" "$ID" "$PWD/$S"
 ```
 
-Each driver checks that its run folder is the active one, takes a lease in `<run>/drivers/<pid>`, reserves its evidence folder atomically (an existing folder refuses the drive), runs `uksf-verify.sh owned <run-id>`, checks that none of the records cleanup would delete exist yet (the account and its confirmation codes, or the mission session and its player stats), and only then adds their kind to `<run>/owned`. Database lookups use `<run>/settings.json`, not the current `UKSF_API_DIR` or settings file. The mission driver re-runs `owned` before every event it posts.
+Each driver checks that its run folder is the active one, takes a lease in `<run>/drivers/<pid>`, reserves its evidence folder atomically (an existing folder refuses the drive), runs `uksf-verify.sh owned <run-id>`, checks that none of the records cleanup would delete exist yet (the account, its confirmation codes, and its funnel events; the account's application, comment threads, notifications, and unit memberships; or the mission session and its player stats), and only then adds their kind to `<run>/owned`. Database lookups use `<run>/settings.json`, not the current `UKSF_API_DIR` or settings file. The mission driver re-runs `owned` before every event it posts.
 
-- `drive-signup.mjs` uses Playwright against the web UI. Run it from the web checkout root so it loads the repo's Playwright.
+- `drive-signup.mjs` uses Playwright against the web UI. Run it from the web checkout root so it loads the repo's Playwright. With `--details` it also seeds the comms fields through `POST /accounts/verify/comms` and submits the application Details step.
 - `drive-mission.mjs` replays game-server events into `POST /gameservers/events` exactly as the Arma extension sends them, and runs a fake game listener on port 47999 (`UKSF_VERIFY_LISTENER_PORT`) that records every command the API pushes back. It refuses a port that any `gameServers` record in `devLocal` uses.
-- `verify-data.cs` reads the run's records from `devLocal`: `dotnet run $S/verify-data.cs -- $R/settings.json account <email>`, `mission <session-id>`, or `gameserver-port <port>`.
+- `verify-data.cs` reads the run's records from `devLocal`: `dotnet run $S/verify-data.cs -- $R/settings.json account <email>`, `application <email>`, `mission <session-id>`, or `gameserver-port <port>`.
 
 For a feature with no driver yet, follow its recipe in `features/` and save the same kind of evidence by hand.
 
 ## Evidence
 
-- Drive the real user path: the web UI for a user feature, the extension's HTTP contract for a game feature. Do not call internal setters or test-only endpoints.
+- Drive the real user path: the web UI for a user feature, the extension's HTTP contract for a game feature. Do not call internal setters or write records behind the API. The one exception is a verify-mode-only API endpoint for a prerequisite a local run cannot reach, such as `POST /accounts/verify/comms` for the Teamspeak, Steam, and Discord links.
 - Capture the action and the resulting state: a screenshot at each step, and the database record that the step produced.
 - Check side effects next to what is visible: the account state in Mongo, the email file, the mission session, the commands pushed to the game.
 - Verify mode is not a dry run. It skips the integrations listed under Launch, and everything else runs for real against `devLocal`.
@@ -78,7 +78,7 @@ Evidence stays in `<run>/evidence/` after cleanup. Quote its path in your report
 ## Data
 
 - `devLocal` holds copies of the real units, ranks, and accounts. A run may read them as-is.
-- A run creates only records tagged with its run id: the account `verify+<run-id>@uksf-verify.invalid` with password `Verify-<run-id>-pw` and its confirmation code, and the mission session `verify-<run-id>` with any player stats for it. Verify mode writes no log records to Mongo.
+- A run creates only records tagged with its run id or recorded by id: the account `verify+<run-id>@uksf-verify.invalid` with password `Verify-<run-id>-pw` and its confirmation code, the application funnel events with `visitorId` `verify-<run-id>`, the comment threads and notifications its application submit wrote (ids in `<run>/application-writes.json`), and the mission session `verify-<run-id>` with any player stats for it. Verify mode writes no log records to Mongo.
 - Never change shared records, feature flags, or variables in `devLocal`.
 
 ## Cleanup
@@ -87,7 +87,7 @@ Evidence stays in `<run>/evidence/` after cleanup. Quote its path in your report
 $S/uksf-verify.sh down
 ```
 
-`down` refuses unless the lock exists and belongs to this home's active run, and only one `down` runs per run (`<run>/teardown`). It waits up to 300 seconds for live driver leases, and refuses while any remain. It signals the API only while its PID has the recorded start time, and the web process group only while its leader has the recorded start time, and it checks that identity again before any forced kill. If a member of the web process group survives, or its leader is gone while members remain, `down` fails and keeps the run so you can stop them and retry. It never matches processes by name. It then removes only the record kinds listed in `<run>/owned` (an account and its confirmation codes, or a mission session and its player stats) and writes the counts to `<run>/evidence/cleanup.json`. If cleanup fails, `down` exits non-zero and keeps the run active, so run it again to retry. On success it deletes `<run>/api-bin` and `<run>/settings.json` (which holds secrets) and releases the lock. Run `down` after every attempt, including failed ones.
+`down` refuses unless the lock exists and belongs to this home's active run, and only one `down` runs per run (`<run>/teardown`). It waits up to 300 seconds for live driver leases, and refuses while any remain. It signals the API only while its PID has the recorded start time, and the web process group only while its leader has the recorded start time, and it checks that identity again before any forced kill. If a member of the web process group survives, or its leader is gone while members remain, `down` fails and keeps the run so you can stop them and retry. It never matches processes by name. It then counts the records of each kind listed in `<run>/owned` (an account and its confirmation codes, its funnel events, its application's recorded comment threads and notifications, or a mission session and its player stats) into `<run>/evidence/cleanup-dry-run.json`, removes them, and writes the removed counts and a recount to `<run>/evidence/cleanup.json`. A recount above zero fails `down`. If cleanup fails, `down` exits non-zero and keeps the run active, so run it again to retry. On success it deletes `<run>/api-bin` and `<run>/settings.json` (which holds secrets) and releases the lock. Run `down` after every attempt, including failed ones.
 
 ## Arma beyond event replay
 

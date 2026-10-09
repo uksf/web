@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { createRequire } from "node:module";
+import { driveDetails } from "./details-step.mjs";
 import { data as lookup, driverArguments, holdLease, recordOwnership, requireOwned, reserveEvidence } from "./verify-lib.mjs";
 
 const { runDir, runId, scripts } = driverArguments("drive-signup.mjs");
@@ -8,7 +9,9 @@ const require = createRequire(join(process.cwd(), "package.json"));
 const { chromium } = require("playwright");
 
 const WEB = "http://localhost:4200";
+const withDetails = process.argv[5] === "--details";
 const evidence = join(runDir, "evidence", "signup");
+const detailsEvidence = join(runDir, "evidence", "application-details");
 const emailDir = join(runDir, "email");
 const email = `verify+${runId}@uksf-verify.invalid`;
 const password = `Verify-${runId}-pw`;
@@ -57,14 +60,17 @@ function account() {
 
 holdLease(runDir);
 reserveEvidence(evidence);
+if (withDetails) reserveEvidence(detailsEvidence);
 requireOwned(scripts, runId);
 const preflight = account();
-if (preflight.found || preflight.confirmationCodes !== 0) throw new Error(`refusing: ${email} or its confirmation codes already exist in devLocal (${JSON.stringify(preflight)})`);
+if (preflight.found || preflight.confirmationCodes !== 0 || preflight.funnelEvents !== 0) throw new Error(`refusing: ${email}, its confirmation codes, or its funnel events already exist in devLocal (${JSON.stringify(preflight)})`);
 recordOwnership(runDir, "account");
+recordOwnership(runDir, "funnel");
 
 const chromePath = process.env.PLAYWRIGHT_CHROME_PATH ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const browser = await chromium.launch({ executablePath: chromePath, args: ["--headless=new", "--no-first-run", "--no-default-browser-check"] });
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+await page.addInitScript((visitorId) => localStorage.setItem("uksf_visitor_id", visitorId), `verify-${runId}`);
 activePage = page;
 try {
   await page.goto(`${WEB}/application`);
@@ -100,7 +106,14 @@ try {
   await shot(page, "communications");
   const after = account();
 
+  let details;
+  if (withDetails) {
+    details = await driveDetails({ page, runDir, runId, scripts, email, evidence: detailsEvidence, shot });
+    console.log(JSON.stringify({ feature: "application-details", pass: details.pass, checks: details.checks, evidence: detailsEvidence }));
+  }
+
   const fresh = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  await fresh.addInitScript((visitorId) => localStorage.setItem("uksf_visitor_id", visitorId), `verify-${runId}`);
   const signIn = await fresh.newPage();
   activePage = signIn;
   await signIn.goto(`${WEB}/login`);
@@ -120,7 +133,8 @@ try {
     accountAfterCreate: before,
     accountAfterCode: after,
     signedInAs: signedInAs ? "Agent.V" : null,
-    pass: before.found && before.membershipState === "Unconfirmed" && after.membershipState === "Confirmed" && signedInAs,
+    details: details ? { pass: details.pass, result: join(detailsEvidence, "result.json") } : undefined,
+    pass: before.found && before.membershipState === "Unconfirmed" && after.membershipState === "Confirmed" && signedInAs && (!details || details.pass),
     steps,
   };
   writeFileSync(join(evidence, "result.json"), JSON.stringify(result, null, 2));
