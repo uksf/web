@@ -45,7 +45,7 @@ export class GameServersService {
     }
 
     killServer(serverId: string): Observable<void> {
-        return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/${serverId}/kill`, null);
+        return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/${serverId}/kill?confirmDataLoss=true`, null);
     }
 
     killAllServers(): Observable<void> {

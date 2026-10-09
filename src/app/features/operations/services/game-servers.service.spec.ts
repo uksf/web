@@ -120,11 +120,11 @@ describe('GameServersService', () => {
         );
     });
 
-    it('killServer calls POST /gameservers/:id/kill', () => {
+    it('killServer calls POST /gameservers/:id/kill with the data-loss confirmation the admin gave', () => {
         service.killServer('server1').subscribe();
 
         expect(mockHttpClient.post).toHaveBeenCalledWith(
-            'http://localhost:5500/gameservers/server1/kill',
+            'http://localhost:5500/gameservers/server1/kill?confirmDataLoss=true',
             null
         );
     });
