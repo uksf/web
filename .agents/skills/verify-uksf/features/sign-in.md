@@ -11,7 +11,7 @@ A member or applicant signs in to the website.
 
 ## How to get to it
 
-- The header **Sign in** button (only the `person` icon at the smallest mobile width), or the route `/login`. A page that needs an account redirects to plain `/login` and stores the destination in localStorage key `auth_redirect_url` (`src/app/core/services/authentication/redirect.service.ts`). After sign-in the app goes to that destination, or to `/home` when none is stored.
+- The header **Sign in** button (it also carries a `person` icon; at the smallest mobile width the control is icon-only), or the route `/login`. A page that needs an account redirects to plain `/login` and stores the destination in localStorage key `auth_redirect_url` (`src/app/core/services/authentication/redirect.service.ts`). After sign-in the app goes to that destination, or to `/home` when none is stored.
 
 ## Driving it with Playwright
 
