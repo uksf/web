@@ -15,10 +15,14 @@ export function isServerStopping(server: GameServer): boolean {
     return server.status.stopPhase !== StopPhase.None;
 }
 
-/**
- * A stop in progress hides the kill until the API says the shutdown has passed the time
- * that phase normally takes, so a healthy shutdown is not cut short by hand.
- */
+export function killConfirmationMessage(server: GameServer): string {
+    if (server.status.stopPhase === StopPhase.Ending || server.status.stopPhase === StopPhase.Saving) {
+        return `'${server.name}' is still saving. Killing it now loses any persistence data that has not reached the API. Kill it anyway?`;
+    }
+
+    return `Are you sure you want to kill '${server.name}'? This could have unexpected effects on the server`;
+}
+
 export function isServerKillAllowed(server: GameServer): boolean {
     if (!isServerStopping(server)) {
         return true;
@@ -27,7 +31,6 @@ export function isServerKillAllowed(server: GameServer): boolean {
     return !!server.status.killAllowedAt && Date.now() >= Date.parse(server.status.killAllowedAt);
 }
 
-/** Recomputes each running server's uptime text. Returns true when any label changed. */
 export function applyUptimes(servers: GameServer[], nowMs: number): boolean {
     let changed = false;
 

@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { OperationsServersComponent } from './operations-servers.component';
 import { GameServer, StopPhase } from '../../models/game-server';
 import { makeServer, setupOperationsServersSpec, teardownOperationsServersSpec } from './operations-servers.spec-setup';
+import { killConfirmationMessage } from './operations-servers.helpers';
 
 describe('OperationsServersComponent status', () => {
     let component: OperationsServersComponent;
@@ -78,6 +79,20 @@ describe('OperationsServersComponent status', () => {
 
         it('is available for a running server', () => {
             expect(component.isStopping(makeServer())).toBe(false);
+        });
+    });
+
+    describe('kill confirmation', () => {
+        it.each([StopPhase.Ending, StopPhase.Saving])('warns that unsaved persistence data is lost while the server is in %s', (stopPhase) => {
+            const server = makeServer({ name: 'Main', status: { ...makeServer().status, stopPhase } });
+
+            expect(killConfirmationMessage(server)).toBe(
+                "'Main' is still saving. Killing it now loses any persistence data that has not reached the API. Kill it anyway?"
+            );
+        });
+
+        it('keeps the general warning for a server that is not saving', () => {
+            expect(killConfirmationMessage(makeServer({ name: 'Main' }))).toBe("Are you sure you want to kill 'Main'? This could have unexpected effects on the server");
         });
     });
 });
