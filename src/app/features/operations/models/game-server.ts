@@ -24,7 +24,8 @@ export enum StopPhase {
     None = 0,
     Ending = 1,
     Saving = 2,
-    Stopping = 3
+    Stopping = 3,
+    Delivering = 4
 }
 
 export interface GameServer {

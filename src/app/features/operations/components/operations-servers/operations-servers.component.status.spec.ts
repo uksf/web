@@ -16,6 +16,11 @@ describe('OperationsServersComponent status', () => {
     });
 
     describe('getServerStatus', () => {
+        it('returns "Saving to API" while the save waits on API delivery', () => {
+            const server = makeServer({ status: { ...makeServer().status, stopPhase: StopPhase.Delivering } });
+            expect(component.getServerStatus(server)).toBe('Saving to API');
+        });
+
         it('returns "Stopping" when server is stopping', () => {
             const server = makeServer({ status: { ...makeServer().status, stopPhase: StopPhase.Stopping } });
             expect(component.getServerStatus(server)).toBe('Stopping');
@@ -83,7 +88,7 @@ describe('OperationsServersComponent status', () => {
     });
 
     describe('kill confirmation', () => {
-        it.each([StopPhase.Ending, StopPhase.Saving])('warns that unsaved persistence data is lost while the server is in %s', (stopPhase) => {
+        it.each([StopPhase.Ending, StopPhase.Saving, StopPhase.Delivering])('warns that unsaved persistence data is lost while the server is in %s', (stopPhase) => {
             const server = makeServer({ name: 'Main', status: { ...makeServer().status, stopPhase } });
 
             expect(killConfirmationMessage(server)).toBe(

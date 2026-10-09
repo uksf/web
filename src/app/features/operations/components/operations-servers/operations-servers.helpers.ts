@@ -4,6 +4,7 @@ import { GameServer, Mission, StopPhase } from '../../models/game-server';
 export function serverStatusLabel(server: GameServer): string {
     if (server.status.stopPhase === StopPhase.Ending) return 'Ending';
     if (server.status.stopPhase === StopPhase.Saving) return 'Saving';
+    if (server.status.stopPhase === StopPhase.Delivering) return 'Saving to API';
     if (server.status.stopPhase === StopPhase.Stopping) return 'Stopping';
     if (server.status.launching) return 'Launching';
     if (!server.status.running) return 'Offline';
@@ -16,7 +17,7 @@ export function isServerStopping(server: GameServer): boolean {
 }
 
 export function killConfirmationMessage(server: GameServer): string {
-    if (server.status.stopPhase === StopPhase.Ending || server.status.stopPhase === StopPhase.Saving) {
+    if ([StopPhase.Ending, StopPhase.Saving, StopPhase.Delivering].includes(server.status.stopPhase)) {
         return `'${server.name}' is still saving. Killing it now loses any persistence data that has not reached the API. Kill it anyway?`;
     }
 
