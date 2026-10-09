@@ -28,7 +28,7 @@ $S/uksf-verify.sh up
 
 If any step fails, `up` runs `down` before it exits.
 
-Ready signals: the API log line `Application started`, and HTTP 200 from `http://localhost:4200/`. A fresh `up` took 1 minute 54 seconds on 2026-10-09 with the API build included.
+Ready signals: the API log line `Application started`, and HTTP 200 from `http://localhost:4200/`. A fresh `up` with the API build took 1 minute 54 seconds and 2 minutes 45 seconds on 2026-10-09, so allow up to five minutes.
 
 ## Doctor
 
@@ -78,7 +78,7 @@ Evidence stays in `<run>/evidence/` after cleanup. Quote its path in your report
 ## Data
 
 - `devLocal` holds copies of the real units, ranks, and accounts. A run may read them as-is.
-- A run creates only records tagged with its run id or recorded by id: the account `verify+<run-id>@uksf-verify.invalid` with password `Verify-<run-id>-pw`, pinned by its id in `<run>/account-writes.json`, with its confirmation code and the code's expiry record in `scheduledJobs`; the application funnel events with `visitorId` `verify-<run-id>`; the comment threads and notifications its application submit wrote (`<run>/application-writes.json`); and the mission session `verify-<run-id>` with its player stats, mission stats, and raw mission events. Verify mode writes no log records to Mongo.
+- A run creates only records tagged with its run id or recorded by id: the account `verify+<run-id>@uksf-verify.invalid` with password `Verify-<run-id>-pw`, pinned by its id in `<run>/account-writes.json`, with its confirmation code and the code's expiry record in `scheduledJobs` (applying the code consumes both, so a finished sign-up leaves none to count on 2026-10-09); the application funnel events with `visitorId` `verify-<run-id>`; the comment threads and notifications its application submit wrote (`<run>/application-writes.json`); and the mission session `verify-<run-id>` with its player stats, mission stats, and raw mission events. Verify mode writes no log records to Mongo.
 - The run owns the account it created, by id, and every record whose only subject is that account, such as a recruiter's notification linking to it. The rules are in `features/application-details.md` under Data.
 - Never change shared records, feature flags, or variables in `devLocal`.
 
@@ -89,6 +89,39 @@ $S/uksf-verify.sh down
 ```
 
 `down` refuses unless the lock exists and belongs to this home's active run, and only one `down` runs per run (`<run>/teardown`). It waits up to 300 seconds for live driver leases, and refuses while any remain. It signals the API only while its PID has the recorded start time, and the web process group only while its leader has the recorded start time, and it checks that identity again before any forced kill. If a member of the web process group survives, or its leader is gone while members remain, `down` fails and keeps the run so you can stop them and retry. It never matches processes by name. It then counts the records of each kind listed in `<run>/owned` (an account and its confirmation codes, its funnel events, its application's comment threads and notifications, or a mission session with its player stats, mission stats, and raw mission events) into `<run>/evidence/cleanup-dry-run.json`. It deletes and recounts every child record first, deletes the account by id and email only when every child recount is zero, then recounts the account, and writes the removed counts and the recounts to `<run>/evidence/cleanup.json`. A recount above zero fails `down`. It refuses when the account exists but its id was never recorded, when an application's threads are not exactly the recorded ones, or when the run's API minted a thread the manifest does not record. When a failed submit leaves comment threads that no attached application references, cleanup deletes none of them, and `down` exits 7 and prints the candidate ids for a person to check (see `features/application-details.md`). If cleanup fails for any other reason, `down` exits 1 and keeps the run active, so run it again to retry; a retry works with the account already gone. On success it deletes `<run>/api-bin` and `<run>/settings.json` (which holds secrets) and releases the lock. Run `down` after every attempt, including failed ones.
+
+## Base versus head
+
+`verify-pr` drives the PR base and the PR head one after the other. The lock allows one run at a time, so never start the second side before `down` finishes on the first. Each side has its own worktree, its own `UKSF_VERIFY_HOME`, and so its own evidence folder. Both sides use the head's scripts, so only the product differs.
+
+```bash
+W=~/Workspace/uksf/web; P=~/.worktrees/web; BASE=<base-sha>; HEAD=<head-sha>
+export PATH="$HOME/.dotnet:$HOME/.bun/bin:$PATH" DOTNET_ROOT="$HOME/.dotnet"
+git -C $W fetch origin
+git -C $W worktree add --detach $P/verify-base $BASE
+git -C $W worktree add --detach $P/verify-head $HEAD
+for s in base head; do (cd $P/verify-$s && bun install --frozen-lockfile); done
+S=$P/verify-head/.agents/skills/verify-uksf/scripts
+for s in base head; do
+  export UKSF_WEB_DIR=$P/verify-$s UKSF_VERIFY_HOME=$HOME/.uksf-verify-pr/$s
+  ( set -e
+    $S/uksf-verify.sh up
+    $S/uksf-verify.sh doctor
+    R=$($S/uksf-verify.sh dir); ID=$($S/uksf-verify.sh run-id)
+    cd $UKSF_WEB_DIR
+    node $S/drive-signup.mjs "$R" "$ID" "$S"
+  ) || echo "$s: drive failed"
+  $S/uksf-verify.sh down || echo "$s: down failed"
+done
+git -C $W worktree remove --force $P/verify-base
+git -C $W worktree remove --force $P/verify-head
+```
+
+- Add the drives the PR needs to the subshell, for example `drive-signup.mjs ... --details` or `drive-mission.mjs`. Run the same drives on both sides.
+- Evidence: `~/.uksf-verify-pr/base/runs/<run-id>/evidence/` and `~/.uksf-verify-pr/head/runs/<run-id>/evidence/`. Quote both paths in the verdict.
+- For an API PR, make an API worktree for each side with the same lower-case path rule, copy `UKSF.Api/appsettings.Development.json` into it (it is gitignored), and export `UKSF_API_DIR` per side in the loop. Keep the web checkout the same on both sides. The API base must include `a61e4070`.
+- A failed `down` keeps the run and its lock. Fix it and run `down` again before the next side. After the loop, check that `$TMPDIR/uksf-verify.lock` does not exist and that nothing listens on ports 5500, 4200, and 47999.
+- If the PR changes this skill's scripts, the head's scripts drive both sides, so a harness regression is not visible on the base. Say so in the verdict.
 
 ## Arma beyond event replay
 
