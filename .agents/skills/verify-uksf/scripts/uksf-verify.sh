@@ -80,12 +80,16 @@ data() {
   dotnet run "$SCRIPTS/verify-data.cs" -- "$dir/settings.json" "$@" 2>/dev/null
 }
 
+cleanup_records() {
+  dotnet run "$SCRIPTS/verify-cleanup.cs" -- "$1/settings.json" "${@:2}"
+}
+
 up() {
   local api_dir
   api_dir="$(cd "${UKSF_API_DIR:-$HOME/Workspace/uksf/api}" && pwd -P)"
   mkdir "$LOCK" 2>/dev/null || { echo "refusing: another verify run holds $LOCK ($(cat "$LOCK/run" 2>/dev/null)); run '$0 down' with its UKSF_VERIFY_HOME ($(cat "$LOCK/home" 2>/dev/null))" >&2; exit 1; }
   local run dir
-  run="v$(date -u +%Y%m%d%H%M%S)-$(openssl rand -hex 2)"
+  run="v$(date -u +%Y%m%d%H%M%S)-$(openssl rand -hex 8)"
   dir="$(run_dir "$run")"
   echo "$run" > "$LOCK/run"
   echo "$VERIFY_HOME" > "$LOCK/home"
@@ -267,12 +271,10 @@ down() {
   fi
   stop_api "$dir" || return 1
   stop_web "$dir" || return 1
-  local kinds
+  local kinds status=0
   kinds="$(sort -u "$dir/owned" | tr '\n' ' ')" || { echo "the run's ownership manifest is unreadable" >&2; return 1; }
-  if [[ -n "$kinds" ]] && ! data "$dir" cleanup "$run" $kinds > "$dir/evidence/cleanup.json"; then
-    echo "processes stopped, but cleanup of $kinds failed; run down again to retry" >&2
-    return 1
-  fi
+  [[ -z "$kinds" ]] || { cleanup_records "$dir" "$run" --dry-run $kinds > "$dir/evidence/cleanup-dry-run.json" && cat "$dir/evidence/cleanup-dry-run.json" && cleanup_records "$dir" "$run" $kinds > "$dir/evidence/cleanup.json"; } || status=$?
+  (( status == 0 )) || { echo "processes stopped, but cleanup of $kinds failed ($(cat "$dir/evidence/cleanup.json" 2>/dev/null)); run down again to retry" >&2; return $(( status == 7 ? 7 : 1 )); }
   [[ -n "$kinds" ]] || echo '{"cleanup":"no records were created"}' > "$dir/evidence/cleanup.json"
   cat "$dir/evidence/cleanup.json"
   echo

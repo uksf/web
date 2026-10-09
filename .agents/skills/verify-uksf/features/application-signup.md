@@ -31,4 +31,5 @@ Evidence: a screenshot after steps 1, 4, 5, and 7, the `.eml` path, and `verify-
 - The identity step opens in passkey mode. Headless Chrome has no authenticator, so use the password path.
 - Mongo stores `membershipState` as a number. `verify-data account` prints the enum name.
 - The email address must be unused. A second sign-up in the same run fails, so run `down` and `up` before you repeat it.
-- The Communications step needs Teamspeak, which verify mode does not start, so the drive stops there.
+- The Communications step needs Teamspeak, which verify mode does not start. The plain drive stops there. With `--details` the driver seeds the comms fields and continues into [application-details.md](application-details.md).
+- The application pages post funnel events to `POST /application/analytics/event` (`applicationFunnelEvents`): `info_page_view`, `info_page_next`, `info_page_duration`, `account_created`, and `email_confirmed`. The driver sets their `visitorId` to `verify-<run-id>` and `down` deletes them.
