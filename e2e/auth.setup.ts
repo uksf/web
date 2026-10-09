@@ -3,7 +3,6 @@ import * as dotenv from 'dotenv';
 import * as path from 'path';
 import * as fs from 'fs';
 
-// Load test credentials from .env.test
 dotenv.config({ path: path.resolve(__dirname, '../.env.test') });
 
 if (!process.env.TEST_EMAIL || !process.env.TEST_PASSWORD) {
@@ -13,31 +12,20 @@ if (!process.env.TEST_EMAIL || !process.env.TEST_PASSWORD) {
 const authFile = path.resolve(__dirname, '../playwright/.auth/user.json');
 
 setup('authenticate', async ({ page }) => {
-  // Ensure the auth directory exists
   const authDir = path.dirname(authFile);
   if (!fs.existsSync(authDir)) {
     fs.mkdirSync(authDir, { recursive: true });
   }
 
-  // Navigate to login page
   await page.goto('/login');
 
-  // Wait for the login form to be visible
-  await page.waitForSelector('input[autocomplete="username"]');
+  const form = page.locator('app-login');
+  await form.locator('input[type="email"]').fill(process.env.TEST_EMAIL!);
+  await form.locator('input[type="password"]').fill(process.env.TEST_PASSWORD!);
+  await form.locator('app-button').filter({ hasText: /^\s*Sign in\s*$/ }).click();
 
-  // Fill in credentials
-  await page.fill('input[autocomplete="username"]', process.env.TEST_EMAIL!);
-  await page.fill('input[autocomplete="current-password"]', process.env.TEST_PASSWORD!);
-
-  // Click the login button (app-button component containing "Login" text)
-  await page.click('app-button:has-text("Login")');
-
-  // Wait for redirect after successful login
-  await page.waitForURL('**/home', { timeout: 30000 });
-
-  // Verify we're logged in by checking for authenticated content
+  await page.waitForURL(/\/(home|application)/, { timeout: 30000 });
   await expect(page.locator('app-header-bar')).toBeVisible();
 
-  // Save authenticated state
   await page.context().storageState({ path: authFile });
 });
