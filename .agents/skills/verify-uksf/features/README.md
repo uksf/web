@@ -8,11 +8,13 @@ This map lists what a user or the game does with UKSF, how they reach it, and ho
 - Shared `devLocal` data: real units, ranks, and accounts, read as-is.
 - Run data: the account `verify+<run-id>@uksf-verify.invalid` (password `Verify-<run-id>-pw`, name Verify Agent, display name `Agent.V`) and the mission session `verify-<run-id>`. `down` removes both.
 
+Last clean pass: none yet. The first maintain pass (2026-10-09) ended `changed`.
+
 ## Driving conventions
 
 - Web: Playwright with Google Chrome headless, viewport 1280 by 900, from the web checkout root. Prefer `autocomplete` attributes, label text, and component tags (`app-button`, `app-header-bar`) over coordinates.
 - Game: HTTP replay to `POST http://127.0.0.1:5500/gameservers/events` with the extension's wire format: an SQF `str()` array `["<type>",[["key",value],...]]`, header `X-Api-Port` (the game listener port), and header `X-Enqueued-At`. The endpoint accepts loopback callers only.
-- Data checks: `dotnet run scripts/verify-data.cs -- <run>/settings.json account <email>` or `mission <session-id>`.
+- Data checks: `dotnet run .agents/skills/verify-uksf/scripts/verify-data.cs -- <run>/settings.json account <email>` or `mission <session-id>`.
 
 ## Proof rules
 
@@ -28,7 +30,7 @@ This map lists what a user or the game does with UKSF, how they reach it, and ho
 
 ## Known local failures
 
-- The home page's picture endpoint reads a configured `E:\Workspace\UKSF\homepagepictures` path, which exists only on ultron. On macOS it logs a `DirectoryNotFoundException`. It does not affect the mapped features.
+- None. The home page's picture endpoint (`GET /instagram`) reads a configured `E:\Workspace\UKSF\homepagepictures` path that exists only on ultron. With the path absent it answers 200 with `[]` and logs no error. It does not affect the mapped features.
 
 ## Not yet mapped
 

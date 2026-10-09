@@ -8,7 +8,7 @@ description: Drive the real UKSF website, API, and the API's Arma game-server su
 This skill starts its own UKSF API and web dev server, drives them the way a user or the Arma extension does, and keeps the evidence. It never drives an instance it did not start.
 
 - Web checkout: the repo that holds this skill (`UKSF_WEB_DIR` overrides it).
-- API checkout: `~/Workspace/uksf/api` (`UKSF_API_DIR` overrides it). It must hold the gitignored `UKSF.Api/appsettings.Development.json`, which points at the shared `devLocal` Mongo database, and it must include API commit `a61e4070` or later, which keeps verify-mode logs out of Mongo. The doctor fails on an older API.
+- API checkout: `~/Workspace/uksf/api` (`UKSF_API_DIR` overrides it). Use the same letter case every time: the .NET build cache stores absolute paths, and mixing `UKSF/api` with `uksf/api` fails the build with missing project references. It must hold the gitignored `UKSF.Api/appsettings.Development.json`, which points at the shared `devLocal` Mongo database, and it must include API commit `a61e4070` or later, which keeps verify-mode logs out of Mongo. The doctor fails on an older API.
 - Run state and evidence: `~/.uksf-verify/runs/<run-id>/` (`UKSF_VERIFY_HOME` overrides the root).
 - Host: macOS (iultron). It needs the .NET 10 SDK in `~/.dotnet`, bun in `~/.bun/bin`, `node_modules` installed in the web checkout (`bun install`; a symlinked `node_modules` breaks Angular's CSS imports), and Google Chrome. Set `PLAYWRIGHT_CHROME_PATH` to use another Chrome build.
 
@@ -28,7 +28,7 @@ $S/uksf-verify.sh up
 
 If any step fails, `up` runs `down` before it exits.
 
-Ready signals: the API log line `Application started`, and HTTP 200 from `http://localhost:4200/`. A fresh `up` takes about 20 seconds with a warm build.
+Ready signals: the API log line `Application started`, and HTTP 200 from `http://localhost:4200/`. A fresh `up` took 1 minute 54 seconds on 2026-10-09 with the API build included.
 
 ## Doctor
 
