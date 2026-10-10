@@ -122,16 +122,23 @@ Rerun that function shape for every drive the PR needs, with the same drives on 
 API PR: an API worktree per side, one web checkout shared by both, `--api-dir` per side. The API base must include `a61e4070` or its squash on main, `ed06088b`; `api-worktree.sh add` refuses a base without either.
 
 ```bash
-A=~/.worktrees/api; S=$P/vs-head/.agents/skills/verify-uksf/scripts
+W=~/Workspace/uksf/web; P=~/.worktrees/web; A=~/.worktrees/api; WEB=<web-sha>; B=<api-base-sha>; H=<api-head-sha>
 api_sides() {
   local side
   for side in base head; do
-    $S/verify-side.sh --side api-$side --api-dir $A/vs-$side --web-dir $P/vs-head --scripts-dir $S --home ~/.uksf-verify-pr/api-$side --drive signup || return "$?"
+    $S/verify-side.sh --side api-$side --api-dir $A/vs-$side --web-dir $P/vs-web --scripts-dir $S --home ~/.uksf-verify-pr/api-$side --drive signup || return "$?"
   done
 }
+git -C $W fetch origin &&
+git -C $W worktree add --detach $P/vs-web $WEB &&
+(cd $P/vs-web && bun install --frozen-lockfile) &&
+S=$P/vs-web/.agents/skills/verify-uksf/scripts &&
 $S/api-worktree.sh add $B $A/vs-base && $S/api-worktree.sh add $H $A/vs-head &&
-api_sides && $S/api-worktree.sh remove $A/vs-base && $S/api-worktree.sh remove $A/vs-head
+api_sides &&
+$S/api-worktree.sh remove $A/vs-base && $S/api-worktree.sh remove $A/vs-head && git -C $W worktree remove $P/vs-web
 ```
+
+Run Details as its own side with its own `--home`, because a single run cannot hold both sign-up and Details.
 
 `remove` refuses a path that `add` did not create (no ownership marker), the main API checkout, a directory inside a worktree, and a settings file that is not the copy `add` made. Run it with `--dry-run` first to see the same checks without changes.
 
