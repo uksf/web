@@ -27,7 +27,8 @@ each drive's result, the cleanup remaining counts, the lock and port results, an
 
 Exit codes:
   0  every drive passed, down was clean, no lock and no listeners remain
-  1  up, doctor or a drive failed after a clean down, or a lock or listener remains, or bad input
+  1  up, doctor or a drive failed after a clean down, or a lock or listener remains, or bad input,
+     or the harness lacks a requested drive (reported as "unsupported"; no run starts)
   2  down failed: the run and its lock are kept; the retry command is printed
 EOF
 }
@@ -88,6 +89,24 @@ if [[ " ${drives[*]} " == *" signup "* && " ${drives[*]} " == *" details "* ]]; 
   kept=()
   for name in "${drives[@]}"; do [[ "$name" == signup ]] || kept+=("$name"); done
   drives=("${kept[@]}")
+fi
+
+unsupported=0
+drive_results_early='{}'
+for name in "${drives[@]}"; do
+  state="skipped"
+  case "$name" in
+    mission) [[ -f "$scripts_dir/drive-mission.mjs" ]] || state="unsupported" ;;
+    details) grep -qF -- '"--details"' "$scripts_dir/drive-signup.mjs" 2>/dev/null || state="unsupported" ;;
+  esac
+  [[ "$state" == unsupported ]] && unsupported=1
+  drive_results_early="$(jq -c --arg n "$name" --arg r "$state" '.[$n] = $r' <<<"$drive_results_early")"
+done
+if ((unsupported)); then
+  echo "the harness in $scripts_dir does not support every requested drive: no run started" >&2
+  jq -cn --arg side "${side:-$(basename "$home_dir")}" --argjson drives "$drive_results_early" \
+    '{side: $side, runId: "", evidence: "", up: "skipped", doctor: "skipped", drives: $drives, downExit: 0, cleanupRemaining: null, lock: "untouched", ports: {}, exitCode: 1}'
+  exit 1
 fi
 
 web_dir="$(cd "$web_dir" && pwd -P)"

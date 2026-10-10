@@ -8,7 +8,8 @@ usage:
   api-worktree.sh remove <path> [--dry-run]
   api-worktree.sh --help
 
-add      creates a detached API worktree of <sha> at <path> and copies the gitignored
+add      refuses a <sha> that contains neither a61e4070 nor its squash on main, ed06088b (verify-mode
+         logs stay out of Mongo only from there), then creates a detached API worktree of <sha> at <path> and copies the gitignored
          UKSF.Api/appsettings.Development.json into it with mode 600. <path> must not exist, must be
          absolute, and below $HOME it must be lower case: mixed casing across API checkouts breaks the
          .NET build cache. The source repo is --api-repo, UKSF_API_REPO, or ~/Workspace/uksf/api.
@@ -44,6 +45,7 @@ add() {
   [[ -f "$repo/$settings" ]] || die "$repo has no $settings to copy"
   local commit
   commit="$(git -C "$repo" rev-parse --verify --quiet "$sha^{commit}")" || die "$sha is not a commit in $repo"
+  git -C "$repo" merge-base --is-ancestor a61e4070 "$commit" 2>/dev/null || git -C "$repo" merge-base --is-ancestor ed06088b "$commit" 2>/dev/null || die "$commit contains neither a61e4070 nor its squash ed06088b: before them, verify-mode logs reach shared Mongo"
   git -C "$repo" worktree add --detach "$path" "$commit" >&2 || die "git worktree add failed"
   cp "$repo/$settings" "$path/$settings" && chmod 600 "$path/$settings" || die "could not copy the settings file"
   jq -cn --arg path "$path" --arg sha "$commit" '{added: $path, sha: $sha, settingsMode: "600"}'

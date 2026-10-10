@@ -115,7 +115,7 @@ done
 
 Rerun that loop shape for every drive the PR needs, with the same drives on both sides. After exit 0 on both, `git -C $W worktree remove $P/vs-base` and `vs-head`.
 
-API PR: an API worktree per side, one web checkout shared by both, `--api-dir` per side. The API base must include `a61e4070`.
+API PR: an API worktree per side, one web checkout shared by both, `--api-dir` per side. The API base must include `a61e4070` or its squash on main, `ed06088b`; `api-worktree.sh add` refuses a base without either.
 
 ```bash
 A=~/.worktrees/api; S=$P/vs-head/.agents/skills/verify-uksf/scripts
@@ -127,7 +127,7 @@ done
 
 Then `api-worktree.sh remove $A/vs-base` and `vs-head`.
 
-Harness comparison: when the PR changes this skill's scripts, the web or API variants exercise only the head's harness, so a harness regression is invisible. Pin one product checkout (`--web-dir` and `--api-dir` identical on both runs) and vary only `--scripts-dir`: once with the base's scripts, once with the head's, each with its own `--home`, one at a time. A drive that passes with the base harness and fails with the head harness is a regression, `FAIL`. A claim about the harness that cannot be compared is unverified, and unverified is `FAIL` when the PR's done-bar depends on it. Saying so in the verdict does not turn it into a pass. A base harness that predates a flag may ignore it (the `7cb6d74b` scripts treat `--drive details` as a plain sign-up): read the drive's result file, not just the exit code, to see what it exercised.
+Harness comparison: when the PR changes this skill's scripts, the web or API variants exercise only the head's harness, so a harness regression is invisible. Pin one product checkout (`--web-dir` and `--api-dir` identical on both runs) and vary only `--scripts-dir`: once with the base's scripts, once with the head's, each with its own `--home`, one at a time. A drive that passes with the base harness and fails with the head harness is a regression, `FAIL`. A claim about the harness that cannot be compared is unverified, and unverified is `FAIL` when the PR's done-bar depends on it. Saying so in the verdict does not turn it into a pass. A base harness that lacks a requested drive (the `7cb6d74b` scripts have no Details drive) makes `verify-side.sh` report that drive as `unsupported`, exit 1, and start no run; that claim is then unverified for the base.
 
 Old harnesses can leave records behind: `7cb6d74b` and earlier never tag the browser's random funnel visitor id, so their `down` reports `cleanupRemaining: null` and five `applicationFunnelEvents` stay in devLocal. Report their ids and leave them; deleting records the run cannot prove it owns needs a person's decision.
 
