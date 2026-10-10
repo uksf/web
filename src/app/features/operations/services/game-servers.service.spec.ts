@@ -129,11 +129,11 @@ describe('GameServersService', () => {
         );
     });
 
-    it('killAllServers calls POST /gameservers/killall', () => {
+    it('killAllServers calls POST /gameservers/killall with the data-loss confirmation', () => {
         service.killAllServers().subscribe();
 
         expect(mockHttpClient.post).toHaveBeenCalledWith(
-            'http://localhost:5500/gameservers/killall',
+            'http://localhost:5500/gameservers/killall?confirmDataLoss=true',
             null
         );
     });

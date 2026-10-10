@@ -49,7 +49,7 @@ export class GameServersService {
     }
 
     killAllServers(): Observable<void> {
-        return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/killall`, null);
+        return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/killall?confirmDataLoss=true`, null);
     }
 
     addServer(body: string): Observable<unknown> {

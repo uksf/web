@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { OperationsServersComponent } from './operations-servers.component';
 import { GameServer, StopPhase } from '../../models/game-server';
 import { makeServer, setupOperationsServersSpec, teardownOperationsServersSpec } from './operations-servers.spec-setup';
-import { killConfirmationMessage } from './operations-servers.helpers';
+import { killAllConfirmationMessage, killConfirmationMessage } from './operations-servers.helpers';
 
 describe('OperationsServersComponent status', () => {
     let component: OperationsServersComponent;
@@ -98,6 +98,25 @@ describe('OperationsServersComponent status', () => {
 
         it('keeps the general warning for a server that is not saving', () => {
             expect(killConfirmationMessage(makeServer({ name: 'Main' }))).toBe("Are you sure you want to kill 'Main'? This could have unexpected effects on the server");
+        });
+    });
+
+    describe('kill all confirmation', () => {
+        it('names the servers that are still saving and warns of persistence loss', () => {
+            const servers = [
+                makeServer({ name: 'Main', status: { ...makeServer().status, stopPhase: StopPhase.Delivering } }),
+                makeServer({ name: 'Training' })
+            ];
+
+            expect(killAllConfirmationMessage(servers, 3)).toBe(
+                'Main still saving. Killing all 3 servers now loses any persistence data that has not reached the API. Kill them anyway?'
+            );
+        });
+
+        it('keeps the general warning when no server is saving', () => {
+            expect(killAllConfirmationMessage([makeServer({ name: 'Main' })], 2)).toBe(
+                'Are you sure you want to kill 2 servers?\nThere could be players still on and this could have unexpected effects on the server'
+            );
         });
     });
 });

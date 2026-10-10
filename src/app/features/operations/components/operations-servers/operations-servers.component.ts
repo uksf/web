@@ -17,7 +17,7 @@ import { UksfError } from '@app/shared/models/response';
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { OrderUpdateRequest } from '@app/shared/models/order-update-request';
 import { GameServer, GameServersUpdate, GameServerUpdate, Mission, MissionReport } from '../../models/game-server';
-import { applyUptimes, isServerKillAllowed, killConfirmationMessage, isServerStopping, mapMission, mapMissionElement, missionName, serverStatusLabel } from './operations-servers.helpers';
+import { applyUptimes, isServerKillAllowed, killAllConfirmationMessage, killConfirmationMessage, isServerStopping, mapMission, mapMissionElement, missionName, serverStatusLabel } from './operations-servers.helpers';
 import { GameServersService } from '../../services/game-servers.service';
 import { DestroyableComponent } from '@app/shared/components';
 import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
@@ -540,7 +540,7 @@ export class OperationsServersComponent extends DestroyableComponent implements 
     killAll() {
         this.dialog
             .open(ConfirmationModalComponent, {
-                data: { message: `Are you sure you want to kill ${this.instanceCount} servers?\nThere could be players still on and this could have unexpected effects on the server` }
+                data: { message: killAllConfirmationMessage(this.servers, this.instanceCount) }
             })
             .afterClosed()
             .pipe(first())
