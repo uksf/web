@@ -92,37 +92,70 @@ $S/uksf-verify.sh down
 
 ## Base versus head
 
-`verify-pr` drives the PR base and the PR head one after the other. The lock allows one run at a time, so never start the second side before `down` finishes on the first. Each side has its own worktree, its own `UKSF_VERIFY_HOME`, and so its own evidence folder. Both sides use the head's scripts, so only the product differs.
+`verify-pr` drives the PR base and the PR head one after the other, with `scripts/verify-side.sh` for each side and `scripts/api-worktree.sh` for API checkouts. Run `--help` on either for the full flags. The lock allows one run at a time, so never start the second side before the first has finished: `verify-side.sh` only returns after `down`, the lock check, and the port checks.
+
+`verify-side.sh --web-dir D --scripts-dir D --home D [--api-dir D] [--side N] --drive signup|details|mission` runs up, doctor, the drives in order, then `down`. Every prerequisite is chained with `&&`, so no drive ever runs after a failed `up` or doctor. Name `signup` and `details` together and only `details` runs, because it includes sign-up and sign-in and two drives cannot share a run. Each side needs its own `--home`, so its evidence folder stays separate.
+
+Exit codes: 0 all passed, down clean, no lock, every port free; 1 up, doctor, or a drive failed after a clean `down`, or a lock or listener remains, or a port could not be inspected, or bad input; 2 `down` failed (including the cleanup inside a failed `up`), the run and lock are kept, and the shell-quoted retry command is printed. The last line is always JSON, on every exit path after the arguments are read: side, run id, evidence path, doctor, each drive's result, `notes` (the reason for a drive's failure), `cleanupRemaining`, lock, ports (`free`, `listening` or `error`), exit code, reason, retry. It needs `jq` and `lsof`; without `jq` it prints a fixed JSON line with exit 1. A `details` pass needs the driver's own `application-details/result.json` with `pass: true` and every Details check true; a harness that accepts `--details` but ran no Details checks is recorded as a fail. Quote that line and the evidence path in the verdict. Stop at the first non-zero side; do not remove worktrees until both sides exit 0.
+
+Web worktrees are plain `git worktree add --detach` checkouts followed by `bun install --frozen-lockfile` in each. API worktrees use `api-worktree.sh add <sha> <path>` (lower-case path below `$HOME`, copies the gitignored settings with mode 600) and `api-worktree.sh remove <path>` (deletes the copy, then the worktree; `--dry-run` shows the plan). Remove every worktree only after both sides tear down cleanly.
+
+Web PR: base and head web worktrees, the head's scripts on both sides, the same API checkout.
 
 ```bash
-W=~/Workspace/uksf/web; P=~/.worktrees/web; BASE=<base-sha>; HEAD=<head-sha>
-export PATH="$HOME/.dotnet:$HOME/.bun/bin:$PATH" DOTNET_ROOT="$HOME/.dotnet"
-S=$P/verify-head/.agents/skills/verify-uksf/scripts; V=$S/uksf-verify.sh
-run_side() {
-  export UKSF_WEB_DIR=$P/verify-$1 UKSF_VERIFY_HOME=$HOME/.uksf-verify-pr/$1
-  local ok=0 R ID
-  $V up || { echo "$1: up failed; up cleaned itself. Stopped, worktrees kept."; return 1; }
-  if $V doctor && R=$($V dir) && ID=$($V run-id) && (cd "$UKSF_WEB_DIR" && node $S/drive-signup.mjs "$R" "$ID" "$S"); then ok=1; fi
-  $V down || { echo "$1: down failed. Stopped, worktrees kept. Fix cleanup, then rerun down with UKSF_VERIFY_HOME=$UKSF_VERIFY_HOME."; return 2; }
-  [ $ok = 1 ] || { echo "$1: doctor or drive failed. Torn down, stopped, worktrees kept. No driver ran after a failed doctor."; return 1; }
+W=~/Workspace/uksf/web; P=~/.worktrees/web; B=<base-sha>; H=<head-sha>
+web_sides() {
+  local side
+  for side in base head; do
+    $S/verify-side.sh --side $side --web-dir $P/vs-$side --scripts-dir $S --home ~/.uksf-verify-pr/$side --drive details || return "$?"
+  done
 }
 git -C $W fetch origin &&
-git -C $W worktree add --detach $P/verify-base $BASE &&
-git -C $W worktree add --detach $P/verify-head $HEAD &&
-(cd $P/verify-base && bun install --frozen-lockfile) &&
-(cd $P/verify-head && bun install --frozen-lockfile) &&
-run_side base && run_side head &&
-git -C $W worktree remove --force $P/verify-base &&
-git -C $W worktree remove --force $P/verify-head
+git -C $W worktree add --detach $P/vs-base $B && git -C $W worktree add --detach $P/vs-head $H &&
+(cd $P/vs-base && bun install --frozen-lockfile) && (cd $P/vs-head && bun install --frozen-lockfile) &&
+S=$P/vs-head/.agents/skills/verify-uksf/scripts &&
+web_sides && git -C $W worktree remove $P/vs-base && git -C $W worktree remove $P/vs-head
 ```
 
-Every prerequisite is chained with `&&`, so a failed checkout, `up`, `doctor`, or `cd` stops that side before any driver runs, and a failed side stops the recipe before the next side starts. Do not rewrite the chain with `set -e` inside a subshell on the left of `||`: Bash ignores errexit there. The worktrees go only after both sides tore down cleanly. After a stop, read the message, fix the cause, run `down` with that side's `UKSF_VERIFY_HOME` if it did not finish, and remove the worktrees by hand.
+Rerun that function shape for every drive the PR needs, with the same drives on both sides. The removals run only after both sides return 0; `|| return "$?"` keeps the failing side's status, where `|| break` would turn it into 0. After a stop, nothing is removed.
 
-- Add the drives the PR needs to the subshell, for example `drive-signup.mjs ... --details` or `drive-mission.mjs`. Run the same drives on both sides.
-- Evidence: `~/.uksf-verify-pr/base/runs/<run-id>/evidence/` and `~/.uksf-verify-pr/head/runs/<run-id>/evidence/`. Quote both paths in the verdict.
-- For an API PR, make an API worktree for each side with the same lower-case path rule, copy `UKSF.Api/appsettings.Development.json` into it (it is gitignored), and export `UKSF_API_DIR` per side in the loop. Keep the web checkout the same on both sides. The API base must include `a61e4070`.
-- A failed `down` keeps the run and its lock; the recipe stops and keeps both worktrees. Fix it and run `down` again before anything else. After the recipe, check that `$TMPDIR/uksf-verify.lock` does not exist and that nothing listens on ports 5500, 4200, and 47999.
-- If the PR changes this skill's scripts, the recipe above exercises only the head's harness, so a harness regression is not visible. Run the harness comparison too: with the same pinned product checkout (for example `UKSF_WEB_DIR=$P/verify-base`), drive once with the base's scripts and once with the head's scripts, each with its own `UKSF_VERIFY_HOME`, one at a time. A drive that works with the base harness and fails with the head harness is a regression, `FAIL`. If the comparison cannot run, every claim about the harness is unverified, which is `FAIL` when the PR's done-bar depends on it. Saying so in the verdict does not turn an unverified or failing harness claim into a pass.
+API PR: an API worktree per side, one web checkout shared by both, `--api-dir` per side. The API base must include `a61e4070` or its squash on main, `ed06088b`; `api-worktree.sh add` refuses a base without either.
+
+```bash
+A=~/.worktrees/api; S=$P/vs-head/.agents/skills/verify-uksf/scripts
+api_sides() {
+  local side
+  for side in base head; do
+    $S/verify-side.sh --side api-$side --api-dir $A/vs-$side --web-dir $P/vs-head --scripts-dir $S --home ~/.uksf-verify-pr/api-$side --drive signup || return "$?"
+  done
+}
+$S/api-worktree.sh add $B $A/vs-base && $S/api-worktree.sh add $H $A/vs-head &&
+api_sides && $S/api-worktree.sh remove $A/vs-base && $S/api-worktree.sh remove $A/vs-head
+```
+
+`remove` refuses a path that `add` did not create (no ownership marker), the main API checkout, a directory inside a worktree, and a settings file that is not the copy `add` made. Run it with `--dry-run` first to see the same checks without changes.
+
+Harness comparison: when the PR changes this skill's scripts, the web or API variants exercise only the head's harness, so a harness regression is invisible. Pin one product checkout (`--web-dir` and `--api-dir` identical on both runs) and vary only `--scripts-dir`: once with the base's scripts, once with the head's, each with its own `--home`, one at a time. The head's `verify-side.sh` runs both; only the harness it points at differs.
+
+```bash
+harness_sides() {
+  local label
+  for label in base head; do
+    $S/verify-side.sh --side harness-$label --web-dir $P/vs-head --scripts-dir $P/vs-$label/.agents/skills/verify-uksf/scripts --home ~/.uksf-verify-pr/harness-$label --drive signup || return "$?"
+  done
+}
+[ "$(git -C $P/vs-base rev-parse HEAD)" = "$(git -C $W rev-parse $B)" ] &&
+[ "$(git -C $P/vs-head rev-parse HEAD)" = "$(git -C $W rev-parse $H)" ] &&
+harness_sides && git -C $W worktree remove $P/vs-base && git -C $W worktree remove $P/vs-head
+```
+
+A drive that passes with the base harness and fails with the head harness is a regression, `FAIL`. A claim about the harness that cannot be compared is unverified, and unverified is `FAIL` when the PR's done-bar depends on it. Saying so in the verdict does not turn it into a pass. A base harness that lacks a requested drive (the `7cb6d74b` scripts have no Details drive) makes `verify-side.sh` report that drive as `unsupported`, exit 1, and start no run; that claim is then unverified for the base.
+
+Old harnesses can leave records behind: `7cb6d74b` and earlier never tag the browser's random funnel visitor id, so their `down` reports `cleanupRemaining: null` and five `applicationFunnelEvents` stay in devLocal. Report their ids and leave them; deleting records the run cannot prove it owns needs a person's decision.
+
+Never publish raw `api.log`: it contains auth tokens. Quote evidence files (`result.json`, `cleanup.json`) instead.
+
+After a stop, read the message, fix the cause, run `down` with that side's `UKSF_VERIFY_HOME` if it did not finish (exit 2 prints the exact command), and remove worktrees by hand.
 
 ## Arma beyond event replay
 
