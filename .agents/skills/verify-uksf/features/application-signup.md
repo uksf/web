@@ -7,7 +7,7 @@ A visitor applies to join UKSF. The first three steps create an account and conf
 - Information step: the joining requirements, with a Next button.
 - Identity step: email, password and confirmation (or a passkey), first and last name, date of birth, and nation of residence. Next creates the account through `POST /accounts/create` and signs the visitor in.
 - Email Confirmation step: the API mails a 24-character code. Entering it calls `POST /accounts/code`, sets the account's `membershipState` from `Unconfirmed` (0) to `Confirmed` (1), and moves to the Communications step.
-- Resend: the Resend button calls `POST /accounts/resend-email-code`.
+- Resend: the "Resend Code" button calls `POST /accounts/resend-email-code`.
 
 ## How to get to it
 

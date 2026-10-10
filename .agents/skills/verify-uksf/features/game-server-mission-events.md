@@ -4,7 +4,7 @@ The UKSF Arma extension reports what happens on a game server. The API records e
 
 ## Sub-features
 
-- `mission_started` with `sessionId`, `mission`, and `map`: creates or updates the `missionSessions` record and sets `missionStarted`. When `X-Api-Port` matches a configured game server, it also sets that server's current session.
+- `mission_started` with `sessionId`, `mission`, and `map`: creates or updates the `missionSessions` record and sets `missionStarted`. When `X-Api-Port` matches a configured game server, it also sets that server's `CurrentMissionSessionId`, and `mission_ended` clears it (`GameServerEventHandler.cs`, `HandleMissionLifecycleEvent`).
 - `player_connected` with `sessionId`, `uid`, and `name`, and `player_disconnected` with `sessionId` and `uid`: add and close a `playerPresence` entry.
 - `mission_ended` with `sessionId` and `duration`: sets `missionEnded` and `durationSeconds`.
 - The endpoint answers 202 and handles the event in the background, except `persistence_save`, which it handles before it answers 200.
@@ -30,6 +30,6 @@ Evidence: every posted body and its HTTP status, each polled session state, and 
 - The endpoint is loopback-only. Post to `127.0.0.1`, not the machine's network address.
 - SQF strings double their quotes. Numbers are bare.
 - `durationSeconds` reads back as the string `42` from `verify-data`.
-- Each event handler finds the session with `FindFirst`, which filters in Mongo through the `sessionId` index. Against the remote `devLocal`, an event shows in Mongo within 1 to 3 seconds (measured 1, 1, 1, and 3 seconds on 2026-10-09). The driver still waits up to 180 seconds per step and records `secondsUntilVisible`.
+- Each event handler finds the session with `FindFirst`, which filters in Mongo through the `sessionId` index. Against the remote `devLocal`, an event shows in Mongo within 1 to 3 seconds (measured 1, 1, 1, and 3 seconds, then 1, 1, 1, and 1 seconds, on 2026-10-09). The driver still waits up to 180 seconds per step and records `secondsUntilVisible`.
 - A Go tool on iultron (`Go-http-client/1.1`, probably moshi-hook port discovery) sends `GET /` to any new local listener within seconds. Only `POST /command` is a game command. The driver records other requests separately as `otherListenerRequests`.
 - NPC events need a mission with registered NPCs, and NPC broker features that are off in `devLocal`. They are not mapped yet.

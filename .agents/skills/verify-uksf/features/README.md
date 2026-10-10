@@ -8,7 +8,7 @@ This map lists what a user or the game does with UKSF, how they reach it, and ho
 - Shared `devLocal` data: real units, ranks, and accounts, read as-is.
 - Run data: the account `verify+<run-id>@uksf-verify.invalid` (password `Verify-<run-id>-pw`, name Verify Agent, display name `Agent.V`, `Cdt.Agent.V` after the Details submit), the application funnel events with `visitorId` `verify-<run-id>`, the application's comment threads and notifications by recorded id, and the mission session `verify-<run-id>`. `down` removes them all.
 
-Last clean pass: none yet. The first maintain pass (2026-10-09) ended `changed`.
+Last clean pass: none yet. The first and second maintain passes (2026-10-09, the second at web `b88c1616` and API `79d153a5`) ended `changed`.
 
 ## Driving conventions
 
