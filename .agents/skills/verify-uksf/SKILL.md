@@ -104,16 +104,16 @@ Web PR: base and head web worktrees, the head's scripts on both sides, the same 
 
 ```bash
 W=~/Workspace/uksf/web; P=~/.worktrees/web; B=<base-sha>; H=<head-sha>
-git -C $W fetch origin &&
-git -C $W worktree add --detach $P/vs-base $B && git -C $W worktree add --detach $P/vs-head $H &&
-(cd $P/vs-base && bun install --frozen-lockfile) && (cd $P/vs-head && bun install --frozen-lockfile) &&
-S=$P/vs-head/.agents/skills/verify-uksf/scripts &&
 web_sides() {
   local side
   for side in base head; do
     $S/verify-side.sh --side $side --web-dir $P/vs-$side --scripts-dir $S --home ~/.uksf-verify-pr/$side --drive details || return "$?"
   done
 }
+git -C $W fetch origin &&
+git -C $W worktree add --detach $P/vs-base $B && git -C $W worktree add --detach $P/vs-head $H &&
+(cd $P/vs-base && bun install --frozen-lockfile) && (cd $P/vs-head && bun install --frozen-lockfile) &&
+S=$P/vs-head/.agents/skills/verify-uksf/scripts &&
 web_sides && git -C $W worktree remove $P/vs-base && git -C $W worktree remove $P/vs-head
 ```
 
@@ -144,8 +144,12 @@ harness_sides() {
     $S/verify-side.sh --side harness-$label --web-dir $P/vs-head --scripts-dir $P/vs-$label/.agents/skills/verify-uksf/scripts --home ~/.uksf-verify-pr/harness-$label --drive signup || return "$?"
   done
 }
+[ "$(git -C $P/vs-base rev-parse HEAD)" = "$(git -C $W rev-parse $B)" ] &&
+[ "$(git -C $P/vs-head rev-parse HEAD)" = "$(git -C $W rev-parse $H)" ] &&
 harness_sides && git -C $W worktree remove $P/vs-base && git -C $W worktree remove $P/vs-head
-``` A drive that passes with the base harness and fails with the head harness is a regression, `FAIL`. A claim about the harness that cannot be compared is unverified, and unverified is `FAIL` when the PR's done-bar depends on it. Saying so in the verdict does not turn it into a pass. A base harness that lacks a requested drive (the `7cb6d74b` scripts have no Details drive) makes `verify-side.sh` report that drive as `unsupported`, exit 1, and start no run; that claim is then unverified for the base.
+```
+
+A drive that passes with the base harness and fails with the head harness is a regression, `FAIL`. A claim about the harness that cannot be compared is unverified, and unverified is `FAIL` when the PR's done-bar depends on it. Saying so in the verdict does not turn it into a pass. A base harness that lacks a requested drive (the `7cb6d74b` scripts have no Details drive) makes `verify-side.sh` report that drive as `unsupported`, exit 1, and start no run; that claim is then unverified for the base.
 
 Old harnesses can leave records behind: `7cb6d74b` and earlier never tag the browser's random funnel visitor id, so their `down` reports `cleanupRemaining: null` and five `applicationFunnelEvents` stay in devLocal. Report their ids and leave them; deleting records the run cannot prove it owns needs a person's decision.
 
