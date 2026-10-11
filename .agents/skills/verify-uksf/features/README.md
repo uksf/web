@@ -8,7 +8,7 @@ This map lists what a user or the game does with UKSF, how they reach it, and ho
 - Shared `devLocal` data: real units, ranks, and accounts, read as-is.
 - Run data: the account `verify+<run-id>@uksf-verify.invalid` (password `Verify-<run-id>-pw`, name Verify Agent, display name `Agent.V`, `Cdt.Agent.V` after the Details submit), the application funnel events with `visitorId` `verify-<run-id>`, the application's comment threads and notifications by recorded id, and the mission session `verify-<run-id>`. `down` removes them all.
 
-Last clean pass: none yet. The first, second, and third maintain passes (2026-10-09 twice, then 2026-10-11 at web `67b4cfde` and API `79d153a5`) ended `changed`.
+Last clean pass: none yet. The first four maintain passes (2026-10-09 twice, then 2026-10-11 at web `67b4cfde` and API `79d153a5`, then 2026-10-11 at web `357db2dc` and API `a8da4a9c`) ended `changed`.
 
 ## Driving conventions
 
@@ -32,7 +32,6 @@ Last clean pass: none yet. The first, second, and third maintain passes (2026-10
 
 ## Known local failures
 
-- One of eleven sign-up drives on 2026-10-11 timed out waiting for `POST /accounts/create` after the Identity step's **Next** click (`03-failure.png` shows the filled form, and the API log has no create request). The next run with the same code passed. Run `down` and drive again.
 - The home page's picture endpoint (`GET /instagram`) reads a configured `E:\Workspace\UKSF\homepagepictures` path that exists only on ultron. With the path absent it answers 200 with `[]` and logs no error. It does not affect the mapped features.
 
 ## Not yet mapped
