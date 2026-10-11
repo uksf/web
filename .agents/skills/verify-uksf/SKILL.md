@@ -36,7 +36,7 @@ Ready signals: the API log line `Application started`, and HTTP 200 from `http:/
 $S/uksf-verify.sh doctor
 ```
 
-Run it after `up`, and again whenever a result looks wrong. Every line must be `PASS`:
+Run it after `up`, and again whenever a result looks wrong. Every `PASS` or `FAIL` line must be `PASS`. The two lines that start `API reports database:` and `API connections now:` are informational: they print what the next check compares, and that check passes or fails:
 
 - this run owns the lock, the API settings file is unchanged, the API process (by PID and start time) holds port 5500, and the run's web process group (by leader start time) holds port 4200 and serves this web checkout;
 - the API and web source ids still match the ones recorded at `up`;
