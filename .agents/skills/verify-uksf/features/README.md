@@ -8,7 +8,7 @@ This map lists what a user or the game does with UKSF, how they reach it, and ho
 - Shared `devLocal` data: real units, ranks, and accounts, read as-is.
 - Run data: the account `verify+<run-id>@uksf-verify.invalid` (password `Verify-<run-id>-pw`, name Verify Agent, display name `Agent.V`, `Cdt.Agent.V` after the Details submit), the application funnel events with `visitorId` `verify-<run-id>`, the application's comment threads and notifications by recorded id, and the mission session `verify-<run-id>`. `down` removes them all.
 
-Last clean pass: none yet. All five maintain passes ended `changed`: 2026-10-09 twice, then 2026-10-11 at web `67b4cfde` and API `79d153a5`, at web `357db2dc` and API `a8da4a9c`, and at web `97ca3d42` and API `a8da4a9c`. Not exercised live: the Teamspeak stored-true path and `down` exiting 7 after a failed submit.
+Last clean pass: none yet. All six maintain passes ended `changed`: 2026-10-09 twice, then 2026-10-11 at web `67b4cfde` and API `79d153a5`, at web `357db2dc` and API `a8da4a9c`, at web `97ca3d42` and API `a8da4a9c`, and at web `1ee69bb8` and API `a8da4a9c`. Not exercised live: the Teamspeak stored-true path and `down` exiting 7 after a failed submit.
 
 ## Driving conventions
 
