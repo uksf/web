@@ -26,7 +26,7 @@ $S/uksf-verify.sh up
 - the API with `ASPNETCORE_ENVIRONMENT=Development`, `UKSF_VERIFY_MODE=1`, `UKSF_FEATURE_ON=NOTIFICATIONS` (honoured only by an API that has the seam, which forces notifications on for this process alone), and `UKSF_VERIFY_EMAIL_DIR=<run>/email`. An API with the seam also keeps `TEAMSPEAK` and `DISCORD` off in verify mode whatever the stored flags say. Verify mode runs no migrations, creates no startup scheduled jobs or indexes, loads no existing scheduled jobs, and starts no Teamspeak, Discord, queued builds, backups, game-server recovery, or NPC workers. Sign-up still creates and schedules the confirmation code's expiry job (see Data). It writes its own logs to stdout as `verify-log {json}` lines in `<run>/api.log`, not to Mongo, and prints `verify mode: database <name> at <host>:<port>`. Mail goes to `.eml` files in the run's `email` folder. The Discord client cannot connect in Development or verify mode.
 - the web dev server (`ng serve --port 4200`) in its own process group, recorded at launch.
 
-If any step fails, `up` runs `down` before it exits.
+Once `up` holds the lock, a failed step runs `down` before `up` exits. A refusal before the lock, such as another active run, changes nothing.
 
 Ready signals: the API log line `Application started`, and HTTP 200 from `http://localhost:4200/`. A cold `up` that builds the API takes a few minutes, and a warm .NET build cache brings it under a minute. `up` waits up to 120 seconds for the API to start (after the build) and then up to 240 seconds for the web server.
 
