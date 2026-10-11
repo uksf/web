@@ -1,8 +1,10 @@
+import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { data as lookup, recordOwnership, requireOwned } from "./verify-lib.mjs";
 
 const API = "http://localhost:5500";
+const NOTIFICATION_SUBJECT = "UKSF Notification";
 const ANSWERS = {
   arma: "Verify agent: three years of Arma 3 milkshake missions.",
   units: "Verify agent: none.",
@@ -48,11 +50,28 @@ async function settledApplication(runDir, scripts, account) {
   throw new Error(`the submit wrote notifications for [${current?.notificationOwners}] but the API notifies [${current?.expectedNotificationOwners}]; not settled within 60 seconds`);
 }
 
-function mailRecipients(runDir) {
+const addressDigest = (address) => createHash("sha256").update(address.trim().toLowerCase()).digest("hex").slice(0, 12);
+
+function emailMessages(runDir) {
   const folder = join(runDir, "email");
   return readdirSync(folder)
     .filter((name) => name.endsWith(".eml"))
-    .map((name) => ({ file: join(folder, name), to: readFileSync(join(folder, name), "utf8").match(/^To:\s*(.*)$/im)?.[1]?.trim() }));
+    .map((name) => {
+      const file = join(folder, name);
+      const raw = readFileSync(file, "utf8");
+      return { file, to: raw.match(/^To:.*?([^<\s,]+@[^>\s,]+)/im)?.[1] ?? "", subject: raw.match(/^Subject:\s*(.*)$/im)?.[1]?.trim() };
+    });
+}
+
+async function newNotificationMail(runDir, seen, expected) {
+  const fresh = () => emailMessages(runDir).filter((message) => !seen.has(message.file));
+  const deadline = Date.now() + 30_000;
+  while (fresh().length < expected.length && Date.now() < deadline) await new Promise((resolve) => setTimeout(resolve, 1_000));
+  await new Promise((resolve) => setTimeout(resolve, 3_000));
+  return fresh().map((message) => {
+    const digest = addressDigest(message.to);
+    return { file: message.file, subject: message.subject, digest, masked: expected.find((recipient) => recipient.digest === digest)?.masked ?? "unexpected recipient" };
+  });
 }
 
 async function steps({ page, runDir, runId, scripts, email, accountId, evidence, shot }) {
@@ -63,7 +82,7 @@ async function steps({ page, runDir, runId, scripts, email, accountId, evidence,
   if (!checks.preflightClean) throw new Error(`refusing: ${email} already has application writes (${JSON.stringify(before)})`);
   manifest(runDir, accountId, { unitMembersTotal: before.unitMembersTotal }, { complete: false });
   recordOwnership(runDir, "application");
-  const mailBefore = mailRecipients(runDir).length;
+  const mailBefore = new Set(emailMessages(runDir).map((message) => message.file));
 
   requireOwned(scripts, runId);
   const seeded = await seedComms(page);
@@ -103,12 +122,20 @@ async function steps({ page, runDir, runId, scripts, email, accountId, evidence,
   checks.notificationsExact = sameSet(after.notificationOwners, after.expectedNotificationOwners) && after.notificationOwners.includes(accountId);
   checks.noUnitMembershipsAdded = after.units.length === 0 && after.unitMembersTotal === before.unitMembersTotal;
   checks.submitFunnelEvent = after.funnelEvents.some((event) => event.event === "application_submitted");
-  const mail = mailRecipients(runDir).slice(mailBefore);
   const apiLog = readFileSync(join(runDir, "api.log"), "utf8");
+  const mailSupported = /^verify mode: features forced on: .*\bNOTIFICATIONS\b/m.test(apiLog);
+  let notificationMail = { status: "unsupported", reason: "the API did not log 'verify mode: features forced on: NOTIFICATIONS', so it lacks UKSF_FEATURE_ON and sends no notification mail" };
+  if (mailSupported) {
+    const delivered = await newNotificationMail(runDir, mailBefore, after.expectedNotificationMail);
+    const sameDigests = JSON.stringify(delivered.map((message) => message.digest).sort()) === JSON.stringify(after.expectedNotificationMail.map((recipient) => recipient.digest).sort());
+    checks.notificationMailExact = after.expectedNotificationMail.length > 0 && sameDigests;
+    checks.notificationMailSubjects = delivered.length > 0 && delivered.every((message) => message.subject === NOTIFICATION_SUBJECT);
+    notificationMail = { status: "checked", expected: after.expectedNotificationMail.map(({ masked }) => masked), delivered: delivered.map(({ masked, subject, file }) => ({ masked, subject, file })) };
+  }
   checks.auditLogged = apiLog.split("\n").some((line) => line.startsWith("verify-log ") && line.includes('"type":"AuditLog"') && line.includes('"message":"Application submitted for Cdt.Agent.V.'));
   checks.discordRefused = !/discord (connected|ready)/i.test(apiLog);
 
-  const result = { runId, email, seeded, before, after, notificationMail: mail, checks, pass: Object.values(checks).every(Boolean) };
+  const result = { runId, email, seeded, before, after, notificationMail, checks, pass: Object.values(checks).every(Boolean) };
   writeFileSync(join(evidence, "result.json"), JSON.stringify(result, null, 2));
   return result;
 }

@@ -1,6 +1,8 @@
 #:package MongoDB.Driver@3.9.0
 #:property PublishAot=false
 
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -66,6 +68,25 @@ async Task<List<string>> ExpectedNotificationOwners(ObjectId applicantId, BsonVa
     var candidates = new[] { applicantId.ToString() }.Concat(recruiter.IsBsonNull ? [] : [recruiter.ToString()!]).Concat(leads).Distinct().ToList();
     var notifiable = await accounts.Find(filter.And(filter.In("_id", candidates.Select(ObjectId.Parse)), filter.Ne("membershipState", 3))).Project(Builders<BsonDocument>.Projection.Include("_id")).ToListAsync();
     return notifiable.Select(x => x["_id"].ToString()!).OrderBy(x => x).ToList();
+}
+
+static string MaskAddress(string address)
+{
+    var at = address.LastIndexOf('@');
+    var dot = address.LastIndexOf('.');
+    return at < 1 || dot < at ? "***" : $"{address[0]}***@{address[at + 1]}***{address[dot..]}";
+}
+
+static string AddressDigest(string address) => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(address.Trim().ToLowerInvariant())))[..12].ToLowerInvariant();
+
+async Task<object[]> ExpectedNotificationMail(IEnumerable<string> owners)
+{
+    var recipients = await accounts.Find(filter.In("_id", owners.Select(ObjectId.Parse))).Project(Builders<BsonDocument>.Projection.Include("email").Include("settings")).ToListAsync();
+    return recipients
+           .Where(x => !x.GetValue("email", BsonNull.Value).IsBsonNull && x.GetValue("settings", BsonNull.Value) is var settings && (!settings.IsBsonDocument || settings.AsBsonDocument.GetValue("notificationsEmail", true).ToBoolean()))
+           .OrderBy(x => x["_id"].ToString())
+           .Select(x => (object)new { owner = x["_id"].ToString(), masked = MaskAddress(x["email"].ToString()!), digest = AddressDigest(x["email"].ToString()!) })
+           .ToArray();
 }
 
 switch (args[1])
@@ -154,6 +175,7 @@ switch (args[1])
         var threads = ApplicationThreads(applicant);
         var threadDocuments = await commentThreads.CountDocumentsAsync(filter.In("_id", threads.Select(ObjectId.Parse)));
         var visitorId = $"verify-{args[3].Split('+', '@')[1]}";
+        var expectedOwners = await ExpectedNotificationOwners(applicantId, recruiter);
         var applicantFunnel = await funnelEvents.Find(filter.Eq("visitorId", visitorId)).ToListAsync();
         Console.WriteLine(JsonSerializer.Serialize(new
         {
@@ -175,7 +197,8 @@ switch (args[1])
             notifications = notificationDocs.Select(x => x["_id"].ToString()).ToArray(),
             notificationOwners = notificationDocs.Select(x => x.GetValue("owner", BsonNull.Value).ToString()).OrderBy(x => x).ToArray(),
             recruiterAssigned = notificationDocs.Any(x => x.GetValue("owner", BsonNull.Value).ToString() == recruiter.ToString() && x.GetValue("link", BsonNull.Value).ToString() == $"/recruitment/{applicantId}"),
-            expectedNotificationOwners = await ExpectedNotificationOwners(applicantId, recruiter),
+            expectedNotificationOwners = expectedOwners,
+            expectedNotificationMail = await ExpectedNotificationMail(expectedOwners),
             units = holdingUnits,
             unitMembersTotal = await UnitMembersTotal(),
             funnelEvents = applicantFunnel.Select(x => new { id = x["_id"].ToString(), @event = x.GetValue("event", BsonNull.Value).ToString() }).ToArray()
