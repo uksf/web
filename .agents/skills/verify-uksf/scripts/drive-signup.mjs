@@ -97,7 +97,7 @@ try {
 
   requireOwned(scripts, runId);
   const created = page.waitForResponse((response) => response.url().endsWith("/accounts/create") && response.request().method() === "POST", { timeout: 30_000 });
-  await page.locator("app-application-identity app-button", { hasText: "Next" }).click();
+  await page.locator("app-application-identity app-button", { hasText: "Next" }).locator("button").click();
   const { token } = await (await created).json();
   const claims = JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString("utf8"));
   accountId = claims["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid"];
@@ -127,7 +127,7 @@ try {
   await signIn.goto(`${WEB}/login`);
   await signIn.locator("app-login input[type=email]").fill(email);
   await signIn.locator("app-login input[type=password]").fill(password);
-  await signIn.locator("app-login app-button").filter({ hasText: /^\s*Sign in\s*$/ }).click();
+  await signIn.locator("app-login app-button").filter({ hasText: /^\s*Sign in\s*$/ }).locator("button").click();
   await signIn.waitForURL(/\/(home|application)/, { timeout: 30_000 });
   await signIn.locator("app-header-bar").waitFor();
   const signedInAs = (await signIn.locator("app-header-bar").innerText()).includes("Agent.V");

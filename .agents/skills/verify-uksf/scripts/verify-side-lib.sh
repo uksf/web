@@ -129,6 +129,10 @@ details_checked() {
     "$run_dir/evidence/application-details/result.json" >/dev/null 2>&1
 }
 
+details_mail_status() {
+  jq -r '.notificationMailStatus // "unknown"' "$run_dir/evidence/application-details/result.json" 2>/dev/null
+}
+
 run_drives() {
   local name stopped=0
   drives_ok=1
@@ -139,6 +143,9 @@ run_drives() {
       record_drive "$name" fail
     elif [[ "$name" == details ]] && ! details_checked; then
       record_drive "$name" fail "harness ran no Details checks"
+    elif [[ "$name" == details && "$(details_mail_status)" == unsupported ]]; then
+      record_drive "$name" pass "notificationMail: unsupported; any mail claim is unverified"
+      continue
     else
       record_drive "$name" pass
       continue

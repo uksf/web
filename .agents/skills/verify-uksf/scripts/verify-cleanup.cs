@@ -1,4 +1,4 @@
-#:package MongoDB.Driver@3.6.0
+#:package MongoDB.Driver@3.9.0
 #:property PublishAot=false
 
 using System.Text.Json;

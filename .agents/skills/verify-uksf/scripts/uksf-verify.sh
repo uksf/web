@@ -105,6 +105,10 @@ up() {
     echo "refusing: an environment variable overrides API configuration; unset it" >&2
     false
   fi
+  if tr -d '[:space:]' <<<"${UKSF_FEATURE_OFF:-}" | tr '[:lower:]' '[:upper:]' | grep -qE '(^|,)NOTIFICATIONS(,|$)'; then
+    echo "refusing: UKSF_FEATURE_OFF contains NOTIFICATIONS, which overrides UKSF_FEATURE_ON; unset it" >&2
+    false
+  fi
   node "$SCRIPTS/check-web-deps.mjs" "$WEB_DIR"
   cp "$api_dir/UKSF.Api/appsettings.Development.json" "$dir/settings.json"
   chmod 600 "$dir/settings.json"
@@ -115,7 +119,7 @@ up() {
   echo "building the API at $(git -C "$api_dir" rev-parse --short HEAD) (source tree $(cut -c1-12 "$dir/api-source"))"
   dotnet build "$api_dir/UKSF.Api/UKSF.Api.csproj" -c Debug -o "$dir/api-bin" -v quiet -nologo > "$dir/api-build.log" 2>&1
 
-  ASPNETCORE_ENVIRONMENT=Development UKSF_VERIFY_MODE=1 UKSF_VERIFY_EMAIL_DIR="$dir/email" \
+  ASPNETCORE_ENVIRONMENT=Development UKSF_VERIFY_MODE=1 UKSF_FEATURE_ON=NOTIFICATIONS UKSF_VERIFY_EMAIL_DIR="$dir/email" \
     nohup "$dir/api-bin/UKSF.Api" --contentRoot "$api_dir/UKSF.Api" > "$dir/api.log" 2>&1 &
   echo $! > "$dir/api.pid"
   started_at "$(cat "$dir/api.pid")" > "$dir/api.started"
