@@ -105,7 +105,7 @@ up() {
     echo "refusing: an environment variable overrides API configuration; unset it" >&2
     false
   fi
-  if tr -d ' ' <<<"${UKSF_FEATURE_OFF:-}" | tr '[:lower:]' '[:upper:]' | grep -qE '(^|,)NOTIFICATIONS(,|$)'; then
+  if tr -d '[:space:]' <<<"${UKSF_FEATURE_OFF:-}" | tr '[:lower:]' '[:upper:]' | grep -qE '(^|,)NOTIFICATIONS(,|$)'; then
     echo "refusing: UKSF_FEATURE_OFF contains NOTIFICATIONS, which overrides UKSF_FEATURE_ON; unset it" >&2
     false
   fi
