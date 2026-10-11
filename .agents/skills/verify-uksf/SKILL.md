@@ -28,7 +28,7 @@ $S/uksf-verify.sh up
 
 If any step fails, `up` runs `down` before it exits.
 
-Ready signals: the API log line `Application started`, and HTTP 200 from `http://localhost:4200/`. A fresh `up` with the API build took 1 minute 54 seconds and 2 minutes 45 seconds on 2026-10-09 and about 16 seconds with a warm .NET build cache on 2026-10-11, so allow up to five minutes.
+Ready signals: the API log line `Application started`, and HTTP 200 from `http://localhost:4200/`. A cold `up` that builds the API takes a few minutes, and a warm .NET build cache brings it under a minute. Allow up to five minutes.
 
 ## Doctor
 
