@@ -131,7 +131,7 @@ api_sides() {
   done
 }
 git -C $W fetch origin &&
-mkdir -p ~/.uksf-verify-pr &&
+mkdir -p ~/.uksf-verify-pr $A &&
 git -C $W worktree add --detach $P/vs-web $WEB &&
 (cd $P/vs-web && bun install --frozen-lockfile) &&
 S=$P/vs-web/.agents/skills/verify-uksf/scripts &&
