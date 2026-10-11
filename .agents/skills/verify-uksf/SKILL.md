@@ -28,7 +28,7 @@ $S/uksf-verify.sh up
 
 If any step fails, `up` runs `down` before it exits.
 
-Ready signals: the API log line `Application started`, and HTTP 200 from `http://localhost:4200/`. A fresh `up` with the API build took 1 minute 54 seconds and 2 minutes 45 seconds on 2026-10-09, so allow up to five minutes.
+Ready signals: the API log line `Application started`, and HTTP 200 from `http://localhost:4200/`. A fresh `up` with the API build took 1 minute 54 seconds and 2 minutes 45 seconds on 2026-10-09 and 32 seconds with a warm .NET build cache on 2026-10-11, so allow up to five minutes.
 
 ## Doctor
 
@@ -49,7 +49,7 @@ If a line fails, run `down`, fix the cause, and start again. Do not drive a run 
 
 ## Drive
 
-Each driver takes the run directory, the run id, and the scripts directory, and writes `result.json` plus screenshots or payloads under `<run>/evidence/<feature>/`. Each exits 0 only when its proof holds.
+Each driver takes the run directory, the run id, and the scripts directory, and writes `result.json` plus screenshots or payloads under its own folder in `<run>/evidence/`: `signup` and `application-details` for `drive-signup.mjs`, `mission` for `drive-mission.mjs`. Each exits 0 only when its proof holds.
 
 ```bash
 export PATH="$HOME/.dotnet:$PATH" DOTNET_ROOT="$HOME/.dotnet"
@@ -145,12 +145,17 @@ Run Details as its own side with its own `--home`, because a single run cannot h
 Harness comparison: when the PR changes this skill's scripts, the web or API variants exercise only the head's harness, so a harness regression is invisible. Pin one product checkout (`--web-dir` and `--api-dir` identical on both runs) and vary only `--scripts-dir`: once with the base's scripts, once with the head's, each with its own `--home`, one at a time. The head's `verify-side.sh` runs both; only the harness it points at differs.
 
 ```bash
+W=~/Workspace/uksf/web; P=~/.worktrees/web; B=<base-sha>; H=<head-sha>
 harness_sides() {
   local label
   for label in base head; do
     $S/verify-side.sh --side harness-$label --web-dir $P/vs-head --scripts-dir $P/vs-$label/.agents/skills/verify-uksf/scripts --home ~/.uksf-verify-pr/harness-$label --drive signup || return "$?"
   done
 }
+git -C $W fetch origin &&
+git -C $W worktree add --detach $P/vs-base $B && git -C $W worktree add --detach $P/vs-head $H &&
+(cd $P/vs-base && bun install --frozen-lockfile) && (cd $P/vs-head && bun install --frozen-lockfile) &&
+S=$P/vs-head/.agents/skills/verify-uksf/scripts &&
 [ "$(git -C $P/vs-base rev-parse HEAD)" = "$(git -C $W rev-parse $B)" ] &&
 [ "$(git -C $P/vs-head rev-parse HEAD)" = "$(git -C $W rev-parse $H)" ] &&
 harness_sides && git -C $W worktree remove $P/vs-base && git -C $W worktree remove $P/vs-head

@@ -11,7 +11,7 @@ A visitor applies to join UKSF. The first three steps create an account and conf
 
 ## How to get to it
 
-- Header button **Apply**, or the sidebar entry **Application**, or the route `/application`.
+- The sidebar entry **Application** (shown to visitors who are not signed in and to signed-in accounts that are not yet members), or the route `/application`. The header button **Apply** appears only for a signed-in account whose email is confirmed (`ngxPermissionsOnly CONFIRMED`, `header-bar.component.html:21-25`), so a visitor sees only **Sign in** in the header.
 - A signed-in account that has not finished its application lands on the same page at its current step.
 
 ## Driving it with Playwright
