@@ -111,6 +111,7 @@ web_sides() {
   done
 }
 git -C $W fetch origin &&
+mkdir -p ~/.uksf-verify-pr &&
 git -C $W worktree add --detach $P/vs-base $B && git -C $W worktree add --detach $P/vs-head $H &&
 (cd $P/vs-base && bun install --frozen-lockfile) && (cd $P/vs-head && bun install --frozen-lockfile) &&
 S=$P/vs-head/.agents/skills/verify-uksf/scripts &&
@@ -130,6 +131,7 @@ api_sides() {
   done
 }
 git -C $W fetch origin &&
+mkdir -p ~/.uksf-verify-pr &&
 git -C $W worktree add --detach $P/vs-web $WEB &&
 (cd $P/vs-web && bun install --frozen-lockfile) &&
 S=$P/vs-web/.agents/skills/verify-uksf/scripts &&
@@ -153,6 +155,7 @@ harness_sides() {
   done
 }
 git -C $W fetch origin &&
+mkdir -p ~/.uksf-verify-pr &&
 git -C $W worktree add --detach $P/vs-base $B && git -C $W worktree add --detach $P/vs-head $H &&
 (cd $P/vs-base && bun install --frozen-lockfile) && (cd $P/vs-head && bun install --frozen-lockfile) &&
 S=$P/vs-head/.agents/skills/verify-uksf/scripts &&
