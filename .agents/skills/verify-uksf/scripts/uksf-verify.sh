@@ -105,6 +105,10 @@ up() {
     echo "refusing: an environment variable overrides API configuration; unset it" >&2
     false
   fi
+  if tr -d ' ' <<<"${UKSF_FEATURE_OFF:-}" | tr '[:lower:]' '[:upper:]' | grep -qE '(^|,)NOTIFICATIONS(,|$)'; then
+    echo "refusing: UKSF_FEATURE_OFF contains NOTIFICATIONS, which overrides UKSF_FEATURE_ON; unset it" >&2
+    false
+  fi
   node "$SCRIPTS/check-web-deps.mjs" "$WEB_DIR"
   cp "$api_dir/UKSF.Api/appsettings.Development.json" "$dir/settings.json"
   chmod 600 "$dir/settings.json"

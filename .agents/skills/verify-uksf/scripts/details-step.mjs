@@ -124,7 +124,11 @@ async function steps({ page, runDir, runId, scripts, email, accountId, evidence,
   checks.submitFunnelEvent = after.funnelEvents.some((event) => event.event === "application_submitted");
   const apiLog = readFileSync(join(runDir, "api.log"), "utf8");
   const mailSupported = /^verify mode: features forced on: .*\bNOTIFICATIONS\b/m.test(apiLog);
-  let notificationMail = { status: "unsupported", reason: "the API did not log 'verify mode: features forced on: NOTIFICATIONS', so it lacks UKSF_FEATURE_ON and sends no notification mail" };
+  let notificationMail = {
+    status: "unsupported",
+    reason: "the API did not log 'verify mode: features forced on: NOTIFICATIONS', so the harness cannot confirm force-on and notification mail is unchecked",
+    emlProduced: emailMessages(runDir).filter((message) => !mailBefore.has(message.file)).length,
+  };
   if (mailSupported) {
     const delivered = await newNotificationMail(runDir, mailBefore, after.expectedNotificationMail);
     const sameDigests = JSON.stringify(delivered.map((message) => message.digest).sort()) === JSON.stringify(after.expectedNotificationMail.map((recipient) => recipient.digest).sort());
@@ -135,7 +139,7 @@ async function steps({ page, runDir, runId, scripts, email, accountId, evidence,
   checks.auditLogged = apiLog.split("\n").some((line) => line.startsWith("verify-log ") && line.includes('"type":"AuditLog"') && line.includes('"message":"Application submitted for Cdt.Agent.V.'));
   checks.discordRefused = !/discord (connected|ready)/i.test(apiLog);
 
-  const result = { runId, email, seeded, before, after, notificationMail, checks, pass: Object.values(checks).every(Boolean) };
+  const result = { runId, email, seeded, before, after, notificationMail, notificationMailStatus: notificationMail.status, checks, pass: Object.values(checks).every(Boolean) };
   writeFileSync(join(evidence, "result.json"), JSON.stringify(result, null, 2));
   return result;
 }
