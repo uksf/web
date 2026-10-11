@@ -4,7 +4,7 @@ The UKSF Arma extension reports what happens on a game server. The API records e
 
 ## Sub-features
 
-- `mission_started` with `sessionId`, `mission`, and `map`: creates or updates the `missionSessions` record and sets `missionStarted`. When `X-Api-Port` matches a configured game server, it also sets that server's current session.
+- `mission_started` with `sessionId`, `mission`, and `map`: creates or updates the `missionSessions` record and sets `missionStarted`. When `X-Api-Port` matches a configured game server, it also sets that server's `CurrentMissionSessionId`, and `mission_ended` clears it (`GameServerEventHandler.cs`, `HandleMissionLifecycleEvent`).
 - `player_connected` with `sessionId`, `uid`, and `name`, and `player_disconnected` with `sessionId` and `uid`: add and close a `playerPresence` entry.
 - `mission_ended` with `sessionId` and `duration`: sets `missionEnded` and `durationSeconds`.
 - The endpoint answers 202 and handles the event in the background, except `persistence_save`, which it handles before it answers 200.
@@ -23,13 +23,13 @@ The UKSF Arma extension reports what happens on a game server. The API records e
 4. Post `player_disconnected` and poll until that entry has `disconnected`. Post `mission_ended` with `duration` 42 and poll until `missionEnded` is set and `durationSeconds` is 42.
 5. Wait ten seconds and check the listener. A mission with no NPCs pushes no commands. The window covers only the time from `mission_started` to ten seconds after the end is visible.
 
-Evidence: every posted body and its HTTP status, each polled session state, and the commands the listener received, in `result.json`.
+Evidence: every posted body and its HTTP status, the four session states that satisfied the `started`, `joined`, `left` and `ended` steps, the lookup errors, and the commands the listener received, in `<run>/evidence/mission/result.json`. A run that fails a check after all four steps keeps the four states and sets `pass` to false. A run that throws before the end keeps no session states, and records the error text with the other fields.
 
 ## Gotchas
 
 - The endpoint is loopback-only. Post to `127.0.0.1`, not the machine's network address.
 - SQF strings double their quotes. Numbers are bare.
 - `durationSeconds` reads back as the string `42` from `verify-data`.
-- Each event handler finds the session with `FindFirst`, which filters in Mongo through the `sessionId` index. Against the remote `devLocal`, an event shows in Mongo within 1 to 3 seconds (measured 1, 1, 1, and 3 seconds on 2026-10-09). The driver still waits up to 180 seconds per step and records `secondsUntilVisible`.
-- A Go tool on iultron (`Go-http-client/1.1`, probably moshi-hook port discovery) sends `GET /` to any new local listener within seconds. Only `POST /command` is a game command. The driver records other requests separately as `otherListenerRequests`.
+- Each event handler finds the session with `FindFirst`, which filters in Mongo through the `sessionId` index. Against the remote `devLocal`, an event shows in Mongo within 3 seconds (measured 1, 1, 1, and 3 seconds, then 1, 1, 1, and 1 seconds, on 2026-10-09, and under 1 second on all twelve steps of three runs on 2026-10-11). The driver still waits up to 180 seconds per step and records `secondsUntilVisible`.
+- A Go tool on iultron (`Go-http-client/1.1`, probably moshi-hook port discovery) sometimes sends `GET /` to a new local listener within seconds. On 2026-10-11 run `v20261011173419-12322c84aef4d7df` recorded two such requests, and the other four mission runs of maintain passes 4 and 5 recorded none. Only `POST /command` is a game command. The driver records other requests separately as `otherListenerRequests`.
 - NPC events need a mission with registered NPCs, and NPC broker features that are off in `devLocal`. They are not mapped yet.

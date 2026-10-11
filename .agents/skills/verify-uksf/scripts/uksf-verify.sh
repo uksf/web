@@ -80,12 +80,16 @@ data() {
   dotnet run "$SCRIPTS/verify-data.cs" -- "$dir/settings.json" "$@" 2>/dev/null
 }
 
+cleanup_records() {
+  dotnet run "$SCRIPTS/verify-cleanup.cs" -- "$1/settings.json" "${@:2}"
+}
+
 up() {
   local api_dir
   api_dir="$(cd "${UKSF_API_DIR:-$HOME/Workspace/uksf/api}" && pwd -P)"
   mkdir "$LOCK" 2>/dev/null || { echo "refusing: another verify run holds $LOCK ($(cat "$LOCK/run" 2>/dev/null)); run '$0 down' with its UKSF_VERIFY_HOME ($(cat "$LOCK/home" 2>/dev/null))" >&2; exit 1; }
   local run dir
-  run="v$(date -u +%Y%m%d%H%M%S)-$(openssl rand -hex 2)"
+  run="v$(date -u +%Y%m%d%H%M%S)-$(openssl rand -hex 8)"
   dir="$(run_dir "$run")"
   echo "$run" > "$LOCK/run"
   echo "$VERIFY_HOME" > "$LOCK/home"
@@ -101,6 +105,10 @@ up() {
     echo "refusing: an environment variable overrides API configuration; unset it" >&2
     false
   fi
+  if tr -d '[:space:]' <<<"${UKSF_FEATURE_OFF:-}" | tr '[:lower:]' '[:upper:]' | grep -qE '(^|,)NOTIFICATIONS(,|$)'; then
+    echo "refusing: UKSF_FEATURE_OFF contains NOTIFICATIONS, which overrides UKSF_FEATURE_ON; unset it" >&2
+    false
+  fi
   node "$SCRIPTS/check-web-deps.mjs" "$WEB_DIR"
   cp "$api_dir/UKSF.Api/appsettings.Development.json" "$dir/settings.json"
   chmod 600 "$dir/settings.json"
@@ -111,7 +119,7 @@ up() {
   echo "building the API at $(git -C "$api_dir" rev-parse --short HEAD) (source tree $(cut -c1-12 "$dir/api-source"))"
   dotnet build "$api_dir/UKSF.Api/UKSF.Api.csproj" -c Debug -o "$dir/api-bin" -v quiet -nologo > "$dir/api-build.log" 2>&1
 
-  ASPNETCORE_ENVIRONMENT=Development UKSF_VERIFY_MODE=1 UKSF_VERIFY_EMAIL_DIR="$dir/email" \
+  ASPNETCORE_ENVIRONMENT=Development UKSF_VERIFY_MODE=1 UKSF_FEATURE_ON=NOTIFICATIONS UKSF_VERIFY_EMAIL_DIR="$dir/email" \
     nohup "$dir/api-bin/UKSF.Api" --contentRoot "$api_dir/UKSF.Api" > "$dir/api.log" 2>&1 &
   echo $! > "$dir/api.pid"
   started_at "$(cat "$dir/api.pid")" > "$dir/api.started"
@@ -267,12 +275,10 @@ down() {
   fi
   stop_api "$dir" || return 1
   stop_web "$dir" || return 1
-  local kinds
+  local kinds status=0
   kinds="$(sort -u "$dir/owned" | tr '\n' ' ')" || { echo "the run's ownership manifest is unreadable" >&2; return 1; }
-  if [[ -n "$kinds" ]] && ! data "$dir" cleanup "$run" $kinds > "$dir/evidence/cleanup.json"; then
-    echo "processes stopped, but cleanup of $kinds failed; run down again to retry" >&2
-    return 1
-  fi
+  [[ -z "$kinds" ]] || { cleanup_records "$dir" "$run" --dry-run $kinds > "$dir/evidence/cleanup-dry-run.json" && cat "$dir/evidence/cleanup-dry-run.json" && cleanup_records "$dir" "$run" $kinds > "$dir/evidence/cleanup.json"; } || status=$?
+  (( status == 0 )) || { echo "processes stopped, but cleanup of $kinds failed ($(cat "$dir/evidence/cleanup.json" 2>/dev/null)); run down again to retry" >&2; return $(( status == 7 ? 7 : 1 )); }
   [[ -n "$kinds" ]] || echo '{"cleanup":"no records were created"}' > "$dir/evidence/cleanup.json"
   cat "$dir/evidence/cleanup.json"
   echo
