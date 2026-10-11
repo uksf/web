@@ -23,7 +23,7 @@ The UKSF Arma extension reports what happens on a game server. The API records e
 4. Post `player_disconnected` and poll until that entry has `disconnected`. Post `mission_ended` with `duration` 42 and poll until `missionEnded` is set and `durationSeconds` is 42.
 5. Wait ten seconds and check the listener. A mission with no NPCs pushes no commands. The window covers only the time from `mission_started` to ten seconds after the end is visible.
 
-Evidence: every posted body and its HTTP status, each polled session state, and the commands the listener received, in `result.json`.
+Evidence: every posted body and its HTTP status, the four session states that satisfied the `started`, `joined`, `left` and `ended` steps, the lookup errors, and the commands the listener received, in `<run>/evidence/mission/result.json`. A run that fails a check after all four steps keeps the four states and sets `pass` to false. A run that throws before the end keeps no session states, and records the error text with the other fields.
 
 ## Gotchas
 
