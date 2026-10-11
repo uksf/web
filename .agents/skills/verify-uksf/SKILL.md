@@ -166,7 +166,7 @@ harness_sides && git -C $W worktree remove $P/vs-base && git -C $W worktree remo
 
 A drive that passes with the base harness and fails with the head harness is a regression, `FAIL`. A claim about the harness that cannot be compared is unverified, and unverified is `FAIL` when the PR's done-bar depends on it. Saying so in the verdict does not turn it into a pass. A base harness that lacks a requested drive (the `7cb6d74b` scripts have no Details drive) makes `verify-side.sh` report that drive as `unsupported`, exit 1, and start no run; that claim is then unverified for the base.
 
-Old harnesses can leave records behind: `7cb6d74b` and earlier never tag the browser's random funnel visitor id, so their `down` reports `cleanupRemaining: null`, `verify-side.sh` exits 1, and five `applicationFunnelEvents` stay in devLocal. Report their ids and leave them; deleting records the run cannot prove it owns needs a person's decision.
+Old harnesses can leave records behind: `7cb6d74b` and earlier never tag the browser's random funnel visitor id, so their `down` reports `cleanupRemaining: null`, `verify-side.sh` exits 1, and the run's `applicationFunnelEvents` stay in devLocal. Report their ids and leave them; deleting records the run cannot prove it owns needs a person's decision.
 
 Never publish raw `api.log`: it contains auth tokens. Quote evidence files (`result.json`, `cleanup.json`) instead.
 

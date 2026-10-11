@@ -36,7 +36,11 @@ export function driverArguments(usage) {
       return undefined;
     }
   };
-  if (!canonical(runDir) || canonical(runDir) !== canonical(active) || !active.endsWith(`/runs/${runId}`)) {
+  if (!active.endsWith(`/runs/${runId}`)) {
+    console.error(`refusing: '${runId}' is not the active run; the active run directory is ${active}`);
+    process.exit(2);
+  }
+  if (!canonical(runDir) || canonical(runDir) !== canonical(active)) {
     console.error(`refusing: '${runDir}' is not the active run directory ${active}`);
     process.exit(2);
   }
