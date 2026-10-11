@@ -12,7 +12,7 @@ A visitor applies to join UKSF. The first three steps create an account and conf
 ## How to get to it
 
 - The sidebar entry **Application** (shown to visitors who are not signed in and to signed-in accounts that are not yet members), or the route `/application`. The header button **Apply** appears only for a signed-in account whose email is confirmed (`ngxPermissionsOnly CONFIRMED`, `header-bar.component.html:21-25`), so a visitor sees only **Sign in** in the header.
-- A signed-in account that has not finished its application lands on the same page at its current step.
+- Opening `/application` with an account that has not finished its application shows its current step. Signing in without a stored redirect lands on `/home`; **Apply** resumes the application.
 
 ## Driving it with Playwright
 
@@ -33,4 +33,4 @@ Evidence: a screenshot after steps 1, 4, 5, and 7, the `.eml` path, and `verify-
 - The Identity step's **Next** stays disabled until the form is valid, which includes the async email check `GET /accounts/exists` (`application-identity.component.html:132`, `application-identity.component.ts:151`). The driver clicks the inner `button` of `app-button`, which Playwright waits to enable. Clicking the `app-button` wrapper does nothing while the button is disabled, and the drive then times out waiting for `POST /accounts/create`.
 - The email address must be unused. A second sign-up in the same run fails, so run `down` and `up` before you repeat it.
 - The Communications step needs Teamspeak, which verify mode does not start. The plain drive stops there. With `--details` the driver seeds the comms fields and continues into [application-details.md](application-details.md).
-- The application pages post funnel events to `POST /application/analytics/event` (`applicationFunnelEvents`): `info_page_view`, `info_page_next`, `info_page_duration`, `account_created`, and `email_confirmed`. The driver sets their `visitorId` to `verify-<run-id>` and `down` deletes them.
+- The application pages post funnel events to `POST /application/analytics/event` (`applicationFunnelEvents`): `info_page_view`, `info_page_next`, `info_page_duration`, `account_created`, and `email_confirmed`, plus `application_submitted` when the Details step is driven. The driver sets their `visitorId` to `verify-<run-id>` and `down` deletes them.

@@ -156,6 +156,7 @@ if ((down_status != 0)); then
 elif [[ "$up_result" != pass ]]; then exit_code=1; reason="up failed"
 elif [[ "$doctor" != pass ]]; then exit_code=1; reason="doctor did not pass"
 elif ((drives_ok != 1)); then exit_code=1; reason="a drive failed"
+elif [[ "$remaining" == null ]]; then exit_code=1; reason="cleanup reported no recount, so the run cannot prove it left no records"
 elif [[ "$lock_result" != absent ]]; then exit_code=1; reason="the verify lock remains"
 elif [[ "$port_lines" == *listening* ]]; then exit_code=1; reason="a port still has a listener"
 elif [[ "$port_lines" == *error* ]]; then exit_code=1; reason="a port could not be inspected"

@@ -32,8 +32,8 @@ If jq is missing, or the JSON cannot be built, a fixed JSON line with a reason i
 Exit codes:
   0  every drive passed, down was clean, no lock remains, every port is free
   1  up, doctor or a drive failed after a clean down, or a lock or listener remains, or a port
-     could not be inspected, or bad input, or the harness lacks a requested drive (reported as
-     "unsupported"; no run starts)
+     could not be inspected, or cleanup reported no recount (cleanupRemaining: null), or bad
+     input, or the harness lacks a requested drive (reported as "unsupported"; no run starts)
   2  down failed (also when the cleanup inside a failed up failed): the run and its lock are kept;
      the retry command is printed
 EOF

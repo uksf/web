@@ -22,7 +22,13 @@ export function driverArguments(usage) {
     console.error(`refusing: '${runId}' is not a verify run id`);
     process.exit(2);
   }
-  const active = verifyScript(scripts, ["dir"]);
+  let active;
+  try {
+    active = verifyScript(scripts, ["dir"]);
+  } catch (error) {
+    console.error(`refusing: ${String(error.stderr ?? error).trim()}`);
+    process.exit(2);
+  }
   const canonical = (path) => {
     try {
       return realpathSync(path);
@@ -30,7 +36,11 @@ export function driverArguments(usage) {
       return undefined;
     }
   };
-  if (!canonical(runDir) || canonical(runDir) !== canonical(active) || !active.endsWith(`/runs/${runId}`)) {
+  if (!active.endsWith(`/runs/${runId}`)) {
+    console.error(`refusing: '${runId}' is not the active run; the active run directory is ${active}`);
+    process.exit(2);
+  }
+  if (!canonical(runDir) || canonical(runDir) !== canonical(active)) {
     console.error(`refusing: '${runDir}' is not the active run directory ${active}`);
     process.exit(2);
   }
@@ -57,7 +67,10 @@ export function reserveEvidence(directory) {
   try {
     mkdirSync(directory);
   } catch (error) {
-    if (error.code === "EEXIST") throw new Error(`refusing: ${directory} already exists; each run drives a feature once`);
+    if (error.code === "EEXIST") {
+      console.error(`refusing: ${directory} already exists; each run drives a feature once`);
+      process.exit(1);
+    }
     throw error;
   }
 }
