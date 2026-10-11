@@ -25,6 +25,6 @@ Evidence: a screenshot of the signed-in page and the header text check in `resul
 
 ## Gotchas
 
-- An account that has not finished its application still lands on `/home`. **Apply** resumes the application at its current step.
+- Without a stored redirect, an account that has not finished its application still lands on `/home`. **Apply** resumes the application at its current step.
 - The email field has `autocomplete="username webauthn"`. The repo's `e2e/auth.setup.ts` selects `app-login input[type="email"]` and the "Sign in" button, the same elements as this recipe.
 - Passkey and password reset are not driven yet. Password reset mail lands in `<run>/email` like the sign-up code.
