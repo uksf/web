@@ -11,7 +11,7 @@ usage:
 add      refuses a <sha> that contains neither a61e4070 nor its squash on main, ed06088b (verify-mode
          logs stay out of Mongo only from there), then creates a detached API worktree of <sha> at <path> and copies the gitignored
          UKSF.Api/appsettings.Development.json into it with mode 600 (created owner-only, never readable first) and an ownership marker. <path> must not exist, must be
-         absolute, and below $HOME it must be lower case: mixed casing across API checkouts breaks the
+         absolute, and lower case apart from a leading $HOME: mixed casing across API checkouts breaks the
          .NET build cache. The source repo is --api-repo, UKSF_API_REPO, or ~/Workspace/uksf/api.
 remove   deletes the copied settings file (it holds secrets), then removes the worktree. <path> must be the root
          of a linked worktree that add created: it checks the ownership marker add wrote in the worktree's git dir
