@@ -54,8 +54,23 @@ describe('OperationsCampaignsComponent', () => {
         expect(component.sections.find((s) => s.title === 'Past')?.items[0]?.name).toBe('Silent Talon');
     });
 
+    it('orders campaigns in a section by start date, newest first for past, undated last', () => {
+        service.getCampaigns.mockReturnValue(
+            of([
+                { id: 'u1', name: 'Undated', summary: '', status: CampaignStatus.Upcoming },
+                { id: 'u2', name: 'Later', summary: '', status: CampaignStatus.Upcoming, start: '2026-12-01T00:00:00Z' },
+                { id: 'u3', name: 'Sooner', summary: '', status: CampaignStatus.Upcoming, start: '2026-11-01T00:00:00Z' },
+                { id: 'p1', name: 'Older', summary: '', status: CampaignStatus.Past, start: '2025-01-01T00:00:00Z' },
+                { id: 'p2', name: 'Undated past', summary: '', status: CampaignStatus.Past },
+                { id: 'p3', name: 'Recent', summary: '', status: CampaignStatus.Past, start: '2026-01-01T00:00:00Z' }
+            ])
+        );
+        component.load();
+        expect(component.sections.find((s) => s.title === 'Upcoming')?.items.map((c) => c.name)).toEqual(['Sooner', 'Later', 'Undated']);
+        expect(component.sections.find((s) => s.title === 'Past')?.items.map((c) => c.name)).toEqual(['Recent', 'Older', 'Undated past']);
+    });
+
     it('omits sections that have no campaigns', () => {
-        // No Upcoming campaigns in the fixture.
         expect(component.sections.find((s) => s.title === 'Upcoming')).toBeUndefined();
     });
 
@@ -71,7 +86,6 @@ describe('OperationsCampaignsComponent', () => {
     });
 
     it('joins distinct map theatres for a multi-map campaign, de-duplicating', () => {
-        // c1 missions span Altis (twice) + Tanoa -> "Altis · Tanoa", no duplicate Altis.
         expect(component.theatre(campaigns[0] as any)).toBe('Altis · Tanoa');
     });
 

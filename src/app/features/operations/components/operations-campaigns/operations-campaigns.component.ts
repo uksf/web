@@ -39,9 +39,9 @@ export class OperationsCampaignsComponent {
                 next: (campaigns) => {
                     this.campaigns = campaigns;
                     this.sections = [
-                        { title: 'Current', items: campaigns.filter((c) => c.status === CampaignStatus.Current), muted: false },
-                        { title: 'Upcoming', items: campaigns.filter((c) => c.status === CampaignStatus.Upcoming), muted: false },
-                        { title: 'Past', items: campaigns.filter((c) => c.status === CampaignStatus.Past), muted: true }
+                        { title: 'Current', items: byStart(campaigns, CampaignStatus.Current, 1), muted: false },
+                        { title: 'Upcoming', items: byStart(campaigns, CampaignStatus.Upcoming, 1), muted: false },
+                        { title: 'Past', items: byStart(campaigns, CampaignStatus.Past, -1), muted: true }
                     ].filter((s) => s.items.length > 0);
                     this.loadTheatres(campaigns);
                 }
@@ -83,4 +83,9 @@ export class OperationsCampaignsComponent {
     createCampaign() {
         this.router.navigate(['/operations/campaigns/new']);
     }
+}
+
+function byStart(campaigns: Campaign[], status: CampaignStatus, direction: 1 | -1): Campaign[] {
+    const startOf = (campaign: Campaign) => (campaign.start ? Date.parse(campaign.start) * direction : Number.MAX_VALUE);
+    return campaigns.filter((c) => c.status === status).sort((a, b) => startOf(a) - startOf(b));
 }

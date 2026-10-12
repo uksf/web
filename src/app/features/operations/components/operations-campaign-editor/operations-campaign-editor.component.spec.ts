@@ -5,15 +5,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { OperationsCampaignEditorComponent } from './operations-campaign-editor.component';
 import { CampaignsService } from '../../services/campaigns.service';
-import { CampaignStatus } from '../../models/campaign';
+import { Campaign, CampaignStatus } from '../../models/campaign';
 
 describe('OperationsCampaignEditorComponent', () => {
     let component: OperationsCampaignEditorComponent;
     let service: any;
     let router: any;
 
-    function setup(params: Record<string, string>) {
-        service = { addCampaign: vi.fn().mockReturnValue(of(undefined)), updateCampaign: vi.fn().mockReturnValue(of(undefined)), getCampaign: vi.fn().mockReturnValue(of({ id: 'c1', name: 'Iron Sky', summary: '<p>b</p>', status: CampaignStatus.Past })) };
+    function setup(params: Record<string, string>, campaign: Campaign = { id: 'c1', name: 'Iron Sky', summary: '<p>b</p>', status: CampaignStatus.Past }) {
+        service = { addCampaign: vi.fn().mockReturnValue(of(undefined)), updateCampaign: vi.fn().mockReturnValue(of(undefined)), getCampaign: vi.fn().mockReturnValue(of(campaign)) };
         router = { navigate: vi.fn() };
         TestBed.configureTestingModule({
             providers: [
@@ -41,6 +41,21 @@ describe('OperationsCampaignEditorComponent', () => {
         expect(component.isEdit).toBe(true);
         expect(component.model.name).toBe('Iron Sky');
         expect(component.model.status).toBe(CampaignStatus.Past);
+    });
+
+    it('edit mode prefills the start date and submit sends it back', () => {
+        setup({ campaignId: 'c1' }, { id: 'c1', name: 'Iron Sky', summary: '', status: CampaignStatus.Past, start: '2026-03-01T00:00:00.000Z' });
+        expect(component.startDate?.toISOString()).toBe('2026-03-01T00:00:00.000Z');
+        component.startDate = new Date('2026-04-02T00:00:00.000Z');
+        component.submit();
+        expect(service.updateCampaign).toHaveBeenCalledWith(expect.objectContaining({ start: '2026-04-02T00:00:00.000Z' }));
+    });
+
+    it('submit without a start date sends no start', () => {
+        setup({});
+        component.model.name = 'New';
+        component.submit();
+        expect(service.addCampaign.mock.calls[0][0].start).toBeUndefined();
     });
 
     it('submit (create) calls addCampaign with Upcoming then navigates to the list', () => {

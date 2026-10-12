@@ -7,6 +7,7 @@ import { first } from 'rxjs/operators';
 import { ButtonComponent } from '@app/shared/components/elements/button-pending/button.component';
 import { TextInputComponent } from '@app/shared/components/elements/text-input/text-input.component';
 import { DropdownComponent } from '@app/shared/components/elements/dropdown/dropdown.component';
+import { DateInputComponent } from '@app/shared/components/elements/date-input/date-input.component';
 import { TemplateFormValueDebugComponent } from '@app/shared/components/elements/form-value-debug/form-value-debug.component';
 import { DocsEditorComponent } from '@app/shared/components/docs-editor/docs-editor.component';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
@@ -18,7 +19,7 @@ import { CampaignsService } from '../../services/campaigns.service';
     selector: 'app-operations-campaign-editor',
     templateUrl: './operations-campaign-editor.component.html',
     styleUrls: ['../_docs-editor-page.scss'],
-    imports: [FormsModule, TextInputComponent, DropdownComponent, ButtonComponent, DocsEditorComponent, TemplateFormValueDebugComponent]
+    imports: [FormsModule, TextInputComponent, DropdownComponent, DateInputComponent, ButtonComponent, DocsEditorComponent, TemplateFormValueDebugComponent]
 })
 export class OperationsCampaignEditorComponent {
     private route = inject(ActivatedRoute);
@@ -39,6 +40,7 @@ export class OperationsCampaignEditorComponent {
     ];
     statusElements: Observable<IDropdownElement[]> = of(this.statusOptions);
     statusValue: IDropdownElement | null = this.statusOptions[0];
+    startDate: Date | null = null;
 
     constructor() {
         const campaignId = this.route.snapshot.paramMap.get('campaignId');
@@ -51,6 +53,7 @@ export class OperationsCampaignEditorComponent {
             next: (campaign) => {
                 this.model = { ...campaign };
                 this.statusValue = this.statusOptions.find((o) => o.value === String(this.model.status)) ?? this.statusOptions[0];
+                this.startDate = campaign.start ? new Date(campaign.start) : null;
                 this.ready = true;
             },
             error: () => (this.missing = true)
@@ -67,6 +70,7 @@ export class OperationsCampaignEditorComponent {
         }
         this.pending = true;
         this.model.status = Number(this.statusValue?.value ?? CampaignStatus.Upcoming);
+        this.model.start = this.startDate?.toISOString();
         const request = this.isEdit ? this.campaignsService.updateCampaign(this.model) : this.campaignsService.addCampaign(this.model);
         request.pipe(first()).subscribe({
             next: () => this.cancel(),

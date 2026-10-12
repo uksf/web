@@ -15,6 +15,7 @@
                 <app-dropdown [(ngModel)]="statusValue" [elements]="statusElements" [elementName]="'Status'" [placeholder]="'Status'" name="status" id="status" [autocomplete]="false">
                     <ng-template #element let-element>{{ element.displayValue }}</ng-template>
                 </app-dropdown>
+                <app-date-input label="Start date" [(ngModel)]="startDate" name="start" id="start"></app-date-input>
             </div>
             <app-docs-editor [(content)]="model.summary"></app-docs-editor>
             <app-form-value-debug-template></app-form-value-debug-template>

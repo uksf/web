@@ -14,6 +14,8 @@ import { Campaign, CampaignStatus, IntelPage, IntelScope, Operation, OperationSt
 import { CampaignsService } from '../../services/campaigns.service';
 
 
+const operationGroupOrder: Record<OperationStatus, number> = { [OperationStatus.Current]: 0, [OperationStatus.Upcoming]: 1, [OperationStatus.Past]: 2 };
+
 @Component({
     selector: 'app-operations-campaign-detail',
     templateUrl: './operations-campaign-detail.component.html',
@@ -71,7 +73,7 @@ export class OperationsCampaignDetailComponent {
             next: (c) => (this.campaign = c),
             error: () => (this.missing = true)
         });
-        this.campaignsService.getOperations(this.campaignId).pipe(first()).subscribe({ next: (operations) => (this.operations = operations) });
+        this.campaignsService.getOperations(this.campaignId).pipe(first()).subscribe({ next: (operations) => (this.operations = [...operations].sort((a, b) => operationGroupOrder[a.status] - operationGroupOrder[b.status])) });
         this.campaignsService.getIntel(IntelScope.Campaign, this.campaignId).pipe(first()).subscribe({ next: (intel) => (this.intel = intel) });
     }
 

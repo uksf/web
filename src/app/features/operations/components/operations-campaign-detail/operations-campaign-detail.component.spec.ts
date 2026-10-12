@@ -54,6 +54,19 @@ describe('OperationsCampaignDetailComponent', () => {
         expect(service.getIntel).toHaveBeenCalledWith(IntelScope.Campaign, 'c1');
         expect(component.campaign?.name).toBe('Iron Sky');
         expect(component.operations.length).toBe(2);
+    });
+
+    it('groups operations as current, upcoming, then past and keeps the API order inside each group', () => {
+        service.getOperations.mockReturnValue(
+            of([
+                { ...operation, id: 'past', status: OperationStatus.Past },
+                { ...operation, id: 'upcoming-a', status: OperationStatus.Upcoming },
+                { ...operation, id: 'current', status: OperationStatus.Current },
+                { ...operation, id: 'upcoming-b', status: OperationStatus.Upcoming }
+            ])
+        );
+        component.load();
+        expect(component.operations.map((o) => o.id)).toEqual(['current', 'upcoming-a', 'upcoming-b', 'past']);
         expect(component.intel.length).toBe(1);
     });
 
