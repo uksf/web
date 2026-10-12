@@ -65,6 +65,7 @@ describe('OperationsServersComponent kill data-loss confirmation', () => {
         component.killAll();
         dialogAfterClosed$.next(false);
 
+        expect(mockDialog.open.mock.calls[0][1].data.message).toContain('Main is still saving');
         expect(mockGameServersService.killAllServers).not.toHaveBeenCalled();
     });
 });
