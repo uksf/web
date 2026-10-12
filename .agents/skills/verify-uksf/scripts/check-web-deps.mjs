@@ -7,7 +7,13 @@ if (!webDir) {
   process.exit(2);
 }
 
-const manifest = JSON.parse(readFileSync(join(webDir, "package.json"), "utf8"));
+const manifestPath = join(webDir, "package.json");
+if (!existsSync(manifestPath)) {
+  console.error(`refusing: ${webDir} has no package.json; set UKSF_WEB_DIR to a web checkout`);
+  process.exit(1);
+}
+
+const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
 const declared = Object.keys({ ...manifest.dependencies, ...manifest.devDependencies });
 const missing = declared.filter((name) => !existsSync(join(webDir, "node_modules", name, "package.json")));
 

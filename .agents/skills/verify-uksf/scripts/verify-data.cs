@@ -10,7 +10,9 @@ using MongoDB.Driver;
 const string RequiredDatabase = "devLocal";
 var usage = "usage: verify-data <settings-json> doctor|account <email> [<account-id>]|application <account-id> <email>|funnel <run-id>|mission <session-id>|gameserver-port <port>";
 
-if (args.Length < 2 || (args[1] != "doctor" && args.Length < 3) || (args[1] == "application" && args.Length < 4))
+var badPort = args.Length > 2 && args[1] == "gameserver-port" && !int.TryParse(args[2], out _);
+var badAccountId = (args.Length > 3 && args[1] == "account" && !ObjectId.TryParse(args[3], out _)) || (args.Length > 2 && args[1] == "application" && !ObjectId.TryParse(args[2], out _));
+if (args.Length < 2 || (args[1] != "doctor" && args.Length < 3) || (args[1] == "application" && args.Length < 4) || badPort || badAccountId)
 {
     Console.Error.WriteLine(usage);
     return 2;

@@ -294,6 +294,6 @@ case "${1:-}" in
   down) down ;;
   owned) owned "${2:-}" ;;
   run-id) current_run ;;
-  dir) run_dir "$(current_run)" ;;
+  dir) run="$(current_run)" && run_dir "$run" ;;
   *) echo "usage: $0 up|doctor|down|owned [run-id]|run-id|dir" >&2; exit 2 ;;
 esac
