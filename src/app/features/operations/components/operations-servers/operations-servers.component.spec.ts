@@ -1,7 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { of, Subject } from 'rxjs';
 import { OperationsServersComponent } from './operations-servers.component';
-import { GameServer, StopPhase } from '../../models/game-server';
 import { makeServer, setupOperationsServersSpec, teardownOperationsServersSpec } from './operations-servers.spec-setup';
 
 describe('OperationsServersComponent', () => {
@@ -164,7 +163,6 @@ describe('OperationsServersComponent', () => {
                     missions: [{ path: '/p', name: 'test', map: 'Altis' }]
                 })
             );
-            // Need to init first to get hubConnection
             component.ngOnInit();
             mockGameServersService.getServers.mockClear();
             mockGameServersService.getServers.mockReturnValue(
@@ -219,7 +217,7 @@ describe('OperationsServersComponent', () => {
             component.kill(server);
             dialogAfterClosed$.next(true);
 
-            expect(mockGameServersService.killServer).toHaveBeenCalledWith('server1');
+            expect(mockGameServersService.killServer).toHaveBeenCalledWith('server1', false);
         });
 
         it('does not call killServer when confirmation is rejected', () => {

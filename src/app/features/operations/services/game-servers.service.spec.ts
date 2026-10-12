@@ -121,21 +121,19 @@ describe('GameServersService', () => {
     });
 
     it('killServer calls POST /gameservers/:id/kill with the data-loss confirmation the admin gave', () => {
-        service.killServer('server1').subscribe();
+        service.killServer('server1', true).subscribe();
+        service.killServer('server2', false).subscribe();
 
-        expect(mockHttpClient.post).toHaveBeenCalledWith(
-            'http://localhost:5500/gameservers/server1/kill?confirmDataLoss=true',
-            null
-        );
+        expect(mockHttpClient.post).toHaveBeenCalledWith('http://localhost:5500/gameservers/server1/kill?confirmDataLoss=true', null);
+        expect(mockHttpClient.post).toHaveBeenCalledWith('http://localhost:5500/gameservers/server2/kill?confirmDataLoss=false', null);
     });
 
-    it('killAllServers calls POST /gameservers/killall with the data-loss confirmation', () => {
-        service.killAllServers().subscribe();
+    it('killAllServers calls POST /gameservers/killall with the data-loss confirmation the admin gave', () => {
+        service.killAllServers(true).subscribe();
+        service.killAllServers(false).subscribe();
 
-        expect(mockHttpClient.post).toHaveBeenCalledWith(
-            'http://localhost:5500/gameservers/killall?confirmDataLoss=true',
-            null
-        );
+        expect(mockHttpClient.post).toHaveBeenCalledWith('http://localhost:5500/gameservers/killall?confirmDataLoss=true', null);
+        expect(mockHttpClient.post).toHaveBeenCalledWith('http://localhost:5500/gameservers/killall?confirmDataLoss=false', null);
     });
 
     it('addServer calls PUT /gameservers with JSON Content-Type header', () => {

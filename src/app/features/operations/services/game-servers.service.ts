@@ -44,12 +44,12 @@ export class GameServersService {
         return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/${serverId}/stop`, null);
     }
 
-    killServer(serverId: string): Observable<void> {
-        return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/${serverId}/kill?confirmDataLoss=true`, null);
+    killServer(serverId: string, confirmDataLoss: boolean): Observable<void> {
+        return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/${serverId}/kill?confirmDataLoss=${confirmDataLoss}`, null);
     }
 
-    killAllServers(): Observable<void> {
-        return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/killall?confirmDataLoss=true`, null);
+    killAllServers(confirmDataLoss: boolean): Observable<void> {
+        return this.httpClient.post<void>(`${this.urls.apiUrl}/gameservers/killall?confirmDataLoss=${confirmDataLoss}`, null);
     }
 
     addServer(body: string): Observable<unknown> {

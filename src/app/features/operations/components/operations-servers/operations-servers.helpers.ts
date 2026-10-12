@@ -16,7 +16,7 @@ export function isServerStopping(server: GameServer): boolean {
     return server.status.stopPhase !== StopPhase.None;
 }
 
-function isServerSaving(server: GameServer): boolean {
+export function isServerSaving(server: GameServer): boolean {
     return [StopPhase.Ending, StopPhase.Saving, StopPhase.Delivering].includes(server.status.stopPhase);
 }
 
@@ -31,7 +31,8 @@ export function killConfirmationMessage(server: GameServer): string {
 export function killAllConfirmationMessage(servers: GameServer[], instanceCount: number): string {
     const saving = (servers ?? []).filter(isServerSaving).map((server) => server.name);
     if (saving.length > 0) {
-        return `${saving.join(', ')} still saving. Killing all ${instanceCount} servers now loses any persistence data that has not reached the API. Kill them anyway?`;
+        const names = saving.length === 1 ? `${saving[0]} is` : `${saving.slice(0, -1).join(', ')} and ${saving[saving.length - 1]} are`;
+        return `${names} still saving. Killing all ${instanceCount} servers now loses any persistence data that has not reached the API. Kill them anyway?`;
     }
 
     return `Are you sure you want to kill ${instanceCount} servers?\nThere could be players still on and this could have unexpected effects on the server`;

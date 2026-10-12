@@ -109,7 +109,7 @@ describe('OperationsServersComponent status', () => {
             ];
 
             expect(killAllConfirmationMessage(servers, 3)).toBe(
-                'Main still saving. Killing all 3 servers now loses any persistence data that has not reached the API. Kill them anyway?'
+                'Main is still saving. Killing all 3 servers now loses any persistence data that has not reached the API. Kill them anyway?'
             );
         });
 

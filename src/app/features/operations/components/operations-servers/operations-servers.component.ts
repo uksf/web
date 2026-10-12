@@ -17,7 +17,7 @@ import { UksfError } from '@app/shared/models/response';
 import { IDropdownElement } from '@app/shared/components/elements/dropdown-base/dropdown-base.component';
 import { OrderUpdateRequest } from '@app/shared/models/order-update-request';
 import { GameServer, GameServersUpdate, GameServerUpdate, Mission, MissionReport } from '../../models/game-server';
-import { applyUptimes, isServerKillAllowed, killAllConfirmationMessage, killConfirmationMessage, isServerStopping, mapMission, mapMissionElement, missionName, serverStatusLabel } from './operations-servers.helpers';
+import { applyUptimes, isServerKillAllowed, isServerSaving, killAllConfirmationMessage, killConfirmationMessage, isServerStopping, mapMission, mapMissionElement, missionName, serverStatusLabel } from './operations-servers.helpers';
 import { GameServersService } from '../../services/game-servers.service';
 import { DestroyableComponent } from '@app/shared/components';
 import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
@@ -403,16 +403,15 @@ export class OperationsServersComponent extends DestroyableComponent implements 
     }
 
     kill(server: GameServer) {
+        const confirmDataLoss = isServerSaving(server);
         this.dialog
-            .open(ConfirmationModalComponent, {
-                data: { message: killConfirmationMessage(server) }
-            })
+            .open(ConfirmationModalComponent, { data: { message: killConfirmationMessage(server) } })
             .afterClosed()
             .pipe(first())
             .subscribe({
                 next: (result) => {
                     if (result) {
-                        this.runKill(server);
+                        this.runKill(server, confirmDataLoss);
                     }
                 }
             });
@@ -434,10 +433,10 @@ export class OperationsServersComponent extends DestroyableComponent implements 
             });
     }
 
-    runKill(server: GameServer) {
+    runKill(server: GameServer, confirmDataLoss: boolean) {
         this.pendingActions.add(server.id);
         this.gameServersService
-            .killServer(server.id)
+            .killServer(server.id, confirmDataLoss)
             .pipe(first())
             .subscribe({
                 next: () => {
@@ -538,17 +537,16 @@ export class OperationsServersComponent extends DestroyableComponent implements 
     }
 
     killAll() {
+        const confirmDataLoss = (this.servers ?? []).some(isServerSaving);
         this.dialog
-            .open(ConfirmationModalComponent, {
-                data: { message: killAllConfirmationMessage(this.servers, this.instanceCount) }
-            })
+            .open(ConfirmationModalComponent, { data: { message: killAllConfirmationMessage(this.servers, this.instanceCount) } })
             .afterClosed()
             .pipe(first())
             .subscribe({
                 next: (result) => {
                     if (result) {
                         this.gameServersService
-                            .killAllServers()
+                            .killAllServers(confirmDataLoss)
                             .pipe(first())
                             .subscribe({
                                 error: (error) => {
