@@ -32,7 +32,7 @@
             <div class="metaline">
                 <span class="m"><mat-icon>event</mat-icon>{{ dto.mission.scheduledTime | date: 'EEE d MMM, HH:mm' }}</span>
                 <span class="dotsep">·</span>
-                <span class="m"><mat-icon>dns</mat-icon>{{ serverName }}</span>
+                <span class="m"><mat-icon>dns</mat-icon>{{ dto.serverName }}</span>
                 @if (mapName && dto.missionFileState === MissionFileState.Present) {
                     <span class="dotsep">·</span>
                     <span class="m"><span class="swatch" [style.background]="stripe"></span>{{ mapName }}</span>

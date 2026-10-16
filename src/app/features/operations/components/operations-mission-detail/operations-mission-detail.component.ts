@@ -15,7 +15,6 @@ import { ConfirmationModalComponent } from '@app/shared/modals/confirmation-moda
 import { capitaliseMapName, mapBorderColour, mapTokenFromMission } from '../../utils/map-colour';
 import { Campaign, CampaignMissionDto, CampaignMissionStatus, CampaignStatus, IntelPage, IntelScope, MissionFileState, Operation } from '../../models/campaign';
 import { CampaignsService } from '../../services/campaigns.service';
-import { GameServersService } from '../../services/game-servers.service';
 import { MissionModalComponent } from '../../modals/mission-modal/mission-modal.component';
 
 @Component({
@@ -40,7 +39,6 @@ export class OperationsMissionDetailComponent {
     private route = inject(ActivatedRoute);
     private router = inject(Router);
     private campaignsService = inject(CampaignsService);
-    private gameServersService = inject(GameServersService);
     private dialog = inject(MatDialog);
 
     readonly CampaignMissionStatus = CampaignMissionStatus;
@@ -55,7 +53,6 @@ export class OperationsMissionDetailComponent {
     dto?: CampaignMissionDto;
     intel: IntelPage[] = [];
     missing = false;
-    private serverNames: Record<string, string> = {};
 
     shiftHeld = false;
 
@@ -73,10 +70,6 @@ export class OperationsMissionDetailComponent {
         this.campaignId = this.route.snapshot.paramMap.get('campaignId') ?? '';
         this.operationId = this.route.snapshot.paramMap.get('operationId') ?? '';
         this.missionId = this.route.snapshot.paramMap.get('missionId') ?? '';
-        this.gameServersService
-            .getServers()
-            .pipe(first())
-            .subscribe({ next: (update) => update.servers.forEach((s) => (this.serverNames[s.id] = s.name)) });
         this.load();
     }
 
@@ -88,11 +81,6 @@ export class OperationsMissionDetailComponent {
         this.campaignsService.getCampaign(this.campaignId).pipe(first()).subscribe({ next: (c) => (this.campaign = c) });
         this.campaignsService.getOperation(this.campaignId, this.operationId).pipe(first()).subscribe({ next: (operation) => (this.operation = operation) });
         this.campaignsService.getIntel(IntelScope.Mission, this.missionId).pipe(first()).subscribe({ next: (intel) => (this.intel = intel) });
-    }
-
-    get serverName(): string {
-        const id = this.dto?.mission.serverId;
-        return id ? (this.serverNames[id] ?? id) : '';
     }
 
     get stripe(): string {

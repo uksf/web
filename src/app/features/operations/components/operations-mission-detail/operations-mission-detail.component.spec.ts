@@ -4,7 +4,6 @@ import { of, Subject, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { OperationsMissionDetailComponent } from './operations-mission-detail.component';
 import { CampaignsService } from '../../services/campaigns.service';
-import { GameServersService } from '../../services/game-servers.service';
 import { PermissionsService } from '@app/core/services/permissions.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
@@ -19,7 +18,8 @@ describe('OperationsMissionDetailComponent', () => {
 
     const missionDto = {
         mission: { id: 'm1', operationId: 'op1', title: 'Op 1', scheduledTime: '2026-06-28T18:00:00Z', serverId: 's1', missionName: 'sweep.Altis.pbo', warno: '<p>w</p>', status: CampaignMissionStatus.Scheduled },
-        missionFileState: MissionFileState.Present
+        missionFileState: MissionFileState.Present,
+        serverName: 'Main Server'
     };
     const intelPage = { id: 'i2', scope: IntelScope.Mission, ownerId: 'm1', title: 'Recon', body: '' };
 
@@ -40,7 +40,6 @@ describe('OperationsMissionDetailComponent', () => {
             providers: [
                 OperationsMissionDetailComponent,
                 { provide: CampaignsService, useValue: service },
-                { provide: GameServersService, useValue: { getServers: vi.fn().mockReturnValue(of({ servers: [{ id: 's1', name: 'Main Server' }] })) } },
                 { provide: PermissionsService, useValue: { hasPermission: vi.fn().mockReturnValue(true) } },
                 { provide: MatDialog, useValue: dialog },
                 { provide: Router, useValue: router },
@@ -62,8 +61,8 @@ describe('OperationsMissionDetailComponent', () => {
         expect(component.intel.length).toBe(1);
     });
 
-    it('resolves serverName from the server list, falling back to the id', () => {
-        expect(component.serverName).toBe('Main Server');
+    it('shows the server name the mission came with', () => {
+        expect(component.dto?.serverName).toBe('Main Server');
     });
 
     it('derives stripe colour + map name from the mission file', () => {

@@ -62,6 +62,7 @@ export interface CampaignMission {
 export interface CampaignMissionDto {
     mission: CampaignMission;
     missionFileState: MissionFileState;
+    serverName: string;
 }
 
 export interface IntelPage {
