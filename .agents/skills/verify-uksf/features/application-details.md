@@ -14,7 +14,17 @@ A confirmed applicant with Teamspeak, Steam, and Discord connected writes about 
 - `web:/application`
 - `api:POST /accounts/{id}/application`
 - `api:POST /accounts/verify/comms` (verify mode only)
-
+- `api:GET /auth/refresh`
+- `api:GET /accounts`
+- `api:GET /version`
+- `hub:UtilityHub`
+- `api:GET /notifications`
+- `hub:NotificationHub`
+- `hub:AccountHub`
+- `api:POST /application/analytics/event`
+- `api:GET /commentthread/{id}`
+- `api:GET /commentthread/canpost/{id}`
+- `hub:CommentThreadHub`
 
 ## How to get to it
 

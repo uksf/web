@@ -14,7 +14,16 @@ A member or applicant signs in to the website.
 - `web:/login`
 - `web:/home`
 - `api:POST /auth/login`
-
+- `api:GET /auth/refresh`
+- `api:GET /accounts`
+- `api:GET /version`
+- `hub:UtilityHub`
+- `api:GET /notifications`
+- `hub:NotificationHub`
+- `hub:AccountHub`
+- `api:GET /teamspeak/onlineAccounts`
+- `api:GET /instagram`
+- `hub:TeamspeakClientsHub`
 
 ## How to get to it
 

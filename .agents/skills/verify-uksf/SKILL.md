@@ -189,4 +189,4 @@ node .agents/skills/verify-uksf/scripts/surface.mjs --api-repo ~/Workspace/uksf/
   | node ~/.pi/agent/skills/maintain-verification-skill/scripts/surface-check.mjs .agents/skills/verify-uksf/features
 ```
 
-Exit 0 means every id is claimed. Exit 1 prints the `unclaimed` and `stale` ids. Exit 2 means a missing input, such as no `node_modules` or a bad API ref. Run `git -C <api repo> fetch` first when the ref is `origin/main`.
+Web ids include redirect routes and the `**` route, because a user can open those URLs. Exit 0 means every id is claimed. Exit 1 prints the `unclaimed` and `stale` ids. Exit 2 means a missing input (no `node_modules`, a bad API ref) or a route, attribute, or event case the parser cannot read. The parsers live in `scripts/surface-lib.mjs`. Test them with `node --test .agents/skills/verify-uksf/scripts/surface-lib.test.mjs`. Run `git -C <api repo> fetch` first when the ref is `origin/main`.

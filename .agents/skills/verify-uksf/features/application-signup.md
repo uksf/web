@@ -17,7 +17,15 @@ A visitor applies to join UKSF. The first three steps create an account and conf
 - `api:POST /accounts/create`
 - `api:POST /accounts/code`
 - `api:POST /application/analytics/event`
-
+- `api:GET /auth/refresh`
+- `api:GET /accounts`
+- `api:GET /version`
+- `hub:UtilityHub`
+- `api:GET /notifications`
+- `hub:NotificationHub`
+- `hub:AccountHub`
+- `api:GET /teamspeak/online`
+- `hub:TeamspeakClientsHub`
 
 ## How to get to it
 

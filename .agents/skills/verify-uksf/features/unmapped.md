@@ -25,7 +25,6 @@
 - `api:DELETE /units/{id}`
 - `api:DELETE /variables/{key}`
 - `api:DELETE /workshop/{workshopModId}`
-- `api:GET /accounts`
 - `api:GET /accounts/active`
 - `api:GET /accounts/members`
 - `api:GET /accounts/roster`
@@ -34,7 +33,6 @@
 - `api:GET /artillery/{key}`
 - `api:GET /auth`
 - `api:GET /auth/impersonate`
-- `api:GET /auth/refresh`
 - `api:GET /backups/entries`
 - `api:GET /backups/runs`
 - `api:GET /backups/tree`
@@ -50,8 +48,6 @@
 - `api:GET /campaigns/{id}`
 - `api:GET /command/members`
 - `api:GET /commandrequests`
-- `api:GET /commentthread/canpost/{id}`
-- `api:GET /commentthread/{id}`
 - `api:GET /data/invalidate`
 - `api:GET /dev-run/{runId}`
 - `api:GET /dev-run/{runId}/status`
@@ -77,7 +73,6 @@
 - `api:GET /github/branches`
 - `api:GET /github/issues/templates`
 - `api:GET /github/populatereleases`
-- `api:GET /instagram`
 - `api:GET /instagram/cache`
 - `api:GET /intelpages`
 - `api:GET /intelpages/{id}`
@@ -104,7 +99,6 @@
 - `api:GET /modpack/rcs`
 - `api:GET /modpack/releases`
 - `api:GET /mods/size`
-- `api:GET /notifications`
 - `api:GET /npcvoices`
 - `api:GET /npcvoices/{baseVoiceId}/job`
 - `api:GET /npcvoices/{id}/sample`
@@ -129,8 +123,6 @@
 - `api:GET /steamconnection/application`
 - `api:GET /steamconnection/success`
 - `api:GET /steamconnection/success/application`
-- `api:GET /teamspeak/online`
-- `api:GET /teamspeak/onlineAccounts`
 - `api:GET /teamspeak/reload`
 - `api:GET /teamspeak/shutdown`
 - `api:GET /teamspeak/{accountId}/onlineUserDetails`
@@ -144,7 +136,6 @@
 - `api:GET /units/{id}`
 - `api:GET /variables`
 - `api:GET /variables/{key}`
-- `api:GET /version`
 - `api:GET /version/update`
 - `api:GET /workshop`
 - `api:GET /workshop/updatedDates`
@@ -275,19 +266,18 @@
 - `game:shutdown_saving`
 - `game:shutdown_stopping`
 - `hub:AccountGroupedHub`
-- `hub:AccountHub`
 - `hub:AdminHub`
 - `hub:AllHub`
 - `hub:BoardHub`
 - `hub:CommandRequestsHub`
-- `hub:CommentThreadHub`
 - `hub:LauncherHub`
 - `hub:ModpackHub`
-- `hub:NotificationHub`
 - `hub:ServersHub`
-- `hub:TeamspeakClientsHub`
 - `hub:TeamspeakHub`
-- `hub:UtilityHub`
+- `web:/`
+- `web:/**`
+- `web:/about`
+- `web:/admin`
 - `web:/admin/audit`
 - `web:/admin/backups`
 - `web:/admin/discord`
@@ -297,6 +287,7 @@
 - `web:/admin/servers`
 - `web:/admin/tools`
 - `web:/admin/variables`
+- `web:/command`
 - `web:/command/members`
 - `web:/command/ranks`
 - `web:/command/requests`
@@ -310,12 +301,15 @@
 - `web:/information/docs`
 - `web:/information/policy`
 - `web:/information/rules`
+- `web:/modpack`
 - `web:/modpack/builds-dev`
 - `web:/modpack/builds-rc`
 - `web:/modpack/guide`
 - `web:/modpack/releases`
 - `web:/modpack/workshop`
+- `web:/operations`
 - `web:/operations/aar`
+- `web:/operations/activity`
 - `web:/operations/campaigns`
 - `web:/operations/campaigns/:campaignId`
 - `web:/operations/campaigns/:campaignId/edit`
@@ -336,19 +330,28 @@
 - `web:/operations/campaigns/new`
 - `web:/operations/missions`
 - `web:/operations/npcs`
+- `web:/operations/opords`
+- `web:/operations/opreps`
+- `web:/operations/orders`
+- `web:/operations/reports`
 - `web:/operations/servers`
+- `web:/personnel`
 - `web:/personnel/activity`
 - `web:/personnel/discharges`
 - `web:/personnel/discharges/:filter`
 - `web:/personnel/loas`
 - `web:/personnel/roster`
+- `web:/policy`
 - `web:/profile`
 - `web:/profile/:id`
 - `web:/recruitment`
 - `web:/recruitment/:id`
+- `web:/rules`
+- `web:/units`
 - `web:/units/:id`
 - `web:/units/auxiliary`
 - `web:/units/orbat`
+- `web:/units/roster`
 - `web:/units/secondary`
 
 ## Not user-facing
