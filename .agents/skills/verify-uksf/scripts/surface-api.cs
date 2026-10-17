@@ -75,6 +75,7 @@ try
                 continue;
             }
             if (!isPublic || nonAction || method.TypeParameterList is not null || method.Modifiers.Any(SyntaxKind.AbstractKeyword) || method.Modifiers.Any(SyntaxKind.OverrideKeyword)) Refuse(method, "a routed method must be public, non-static, non-generic, non-override, and not [NonAction]");
+            if (attributes.Count > 1 && attributes.All(attribute => Attribute(attribute.Name).StartsWith("Http")) && attributes.Select(attribute => Template(attribute, required: false).Length == 0).Distinct().Count() > 1) Refuse(method, "an action mixes verb attributes with and without a template");
             foreach (var attribute in attributes)
             {
                 var name = Attribute(attribute.Name);

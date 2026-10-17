@@ -91,6 +91,7 @@ test("api endpoints refuse anything MVC or SignalR could discover differently", 
   [/using alias as an attribute, base type, or hub type/, () => api(`using B = Example.BaseController;\n[Route("derived")]\npublic class DerivedController : B {}`)],
   [/using alias as an attribute, base type, or hub type/, () => api(`using Provider = Microsoft.AspNetCore.Mvc.Routing.IRouteTemplateProvider;\npublic sealed class HiddenAttribute : System.Attribute, Provider {}`)],
   [/using alias as an attribute, base type, or hub type/, () => api(`using H = Example.ProbeHub;\nclass S { void M() { app.MapHub<H>("/probe"); } }`)],
+  [/mixes verb attributes with and without a template/, () => api(controller("probe", `[HttpGet("a"), HttpPost] public string A() => "ok";`))],
   [/declares a MapHub method/, () => api(`class S { void MapHub<T>(string path) {} void M() { MapHub<GhostHub>("/ghost"); } }`)],
   [/whitespace or a control character/, () => game(`switch (gameServerEvent.Type) { case "a\\nb": break; }`)],
 ]));

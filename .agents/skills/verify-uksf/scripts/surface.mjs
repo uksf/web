@@ -73,4 +73,6 @@ try {
   refuse(error.message);
 }
 const all = [...web_, ...apiIds(apiSources())].sort();
+const bad = all.find((id) => /[\s\p{C}]/u.test(id.startsWith("api:") ? id.slice(id.indexOf(" ") + 1) : id.slice(id.indexOf(":") + 1)));
+if (bad !== undefined) refuse(`id ${JSON.stringify(bad)} contains whitespace or a control character`);
 console.log(all.join("\n"));
