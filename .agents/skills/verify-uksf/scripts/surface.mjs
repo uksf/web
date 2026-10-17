@@ -8,9 +8,15 @@ import { webRoutes } from "./surface-lib.mjs";
 
 const usage = "usage: surface.mjs [--web <dir, default: this checkout>] [--api-repo <dir>] [--api-ref <ref>]\nPrints every web route, API endpoint, SignalR hub, and game event type, one id per line, sorted.";
 const args = process.argv.slice(2);
+const refuse = (message) => {
+  console.error(`refusing: ${message}\n${usage}`);
+  process.exit(2);
+};
 const option = (name, fallback) => {
   const at = args.indexOf(name);
-  return at < 0 ? fallback : args[at + 1];
+  if (at < 0) return fallback;
+  if (!args[at + 1] || args[at + 1].startsWith("--")) refuse(`${name} needs a value`);
+  return args[at + 1];
 };
 if (args.includes("--help")) {
   console.log(usage);
@@ -19,10 +25,6 @@ if (args.includes("--help")) {
 const web = resolve(option("--web", fileURLToPath(new URL("../../../..", import.meta.url))));
 const apiRepo = resolve(option("--api-repo", process.env.UKSF_API_REPO ?? join(process.env.HOME, "Workspace/uksf/api")));
 const apiRef = option("--api-ref", "origin/main");
-const refuse = (message) => {
-  console.error(`refusing: ${message}\n${usage}`);
-  process.exit(2);
-};
 if (!existsSync(join(web, "src/app/app.routes.ts"))) refuse(`${web} has no src/app/app.routes.ts`);
 if (!existsSync(join(web, "node_modules/typescript"))) refuse(`${web} has no node_modules/typescript; run bun install --frozen-lockfile there first`);
 
@@ -52,12 +54,16 @@ function apiSources() {
 
 function apiIds(sources) {
   const dotnetRoot = process.env.DOTNET_ROOT ?? join(process.env.HOME, ".dotnet");
-  const env = { ...process.env, DOTNET_ROOT: dotnetRoot, PATH: `${dotnetRoot}:${process.env.PATH}` };
+  const env = { ...process.env, DOTNET_ROOT: dotnetRoot, PATH: `${dotnetRoot}:${process.env.PATH}`, DOTNET_NOLOGO: "1", DOTNET_CLI_TELEMETRY_OPTOUT: "1", DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "1" };
   const reader = fileURLToPath(new URL("./surface-api.cs", import.meta.url));
   const result = spawnSync("dotnet", ["run", reader], { input: JSON.stringify(Object.fromEntries(sources)), encoding: "utf8", env, maxBuffer: 64 * 1024 * 1024 });
   if (result.error) refuse(`cannot run dotnet: ${result.error.message}`);
   if (result.status !== 0) refuse(`surface-api.cs exited ${result.status}: ${result.stderr.trim()}`);
-  return result.stdout.split("\n").filter(Boolean);
+  const frames = result.stdout.split("\n").filter((line) => line.startsWith("SURFACE-API "));
+  if (frames.length !== 1) refuse(`surface-api.cs printed ${frames.length} result lines`);
+  const ids = JSON.parse(frames[0].slice("SURFACE-API ".length));
+  if (!Array.isArray(ids) || !ids.length || ids.some((id) => typeof id !== "string" || /[\n\r]/.test(id))) refuse("surface-api.cs returned an invalid id list");
+  return ids;
 }
 
 let web_;

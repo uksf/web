@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
 import { join } from "node:path";
-import { test } from "node:test";
+import { before, test } from "node:test";
 import { fileURLToPath } from "node:url";
 
 const reader = fileURLToPath(new URL("./surface-api.cs", import.meta.url));
@@ -11,10 +11,12 @@ const events = `switch (gameServerEvent.Type) { case "fixture": break; }`;
 
 function read(files) {
   return new Promise((done) => {
-    const child = execFile("dotnet", ["run", reader], { env }, (error, stdout, stderr) => done(error ? { error: stderr.trim() || error.message } : { ids: stdout.split("\n").filter(Boolean) }));
+    const child = execFile("dotnet", ["run", reader], { env }, (error, stdout, stderr) => done(error ? { error: stderr.trim() || error.message } : { ids: JSON.parse(stdout.split("\n").find((line) => line.startsWith("SURFACE-API ")).slice(12)) }));
     child.stdin.end(JSON.stringify(files));
   });
 }
+
+before(() => read({ "GameServerEventHandler.cs": events }));
 
 const api = async (text, extra = {}) => {
   const result = await read({ "GameServerEventHandler.cs": events, "Probe.cs": text, ...extra });
@@ -48,7 +50,7 @@ public class ProbeController : ControllerBase {
   [["api:GET /probe/probe"], () => api(controller("[controller]/[controller]", "[HttpGet] public void A() {}"))],
   [["api:GET /probe"], () => api(controller("/probe", "[HttpGet] public void A() {}"))],
   [["api:GET /probe"], () => api(controller("\\u0070robe", "[HttpGet] public void A() {}"))],
-  [["api:GET /probe"], () => api(`namespace Example {\n  [Route("[controller]")]\n  // class WrongController\n  public record class ProbeController {\n    // [HttpGet("ghost")]\n    [HttpGet] public string Get() => "// HttpGet Route( MapHub";\n  }\n}`)],
+  [["api:GET /probe"], () => api(`namespace Example {\n  [Route("[controller]")]\n  // class WrongController\n  public record class ProbeController : ControllerBase {\n    // [HttpGet("ghost")]\n    [HttpGet] public string Get() => "// HttpGet Route( MapHub";\n  }\n}`)],
   [["api:GET /alpha/a", "api:GET /beta/b"], () => api(`[Route("[controller]")]
 public class AlphaController : ControllerBase { [HttpGet("a")] public string A() => "}"; }
 public class Dto { public string Name { get; set; } }
@@ -60,21 +62,37 @@ public class BetaController : ControllerBase { [HttpGet("b")] public void B() {}
 
 test("api endpoints refuse shapes the reader cannot enumerate", () => cases([
   [/routing attribute outside a controller/, () => api(`public class Dto { [HttpGet] public int X { get; set; } }`)],
-  [/actions without a class-level/, () => api(`public class ProbeController : ControllerBase { [HttpGet] public void A() {} }`)],
+  [/controller without a class-level/, () => api(`public class ProbeController : ControllerBase { [HttpGet] public void A() {} }`)],
   [/\[Route\] on an action is not supported/, () => api(controller("probe", `[HttpGet, Route("new")] public void A() {}`))],
   [/\[AcceptVerbs\] on an action/, () => api(controller("probe", `[AcceptVerbs("GET")] public void A() {}`))],
-  [/partial controller ProbeController/, () => api(`[Route("one")]\npublic partial\nclass ProbeController {}`, { "B.cs": `[Route("two")]\npublic partial\nclass ProbeController { [HttpGet("new")] public void A() {} }` })],
-  [/inherits routed actions from BaseController/, () => api(`[Route("derived")]\npublic class DerivedController : BaseController {}`, { "Base.cs": `[Route("base")]\npublic class BaseController { [HttpGet] public string Get() => "ok"; }` })],
-  [/abstract or static routed type/, () => api(`[Route("base")]\npublic abstract class BaseController { [HttpGet] public string Get() => "ok"; }`)],
+  [/partial controller ProbeController/, () => api(`[Route("one")]\npublic partial\nclass ProbeController : ControllerBase {}`, { "B.cs": `[Route("two")]\npublic partial\nclass ProbeController { [HttpGet("new")] public void A() {} }` })],
+  [/must derive directly from ControllerBase/, () => api(`[Route("derived")]\npublic class DerivedController : BaseController {}`, { "Base.cs": `[Route("base")]\npublic class BaseController { [HttpGet] public string Get() => "ok"; }` })],
+  [/abstract or static controller/, () => api(`[Route("base")]\npublic abstract class BaseController : ControllerBase { [HttpGet] public string Get() => "ok"; }`)],
   [/route token in \/probe\/\[action\]/, () => api(controller("probe/[action]", "[HttpGet] public void A() {}"))],
   [/route template is not one string literal/, () => api(controller("probe", "[HttpGet(Routes.New)] public void A() {}"))],
-  [/aliases a routing attribute/, () => api(`using Get = Microsoft.AspNetCore.Mvc.HttpGetAttribute;\n${controller("probe", "[Get] public void A() {}")}`)],
+  [/using alias as an attribute/, () => api(`using Get = Microsoft.AspNetCore.Mvc.HttpGetAttribute;\n${controller("probe", "[Get] public void A() {}")}`)],
   [/declares a custom routing attribute/, () => api(`public class MyGet : HttpGetAttribute {}`)],
   [/disabled by #if/, () => api(`#if NEVER\n[HttpGet] public void A() {}\n#endif`)],
   [/must be public/, () => api(controller("probe", "[HttpGet] private void A() {}"))],
-  [/routed type is not public/, () => api(`[Route("probe")]\ninternal class ProbeController { [HttpGet] public void A() {} }`)],
+  [/controller is not public/, () => api(`[Route("probe")]\ninternal class ProbeController : ControllerBase { [HttpGet] public void A() {} }`)],
   [/MapHub without one type argument/, () => api(`class S { void M() { app.MapHub(typeof(H), "/h"); } }`)],
   [/does not parse/, () => api(`public class {`)],
+]));
+
+test("api endpoints refuse anything MVC or SignalR could discover differently", () => cases([
+  [/Get has no verb attribute/, () => api(controller("probe", `public string Get() => "ok";`))],
+  [/Get has no verb attribute/, () => api(`[ApiController]\n${controller("probe", `public string Get() => "ok";`)}`)],
+  [/must end in Controller/, () => api(`public abstract class Common : ControllerBase { public string Get() => "ok"; }\n[Route("derived")]\npublic class DerivedController : Common {}`)],
+  [/without a class-level/, () => api(`public class ProbeController : ControllerBase { public string Get() => "ok"; }`)],
+  [/NonController/, () => api(`[NonController]\n${controller("probe", `[HttpGet] public string Get() => "ok";`)}`)],
+  [/must end in Controller/, () => api(`[Route("probe")]\npublic class Utility { [HttpGet] public string Get() => "ok"; }`)],
+  [/non-generic/, () => api(controller("probe", `[HttpGet] public string Get<T>() => "ok";`))],
+  [/named constructor arguments/, () => api(controller("probe", `[HttpGet(template: "new")] public string Get() => "ok";`))],
+  [/using alias as an attribute, base type, or hub type/, () => api(`using B = Example.BaseController;\n[Route("derived")]\npublic class DerivedController : B {}`)],
+  [/using alias as an attribute, base type, or hub type/, () => api(`using Provider = Microsoft.AspNetCore.Mvc.Routing.IRouteTemplateProvider;\npublic sealed class HiddenAttribute : System.Attribute, Provider {}`)],
+  [/using alias as an attribute, base type, or hub type/, () => api(`using H = Example.ProbeHub;\nclass S { void M() { app.MapHub<H>("/probe"); } }`)],
+  [/declares a MapHub method/, () => api(`class S { void MapHub<T>(string path) {} void M() { MapHub<GhostHub>("/ghost"); } }`)],
+  [/whitespace or a control character/, () => game(`switch (gameServerEvent.Type) { case "a\\nb": break; }`)],
 ]));
 
 test("game events read string cases anywhere in the switch and refuse other shapes", () => cases([

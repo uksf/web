@@ -26,38 +26,55 @@ try
     var nodes = trees.SelectMany(tree => tree.GetRoot().DescendantNodes()).ToList();
     var ids = new SortedSet<string>(StringComparer.Ordinal);
 
-    foreach (var alias in nodes.OfType<UsingDirectiveSyntax>().Where(directive => directive.Alias is not null))
-        if (alias.NamespaceOrType is TypeSyntax target && routing.Contains(Attribute(target))) Refuse(alias, "aliases a routing attribute");
+    var aliases = nodes.OfType<UsingDirectiveSyntax>().Where(directive => directive.Alias is not null).Select(directive => directive.Alias!.Name.Identifier.ValueText).ToHashSet();
+    var aliased = nodes.OfType<AttributeSyntax>().Select(attribute => (SyntaxNode)attribute.Name)
+        .Concat(nodes.OfType<BaseTypeSyntax>().Select(base_ => base_.Type))
+        .Concat(nodes.OfType<GenericNameSyntax>().Where(name => name.Identifier.ValueText == "MapHub").SelectMany(name => name.TypeArgumentList.Arguments))
+        .FirstOrDefault(name => aliases.Contains(Name(name)) || aliases.Contains(Attribute(name)));
+    if (aliased is not null) Refuse(aliased, "a using alias as an attribute, base type, or hub type is not supported");
     foreach (var type in nodes.OfType<BaseTypeDeclarationSyntax>())
-        if (type.BaseList?.Types.Any(base_ => routing.Contains(Attribute(base_.Type)) || providers.Contains(Name(base_.Type))) == true) Refuse(type, "declares a custom routing attribute");
+        if (type.BaseList?.Types.Any(base_ => routing.Contains(Attribute(base_.Type)) || Attribute(base_.Type) == "HttpMethod" || providers.Contains(Name(base_.Type))) == true) Refuse(type, "declares a custom routing attribute");
+    foreach (var method in nodes.OfType<MethodDeclarationSyntax>().Where(method => method.Identifier.ValueText == "MapHub"))
+        Refuse(method, "declares a MapHub method");
 
     var consumed = new HashSet<AttributeSyntax>();
-    var types = nodes.OfType<TypeDeclarationSyntax>().ToList();
-    var withActions = new HashSet<string>();
     var controllers = new List<(TypeDeclarationSyntax Type, List<string> Bases, List<(string Verb, string Template)> Actions)>();
-    foreach (var type in types)
+    string[] markers = ["Controller", "ApiController", "NonController", "Route"];
+    foreach (var type in nodes.OfType<TypeDeclarationSyntax>().Where(type => type is ClassDeclarationSyntax or RecordDeclarationSyntax))
     {
-        var classAttributes = Routing(type.AttributeLists);
-        var actions = type.Members.OfType<MethodDeclarationSyntax>().Select(method => (Method: method, Attributes: Routing(method.AttributeLists))).Where(pair => pair.Attributes.Count > 0).ToList();
-        if (classAttributes.Count == 0 && actions.Count == 0) continue;
+        var attributeNames = type.AttributeLists.SelectMany(list => list.Attributes).Select(attribute => Attribute(attribute.Name)).ToList();
+        var baseNames = type.BaseList?.Types.Select(base_ => Name(base_.Type)).ToList() ?? [];
+        var methods = type.Members.OfType<MethodDeclarationSyntax>().ToList();
+        var candidate = type.Identifier.ValueText.EndsWith("Controller") || attributeNames.Any(markers.Contains) || baseNames.Any(name => name.EndsWith("Controller") || name.EndsWith("ControllerBase")) || methods.Any(method => Routing(method.AttributeLists).Count > 0);
+        if (!candidate) continue;
         if (type.Modifiers.Any(SyntaxKind.PartialKeyword)) Refuse(type, $"partial controller {type.Identifier.ValueText} is not supported");
+        if (attributeNames.Contains("NonController")) Refuse(type, "[NonController] is not supported");
+        if (!type.Identifier.ValueText.EndsWith("Controller")) Refuse(type, "a controller name must end in Controller");
+        if (baseNames.Count == 0 || baseNames[0] is not ("ControllerBase" or "Controller")) Refuse(type, "a controller must derive directly from ControllerBase or Controller");
         if (type.Parent is TypeDeclarationSyntax) Refuse(type, "nested controller is not supported");
-        if (!type.Modifiers.Any(SyntaxKind.PublicKeyword)) Refuse(type, "routed type is not public");
-        if (type.Modifiers.Any(SyntaxKind.AbstractKeyword) || type.Modifiers.Any(SyntaxKind.StaticKeyword)) Refuse(type, "abstract or static routed type is not supported");
+        if (!type.Modifiers.Any(SyntaxKind.PublicKeyword)) Refuse(type, "controller is not public");
+        if (type.Modifiers.Any(SyntaxKind.AbstractKeyword) || type.Modifiers.Any(SyntaxKind.StaticKeyword)) Refuse(type, "abstract or static controller is not supported");
         if (type.TypeParameterList is not null) Refuse(type, "generic controller is not supported");
         var bases = new List<string>();
-        foreach (var attribute in classAttributes)
+        foreach (var attribute in Routing(type.AttributeLists))
         {
             if (Attribute(attribute.Name) != "Route") Refuse(attribute, "only [Route] is supported on a controller");
             bases.Add(Template(attribute, required: true));
             consumed.Add(attribute);
         }
-        if (actions.Count > 0 && bases.Count == 0) Refuse(type, "actions without a class-level [Route]");
+        if (bases.Count == 0) Refuse(type, "controller without a class-level [Route]");
         var parsed = new List<(string, string)>();
-        foreach (var (method, attributes) in actions)
+        foreach (var method in methods)
         {
-            if (!method.Modifiers.Any(SyntaxKind.PublicKeyword) || method.Modifiers.Any(SyntaxKind.StaticKeyword) || method.Modifiers.Any(SyntaxKind.AbstractKeyword)) Refuse(method, "a routed method must be public, non-static, and non-abstract");
-            if (method.AttributeLists.SelectMany(list => list.Attributes).Any(other => Attribute(other.Name) == "NonAction")) Refuse(method, "[NonAction] with a routing attribute");
+            var attributes = Routing(method.AttributeLists);
+            var isPublic = method.Modifiers.Any(SyntaxKind.PublicKeyword) && !method.Modifiers.Any(SyntaxKind.StaticKeyword);
+            var nonAction = method.AttributeLists.SelectMany(list => list.Attributes).Any(attribute => Attribute(attribute.Name) == "NonAction");
+            if (attributes.Count == 0)
+            {
+                if (isPublic) Refuse(method, $"public method {method.Identifier.ValueText} has no verb attribute, so MVC treats it as an action");
+                continue;
+            }
+            if (!isPublic || nonAction || method.TypeParameterList is not null || method.Modifiers.Any(SyntaxKind.AbstractKeyword) || method.Modifiers.Any(SyntaxKind.OverrideKeyword)) Refuse(method, "a routed method must be public, non-static, non-generic, non-override, and not [NonAction]");
             foreach (var attribute in attributes)
             {
                 var name = Attribute(attribute.Name);
@@ -66,13 +83,7 @@ try
                 consumed.Add(attribute);
             }
         }
-        if (parsed.Count > 0) withActions.Add(type.Identifier.ValueText);
         controllers.Add((type, bases, parsed));
-    }
-    foreach (var type in types)
-    {
-        var inherited = type.BaseList?.Types.Select(base_ => Name(base_.Type)).FirstOrDefault(withActions.Contains);
-        if (inherited is not null) Refuse(type, $"inherits routed actions from {inherited}");
     }
     var leftover = nodes.OfType<AttributeSyntax>().FirstOrDefault(attribute => routing.Contains(Attribute(attribute.Name)) && !consumed.Contains(attribute));
     if (leftover is not null) Refuse(leftover, "routing attribute outside a controller class or action method");
@@ -87,7 +98,7 @@ try
                 var path = Absolute(template) ? Trim(template) : string.Join("/", new[] { Trim(classTemplate), template }.Where(part => part.Length > 0));
                 path = Regex.Replace(path, @"\[controller\]", controller, RegexOptions.IgnoreCase);
                 if (path.Contains('[') || path.Contains(']')) Refuse(type, $"route token in /{path} is not supported");
-                ids.Add($"api:{verb} /{path}");
+                Add(type, $"api:{verb} /{path}");
             }
         }
     }
@@ -97,7 +108,8 @@ try
         if (name is not GenericNameSyntax generic || generic.TypeArgumentList.Arguments.Count != 1) Refuse(name, "MapHub without one type argument");
         var call = name.Parent is MemberAccessExpressionSyntax access && access.Name == name ? access.Parent : name.Parent;
         if (call is not InvocationExpressionSyntax) Refuse(name, "MapHub is not called directly");
-        ids.Add($"hub:{Name(((GenericNameSyntax)name).TypeArgumentList.Arguments[0])}");
+        if (name.Parent is not MemberAccessExpressionSyntax) Refuse(name, "MapHub is not called on a route builder");
+        Add(name, $"hub:{Name(((GenericNameSyntax)name).TypeArgumentList.Arguments[0])}");
     }
 
     var switches = nodes.Where(node => node is SwitchStatementSyntax or SwitchExpressionSyntax).Where(node => Regex.Replace((node is SwitchStatementSyntax statement ? statement.Expression : ((SwitchExpressionSyntax)node).GoverningExpression).ToString(), @"\s", "") == "gameServerEvent.Type").ToList();
@@ -107,12 +119,19 @@ try
     {
         if (label is DefaultSwitchLabelSyntax) continue;
         if (label is not CaseSwitchLabelSyntax { Value: LiteralExpressionSyntax literal } || !literal.IsKind(SyntaxKind.StringLiteralExpression)) Refuse(label, "event case is not a string literal");
-        ids.Add($"game:{((LiteralExpressionSyntax)((CaseSwitchLabelSyntax)label).Value).Token.ValueText}");
+        Add(label, $"game:{((LiteralExpressionSyntax)((CaseSwitchLabelSyntax)label).Value).Token.ValueText}");
         cases++;
     }
     if (cases == 0) Refuse(eventSwitch, "the event switch has no cases");
 
-    Console.Out.Write(string.Join("\n", ids));
+    Console.Out.WriteLine("SURFACE-API " + JsonSerializer.Serialize(ids));
+
+    void Add(SyntaxNode node, string id)
+    {
+        var value = id.StartsWith("api:") ? id[(id.IndexOf(' ') + 1)..] : id[(id.IndexOf(':') + 1)..];
+        if (Regex.IsMatch(value, @"[\s\p{C}]")) Refuse(node, "an id contains whitespace or a control character");
+        ids.Add(id);
+    }
     return 0;
 }
 catch (InvalidDataException error)
@@ -130,7 +149,8 @@ List<AttributeSyntax> Routing(SyntaxList<AttributeListSyntax> lists)
 
 string Template(AttributeSyntax attribute, bool required)
 {
-    var positional = attribute.ArgumentList?.Arguments.Where(argument => argument.NameEquals is null && argument.NameColon is null).ToList() ?? [];
+    if (attribute.ArgumentList?.Arguments.Any(argument => argument.NameColon is not null) == true) Refuse(attribute, "named constructor arguments are not supported");
+    var positional = attribute.ArgumentList?.Arguments.Where(argument => argument.NameEquals is null).ToList() ?? [];
     if (positional.Count == 0 && !required) return "";
     if (positional.Count != 1 || positional[0].Expression is not LiteralExpressionSyntax literal || !literal.IsKind(SyntaxKind.StringLiteralExpression)) Refuse(attribute, "route template is not one string literal");
     return ((LiteralExpressionSyntax)positional[0].Expression).Token.ValueText;
