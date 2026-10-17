@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { apiEndpoints, gameEvents, webRoutes } from "./surface-lib.mjs";
+import { webRoutes } from "./surface-lib.mjs";
 
 const usage = "usage: surface.mjs [--web <dir, default: this checkout>] [--api-repo <dir>] [--api-ref <ref>]\nPrints every web route, API endpoint, SignalR hub, and game event type, one id per line, sorted.";
 const args = process.argv.slice(2);
@@ -50,11 +50,21 @@ function apiSources() {
   return sources;
 }
 
-const sources = apiSources();
-let all;
+function apiIds(sources) {
+  const dotnetRoot = process.env.DOTNET_ROOT ?? join(process.env.HOME, ".dotnet");
+  const env = { ...process.env, DOTNET_ROOT: dotnetRoot, PATH: `${dotnetRoot}:${process.env.PATH}` };
+  const reader = fileURLToPath(new URL("./surface-api.cs", import.meta.url));
+  const result = spawnSync("dotnet", ["run", reader], { input: JSON.stringify(Object.fromEntries(sources)), encoding: "utf8", env, maxBuffer: 64 * 1024 * 1024 });
+  if (result.error) refuse(`cannot run dotnet: ${result.error.message}`);
+  if (result.status !== 0) refuse(`surface-api.cs exited ${result.status}: ${result.stderr.trim()}`);
+  return result.stdout.split("\n").filter(Boolean);
+}
+
+let web_;
 try {
-  all = [...webRoutes(ts, join(web, "src/app"), read), ...apiEndpoints(sources), ...gameEvents(sources)].sort();
+  web_ = [...webRoutes(ts, join(web, "src/app"), read)];
 } catch (error) {
   refuse(error.message);
 }
+const all = [...web_, ...apiIds(apiSources())].sort();
 console.log(all.join("\n"));
