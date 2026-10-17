@@ -18,6 +18,12 @@ if (args.Length < 2 || (args[1] != "doctor" && args.Length < 3) || (args[1] == "
     return 2;
 }
 
+if (!File.Exists(args[0]))
+{
+    Console.Error.WriteLine($"verify-data: settings file {args[0]} does not exist\n{usage}");
+    return 2;
+}
+
 var settings = JsonDocument.Parse(File.ReadAllText(args[0]));
 var connectionString = settings.RootElement.GetProperty("appSettings").GetProperty("connectionStrings").GetProperty("database").GetString()!;
 var databaseName = MongoUrl.Create(connectionString).DatabaseName;

@@ -33,7 +33,8 @@ Exit codes:
   0  every drive passed, down was clean, no lock remains, every port is free
   1  up, doctor or a drive failed after a clean down, or a lock or listener remains, or a port
      could not be inspected, or cleanup reported no recount (cleanupRemaining: null), or bad
-     input, or the harness lacks a requested drive (reported as "unsupported"; no run starts)
+     input, or the harness lacks a requested drive or the verify-cleanup.cs recount
+     (reported as "unsupported"; no run starts)
   2  down failed (also when the cleanup inside a failed up failed): the run and its lock are kept;
      the retry command is printed
 EOF
@@ -81,6 +82,7 @@ canon() {
 }
 
 probe_drive() {
+  grep -qF 'remainingChecks[' "$scripts_dir/verify-cleanup.cs" 2>/dev/null || return 1
   case "$1" in
     signup) [[ -f "$scripts_dir/drive-signup.mjs" ]] ;;
     details) [[ -f "$scripts_dir/drive-signup.mjs" ]] && grep -qF -- '"--details"' "$scripts_dir/drive-signup.mjs" ;;

@@ -26,7 +26,7 @@ $S/uksf-verify.sh up
 - the API with `ASPNETCORE_ENVIRONMENT=Development`, `UKSF_VERIFY_MODE=1`, `UKSF_FEATURE_ON=NOTIFICATIONS` (honoured only by an API that has the seam, which forces notifications on for this process alone), and `UKSF_VERIFY_EMAIL_DIR=<run>/email`. An API with the seam also keeps `TEAMSPEAK` and `DISCORD` off in verify mode whatever the stored flags say. Verify mode runs no migrations, creates no startup scheduled jobs or indexes, loads no existing scheduled jobs, and starts no Teamspeak, Discord, queued builds, backups, game-server recovery, or NPC workers. Sign-up still creates and schedules the confirmation code's expiry job (see Data). It writes its own logs to stdout as `verify-log {json}` lines in `<run>/api.log`, not to Mongo, and prints `verify mode: database <name> at <host>:<port>`. Mail goes to `.eml` files in the run's `email` folder. The Discord client cannot connect in Development or verify mode.
 - the web dev server (`ng serve --port 4200`) in its own process group, recorded at launch.
 
-Once `up` has recorded the run as current, a failed step runs `down` before `up` exits. A refusal before the lock, such as another active run, changes nothing. A failure between taking the lock and recording the run, such as `openssl` failing, leaves the lock in place; remove `$LOCK` by hand after checking no run holds it.
+`up` runs every refusal check after it takes the lock and before it creates the run folder. A refusal or other failure before the run is recorded as current releases the lock, deletes the run folder, and leaves another run's lock alone. If writing the run id into the lock fails, the lock stays; remove `$LOCK` by hand after checking no run holds it. Once `up` has recorded the run as current, a failed step runs `down` before `up` exits. A refusal before the lock, such as another active run, changes nothing.
 
 Ready signals: the API log line `Application started`, and HTTP 200 from `http://localhost:4200/`. A cold `up` that builds the API takes a few minutes, and a warm .NET build cache brings it under a minute. `up` waits up to 120 seconds for the API to start (after the build) and then up to 240 seconds for the web server.
 
@@ -62,7 +62,7 @@ Each driver checks that its run folder is the active one, takes a lease in `<run
 
 - `drive-signup.mjs` uses Playwright against the web UI. Run it from the web checkout root so it loads the repo's Playwright. With `--details` it also seeds the comms fields through `POST /accounts/verify/comms` and submits the application Details step.
 - `drive-mission.mjs` replays game-server events into `POST /gameservers/events` exactly as the Arma extension sends them, and runs a fake game listener on port 47999 (`UKSF_VERIFY_LISTENER_PORT`) that records every command the API pushes back. It refuses a port that any `gameServers` record in `devLocal` uses.
-- `verify-data.cs` reads the run's records from `devLocal`: `dotnet run $S/verify-data.cs -- $R/settings.json account <email> [<account-id>]`, `application <account-id> <email>`, `funnel <run-id>`, `mission <session-id>`, or `gameserver-port <port>`. `verify-cleanup.cs` is the cleanup `down` runs.
+- `verify-data.cs` reads the run's records from `devLocal`: `dotnet run $S/verify-data.cs -- $R/settings.json account <email> [<account-id>]`, `application <account-id> <email>`, `funnel <run-id>`, `mission <session-id>`, or `gameserver-port <port>`. `verify-cleanup.cs` is the cleanup `down` runs. `verify-data.cs` exits 2 with its usage message when the settings file does not exist or the arguments are invalid. `verify-cleanup.cs` exits 2 when it has fewer than three arguments or the settings file does not exist, 3 when the settings name a database other than `devLocal`, and 4 for a malformed run id or an unknown record kind.
 
 For a feature with no driver yet, follow its recipe in `features/` and save the same kind of evidence by hand.
 
@@ -88,7 +88,7 @@ Evidence stays in `<run>/evidence/` after cleanup. Quote its path in your report
 $S/uksf-verify.sh down
 ```
 
-`down` refuses unless the lock exists and belongs to this home's active run, and only one `down` runs per run (`<run>/teardown`). It waits up to 300 seconds for live driver leases, and refuses while any remain. It signals the API only while its PID has the recorded start time, and the web process group only while its leader has the recorded start time, and it checks that identity again before any forced kill. If a member of the web process group survives, or its leader is gone while members remain, `down` fails and keeps the run so you can stop them and retry. It never matches processes by name. It then counts the records of each kind listed in `<run>/owned` (an account and its confirmation codes, its funnel events, its application's comment threads and notifications, or a mission session with its player stats, mission stats, and raw mission events) into `<run>/evidence/cleanup-dry-run.json`. It deletes and recounts every child record first, deletes the account by id and email only when every child recount is zero, then recounts the account, and writes the removed counts and the recounts to `<run>/evidence/cleanup.json`. A recount above zero fails `down`. It refuses when the account exists but its id was never recorded, when an application's threads are not exactly the recorded ones, or when the run's API minted a thread the manifest does not record. When a failed submit leaves comment threads that no attached application references, cleanup deletes none of them, and `down` exits 7 and prints the candidate ids for a person to check (see `features/application-details.md`). If cleanup fails for any other reason, `down` exits 1 and keeps the run active, so run it again to retry; a retry works with the account already gone. On success it deletes `<run>/api-bin` and `<run>/settings.json` (which holds secrets) and releases the lock. Run `down` after every attempt, including failed ones.
+`down` refuses unless the lock exists and belongs to this home's active run, and only one `down` runs per run (`<run>/teardown`). It waits up to 300 seconds for live driver leases, and refuses while any remain. `up` holds a lease in `<run>/drivers/` from creating the run folder until the run is up, so a `down` during startup waits instead of releasing the lock under it. It signals the API only while its PID has the recorded start time, and the web process group only while its leader has the recorded start time, and it checks that identity again before any forced kill. If a member of the web process group survives, or its leader is gone while members remain, `down` fails and keeps the run so you can stop them and retry. It never matches processes by name. It then counts the records of each kind listed in `<run>/owned` (an account and its confirmation codes, its funnel events, its application's comment threads and notifications, or a mission session with its player stats, mission stats, and raw mission events) into `<run>/evidence/cleanup-dry-run.json`. It deletes and recounts every child record first, deletes the account by id and email only when every child recount is zero, then recounts the account, and writes the removed counts and the recounts to `<run>/evidence/cleanup.json`. A recount above zero fails `down`. It refuses when the account exists but its id was never recorded, when an application's threads are not exactly the recorded ones, or when the run's API minted a thread the manifest does not record. When a failed submit leaves comment threads that no attached application references, cleanup deletes none of them, and `down` exits 7 and prints the candidate ids for a person to check (see `features/application-details.md`). If cleanup fails for any other reason, `down` exits 1 and keeps the run active, so run it again to retry; a retry works with the account already gone. On success it deletes `<run>/api-bin` and `<run>/settings.json` (which holds secrets) and releases the lock. Run `down` after every attempt, including failed ones.
 
 ## Base versus head
 
@@ -100,18 +100,20 @@ Exit codes: 0 all passed, down clean, no lock, every port free; 1 up, doctor, or
 
 Web worktrees are plain `git worktree add --detach` checkouts followed by `bun install --frozen-lockfile` in each. API worktrees use `api-worktree.sh add <sha> <path>` (the path must be lower case apart from a leading `$HOME`; copies the gitignored settings with mode 600) and `api-worktree.sh remove <path>` (deletes the copy, then the worktree; `--dry-run` shows the plan). Remove every worktree only after both sides tear down cleanly.
 
+Every recipe keeps each side's run home under `$V`. To keep the homes somewhere else, set `V` to that folder.
+
 Web PR: base and head web worktrees, the head's scripts on both sides, the same API checkout.
 
 ```bash
-W=~/Workspace/uksf/web; P=~/.worktrees/web; B=<base-sha>; H=<head-sha>
+W=~/Workspace/uksf/web; P=~/.worktrees/web; B=<base-sha>; H=<head-sha>; V=~/.uksf-verify-pr
 web_sides() {
   local side
   for side in base head; do
-    $S/verify-side.sh --side $side --web-dir $P/vs-$side --scripts-dir $S --home ~/.uksf-verify-pr/$side --drive details || return "$?"
+    $S/verify-side.sh --side $side --web-dir $P/vs-$side --scripts-dir $S --home $V/$side --drive details || return "$?"
   done
 }
 git -C $W fetch origin &&
-mkdir -p ~/.uksf-verify-pr &&
+mkdir -p $V &&
 git -C $W worktree add --detach $P/vs-base $B && git -C $W worktree add --detach $P/vs-head $H &&
 (cd $P/vs-base && bun install --frozen-lockfile) && (cd $P/vs-head && bun install --frozen-lockfile) &&
 S=$P/vs-head/.agents/skills/verify-uksf/scripts &&
@@ -123,15 +125,15 @@ Rerun that function shape for every drive the PR needs, with the same drives on 
 API PR: an API worktree per side, one web checkout shared by both, `--api-dir` per side. The API base must include `a61e4070` or its squash on main, `ed06088b`; `api-worktree.sh add` refuses a base without either.
 
 ```bash
-W=~/Workspace/uksf/web; P=~/.worktrees/web; A=~/.worktrees/api; WEB=<web-sha>; B=<api-base-sha>; H=<api-head-sha>
+W=~/Workspace/uksf/web; P=~/.worktrees/web; A=~/.worktrees/api; WEB=<web-sha>; B=<api-base-sha>; H=<api-head-sha>; V=~/.uksf-verify-pr
 api_sides() {
   local side
   for side in base head; do
-    $S/verify-side.sh --side api-$side --api-dir $A/vs-$side --web-dir $P/vs-web --scripts-dir $S --home ~/.uksf-verify-pr/api-$side --drive signup || return "$?"
+    $S/verify-side.sh --side api-$side --api-dir $A/vs-$side --web-dir $P/vs-web --scripts-dir $S --home $V/api-$side --drive signup || return "$?"
   done
 }
 git -C $W fetch origin &&
-mkdir -p ~/.uksf-verify-pr $A &&
+mkdir -p $V $A &&
 git -C $W worktree add --detach $P/vs-web $WEB &&
 (cd $P/vs-web && bun install --frozen-lockfile) &&
 S=$P/vs-web/.agents/skills/verify-uksf/scripts &&
@@ -144,18 +146,18 @@ Run Details as its own side with its own `--home`, because a single run cannot h
 
 `remove` refuses a path that `add` did not create (no ownership marker), the main API checkout, a directory inside a worktree, and a settings file that is not the copy `add` made. Run it with `--dry-run` first to see the same checks without changes.
 
-Harness comparison: when the PR changes this skill's scripts, the web or API variants exercise only the head's harness, so a harness regression is invisible. Pin one product checkout (`--web-dir` and `--api-dir` identical on both runs) and vary only `--scripts-dir`: once with the base's scripts, once with the head's, each with its own `--home`, one at a time. The head's `verify-side.sh` runs both; only the harness it points at differs.
+Harness comparison: when the PR changes this skill's scripts, the web or API variants exercise only the head's harness, so a harness regression is invisible. Pin one product checkout (`--web-dir` and `--api-dir` identical on both runs) and vary only `--scripts-dir`: once with the base's scripts, once with the head's, each with its own `--home`, one at a time. The head's `verify-side.sh` runs both; only the harness it points at differs. `verify-side.sh` reports every drive as `unsupported` and starts no run when the harness's `verify-cleanup.cs` lacks the recount (`remainingChecks[`), because that harness cannot prove its records are gone. Harnesses before the cleanup recount, such as `7cb6d74b`, cannot be compared.
 
 ```bash
-W=~/Workspace/uksf/web; P=~/.worktrees/web; B=<base-sha>; H=<head-sha>
+W=~/Workspace/uksf/web; P=~/.worktrees/web; B=<base-sha>; H=<head-sha>; V=~/.uksf-verify-pr
 harness_sides() {
   local label
   for label in base head; do
-    $S/verify-side.sh --side harness-$label --web-dir $P/vs-head --scripts-dir $P/vs-$label/.agents/skills/verify-uksf/scripts --home ~/.uksf-verify-pr/harness-$label --drive signup || return "$?"
+    $S/verify-side.sh --side harness-$label --web-dir $P/vs-head --scripts-dir $P/vs-$label/.agents/skills/verify-uksf/scripts --home $V/harness-$label --drive signup || return "$?"
   done
 }
 git -C $W fetch origin &&
-mkdir -p ~/.uksf-verify-pr &&
+mkdir -p $V &&
 git -C $W worktree add --detach $P/vs-base $B && git -C $W worktree add --detach $P/vs-head $H &&
 (cd $P/vs-base && bun install --frozen-lockfile) && (cd $P/vs-head && bun install --frozen-lockfile) &&
 S=$P/vs-head/.agents/skills/verify-uksf/scripts &&
