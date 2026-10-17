@@ -13,6 +13,11 @@ if (args.Length < 3)
 }
 
 var settingsPath = args[0];
+if (!File.Exists(settingsPath))
+{
+    Console.Error.WriteLine($"verify-cleanup: settings file {settingsPath} does not exist");
+    return 2;
+}
 var runDir = Path.GetDirectoryName(Path.GetFullPath(settingsPath))!;
 var connectionString = JsonDocument.Parse(File.ReadAllText(settingsPath)).RootElement.GetProperty("appSettings").GetProperty("connectionStrings").GetProperty("database").GetString()!;
 var databaseName = MongoUrl.Create(connectionString).DatabaseName;

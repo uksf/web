@@ -82,7 +82,7 @@ remove() {
   [[ -d "$path" ]] || die "$path is not a directory"
   path="$(cd "$path" && pwd -P)" || die "cannot resolve $path"
   local top gitdir common listed=0 key value recorded actual="" has_settings=false
-  top="$(git -C "$path" rev-parse --show-toplevel)" && top="$(cd "$top" && pwd -P)" || die "$path is not a git worktree"
+  top="$(git -C "$path" rev-parse --show-toplevel 2>/dev/null)" && top="$(cd "$top" && pwd -P)" || die "$path is not a git worktree"
   [[ "$top" == "$path" ]] || die "$path is not the root of a worktree"
   gitdir="$(git -C "$path" rev-parse --absolute-git-dir)" || die "cannot read the git dir of $path"
   common="$(git -C "$path" rev-parse --path-format=absolute --git-common-dir)" || die "cannot read the common git dir of $path"
