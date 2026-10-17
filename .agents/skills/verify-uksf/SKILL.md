@@ -179,3 +179,14 @@ Event replay covers the API side of the game contract. For behaviour that needs 
 ## Upkeep
 
 Keep this skill and `features/` true to the app with the `maintain-verification-skill` skill. Change them in the same commit as the code they describe.
+
+## Entry-point coverage
+
+`scripts/surface.mjs` lists every entry point from source: Angular routes (`web:`), API controller endpoints read from the API repository at a Git ref (`api:`), SignalR hubs (`hub:`), and game event types from `GameServerEventHandler.cs` (`game:`). Each id must appear in one feature file's `## Entry points` or in `features/unmapped.md`. Check it from this checkout:
+
+```bash
+node .agents/skills/verify-uksf/scripts/surface.mjs --api-repo ~/Workspace/uksf/api --api-ref origin/main \
+  | node ~/.pi/agent/skills/maintain-verification-skill/scripts/surface-check.mjs .agents/skills/verify-uksf/features
+```
+
+Exit 0 means every id is claimed. Exit 1 prints the `unclaimed` and `stale` ids. Exit 2 means a missing input, such as no `node_modules` or a bad API ref. Run `git -C <api repo> fetch` first when the ref is `origin/main`.

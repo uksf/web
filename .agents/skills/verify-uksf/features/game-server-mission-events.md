@@ -10,6 +10,15 @@ The UKSF Arma extension reports what happens on a game server. The API records e
 - The endpoint answers 202 and handles the event in the background, except `persistence_save`, which it handles before it answers 200.
 - Other event types: `server_status`, `shutdown_*`, `mission_stats`, `performance`, `persistence_save`, and the NPC events `npc_register`, `npc_turn`, `npc_utterance`, and `npc_ack`.
 
+## Entry points
+
+- `api:POST /gameservers/events`
+- `game:mission_started`
+- `game:player_connected`
+- `game:player_disconnected`
+- `game:mission_ended`
+
+
 ## How to get to it
 
 - The Arma extension on a game server posts each event to `POST /gameservers/events` on the same host. No user drives it, and no API read endpoint exposes mission sessions. The arma-mission-stats tooling reads them from Mongo.

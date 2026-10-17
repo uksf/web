@@ -36,4 +36,4 @@ Last clean pass: web `7cb90523` with API `a8da4a9c`, 2026-10-12. Not exercised l
 
 ## Not yet mapped
 
-Passkey sign-up and sign-in, the real Communications step (Teamspeak, Steam, and Discord linking), editing a submitted application, recruitment review, the personnel roster, units, operations and campaigns, documents, modpack builds, admin pages, NPC events and the commands the API pushes to the game, persistence saves, and mission stats events.
+[unmapped.md](unmapped.md) lists every entry point that no feature file maps yet, by exact id. In words: passkey sign-up and sign-in, the real Communications step (Teamspeak, Steam, and Discord linking), editing a submitted application, recruitment review, the personnel roster, units, operations and campaigns, documents, modpack builds, admin pages, SignalR hubs, NPC events and the commands the API pushes to the game, persistence saves, server status, shutdown events, and mission stats events.
