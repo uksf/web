@@ -77,3 +77,9 @@ abandon_up() {
   [[ "$(cat "$VERIFY_HOME/current" 2>/dev/null)" != "$1" ]] || rm -f "$VERIFY_HOME/current"
   rm -rf "$2" "$LOCK"
 }
+
+fail_up() {
+  [[ "$BASH_SUBSHELL" == 0 && "$(cat "$VERIFY_HOME/current" 2>/dev/null)" == "$1" ]] || return 0
+  echo "up failed; cleaning up run $1" >&2
+  down
+}

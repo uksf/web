@@ -20,9 +20,9 @@ up() {
   run="v$(date -u +%Y%m%d%H%M%S)-$(openssl rand -hex 8)"
   dir="$(run_dir "$run")"
   mkdir "$LOCK" 2>/dev/null || { echo "refusing: another verify run holds $LOCK ($(cat "$LOCK/run" 2>/dev/null)); run '$0 down' with its UKSF_VERIFY_HOME ($(cat "$LOCK/home" 2>/dev/null))" >&2; exit 1; }
+  trap "abandon_up $(printf %q "$run") $(printf %q "$dir")" ERR
   echo "$run" > "$LOCK/run"
   echo "$VERIFY_HOME" > "$LOCK/home"
-  trap "abandon_up $(printf %q "$run") $(printf %q "$dir")" ERR
   for port in $API_PORT $WEB_PORT; do
     [[ -z "$(listener "$port")" ]] || { echo "refusing: port $port is in use by pid $(listener "$port"); this skill drives only instances it starts" >&2; false; }
   done
@@ -39,7 +39,7 @@ up() {
   touch "$dir/owned"
   echo "$api_dir" > "$dir/api-dir"
   echo "$run" > "$VERIFY_HOME/current"
-  trap 'echo "up failed; cleaning up run '"$run"'" >&2; down' ERR
+  trap "fail_up $(printf %q "$run")" ERR
   cp "$api_dir/UKSF.Api/appsettings.Development.json" "$dir/settings.json"
   chmod 600 "$dir/settings.json"
   settings_hash "$api_dir" > "$dir/api-settings"
