@@ -36,6 +36,16 @@ test("web routes refuse shapes the parser cannot enumerate", () => {
   refuse("...childRoutes", /route is not an object literal/);
   refuse("{ matcher: m, component: C }", /unsupported route property/);
   refuse("{ path: 'a', loadChildren: loader }", /cannot read loadChildren/);
+  refuse("{ path: 'chat', outlet: 'aux', component: C }", /unsupported route property/);
+});
+
+test("web routes list a parent route that has a component and children", () => {
+  assert.deepEqual(routes({ "/app/app.routes.ts": "export const appRoutes = [{ path: 'parent', component: P, children: [{ path: 'child', component: C }] }];" }), ["web:/parent", "web:/parent/child"]);
+});
+
+test("web routes read only the exported route array", () => {
+  assert.deepEqual(routes({ "/app/app.routes.ts": "export const appRoutes = [{ path: 'new', component: C }]; function f() { const appRoutes = []; }" }), ["web:/new"]);
+  assert.throws(() => routes({ "/app/app.routes.ts": "const appRoutes = [{ path: 'new', component: C }];" }), /expected one exported array literal appRoutes, found 0/);
 });
 
 test("api endpoints cover verbs, absolute templates, and every class route", () => {
@@ -55,14 +65,33 @@ public class ProbeController : ControllerBase {
 
 test("api endpoints refuse routing attributes the parser cannot read", () => {
   const refuse = (body, message) => assert.throws(() => api(`[Route("probe")]\npublic class ProbeController : ControllerBase {\n    ${body} public void A() {}\n}`), message);
-  refuse(`[HttpGet, Route("new")]`, /cannot read routing attribute/);
-  refuse(`[Route("new")]`, /cannot read routing attribute/);
-  refuse(`[AcceptVerbs("GET")]`, /cannot read routing attribute/);
-  assert.throws(() => api(`public class ProbeController : ControllerBase { [HttpGet] public void A() {} }`), /actions without a class-level/);
+  refuse(`[HttpGet, Route("new")]`, /routing declarations, but the parser read/);
+  refuse(`[Route("new")]`, /routing declarations, but the parser read/);
+  refuse(`[AcceptVerbs("GET")]`, /routing declarations, but the parser read/);
+  refuse(`[Microsoft.AspNetCore.Mvc.HttpGet("new")]`, /routing declarations, but the parser read/);
+  refuse(`[HttpGet("new"), ProducesResponseType(typeof(string[]), 200)]`, /routing declarations, but the parser read/);
+  assert.throws(() => api(`public class ProbeController : ControllerBase { [HttpGet] public void A() {} }`), /outside a class with a class-level/);
+  assert.throws(() => api(`[Route("two")]\npublic partial class ProbeController {\n    [HttpGet("new")] public void A() {}\n}`), /partial controller ProbeController/);
+});
+
+test("api endpoints tie each action to its own controller and read spaced hubs", () => {
+  const text = `[Route("[controller]")]
+public class AlphaController : ControllerBase {
+    [HttpGet("a")] public string A() => "}";
+}
+public class Dto { public string Name { get; set; } }
+[Route("[controller]")]
+public class BetaController : ControllerBase {
+    [HttpGet("b")] public void B() {}
+}`;
+  assert.deepEqual(api(text), ["api:GET /alpha/a", "api:GET /beta/b"]);
+  assert.deepEqual(api(`app.MapHub< ProbeHub >("/probe");`), ["hub:ProbeHub"]);
 });
 
 test("game events read every string case and refuse other shapes", () => {
   assert.deepEqual(events(`switch (gameServerEvent.Type) { case "npc_v2": break; case "npc_ack": break; default: break; }`), ["game:npc_ack", "game:npc_v2"]);
   assert.throws(() => events(`switch (gameServerEvent.Type) { case Events.Probe: break; default: break; }`), /not a string literal/);
-  assert.throws(() => events(`switch (other) { case "x": break; default: break; }`), /no switch/);
+  assert.throws(() => events(`switch (other) { case "x": break; default: break; }`), /exactly one switch/);
+  assert.deepEqual(events(`switch (gameServerEvent.Type) { case "existing": break; default: break; case "new_v2": break; }`), ["game:existing", "game:new_v2"]);
+  assert.throws(() => events(`switch (gameServerEvent.Type) { case "a": switch (x) { case 1: break; } break; }`), /nested switch/);
 });

@@ -1,6 +1,6 @@
 import { dirname, join, resolve } from "node:path";
 
-const routeKeys = new Set(["path", "component", "loadComponent", "children", "loadChildren", "redirectTo", "pathMatch", "canActivate", "canActivateChild", "canMatch", "canDeactivate", "data", "providers", "resolve", "title", "outlet", "runGuardsAndResolvers"]);
+const routeKeys = new Set(["path", "component", "loadComponent", "children", "loadChildren", "redirectTo", "pathMatch", "canActivate", "canActivateChild", "canMatch", "canDeactivate", "data", "providers", "resolve", "title", "runGuardsAndResolvers"]);
 
 export function webRoutes(ts, appDir, read) {
   const parse = (file) => ts.createSourceFile(file, read(file), ts.ScriptTarget.Latest, true);
@@ -10,13 +10,10 @@ export function webRoutes(ts, appDir, read) {
   const keyOf = (entry) => (ts.isIdentifier(entry.name) || ts.isStringLiteral(entry.name) ? entry.name.text : undefined);
 
   function exportedArray(source, name) {
-    let found;
-    source.forEachChild(function visit(node) {
-      if (ts.isVariableDeclaration(node) && node.name.getText() === name && node.initializer) found = node.initializer;
-      node.forEachChild(visit);
-    });
-    if (!found || !ts.isArrayLiteralExpression(found)) throw new Error(`${source.fileName}: ${name} is not an array literal`);
-    return found;
+    const exported = (statement) => ts.isVariableStatement(statement) && statement.modifiers?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword);
+    const found = source.statements.filter(exported).flatMap((statement) => statement.declarationList.declarations).filter((declaration) => declaration.name.getText() === name);
+    if (found.length !== 1 || !found[0].initializer || !ts.isArrayLiteralExpression(found[0].initializer)) throw new Error(`${source.fileName}: expected one exported array literal ${name}, found ${found.length}`);
+    return found[0].initializer;
   }
 
   function props(file, element) {
@@ -45,11 +42,12 @@ export function webRoutes(ts, appDir, read) {
       const path = route.path ? route.path.text : "";
       const full = path ? `${prefix.replace(/\/$/, "")}/${path}` : prefix || "/";
       if (route.children && !ts.isArrayLiteralExpression(route.children)) fail(file, route.children, "children is not an array literal");
+      out.add(`web:${full}`);
       if (route.children) walk(file, route.children, full, out);
       else if (route.loadChildren) {
         const target = lazyTarget(file, route.loadChildren);
         walk(target.file, exportedArray(parse(target.file), target.name), full, out);
-      } else out.add(`web:${full}`);
+      }
     }
   }
 
@@ -60,39 +58,73 @@ export function webRoutes(ts, appDir, read) {
 }
 
 const attribute = /\[((?:[^[\]"]|"[^"]*")*)\]/g;
-const routing = /(^|,\s*)(Http[A-Z]\w*|Route|AcceptVerbs)\b/;
+const token = /\b(?:\w+\.)*(?:Http(?:Get|Post|Put|Patch|Delete|Head|Options)|AcceptVerbs)\b|\bRoute\s*\(|\bMapHub\b/g;
 const classRoute = /^Route\("([^"]*)"\)$/;
 const action = /^Http(Get|Post|Put|Patch|Delete|Head|Options)(?:\(\s*"([^"]*)"\s*(?:,[^)]*)?\))?$/;
+const hub = /\bMapHub\s*<\s*([\w.]+)\s*>/g;
 
 export function apiEndpoints(sources) {
   const out = new Set();
   for (const [name, text] of sources) {
+    const raw = [...text.matchAll(token)].length;
+    if (!raw) continue;
     const bases = [];
     const actions = [];
     for (const match of text.matchAll(attribute)) {
       const body = match[1].trim();
-      if (!routing.test(body)) continue;
       const atLineStart = match.index === 0 || text[match.index - 1] === "\n";
       const route = classRoute.exec(body);
       const verb = action.exec(body);
-      if (route && atLineStart) bases.push(route[1]);
-      else if (verb) actions.push({ verb: verb[1].toUpperCase(), template: verb[2] ?? "" });
-      else throw new Error(`${name}: cannot read routing attribute [${body}]`);
+      if (route && atLineStart) bases.push({ at: match.index, template: route[1] });
+      else if (verb) actions.push({ at: match.index, verb: verb[1].toUpperCase(), template: verb[2] ?? "" });
     }
-    if (!actions.length && !bases.length) continue;
-    if (actions.length && !bases.length) throw new Error(`${name}: actions without a class-level [Route]`);
-    const className = /\bclass (\w+?)(?:Controller)?\b/.exec(text.slice(text.indexOf(`[Route("${bases.at(-1)}")]`)));
-    if (!className) throw new Error(`${name}: no class after [Route]`);
-    for (const base of bases.map((template) => template.replace("[controller]", className[1].toLowerCase()))) {
-      for (const { verb, template } of actions) {
-        const absolute = template.startsWith("~/") || template.startsWith("/");
-        const path = absolute ? `/${template.replace(/^~?\//, "")}` : template ? `/${base}/${template}` : `/${base}`;
-        out.add(`api:${verb} ${path}`);
+    const hubs = [...text.matchAll(hub)].map((match) => match[1]);
+    if (bases.length + actions.length + hubs.length !== raw) throw new Error(`${name}: ${raw} routing declarations, but the parser read ${bases.length + actions.length + hubs.length}`);
+    for (const found of hubs) out.add(`hub:${found}`);
+    if (!bases.length && !actions.length) continue;
+    const controllers = new Map();
+    for (const base of bases) {
+      const declaration = /(partial )?(?:record|class) (\w+)/.exec(text.slice(base.at));
+      if (!declaration) throw new Error(`${name}: no class after [Route("${base.template}")]`);
+      if (declaration[1]) throw new Error(`${name}: partial controller ${declaration[2]} is not supported`);
+      const at = base.at + declaration.index;
+      if (!controllers.has(at)) controllers.set(at, { name: declaration[2], body: block(text, at, name), templates: [] });
+      controllers.get(at).templates.push(base.template);
+    }
+    for (const { verb, template, at } of actions) {
+      const owner = [...controllers.values()].find(({ body }) => at > body.start && at < body.end);
+      if (!owner) throw new Error(`${name}: [Http${verb[0]}${verb.slice(1).toLowerCase()}] outside a class with a class-level [Route]`);
+      owner.actions = [...(owner.actions ?? []), { verb, template }];
+    }
+    for (const owner of controllers.values()) {
+      const controller = owner.name.replace(/Controller$/, "").toLowerCase();
+      for (const base of owner.templates.map((template) => template.replace("[controller]", controller))) {
+        for (const { verb, template } of owner.actions ?? []) {
+          const absolute = template.startsWith("~/") || template.startsWith("/");
+          const path = absolute ? `/${template.replace(/^~?\//, "")}` : template ? `/${base}/${template}` : `/${base}`;
+          out.add(`api:${verb} ${path}`);
+        }
       }
     }
   }
-  for (const text of sources.values()) for (const hub of text.matchAll(/MapHub<(\w+)>/g)) out.add(`hub:${hub[1]}`);
   return out;
+}
+
+function block(text, from, name) {
+  const open = text.indexOf("{", from);
+  const semicolon = text.indexOf(";", from);
+  if (semicolon >= 0 && (open < 0 || semicolon < open)) return { start: semicolon, end: semicolon };
+  let depth = 0;
+  for (let at = open; at < text.length; at++) {
+    const char = text[at];
+    if (char === "/" && text[at + 1] === "/") at = text.indexOf("\n", at) < 0 ? text.length : text.indexOf("\n", at);
+    else if (char === "/" && text[at + 1] === "*") at = text.indexOf("*/", at) + 1;
+    else if (char === '"' || char === "'") {
+      for (at++; at < text.length && text[at] !== char; at++) if (text[at] === "\\") at++;
+    } else if (char === "{") depth++;
+    else if (char === "}" && --depth === 0) return { start: open, end: at };
+  }
+  throw new Error(`${name}: unbalanced braces after offset ${from}`);
 }
 
 export function gameEvents(sources) {
@@ -100,10 +132,11 @@ export function gameEvents(sources) {
   if (handlers.length !== 1) throw new Error(`expected one GameServerEventHandler.cs, found ${handlers.length}`);
   const text = handlers[0][1];
   const start = text.indexOf("switch (gameServerEvent.Type)");
-  const end = text.indexOf("default:", start);
-  if (start < 0 || end < 0) throw new Error("GameServerEventHandler.cs has no switch (gameServerEvent.Type) with a default");
-  const block = text.slice(start, end);
-  const cases = [...block.matchAll(/\bcase\s+([^:]+):/g)].map((match) => match[1].trim());
+  if (start < 0 || text.indexOf("switch (gameServerEvent.Type)", start + 1) >= 0) throw new Error("GameServerEventHandler.cs must have exactly one switch (gameServerEvent.Type)");
+  const range = block(text, start, "GameServerEventHandler.cs");
+  const body = text.slice(range.start + 1, range.end);
+  if (/\bswitch\b/.test(body)) throw new Error("GameServerEventHandler.cs: nested switch in the event switch");
+  const cases = [...body.matchAll(/\bcase\s+([^:]+):/g)].map((match) => match[1].trim());
   const bad = cases.find((value) => !/^"[^"]+"$/.test(value));
   if (bad) throw new Error(`GameServerEventHandler.cs: case ${bad} is not a string literal`);
   if (!cases.length) throw new Error("GameServerEventHandler.cs: the event switch has no cases");
