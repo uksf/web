@@ -37,6 +37,7 @@ up() {
   node "$SCRIPTS/check-web-deps.mjs" "$WEB_DIR"
   mkdir -p "$dir/email" "$dir/evidence" "$dir/drivers"
   started_at "$$" > "$dir/drivers/$$"
+  [[ -s "$dir/drivers/$$" ]] || { echo "refusing: could not read this process's start time for its startup lease" >&2; false; }
   touch "$dir/owned"
   echo "$api_dir" > "$dir/api-dir"
   echo "$run" > "$VERIFY_HOME/current"
