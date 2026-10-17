@@ -81,5 +81,6 @@ abandon_up() {
 fail_up() {
   [[ "$BASH_SUBSHELL" == 0 && "$(cat "$VERIFY_HOME/current" 2>/dev/null)" == "$1" ]] || return 0
   echo "up failed; cleaning up run $1" >&2
+  rm -f "$(run_dir "$1")/drivers/$$"
   down
 }

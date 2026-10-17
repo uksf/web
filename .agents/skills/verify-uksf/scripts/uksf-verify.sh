@@ -36,6 +36,7 @@ up() {
   fi
   node "$SCRIPTS/check-web-deps.mjs" "$WEB_DIR"
   mkdir -p "$dir/email" "$dir/evidence" "$dir/drivers"
+  started_at "$$" > "$dir/drivers/$$"
   touch "$dir/owned"
   echo "$api_dir" > "$dir/api-dir"
   echo "$run" > "$VERIFY_HOME/current"
@@ -64,6 +65,7 @@ up() {
   wait_for 120 "the API to start" api_started "$dir"
   wait_for 240 "the web dev server" web_ready
   trap - ERR
+  rm -f "$dir/drivers/$$"
   echo "run $run is up: api pid $(cat "$dir/api.pid"), web process group $(cat "$dir/web.pgid"), evidence in $dir/evidence"
 }
 
