@@ -1,0 +1,360 @@
+# Unmapped entry points
+
+`scripts/surface.mjs` lists every entry point. This file claims each one that no feature file maps yet. `surface-check.mjs` fails when an entry point appears in no file, or when an id here no longer exists.
+
+## Not yet mapped
+
+- `api:DELETE /backups/entries/{id}`
+- `api:DELETE /boards/{boardId}`
+- `api:DELETE /boards/{boardId}/cards/{cardId}`
+- `api:DELETE /campaigns/{campaignId}/operations/{operationId}`
+- `api:DELETE /campaigns/{campaignId}/operations/{operationId}/missions/{missionId}`
+- `api:DELETE /campaigns/{id}`
+- `api:DELETE /discord/commands/newGithubIssue`
+- `api:DELETE /docs/folders/{folderId}`
+- `api:DELETE /docs/folders/{folderId}/documents/{documentId}`
+- `api:DELETE /gameservers/{id}`
+- `api:DELETE /intelpages/{id}`
+- `api:DELETE /loa/{id}`
+- `api:DELETE /missions/{fileName}`
+- `api:DELETE /npcvoices/{id}`
+- `api:DELETE /passkeys/{id}`
+- `api:DELETE /ranks/{id}`
+- `api:DELETE /roles/{id}`
+- `api:DELETE /trainings/{trainingId}`
+- `api:DELETE /units/{id}`
+- `api:DELETE /variables/{key}`
+- `api:DELETE /workshop/{workshopModId}`
+- `api:GET /accounts/active`
+- `api:GET /accounts/members`
+- `api:GET /accounts/roster`
+- `api:GET /accounts/{id}`
+- `api:GET /application/analytics/funnel`
+- `api:GET /artillery/{key}`
+- `api:GET /auth`
+- `api:GET /auth/impersonate`
+- `api:GET /backups/entries`
+- `api:GET /backups/runs`
+- `api:GET /backups/tree`
+- `api:GET /boards`
+- `api:GET /boards/{boardId}`
+- `api:GET /boards/{boardId}/done`
+- `api:GET /campaigns`
+- `api:GET /campaigns/{campaignId}/missions`
+- `api:GET /campaigns/{campaignId}/operations`
+- `api:GET /campaigns/{campaignId}/operations/{operationId}`
+- `api:GET /campaigns/{campaignId}/operations/{operationId}/missions`
+- `api:GET /campaigns/{campaignId}/operations/{operationId}/missions/{missionId}`
+- `api:GET /campaigns/{id}`
+- `api:GET /command/members`
+- `api:GET /commandrequests`
+- `api:GET /data/invalidate`
+- `api:GET /dev-run/{runId}`
+- `api:GET /dev-run/{runId}/status`
+- `api:GET /discharges`
+- `api:GET /discharges/reinstate/{id}`
+- `api:GET /discord/roles`
+- `api:GET /discord/updateuserroles`
+- `api:GET /discord/{accountId}/onlineUserDetails`
+- `api:GET /discordconnection`
+- `api:GET /discordconnection/application`
+- `api:GET /discordconnection/success`
+- `api:GET /discordconnection/success/application`
+- `api:GET /displayname/{id}`
+- `api:GET /docs/folders`
+- `api:GET /docs/folders/{folderId}`
+- `api:GET /docs/folders/{folderId}/documents/{documentId}`
+- `api:GET /docs/folders/{folderId}/documents/{documentId}/content`
+- `api:GET /gameservers`
+- `api:GET /gameservers/disabled`
+- `api:GET /gameservers/{id}/log/download`
+- `api:GET /gameservers/{id}/mods`
+- `api:GET /gameservers/{id}/mods/reset`
+- `api:GET /github/branches`
+- `api:GET /github/issues/templates`
+- `api:GET /github/populatereleases`
+- `api:GET /instagram/cache`
+- `api:GET /intelpages`
+- `api:GET /intelpages/{id}`
+- `api:GET /launcher/download/setup`
+- `api:GET /launcher/download/updater`
+- `api:GET /launcher/version`
+- `api:GET /loa`
+- `api:GET /logging/audit`
+- `api:GET /logging/basic`
+- `api:GET /logging/discord`
+- `api:GET /logging/error`
+- `api:GET /logging/launcher`
+- `api:GET /missions`
+- `api:GET /missions/archived`
+- `api:GET /missions/{fileName}/download`
+- `api:GET /modpack/builds`
+- `api:GET /modpack/builds/{id}`
+- `api:GET /modpack/builds/{id}/cancel`
+- `api:GET /modpack/builds/{id}/rebuild`
+- `api:GET /modpack/builds/{id}/step/{index:int}`
+- `api:GET /modpack/gamedata`
+- `api:GET /modpack/gamedata/export/status`
+- `api:GET /modpack/gamedata/{version}/{file}`
+- `api:GET /modpack/rcs`
+- `api:GET /modpack/releases`
+- `api:GET /mods/size`
+- `api:GET /npcvoices`
+- `api:GET /npcvoices/{baseVoiceId}/job`
+- `api:GET /npcvoices/{id}/sample`
+- `api:GET /ocap/embed-token`
+- `api:GET /operations`
+- `api:GET /passkeys`
+- `api:GET /persistence/{key}`
+- `api:GET /ranks`
+- `api:GET /ranks/{id}`
+- `api:GET /recruitment/applications/active`
+- `api:GET /recruitment/applications/completed`
+- `api:GET /recruitment/applications/{accountId}`
+- `api:GET /recruitment/recruiters`
+- `api:GET /recruitment/stats`
+- `api:GET /roles`
+- `api:GET /servers/infrastructure/current`
+- `api:GET /servers/infrastructure/installed`
+- `api:GET /servers/infrastructure/isUpdating`
+- `api:GET /servers/infrastructure/latest`
+- `api:GET /servers/infrastructure/update`
+- `api:GET /steamconnection`
+- `api:GET /steamconnection/application`
+- `api:GET /steamconnection/success`
+- `api:GET /steamconnection/success/application`
+- `api:GET /teamspeak/reload`
+- `api:GET /teamspeak/shutdown`
+- `api:GET /teamspeak/{accountId}/onlineUserDetails`
+- `api:GET /teamspeak/{teamspeakId}`
+- `api:GET /trainings`
+- `api:GET /trainings/check-unique`
+- `api:GET /units`
+- `api:GET /units/chart/{type}`
+- `api:GET /units/exists/{check}`
+- `api:GET /units/tree`
+- `api:GET /units/{id}`
+- `api:GET /variables`
+- `api:GET /variables/{key}`
+- `api:GET /version/update`
+- `api:GET /workshop`
+- `api:GET /workshop/updatedDates`
+- `api:GET /workshop/{id}`
+- `api:PATCH /backups/entries`
+- `api:PATCH /commandrequests/{id}`
+- `api:PATCH /gameservers`
+- `api:PATCH /gameservers/order`
+- `api:PATCH /modpack/releases/{version}`
+- `api:PATCH /ranks`
+- `api:PATCH /roles`
+- `api:PATCH /trainings`
+- `api:PATCH /units/{id}/order`
+- `api:PATCH /units/{id}/parent`
+- `api:PATCH /variables`
+- `api:POST /accounts/create/passkey/options`
+- `api:POST /accounts/resend-email-code`
+- `api:POST /accounts/{accountId}/teamspeak/{teamspeakId}`
+- `api:POST /auth/passkey`
+- `api:POST /auth/passkey/options`
+- `api:POST /auth/passwordReset`
+- `api:POST /auth/passwordReset/{code}`
+- `api:POST /backups/run`
+- `api:POST /boards`
+- `api:POST /boards/{boardId}/cards`
+- `api:POST /boards/{boardId}/cards/{cardId}/commentthread`
+- `api:POST /campaigns`
+- `api:POST /campaigns/{campaignId}/operations`
+- `api:POST /campaigns/{campaignId}/operations/{operationId}/missions`
+- `api:POST /campaigns/{campaignId}/operations/{operationId}/missions/{missionId}/launch`
+- `api:POST /commandrequests/Create/chainofcommandposition`
+- `api:POST /commandrequests/Create/discharge`
+- `api:POST /commandrequests/Create/loa`
+- `api:POST /commandrequests/Create/medicattachment`
+- `api:POST /commandrequests/Create/rank`
+- `api:POST /commandrequests/Create/reinstate`
+- `api:POST /commandrequests/Create/role`
+- `api:POST /commandrequests/Create/transfer`
+- `api:POST /commandrequests/Create/unitremoval`
+- `api:POST /commandrequests/exists`
+- `api:POST /commentthread/{id}/{commentId}`
+- `api:POST /dev-run`
+- `api:POST /discordcode/{discordId}`
+- `api:POST /docs/folders`
+- `api:POST /docs/folders/{folderId}/documents`
+- `api:POST /gameservers/disabled`
+- `api:POST /gameservers/killall`
+- `api:POST /gameservers/{check}`
+- `api:POST /gameservers/{id}/kill`
+- `api:POST /gameservers/{id}/launch`
+- `api:POST /gameservers/{id}/mods`
+- `api:POST /gameservers/{id}/stop`
+- `api:POST /github`
+- `api:POST /github/issues`
+- `api:POST /intelpages`
+- `api:POST /launcher/download/update`
+- `api:POST /launcher/error`
+- `api:POST /launcher/version`
+- `api:POST /missions/upload`
+- `api:POST /missions/{fileName}/archive`
+- `api:POST /missions/{fileName}/restore`
+- `api:POST /modpack/builds/emergency-cleanup`
+- `api:POST /modpack/builds/{id}/cancel`
+- `api:POST /modpack/builds/{id}/rebuild`
+- `api:POST /modpack/gamedata/export`
+- `api:POST /modpack/newbuild`
+- `api:POST /modpack/releases/{version}`
+- `api:POST /notifications/clear`
+- `api:POST /notifications/read`
+- `api:POST /notifications/test`
+- `api:POST /npcvoices`
+- `api:POST /npcvoices/{baseVoiceId}/generate-moods`
+- `api:POST /passkeys`
+- `api:POST /passkeys/options`
+- `api:POST /passkeys/options/automatic`
+- `api:POST /ranks`
+- `api:POST /ranks/exists`
+- `api:POST /ranks/order`
+- `api:POST /ranks/{check}`
+- `api:POST /recruitment/applications/{accountId}`
+- `api:POST /recruitment/applications/{accountId}/recruiter`
+- `api:POST /roles/{check}`
+- `api:POST /scheduled-actions/{name}/run`
+- `api:POST /steamcode/{steamId}`
+- `api:POST /trainings`
+- `api:POST /units`
+- `api:POST /variables/{key}`
+- `api:POST /workshop`
+- `api:POST /workshop/{workshopModId}/resolve`
+- `api:POST /workshop/{workshopModId}/retry`
+- `api:POST /workshop/{workshopModId}/uninstall`
+- `api:POST /workshop/{workshopModId}/update`
+- `api:PUT /accounts/name`
+- `api:PUT /accounts/password`
+- `api:PUT /accounts/{accountId}/training`
+- `api:PUT /accounts/{id}/application`
+- `api:PUT /accounts/{id}/qualifications`
+- `api:PUT /accounts/{id}/updatesetting`
+- `api:PUT /artillery/{key}`
+- `api:PUT /backups/entries`
+- `api:PUT /boards/{boardId}`
+- `api:PUT /boards/{boardId}/cards/{cardId}`
+- `api:PUT /boards/{boardId}/cards/{cardId}/move`
+- `api:PUT /campaigns`
+- `api:PUT /campaigns/{campaignId}/operations/{operationId}`
+- `api:PUT /campaigns/{campaignId}/operations/{operationId}/missions/{missionId}`
+- `api:PUT /commentthread/{commentThreadId}`
+- `api:PUT /docs/folders/{folderId}`
+- `api:PUT /docs/folders/{folderId}/documents/{documentId}`
+- `api:PUT /docs/folders/{folderId}/documents/{documentId}/content`
+- `api:PUT /gameservers`
+- `api:PUT /intelpages`
+- `api:PUT /modpack/releases/{version}`
+- `api:PUT /modpack/releases/{version}/changelog`
+- `api:PUT /roles`
+- `api:PUT /units/{id}`
+- `api:PUT /variables`
+- `game:mission_stats`
+- `game:npc_ack`
+- `game:npc_register`
+- `game:npc_turn`
+- `game:npc_utterance`
+- `game:performance`
+- `game:persistence_save`
+- `game:server_status`
+- `game:shutdown_delivering`
+- `game:shutdown_ending`
+- `game:shutdown_saving`
+- `game:shutdown_stopping`
+- `hub:AccountGroupedHub`
+- `hub:AdminHub`
+- `hub:AllHub`
+- `hub:BoardHub`
+- `hub:CommandRequestsHub`
+- `hub:LauncherHub`
+- `hub:ModpackHub`
+- `hub:ServersHub`
+- `hub:TeamspeakHub`
+- `web:/`
+- `web:/**`
+- `web:/about`
+- `web:/admin`
+- `web:/admin/audit`
+- `web:/admin/backups`
+- `web:/admin/discord`
+- `web:/admin/errors`
+- `web:/admin/launcher`
+- `web:/admin/logs`
+- `web:/admin/servers`
+- `web:/admin/tools`
+- `web:/admin/variables`
+- `web:/command`
+- `web:/command/members`
+- `web:/command/ranks`
+- `web:/command/requests`
+- `web:/command/roles`
+- `web:/command/training`
+- `web:/command/units`
+- `web:/information`
+- `web:/information/about`
+- `web:/information/boards`
+- `web:/information/boards/:boardId`
+- `web:/information/docs`
+- `web:/information/policy`
+- `web:/information/rules`
+- `web:/modpack`
+- `web:/modpack/builds-dev`
+- `web:/modpack/builds-rc`
+- `web:/modpack/guide`
+- `web:/modpack/releases`
+- `web:/modpack/workshop`
+- `web:/operations`
+- `web:/operations/aar`
+- `web:/operations/activity`
+- `web:/operations/campaigns`
+- `web:/operations/campaigns/:campaignId`
+- `web:/operations/campaigns/:campaignId/edit`
+- `web:/operations/campaigns/:campaignId/intel/:intelId`
+- `web:/operations/campaigns/:campaignId/intel/:intelId/edit`
+- `web:/operations/campaigns/:campaignId/intel/new`
+- `web:/operations/campaigns/:campaignId/operations/:operationId`
+- `web:/operations/campaigns/:campaignId/operations/:operationId/edit`
+- `web:/operations/campaigns/:campaignId/operations/:operationId/intel/:intelId`
+- `web:/operations/campaigns/:campaignId/operations/:operationId/intel/:intelId/edit`
+- `web:/operations/campaigns/:campaignId/operations/:operationId/intel/new`
+- `web:/operations/campaigns/:campaignId/operations/:operationId/missions/:missionId`
+- `web:/operations/campaigns/:campaignId/operations/:operationId/missions/:missionId/intel/:intelId`
+- `web:/operations/campaigns/:campaignId/operations/:operationId/missions/:missionId/intel/:intelId/edit`
+- `web:/operations/campaigns/:campaignId/operations/:operationId/missions/:missionId/intel/new`
+- `web:/operations/campaigns/:campaignId/operations/:operationId/missions/:missionId/warno`
+- `web:/operations/campaigns/:campaignId/operations/new`
+- `web:/operations/campaigns/new`
+- `web:/operations/missions`
+- `web:/operations/npcs`
+- `web:/operations/opords`
+- `web:/operations/opreps`
+- `web:/operations/orders`
+- `web:/operations/reports`
+- `web:/operations/servers`
+- `web:/personnel`
+- `web:/personnel/activity`
+- `web:/personnel/discharges`
+- `web:/personnel/discharges/:filter`
+- `web:/personnel/loas`
+- `web:/personnel/roster`
+- `web:/policy`
+- `web:/profile`
+- `web:/profile/:id`
+- `web:/recruitment`
+- `web:/recruitment/:id`
+- `web:/rules`
+- `web:/units`
+- `web:/units/:id`
+- `web:/units/auxiliary`
+- `web:/units/orbat`
+- `web:/units/roster`
+- `web:/units/secondary`
+
+## Not user-facing
+
+- `api:GET /debug/500`: throws on purpose to test error handling.
+- `api:POST /dev-run/internal/*`: callbacks from a dev-test game server to the API that started it.

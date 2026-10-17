@@ -9,6 +9,22 @@ A member or applicant signs in to the website.
 - Password reset through `POST /auth/passwordReset` and the emailed code.
 - After sign-in, the header shows the account's display name.
 
+## Entry points
+
+- `web:/login`
+- `web:/home`
+- `api:POST /auth/login`
+- `api:GET /auth/refresh`
+- `api:GET /accounts`
+- `api:GET /version`
+- `hub:UtilityHub`
+- `api:GET /notifications`
+- `hub:NotificationHub`
+- `hub:AccountHub`
+- `api:GET /teamspeak/onlineAccounts`
+- `api:GET /instagram`
+- `hub:TeamspeakClientsHub`
+
 ## How to get to it
 
 - The header **Sign in** button (it also carries a `person` icon; at the smallest mobile width the control is icon-only), or the route `/login`. A page that needs an account redirects to plain `/login` and stores the destination in localStorage key `auth_redirect_url` (`src/app/core/services/authentication/redirect.service.ts`). After sign-in the app goes to that destination, or to `/home` when none is stored.

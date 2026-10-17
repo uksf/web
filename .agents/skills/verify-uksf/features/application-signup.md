@@ -9,6 +9,24 @@ A visitor applies to join UKSF. The first three steps create an account and conf
 - Email Confirmation step: the API mails a 24-character code. Entering it calls `POST /accounts/code`, sets the account's `membershipState` from `Unconfirmed` (0) to `Confirmed` (1), and moves to the Communications step.
 - Resend: the "Resend Code" button calls `POST /accounts/resend-email-code`.
 
+## Entry points
+
+- `web:/application`
+- `api:GET /accounts/exists`
+- `api:GET /accounts/nations`
+- `api:POST /accounts/create`
+- `api:POST /accounts/code`
+- `api:POST /application/analytics/event`
+- `api:GET /auth/refresh`
+- `api:GET /accounts`
+- `api:GET /version`
+- `hub:UtilityHub`
+- `api:GET /notifications`
+- `hub:NotificationHub`
+- `hub:AccountHub`
+- `api:GET /teamspeak/online`
+- `hub:TeamspeakClientsHub`
+
 ## How to get to it
 
 - The sidebar entry **Application** (shown to visitors who are not signed in and to signed-in accounts that are not yet members), or the route `/application`. The header button **Apply** appears only for a signed-in account whose email is confirmed (`ngxPermissionsOnly CONFIRMED`, `header-bar.component.html:21-25`), so a visitor sees only **Sign in** in the header.

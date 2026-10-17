@@ -9,6 +9,23 @@ A confirmed applicant with Teamspeak, Steam, and Discord connected writes about 
 - After the submit the page shows "Application Submitted", an Edit Application form, and the Application Chat. The display name becomes `Cdt.Agent.V`.
 - `PUT /accounts/{id}/application` updates the answers from the Edit Application form. It is not driven yet.
 
+## Entry points
+
+- `web:/application`
+- `api:POST /accounts/{id}/application`
+- `api:POST /accounts/verify/comms` (verify mode only)
+- `api:GET /auth/refresh`
+- `api:GET /accounts`
+- `api:GET /version`
+- `hub:UtilityHub`
+- `api:GET /notifications`
+- `hub:NotificationHub`
+- `hub:AccountHub`
+- `api:POST /application/analytics/event`
+- `api:GET /commentthread/{id}`
+- `api:GET /commentthread/canpost/{id}`
+- `hub:CommentThreadHub`
+
 ## How to get to it
 
 - `/application` (header **Apply**, sidebar **Application**) for a signed-in account whose email is confirmed and whose Teamspeak, Steam, and Discord are connected. The progress bar highlights "Details".
