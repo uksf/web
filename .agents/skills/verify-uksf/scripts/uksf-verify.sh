@@ -12,83 +12,17 @@ WEB_PORT=4200
 export DOTNET_ROOT="${DOTNET_ROOT:-$HOME/.dotnet}"
 export PATH="$DOTNET_ROOT:$HOME/.bun/bin:$PATH"
 
-current_run() {
-  [[ -f "$VERIFY_HOME/current" ]] || { echo "no verify run is active in $VERIFY_HOME" >&2; exit 1; }
-  cat "$VERIFY_HOME/current"
-}
-
-run_dir() {
-  echo "$VERIFY_HOME/runs/$1"
-}
-
-listener() {
-  lsof -nP -t -iTCP:"$1" -sTCP:LISTEN 2>/dev/null | head -1 || true
-}
-
-started_at() {
-  ps -o lstart= -p "$1" 2>/dev/null | tr -s ' ' || true
-}
-
-same_process() {
-  [[ -n "$(started_at "$1")" && "$(started_at "$1")" == "$2" ]]
-}
-
-cwd_of() {
-  lsof -nP -a -p "$1" -d cwd 2>/dev/null | awk 'NR > 1 {print $NF}'
-}
-
-source_id() {
-  local repo="$1" index
-  index="$(mktemp)" || return 1
-  cp "$(git -C "$repo" rev-parse --absolute-git-dir)/index" "$index" || { rm -f "$index"; return 1; }
-  GIT_INDEX_FILE="$index" git -C "$repo" add -A >/dev/null 2>&1 || { rm -f "$index"; return 1; }
-  GIT_INDEX_FILE="$index" git -C "$repo" write-tree || { rm -f "$index"; return 1; }
-  rm -f "$index"
-}
-
-settings_hash() {
-  shasum "$1/UKSF.Api/appsettings.Development.json" | cut -c1-16
-}
-
-wait_for() {
-  local seconds="$1" description="$2"
-  shift 2
-  local deadline=$((SECONDS + seconds))
-  while ((SECONDS < deadline)); do
-    if "$@" >/dev/null 2>&1; then return 0; fi
-    sleep 1
-  done
-  echo "timed out after ${seconds}s waiting for $description" >&2
-  return 1
-}
-
-api_started() {
-  grep -q "Application started" "$1/api.log"
-}
-
-http_status() {
-  curl -s -m 5 -o /dev/null -w "%{http_code}" "$1" || true
-}
-
-web_ready() {
-  [[ "$(http_status "http://localhost:$WEB_PORT/")" == "200" ]]
-}
-
-data() {
-  local dir="$1"
-  shift
-  dotnet run "$SCRIPTS/verify-data.cs" -- "$dir/settings.json" "$@" 2>/dev/null
-}
-
-cleanup_records() {
-  dotnet run "$SCRIPTS/verify-cleanup.cs" -- "$1/settings.json" "${@:2}"
-}
+source "$SCRIPTS/uksf-verify-lib.sh"
 
 up() {
-  local api_dir
+  local api_dir run dir
   api_dir="$(cd "${UKSF_API_DIR:-$HOME/Workspace/uksf/api}" && pwd -P)"
+  run="v$(date -u +%Y%m%d%H%M%S)-$(openssl rand -hex 8)"
+  dir="$(run_dir "$run")"
   mkdir "$LOCK" 2>/dev/null || { echo "refusing: another verify run holds $LOCK ($(cat "$LOCK/run" 2>/dev/null)); run '$0 down' with its UKSF_VERIFY_HOME ($(cat "$LOCK/home" 2>/dev/null))" >&2; exit 1; }
-  trap 'rm -rf "$LOCK"' ERR
+  echo "$run" > "$LOCK/run"
+  echo "$VERIFY_HOME" > "$LOCK/home"
+  trap "abandon_up $(printf %q "$run") $(printf %q "$dir")" ERR
   for port in $API_PORT $WEB_PORT; do
     [[ -z "$(listener "$port")" ]] || { echo "refusing: port $port is in use by pid $(listener "$port"); this skill drives only instances it starts" >&2; false; }
   done
@@ -101,11 +35,6 @@ up() {
     false
   fi
   node "$SCRIPTS/check-web-deps.mjs" "$WEB_DIR"
-  local run dir
-  run="v$(date -u +%Y%m%d%H%M%S)-$(openssl rand -hex 8)"
-  dir="$(run_dir "$run")"
-  echo "$run" > "$LOCK/run"
-  echo "$VERIFY_HOME" > "$LOCK/home"
   mkdir -p "$dir/email" "$dir/evidence" "$dir/drivers"
   touch "$dir/owned"
   echo "$api_dir" > "$dir/api-dir"
