@@ -100,18 +100,20 @@ Exit codes: 0 all passed, down clean, no lock, every port free; 1 up, doctor, or
 
 Web worktrees are plain `git worktree add --detach` checkouts followed by `bun install --frozen-lockfile` in each. API worktrees use `api-worktree.sh add <sha> <path>` (the path must be lower case apart from a leading `$HOME`; copies the gitignored settings with mode 600) and `api-worktree.sh remove <path>` (deletes the copy, then the worktree; `--dry-run` shows the plan). Remove every worktree only after both sides tear down cleanly.
 
+Every recipe keeps each side's run home under `$V`. To keep the homes somewhere else, set `V` to that folder.
+
 Web PR: base and head web worktrees, the head's scripts on both sides, the same API checkout.
 
 ```bash
-W=~/Workspace/uksf/web; P=~/.worktrees/web; B=<base-sha>; H=<head-sha>
+W=~/Workspace/uksf/web; P=~/.worktrees/web; B=<base-sha>; H=<head-sha>; V=~/.uksf-verify-pr
 web_sides() {
   local side
   for side in base head; do
-    $S/verify-side.sh --side $side --web-dir $P/vs-$side --scripts-dir $S --home ~/.uksf-verify-pr/$side --drive details || return "$?"
+    $S/verify-side.sh --side $side --web-dir $P/vs-$side --scripts-dir $S --home $V/$side --drive details || return "$?"
   done
 }
 git -C $W fetch origin &&
-mkdir -p ~/.uksf-verify-pr &&
+mkdir -p $V &&
 git -C $W worktree add --detach $P/vs-base $B && git -C $W worktree add --detach $P/vs-head $H &&
 (cd $P/vs-base && bun install --frozen-lockfile) && (cd $P/vs-head && bun install --frozen-lockfile) &&
 S=$P/vs-head/.agents/skills/verify-uksf/scripts &&
@@ -123,15 +125,15 @@ Rerun that function shape for every drive the PR needs, with the same drives on 
 API PR: an API worktree per side, one web checkout shared by both, `--api-dir` per side. The API base must include `a61e4070` or its squash on main, `ed06088b`; `api-worktree.sh add` refuses a base without either.
 
 ```bash
-W=~/Workspace/uksf/web; P=~/.worktrees/web; A=~/.worktrees/api; WEB=<web-sha>; B=<api-base-sha>; H=<api-head-sha>
+W=~/Workspace/uksf/web; P=~/.worktrees/web; A=~/.worktrees/api; WEB=<web-sha>; B=<api-base-sha>; H=<api-head-sha>; V=~/.uksf-verify-pr
 api_sides() {
   local side
   for side in base head; do
-    $S/verify-side.sh --side api-$side --api-dir $A/vs-$side --web-dir $P/vs-web --scripts-dir $S --home ~/.uksf-verify-pr/api-$side --drive signup || return "$?"
+    $S/verify-side.sh --side api-$side --api-dir $A/vs-$side --web-dir $P/vs-web --scripts-dir $S --home $V/api-$side --drive signup || return "$?"
   done
 }
 git -C $W fetch origin &&
-mkdir -p ~/.uksf-verify-pr $A &&
+mkdir -p $V $A &&
 git -C $W worktree add --detach $P/vs-web $WEB &&
 (cd $P/vs-web && bun install --frozen-lockfile) &&
 S=$P/vs-web/.agents/skills/verify-uksf/scripts &&
@@ -144,18 +146,18 @@ Run Details as its own side with its own `--home`, because a single run cannot h
 
 `remove` refuses a path that `add` did not create (no ownership marker), the main API checkout, a directory inside a worktree, and a settings file that is not the copy `add` made. Run it with `--dry-run` first to see the same checks without changes.
 
-Harness comparison: when the PR changes this skill's scripts, the web or API variants exercise only the head's harness, so a harness regression is invisible. Pin one product checkout (`--web-dir` and `--api-dir` identical on both runs) and vary only `--scripts-dir`: once with the base's scripts, once with the head's, each with its own `--home`, one at a time. The head's `verify-side.sh` runs both; only the harness it points at differs.
+Harness comparison: when the PR changes this skill's scripts, the web or API variants exercise only the head's harness, so a harness regression is invisible. Pin one product checkout (`--web-dir` and `--api-dir` identical on both runs) and vary only `--scripts-dir`: once with the base's scripts, once with the head's, each with its own `--home`, one at a time. The head's `verify-side.sh` runs both; only the harness it points at differs. `verify-side.sh` reports every drive as `unsupported` and starts no run when the harness has no `verify-cleanup.cs` that recounts, because that harness cannot prove its records are gone. Harnesses before the cleanup recount, such as `7cb6d74b`, cannot be compared.
 
 ```bash
-W=~/Workspace/uksf/web; P=~/.worktrees/web; B=<base-sha>; H=<head-sha>
+W=~/Workspace/uksf/web; P=~/.worktrees/web; B=<base-sha>; H=<head-sha>; V=~/.uksf-verify-pr
 harness_sides() {
   local label
   for label in base head; do
-    $S/verify-side.sh --side harness-$label --web-dir $P/vs-head --scripts-dir $P/vs-$label/.agents/skills/verify-uksf/scripts --home ~/.uksf-verify-pr/harness-$label --drive signup || return "$?"
+    $S/verify-side.sh --side harness-$label --web-dir $P/vs-head --scripts-dir $P/vs-$label/.agents/skills/verify-uksf/scripts --home $V/harness-$label --drive signup || return "$?"
   done
 }
 git -C $W fetch origin &&
-mkdir -p ~/.uksf-verify-pr &&
+mkdir -p $V &&
 git -C $W worktree add --detach $P/vs-base $B && git -C $W worktree add --detach $P/vs-head $H &&
 (cd $P/vs-base && bun install --frozen-lockfile) && (cd $P/vs-head && bun install --frozen-lockfile) &&
 S=$P/vs-head/.agents/skills/verify-uksf/scripts &&
