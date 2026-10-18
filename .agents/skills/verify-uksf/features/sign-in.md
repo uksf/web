@@ -35,7 +35,7 @@ A member or applicant signs in to the website.
 2. Fill `app-login input[type=email]` with the email and `app-login input[type=password]` with the password.
 3. Click the `app-button` in `app-login` whose text is exactly "Sign in". The other button is "Sign in with a passkey".
 4. Wait for the URL to reach `/home`, then for `app-header-bar`.
-5. Check that the header text contains the display name. For the run account it is `Agent.V`.
+5. Check that the header text contains the display name. For the run account it is `Agent.V`, or `Cdt.Agent.V` when sign-in runs after the Details submit. The driver checks that the header contains `Agent.V`, which matches both.
 
 Evidence: a screenshot of the signed-in page and the header text check in `result.json`.
 
