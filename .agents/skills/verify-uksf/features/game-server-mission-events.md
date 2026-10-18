@@ -7,7 +7,7 @@ The UKSF Arma extension reports what happens on a game server. The API records e
 - `mission_started` with `sessionId`, `mission`, and `map`: creates or updates the `missionSessions` record and sets `missionStarted`. When `X-Api-Port` matches a configured game server, it also sets that server's `CurrentMissionSessionId`, and `mission_ended` clears it (`GameServerEventHandler.cs`, `HandleMissionLifecycleEvent`).
 - `player_connected` with `sessionId`, `uid`, and `name`, and `player_disconnected` with `sessionId` and `uid`: add and close a `playerPresence` entry.
 - `mission_ended` with `sessionId` and `duration`: sets `missionEnded` and `durationSeconds`.
-- The endpoint answers 202 and handles the event in the background, except `persistence_save`, which it handles before it answers 200.
+- `mission_ended`, `persistence_save`, and `shutdown_*` are handled before the answer (`GameServerEventsController.cs`). Success answers 200. A handling failure answers 503 so the extension retries. A rejected `persistence_save` answers 200, or 422 when the request carries `X-Uksf-Protocol: 2`. Every other event answers 202 and is handled in the background.
 - Other event types: `server_status`, `shutdown_*`, `mission_stats`, `performance`, `persistence_save`, and the NPC events `npc_register`, `npc_turn`, `npc_utterance`, and `npc_ack`.
 
 ## Entry points
@@ -26,7 +26,7 @@ The UKSF Arma extension reports what happens on a game server. The API records e
 ## Driving it with HTTP replay
 
 1. Start a listener on `127.0.0.1:47999` that records every request. It stands in for the game, which receives API commands at `POST http://127.0.0.1:<X-Api-Port>/command`.
-2. Check that no `gameServers` record uses port 47999 (`verify-data gameserver-port 47999`), then post each event with header `X-Api-Port: 47999`. Each post must answer 202.
+2. Check that no `gameServers` record uses port 47999 (`verify-data gameserver-port 47999`), then post each event with header `X-Api-Port: 47999`. `mission_ended` must answer 200. The other three posts must answer 202.
    `["mission_started",[["sessionId","verify-<run-id>"],["mission","verify_mission"],["map","VR"]]]`
 3. Poll `verify-data mission verify-<run-id>` until `missionStarted` is set. Then post `player_connected` with a dummy Steam id and the name Verify Agent, and poll until its presence entry has `connected`.
 4. Post `player_disconnected` and poll until that entry has `disconnected`. Post `mission_ended` with `duration` 42 and poll until `missionEnded` is set and `durationSeconds` is 42.

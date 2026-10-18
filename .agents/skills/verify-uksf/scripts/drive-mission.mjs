@@ -33,7 +33,8 @@ async function send(type, pairs) {
     signal: AbortSignal.timeout(30_000),
   });
   sent.push({ type, body, status: response.status });
-  if (response.status !== 202) throw new Error(`${type} answered ${response.status}, expected 202: ${await response.text()}`);
+  const expected = type === "mission_ended" ? 200 : 202;
+  if (response.status !== expected) throw new Error(`${type} answered ${response.status}, expected ${expected}: ${await response.text()}`);
 }
 
 async function until(description, predicate) {
