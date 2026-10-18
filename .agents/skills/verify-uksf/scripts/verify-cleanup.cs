@@ -145,18 +145,19 @@ if (kinds.Contains("application"))
 if (kinds.Contains("funnel"))
 {
     var visitor = filter.Eq("visitorId", visitorId);
-    deletions.Add(("applicationFunnelEvents", Collection("applicationFunnelEvents"), filter.And(filter.In("_id", Ids(accountWrites, "funnelEvents")), visitor)));
+    deletions.Add(("applicationFunnelEvents", Collection("applicationFunnelEvents"), visitor));
     remainingChecks["applicationFunnelEvents"] = (Collection("applicationFunnelEvents"), visitor);
 }
 
 if (kinds.Contains("account"))
 {
-    var recordedCodes = Ids(accountWrites, "confirmationCodes");
-    var codeJobs = recordedCodes.Select(x => JsonSerializer.Serialize(new object[] { x.ToString() })).ToList();
+    var runCodes = filter.Eq("value", email);
+    var codeIds = Ids(accountWrites, "confirmationCodes").Union(Collection("confirmationCodes").Find(runCodes).ToList().Select(x => x["_id"].AsObjectId)).ToList();
+    var codeJobs = codeIds.Select(x => JsonSerializer.Serialize(new object[] { x.ToString() })).ToList();
     var expiryJobs = filter.And(filter.Eq("action", "ActionDeleteExpiredConfirmationCode"), filter.In("actionParameters", codeJobs));
-    deletions.Add(("confirmationCodes", Collection("confirmationCodes"), filter.And(filter.In("_id", recordedCodes), filter.Eq("value", email))));
     deletions.Add(("scheduledJobs", Collection("scheduledJobs"), expiryJobs));
-    remainingChecks["confirmationCodes"] = (Collection("confirmationCodes"), filter.Eq("value", email));
+    deletions.Add(("confirmationCodes", Collection("confirmationCodes"), runCodes));
+    remainingChecks["confirmationCodes"] = (Collection("confirmationCodes"), runCodes);
     remainingChecks["scheduledJobs"] = (Collection("scheduledJobs"), expiryJobs);
 }
 
