@@ -32,7 +32,7 @@
                         "scripts": [
                             "./node_modules/prismjs/prism.js",
                             "./node_modules/prismjs/components/prism-markdown.min.js",
-                            "./node_modules/chart.js/dist/Chart.js"
+                            "./node_modules/chart.js/dist/chart.js"
                         ],
                         "allowedCommonJsDependencies": ["quill-delta", "moment", "moment-timezone", "chart.js", "mobx", "ansi-to-html"],
                         "extractLicenses": false,
