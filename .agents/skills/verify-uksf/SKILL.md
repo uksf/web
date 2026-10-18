@@ -92,7 +92,7 @@ $S/uksf-verify.sh down
 
 ## Base versus head
 
-`verify-pr` drives the PR base and the PR head one after the other, with `scripts/verify-side.sh` for each side and `scripts/api-worktree.sh` for API checkouts. Run `--help` on either for the full flags. The lock allows one run at a time, so never start the second side before the first has finished: `verify-side.sh` only returns after `down`, the lock check, and the port checks.
+`verify-pr` drives the PR base and the PR head one after the other, with `scripts/verify-side.sh` for each side and `scripts/api-worktree.sh` for API checkouts. Run `--help` on either for the full flags. The lock allows one run at a time, so never start the second side before the first has finished. When `verify-side.sh` starts a run, it returns only after `down`, the lock check, and the port checks. Bad input or an unsupported drive makes it exit before it starts a run.
 
 `verify-side.sh --web-dir D --scripts-dir D --home D [--api-dir D] [--side N] --drive signup|details|mission` runs up, doctor, the drives in order, then `down`. Each step runs only when the previous one passed, so no drive ever runs after a failed `up` or doctor. Name `signup` and `details` together and only `details` runs, because it includes sign-up and sign-in and two drives cannot share a run. Each side needs its own `--home`, so its evidence folder stays separate.
 
