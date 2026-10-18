@@ -34,7 +34,8 @@ async function send(type, pairs) {
   });
   sent.push({ type, body, status: response.status });
   const expected = type === "mission_ended" ? 200 : 202;
-  if (response.status !== expected) throw new Error(`${type} answered ${response.status}, expected ${expected}: ${await response.text()}`);
+  const older = type === "mission_ended" && response.status === 202 ? " (an API before 03f7cf80 queues mission_ended and answers 202)" : "";
+  if (response.status !== expected) throw new Error(`${type} answered ${response.status}, expected ${expected}${older}: ${await response.text()}`);
 }
 
 async function until(description, predicate) {
