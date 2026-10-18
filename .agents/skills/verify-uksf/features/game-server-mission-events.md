@@ -4,7 +4,7 @@ The UKSF Arma extension reports what happens on a game server. The API records e
 
 ## Sub-features
 
-- `mission_started` with `sessionId`, `mission`, and `map`: creates or updates the `missionSessions` record and sets `missionStarted`. When `X-Api-Port` matches a configured game server, it also sets that server's `CurrentMissionSessionId`, and `mission_ended` clears it (`GameServerEventHandler.cs`, `HandleMissionLifecycleEvent`).
+- `mission_started` with `sessionId`, `mission`, and `map`: creates or updates the `missionSessions` record and sets `missionStarted`. When `X-Api-Port` matches a configured game server, `GameServerProcessManager.Sessions.cs` sets that server's `CurrentMissionSessionId` to the session. `mission_ended` clears it only when it names the same session; otherwise the current id stays (`GameServerEventHandler.Sessions.cs`, `HandleMissionLifecycleEvent`).
 - `player_connected` with `sessionId`, `uid`, and `name`, and `player_disconnected` with `sessionId` and `uid`: add and close a `playerPresence` entry.
 - `mission_ended` with `sessionId` and `duration`: sets `missionEnded` and `durationSeconds`.
 - `mission_ended`, `persistence_save`, and `shutdown_*` are handled before the answer (`GameServerEventsController.cs`). Success answers 200. A handling failure answers 503 so the extension retries. A rejected `persistence_save` answers 200, or 422 when the request carries `X-Uksf-Protocol: 2`. Every other event answers 202 and is handled in the background.

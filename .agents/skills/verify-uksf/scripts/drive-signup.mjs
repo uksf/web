@@ -59,6 +59,15 @@ function account() {
   return found.value;
 }
 
+let funnelRecorded = false;
+
+function recordFunnelEvents() {
+  const funnel = lookup(runDir, scripts, ["funnel", runId], 60_000);
+  if (!funnel.ok) throw new Error(funnel.error);
+  recordWrites(runDir, { funnelEvents: funnel.value.events.map((event) => event.id) });
+  funnelRecorded = true;
+}
+
 holdLease(runDir);
 reserveEvidence(evidence);
 if (withDetails) reserveEvidence(detailsEvidence);
@@ -133,6 +142,7 @@ try {
   const signedInAs = (await signIn.locator("app-header-bar").innerText()).includes("Agent.V");
   await shot(signIn, "signed-in");
   await fresh.close();
+  recordFunnelEvents();
 
   const result = {
     runId,
@@ -156,7 +166,11 @@ try {
   process.exitCode = 1;
 } finally {
   await browser.close();
-  const funnel = lookup(runDir, scripts, ["funnel", runId], 60_000);
-  if (funnel.ok) recordWrites(runDir, { funnelEvents: funnel.value.events.map((event) => event.id) });
-  else console.error(`funnel event ids were not recorded: ${funnel.error}`);
+  if (!funnelRecorded) {
+    try {
+      recordFunnelEvents();
+    } catch (error) {
+      console.error(`funnel event ids were not recorded: ${error.message}`);
+    }
+  }
 }
