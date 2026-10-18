@@ -165,12 +165,15 @@ try {
   console.error(String(error));
   process.exitCode = 1;
 } finally {
-  await browser.close();
-  if (!funnelRecorded) {
-    try {
-      recordFunnelEvents();
-    } catch (error) {
-      console.error(`funnel event ids were not recorded: ${error.message}`);
+  try {
+    await browser.close();
+  } finally {
+    if (!funnelRecorded) {
+      try {
+        recordFunnelEvents();
+      } catch (error) {
+        console.error(`funnel event ids were not recorded: ${error.message}`);
+      }
     }
   }
 }
