@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
+INJECTED_MONGO="${UKSF_VERIFY_MONGO:-}" INJECTED_TOKEN_KEY="${UKSF_VERIFY_TOKEN_KEY:-}"
+unset UKSF_VERIFY_MONGO UKSF_VERIFY_TOKEN_KEY
 
 SCRIPTS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WEB_DIR="$(cd "${UKSF_WEB_DIR:-$(git -C "$SCRIPTS" rev-parse --show-toplevel)}" && pwd -P)"
@@ -9,8 +11,6 @@ VERIFY_HOME="$(cd "$VERIFY_HOME" && pwd -P)"
 LOCK="${TMPDIR:-/tmp}/uksf-verify.lock"
 API_PORT=5500
 WEB_PORT=4200
-INJECTED_MONGO="${UKSF_VERIFY_MONGO:-}" INJECTED_TOKEN_KEY="${UKSF_VERIFY_TOKEN_KEY:-}"
-unset UKSF_VERIFY_MONGO UKSF_VERIFY_TOKEN_KEY
 export DOTNET_ROOT="${DOTNET_ROOT:-$HOME/.dotnet}"
 export PATH="$DOTNET_ROOT:$HOME/.bun/bin:$PATH"
 
