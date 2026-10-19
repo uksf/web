@@ -9,6 +9,8 @@ VERIFY_HOME="$(cd "$VERIFY_HOME" && pwd -P)"
 LOCK="${TMPDIR:-/tmp}/uksf-verify.lock"
 API_PORT=5500
 WEB_PORT=4200
+INJECTED_MONGO="${UKSF_VERIFY_MONGO:-}" INJECTED_TOKEN_KEY="${UKSF_VERIFY_TOKEN_KEY:-}"
+unset UKSF_VERIFY_MONGO UKSF_VERIFY_TOKEN_KEY
 export DOTNET_ROOT="${DOTNET_ROOT:-$HOME/.dotnet}"
 export PATH="$DOTNET_ROOT:$HOME/.bun/bin:$PATH"
 
@@ -42,8 +44,8 @@ up() {
   echo "$api_dir" > "$dir/api-dir"
   echo "$run" > "$VERIFY_HOME/current"
   trap "fail_up $(printf %q "$run")" ERR
-  (umask 077; jq --arg db "${UKSF_VERIFY_MONGO:-}" --arg key "${UKSF_VERIFY_TOKEN_KEY:-}" \
-    '(if $db == "" then . else .appSettings.connectionStrings.database = $db end) | (if $key == "" then . else .appSettings.secrets.tokenKey = $key end)' \
+  (umask 077; INJECTED_MONGO="$INJECTED_MONGO" INJECTED_TOKEN_KEY="$INJECTED_TOKEN_KEY" jq \
+    '($ENV.INJECTED_MONGO) as $db | ($ENV.INJECTED_TOKEN_KEY) as $key | (if $db == "" then . else .appSettings.connectionStrings.database = $db end) | (if $key == "" then . else .appSettings.secrets.tokenKey = $key end)' \
     "$api_dir/UKSF.Api/appsettings.Development.json" > "$dir/settings.json")
   settings_hash "$api_dir" > "$dir/api-settings"
   source_id "$api_dir" > "$dir/api-source"
@@ -52,11 +54,12 @@ up() {
   echo "building the API at $(git -C "$api_dir" rev-parse --short HEAD) (source tree $(cut -c1-12 "$dir/api-source"))"
   dotnet build "$api_dir/UKSF.Api/UKSF.Api.csproj" -c Debug -o "$dir/api-bin" -v quiet -nologo > "$dir/api-build.log" 2>&1
 
-  local injected=()
-  [[ -z ${UKSF_VERIFY_MONGO:-} ]] || injected+=("appSettings__connectionStrings__database=$UKSF_VERIFY_MONGO")
-  [[ -z ${UKSF_VERIFY_TOKEN_KEY:-} ]] || injected+=("appSettings__secrets__tokenKey=$UKSF_VERIFY_TOKEN_KEY")
-  env ${injected[@]+"${injected[@]}"} ASPNETCORE_ENVIRONMENT=Development UKSF_VERIFY_MODE=1 UKSF_FEATURE_ON=NOTIFICATIONS UKSF_VERIFY_EMAIL_DIR="$dir/email" \
-    nohup "$dir/api-bin/UKSF.Api" --contentRoot "$api_dir/UKSF.Api" > "$dir/api.log" 2>&1 &
+  (
+    [[ -z $INJECTED_MONGO ]] || export appSettings__connectionStrings__database="$INJECTED_MONGO"
+    [[ -z $INJECTED_TOKEN_KEY ]] || export appSettings__secrets__tokenKey="$INJECTED_TOKEN_KEY"
+    ASPNETCORE_ENVIRONMENT=Development UKSF_VERIFY_MODE=1 UKSF_FEATURE_ON=NOTIFICATIONS UKSF_VERIFY_EMAIL_DIR="$dir/email" \
+      exec nohup "$dir/api-bin/UKSF.Api" --contentRoot "$api_dir/UKSF.Api" > "$dir/api.log" 2>&1
+  ) &
   echo $! > "$dir/api.pid"
   started_at "$(cat "$dir/api.pid")" > "$dir/api.started"
 
