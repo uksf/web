@@ -104,7 +104,6 @@
 - `api:GET /npcvoices/{id}/sample`
 - `api:GET /ocap/embed-token`
 - `api:GET /operations`
-- `api:GET /passkeys`
 - `api:GET /persistence/{key}`
 - `api:GET /ranks`
 - `api:GET /ranks/{id}`
@@ -155,7 +154,6 @@
 - `api:POST /accounts/resend-email-code`
 - `api:POST /accounts/{accountId}/teamspeak/{teamspeakId}`
 - `api:POST /auth/passkey`
-- `api:POST /auth/passkey/options`
 - `api:POST /auth/passwordReset`
 - `api:POST /auth/passwordReset/{code}`
 - `api:POST /backups/run`
@@ -210,7 +208,6 @@
 - `api:POST /npcvoices/{baseVoiceId}/generate-moods`
 - `api:POST /passkeys`
 - `api:POST /passkeys/options`
-- `api:POST /passkeys/options/automatic`
 - `api:POST /ranks`
 - `api:POST /ranks/exists`
 - `api:POST /ranks/order`
