@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+readonly PINNED_BUN=/opt/clacks-factory/bun-1.3.6/bun
+
+[[ $# -eq 1 && -d $1 ]] || { echo "usage: pulsar-verify <candidate checkout>" >&2; exit 2; }
+found="$(command -v bun || true)"
+[[ -n $found && "$(readlink -f "$found")" == "$PINNED_BUN" ]] || { echo "pulsar-verify: bun on PATH is '${found:-missing}', not $PINNED_BUN" >&2; exit 1; }
+[[ "$("$PINNED_BUN" --version)" == 1.3.6 ]] || { echo "pulsar-verify: $PINNED_BUN is not bun 1.3.6" >&2; exit 1; }
+
+cd "$1"
+"$PINNED_BUN" install --frozen-lockfile
+"$PINNED_BUN" x ng build -c production
