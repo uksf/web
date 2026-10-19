@@ -6,6 +6,7 @@ A member or applicant signs in to the website.
 
 - Email and password sign-in through `POST /auth/login`, which returns a token the web app stores.
 - Passkey sign-in through `POST /auth/passkey/options` and `POST /auth/passkey`.
+- After a password sign-in, the app tries to save a passkey without a prompt (`PasskeyService.upgradeAfterPasswordSignIn`, called from `login.component.ts`). It acts only when the browser reports `conditionalCreate` and `GET /passkeys` lists none, then calls `POST /passkeys/options/automatic` and `POST /passkeys`. Every failure is silent and the sign-in continues. Those endpoints are listed in [unmapped.md](unmapped.md), and this path is not driven.
 - Password reset through `POST /auth/passwordReset` and the emailed code.
 - After sign-in, the header shows the account's display name.
 
