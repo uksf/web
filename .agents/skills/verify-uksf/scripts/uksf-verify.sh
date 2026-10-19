@@ -52,7 +52,7 @@ up() {
   source_id "$WEB_DIR" > "$dir/web-source"
 
   echo "building the API at $(git -C "$api_dir" rev-parse --short HEAD) (source tree $(cut -c1-12 "$dir/api-source"))"
-  dotnet build "$api_dir/UKSF.Api/UKSF.Api.csproj" -c Debug -o "$dir/api-bin" -v quiet -nologo > "$dir/api-build.log" 2>&1
+  dotnet build "$api_dir/UKSF.Api/UKSF.Api.csproj" -c Debug -o "$dir/api-bin" --disable-build-servers -v quiet -nologo > "$dir/api-build.log" 2>&1
 
   (
     [[ -z $INJECTED_MONGO ]] || export appSettings__connectionStrings__database="$INJECTED_MONGO"
@@ -111,8 +111,8 @@ owned() {
   [[ "$(cat "$LOCK/run" 2>/dev/null)" == "$run" && "$(cat "$LOCK/home" 2>/dev/null)" == "$VERIFY_HOME" ]] || { echo "the lock does not belong to run $run in $VERIFY_HOME" >&2; return 1; }
   [[ ! -e "$dir/teardown" ]] || { echo "run $run is being torn down" >&2; return 1; }
   [[ "$(settings_hash "$(cat "$dir/api-dir")")" == "$(cat "$dir/api-settings")" ]] || { echo "the API settings file changed since up" >&2; return 1; }
-  [[ "$(listener $API_PORT)" == "$(cat "$dir/api.pid")" ]] && same_process "$(cat "$dir/api.pid")" "$(cat "$dir/api.started")" || { echo "port $API_PORT is not held by run $run's API" >&2; return 1; }
-  same_process "$(cat "$dir/web.pgid")" "$(cat "$dir/web.started")" || { echo "run $run's web server is gone" >&2; return 1; }
+  [[ "$(listener $API_PORT)" == "$(cat "$dir/api.pid")" ]] && running "$(cat "$dir/api.pid")" "$(cat "$dir/api.started")" || { echo "port $API_PORT is not held by run $run's API" >&2; return 1; }
+  running "$(cat "$dir/web.pgid")" "$(cat "$dir/web.started")" || { echo "run $run's web server is gone" >&2; return 1; }
   [[ "$(ps -o pgid= -p "$(listener $WEB_PORT)" 2>/dev/null | tr -d ' ')" == "$(cat "$dir/web.pgid")" ]] || { echo "port $WEB_PORT is not held by run $run's web server" >&2; return 1; }
 }
 
@@ -153,7 +153,7 @@ live_drivers() {
   local lease
   for lease in "$1"/drivers/*; do
     [[ -f "$lease" ]] || continue
-    same_process "$(basename "$lease")" "$(cat "$lease")" && echo "$(basename "$lease")"
+    running "$(basename "$lease")" "$(cat "$lease")" && echo "$(basename "$lease")"
   done
 }
 
@@ -162,7 +162,7 @@ no_live_drivers() {
 }
 
 api_stopped() {
-  ! same_process "$1" "$2"
+  ! running "$1" "$2"
 }
 
 stop_api() {
@@ -177,8 +177,12 @@ stop_api() {
   wait_for 10 "the API to die" api_stopped "$pid" "$started"
 }
 
+live_group_members() {
+  ps -axo pid=,pgid=,stat= | awk -v g="$1" '$2 == g && $3 !~ /^Z/ {print $1}' | tr '\n' ' '
+}
+
 group_gone() {
-  [[ -z "$(ps -axo pgid= | awk -v g="$1" '$1 == g')" ]]
+  [[ -z "$(live_group_members "$1")" ]]
 }
 
 stop_web() {
@@ -193,7 +197,7 @@ stop_web() {
     wait_for 10 "the web server to die" group_gone "$group" && return 0
   fi
   group_gone "$group" && return 0
-  echo "process group $group still has members ($(ps -axo pid=,pgid= | awk -v g="$group" '$2 == g {print $1}' | tr '\n' ' ')) whose leader is gone, so they cannot be proven ours; stop them, then run down again" >&2
+  echo "process group $group still has members ($(live_group_members "$group")) whose leader is gone, so they cannot be proven ours; stop them, then run down again" >&2
   return 1
 }
 

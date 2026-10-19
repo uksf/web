@@ -21,6 +21,14 @@ same_process() {
   [[ -n "$(started_at "$1")" && "$(started_at "$1")" == "$2" ]]
 }
 
+zombie() {
+  [[ "$(ps -o stat= -p "$1" 2>/dev/null | tr -d ' ')" == Z* ]]
+}
+
+running() {
+  same_process "$1" "$2" && ! zombie "$1"
+}
+
 cwd_of() {
   lsof -nP -a -p "$1" -d cwd 2>/dev/null | awk 'NR > 1 {print $NF}'
 }
