@@ -77,7 +77,7 @@ if (preflight.found || preflight.confirmationCodes !== 0 || preflight.funnelEven
 recordOwnership(runDir, "account");
 recordOwnership(runDir, "funnel");
 
-const chromePath = process.env.PLAYWRIGHT_CHROME_PATH ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+const chromePath = process.env.PLAYWRIGHT_CHROME_PATH ?? (process.platform === "darwin" ? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" : undefined);
 const browser = await chromium.launch({ executablePath: chromePath, args: ["--headless=new", "--no-first-run", "--no-default-browser-check"] });
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
 await page.addInitScript((visitorId) => localStorage.setItem("uksf_visitor_id", visitorId), `verify-${runId}`);
