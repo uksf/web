@@ -23,7 +23,6 @@ export interface NpcVoiceUploadResult {
 const MIN_SECONDS = 3;
 const MAX_SECONDS = 15;
 
-// Same rule as the API's VoiceSlug, so the preview matches the ID the voice will get.
 export function voiceSlug(name: string): string {
     return name
         .toLowerCase()

@@ -11,7 +11,6 @@ export interface NpcMoodView {
 
 export interface NpcVoiceGroup {
     voiceId: string;
-    // Null when the source voice was deleted but mood variants remain from before cascading deletes.
     base: NpcVoice | null;
     moods: NpcMoodView[];
 }

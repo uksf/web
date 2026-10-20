@@ -4,9 +4,10 @@
     display: block;
 }
 
-// Room for the site's floating spotlight button, so the last row can scroll clear of it.
+$floating-spotlight-button-clearance: 56px;
+
 .npcs-page {
-    padding-bottom: 56px;
+    padding-bottom: $floating-spotlight-button-clearance;
 }
 
 .npcs-header {
@@ -167,7 +168,6 @@
     }
 }
 
-// Four fixed columns (play, generate, upload, delete) so icons line up down the page.
 .action-slots {
     display: grid;
     grid-template-columns: repeat(4, 40px);
@@ -232,7 +232,6 @@
     }
 }
 
-// The collapsed row keeps name, ID and actions; detail drops out first on narrow screens.
 @media (max-width: 1000px) {
     .voice-meta {
         display: none;

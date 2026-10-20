@@ -1,7 +1,6 @@
 import { Observable } from 'rxjs';
 import { first } from 'rxjs/operators';
 
-/// Plays one voice sample at a time. Pressing play on the playing sample stops it.
 export class NpcSamplePlayer {
     playingId: string | null = null;
     private audio: HTMLAudioElement | null = null;

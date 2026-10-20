@@ -21,12 +21,10 @@ export class NpcVoicesService {
         return this.httpClient.delete(`${this.urls.apiUrl}/npcvoices/${id}`);
     }
 
-    // Fetched through HttpClient so the auth interceptor adds the token; an <audio src> would not.
     getSample(id: string): Observable<Blob> {
         return this.httpClient.get(`${this.urls.apiUrl}/npcvoices/${id}/sample`, { responseType: 'blob' });
     }
 
-    // No moods = every mood the voice does not have yet.
     generateMoods(baseVoiceId: string, moods: string[] = []): Observable<NpcVoiceJob> {
         return this.httpClient.post<NpcVoiceJob>(`${this.urls.apiUrl}/npcvoices/${baseVoiceId}/generate-moods`, { moods });
     }

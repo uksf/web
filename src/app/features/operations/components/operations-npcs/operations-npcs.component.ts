@@ -258,7 +258,6 @@ export class OperationsNpcsComponent extends DestroyableComponent implements OnI
         this.applyFilter();
     }
 
-    // One loop for every voice that is generating; it ends when none are.
     private poll(): void {
         if (this.polling || !Object.values(this.jobs).some(isGenerating)) return;
         this.polling = true;
