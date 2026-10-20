@@ -25,5 +25,12 @@ export class OperationsPageComponent {
     private ngxPermissions = inject(NgxPermissionsService);
     private permissions = toSignal(this.ngxPermissions.permissions$, { requireSync: true });
 
-    tabLinks = computed<TabLink[]>(() => (this.permissions()['SERVERS'] ? [CAMPAIGNS, AAR, MISSIONS, NPCS, SERVERS] : [CAMPAIGNS, AAR]));
+    tabLinks = computed<TabLink[]>(() => {
+        const permissions = this.permissions();
+        if (!permissions['SERVERS']) {
+            return [CAMPAIGNS, AAR];
+        }
+
+        return permissions['SUPERADMIN'] ? [CAMPAIGNS, AAR, MISSIONS, NPCS, SERVERS] : [CAMPAIGNS, AAR, MISSIONS, SERVERS];
+    });
 }

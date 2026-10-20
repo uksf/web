@@ -77,7 +77,7 @@ export const OPERATIONS_ROUTES: Routes = [
                 providers: [NpcVoicesService],
                 data: {
                     permissions: {
-                        only: Permissions.SERVERS,
+                        only: Permissions.SUPERADMIN,
                         except: Permissions.UNLOGGED,
                         redirectTo: {
                             UNLOGGED: loginRedirect,
