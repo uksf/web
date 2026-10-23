@@ -11,9 +11,6 @@ export function interventionLabel(mod: WorkshopMod): string {
 }
 
 export function updateAvailable(mod: WorkshopMod): boolean {
-    // A mod that needs attention (errored or awaiting intervention) is recovered via Retry/Resolve, not Update, and a mod
-    // mid-operation is already being handled. Neither has had lastUpdatedLocally bumped yet, so the dates would
-    // otherwise falsely flag an update as available.
     if (mod.status === 'Error' || mod.status === 'InterventionRequired' || inProgress(mod)) {
         return false;
     }
@@ -59,7 +56,7 @@ export function groupModsIntoSections(mods: WorkshopMod[], searchTerm: string): 
 
     return WORKSHOP_SECTION_DEFINITIONS.map((definition) => ({
         ...definition,
-        mods: sectionMap.get(definition.key).sort((a, b) => a.name.localeCompare(b.name))
+        mods: sectionMap.get(definition.key).sort((a, b) => Number(b.rootMod) - Number(a.rootMod) || a.name.localeCompare(b.name))
     }));
 }
 

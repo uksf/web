@@ -198,6 +198,17 @@ describe('groupModsIntoSections', () => {
         expect(sectionOf(mods, 'installed').mods.map((mod) => mod.name)).toEqual(['Alpha', 'Middle', 'Zebra']);
     });
 
+    it('sorts root mods before other mods within each section', () => {
+        const mods = [
+            makeMod({ id: '1', status: 'Installed', name: 'Alpha', rootMod: false }),
+            makeMod({ id: '2', status: 'Installed', name: 'Zebra', rootMod: true }),
+            makeMod({ id: '3', status: 'Installed', name: 'Beta', rootMod: false }),
+            makeMod({ id: '4', status: 'Installed', name: 'Middle', rootMod: true })
+        ];
+
+        expect(sectionOf(mods, 'installed').mods.map((mod) => mod.name)).toEqual(['Middle', 'Zebra', 'Alpha', 'Beta']);
+    });
+
     it('assigns each mod to exactly one section based on priority', () => {
         const mods = [makeMod({ status: 'Error', name: 'ErrorWithUpdate', updatedDate: '2026-02-01T00:00:00Z', lastUpdatedLocally: '2026-01-01T00:00:00Z' })];
         mods.forEach(applyComputedProperties);
