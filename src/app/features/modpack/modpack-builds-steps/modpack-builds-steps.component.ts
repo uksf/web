@@ -11,8 +11,8 @@ import { HubConnectionHandle } from '@app/core/services/hub-connection-handle';
 import { ModpackBuildProcessService } from '../modpackBuildProcess.service';
 import { ModpackBuildStep } from '../models/modpack-build-step';
 import { nextFrame } from '@app/shared/services/helper.service';
-import { Subject } from 'rxjs';
-import { switchMap, takeUntil } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { ThemeEmitterComponent as ThemeEmitterComponent_1 } from '../../../shared/components/elements/theme-emitter/theme-emitter.component';
 import { NgClass } from '@angular/common';
 import { FlexFillerComponent } from '../../../shared/components/elements/flex-filler/flex-filler.component';
@@ -20,6 +20,7 @@ import { MatButton } from '@angular/material/button';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatIcon } from '@angular/material/icon';
 import { AnsiToHtmlPipe } from '../../../shared/pipes/ansi-to-html.pipe';
+import { logItemColour } from './log-item-colour';
 
 @Component({
     selector: 'app-modpack-builds-steps',
@@ -49,8 +50,8 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
     ignoreUpdates = false;
     cancelling = false;
     autoScroll = true;
-    private hubConnection: HubConnectionHandle;
-    private destroy$ = new Subject<void>();
+    private hubConnection: HubConnectionHandle | null = null;
+    private connection: Subscription | null = null;
 
     private onReceiveBuildStep = (step: ModpackBuildStep) => {
         if (JSON.stringify(step) !== JSON.stringify(this.build.steps[step.index])) {
@@ -79,8 +80,6 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
     }
 
     ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
         this.disconnect();
     }
 
@@ -91,35 +90,40 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
     }
 
     connect() {
-        this.modpackBuildProcessService
-            .getBuildData(this.build.id)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe({
+        const connection = new Subscription();
+        this.connection = connection;
+        connection.add(
+            this.modpackBuildProcessService.getBuildData(this.build.id).subscribe({
                 next: (newBuild) => {
                     this.build = newBuild;
                     this.checkRoute();
                     this.chooseStep();
 
                     if (!this.build.finished) {
-                        this.hubConnection = this.hubFactory.connect(`modpack?buildId=${this.build.id}`);
-                        this.hubConnection.on('ReceiveBuildStep', this.onReceiveBuildStep);
-                        this.hubConnection.reconnected$
-                            .pipe(
-                                switchMap(() => this.modpackBuildProcessService.getBuildData(this.build.id)),
-                                takeUntil(this.destroy$)
-                            )
-                            .subscribe({
+                        const hub = this.hubFactory.connect(`modpack?buildId=${this.build.id}`);
+                        this.hubConnection = hub;
+                        hub.on('ReceiveBuildStep', (step: ModpackBuildStep) => {
+                            if (this.hubConnection === hub) {
+                                this.onReceiveBuildStep(step);
+                            }
+                        });
+                        connection.add(
+                            hub.reconnected$.pipe(switchMap(() => this.modpackBuildProcessService.getBuildData(this.build.id))).subscribe({
                                 next: (reconnectBuild) => {
                                     this.build = reconnectBuild;
                                     this.chooseStep();
                                 }
-                            });
+                            })
+                        );
                     }
                 }
-            });
+            })
+        );
     }
 
     disconnect() {
+        this.connection?.unsubscribe();
+        this.connection = null;
         if (this.hubConnection) {
             this.hubConnection.disconnect();
             this.hubConnection = null;
@@ -269,36 +273,6 @@ export class ModpackBuildsStepsComponent implements OnInit, OnDestroy, OnChanges
     }
 
     getLogItemColour(index: number): string {
-        if (index === 0) {
-            if (this.selectedStep.running) {
-                return '#0c78ff';
-            } else if (this.selectedStep.finished) {
-                if (this.selectedStep.buildResult === ModpackBuildResult.SUCCESS) {
-                    return 'green';
-                } else if (this.selectedStep.buildResult === ModpackBuildResult.FAILED) {
-                    return 'red';
-                } else if (this.selectedStep.buildResult === ModpackBuildResult.CANCELLED) {
-                    return 'goldenrod';
-                } else if (this.selectedStep.buildResult === ModpackBuildResult.WARNING) {
-                    return 'orangered';
-                } else if (this.selectedStep.buildResult === ModpackBuildResult.SKIPPED) {
-                    return 'gray';
-                }
-            }
-        }
-
-        if (this.selectedStep.logs[index].colour !== '') {
-            return this.selectedStep.logs[index].colour;
-        }
-
-        if (this.theme === undefined) {
-            return '';
-        }
-
-        if (index > 0 && index < this.selectedStep.logs.length - 1) {
-            return this.theme.foregroundColor;
-        }
-
-        return this.theme.foregroundColor;
+        return logItemColour(this.selectedStep, index, this.theme);
     }
 }
