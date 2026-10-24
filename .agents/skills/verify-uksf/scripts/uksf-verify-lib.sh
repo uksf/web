@@ -73,11 +73,11 @@ web_ready() {
 data() {
   local dir="$1"
   shift
-  dotnet run "$SCRIPTS/verify-data.cs" -- "$dir/settings.json" "$@" 2>/dev/null
+  dotnet run --disable-build-servers "$SCRIPTS/verify-data.cs" -- "$dir/settings.json" "$@" 2>/dev/null
 }
 
 cleanup_records() {
-  dotnet run "$SCRIPTS/verify-cleanup.cs" -- "$1/settings.json" "${@:2}"
+  dotnet run --disable-build-servers "$SCRIPTS/verify-cleanup.cs" -- "$1/settings.json" "${@:2}"
 }
 
 abandon_up() {

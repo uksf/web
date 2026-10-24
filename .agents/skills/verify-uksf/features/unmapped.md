@@ -100,6 +100,7 @@
 - `api:GET /modpack/releases`
 - `api:GET /mods/size`
 - `api:GET /npcvoices`
+- `api:GET /npcvoices/names`
 - `api:GET /npcvoices/{baseVoiceId}/job`
 - `api:GET /npcvoices/{id}/sample`
 - `api:GET /ocap/embed-token`

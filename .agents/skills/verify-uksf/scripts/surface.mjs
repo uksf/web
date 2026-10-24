@@ -56,7 +56,7 @@ function apiIds(sources) {
   const dotnetRoot = process.env.DOTNET_ROOT ?? join(process.env.HOME, ".dotnet");
   const env = { ...process.env, DOTNET_ROOT: dotnetRoot, PATH: `${dotnetRoot}:${process.env.PATH}`, DOTNET_NOLOGO: "1", DOTNET_CLI_TELEMETRY_OPTOUT: "1", DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "1" };
   const reader = fileURLToPath(new URL("./surface-api.cs", import.meta.url));
-  const result = spawnSync("dotnet", ["run", reader], { input: JSON.stringify(Object.fromEntries(sources)), encoding: "utf8", env, maxBuffer: 64 * 1024 * 1024 });
+  const result = spawnSync("dotnet", ["run", "--disable-build-servers", reader], { input: JSON.stringify(Object.fromEntries(sources)), encoding: "utf8", env, maxBuffer: 64 * 1024 * 1024 });
   if (result.error) refuse(`cannot run dotnet: ${result.error.message}`);
   if (result.status !== 0) refuse(`surface-api.cs exited ${result.status}: ${result.stderr.trim()}`);
   const frames = result.stdout.split("\n").filter((line) => line.startsWith("SURFACE-API "));

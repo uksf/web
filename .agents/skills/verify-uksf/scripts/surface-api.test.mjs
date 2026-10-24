@@ -11,7 +11,7 @@ const events = `switch (gameServerEvent.Type) { case "fixture": break; }`;
 
 function read(files) {
   return new Promise((done) => {
-    const child = execFile("dotnet", ["run", reader], { env }, (error, stdout, stderr) => done(error ? { error: stderr.trim() || error.message } : { ids: JSON.parse(stdout.split("\n").find((line) => line.startsWith("SURFACE-API ")).slice(12)) }));
+    const child = execFile("dotnet", ["run", "--disable-build-servers", reader], { env }, (error, stdout, stderr) => done(error ? { error: stderr.trim() || error.message } : { ids: JSON.parse(stdout.split("\n").find((line) => line.startsWith("SURFACE-API ")).slice(12)) }));
     child.stdin.end(JSON.stringify(files));
   });
 }
