@@ -8,14 +8,14 @@ This map lists what a user or the game does with UKSF, how they reach it, and ho
 - Shared `devLocal` data: real units, ranks, and accounts, read as-is.
 - Run data: the account `verify+<run-id>@uksf-verify.invalid` (password `Verify-<run-id>-pw`, name Verify Agent, display name `Agent.V`, `Cdt.Agent.V` after the Details submit), the application funnel events with `visitorId` `verify-<run-id>`, the application's comment threads and notifications by recorded id, and the mission session `verify-<run-id>`. `down` removes them all.
 
-Last clean pass: web `392ca71a` with API `ae3f7bae`, 2026-10-19. Not exercised live: the Teamspeak stored-true path, `down` exiting 7 after a failed submit, a passkey saved by the automatic attempt (`POST /passkeys`), the `comms_linked` event, and the `mission_started` paths without `mission` or `map` or on a configured game server.
+Last clean pass: web `05681f9b` with API `f8079560`, 2026-10-24. Not exercised live: the Teamspeak stored-true path, `down` exiting 7 after a failed submit, a passkey saved by the automatic attempt (`POST /passkeys`), the `comms_linked` event, and the `mission_started` paths without `mission` or `map` or on a configured game server.
 
 ## Driving conventions
 
 - Web: Playwright with Google Chrome headless, viewport 1280 by 900, from the web checkout root. Prefer `autocomplete` attributes, label text, and component tags (`app-button`, `app-header-bar`) over coordinates.
 - Game: HTTP replay to `POST http://127.0.0.1:5500/gameservers/events` with the extension's wire format: an SQF `str()` array `["<type>",[["key",value],...]]`, header `X-Api-Port` (the game listener port), and header `X-Enqueued-At`. The endpoint accepts loopback callers only.
 - Web runs set localStorage `uksf_visitor_id` to `verify-<run-id>` before the page loads, so the application funnel events the app posts belong to the run.
-- Data checks: `dotnet run .agents/skills/verify-uksf/scripts/verify-data.cs -- <run>/settings.json account <email> [<account-id>]`, `application <account-id> <email>`, `funnel <run-id>`, `mission <session-id>`, or `gameserver-port <port>`.
+- Data checks: `dotnet run --disable-build-servers .agents/skills/verify-uksf/scripts/verify-data.cs -- <run>/settings.json account <email> [<account-id>]`, `application <account-id> <email>`, `funnel <run-id>`, `mission <session-id>`, or `gameserver-port <port>`.
 
 ## Proof rules
 

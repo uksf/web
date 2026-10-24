@@ -89,7 +89,7 @@ export function data(runDir, scripts, args, timeoutMs) {
   const settings = join(runDir, "settings.json");
   const result = { ok: false, value: undefined, error: undefined };
   try {
-    const output = execFileSync("dotnet", ["run", join(scripts, "verify-data.cs"), "--", settings, ...args], {
+    const output = execFileSync("dotnet", ["run", "--disable-build-servers", join(scripts, "verify-data.cs"), "--", settings, ...args], {
       encoding: "utf8",
       timeout: Math.max(1000, timeoutMs),
       stdio: ["ignore", "pipe", "pipe"],
