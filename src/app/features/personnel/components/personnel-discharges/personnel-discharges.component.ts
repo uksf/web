@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { first } from 'rxjs/operators';
 import { TextInputModalComponent } from '@app/shared/modals/text-input-modal/text-input-modal.component';
 import { DischargesService } from '../../services/discharges.service';
@@ -9,7 +9,7 @@ import { CommandRequestsService, CommandRequestExistsBody } from '@app/features/
 import { expansionAnimations } from '@app/shared/services/animations.service';
 import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
-import { MatButton } from '@angular/material/button';
+import { MatAnchor, MatButton } from '@angular/material/button';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatIcon } from '@angular/material/icon';
 import { NgClass, DatePipe } from '@angular/common';
@@ -32,7 +32,9 @@ import { NgxPermissionsModule } from 'ngx-permissions';
     imports: [
         DefaultContentAreasComponent,
         MainContentAreaComponent,
+        MatAnchor,
         MatButton,
+        RouterLink,
         MatTooltip,
         MatIcon,
         NgClass,
@@ -122,14 +124,13 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
 
     navigate(mode: number) {
         switch (mode) {
-            case 0: // Previous
+            case 0:
                 this.index -= this.length;
                 break;
-            case 1: // Next
+            case 1:
                 this.index += this.length;
                 break;
             default:
-                // Don't navigate
                 break;
         }
         this.selectedIndex = -1;
