@@ -5,7 +5,7 @@ import { of } from 'rxjs';
 import { AccountService } from '@app/core/services/account.service';
 import { RecruitmentService } from '../../services/recruitment.service';
 import { ProfileService } from '@app/features/profile/services/profile.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 
 describe('RecruitmentPageComponent', () => {
     let component: RecruitmentPageComponent;
@@ -36,6 +36,7 @@ describe('RecruitmentPageComponent', () => {
 
         TestBed.configureTestingModule({
             providers: [
+                { provide: ActivatedRoute, useValue: { snapshot: { queryParams: {}, queryParamMap: convertToParamMap({}) } } },
                 RecruitmentPageComponent,
                 { provide: AccountService, useValue: mockAccountService },
                 { provide: RecruitmentService, useValue: mockRecruitmentService },

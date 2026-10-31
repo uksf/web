@@ -12,6 +12,7 @@ import { Dictionary } from '@app/shared/models/dictionary';
 import { ThemeEmitterComponent } from '@app/shared/components/elements/theme-emitter/theme-emitter.component';
 import { buildQuery } from '@app/shared/services/helper.service';
 import { debounceTime, distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
+import { UrlQueryState } from '@app/shared/utils/url-query-state';
 import { PagedEvent } from '@app/shared/components/elements/paginator/paginator.component';
 import { DestroyableComponent } from '@app/shared/components';
 import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
@@ -100,8 +101,10 @@ export class RecruitmentPageComponent extends DestroyableComponent implements On
         { mode: 'dateCompleted', direction: 1, name: 'Date Completed (Old - New)' }
     ];
     private filterSubject: Subject<string> = new Subject<string>();
+    private urlState = new UrlQueryState();
 
     ngOnInit() {
+        this.restoreUrlState();
         this.recruitmentService
             .getActiveApplications()
             .pipe(first())
@@ -215,7 +218,27 @@ export class RecruitmentPageComponent extends DestroyableComponent implements On
         return application.account.id;
     }
 
+    private restoreUrlState() {
+        this.filterString = this.urlState.string('filter');
+        this.pageIndex = this.urlState.number('page', 0);
+        this.pageSize = this.urlState.number('size', 15);
+        this.recruiterIdFilter = this.urlState.string('recruiter');
+        const sort = this.urlState.string('sort', 'dateCompleted');
+        const direction = this.urlState.number('dir', -1);
+        const sortDefinition = this.sortDefinitions.find((definition) => definition.mode === sort && definition.direction === direction);
+        this.sortMode = sortDefinition?.mode ?? 'dateCompleted';
+        this.sortDirection = sortDefinition?.direction ?? -1;
+    }
+
     private getCompletedApplications() {
+        this.urlState.set({
+            filter: this.filterString,
+            page: this.pageIndex,
+            size: this.pageSize,
+            recruiter: this.recruiterIdFilter,
+            sort: this.sortMode,
+            dir: this.sortDirection
+        });
         const query: string = buildQuery(this.filterString);
         const pageIndex: number = this.pageIndex;
         const pageSize: number = this.pageSize;

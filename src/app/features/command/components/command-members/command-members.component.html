@@ -21,7 +21,7 @@
             >
             </app-text-input-boxed>
             <app-flex-filler></app-flex-filler>
-            <app-paginator [total]="totalMembers" (page)="page($event)" [hidden]="groupByUnit"></app-paginator>
+            <app-paginator [total]="totalMembers" [pageIndex]="pageIndex" [pageSize]="pageSize" (page)="page($event)" [hidden]="groupByUnit"></app-paginator>
             @if (groupByUnit) {
             <div class="unit-group-expand-container">
                 <button mat-icon-button (click)="unitGroupsRoot.expandAll(); groupsExpanded = true" matTooltip="Expand all" [disabled]="groupsExpanded">

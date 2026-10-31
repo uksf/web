@@ -15,6 +15,7 @@ import { Subject } from 'rxjs';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { debounceTime, distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
 import { LogsService } from '../../services/logs.service';
+import { UrlQueryState } from '@app/shared/utils/url-query-state';
 import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
 import { MainContentAreaComponent } from '../../../../shared/components/content-areas/main-content-area/main-content-area.component';
 import { TextInputBoxedComponent } from '../../../../shared/components/elements/text-input-boxed/text-input-boxed.component';
@@ -62,6 +63,7 @@ export class AdminLogsComponent extends DestroyableComponent implements OnInit, 
     protected dialog: MatDialog;
     protected adminHub: AdminHubService;
     protected filterSubject = new Subject<string>();
+    protected urlState = new UrlQueryState();
 
     private onReceiveLog = () => {
         this.refreshData();
@@ -85,6 +87,7 @@ export class AdminLogsComponent extends DestroyableComponent implements OnInit, 
     }
 
     ngOnInit(): void {
+        this.restoreUrlState();
         this.adminHub.connect();
         this.adminHub.on('ReceiveLog', this.onReceiveLog);
         this.adminHub.reconnected$.pipe(takeUntil(this.destroy$)).subscribe({
@@ -154,7 +157,33 @@ export class AdminLogsComponent extends DestroyableComponent implements OnInit, 
         this.clipboard.copy(text);
     }
 
+    protected restoreUrlState() {
+        this.filter = this.urlState.string('filter');
+        this.paginator.pageIndex = this.urlState.number('page', 0);
+        this.paginator.pageSize = this.urlState.number('size', 25);
+        const sortField = this.urlState.string('sort');
+        const sortDirection = this.urlState.oneOf('dir', ['', 'asc', 'desc'] as const, '');
+        if (sortField && sortDirection) {
+            this.sort.active = sortField;
+            this.sort.direction = sortDirection;
+        }
+        const levels = this.urlState.list('levels');
+        this.selectedLevels = this.allLevels.filter((level) => levels.includes(this.levelToString(level)));
+    }
+
+    protected writeUrlState() {
+        this.urlState.set({
+            filter: this.filter,
+            page: this.paginator.pageIndex,
+            size: this.paginator.pageSize,
+            sort: this.sort.direction ? this.sort.active : null,
+            dir: this.sort.direction,
+            levels: this.selectedLevels.map((level) => this.levelToString(level))
+        });
+    }
+
     buildParams(): HttpParams {
+        this.writeUrlState();
         let params = new HttpParams()
             .set('page', String(this.paginator.pageIndex + 1))
             .set('pageSize', String(this.paginator.pageSize))

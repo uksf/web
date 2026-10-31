@@ -8,6 +8,7 @@ import { Loa } from '@app/features/command/models/loa';
 import { PersonnelLoasListComponent } from '../personnel-loas-list/personnel-loas-list.component';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
+import { UrlQueryState } from '@app/shared/utils/url-query-state';
 import moment from 'moment-timezone';
 import { DestroyableComponent } from '@app/shared/components';
 import { DefaultContentAreasComponent } from '../../../../shared/components/content-areas/default-content-areas/default-content-areas.component';
@@ -78,11 +79,19 @@ export class PersonnelLoasComponent extends DestroyableComponent implements OnIn
     filterString: string = '';
     selectedDate: Date | null = this.getUkToday();
     private filterSubject = new Subject<string>();
+    private urlState = new UrlQueryState();
 
     constructor() {
         super();
-        this.dateMode = this.dateModes[0];
-        this.viewMode = this.viewModes[0];
+        const viewMode = this.urlState.string('view', 'all');
+        const dateMode = this.urlState.string('date', 'all');
+        this.viewMode = this.viewModes.find((item) => item.mode === viewMode) ?? this.viewModes[0];
+        this.dateMode = this.dateModes.find((item) => item.mode === dateMode) ?? this.dateModes[0];
+        this.filterString = this.urlState.string('filter');
+        const day = /^(\d{4})-(\d{2})-(\d{2})$/.exec(this.urlState.string('day'));
+        if (day && this.dateMode.mode === 'select') {
+            this.selectedDate = new Date(Number(day[1]), Number(day[2]) - 1, Number(day[3]));
+        }
     }
 
     ngOnInit(): void {
@@ -101,6 +110,12 @@ export class PersonnelLoasComponent extends DestroyableComponent implements OnIn
     }
 
     update() {
+        this.urlState.set({
+            view: this.viewMode.mode,
+            date: this.dateMode.mode,
+            filter: this.filterString,
+            day: this.dateMode.mode === 'select' && this.selectedDate ? formatDate(this.selectedDate, 'yyyy-MM-dd', 'en-GB') : null
+        });
         this.loaLists.forEach((x) => x.update(this.dateMode, this.viewMode, this.filterString, this.selectedDate));
     }
 

@@ -59,9 +59,9 @@
                     </div>
                     <h6>All dates and times are in GMT</h6>
                     <div class="loa-sections">
-                        <app-personnel-loas-list [selectionMode]="'current'" (deleteEvent)="delete($event)"></app-personnel-loas-list>
-                        <app-personnel-loas-list [selectionMode]="'future'" (deleteEvent)="delete($event)"></app-personnel-loas-list>
-                        <app-personnel-loas-list [selectionMode]="'past'" [deletable]="false"></app-personnel-loas-list>
+                        <app-personnel-loas-list [selectionMode]="'current'" [viewMode]="viewMode.mode" [dateMode]="dateMode.mode" [filterString]="filterString" [selectedDate]="dateMode.mode === 'select' ? selectedDate : null" (deleteEvent)="delete($event)"></app-personnel-loas-list>
+                        <app-personnel-loas-list [selectionMode]="'future'" [viewMode]="viewMode.mode" [dateMode]="dateMode.mode" [filterString]="filterString" [selectedDate]="dateMode.mode === 'select' ? selectedDate : null" (deleteEvent)="delete($event)"></app-personnel-loas-list>
+                        <app-personnel-loas-list [selectionMode]="'past'" [viewMode]="viewMode.mode" [dateMode]="dateMode.mode" [filterString]="filterString" [selectedDate]="dateMode.mode === 'select' ? selectedDate : null" [deletable]="false"></app-personnel-loas-list>
                     </div>
                 </div>
             </div>

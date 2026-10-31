@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageModalComponent } from '@app/shared/modals/message-modal/message-modal.component';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
+import { UrlQueryState } from '@app/shared/utils/url-query-state';
 import { first } from 'rxjs/operators';
 import { TextInputModalComponent } from '@app/shared/modals/text-input-modal/text-input-modal.component';
 import { DischargesService } from '../../services/discharges.service';
@@ -65,7 +66,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
     private dischargesService = inject(DischargesService);
     private commandRequestsService = inject(CommandRequestsService);
     private dialog = inject(MatDialog);
-    private route = inject(ActivatedRoute);
+    private urlState = new UrlQueryState();
 
     displayedColumns = ['timestamp', 'rank', 'unit', 'role', 'dischargedBy', 'reason'];
     selectedIndex = -1;
@@ -85,11 +86,9 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
     private timeout: number;
 
     ngOnInit(): void {
-        if (this.route.snapshot.queryParams['filter']) {
-            this.refresh(this.route.snapshot.queryParams['filter']);
-        } else {
-            this.refresh();
-        }
+        const size = this.urlState.number('size', 15);
+        this.length = this.lengths.some((option) => option.value === size) ? size : 15;
+        this.refresh(this.urlState.string('filter'), this.urlState.number('page', 0));
     }
 
     ngOnDestroy(): void {
@@ -98,7 +97,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
         }
     }
 
-    refresh(initialFilter = '') {
+    refresh(initialFilter = '', initialPage = 0) {
         this.completeDischargeCollections = undefined;
         this.updating = true;
         this.dischargesService
@@ -112,6 +111,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
                         this.filter(true);
                     } else {
                         this.filtered = this.completeDischargeCollections;
+                        this.index = Math.min(initialPage, Math.max(Math.ceil(this.filtered.length / this.length) - 1, 0)) * this.length;
                         this.navigate(-1);
                     }
                     this.updating = false;
@@ -135,6 +135,7 @@ export class PersonnelDischargesComponent implements OnInit, OnDestroy {
         }
         this.selectedIndex = -1;
         this.dischargeCollections = this.filtered.slice(this.index, this.index + this.length);
+        this.urlState.set({ filter: this.filterString, page: Math.floor(this.index / this.length), size: this.length });
     }
 
     filter(openFirst: boolean = false) {

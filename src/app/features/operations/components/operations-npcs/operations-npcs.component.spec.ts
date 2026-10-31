@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { NgxPermissionsService } from 'ngx-permissions';
@@ -48,6 +49,7 @@ describe('OperationsNpcsComponent', () => {
 
         TestBed.configureTestingModule({
             providers: [
+                provideRouter([]),
                 OperationsNpcsComponent,
                 { provide: NpcVoicesService, useValue: service },
                 { provide: MatDialog, useValue: dialog },

@@ -14,8 +14,8 @@ import { FormsModule } from '@angular/forms';
 export class PaginatorComponent implements OnChanges {
     @Output() page = new EventEmitter<PagedEvent>();
     @Input() total: number = 0;
-    pageIndex: number = 0;
-    pageSize: number = 15;
+    @Input() pageIndex: number = 0;
+    @Input() pageSize: number = 15;
     pageSizes = [10, 15, 30, 50];
 
     constructor() {}

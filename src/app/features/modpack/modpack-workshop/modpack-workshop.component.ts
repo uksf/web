@@ -22,6 +22,7 @@ import { MatTooltip } from '@angular/material/tooltip';
 import { TextInputBoxedComponent } from '../../../shared/components/elements/text-input-boxed/text-input-boxed.component';
 import { MatIcon } from '@angular/material/icon';
 import { MatCard } from '@angular/material/card';
+import { UrlQueryState } from '@app/shared/utils/url-query-state';
 
 const UPDATED_DATE_POLL_INTERVAL_MS = 300000;
 
@@ -40,8 +41,9 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
     private onReceiveWorkshopModUpdate = (id: string) => this.getDataForMod(id);
     mods: WorkshopMod[] = [];
     sections: WorkshopModSection[] = [];
-    searchControl = new FormControl('');
-    private searchTerm = '';
+    private urlState = new UrlQueryState();
+    searchControl = new FormControl(this.urlState.string('filter'));
+    private searchTerm = (this.searchControl.value ?? '').toLowerCase();
     viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
     showInlineActions = true;
 
@@ -146,6 +148,7 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
     }
 
     applySearch(term: string) {
+        this.urlState.set({ filter: term });
         this.searchTerm = term.toLowerCase();
         this.groupMods();
     }
@@ -210,10 +213,13 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
             });
     }
 
-    update(mod: WorkshopMod) {
-        // Show the mod as updating straight away so the button cannot be clicked again before the hub reports the new status.
+    private blockRepeatClicksUntilHubReportsStatus(mod: WorkshopMod) {
         mod.status = 'Updating';
         this.updateModComputedProperties();
+    }
+
+    update(mod: WorkshopMod) {
+        this.blockRepeatClicksUntilHubReportsStatus(mod);
         this.workshopService
             .updateMod(mod.steamId)
             .pipe(first())

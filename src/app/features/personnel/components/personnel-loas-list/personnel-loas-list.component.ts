@@ -50,8 +50,8 @@ export class PersonnelLoasListComponent implements OnInit {
     totalLoas: number = 0;
     pageIndex: number = 0;
     pageSize: number = 15;
-    filterString: string = '';
-    selectedDate: Date | null = null;
+    @Input() filterString: string = '';
+    @Input() selectedDate: Date | null = null;
 
     selectedIndex: number = -1;
 

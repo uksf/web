@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { AdminDiscordLogsComponent } from './admin-discord-logs.component';
 import { DiscordUserEventType } from '@app/features/admin/models/logging';
 import { SortDirection } from '@app/shared/models/sort-direction';
@@ -21,6 +22,7 @@ describe('AdminDiscordLogsComponent', () => {
 
         TestBed.configureTestingModule({
             providers: [
+                provideRouter([]),
                 AdminDiscordLogsComponent,
                 { provide: LogsService, useValue: mockLogsService },
                 { provide: MatDialog, useValue: { open: vi.fn() } },

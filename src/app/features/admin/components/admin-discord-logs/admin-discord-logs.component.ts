@@ -80,6 +80,17 @@ export class AdminDiscordLogsComponent extends AdminLogsComponent implements OnI
         this.refreshData();
     }
 
+    protected override restoreUrlState() {
+        super.restoreUrlState();
+        const eventTypes = this.urlState.list('events');
+        this.selectedEventTypes = this.allEventTypes.filter((eventType) => eventTypes.includes(this.eventTypeToApiString(eventType)));
+    }
+
+    protected override writeUrlState() {
+        super.writeUrlState();
+        this.urlState.set({ events: this.selectedEventTypes.map((eventType) => this.eventTypeToApiString(eventType)) });
+    }
+
     override buildParams() {
         let params = super.buildParams();
 

@@ -22,6 +22,7 @@ import { MessageModalComponent } from '@app/shared/modals/message-modal/message-
 import { NpcVoiceUploadData, NpcVoiceUploadModalComponent, NpcVoiceUploadResult } from '../../modals/npc-voice-upload-modal/npc-voice-upload-modal.component';
 import { NpcMood, NpcVoice, NpcVoiceJob } from '../../models/npc-voice';
 import { NpcVoicesService } from '../../services/npc-voices.service';
+import { UrlQueryState } from '@app/shared/utils/url-query-state';
 import { groupName, groupVoices, isGenerating, matchesFilter, moodLabel, NpcMoodView, NpcVoiceGroup } from '../../utils/npc-voice-groups';
 import { NpcSamplePlayer } from '../../utils/npc-sample-player';
 
@@ -63,7 +64,8 @@ export class OperationsNpcsComponent extends DestroyableComponent implements OnI
     jobs: Record<string, NpcVoiceJob> = {};
     groups: NpcVoiceGroup[] = [];
     filtered: NpcVoiceGroup[] = [];
-    filter = '';
+    private urlState = new UrlQueryState();
+    filter = this.urlState.string('filter');
     copiedId: string | null = null;
     loadFailed = false;
     player = new NpcSamplePlayer();
@@ -116,6 +118,7 @@ export class OperationsNpcsComponent extends DestroyableComponent implements OnI
     }
 
     applyFilter(): void {
+        this.urlState.set({ filter: this.filter });
         this.filtered = this.groups.filter((g) => matchesFilter(g, this.filter));
     }
 

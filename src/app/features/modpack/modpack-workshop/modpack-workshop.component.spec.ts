@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { ModpackWorkshopComponent } from './modpack-workshop.component';
 import { of, Subject, throwError } from 'rxjs';
 import { WorkshopMod, WorkshopModStatus } from '../models/workshop-mod';
@@ -55,6 +56,7 @@ describe('ModpackWorkshopComponent', () => {
 
         TestBed.configureTestingModule({
             providers: [
+                provideRouter([]),
                 ModpackWorkshopComponent,
                 { provide: WorkshopService, useValue: mockWorkshopService },
                 { provide: ModpackHubService, useValue: mockModpackHub },

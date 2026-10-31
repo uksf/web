@@ -9,6 +9,7 @@ import { CommandUnitGroupCardComponent } from './command-unit-group-card/command
 import { AllHubService } from '@app/core/services/all-hub.service';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
+import { UrlQueryState } from '@app/shared/utils/url-query-state';
 import { MembersService } from '@app/shared/services/members.service';
 import { UnitsService } from '../../services/units.service';
 import { DestroyableComponent } from '@app/shared/components';
@@ -84,12 +85,14 @@ export class CommandMembersComponent extends DestroyableComponent implements OnI
     ];
     viewMode: string = 'all';
     private filterSubject = new Subject<string>();
+    private urlState = new UrlQueryState();
 
     private onReceiveAccountUpdate = () => {
         this.getMembers();
     };
 
     ngOnInit(): void {
+        this.restoreUrlState();
         this.allHub.connect();
         this.allHub.on('ReceiveAccountUpdate', this.onReceiveAccountUpdate);
         this.allHub.reconnected$.pipe(takeUntil(this.destroy$)).subscribe({
@@ -106,6 +109,7 @@ export class CommandMembersComponent extends DestroyableComponent implements OnI
             .subscribe({
                 next: (unitTreeDataset: UnitTreeDataSet) => {
                     this.unitRoot = unitTreeDataset.combatNodes[0];
+                    this.applyUnitGrouping();
                 }
             });
 
@@ -116,7 +120,29 @@ export class CommandMembersComponent extends DestroyableComponent implements OnI
         });
     }
 
+    private restoreUrlState() {
+        this.filterString = this.urlState.string('filter');
+        this.pageIndex = this.urlState.number('page', 0);
+        this.pageSize = this.urlState.number('size', 15);
+        const sort = this.urlState.string('sort', 'name');
+        const direction = this.urlState.number('dir', 1);
+        const sortDefinition = this.sortDefinitions.find((definition) => definition.mode === sort && definition.direction === direction) ?? this.sortDefinitions[0];
+        this.sortMode = sortDefinition.mode;
+        this.sortDirection = sortDefinition.direction;
+        this.viewMode = this.urlState.oneOf('view', this.viewModes.map((mode) => mode.mode), 'all');
+        this.groupByUnit = this.urlState.flag('group');
+    }
+
     getMembers() {
+        this.urlState.set({
+            filter: this.filterString,
+            page: this.pageIndex,
+            size: this.pageSize,
+            sort: this.sortMode,
+            dir: this.sortDirection,
+            view: this.viewMode,
+            group: this.groupByUnit
+        });
         const query = buildQuery(this.filterString);
         let pageIndex = this.pageIndex;
         let pageSize = this.pageSize;
@@ -142,11 +168,7 @@ export class CommandMembersComponent extends DestroyableComponent implements OnI
                     this.members = pagedMembers.data;
                     this.totalMembers = pagedMembers.totalCount;
 
-                    if (this.groupByUnit) {
-                        this.groupByUnits();
-                    }
-
-                    this.showUnitGroups = this.groupByUnit;
+                    this.applyUnitGrouping();
                 },
                 error: () => {
                     this.loaded = true;
@@ -182,6 +204,13 @@ export class CommandMembersComponent extends DestroyableComponent implements OnI
         this.groupByUnit = !this.groupByUnit;
 
         this.getMembers();
+    }
+
+    applyUnitGrouping() {
+        this.showUnitGroups = this.groupByUnit && !!this.unitRoot;
+        if (this.showUnitGroups) {
+            this.groupByUnits();
+        }
     }
 
     groupByUnits() {
