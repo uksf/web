@@ -54,8 +54,9 @@
 <app-default-content-areas>
     <app-main-content-area>
         <div class="flex-container padding-bottom">
-            @if (account.membershipState == membershipState.MEMBER) {
+            @if (account.membershipState == membershipState.MEMBER || account.membershipState == membershipState.DISCHARGED) {
             <div>
+                @if (isMyProfile || isNco || account.membershipState == membershipState.MEMBER) {
                 <mat-card>
                     <div class="details-container">
                         <h3>Details</h3>
@@ -64,13 +65,15 @@
                             <div class="detail"><b>Email:</b> {{ account.email }}</div>
                             <div class="detail"><b>Steam ID:</b> {{ account.steamname }}</div>
                         </div>
-                        }
+                        } @if (account.membershipState == membershipState.MEMBER) {
                         <div class="details-panel">
                             <div class="detail"><b>Unit:</b> {{ account.unitAssignment }}</div>
                             <div class="detail"><b>Role:</b> {{ account.roleAssignment }}</div>
                         </div>
+                        }
                     </div>
                 </mat-card>
+                }
                 @if (account.application != null && (isRecruiter || (isMyProfile && !isRecruiter))) {
                 <div class="application-container">
                     <mat-card style="text-align: center; vertical-align: middle">
