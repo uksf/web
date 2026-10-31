@@ -97,7 +97,7 @@
                                 </mat-table>
                             </div>
                             <div class="button-container">
-                                <a mat-raised-button [routerLink]="['/profile', dischargeCollection.accountId]"><mat-icon>person</mat-icon> View profile</a>
+                                <a mat-raised-button color="primary" [routerLink]="['/profile', dischargeCollection.accountId]">View profile</a>
                                 <app-flex-filler></app-flex-filler>
                                 <ng-template [ngxPermissionsOnly]="['PERSONNEL']">
                                     @if (dischargeCollection.discharges.length < 3) {
