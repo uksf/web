@@ -72,6 +72,10 @@
                     padding: 6px;
                 }
 
+                &.pbo-state-locked .pbo-name {
+                    color: th.fg-disabled-text();
+                }
+
                 &.pbo-state-removed .pbo-name {
                     color: th.fg-disabled-text();
                     text-decoration: line-through;
@@ -114,6 +118,19 @@ label {
     &.pbo-badge-conflict {
         color: #ffffff;
         background: #ef6c00;
+    }
+
+    &.pbo-badge-locked {
+        color: #ffffff;
+        background: #616161;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    &.pbo-badge-unlocked {
+        color: #ef6c00;
+        border: 1px solid currentColor;
     }
 }
 

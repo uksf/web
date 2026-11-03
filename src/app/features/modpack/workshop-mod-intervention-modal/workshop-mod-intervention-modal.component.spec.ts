@@ -14,14 +14,19 @@ describe('WorkshopModInterventionModalComponent', () => {
         installedPbos: string[] | null,
         availablePbos: string[],
         installedExtensions: string[] | null = [],
-        availableExtensions: string[] = []
+        availableExtensions: string[] = [],
+        lockedPbos: string[] = [],
+        lockedExtensions: string[] = []
     ): WorkshopModInterventionModalComponent {
         TestBed.resetTestingModule();
         TestBed.configureTestingModule({
             providers: [
                 WorkshopModInterventionModalComponent,
                 { provide: MatDialogRef, useValue: mockDialogRef },
-                { provide: MAT_DIALOG_DATA, useValue: { installedPbos, availablePbos, installedExtensions, availableExtensions } }
+                {
+                    provide: MAT_DIALOG_DATA,
+                    useValue: { installedPbos, availablePbos, installedExtensions, availableExtensions, lockedPbos, lockedExtensions }
+                }
             ]
         });
         return TestBed.inject(WorkshopModInterventionModalComponent);
@@ -44,6 +49,41 @@ describe('WorkshopModInterventionModalComponent', () => {
         const d = component.pboSelection.find((p) => p.name === 'd.pbo');
         expect(d?.selected).toBe(false);
         expect(d?.state).toBe('new');
+    });
+
+    it('shows a locked PBO as locked, not new, and blocks selecting it', () => {
+        const component = createComponent(['ATAK_Phone.pbo'], ['ATAK_Alerts.pbo', 'ATAK_Phone.pbo', 'ATAK_Brand_New.pbo'], [], [], ['ATAK_Alerts.pbo']);
+
+        const locked = component.pboSelection.find((p) => p.name === 'ATAK_Alerts.pbo');
+        expect(locked).toMatchObject({ state: 'locked', disabled: true, selected: false });
+        expect(component.pboSelection.find((p) => p.name === 'ATAK_Brand_New.pbo')?.state).toBe('new');
+    });
+
+    it('select all skips locked PBOs', () => {
+        const component = createComponent(['a.pbo'], ['a.pbo', 'b.pbo', 'c.pbo'], [], [], ['b.pbo']);
+
+        component.selectAll();
+        component.submit();
+
+        expect(mockDialogRef.close).toHaveBeenCalledWith({ selectedPbos: ['a.pbo', 'c.pbo'], selectedExtensions: [] });
+    });
+
+    it('lets an unlocked PBO be selected and installed', () => {
+        const component = createComponent(['a.pbo'], ['a.pbo', 'b.pbo'], [], [], ['b.pbo']);
+        const b = component.pboSelection.find((p) => p.name === 'b.pbo')!;
+
+        component.unlock(b);
+        b.selected = true;
+        component.submit();
+
+        expect(b.disabled).toBe(false);
+        expect(mockDialogRef.close).toHaveBeenCalledWith({ selectedPbos: ['a.pbo', 'b.pbo'], selectedExtensions: [] });
+    });
+
+    it('shows a locked extension as locked', () => {
+        const component = createComponent([], [], ['atak.dll'], ['atak.dll', 'other.dll'], [], ['other.dll']);
+
+        expect(component.extensionSelection.find((x) => x.name === 'other.dll')).toMatchObject({ state: 'locked', disabled: true });
     });
 
     it('marks removed PBOs as removed and disabled', () => {

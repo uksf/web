@@ -168,14 +168,7 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
                         this.workshopService
                             .installMod(data)
                             .pipe(first())
-                            .subscribe({
-                                next: () => {},
-                                error: (error: UksfError) => {
-                                    this.dialog.open(MessageModalComponent, {
-                                        data: { message: error.error }
-                                    });
-                                }
-                            });
+                            .subscribe({ error: this.showRequestError });
                     }
                 }
             });
@@ -189,7 +182,9 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
                     availablePbos: mod.availablePbos,
                     availablePboFolders: mod.availablePboFolders,
                     installedExtensions: mod.extensions,
-                    availableExtensions: mod.availableExtensions
+                    availableExtensions: mod.availableExtensions,
+                    lockedPbos: mod.lockedPbos,
+                    lockedExtensions: mod.lockedExtensions
                 }
             })
             .afterClosed()
@@ -200,14 +195,7 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
                         this.workshopService
                             .resolveIntervention(mod.steamId, selection.selectedPbos, selection.selectedExtensions)
                             .pipe(first())
-                            .subscribe({
-                                next: () => {},
-                                error: (error: UksfError) => {
-                                    this.dialog.open(MessageModalComponent, {
-                                        data: { message: error.error }
-                                    });
-                                }
-                            });
+                            .subscribe({ error: this.showRequestError });
                     }
                 }
             });
@@ -227,9 +215,7 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
                 next: () => {},
                 error: (error: UksfError) => {
                     this.getDataForMod(mod.id);
-                    this.dialog.open(MessageModalComponent, {
-                        data: { message: error.error }
-                    });
+                    this.showRequestError(error);
                 }
             });
     }
@@ -238,15 +224,12 @@ export class ModpackWorkshopComponent extends DestroyableComponent implements On
         this.workshopService
             .retryMod(mod.steamId)
             .pipe(first())
-            .subscribe({
-                next: () => {},
-                error: (error: UksfError) => {
-                    this.dialog.open(MessageModalComponent, {
-                        data: { message: error.error }
-                    });
-                }
-            });
+            .subscribe({ error: this.showRequestError });
     }
+
+    private showRequestError = (error: UksfError) => {
+        this.dialog.open(MessageModalComponent, { data: { message: error.error } });
+    };
 
     uninstall(mod: WorkshopMod) {
         this.workshopService

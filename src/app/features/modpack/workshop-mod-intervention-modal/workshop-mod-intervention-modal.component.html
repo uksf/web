@@ -15,6 +15,19 @@
                         @if (row.state === 'new') {
                             <span class="pbo-badge pbo-badge-new">NEW</span>
                         }
+                        @if (row.state === 'locked') {
+                            <button
+                                type="button"
+                                class="pbo-badge pbo-badge-locked"
+                                matTooltip="Deliberately not installed. Installing it may break the mod. Click to unlock"
+                                (click)="unlock(row)"
+                            >
+                                LOCKED
+                            </button>
+                        }
+                        @if (row.state === 'unlocked') {
+                            <span class="pbo-badge pbo-badge-unlocked" matTooltip="Was locked. Leave it unticked to lock it again">UNLOCKED</span>
+                        }
                         @if (row.state === 'removed') {
                             <span class="pbo-badge pbo-badge-removed">REMOVED</span>
                         }

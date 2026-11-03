@@ -15,10 +15,11 @@ export interface WorkshopMod {
     availablePbos: string[];
     availablePboFolders?: WorkshopModPbo[];
     availableExtensions: string[];
+    lockedPbos?: string[];
+    lockedExtensions?: string[];
 
     updatedDate?: string;
 
-    // Computed properties for template binding (avoid per-CD method calls)
     _hasError?: boolean;
     _canUninstall?: boolean;
     _canDelete?: boolean;
@@ -28,7 +29,6 @@ export interface WorkshopMod {
     _neverReleased?: boolean;
 }
 
-/** A PBO found outside the mod's addons folder, with its folder relative to the mod root. */
 export interface WorkshopModPbo {
     name: string;
     folder: string;

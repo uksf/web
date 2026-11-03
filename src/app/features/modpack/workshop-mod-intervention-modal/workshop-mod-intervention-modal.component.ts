@@ -9,7 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { WorkshopModPbo } from '../models/workshop-mod';
 
-export type WorkshopModSelectionState = 'existing' | 'new' | 'removed';
+export type WorkshopModSelectionState = 'existing' | 'new' | 'removed' | 'locked' | 'unlocked';
 
 export interface WorkshopModSelectionRow {
     name: string;
@@ -26,6 +26,8 @@ export interface WorkshopModInterventionModalData {
     availablePboFolders?: WorkshopModPbo[] | null;
     installedExtensions: string[] | null | undefined;
     availableExtensions: string[] | null | undefined;
+    lockedPbos?: string[] | null;
+    lockedExtensions?: string[] | null;
     conflictPbos?: string[] | null;
 }
 
@@ -49,9 +51,9 @@ export class WorkshopModInterventionModalComponent {
     onExtensionStep = false;
 
     constructor() {
-        this.pboSelection = buildSelection(this.data.installedPbos, this.data.availablePbos, this.data.conflictPbos);
+        this.pboSelection = buildSelection(this.data.installedPbos, this.data.availablePbos, this.data.lockedPbos, this.data.conflictPbos);
         applyFolders(this.pboSelection, this.data.availablePboFolders);
-        this.extensionSelection = buildSelection(this.data.installedExtensions, this.data.availableExtensions, []);
+        this.extensionSelection = buildSelection(this.data.installedExtensions, this.data.availableExtensions, this.data.lockedExtensions, []);
         this.onExtensionStep = this.pboSelection.length === 0;
     }
 
@@ -87,6 +89,11 @@ export class WorkshopModInterventionModalComponent {
         return `Not in the mod's addons folder. Found in ${this.folderLabel(row)}`;
     }
 
+    unlock(row: WorkshopModSelectionRow): void {
+        row.state = 'unlocked';
+        row.disabled = false;
+    }
+
     selectAll(): void {
         this.rows.filter((x) => !x.disabled).forEach((x) => (x.selected = true));
     }
@@ -111,16 +118,20 @@ export class WorkshopModInterventionModalComponent {
 function buildSelection(
     installedNames: string[] | null | undefined,
     availableNames: string[] | null | undefined,
+    lockedNames: string[] | null | undefined,
     conflictNames: string[] | null | undefined
 ): WorkshopModSelectionRow[] {
     const installed = new Set(installedNames ?? []);
     const available = new Set(availableNames ?? []);
+    const locked = new Set(lockedNames ?? []);
     const conflicts = new Set(conflictNames ?? []);
 
     const rows: WorkshopModSelectionRow[] = [];
     for (const name of available) {
         const existing = installed.has(name);
-        rows.push({ name, selected: existing, state: existing ? 'existing' : 'new', disabled: false, conflict: conflicts.has(name) });
+        const isLocked = !existing && locked.has(name);
+        const state: WorkshopModSelectionState = existing ? 'existing' : isLocked ? 'locked' : 'new';
+        rows.push({ name, selected: existing, state, disabled: isLocked, conflict: conflicts.has(name) });
     }
     for (const name of installed) {
         if (!available.has(name)) {
@@ -131,7 +142,6 @@ function buildSelection(
     return rows.sort((a, b) => a.name.localeCompare(b.name));
 }
 
-// A PBO outside the mod's addons folder is the author's own layout (optionals, compat folders), so its row says where it came from.
 function applyFolders(rows: WorkshopModSelectionRow[], folders: WorkshopModPbo[] | null | undefined): void {
     const folderByName = new Map((folders ?? []).map((x) => [x.name, x.folder]));
     rows.filter((row) => folderByName.has(row.name)).forEach((row) => (row.folder = folderByName.get(row.name)));
