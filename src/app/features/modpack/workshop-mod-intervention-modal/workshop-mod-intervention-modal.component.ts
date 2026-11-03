@@ -121,20 +121,20 @@ function buildSelection(
     lockedNames: string[] | null | undefined,
     conflictNames: string[] | null | undefined
 ): WorkshopModSelectionRow[] {
-    const installed = new Set(installedNames ?? []);
-    const available = new Set(availableNames ?? []);
-    const locked = new Set(lockedNames ?? []);
+    const installed = fileNameSet(installedNames);
+    const available = fileNameSet(availableNames);
+    const locked = fileNameSet(lockedNames);
     const conflicts = new Set(conflictNames ?? []);
 
     const rows: WorkshopModSelectionRow[] = [];
-    for (const name of available) {
-        const existing = installed.has(name);
-        const isLocked = !existing && locked.has(name);
+    for (const name of new Set(availableNames ?? [])) {
+        const existing = installed.has(name.toLowerCase());
+        const isLocked = !existing && locked.has(name.toLowerCase());
         const state: WorkshopModSelectionState = existing ? 'existing' : isLocked ? 'locked' : 'new';
         rows.push({ name, selected: existing, state, disabled: isLocked, conflict: conflicts.has(name) });
     }
-    for (const name of installed) {
-        if (!available.has(name)) {
+    for (const name of new Set(installedNames ?? [])) {
+        if (!available.has(name.toLowerCase())) {
             rows.push({ name, selected: false, state: 'removed', disabled: true, conflict: false });
         }
     }
@@ -145,6 +145,10 @@ function buildSelection(
 function applyFolders(rows: WorkshopModSelectionRow[], folders: WorkshopModPbo[] | null | undefined): void {
     const folderByName = new Map((folders ?? []).map((x) => [x.name, x.folder]));
     rows.filter((row) => folderByName.has(row.name)).forEach((row) => (row.folder = folderByName.get(row.name)));
+}
+
+function fileNameSet(names: string[] | null | undefined): Set<string> {
+    return new Set((names ?? []).map((x) => x.toLowerCase()));
 }
 
 function selectedNames(rows: WorkshopModSelectionRow[]): string[] {

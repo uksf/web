@@ -19,6 +19,7 @@
                             <button
                                 type="button"
                                 class="pbo-badge pbo-badge-locked"
+                                [attr.aria-label]="'Unlock ' + row.name"
                                 matTooltip="Deliberately not installed. Installing it may break the mod. Click to unlock"
                                 (click)="unlock(row)"
                             >

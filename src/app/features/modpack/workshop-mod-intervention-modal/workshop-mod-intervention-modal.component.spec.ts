@@ -59,6 +59,14 @@ describe('WorkshopModInterventionModalComponent', () => {
         expect(component.pboSelection.find((p) => p.name === 'ATAK_Brand_New.pbo')?.state).toBe('new');
     });
 
+    it('keeps a locked PBO locked when only its name case changed', () => {
+        const component = createComponent(['ATAK_Phone.pbo'], ['atak_alerts.pbo', 'atak_phone.pbo', 'ATAK_Brand_New.pbo'], [], [], ['ATAK_Alerts.pbo']);
+
+        expect(component.pboSelection.find((p) => p.name === 'atak_alerts.pbo')).toMatchObject({ state: 'locked', disabled: true });
+        expect(component.pboSelection.find((p) => p.name === 'atak_phone.pbo')).toMatchObject({ state: 'existing', selected: true });
+        expect(component.pboSelection.some((p) => p.state === 'removed')).toBe(false);
+    });
+
     it('select all skips locked PBOs', () => {
         const component = createComponent(['a.pbo'], ['a.pbo', 'b.pbo', 'c.pbo'], [], [], ['b.pbo']);
 
