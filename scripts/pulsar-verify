@@ -4,7 +4,7 @@ set -euo pipefail
 [[ $# -eq 1 && -d $1 ]] || { echo "usage: pulsar-verify <candidate checkout>" >&2; exit 2; }
 found="$(command -v bun || true)"
 bun="$(readlink -f "${found:-/nonexistent}" || true)"
-[[ $bun == /opt/clacks-factory/bun/*/bin/bun ]] || { echo "pulsar-verify: bun on PATH is '${found:-missing}', not the factory-trusted bun under /opt/clacks-factory/bun/" >&2; exit 1; }
+[[ $bun == /opt/clacks-factory/bun/*/bin/bun ]] || { echo "pulsar-verify: bun on PATH '${found:-missing}' resolves to '${bun:-missing}', expected /opt/clacks-factory/bun/*/bin/bun" >&2; exit 1; }
 
 cd "$1"
 "$bun" install --frozen-lockfile
