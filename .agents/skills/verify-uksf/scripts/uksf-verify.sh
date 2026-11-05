@@ -8,6 +8,12 @@ WEB_DIR="$(cd "${UKSF_WEB_DIR:-$(git -C "$SCRIPTS" rev-parse --show-toplevel)}" 
 VERIFY_HOME="${UKSF_VERIFY_HOME:-$HOME/.uksf-verify}"
 mkdir -p "$VERIFY_HOME"
 VERIFY_HOME="$(cd "$VERIFY_HOME" && pwd -P)"
+if [[ "$(uname -s)" == Linux && -z "${XDG_RUNTIME_DIR:-}" ]]; then
+  export XDG_RUNTIME_DIR="$VERIFY_HOME/xdg-runtime"
+  mkdir -p -m 700 "$XDG_RUNTIME_DIR"
+  [[ -d "$XDG_RUNTIME_DIR" && ! -L "$XDG_RUNTIME_DIR" && -O "$XDG_RUNTIME_DIR" ]] || { echo "refusing: $XDG_RUNTIME_DIR is not a directory this user owns" >&2; exit 1; }
+  chmod 700 "$XDG_RUNTIME_DIR"
+fi
 LOCK="${TMPDIR:-/tmp}/uksf-verify.lock"
 API_PORT=5500
 WEB_PORT=4200

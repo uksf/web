@@ -137,7 +137,7 @@ try {
   await signIn.locator("app-login input[type=email]").fill(email);
   await signIn.locator("app-login input[type=password]").fill(password);
   await signIn.locator("app-login app-button").filter({ hasText: /^\s*Sign in\s*$/ }).locator("button").click();
-  await signIn.waitForURL(/\/(home|application)/, { timeout: 30_000 });
+  await signIn.waitForURL(`${WEB}/home`, { timeout: 30_000 });
   await signIn.locator("app-header-bar").waitFor();
   const signedInAs = (await signIn.locator("app-header-bar").innerText()).includes("Agent.V");
   await shot(signIn, "signed-in");

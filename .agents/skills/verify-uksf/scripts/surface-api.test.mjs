@@ -3,10 +3,11 @@ import { execFile } from "node:child_process";
 import { join } from "node:path";
 import { before, test } from "node:test";
 import { fileURLToPath } from "node:url";
+import { dotnetEnv } from "./verify-lib.mjs";
 
 const reader = fileURLToPath(new URL("./surface-api.cs", import.meta.url));
 const dotnetRoot = process.env.DOTNET_ROOT ?? join(process.env.HOME, ".dotnet");
-const env = { ...process.env, DOTNET_ROOT: dotnetRoot, PATH: `${dotnetRoot}:${process.env.PATH}` };
+const env = { ...dotnetEnv(), DOTNET_ROOT: dotnetRoot, PATH: `${dotnetRoot}:${process.env.PATH}` };
 const events = `switch (gameServerEvent.Type) { case "fixture": break; }`;
 
 function read(files) {

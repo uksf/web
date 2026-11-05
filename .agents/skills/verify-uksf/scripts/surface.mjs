@@ -5,6 +5,7 @@ import { createRequire } from "node:module";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { webRoutes } from "./surface-lib.mjs";
+import { dotnetEnv } from "./verify-lib.mjs";
 
 const usage = "usage: surface.mjs [--web <dir, default: this checkout>] [--api-repo <dir>] [--api-ref <ref>]\nPrints every web route, API endpoint, SignalR hub, and game event type, one id per line, sorted.";
 const args = process.argv.slice(2);
@@ -54,7 +55,7 @@ function apiSources() {
 
 function apiIds(sources) {
   const dotnetRoot = process.env.DOTNET_ROOT ?? join(process.env.HOME, ".dotnet");
-  const env = { ...process.env, DOTNET_ROOT: dotnetRoot, PATH: `${dotnetRoot}:${process.env.PATH}`, DOTNET_NOLOGO: "1", DOTNET_CLI_TELEMETRY_OPTOUT: "1", DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "1" };
+  const env = { ...dotnetEnv(), DOTNET_ROOT: dotnetRoot, PATH: `${dotnetRoot}:${process.env.PATH}`, DOTNET_NOLOGO: "1", DOTNET_CLI_TELEMETRY_OPTOUT: "1", DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "1" };
   const reader = fileURLToPath(new URL("./surface-api.cs", import.meta.url));
   const result = spawnSync("dotnet", ["run", "--disable-build-servers", reader], { input: JSON.stringify(Object.fromEntries(sources)), encoding: "utf8", env, maxBuffer: 64 * 1024 * 1024 });
   if (result.error) refuse(`cannot run dotnet: ${result.error.message}`);
