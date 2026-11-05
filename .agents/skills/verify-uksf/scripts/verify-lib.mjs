@@ -1,8 +1,20 @@
 import { execFileSync } from "node:child_process";
-import { appendFileSync, existsSync, mkdirSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { appendFileSync, chmodSync, existsSync, lstatSync, mkdirSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { join, resolve } from "node:path";
 
 export const RUN_ID = /^v[0-9]{14}-[0-9a-f]{16}$/;
+
+export function dotnetEnv(env = process.env) {
+  if (process.platform !== "linux" || env.XDG_RUNTIME_DIR) return env;
+  const home = resolve(env.UKSF_VERIFY_HOME || join(env.HOME, ".uksf-verify"));
+  mkdirSync(home, { recursive: true });
+  const dir = join(realpathSync(home), "xdg-runtime");
+  mkdirSync(dir, { recursive: true, mode: 0o700 });
+  const stat = lstatSync(dir);
+  if (!stat.isDirectory() || stat.uid !== process.getuid()) throw new Error(`refusing: ${dir} is not a directory this user owns`);
+  chmodSync(dir, 0o700);
+  return { ...env, XDG_RUNTIME_DIR: dir };
+}
 
 function verifyScript(scripts, args) {
   return execFileSync(join(scripts, "uksf-verify.sh"), args, { stdio: ["ignore", "pipe", "pipe"], encoding: "utf8" }).trim();
@@ -90,6 +102,7 @@ export function data(runDir, scripts, args, timeoutMs) {
   const result = { ok: false, value: undefined, error: undefined };
   try {
     const output = execFileSync("dotnet", ["run", "--disable-build-servers", join(scripts, "verify-data.cs"), "--", settings, ...args], {
+      env: dotnetEnv(),
       encoding: "utf8",
       timeout: Math.max(1000, timeoutMs),
       stdio: ["ignore", "pipe", "pipe"],
