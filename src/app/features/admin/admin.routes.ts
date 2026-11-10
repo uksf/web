@@ -13,11 +13,13 @@ import { AdminToolsComponent } from './components/admin-tools/admin-tools.compon
 import { AdminVariablesComponent } from './components/admin-variables/admin-variables.component';
 import { AdminServersComponent } from './components/admin-servers/admin-servers.component';
 import { AdminBackupsComponent } from './components/admin-backups/admin-backups.component';
+import { AdminDiscordChannelsComponent } from './components/admin-discord-channels/admin-discord-channels.component';
 import { AdminToolsService } from './services/admin-tools.service';
 import { InfrastructureService } from './services/infrastructure.service';
 import { LogsService } from './services/logs.service';
 import { VariablesService } from './services/variables.service';
 import { BackupsService } from './services/backups.service';
+import { DiscordChannelContentsService } from './services/discord-channel-contents.service';
 
 const adminPermissions = {
     only: Permissions.ADMIN,
@@ -33,7 +35,7 @@ export const ADMIN_ROUTES: Routes = [
     {
         path: '',
         component: AdminPageComponent,
-        providers: [AdminToolsService, InfrastructureService, LogsService, VariablesService, BackupsService],
+        providers: [AdminToolsService, InfrastructureService, LogsService, VariablesService, BackupsService, DiscordChannelContentsService],
         children: [
             {
                 path: '',
@@ -91,6 +93,12 @@ export const ADMIN_ROUTES: Routes = [
             {
                 path: 'backups',
                 component: AdminBackupsComponent,
+                data: { permissions: adminPermissions },
+                canActivate: [NgxPermissionsGuard]
+            },
+            {
+                path: 'channels',
+                component: AdminDiscordChannelsComponent,
                 data: { permissions: adminPermissions },
                 canActivate: [NgxPermissionsGuard]
             }

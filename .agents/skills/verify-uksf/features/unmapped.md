@@ -53,6 +53,7 @@
 - `api:GET /dev-run/{runId}/status`
 - `api:GET /discharges`
 - `api:GET /discharges/reinstate/{id}`
+- `api:GET /discord/channelContents`
 - `api:GET /discord/roles`
 - `api:GET /discord/updateuserroles`
 - `api:GET /discord/{accountId}/onlineUserDetails`
@@ -177,6 +178,8 @@
 - `api:POST /commandrequests/exists`
 - `api:POST /commentthread/{id}/{commentId}`
 - `api:POST /dev-run`
+- `api:POST /discord/channelContents`
+- `api:POST /discord/channelContents/{id}/publish`
 - `api:POST /discordcode/{discordId}`
 - `api:POST /docs/folders`
 - `api:POST /docs/folders/{folderId}/documents`
@@ -241,6 +244,7 @@
 - `api:PUT /campaigns/{campaignId}/operations/{operationId}`
 - `api:PUT /campaigns/{campaignId}/operations/{operationId}/missions/{missionId}`
 - `api:PUT /commentthread/{commentThreadId}`
+- `api:PUT /discord/channelContents/{id}`
 - `api:PUT /docs/folders/{folderId}`
 - `api:PUT /docs/folders/{folderId}/documents/{documentId}`
 - `api:PUT /docs/folders/{folderId}/documents/{documentId}/content`
@@ -278,6 +282,7 @@
 - `web:/admin`
 - `web:/admin/audit`
 - `web:/admin/backups`
+- `web:/admin/channels`
 - `web:/admin/discord`
 - `web:/admin/errors`
 - `web:/admin/launcher`

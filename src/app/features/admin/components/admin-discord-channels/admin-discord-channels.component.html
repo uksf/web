@@ -1,0 +1,38 @@
+<app-default-content-areas>
+    <app-main-content-area style="grid-column: span 3">
+        <div class="page-container">
+            <p class="hint">
+                The bot posts this content to the channel. A line with only <code>---</code> starts a new message, and long sections split at the Discord limit. A message that holds
+                only an image URL shows the image. Wrap other links in <code>&lt;&gt;</code> to stop link previews. Mentions never ping. Publish edits the bot's messages in place
+                when the message count stays the same, otherwise it deletes and reposts them.
+            </p>
+            @for (item of items; track item.id) {
+            <section class="channel-content">
+                <div class="row">
+                    <app-text-input class="name" label="Name" [(ngModel)]="item.name" [name]="'name-' + item.id"></app-text-input>
+                    <span class="meta">
+                        Channel {{ item.channelId }} · {{ item.messageIds.length }} messages · @if (item.publishedAt) { Published {{ item.publishedAt | date: 'dd/MM/yyyy HH:mm' }} } @else {
+                        Not published }
+                    </span>
+                </div>
+                <app-text-input label="Content" [multiline]="true" [minRows]="10" [maxRows]="40" [(ngModel)]="item.content" [name]="'content-' + item.id"></app-text-input>
+                <div class="row">
+                    <app-button (clicked)="save(item)" [pending]="pendingId === item.id">Save</app-button>
+                    <app-button (clicked)="saveAndPublish(item)" [pending]="pendingId === item.id">Save and publish</app-button>
+                </div>
+            </section>
+            }
+            <section class="channel-content">
+                <h4>Add channel</h4>
+                <div class="row">
+                    <app-text-input class="name" label="Channel ID" [(ngModel)]="newItem.channelId" name="new-channel-id"></app-text-input>
+                    <app-text-input class="name" label="Name" [(ngModel)]="newItem.name" name="new-name"></app-text-input>
+                </div>
+                <app-text-input label="Content" [multiline]="true" [minRows]="4" [maxRows]="20" [(ngModel)]="newItem.content" name="new-content"></app-text-input>
+                <div class="row">
+                    <app-button (clicked)="create()" [pending]="pendingId === 'new'" [disabled]="!newItem.channelId || !newItem.name || !newItem.content">Add</app-button>
+                </div>
+            </section>
+        </div>
+    </app-main-content-area>
+</app-default-content-areas>

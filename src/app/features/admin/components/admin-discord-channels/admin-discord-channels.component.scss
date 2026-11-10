@@ -1,0 +1,32 @@
+@use 'styles/variables' as v;
+@use 'styles/theme-helpers' as th;
+@use '../../admin-shared' as admin;
+
+@include admin.admin-table-base;
+
+.page-container {
+    gap: v.$spacing-16px;
+}
+
+.hint,
+.meta {
+    color: th.fg-secondary-text();
+}
+
+.channel-content {
+    display: flex;
+    flex-direction: column;
+    gap: v.$spacing-8px;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: v.$spacing-8px;
+}
+
+.name {
+    width: 300px;
+}
