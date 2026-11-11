@@ -2,10 +2,6 @@
 <h2 mat-dialog-title>Update Training</h2>
 <mat-dialog-content>
     <form #form="ngForm" (ngSubmit)="submit()">
-        <mat-radio-group [(ngModel)]="model.remove" name="formRemove" class="mode">
-            <mat-radio-button [value]="false" color="primary">Add</mat-radio-button>
-            <mat-radio-button [value]="true" color="primary">Remove</mat-radio-button>
-        </mat-radio-group>
         <app-selection-list
             [(ngModel)]="model.accounts"
             [elementName]="'Member'"
@@ -34,6 +30,10 @@
                 {{ element.displayValue }}
             </ng-template>
         </app-selection-list>
+        <mat-radio-group [(ngModel)]="model.remove" name="formRemove" class="mode">
+            <mat-radio-button [value]="false" color="primary">Add</mat-radio-button>
+            <mat-radio-button [value]="true" color="primary">Remove</mat-radio-button>
+        </mat-radio-group>
     </form>
 </mat-dialog-content>
 <mat-dialog-actions>
