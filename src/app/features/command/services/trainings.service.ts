@@ -34,4 +34,8 @@ export class TrainingsService {
     updateAccountTrainings(accountId: string, trainingIds: string[]): Observable<unknown> {
         return this.httpClient.put(`${this.urls.apiUrl}/accounts/${accountId}/training`, trainingIds, { headers: jsonHeaders });
     }
+
+    bulkUpdateAccountTrainings(accountIds: string[], trainingIds: string[], remove: boolean): Observable<unknown> {
+        return this.httpClient.patch(`${this.urls.apiUrl}/accounts/training`, { accountIds, trainingIds, remove }, { headers: jsonHeaders });
+    }
 }

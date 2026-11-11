@@ -90,4 +90,16 @@ describe('TrainingsService', () => {
             headers: expect.objectContaining({ lazyInit: expect.anything() })
         });
     });
+
+    it('should bulk update account trainings', () => {
+        httpClient.patch.mockReturnValue(of(null));
+
+        service.bulkUpdateAccountTrainings(['a1', 'a2'], ['t1'], true).subscribe();
+
+        expect(httpClient.patch).toHaveBeenCalledWith(
+            'http://localhost:5500/accounts/training',
+            { accountIds: ['a1', 'a2'], trainingIds: ['t1'], remove: true },
+            { headers: expect.objectContaining({ lazyInit: expect.anything() }) }
+        );
+    });
 });

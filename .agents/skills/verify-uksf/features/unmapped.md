@@ -141,6 +141,7 @@
 - `api:GET /workshop`
 - `api:GET /workshop/updatedDates`
 - `api:GET /workshop/{id}`
+- `api:PATCH /accounts/training`
 - `api:PATCH /backups/entries`
 - `api:PATCH /commandrequests/{id}`
 - `api:PATCH /gameservers`
