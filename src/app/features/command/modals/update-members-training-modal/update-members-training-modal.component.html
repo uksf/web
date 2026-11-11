@@ -4,11 +4,11 @@
     <form #form="ngForm" (ngSubmit)="submit()">
         <app-selection-list
             [(ngModel)]="model.accounts"
-            [elementName]="'Member'"
+            [elementName]="'Recipient'"
             [elements]="accounts"
             [clearOnSelect]="true"
             [isRequired]="true"
-            [placeholder]="'Add member'"
+            [placeholder]="'Add recipient'"
             id="accountList"
             name="formAccountList"
         >
