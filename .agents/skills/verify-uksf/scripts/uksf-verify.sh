@@ -58,7 +58,8 @@ up() {
   source_id "$WEB_DIR" > "$dir/web-source"
 
   echo "building the API at $(git -C "$api_dir" rev-parse --short HEAD) (source tree $(cut -c1-12 "$dir/api-source"))"
-  dotnet build "$api_dir/UKSF.Api/UKSF.Api.csproj" -c Debug -o "$dir/api-bin" --disable-build-servers -v quiet -nologo > "$dir/api-build.log" 2>&1
+  pin_api_sdk "$api_dir/UKSF.Api/UKSF.Api.csproj" "$dir"
+  (cd "$dir" && dotnet build "$api_dir/UKSF.Api/UKSF.Api.csproj" -c Debug -o "$dir/api-bin" --disable-build-servers -v quiet -nologo > "$dir/api-build.log" 2>&1)
 
   (
     [[ -z $INJECTED_MONGO ]] || export appSettings__connectionStrings__database="$INJECTED_MONGO"

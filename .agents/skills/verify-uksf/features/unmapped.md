@@ -125,7 +125,6 @@
 - `api:GET /steamconnection/success`
 - `api:GET /steamconnection/success/application`
 - `api:GET /teamspeak/reload`
-- `api:GET /teamspeak/shutdown`
 - `api:GET /teamspeak/{accountId}/onlineUserDetails`
 - `api:GET /teamspeak/{teamspeakId}`
 - `api:GET /trainings`
@@ -276,7 +275,6 @@
 - `hub:LauncherHub`
 - `hub:ModpackHub`
 - `hub:ServersHub`
-- `hub:TeamspeakHub`
 - `web:/`
 - `web:/**`
 - `web:/about`
