@@ -46,6 +46,15 @@ settings_hash() {
   shasum "$1/UKSF.Api/appsettings.Development.json" | cut -c1-16
 }
 
+pin_api_sdk() {
+  local major mentions
+  mentions="$({ grep -oE 'TargetFramework|<!--|Condition' "$1" 2>/dev/null || true; } | wc -l | tr -d ' ')"
+  major="$(sed -n 's|^[[:space:]]*<TargetFramework>net\([0-9][0-9]*\)\.[0-9]*</TargetFramework>[[:space:]]*$|\1|p' "$1" 2>/dev/null || true)"
+  [[ $mentions == 2 && $major =~ ^[0-9]+$ ]] || { echo "refusing: $1 must exist and name TargetFramework once, as one plain <TargetFramework>netN.M</TargetFramework> line, with no comment, no Condition anywhere in the file, and no TargetFrameworks list" >&2; return 1; }
+  printf '{"sdk":{"version":"%s.0.100","rollForward":"latestFeature"}}\n' "$major" > "$2/global.json"
+  (cd "$2" && dotnet --version) >/dev/null 2>&1 || { echo "refusing: no .NET $major SDK under $DOTNET_ROOT, which the API's net$major.x target needs (dotnet --list-sdks)" >&2; return 1; }
+}
+
 wait_for() {
   local seconds="$1" description="$2"
   shift 2

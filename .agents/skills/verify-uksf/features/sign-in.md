@@ -33,6 +33,7 @@ A member or applicant signs in to the website.
 ## How to get to it
 
 - The header **Sign in** button (it also carries a `person` icon; at the smallest mobile width the control is icon-only), or the route `/login`. A page that needs an account redirects to plain `/login` and stores the destination in localStorage key `auth_redirect_url` (`src/app/core/services/authentication/redirect.service.ts`). After sign-in the app goes to that destination, or to `/home` when none is stored.
+- The `/application` page shows a signed-out visitor "If you have already started an application, please sign in to continue the application". Its **sign in** link opens `/login?redirect=application` (`application-page.component.html`), and the Communications step navigates to the same URL (`application-communications.component.ts`). The login page never reads the `redirect` query parameter (`login.component.ts`, `onLoggedIn` reads only `auth_redirect_url`), so the user lands on `/home`, not on the application. Run `v20261124112438-408ad3be9e4edb02` followed that link, signed in, and landed on `/home` (`<run>/evidence/redirect-probe/result.json`).
 
 ## Driving it with Playwright
 
